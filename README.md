@@ -1,6 +1,6 @@
 ﻿# About MfPack
   
- Deelphi to Free Pascal port for Microsoft Media Foundation and related API's.
+ Delphi to Free Pascal port for Microsoft Media Foundation and related API's.
   
 # MfPack covers the following API's:
   
@@ -27,7 +27,7 @@
 # <u>Latest release:</u> 
   
 # MfPack Version 4.1.0  
-FPC/Lazarus version 3.2.2  
+FPC/Lazarus version 3.2.2 (64 bit)
 SDK version: 10.0.28000.2705 (Windows 11).  
   
   
@@ -55,6 +55,13 @@ a media file. This sample application reads audio data from a media file and wri
 the uncompressed audio to a WAVE file.
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/AudioClipExSample.jpg)
+
+  
+**SimpleVolumeControl sample**
+
+This example shows how to use the MfAudioEndPoint component.  
+Note that the maximum value of the maximum static DB values () are arbitrary!  
+Please, install the '..\Samples\Components' first before loading this project.
   
 ---
   
