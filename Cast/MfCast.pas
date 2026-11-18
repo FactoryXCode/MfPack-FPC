@@ -1,0 +1,975 @@
+// FactoryX
+//
+// Copyright (c) FactoryX, Netherlands/Australia/Germany. All rights reserved.
+//
+// Project: Media Foundation - MFPack - Cast
+// Project location: https://sourceforge.net/projects/MFPack
+//                   https://github.com/FactoryXCode/MfPack
+// Module: MfCast.pas
+// Kind: Pascal Unit
+// Release date: 10-08-2026
+// Language: ENU
+//
+// Revision Version: 4.1.0
+// Description: Public `TMfCast` interface for Cast discovery, connection, media loading,
+//              and playback control.
+//
+// Company: FactoryX
+// Intiator(s): Tony (maXcomX), Carmen (carmenh).
+// Contributor(s): Tony Kalf (maXcomX), Carmen (carmenh).
+//
+//------------------------------------------------------------------------------
+// CHANGE LOG
+// Date       Person              Reason
+// ---------- ------------------- ----------------------------------------------
+// 15/11/2026 All                 Eels release  SDK 10.0.28000.2705 (Windows 11)
+//------------------------------------------------------------------------------
+//
+// Remarks: Requires Windows 10 or higher.
+//
+// Related objects: -
+// Related projects: MfPackX410
+// Known Issues: -
+//
+// Compiler version: 23 up to 35
+// SDK version: 10.0.26100.4654
+//
+// Todo: -
+//
+// =============================================================================
+// Source: Google Cast V2 wire protocol
+//==============================================================================
+//
+// LICENSE
+//
+// The contents of this file are subject to the Mozilla Public License
+// Version 2.0 (the "License"); you may not use this file except in
+// compliance with the License. You may obtain a copy of the License at
+// https://mozilla.org/MPL/2.0/
+//
+// Software distributed under the License is distributed on an "AS IS"
+// basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+// License for the specific language governing rights and limitations
+// under the License.
+//
+// Non commercial users may distribute this sourcecode provided that this
+// header is included in full at the top of the file.
+// Commercial users are not allowed to distribute this sourcecode as part of
+// their product.
+//
+//==============================================================================
+unit MfCast;
+
+{$I MfPack.Fpc.inc}
+{$POINTERMATH ON}
+{$PACKENUM 1}
+
+interface
+
+uses
+
+  {WinApi}
+  Windows,
+  {MediaFoundationApi}
+  WinApi.MediaFoundationApi.MfApi,
+  WinApi.MediaFoundationApi.MfObjects,
+  {System}
+  SysUtils,
+  {Cast}
+  MfCastTypes,
+  MfCastInterfaces,
+  MfCastMediaInterfaces,
+  MfCastCaptureCapabilities,
+  MfCastDesktopCapture;
+
+type
+  TMfCast = class;
+
+  TMfCastLogEvent = procedure(Sender: TObject;
+                              const ALevel: TMfCastLogLevel;
+                              const ASource: string;
+                              const AMessage: string) of object;
+
+  EMfCast = class(Exception);
+
+  // Public main interface for discovery and direct playback. Callbacks are delivered
+  // by worker threads; VCL clients must marshal control updates to the main
+  // thread (for instance: The MfSimpleCastPlayer sample demonstrates this with PostMessage).
+  TMfCast = class
+  private
+    FController: IMfCastController;
+    FLogger: IMfCastLogger;
+    FPreviewSink: IMfCastPreviewSink;
+    FDirectPreviewPlayer: IMfCastDirectPreviewPlayer;
+    FMediaFoundationStarted: Boolean;
+    FLoggingEnabled: Integer;
+    FOnDeviceAdded: TMfCastDeviceEvent;
+    FOnDeviceUpdated: TMfCastDeviceEvent;
+    FOnDeviceRemoved: TMfCastDeviceRemovedEvent;
+    FOnStateChanged: TMfCastStateChangedEvent;
+    FOnMediaStatus: TMfCastMediaStatusEvent;
+    FOnError: TMfCastErrorEvent;
+    FOnLog: TMfCastLogEvent;
+
+    procedure ControllerDeviceAdded(const ADevice: TMfCastDevice);
+    procedure ControllerDeviceUpdated(const ADevice: TMfCastDevice);
+    procedure ControllerDeviceRemoved(const ADeviceId: string);
+
+    procedure ControllerStateChanged(const AOldState: TMfCastState;
+                                     const ANewState: TMfCastState);
+
+    procedure ControllerMediaStatus(const AStatus: TMfCastMediaStatus);
+    procedure ControllerError(const AError: TMfCastErrorInfo);
+
+    procedure DispatchLog(const ALevel: TMfCastLogLevel;
+                          const ASource: string;
+                          const AMessage: string);
+    function GetLoggingEnabled(): Boolean;
+
+    procedure SetLoggingEnabled(const AValue: Boolean);
+  
+  public
+
+    class function ApiVersion(): string; static;
+    constructor Create(const AEnableTranscoding: Boolean = False);
+    destructor Destroy(); override;
+
+    // Browse all receivers for the configured window, or finish early once
+    // the specified receiver supplies a complete fresh discovery response.
+    function Discover(): HRESULT; overload;
+    function Discover(const ADevice: TMfCastDevice): HRESULT; overload;
+    function StopDiscovery(): HRESULT;
+    function RefreshDiscovery(): HRESULT; overload;
+    function RefreshDiscovery(const ADevice: TMfCastDevice): HRESULT; overload;
+    function GetDevices(out ADevices: TMfCastDeviceArray): HRESULT;
+
+    function GetMediaTracks(const ASource: string;
+                            out ATracks: TMfCastTrackInfoArray): HRESULT;
+
+    function SetPreviewWindow(const AWindow: HWND): HRESULT;
+    function UpdatePreviewWindow(): HRESULT;
+    function UpdatePreviewSubtitles(): HRESULT;
+    function SetAudioArtwork(const ASourceName: string): HRESULT;
+    function SetSourceResolver(const AResolver: IMfCastSourceResolver): HRESULT;
+
+    function Connect(const ADevice: TMfCastDevice): HRESULT;
+
+    function Load(const ASource: string): HRESULT; overload;
+
+    function Load(const ASource: string;
+                  const ASubtitle: TMfCastSubtitleAsset;
+                  const AMediaMode: TMfCastMediaMode = cmmAutomatic;
+                  const ASubtitleMode: TMfCastSubtitleMode = csmAutomatic;
+                  const AStartSeconds: Double = 0.0): HRESULT; overload;
+
+    function Cast(const ADevice: TMfCastDevice;
+                  const ASource: string): HRESULT; overload;
+                  
+    function Cast(const ADevice: TMfCastDevice;
+                  const ASource: string;
+                  const ASubtitle: TMfCastSubtitleAsset;
+                  const AMediaMode: TMfCastMediaMode = cmmAutomatic;
+                  const ASubtitleMode: TMfCastSubtitleMode = csmAutomatic;
+                  const AStartSeconds: Double = 0.0): HRESULT; overload;
+
+    function CastLiveFragmentedMp4(const ADevice: TMfCastDevice;
+                                   const AInitSegment: TBytes;
+                                   out AByteStream: IMFByteStream): HRESULT;
+
+    // Resolve the immutable video codec before a V2.1 capture session starts.
+    function GetCaptureCapabilities(const ADevice: TMfCastDevice;
+                                    const APreference: TMfCastVideoCodecPreference;
+                                    out ACapabilities: TMfCastCaptureCapabilities): HRESULT; overload;
+    function GetCaptureCapabilities(const ADevice: TMfCastDevice;
+                                    const ASettings: TMfCastCaptureSettings;
+                                    out ACapabilities: TMfCastCaptureCapabilities): HRESULT; overload;
+
+    function CastDesktop(const ADevice: TMfCastDevice;
+                         const ASettings: TMfCastCaptureSettings;
+                         out ACapabilities: TMfCastCaptureCapabilities): HRESULT;
+
+    function Play(): HRESULT;
+    function Pause(): HRESULT;
+    function Stop(): HRESULT;
+
+    function Seek(const APositionSeconds: Double): HRESULT;
+    function SelectAudioTrack(const ATrackId: Int64): HRESULT;
+    function SelectSubtitle(const ATrackId: Int64): HRESULT; overload;
+    function SelectSubtitle(const ASubtitle: TMfCastSubtitleAsset): HRESULT; overload;
+    function DisableSubtitles(): HRESULT;
+    function SetVolume(const AVolume: Single): HRESULT;
+    function SetMuted(const AMuted: Boolean): HRESULT;
+
+    // Register an existing Remote v2 pairing (empty-password PFX containing its
+    // certificate/private key). Stored with DPAPI for this user and Cast ID.
+    function ImportAndroidTvPairing(const ADevice: TMfCastDevice;
+                                    const APfx: TBytes): HRESULT;
+    function HasAndroidTvPairing(const ADevice: TMfCastDevice): Boolean;
+
+    // Paired Android TVs only. S_FALSE means no pairing is registered;
+    // AIsOn is authoritative only when GetDevicePowerState returns S_OK.
+    function GetDevicePowerState(const ADevice: TMfCastDevice;
+                                 out AIsOn: Boolean;
+                                 out ADetail: string): HRESULT;
+    function RequestDeviceStandby(const ADevice: TMfCastDevice;
+                                  out ADetail: string): HRESULT;
+
+    // Stop casting and detach; registered paired TVs also receive standby.
+    // This can block during the remote handshake; UI clients should use a worker.
+    function Disconnect(): HRESULT;
+    function State(): TMfCastState;
+
+    property OnDeviceAdded: TMfCastDeviceEvent read FOnDeviceAdded write FOnDeviceAdded;
+    property OnDeviceUpdated: TMfCastDeviceEvent read FOnDeviceUpdated write FOnDeviceUpdated;
+    property OnDeviceRemoved: TMfCastDeviceRemovedEvent read FOnDeviceRemoved write FOnDeviceRemoved;
+    property OnStateChanged: TMfCastStateChangedEvent read FOnStateChanged write FOnStateChanged;
+    property OnMediaStatus: TMfCastMediaStatusEvent read FOnMediaStatus write FOnMediaStatus;
+    property OnError: TMfCastErrorEvent read FOnError write FOnError;
+    property OnLog: TMfCastLogEvent read FOnLog write FOnLog;
+    property LoggingEnabled: Boolean read GetLoggingEnabled write SetLoggingEnabled;
+  end;
+
+
+implementation
+
+uses
+  {Cast}
+  MfCastTransport,
+  MfCastChannel,
+  MfCastDiscovery,
+  MfCastHttpServer,
+  MfCastMedia,
+  MfCastWindowPreview,
+  MfCastDirectPreviewPlayer,
+  MfCastRemux,
+  MfCastTranscode,
+  MfCastController,
+  MfCastAndroidTvRemote;
+
+type
+  TMfCastLogger = class(TInterfacedObject, IMfCastLogger)
+  private
+    FOwner: TMfCast;
+
+  public
+
+    constructor Create(const AOwner: TMfCast);
+
+    procedure Detach();
+    procedure Log(const ALevel: TMfCastLogLevel;
+                  const ASource: string;
+                  const AMessage: string);
+  end;
+
+
+constructor TMfCastLogger.Create(const AOwner: TMfCast);
+begin
+
+  inherited Create();
+
+  FOwner := AOwner;
+end;
+
+
+procedure TMfCastLogger.Detach();
+begin
+
+  FOwner := nil;
+end;
+
+
+procedure TMfCastLogger.Log(const ALevel: TMfCastLogLevel;
+                            const ASource: string;
+                            const AMessage: string);
+begin
+
+  if Assigned(FOwner) then
+    FOwner.DispatchLog(ALevel,
+                       ASource,
+                       AMessage);
+end;
+
+
+constructor TMfCast.Create(const AEnableTranscoding: Boolean);
+var
+  hr: HRESULT;
+  Components: TMfCastComponents;
+  Settings: TMfCastSettings;
+  Profile: TMfCastDeviceProfile;
+  Resolver: IMfCastCapabilityResolver;
+  Callbacks: TMfCastControllerCallbacks;
+
+begin
+
+  inherited Create();
+
+  FMediaFoundationStarted := False;
+  FLoggingEnabled := 1;
+  FPreviewSink := nil;
+  FDirectPreviewPlayer := nil;
+
+  // Media inspection and track enumeration also use Media Foundation. Keep
+  // transcoding optional, but initialize the platform for every facade.
+  hr := MFStartup(MF_VERSION,
+                  0);
+
+  if FAILED(hr) then
+    raise EMfCast.CreateFmt('Media Foundation initialization failed (HRESULT $%.8x).',
+                            [DWORD(hr)]);
+
+  FMediaFoundationStarted := True;
+
+  Components.Reset();
+  Components.Discovery := TMfCastMdnsDiscovery.Create();
+  Components.Channel := TMfCastChannel.Create(TMfCastTcpTransport.Create);
+  Components.HttpServer := TMfCastHttpServer.Create();
+  Components.DesktopHttpServer := TMfCastHttpServer.Create();
+  Components.MediaInspector := TMfCastMediaInspector.Create();
+
+  Profile.Reset();
+  Profile.Name := 'Default Chromecast direct-play profile';
+
+  SetLength(Profile.AllowedContentTypes,
+            8);
+  Profile.AllowedContentTypes[0] := 'video/mp4';
+  Profile.AllowedContentTypes[1] := 'audio/mp4';
+  Profile.AllowedContentTypes[2] := 'video/webm';
+  Profile.AllowedContentTypes[3] := 'audio/mpeg';
+  Profile.AllowedContentTypes[4] := 'audio/aac';
+  Profile.AllowedContentTypes[5] := 'audio/flac';
+  Profile.AllowedContentTypes[6] := 'audio/wav';
+  Profile.AllowedContentTypes[7] := 'audio/ogg';
+  Profile.AllowUnknownFormats := True;
+
+  Resolver := TMfCastCapabilityResolver.Create(Profile);
+  Components.MediaPlanner := TMfCastMediaPlanner.Create(Resolver);
+  FDirectPreviewPlayer := TMfCastDirectPreviewPlayer.Create();
+  Components.DirectPreviewPlayer := FDirectPreviewPlayer;
+
+  if AEnableTranscoding then
+    begin
+      Components.SegmentPublisher := TMfCastSegmentPublisher.Create(Components.HttpServer);
+      Components.DesktopPublisher := TMfCastSegmentPublisher.Create(Components.DesktopHttpServer,
+                                                                     'desktop.mp4', True);
+      Components.RemuxPipeline := TMfCastRemuxPipeline.Create();
+      Components.TranscodePipeline := TMfCastTranscodePipeline.Create();
+      Components.CapturePipeline := TMfCastDesktopCapturePipeline.Create();
+      FPreviewSink := TMfCastWindowPreviewSink.Create();
+      Components.PreviewSink := FPreviewSink;
+    end;
+
+  FController := TMfCastController.Create(Components);
+  FLogger := TMfCastLogger.Create(Self);
+  FController.SetLogger(FLogger);
+
+  Callbacks.Reset();
+  Callbacks.OnDeviceAdded := ControllerDeviceAdded;
+  Callbacks.OnDeviceUpdated := ControllerDeviceUpdated;
+  Callbacks.OnDeviceRemoved := ControllerDeviceRemoved;
+  Callbacks.OnStateChanged := ControllerStateChanged;
+  Callbacks.OnMediaStatus := ControllerMediaStatus;
+  Callbacks.OnError := ControllerError;
+  FController.SetCallbacks(Callbacks);
+
+  Settings := TMfCastSettings.CreateDefault;
+  hr := FController.Configure(Settings);
+  if FAILED(hr) then
+    raise EMfCast.CreateFmt('Chromecast initialization failed (HRESULT $%.8x).',
+                            [DWORD(hr)]);
+end;
+
+
+destructor TMfCast.Destroy();
+var
+  Callbacks: TMfCastControllerCallbacks;
+
+begin
+
+  if Assigned(FController) then
+    begin
+      Callbacks.Reset();
+      FController.SetCallbacks(Callbacks);
+      FController.SetLogger(nil);
+      FController.StopDiscovery;
+      FController.Disconnect;
+      FController := nil;
+    end;
+
+  if Assigned(FPreviewSink) then
+    FPreviewSink.SetWindow(0);
+  FPreviewSink := nil;
+  if Assigned(FDirectPreviewPlayer) then
+    FDirectPreviewPlayer.SetWindow(0);
+  FDirectPreviewPlayer := nil;
+  FLogger := nil;
+
+  if FMediaFoundationStarted then
+    begin
+      MFShutdown();
+      FMediaFoundationStarted := False;
+    end;
+
+  inherited Destroy;
+end;
+
+
+function TMfCast.Discover(): HRESULT;
+begin
+
+  Result := FController.StartDiscovery();
+end;
+
+
+function TMfCast.Discover(const ADevice: TMfCastDevice): HRESULT;
+var
+  Targeted: IMfCastTargetedDiscovery;
+begin
+  if Supports(FController, IMfCastTargetedDiscovery, Targeted) then
+    Result := Targeted.DiscoverDevice(ADevice)
+  else
+    Result := FController.RefreshDiscovery();
+end;
+
+
+function TMfCast.StopDiscovery(): HRESULT;
+begin
+
+  Result := FController.StopDiscovery();
+end;
+
+
+function TMfCast.RefreshDiscovery(): HRESULT;
+begin
+
+  Result := FController.RefreshDiscovery();
+end;
+
+
+function TMfCast.RefreshDiscovery(const ADevice: TMfCastDevice): HRESULT;
+begin
+  Result := Discover(ADevice);
+end;
+
+
+function TMfCast.GetDevices(out ADevices: TMfCastDeviceArray): HRESULT;
+begin
+
+  Result := FController.GetDevices(ADevices);
+end;
+
+
+function TMfCast.GetMediaTracks(const ASource: string;
+                                out ATracks: TMfCastTrackInfoArray): HRESULT;
+begin
+
+  Result := FController.GetMediaTracks(ASource, ATracks);
+end;
+
+
+function TMfCast.SetPreviewWindow(const AWindow: HWND): HRESULT;
+var
+  SinkResult: HRESULT;
+
+begin
+
+  Result := E_NOTIMPL;
+
+  if Assigned(FDirectPreviewPlayer) then
+    Result := FDirectPreviewPlayer.SetWindow(AWindow);
+
+  if Assigned(FPreviewSink) then
+    begin
+      SinkResult := FPreviewSink.SetWindow(AWindow);
+      if FAILED(SinkResult) or (Result = E_NOTIMPL) then
+        Result := SinkResult;
+    end;
+end;
+
+
+function TMfCast.UpdatePreviewWindow(): HRESULT;
+begin
+
+  if Assigned(FDirectPreviewPlayer) then
+    Result := FDirectPreviewPlayer.UpdateVideo()
+  else
+    Result := E_NOTIMPL;
+end;
+
+function TMfCast.UpdatePreviewSubtitles(): HRESULT;
+begin
+
+  if Assigned(FDirectPreviewPlayer) then
+    Result := FDirectPreviewPlayer.UpdateSubtitles()
+  else
+    Result := S_FALSE;
+end;
+
+
+function TMfCast.SetAudioArtwork(const ASourceName: string): HRESULT;
+begin
+
+  Result := FController.SetAudioArtwork(ASourceName);
+end;
+
+
+function TMfCast.SetSourceResolver(const AResolver: IMfCastSourceResolver): HRESULT;
+begin
+
+  Result := FController.SetSourceResolver(AResolver);
+end;
+
+
+function TMfCast.Cast(const ADevice: TMfCastDevice;
+                      const ASource: string): HRESULT;
+var
+  Subtitle: TMfCastSubtitleAsset;
+
+begin
+
+  Subtitle.Reset();
+  Result := Cast(ADevice, 
+                 ASource,
+                 Subtitle,
+                 cmmAutomatic,
+                 csmNone,
+                 0.0);
+end;
+
+
+function TMfCast.Connect(const ADevice: TMfCastDevice): HRESULT;
+begin
+
+  Result := FController.Connect(ADevice);
+end;
+
+
+function TMfCast.Load(const ASource: string): HRESULT;
+var
+  Subtitle: TMfCastSubtitleAsset;
+
+begin
+
+  Subtitle.Reset();
+  Result := Load(ASource, 
+                 Subtitle,
+                 cmmAutomatic,
+                 csmNone,
+                 0.0);
+end;
+
+
+function TMfCast.Load(const ASource: string;
+                      const ASubtitle: TMfCastSubtitleAsset;
+                      const AMediaMode: TMfCastMediaMode;
+                      const ASubtitleMode: TMfCastSubtitleMode;
+                      const AStartSeconds: Double): HRESULT;
+var
+  StartTime: Int64;
+
+begin
+
+  StartTime := Round(AStartSeconds * 10000000.0);
+  if (StartTime < 0) then
+    StartTime := 0;
+
+  Result := FController.LoadFile(ASource,
+                                 ASubtitle,
+                                 AMediaMode,
+                                 ASubtitleMode,
+                                 StartTime);
+end;
+
+
+function TMfCast.Cast(const ADevice: TMfCastDevice;
+                      const ASource: string;
+                      const ASubtitle: TMfCastSubtitleAsset;
+                      const AMediaMode: TMfCastMediaMode;
+                      const ASubtitleMode: TMfCastSubtitleMode;
+                      const AStartSeconds: Double): HRESULT;
+var
+  StartTime: Int64;
+
+begin
+
+  StartTime := Round(AStartSeconds * 10000000.0);
+  if (StartTime < 0) then
+    StartTime := 0;
+
+  Result := FController.CastFile(ADevice,
+                                 ASource,
+                                 ASubtitle,
+                                 AMediaMode,
+                                 ASubtitleMode,
+                                 StartTime);
+end;
+
+
+function TMfCast.CastLiveFragmentedMp4(const ADevice: TMfCastDevice;
+                                       const AInitSegment: TBytes;
+                                       out AByteStream: IMFByteStream): HRESULT;
+begin
+
+  Result := FController.CastLiveFragmentedMp4(ADevice,
+                                              AInitSegment,
+                                              AByteStream);
+end;
+
+
+function TMfCast.GetCaptureCapabilities(const ADevice: TMfCastDevice;
+                                        const APreference: TMfCastVideoCodecPreference;
+                                        out ACapabilities: TMfCastCaptureCapabilities): HRESULT;
+begin
+
+  Result := MfCastGetCaptureCapabilities(ADevice,
+                                         APreference,
+                                         ACapabilities);
+end;
+
+
+function TMfCast.GetCaptureCapabilities(const ADevice: TMfCastDevice;
+                                        const ASettings: TMfCastCaptureSettings;
+                                        out ACapabilities: TMfCastCaptureCapabilities): HRESULT;
+begin
+
+  // Explicit audio-only capture needs neither DXGI nor a hardware video encoder.
+  if (Trim(ASettings.ArtworkSourceName) <> '') then
+    begin
+      ACapabilities.Reset();
+
+      if ASettings.AudioOnly or (not ASettings.CaptureSystemAudio) then
+        begin
+          ACapabilities.SelectionReason := 'Audio with artwork requires system audio and a video track.';
+          Exit(E_INVALIDARG);
+        end;
+
+      if MfCastDeviceIsAudioOnly(ADevice) then
+        begin
+          ACapabilities.SelectionReason := 'Audio with artwork requires a video-capable receiver.';
+          Exit(E_INVALIDARG);
+        end;
+
+      if not FileExists(ASettings.ArtworkSourceName) then
+        begin
+          ACapabilities.SelectionReason := 'The selected artwork file does not exist.';
+          Exit(HRESULT(DWORD($80070002)));
+        end;
+    end;
+
+  if ASettings.AudioOnly then
+    begin
+      ACapabilities.Reset();
+      ACapabilities.AudioOnly := True;
+      ACapabilities.SelectionReason :=
+        'Audio-only capture was requested; capture will use WASAPI audio without DXGI video.';
+      Result := S_OK;
+    end
+  else
+    Result := GetCaptureCapabilities(ADevice, ASettings.CodecPreference,
+                                     ACapabilities);
+
+  if SUCCEEDED(Result) and ACapabilities.AudioOnly and
+     (not ASettings.CaptureSystemAudio) then
+    begin
+      ACapabilities.SelectionReason :=
+        'Audio-only capture requires system-audio capture to be enabled.';
+      Result := E_INVALIDARG;
+    end;
+end;
+
+
+function TMfCast.CastDesktop(const ADevice: TMfCastDevice;
+                             const ASettings: TMfCastCaptureSettings;
+                             out ACapabilities: TMfCastCaptureCapabilities): HRESULT;
+var
+  EffectiveSettings: TMfCastCaptureSettings;
+  
+begin
+  
+  Result := GetCaptureCapabilities(ADevice,
+                                   ASettings,
+                                   ACapabilities);
+  if FAILED(Result) then
+    Exit;
+    
+  EffectiveSettings := ASettings;
+  EffectiveSettings.AudioOnly := ACapabilities.AudioOnly;
+  
+
+    
+  Result := FController.CastDesktop(ADevice,
+                                    EffectiveSettings,
+                                    ACapabilities.SelectedVideoSubtype);
+end;
+
+
+function TMfCast.Play(): HRESULT;
+begin
+
+  Result := FController.Play();
+end;
+
+
+function TMfCast.Pause(): HRESULT;
+begin
+
+  Result := FController.Pause();
+end;
+
+
+function TMfCast.Stop(): HRESULT;
+begin
+
+  Result := FController.Stop();
+end;
+
+
+function TMfCast.Seek(const APositionSeconds: Double): HRESULT;
+var
+  Position: Int64;
+
+begin
+
+  Position := Round(APositionSeconds * 10000000.0);
+
+  if (Position < 0) then
+    Position := 0;
+  Result := FController.Seek(Position);
+end;
+
+
+function TMfCast.SelectAudioTrack(const ATrackId: Int64): HRESULT;
+begin
+
+  Result := FController.SelectAudioTrack(ATrackId);
+end;
+
+
+function TMfCast.SelectSubtitle(const ASubtitle: TMfCastSubtitleAsset): HRESULT;
+begin
+
+  Result := FController.SelectSubtitle(ASubtitle);
+end;
+
+
+function TMfCast.SelectSubtitle(const ATrackId: Int64): HRESULT;
+begin
+
+  Result := FController.SelectSubtitleTrack(ATrackId);
+end;
+
+
+function TMfCast.DisableSubtitles(): HRESULT;
+begin
+
+  Result := FController.DisableSubtitles();
+end;
+
+
+function TMfCast.SetVolume(const AVolume: Single): HRESULT;
+var
+  Volume: Single;
+
+begin
+
+  Volume := AVolume;
+
+  if (Volume < 0.0) then
+    Volume := 0.0
+  else
+    if (Volume > 1.0) then
+      Volume := 1.0;
+  Result := FController.SetVolume(Volume);
+end;
+
+
+function TMfCast.SetMuted(const AMuted: Boolean): HRESULT;
+begin
+
+  Result := FController.SetMuted(AMuted);
+end;
+
+
+class function TMfCast.ApiVersion(): string;
+begin
+  Result := MFCAST_API_VERSION;
+end;
+
+
+function TMfCast.ImportAndroidTvPairing(const ADevice: TMfCastDevice;
+  const APfx: TBytes): HRESULT;
+begin
+  Result := MfCastImportAndroidTvPairing(ADevice, APfx);
+  if Succeeded(Result) then
+    DispatchLog(cllInfo, 'AndroidTvRemote',
+      'Paired Android TV credential registered for this Cast device.')
+  else
+    DispatchLog(cllWarning, 'AndroidTvRemote',
+      Format('Could not register the paired Android TV credential: HRESULT $%.8x.',
+             [DWORD(Result)]));
+end;
+
+
+function TMfCast.HasAndroidTvPairing(const ADevice: TMfCastDevice): Boolean;
+var
+  FileName: string;
+
+begin
+
+  FileName := MfCastAndroidTvPairingFile(ADevice);
+  Result := (FileName <> '') and FileExists(FileName);
+end;
+
+
+function TMfCast.GetDevicePowerState(const ADevice: TMfCastDevice;
+                                     out AIsOn: Boolean;
+                                     out ADetail: string): HRESULT;
+begin
+
+  Result := MfCastAndroidTvPower(ADevice,
+                                 False,
+                                 AIsOn,
+                                 ADetail);
+
+  if Failed(Result) then
+    DispatchLog(cllWarning,
+                'AndroidTvRemote',
+                ADetail)
+  else
+    DispatchLog(cllDebug,
+                'AndroidTvRemote',
+                ADetail);
+end;
+
+
+function TMfCast.RequestDeviceStandby(const ADevice: TMfCastDevice;
+                                      out ADetail: string): HRESULT;
+var
+  IsOn: Boolean;
+
+begin
+
+  Result := MfCastAndroidTvPower(ADevice,
+                                 True,
+                                 IsOn,
+                                 ADetail);
+
+  if Failed(Result) then
+    DispatchLog(cllWarning,
+                'AndroidTvRemote',
+                ADetail)
+  else
+    DispatchLog(cllInfo,
+                'AndroidTvRemote',
+                ADetail);
+end;
+
+
+function TMfCast.Disconnect(): HRESULT;
+begin
+
+  Result := FController.Disconnect();
+end;
+
+
+function TMfCast.State(): TMfCastState;
+begin
+
+  Result := FController.GetState();
+end;
+
+
+procedure TMfCast.ControllerDeviceAdded(const ADevice: TMfCastDevice);
+begin
+
+  if Assigned(FOnDeviceAdded) then
+    FOnDeviceAdded(ADevice);
+end;
+
+
+procedure TMfCast.ControllerDeviceUpdated(const ADevice: TMfCastDevice);
+begin
+
+  if Assigned(FOnDeviceUpdated) then
+    FOnDeviceUpdated(ADevice);
+end;
+
+
+procedure TMfCast.ControllerDeviceRemoved(const ADeviceId: string);
+begin
+
+  if Assigned(FOnDeviceRemoved) then
+    FOnDeviceRemoved(ADeviceId);
+end;
+
+
+procedure TMfCast.ControllerStateChanged(const AOldState: TMfCastState;
+                                         const ANewState: TMfCastState);
+begin
+
+  if Assigned(FOnStateChanged) then
+    FOnStateChanged(AOldState, 
+                    ANewState);
+end;
+
+
+procedure TMfCast.ControllerMediaStatus(const AStatus: TMfCastMediaStatus);
+begin
+
+  if Assigned(FOnMediaStatus) then
+    FOnMediaStatus(AStatus);
+end;
+
+
+procedure TMfCast.ControllerError(const AError: TMfCastErrorInfo);
+begin
+
+  if Assigned(FOnError) then
+    FOnError(AError);
+end;
+
+
+procedure TMfCast.DispatchLog(const ALevel: TMfCastLogLevel;
+                              const ASource: string;
+                              const AMessage: string);
+var
+  Text: string;
+
+begin
+
+  if not GetLoggingEnabled() then
+    Exit;
+
+  Text := Format('[MfCast][%s][%s] %s',
+                 [MfCastLogLevelToString(ALevel), ASource, AMessage]);
+
+  OutputDebugStringW(PChar(MfCastFormatLogLine(Text, Now)));
+
+  if Assigned(FOnLog) then
+    FOnLog(Self,
+           ALevel,
+           ASource,
+           AMessage);
+end;
+
+
+function TMfCast.GetLoggingEnabled(): Boolean;
+begin
+
+  Result := InterlockedCompareExchange(FLoggingEnabled,
+                                       0,
+                                       0) <> 0;
+end;
+
+
+procedure TMfCast.SetLoggingEnabled(const AValue: Boolean);
+begin
+
+  if AValue then
+    InterlockedExchange(FLoggingEnabled,
+                        1)
+  else
+    InterlockedExchange(FLoggingEnabled,
+                        0);
+end;
+
+end.
