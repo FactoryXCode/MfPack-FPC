@@ -64,7 +64,6 @@ Note that the maximum value of the maximum static DB values () are arbitrary!
 Please, install the '..\Samples\Components' first before loading this project.
   
 ---
-
   
 **MfSimpleCastPlayer Sample**
   
@@ -85,7 +84,7 @@ as MKV are converted to fragmented MP4 and published by the build-in HTTP server
 Please read the white paper document MfPack/Cast/MfPack_Chromecast_API_White_Paper.txt for  
 full details using the MfPack Cast API.  
   
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/Master/MfPack/Pic/MfSimpleCastPlayer.png)
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfSimpleCastPlayer.png)
   
 ---
 
@@ -104,7 +103,7 @@ IAudioClock and IAudioStreamVolume interfaces.
 The sample uses the MfPeakMeter component. This requires that you install the MfComponents.  
 In your projectsettings you have to add ..MfPack\Samples\MfComponents in the project options searchpath.  
   
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/Master/MfPack/Pic/WasApiPlayer1.png)
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/WasApiPlayer1.png)
   
 ---
   
@@ -113,7 +112,7 @@ In your projectsettings you have to add ..MfPack\Samples\MfComponents in the pro
 This sample is based on Sample 1, but includes full threaded code,  
 using threadsafe events and also uses a custom MFT for bass and treble control.  
   
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/Master/MfPack/Pic/WasApiPlayer2.png)
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/WasApiPlayer2.png)
   
 ---
   
@@ -123,7 +122,7 @@ This sample is based on Sample 2, instead of a bass/treble MFT, this one is equi
 a 3 band High, Mid(Peaking or Notch) and Low EQ MFT and a spectrum analizer.  
 It also stores and read back settings for the MFT.  
   
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/Master/MfPack/Pic/WasApiPlayer3.png)
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/WasApiPlayer3.png)
   
 ---
   
@@ -150,7 +149,7 @@ This sample demonstrates a **real-time audio playback engine on Windows** using:
 **Note:**  
 This is not a sample for absolute beginners. Please read the documents included with this sample.  
   
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/Master/MfPack/Pic/WasApiPlayer4.png)
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/WasApiPlayer4.png)
   
 ---
   
@@ -173,10 +172,9 @@ This sample also demonstrates how to create and implement a:
 This is not a sample for absolute beginners.  
 Please read the documents included with this sample.  
   
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/Master/MfPack/Pic/WasApiPlayer5.png)
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/WasApiPlayer5.png)
   
 ---
-  
 
   
 # Tools
