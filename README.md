@@ -55,6 +55,13 @@ a media file. This sample application reads audio data from a media file and wri
 the uncompressed audio to a WAVE file.
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/AudioClipExSample.jpg)
+
+  
+**AudioClip sample**
+
+This example shows how to use the MfAudioEndPoint component.  
+Note that the maximum value of the maximum static DB values () are arbitrary!  
+Please, install the '..\Samples\Components' first before loading this project.
   
 ---
   
