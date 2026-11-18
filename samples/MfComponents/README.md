@@ -5,7 +5,7 @@ Version: 4.1.0
   
 NOTES:  
   
-* This release is updated for compiler version 3.2.2.
+* This release is updated for compiler version 3.2.2 (64 bit).
 * SDK version: 10.0.28000.2705 (Win 11)
 * Requires Windows 10 22H2 or later.
 * Minimum supported MfPack version: 4.1.0
@@ -19,7 +19,7 @@ This package contains the following -installable- components:
 * TQTimer - Queue Timer component. For precise timing.
 * MfPeakMeter - Simple PeakMeter control.
 * MfPeakMeterEx - Enhanged PeakMeter control.
-* MfPeakMeterMmcs - Derived from MfPeakMeterEx with MMCS support and direct feed from external source.
+* MfPeakMeterMmcs - Derived from MfPeakMeterEx with MMCS support and direct feed from external sources.
 * MfAudioEndPoint - Audio EndPoint component that responds to volume changes.
   Uses: IAudioEndpointVolumeEx, IAudioEndpointVolumeCallback and IMMDeviceEnumerator.
 * TThreadedQTimer - A threaded queue timer (experimental)
