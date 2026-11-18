@@ -6,7 +6,9 @@ interface
 
 implementation
 
-uses Windows,SysUtils;
+uses
+  Windows,
+  SysUtils;
 
 initialization
 
