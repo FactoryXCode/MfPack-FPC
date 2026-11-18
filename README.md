@@ -130,12 +130,12 @@ It also stores and read back settings for the MFT.
   
 This sample demonstrates a **real-time audio playback engine on Windows** using:
   
-- **** (event-driven, shared mode)
-- **Media Foundation SourceReader**
-- A custom **3-band EQ** implemented as an **IMFTransform (MFT)**
-- A **Compressor / Limiter DSP**
-- Thread-safe **GUI and engine** command routing
-- Persistent EQ settings stored via **INI file**
+- **** (event-driven, shared mode).
+- **Media Foundation SourceReader**.
+- A custom **3-band EQ** implemented as an **IMFTransform (MFT)**.
+- A **Compressor / Limiter DSP**.
+- Thread-safe **GUI and engine** command routing.
+- The EQ settings are stored in an **INI file**.
   
 ## Features
   
