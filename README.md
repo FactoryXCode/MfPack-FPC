@@ -57,7 +57,7 @@ the uncompressed audio to a WAVE file.
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/AudioClipExSample.jpg)
 
   
-**AudioClip sample**
+**SimpleVolumeControl sample**
 
 This example shows how to use the MfAudioEndPoint component.  
 Note that the maximum value of the maximum static DB values () are arbitrary!  
