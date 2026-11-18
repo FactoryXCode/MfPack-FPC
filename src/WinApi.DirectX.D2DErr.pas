@@ -1,0 +1,131 @@
+// FactoryX
+//
+// Copyright: © FactoryX. All rights reserved.
+//
+// Project: WinApi.DirectX - D2D1
+// Project location: https://sourceforge.net/projects/MFPack
+//                   https://github.com/FactoryXCode/MfPack
+// Module: WinApi.DirectX.D2DErr.pas
+// Kind: Free Pascal unit (Lazarus compatible)
+// Release date: 30-04-2019
+// Language: ENU
+//
+// Upstream revision: 4.1.0
+// Description: Helper files over the D2D interfaces and APIs.
+//
+// Organisation: FactoryX
+// Initiator(s): Tony (maXcomX), Peter (OzShips)
+// Contributor(s): Tony Kalf (maXcomX), Peter Larson (ozships)
+//
+//------------------------------------------------------------------------------
+// CHANGE LOG
+// Date       Person              Reason
+// ---------- ------------------- ----------------------------------------------
+// 15/11/2026 All                 Eels release  SDK 10.0.28000.2705 (Windows 11)
+//------------------------------------------------------------------------------
+//
+// Remarks: -
+//
+// Related objects: -
+// Related projects: MfPack FPC/Lazarus port
+// Known Issues: -
+//
+// Compiler version: FPC 3.2.2 (Windows x64 port baseline)
+// SDK version: 10.0.28000.2705
+//
+// Todo: -
+//
+//==============================================================================
+// Source: D2DErr.h
+//
+// Copyright (c) Microsoft Corporation. All rights reserved.
+//==============================================================================
+//
+// FPC port updated: 2026-11-14
+// Lazarus version: 4.8
+// FPC mode: DelphiUnicode; COM interfaces; UTF-8 source.
+// COM headers: MfPack WinApi.ActiveX.* and WinApi.ComBaseApi.
+//
+//==============================================================================
+// LICENSE
+//
+// The contents of this file are subject to the Mozilla Public License
+// Version 2.0 (the "License"); you may not use this file except in
+// compliance with the License. You may obtain a copy of the License at
+// https://www.mozilla.org/en-US/MPL/2.0/
+//
+// Software distributed under the License is distributed on an "AS IS"
+// basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+// License for the specific language governing rights and limitations
+// under the License.
+//
+// Non commercial users may distribute this sourcecode provided that this
+// header is included in full at the top of the file.
+// Commercial users are not allowed to distribute this sourcecode as part of
+// their product.
+//
+//
+//==============================================================================
+unit WinApi.DirectX.D2DErr;
+
+{$I MfPack.Fpc.inc}
+
+
+interface
+
+uses
+  
+  {WinApi}
+  Windows,
+  WinApi.WinError;
+
+const
+
+  //+---------------------------------------------------------------------------
+  //
+  // D2D error codes
+  //
+  //----------------------------------------------------------------------------
+
+  //
+  //  Error codes shared with WINCODECS
+  //
+
+  //
+  // The pixel format is not supported.
+  //
+  D2DERR_UNSUPPORTED_PIXEL_FORMAT     = WINCODEC_ERR_UNSUPPORTEDPIXELFORMAT;
+
+  //
+  // Error codes that were already returned in prior versions and were part of the
+  // MIL facility.
+
+  //
+  // Error codes mapped from WIN32 where there isn't already another HRESULT based
+  // define
+  //
+
+  //
+  // The supplied buffer was too small to accommodate the data.
+  //
+  D2DERR_INSUFFICIENT_BUFFER          = HRESULT($8007007A);
+
+
+  //
+  // The file specified was not found.
+  //
+  D2DERR_FILE_NOT_FOUND               = HRESULT($80070002);
+
+  //
+  // D2D specific codes now live in winerror.h / MfPack.WinError.pas
+  //
+
+  // Additional Prototypes for ALL interfaces
+
+  // End of Additional Prototypes
+
+implementation
+
+  // Implement Additional functions here.
+
+end.

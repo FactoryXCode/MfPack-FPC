@@ -1,0 +1,10 @@
+/build/
+*.ppu
+*.o
+*.a
+*.exe
+*.rsj
+*.compiled
+
+*.lps
+*.lpi.bak

@@ -1,0 +1,132 @@
+// FactoryX
+//
+// Copyright: © FactoryX. All rights reserved.
+//
+// Project: MfPack - FPC/Lazarus port
+// Project location: https://sourceforge.net/projects/MFPack
+//                   https://github.com/FactoryXCode/MfPack
+// Module: WinApi.CoreAudioApi.AudioEndpoints.pas
+// Kind: Free Pascal unit (Lazarus compatible)
+// Release date: 28-09-2021
+// Language: ENU
+//
+// Upstream revision: 4.1.0
+// Description: Audio Endpoint related interfaces.
+//
+// Organisation: FactoryX
+// Initiator(s): Tony (maXcomX), Peter (OzShips)
+// Contributor(s): Tony (maXcomX)
+//
+//------------------------------------------------------------------------------
+// CHANGE LOG
+// Date       Person              Reason
+// ---------- ------------------- ----------------------------------------------
+// 15/11/2026 All                 Eels release  SDK 10.0.28000.2705 (Windows 11)
+//------------------------------------------------------------------------------
+//
+// Remarks: -
+//
+// Related objects: -
+// Related projects: MfPack FPC/Lazarus port
+// Known Issues: -
+//
+// Compiler version: FPC 3.2.2 (Windows x64 port baseline)
+// SDK version: 10.0.28000.2705
+//
+// Todo: -
+//
+//==============================================================================
+// Source: AudioEndpoints.h
+// Author: Soccerl
+// Copyright (c) Microsoft Corporation. All rights reserved.
+//==============================================================================
+//
+// FPC port updated: 2026-11-14
+// Lazarus version: 4.8
+// FPC mode: DelphiUnicode; COM interfaces; UTF-8 source.
+// COM headers: MfPack WinApi.ActiveX.* and WinApi.ComBaseApi.
+//
+//==============================================================================
+// LICENSE
+//
+// The contents of this file are subject to the Mozilla Public License
+// Version 2.0 (the "License"); you may not use this file except in
+// compliance with the License. You may obtain a copy of the License at
+// https://www.mozilla.org/en-US/MPL/2.0/
+//
+// Software distributed under the License is distributed on an "AS IS"
+// basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+// License for the specific language governing rights and limitations
+// under the License.
+//
+// Non commercial users may distribute this sourcecode provided that this
+// header is included in full at the top of the file.
+// Commercial users are not allowed to distribute this sourcecode as part of
+// their product.
+//
+//==============================================================================
+
+unit WinApi.CoreAudioApi.AudioEndpoints;
+
+{$I MfPack.Fpc.inc}
+
+
+interface
+
+uses
+  
+  Windows;
+
+  {$PACKENUM 4}
+
+
+const
+  ENDPOINT_FORMAT_RESET_MIX_ONLY      = $00000001 ;
+
+  // ----------------------------------------------------------------------
+  // IAudioEndpointFormatControl
+  //
+  // Description:
+  //
+  //  Interface for resetting the current audio endpoint device format.
+  //  This setting is exposed to the user through the "Sounds" control panel
+  //  and can be read from the endpoint propertystore using
+  //  PKEY_AudioEngine_DeviceFormat
+  //
+
+type
+
+  // Interface IAudioEndpointFormatControl
+  // =====================================
+  // Description:
+  //
+  //  Resets the format to the default setting provided by the device manufacturer.
+  //
+  IAudioEndpointFormatControl = interface(IUnknown)
+  ['{784CFD40-9F89-456E-A1A6-873B006A664E}']
+    function ResetToDefault({in} ResetFlags: DWORD): HResult; stdcall;
+    // Parameters:
+    //
+    //  ResetFlags - [in] Allows the application to specify which formats are reset.  If
+    //                  no flags are set, then this method reevaluates both the endpoint's
+    //                  device format and mix format and sets them to their default values.
+    //
+    //      ENDPOINT_FORMAT_RESET_MIX_ONLY - Only reset the mix format.  The endpoint's device
+    //          format will not be reset if this flag is set.
+    //
+    // Return values:
+    //      S_OK if successful
+    //      <other error>
+  end;
+  IID_IAudioEndpointFormatControl = IAudioEndpointFormatControl;
+
+
+  // Additional Prototypes for ALL interfaces
+
+  // End of Additional Prototypes
+
+implementation
+
+  // Implement Additional functions here.
+
+end.

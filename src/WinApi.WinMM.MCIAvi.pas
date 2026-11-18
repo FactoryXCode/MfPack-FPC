@@ -1,0 +1,172 @@
+// FactoryX
+//
+// Copyright: © FactoryX. All rights reserved.
+//
+// Project: MfPack - FPC/Lazarus port
+// Project location: https://sourceforge.net/projects/MFPack
+//                   https://github.com/FactoryXCode/MfPack
+// Module: WinApi.WinMM.MCIAvi.pas
+// Kind: Free Pascal unit (Lazarus compatible)
+// Release date: 17-05-2020
+// Language: ENU
+//
+// Upstream revision: 4.1.0
+// Description: Multimedia Systems Media Control Interface
+//              AVI driver external header file
+//
+// Organisation: FactoryX
+// Initiator(s): Tony (maXcomX), Peter (OzShips)
+// Contributor(s): Tony Kalf (maXcomX)
+//
+//------------------------------------------------------------------------------
+// CHANGE LOG
+// Date       Person              Reason
+// ---------- ------------------- ----------------------------------------------
+// 15/11/2026 All                 Eels release  SDK 10.0.28000.2705 (Windows 11)
+//------------------------------------------------------------------------------
+//
+// Remarks: Depends on MMSYSTEM.H and WINDOWS.h
+//          Version: 1.00
+//          Date: 16-JUL-1992
+//
+// Related objects: -
+// Related projects: MfPack FPC/Lazarus port
+// Known Issues: -
+//
+// Compiler version: FPC 3.2.2 (Windows x64 port baseline)
+// SDK version: 10.0.28000.2705
+//
+// Todo: -
+//
+//==============================================================================
+// Source: MciAvi.h
+//
+// Copyright (c) Microsoft Corporation. All rights reserved.
+//
+//   THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+//   KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+//   IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
+//   PURPOSE.
+//==============================================================================
+//
+// FPC port updated: 2026-11-13
+// Lazarus version: 4.8
+// FPC mode: DelphiUnicode; COM interfaces; UTF-8 source.
+// COM headers: MfPack WinApi.ActiveX.* and WinApi.ComBaseApi.
+//
+//==============================================================================
+// LICENSE
+//
+// The contents of this file are subject to the Mozilla Public License
+// Version 2.0 (the "License"); you may not use this file except in
+// compliance with the License. You may obtain a copy of the License at
+// https://www.mozilla.org/en-US/MPL/2.0/
+//
+// Software distributed under the License is distributed on an "AS IS"
+// basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+// License for the specific language governing rights and limitations
+// under the License.
+//
+// Non commercial users may distribute this sourcecode provided that this
+// header is included in full at the top of the file.
+// Commercial users are not allowed to distribute this sourcecode as part of
+// their product.
+//
+//==============================================================================
+unit WinApi.WinMM.MCIAvi;
+
+{$I MfPack.Fpc.inc}
+
+  {$PACKENUM 4}
+
+  {$IFDEF WIN32}
+    {$ALIGN 1}
+  {$ELSE}
+    {$ALIGN 8} // Win64
+  {$ENDIF}
+
+interface
+
+
+uses
+  {WinMM}
+  WinApi.WinMM.MCIApi;
+
+  //
+  // These three flags apply to the 'play' command:
+  //	play <alias> window		Play in normal window
+  //	play <alias> fullscreen		Play in 320x240 full-screen mode
+  //	play <alias> fullscreen by 2	Play fullscreen, zoomed by 2
+  //
+
+const
+
+  MCI_MCIAVI_PLAY_WINDOW              = $01000000;
+  MCI_MCIAVI_PLAY_FULLSCREEN          = $02000000;
+  MCI_MCIAVI_PLAY_FULLBY2             = $04000000;
+
+  //
+  // Debugging constants for AVI diagnostics
+  //
+  //
+  // Returns number of frames not drawn during last play.  If this number
+  // is more than a small fraction of the number of frames that should have
+  // been displayed, things aren't looking good.
+  //
+
+  MCI_AVI_STATUS_FRAMES_SKIPPED       = $8001;
+
+  //
+  // Returns a number representing how well the last AVI play worked.
+  // A result of 1000 indicates that the AVI sequence took the amount
+  // of time to play that it should have; a result of 2000, for instance,
+  // would indicate that a 5-second AVI sequence took 10 seconds to play,
+  // implying that the audio and video were badly broken up.
+  //
+
+  MCI_AVI_STATUS_LAST_PLAY_SPEED      = $8002;
+
+  //
+  // Returns the number of times that the audio definitely broke up.
+  // (We count one for every time we're about to write some audio data
+  // to the driver, and we notice that it's already played all of the
+  // data we have.
+  //
+
+  MCI_AVI_STATUS_AUDIO_BREAKS         = $8003;
+
+  MCI_AVI_SETVIDEO_DRAW_PROCEDURE     = $8000;
+
+  MCI_AVI_SETVIDEO_PALETTE_COLOR      = $8100;
+
+
+  //
+  // This constant specifies that the "halftone" palette should be
+  // used, rather than the default palette.
+  //
+
+  MCI_AVI_SETVIDEO_PALETTE_HALFTONE   = $0000FFFF;
+
+  //
+  //	Custom error return values
+  //
+
+  MCIERR_AVI_OLDAVIFORMAT             = (MCIERR_CUSTOM_DRIVER_BASE + 100);
+  MCIERR_AVI_NOTINTERLEAVED           = (MCIERR_CUSTOM_DRIVER_BASE + 101);
+  MCIERR_AVI_NODISPDIB                = (MCIERR_CUSTOM_DRIVER_BASE + 102);
+  MCIERR_AVI_CANTPLAYFULLSCREEN       = (MCIERR_CUSTOM_DRIVER_BASE + 103);
+  MCIERR_AVI_TOOBIGFORVGA             = (MCIERR_CUSTOM_DRIVER_BASE + 104);
+  MCIERR_AVI_NOCOMPRESSOR             = (MCIERR_CUSTOM_DRIVER_BASE + 105);
+  MCIERR_AVI_DISPLAYERROR             = (MCIERR_CUSTOM_DRIVER_BASE + 106);
+  MCIERR_AVI_AUDIOERROR               = (MCIERR_CUSTOM_DRIVER_BASE + 107);
+  MCIERR_AVI_BADPALETTE               = (MCIERR_CUSTOM_DRIVER_BASE + 108);
+
+  // Additional Prototypes for ALL interfaces
+
+  // End of Additional Prototypes
+
+implementation
+
+  // Implement Additional Prototypes here.
+
+end.

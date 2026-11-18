@@ -1,0 +1,892 @@
+// FactoryX
+//
+// Copyright: © FactoryX. All rights reserved.
+//
+// Project: MfPack - FPC/Lazarus port
+// Project location: https://sourceforge.net/projects/MFPack
+//                   https://github.com/FactoryXCode/MfPack
+// Module: WinApi.ActiveX.PropIdl.pas
+// Kind: Free Pascal unit (Lazarus compatible)
+// Release date: 27-06-2012
+// Language: ENU
+//
+// Upstream revision: 4.1.0
+// Description: Structured Storage.
+//
+// Organisation: FactoryX
+// Initiator(s): Tony (maXcomX), Peter (OzShips)
+// Contributor(s): Tony Kalf (maXcomX), Peter Larson (ozships)
+//
+//------------------------------------------------------------------------------
+// CHANGE LOG
+// Date       Person              Reason
+// ---------- ------------------- ----------------------------------------------
+// 15/11/2026 All                 Eels release  SDK 10.0.28000.2705 (Windows 11)
+//------------------------------------------------------------------------------
+//
+// Remarks: Requires Windows Vista or later.
+//          FPC: Use the MfPack COM interface declarations consistently.
+//          Use declared COM interfaces and their reference-counting ownership rules.
+//          Retain MfPack COM/ActiveX translations; do not substitute RTL ActiveX headers.
+//
+// Related objects: -
+// Related projects: MfPack FPC/Lazarus port
+// Known Issues: -
+//
+// Compiler version: FPC 3.2.2 (Windows x64 port baseline)
+// SDK version: 10.0.28000.2705
+//
+// Todo: -
+//
+//==============================================================================
+// Source: propidl.h
+//
+// Copyright (c) Microsoft Corporation. All rights reserved.
+//==============================================================================
+//
+// FPC port updated: 2026-11-13
+// Lazarus version: 4.8
+// FPC mode: DelphiUnicode; COM interfaces; UTF-8 source.
+// COM headers: MfPack WinApi.ActiveX.* and WinApi.ComBaseApi.
+//
+//==============================================================================
+// LICENSE
+//
+// The contents of this file are subject to the Mozilla Public License
+// Version 2.0 (the "License"); you may not use this file except in
+// compliance with the License. You may obtain a copy of the License at
+// https://www.mozilla.org/en-US/MPL/2.0/
+//
+// Software distributed under the License is distributed on an "AS IS"
+// basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+// License for the specific language governing rights and limitations
+// under the License.
+//
+// Non commercial users may distribute this sourcecode provided that this
+// header is included in full at the top of the file.
+// Commercial users are not allowed to distribute this sourcecode as part of
+// their product.
+//
+//==============================================================================
+unit WinApi.ActiveX.PropIdl;
+
+{$I MfPack.Fpc.inc}
+
+
+interface
+
+uses
+
+  {WinApi}
+  Windows,
+  WinApi.WinApiTypes,
+  WinApi.Unknwn,
+  {ActiveX}
+  WinApi.ActiveX.ObjIdlbase,
+  WinApi.ActiveX.ObjIdl,
+  WinApi.ActiveX.OaIdl;
+
+
+  {$PACKENUM 4}
+
+  {$IFDEF WIN32}
+    {$ALIGN 1}
+  {$ELSE}
+    {$ALIGN 8} // Win64
+  {$ENDIF}
+
+  {$I 'WinApiTypes.inc'}
+
+const
+
+  CCH_MAX_PROPSTG_NAME                = 31;
+
+  PROPSETHDR_OSVERSION_UNKNOWN        = MAXDWORD;
+
+  // Flags for IPropertySetStorage.Create
+  PROPSETFLAG_DEFAULT                 = 0;
+  PROPSETFLAG_NONSIMPLE               = 1;
+  PROPSETFLAG_ANSI                    = 2;
+
+  // This flag is only supported on StgCreatePropStg & StgOpenPropStg
+  PROPSETFLAG_UNBUFFERED              = 4;
+
+  // This flag causes a version-1 property set to be created
+  PROPSETFLAG_CASE_SENSITIVE          = 8;
+
+  // Flags for the reservied PID_BEHAVIOR property
+  PROPSET_BEHAVIOR_CASE_SENSITIVE     = 1;
+
+  // Reserved global Property IDs
+  PID_DICTIONARY                      = 0;
+  PID_CODEPAGE                        = $1;
+  PID_FIRST_USABLE                    = $2;
+  PID_FIRST_NAME_DEFAULT              = $FFF;
+  PID_LOCALE                          = $80000000;
+  PID_MODIFY_TIME                     = $80000001;
+  PID_SECURITY                        = $80000002;
+  PID_BEHAVIOR                        = $80000003;
+  PID_ILLEGAL                         = MAXDWORD;
+
+  // Range which is read-only to downlevel implementations
+  PID_MIN_READONLY                    = $80000000;
+  PID_MAX_READONLY                    = $BFFFFFFF;
+
+  // Property IDs for the DiscardableInformation Property Set
+  PIDDI_THUMBNAIL                     = $00000002;  // VT_BLOB
+
+  // Property IDs for the SummaryInformation Property Set
+  PIDSI_TITLE                         = $00000002;  // VT_LPSTR
+  PIDSI_SUBJECT                       = $00000003;  // VT_LPSTR
+  PIDSI_AUTHOR                        = $00000004;  // VT_LPSTR
+  PIDSI_KEYWORDS                      = $00000005;  // VT_LPSTR
+  PIDSI_COMMENTS                      = $00000006;  // VT_LPSTR
+  PIDSI_TEMPLATE                      = $00000007;  // VT_LPSTR
+  PIDSI_LASTAUTHOR                    = $00000008;  // VT_LPSTR
+  PIDSI_REVNUMBER                     = $00000009;  // VT_LPSTR
+  PIDSI_EDITTIME                      = $0000000A;  // VT_FILETIME (UTC)
+  PIDSI_LASTPRINTED                   = $0000000B;  // VT_FILETIME (UTC)
+  PIDSI_CREATE_DTM                    = $0000000C;  // VT_FILETIME (UTC)
+  PIDSI_LASTSAVE_DTM                  = $0000000D;  // VT_FILETIME (UTC)
+  PIDSI_PAGECOUNT                     = $0000000E;  // VT_I4
+  PIDSI_WORDCOUNT                     = $0000000F;  // VT_I4
+  PIDSI_CHARCOUNT                     = $00000010;  // VT_I4
+  PIDSI_THUMBNAIL                     = $00000011;  // VT_CF
+  PIDSI_APPNAME                       = $00000012;  // VT_LPSTR
+  PIDSI_DOC_SECURITY                  = $00000013;  // VT_I4
+
+  // Property IDs for the DocSummaryInformation Property Set
+  PIDDSI_CATEGORY                     = $00000002;  // VT_LPSTR
+  PIDDSI_PRESFORMAT                   = $00000003;  // VT_LPSTR
+  PIDDSI_BYTECOUNT                    = $00000004;  // VT_I4
+  PIDDSI_LINECOUNT                    = $00000005;  // VT_I4
+  PIDDSI_PARCOUNT                     = $00000006;  // VT_I4
+  PIDDSI_SLIDECOUNT                   = $00000007;  // VT_I4
+  PIDDSI_NOTECOUNT                    = $00000008;  // VT_I4
+  PIDDSI_HIDDENCOUNT                  = $00000009;  // VT_I4
+  PIDDSI_MMCLIPCOUNT                  = $0000000A;  // VT_I4
+  PIDDSI_SCALE                        = $0000000B;  // VT_BOOL
+  PIDDSI_HEADINGPAIR                  = $0000000C;  // VT_VARIANT | VT_VECTOR
+  PIDDSI_DOCPARTS                     = $0000000D;  // VT_LPSTR | VT_VECTOR
+  PIDDSI_MANAGER                      = $0000000E;  // VT_LPSTR
+  PIDDSI_COMPANY                      = $0000000F;  // VT_LPSTR
+  PIDDSI_LINKSDIRTY                   = $00000010;  // VT_BOOL
+
+
+  // FMTID_MediaFileSummaryInfo - Property IDs
+  PIDMSI_EDITOR                       = $00000002;  // VT_LPWSTR
+  PIDMSI_SUPPLIER                     = $00000003;  // VT_LPWSTR
+  PIDMSI_SOURCE                       = $00000004;  // VT_LPWSTR
+  PIDMSI_SEQUENCE_NO                  = $00000005;  // VT_LPWSTR
+  PIDMSI_PROJECT                      = $00000006;  // VT_LPWSTR
+  PIDMSI_STATUS                       = $00000007;  // VT_UI4
+  PIDMSI_OWNER                        = $00000008;  // VT_LPWSTR
+  PIDMSI_RATING                       = $00000009;  // VT_LPWSTR
+  PIDMSI_PRODUCTION                   = $0000000A;  // VT_FILETIME (UTC)
+  PIDMSI_COPYRIGHT                    = $0000000B;  // VT_LPWSTR
+
+
+  PRSPEC_INVALID                      = MAXDWORD;
+  PRSPEC_LPWSTR                       = 0;
+  PRSPEC_PROPID                       = 1;
+
+type
+
+  // This is the PROPVARIANT padding layout for marshaling.
+  PROPVAR_PAD1 = Byte;
+  PROPVAR_PAD2 = Byte;
+  PROPVAR_PAD3 = ULONG;
+
+
+  LPVERSIONEDSTREAM = ^VERSIONEDSTREAM;
+  tagVersionedStream = record
+    guidVersion: TGUID;
+    pStream: IStream;
+  end;
+  VERSIONEDSTREAM = tagVersionedStream;
+
+  // This is the standard C layout of the PROPVARIANT.
+
+  PPROPVARIANT = ^PROPVARIANT;
+
+  PCAC = ^CAC;
+  tagCAC = record
+    cElems: ULONG;
+    pElems: PAnsiChar;
+  end;
+  CAC = tagCAC;
+
+  PCAUB = ^CAUB;
+  tagCAUB = record
+    cElems: ULONG;
+    pElems: PUCHAR;
+  end;
+  CAUB = tagCAUB;
+
+  PCAI = ^CAI;
+  tagCAI = record
+    cElems: ULONG;
+    pElems: PSHORT;
+  end;
+  CAI = tagCAI;
+
+  PCAUI = ^CAUI;
+  tagCAUI = record
+    cElems: ULONG;
+    pElems: PWord;
+  end;
+  CAUI = tagCAUI;
+
+  PCAL = ^CAL;
+  tagCAL = record
+    cElems: ULONG;
+    pElems: PLONG;
+  end;
+  CAL = tagCAL;
+
+  PCAUL = ^CAUL;
+  tagCAUL = record
+    cElems: ULONG;
+    pElems: PULONG;
+  end;
+  CAUL = tagCAUL;
+
+  PCAFLT = ^CAFLT;
+  tagCAFLT = record
+    cElems: ULONG;
+    pElems: PFLOAT;
+  end;
+  CAFLT = tagCAFLT;
+
+  PCADBL = ^CADBL;
+  tagCADBL = record
+    cElems: ULONG;
+    pElems: PDOUBLE;
+  end;
+  CADBL = tagCADBL;
+
+  PCACY = ^CACY;
+  tagCACY = record
+    cElems: ULONG;
+    pElems: PCY;
+  end;
+  CACY = tagCACY;
+
+  PCADATE = ^CADATE;
+  tagCADATE = record
+    cElems: ULONG;
+    pElems: PDATE;
+  end;
+  CADATE = tagCADATE;
+
+  PCABSTR = ^CABSTR;
+  tagCABSTR = record
+    cElems: ULONG;
+    pElems: PBSTR;
+  end;
+  CABSTR = tagCABSTR;
+
+  PCABSTRBLOB = ^CABSTRBLOB;
+  tagCABSTRBLOB = record
+    cElems: ULONG;
+    pElems: PBSTR;
+  end;
+  CABSTRBLOB = tagCABSTRBLOB;
+
+  PCABOOL = ^CABOOL;
+  tagCABOOL = record
+    cElems: ULONG;
+    pElems: PVARIANT_BOOL;
+  end;
+  CABOOL = tagCABOOL;
+
+  PCASCODE = ^CASCODE;
+  tagCASCODE = record
+    cElems: ULONG;
+    pElems: PSCODE;
+  end;
+  CASCODE = tagCASCODE;
+
+  PCAPROPVARIANT = ^CAPROPVARIANT;
+  tagCAPROPVARIANT = record
+    cElems: ULONG;
+    pElems: PPROPVARIANT;
+  end;
+  CAPROPVARIANT = tagCAPROPVARIANT;
+
+  PCAH = ^CAH;
+  tagCAH = record
+    cElems: ULONG;
+    pElems: PLARGE_INTEGER;
+  end;
+  CAH = tagCAH;
+
+  PCAUH = ^CAUH;
+  tagCAUH = record
+    cElems: ULONG;
+    pElems: PULARGE_INTEGER;
+  end;
+  CAUH = tagCAUH;
+
+  PCALPSTR = ^CALPSTR;
+  tagCALPSTR = record
+    cElems: ULONG;
+    pElems: PLPSTR;
+  end;
+  CALPSTR = tagCALPSTR;
+
+  PCALPWSTR = ^CALPWSTR;
+  tagCALPWSTR = record
+    cElems: ULONG;
+    pElems: PLPWSTR;
+  end;
+  CALPWSTR = tagCALPWSTR;
+
+  PCAFILETIME = ^CAFILETIME;
+  tagCAFILETIME = record
+    cElems: ULONG;
+    pElems: PFILETIME;
+  end;
+  CAFILETIME = tagCAFILETIME;
+
+  PCACLIPDATA = ^CACLIPDATA;
+  tagCACLIPDATA = record
+    cElems: ULONG;
+    pElems: PCLIPDATA;
+  end;
+  CACLIPDATA = tagCACLIPDATA;
+
+  PCACLSID = ^CACLSID;
+  tagCACLSID = record
+    cElems: ULONG;
+    pElems: PCLSID;
+  end;
+  CACLSID = tagCACLSID;
+
+  // typedef struct tagPROPVARIANT PROPVARIANT;
+  // See WTypes.pas for details of the case select vars
+  // this structure is also defined in ActiveX, but depending on the compilerversion
+  // this could differ. So we undefine the -older - ActiveX version.
+  //
+  // Members
+
+  // vt            Value type tag.
+  // wReserved1    Reserved for future use.
+  // wReserved2    Reserved for future use.
+  // wReserved3    Reserved for future use.
+  // cVal          VT_I1, Version 1
+  // bVal          VT_UI1
+  // iVal          VT_I2
+  // uiVal         VT_UI2
+  // lVal          VT_I4
+  // ulVal         VT_UI4
+  // intVal        VT_INT, Version 1
+  // uintVal       VT_UINT, Version 1
+  // hVal          VT_I8
+  // uhVal         VT_UI8
+  // fltVal        VT_R4
+  // dblVal        VT_R8
+  // boolVal       VT_BOOL
+  // scode         VT_ERROR
+  // cyVal         VT_CY
+  // date          VT_DATE
+  // filetime      VT_FILETIME
+  // puuid         VT_CLSID
+  // pclipdata     VT_CF
+  // bstrVal       VT_BSTR
+  // bstrblobVal   VT_BSTR_BLOB
+  // blob          VT_BLOB, VT_BLOBOBJECT
+  // pszVal        VT_LPSTR
+  // pwszVal       VT_LPWSTR
+  // punkVal       VT_UNKNOWN
+  // pdispVal      VT_DISPATCH
+  // pStream       VT_STREAM, VT_STREAMED_OBJECT
+  // pStorage      VT_STORAGE, VT_STORED_OBJECT
+  // pVersionedStream  VT_VERSIONED_STREAM
+  // parray        VT_ARRAY Or VT_*, Version 1
+  // cac           VT_VECTOR OR VT_I1, Version 1
+  // caub          VT_VECTOR OR VT_UI1
+  // cai           VT_VECTOR OR VT_I2
+  // caui          VT_VECTOR OR VT_UI2
+  // cal           VT_VECTOR OR VT_I4
+  // caul          VT_VECTOR OR VT_UI4
+  // cah           VT_VECTOR OR VT_I8
+  // cauh          VT_VECTOR OR VT_UI8
+  // caflt         VT_VECTOR OR VT_R4
+  // cadbl         VT_VECTOR OR VT_R8
+  // cabool        VT_VECTOR OR VT_BOOL
+  // cascode       VT_VECTOR OR VT_ERROR
+  // cacy          VT_VECTOR OR VT_CY
+  // cadate        VT_VECTOR OR VT_DATE
+  // cafiletime    VT_VECTOR OR VT_FILETIME
+  // cauuid        VT_VECTOR OR VT_CLSID
+  // caclipdata    VT_VECTOR OR VT_CF
+  // cabstr        VT_VECTOR OR VT_BSTR
+  // cabstrblob    VT_VECTOR OR VT_BSTR_BLOB
+  // calpstr       VT_VECTOR OR VT_LPSTR
+  // calpwstr      VT_VECTOR OR VT_LPWSTR
+  // capropvar     VT_VECTOR OR VT_VARIANT
+  // pcVal         VT_BYREF  OR VT_I1, Version 1
+  // pbVal         VT_BYREF OR VT_UI1, Version 1
+  // piVal         VT_BYREF OR VT_I2, Version 1
+  // puiVal        VT_BYREF OR VT_UI2, Version 1
+  // plVal         VT_BYREF OR VT_I4, Version 1
+  // pulVal        VT_BYREF OR VT_UI4, Version 1
+  // pintVal       VT_BYREF OR VT_INT, Version 1
+  // puintVal      VT_BYREF OR VT_UINT, Version 1
+  // pfltVal       VT_BYREF OR VT_R4, Version 1
+  // pdblVal       VT_BYREF OR VT_R8, Version 1
+  // pboolVal      VT_BYREF OR VT_BOOL, Version 1
+  // pdecVal       VT_BYREF OR VT_DECIMAL, Version 1
+  // pscode        VT_BYREF OR VT_ERROR, Version 1
+  // pcyVal        VT_BYREF OR VT_CY, Version 1
+  // pdate         VT_BYREF OR VT_DATE, Version 1
+  // pbstrVal      VT_BYREF OR VT_BSTR, Version 1
+  // ppunkVal      VT_BYREF OR VT_UNKNOWN, Version 1
+  // ppdispVal     VT_BYREF OR VT_DISPATCH, Version 1
+  // pparray       VT_BYREF OR VT_ARRAY, Version 1
+  // pvarVal       VT_BYREF OR VT_VARIANT, Version 1
+  //
+  // Remarks
+  //   The PROPVARIANT structure can also hold a value of VT_DECIMAL:
+  //   DECIMAL       decVal;        // VT_DECIMAL
+  //
+  //   However, the value of the DECIMAL structure requires special handling.
+  //   The DECIMAL structure is the same size as an entire PROPVARIANT structure and
+  //   does not fit into the union that holds all other types of values.
+  //   Instead, the value of the DECIMAL structure occupies the entire PROPVARIANT structure,
+  //   including the reserved fields and the vt member.
+  //   However, the first member of the DECIMAL structure is not used and is equal
+  //   in size to the vt member of the PROPVARIANT structure.
+  //   Therefore, the PROPVARIANT structure declaration in the Propidl.h header file of
+  //   Win32 defines the decVal member intagBLOB such a way that it corresponds to the beginning of
+  //   the PROPVARIANT structure.
+  //   Therefore, to put the value of the DECIMAL structure into a PROPVARIANT structure,
+  //   the value must be loaded into the decVal member and the vt member is set to VT_DECIMAL,
+  //   just as for any other value.
+  //
+  //   PROPVARIANT is the fundamental data type by which property values are read and written
+  //   through the IPropertyStorage interface.
+
+  // This is the LPPROPVARIANT definition for marshaling.
+  LPPROPVARIANT = ^tagPROPVARIANT;
+  REFPROPVARIANT = ^tagPROPVARIANT;
+
+  tagPROPVARIANT = record
+    vt: TVarType;
+    wReserved1: Word;
+    wReserved2: Word;
+    wReserved3: Word;
+    case Integer of
+      VT_I1: (cVal: ShortInt);
+      VT_UI1: (bVal: Byte);
+      VT_I2: (iVal: SHORT);
+      VT_UI2: (uiVal: Word);
+      VT_BOOL: (boolVal: WordBool);
+      80: (bool: WordBool);
+      VT_I4: (lVal: Longint);
+      VT_UI4: (ulVal: Cardinal);
+      VT_R4: (fltVal: Single);
+      VT_ERROR: (scode: SCODE);
+      VT_I8: (hVal: LARGE_INTEGER);
+      VT_UI8: (uhVal: ULARGE_INTEGER);
+      VT_R8: (dblVal: Double);
+      VT_CY: (cyVal: Currency);
+      VT_DATE: (date: Double);
+      VT_FILETIME: (filetime: TFileTime);
+      VT_CLSID: (puuid: PGUID);
+      VT_BLOB: (blob: tagBLOB);
+      VT_CF: (pclipdata: PClipData);
+      VT_STREAM: (pStream: Pointer); // Pointer(IStream)
+      VT_VERSIONED_STREAM: (pVersionedStream: Pointer);  // Pointer(LPVERSIONEDSTREAM)
+      VT_STORAGE: (pStorage: Pointer);  // Pointer(IStorage)
+      VT_BSTR: (bstrVal: PWideChar);
+      VT_LPSTR: (pszVal: PAnsiChar);
+      VT_LPWSTR: (pwszVal: PWideChar);
+      VT_SAFEARRAY: (parray: PSAFEARRAY);
+      VT_VECTOR or VT_UI1: (caub: CAUB);
+      VT_VECTOR or VT_I1: (cai: CAI);
+      VT_VECTOR or VT_UI2: (caui: CAUI);
+      VT_VECTOR or VT_BOOL: (cabool: CABOOL);
+      VT_VECTOR or VT_I4: (cal: CAL);
+      VT_VECTOR or VT_UI4: (caul: CAUL);
+      VT_VECTOR or VT_R4: (caflt: CAFLT);
+      VT_VECTOR or VT_ERROR: (cascode: CASCODE);
+      VT_VECTOR or VT_I8: (cah: CAH);
+      VT_VECTOR or VT_UI8: (cauh: CAUH);
+      VT_VECTOR or VT_R8: (cadbl: CADBL);
+      VT_VECTOR or VT_CY: (cacy: CACY);
+      VT_VECTOR or VT_DATE: (cadate: CADATE);
+      VT_VECTOR or VT_FILETIME: (cafiletime: CAFILETIME);
+      VT_VECTOR or VT_CLSID: (cauuid: CACLSID);
+      VT_VECTOR or VT_CF: (caclipdata: CACLIPDATA);
+      VT_VECTOR or VT_BSTR: (cabstr: CABSTR);
+      VT_VECTOR or VT_LPSTR: (calpstr: CALPSTR);
+      VT_VECTOR or VT_LPWSTR: (calpwstr: CALPWSTR );
+      VT_VECTOR or VT_VARIANT: (capropvar: CAPROPVARIANT);
+      VT_BYREF or VT_I1: (pcVal: PAnsiChar);
+      VT_BYREF or VT_UI1: (pbVal: PByte);
+      VT_BYREF or VT_I2: (piVal: PSmallInt);
+      VT_BYREF or VT_UI2: (puiVal: PWord);
+      VT_BYREF or VT_I4: (plVal: PLongInt);
+      VT_BYREF or 81: (pintVal: PInteger);
+      VT_BYREF or VT_UI4: (pulVal: PCardinal);
+      VT_BYREF or 82: (puintVal: PLongword);
+      VT_BYREF or VT_R4: (pfltVal: PSingle);
+      VT_BYREF or VT_R8: (pdblVal: PDouble);
+      VT_BYREF or VT_BOOL: (pboolVal: PBOOL);
+      VT_BYREF or VT_DECIMAL: (pdecVal: PDecimal);
+      VT_BYREF or VT_ERROR: (pscode: PSCODE);
+      VT_BYREF or VT_CY: (pcyVal: PCurrency);
+      VT_BYREF or VT_DATE: (pdate: PDate);
+      VT_BYREF or VT_BSTR: (pbstrVal: PBSTR);
+      VT_BYREF or VT_UNKNOWN: (ppunkVal: PIUnknown);
+      VT_BYREF or VT_DISPATCH: (ppdispVal: PPointer);
+      VT_BYREF or VT_SAFEARRAY:(pparray: PSAFEARRAY);
+      VT_BYREF or VT_VARIANT: (pvarVal: PPROPVARIANT);
+  end;
+  PROPVARIANT = tagPROPVARIANT;
+  TPropVariant = tagPROPVARIANT;
+
+  // PIDMSI_STATUS value definitions
+  PPIDMSI_STATUS_VALUE = ^PIDMSI_STATUS_VALUE;
+  PIDMSI_STATUS_VALUE                  = (
+   PIDMSI_STATUS_NORMAL                = 0,
+   PIDMSI_STATUS_NEW                   = PIDMSI_STATUS_NORMAL + 1,
+   PIDMSI_STATUS_PRELIM                = PIDMSI_STATUS_NEW + 1,
+   PIDMSI_STATUS_DRAFT                 = PIDMSI_STATUS_PRELIM + 1,
+   PIDMSI_STATUS_INPROGRESS            = PIDMSI_STATUS_DRAFT + 1,
+   PIDMSI_STATUS_EDIT                  = PIDMSI_STATUS_INPROGRESS + 1,
+   PIDMSI_STATUS_REVIEW                = PIDMSI_STATUS_EDIT + 1,
+   PIDMSI_STATUS_PROOF                 = PIDMSI_STATUS_REVIEW + 1,
+   PIDMSI_STATUS_FINAL                 = PIDMSI_STATUS_PROOF + 1,
+   PIDMSI_STATUS_OTHER                 = $7fff
+  );
+
+
+{$IFNDEF _PROPSPEC_DEFINED}
+// Integers are always initialized to 0 in Delphi,
+// So, the default value here is 0.
+
+  PPROPSPEC = ^tagPROPSPEC;
+  tagPROPSPEC = record
+    ulKind: ULONG;
+    case Integer of
+      0: ();  //* Empty union arm */
+      1: (propid: PropID);
+      2: (lpwstr: PWideChar);
+  end;
+  PROPSPEC = tagPROPSPEC;
+{$DEFINE _PROPSPEC_DEFINED}
+{$ENDIF}
+
+
+
+  PSTATPROPSTG = ^tagSTATPROPSTG;
+  tagSTATPROPSTG = record
+    lpwstrName: PWideChar;
+    propid: PROPID;
+    vt: VARTYPE;
+  end;
+  STATPROPSTG = tagSTATPROPSTG;
+
+  PSTATPROPSETSTG = ^tagSTATPROPSETSTG;
+  tagSTATPROPSETSTG = record
+    fmtid: FMTID;
+    clsid: CLSID;
+    grfFlags: DWORD;
+    mtime: FILETIME;
+    ctime: FILETIME;
+    atime: FILETIME;
+    dwOSVersion: DWORD;
+  end;
+  STATPROPSETSTG = tagSTATPROPSETSTG;
+
+  PSERIALIZEDPROPERTYVALUE = ^tagSERIALIZEDPROPERTYVALUE;
+  tagSERIALIZEDPROPERTYVALUE = record
+    dwType: DWORD;
+    rgb: array[0..0] of Byte;
+  end;
+  SERIALIZEDPROPERTYVALUE = tagSERIALIZEDPROPERTYVALUE;
+
+type
+
+  // Forward Interfaces Declarations
+
+  PIEnumSTATPROPSTG = ^IEnumSTATPROPSTG;
+  IEnumSTATPROPSTG = interface;
+
+  PIEnumSTATPROPSETSTG = ^IEnumSTATPROPSETSTG;
+  IEnumSTATPROPSETSTG = interface;
+
+
+  // Interfaces ////////////////////////////////////////////////////////////////
+
+
+  // Interface IPropertyStorage
+  // ==========================
+  //
+  IPropertyStorage = interface(IUnknown)
+  ['{00000138-0000-0000-C000-000000000046}']
+    function ReadMultiple(cpspec: ULONG;
+                          rgpspec: PROPSPEC;
+                          out rgpropvar: PROPVARIANT): HResult; stdcall;
+
+    function WriteMultiple(cpspec: ULONG;
+                           rgpspec: PROPSPEC;
+                           rgpropvar: PROPVARIANT;
+                           propidNameFirst: PROPID): HResult; stdcall;
+
+    function DeleteMultiple(cpspec: ULONG;
+                            rgpspec: PROPSPEC): HResult; stdcall;
+
+    function ReadPropertyNames(cpropid: ULONG;
+                               rgpropid: PROPID;
+                               out rglpwstrName: POLESTR): HResult; stdcall;
+
+    function WritePropertyNames(cpropid: ULONG;
+                                rgpropid: PROPID;
+                                rglpwstrName: POLESTR): HResult; stdcall;
+
+    function DeletePropertyNames(cpropid: ULONG;
+                                 rgpropid: PROPID): HResult; stdcall;
+
+    function Commit(grfCommitFlags: DWORD): HResult; stdcall;
+
+    function Revert(): HResult; stdcall;
+
+    function Enum(out ppenum: PIEnumSTATPROPSTG): HResult; stdcall;
+
+    function SetTimes(pctime: FILETIME;
+                      patime: FILETIME;
+                      pmtime: FILETIME): HResult; stdcall;
+
+    function SetClass(const clsid: REFCLSID): HResult; stdcall;
+
+    function Stat(out pstatpsstg: STATPROPSETSTG): HResult; stdcall;
+
+  end;
+  IID_IPropertyStorage = IPropertyStorage;
+
+
+  // Interface IPropertySetStorage
+  // =============================
+  //
+  IPropertySetStorage = interface(IUnknown)
+  ['{0000013A-0000-0000-C000-000000000046}']
+    function Create(const rfmtid: REFFMTID;
+                    const pclsid: CLSID;
+                    grfFlags: DWORD;
+                    grfMode: DWORD;
+                    out ppprstg: IPropertyStorage): HResult; stdcall;
+
+    function Open(const rfmtid: REFFMTID;
+                  grfMode: DWORD;
+                  var ppprstg: IPropertyStorage): HResult; stdcall;
+
+    function Delete(const rfmtid: REFFMTID): HResult; stdcall;
+
+    function Enum(out ppenum: IEnumSTATPROPSETSTG): HResult; stdcall;
+
+  end;
+  IID_IPropertySetStorage = IPropertySetStorage;
+
+
+
+  // Interface IEnumSTATPROPSTG
+  // ==========================
+  //
+  IEnumSTATPROPSTG = interface(IUnknown)
+  ['{00000139-0000-0000-C000-000000000046}']
+    function Next(celt: ULONG;
+                  rgelt: STATPROPSTG;
+                  out pceltFetched: ULONG): HResult; stdcall;
+
+    function Skip(celt: ULONG): HResult; stdcall;
+
+    function Reset(): HResult; stdcall;
+
+    function Clone(out ppenum: IEnumSTATPROPSTG): HResult; stdcall;
+
+  end;
+  IID_IEnumSTATPROPSTG = IEnumSTATPROPSTG;
+
+
+
+  // Interface IEnumSTATPROPSETSTG
+  // =============================
+  //
+  IEnumSTATPROPSETSTG = interface(IUnknown)
+  ['{00000139-0000-0000-C000-000000000046}']
+    function Next(celt: ULONG;
+                  out rgelt: STATPROPSETSTG;
+                  out pceltFetched: ULONG): HResult; stdcall;
+
+    function Skip(celt: ULONG): HResult; stdcall;
+
+    function Reset(): HResult; stdcall;
+
+    function Clone(out ppenum: IEnumSTATPROPSETSTG): HResult; stdcall;
+
+  end;
+  IID_IEnumSTATPROPSETSTG = IEnumSTATPROPSETSTG;
+
+
+
+  // functions /////////////////////////////////////////////////////////////////
+
+  // Macros for parsing the OS Version of the Property Set Header
+  function PROPSETHDR_OSVER_KIND(dwOSVer: DWORD): DWORD;
+  function PROPSETHDR_OSVER_MAJOR(dwOSVer: DWORD): DWORD;
+  function PROPSETHDR_OSVER_MINOR(dwOSVer: DWORD): DWORD;
+
+
+
+
+  // The PropVariantCopy function copies the contents of one PROPVARIANT structure to another.
+  //
+  // Remarks
+  //   Copies a PROPVARIANT structure by value so the original pvarSrc and new
+  //   pvarDest parameters may be freed independently with calls to PropVariantClear.
+  //   PropVariantCopy does not free the destination as the VariantCopy function does.
+  //   For nonsimple PROPVARIANT types such as VT_STREAM, VT_STORAGE, and so forth,
+  //   which require a subobject, the copy is made by reference.
+  //   The pointer is copied and IUnknown.AddRef is called on it.
+  //   It is illegal to pass Nil for either pvarDest or pvarSrc.
+  function PropVariantCopy(var pvarDest: PROPVARIANT;
+                           var pvarSrc: PROPVARIANT): HResult; stdcall;
+
+  // The PropVariantClear function frees all elements that can be freed in a
+  // given PROPVARIANT structure.
+  // For complex elements with known element pointers,
+  // the underlying elements are freed prior to freeing the containing element.
+  //
+  // Remarks
+  //   At any level of indirection, NULL pointers are ignored.
+  //   For example, the pvar parameter points to a PROPVARIANT structure of type VT_CF.
+  //   The pclipdata member of the PROPVARIANT structure points to a CLIPDATA structure.
+  //   The pClipData pointer in the CLIPDATA structure is NULL.
+  //   In this example, the pClipData pointer is ignored.
+  //   However, the CLIPDATA structure pointed to by the pclipdata member of the
+  //   PROPVARIANT structure is freed.
+  //
+  //   On return, this function writes zeroes to the specified PROPVARIANT structure,
+  //   so the VT-type is VT_EMPTY.
+  //   Passing NULL as the pvar parameter produces a return code of S_OK.
+  //
+  // Note
+  //   Do not use this function to initialize PROPVARIANT structures.
+  //   Instead, initialize these structures using the PropVariantInit procedure (defined in this unit).
+  function PropVariantClear(var pvar: PROPVARIANT): HResult; stdcall;
+
+  //
+  function FreePropVariantArray(cVariants: ULONG;
+                                rgvars: PPROPVARIANT): HResult; stdcall;
+
+
+  // Not included in Ole32.dll or defined in this unit,
+  // This function (and PropVariantClear) are defined in PropSys.pas
+  // procedure PropVariantInit(out pvar: PROPVARIANT);
+
+
+  function StgCreatePropStg(pUnk: IUnknown;
+                            const fmtid: REFFMTID;
+                            const pclsid: CLSID;
+                            grfFlags: DWORD;
+                            dwReserved: DWORD;
+                            out ppPropStg: IPropertyStorage): HResult; stdcall;
+
+  function StgOpenPropStg(pUnk: IUnknown;
+                          const fmtid: REFFMTID;
+                          grfFlags: DWORD;
+                          dwReserved: DWORD;
+                          out ppPropStg: IPropertyStorage): HResult; stdcall;
+
+  function StgCreatePropSetStg(pStorage: IStorage;
+                               dwReserved: DWORD;
+                               out ppPropSetStg: IPropertySetStorage): HResult; stdcall;
+
+  function FmtIdToPropStgName(const pfmtid: REFFMTID;
+                              out oszName: POLESTR): HResult; stdcall;
+
+  function PropStgNameToFmtId(oszName: POLESTR;
+                              out pfmtid: REFFMTID): HResult; stdcall;
+
+  function StgConvertVariantToProperty(pvar: PROPVARIANT;
+                                       CodePage: USHORT;
+                                       out pprop: SERIALIZEDPROPERTYVALUE;
+                                       pcb: PULONG;
+                                       const pid: PROPID;
+                                       __reserved: BOOLEAN;
+                                       pcIndirect: PULONG): SERIALIZEDPROPERTYVALUE; stdcall;
+
+  function StgConvertPropertyToVariant(prop: SERIALIZEDPROPERTYVALUE;
+                                       CodePage: USHORT;
+                                       out pvar: PROPVARIANT;
+                                       pma: PMemoryAllocator): BOOLEAN; stdcall;
+
+
+
+  // Additional Prototypes for ALL interfaces
+
+  // Forward functions
+  procedure PropVariantInit(var pvar: PROPVARIANT); inline;
+  procedure PropVariantClearSafe(var pv: PROPVARIANT); inline;
+  //procedure PropVariantClear(var pv: TMfPROPVARIANT);
+
+  // end of Additional Prototypes
+
+implementation
+
+const
+  PropIdlLib = 'Ole32.dll';
+
+  // Macros for parsing the OS Version of the Property Set Header
+  function PROPSETHDR_OSVER_KIND(dwOSVer: DWORD): DWORD;
+  begin
+    Result:= HIWORD(dwOSVer);
+  end;
+
+  function PROPSETHDR_OSVER_MAJOR(dwOSVer: DWORD): DWORD;
+  begin
+    Result:= LOBYTE(LOWORD(dwOSVer));
+  end;
+
+  function PROPSETHDR_OSVER_MINOR(dwOSVer: DWORD): DWORD;
+  begin
+    Result:= HIBYTE(LOWORD(dwOSVer));
+  end;
+
+
+procedure PropVariantInit(var pvar: PROPVARIANT);
+begin
+
+  FillChar(pvar,
+           SizeOf(PROPVARIANT),
+           0);
+end;
+
+
+procedure PropVariantClearSafe(var pv: PROPVARIANT);
+begin
+  ZeroMemory(@pv, SizeOf(pv));
+end;
+
+
+  //--------------------- External definitions ---------------------------------
+    
+  function PropVariantCopy;             external PropIdlLib name 'PropVariantCopy' ;
+  function PropVariantClear;            external PropIdlLib name 'PropVariantClear' ;
+  function FreePropVariantArray;        external PropIdlLib name 'FreePropVariantArray' ;
+
+  function StgCreatePropStg;            external PropIdlLib name 'StgCreatePropStg' ;
+  function StgOpenPropStg;              external PropIdlLib name 'StgOpenPropStg' ;
+  function StgCreatePropSetStg;         external PropIdlLib name 'StgCreatePropSetStg' ;
+  function FmtIdToPropStgName;          external PropIdlLib name 'FmtIdToPropStgName' ;
+  function PropStgNameToFmtId;          external PropIdlLib name 'PropStgNameToFmtId' ;
+  function StgConvertVariantToProperty; external PropIdlLib name 'StgConvertVariantToProperty' ;
+  function StgConvertPropertyToVariant; external PropIdlLib name 'StgConvertPropertyToVariant' ;
+
+  // Implement Additional Prototypes here.
+
+end.

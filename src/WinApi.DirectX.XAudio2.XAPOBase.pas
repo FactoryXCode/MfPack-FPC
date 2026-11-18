@@ -1,0 +1,526 @@
+﻿// FactoryX
+//
+// Copyright: © FactoryX. All rights reserved.
+//
+// Project: WinApi.DirectX.XAudio2 - XAudio2
+// Project location: http://sourceforge.net/projects/MFPack
+// Module: WinApi.DirectX.XAudio2.XAPOBase.pas
+// Kind: Free Pascal unit (Lazarus compatible)
+// Release date: 07-07-2018
+// Language: ENU
+//
+// Upstream revision: 4.1.0
+// Description: -
+//
+// Organisation: FactoryX
+// Initiator(s): Tony (maXcomX), Peter (OzShips)
+// Contributor(s): Tony Kalf (maXcomX), Peter Larson (ozships), AndrewBJ.
+//
+//------------------------------------------------------------------------------
+// CHANGE LOG
+// Date       Person              Reason
+// ---------- ------------------- ----------------------------------------------
+// 15/11/2026 All                 Eels release  SDK 10.0.28000.2705 (Windows 11)
+//------------------------------------------------------------------------------
+//
+// Remarks: See WinApi.DirectX.XAudio2.XAPO.pas for the rules governing XAPO interface behaviour.
+//
+// Related objects: -
+// Related projects: MfPack FPC/Lazarus port
+// Known Issues: -
+//
+// Compiler version: FPC 3.2.2 (Windows x64 port baseline)
+// SDK version: 10.0.28000.2705
+//
+// Todo: -
+//
+//==============================================================================
+// Source: xapobase.h
+//
+// Copyright (c) Microsoft Corporation. All rights reserved.
+//==============================================================================
+//
+// FPC port updated: 2026-11-16
+// Lazarus version: 4.8
+// FPC mode: DelphiUnicode; COM interfaces; UTF-8 source.
+// COM headers: MfPack WinApi.ActiveX.* and WinApi.ComBaseApi.
+//
+//==============================================================================
+// LICENSE
+//
+// The contents of this file are subject to the Mozilla Public License
+// Version 2.0 (the "License"); you may not use this file except in
+// compliance with the License. You may obtain a copy of the License at
+// https://www.mozilla.org/en-US/MPL/2.0/
+//
+// Software distributed under the License is distributed on an "AS IS"
+// basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+// License for the specific language governing rights and limitations
+// under the License.
+//
+// Non commercial users may distribute this sourcecode provided that this
+// header is included in full at the top of the file.
+// Commercial users are not allowed to distribute this sourcecode as part of
+// their product.
+//
+//==============================================================================
+unit WinApi.DirectX.XAudio2.XAPOBase;
+
+{$I MfPack.Fpc.inc}
+
+
+interface
+
+uses
+
+  {WinApi}
+  Windows,
+  WinApi.WinApiTypes,
+  {WinMM}
+  WinApi.WinMM.MMReg,
+  WinApi.WinMM.MMeApi,
+  {DirectX}
+  WinApi.DirectX.XAudio2.XApo;
+
+  {$PACKENUM 4}
+
+  {$IFDEF WIN32}
+    {$ALIGN 1}
+  {$ELSE}
+    {$ALIGN 8} // Win64
+  {$ENDIF}
+
+
+const
+
+  // Default audio format ranges supported, applies to XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS.pFormat
+  XAPOBASE_DEFAULT_FORMAT_TAG              = WAVE_FORMAT_IEEE_FLOAT;  // 32-bit float only, applies to WAVEFORMATEX.wFormatTag or WAVEFORMATEXTENSIBLE.SubFormat when used
+  XAPOBASE_DEFAULT_FORMAT_MIN_CHANNELS     = XAPO_MIN_CHANNELS;       // minimum channel count, applies to WAVEFORMATEX.nChannels
+  XAPOBASE_DEFAULT_FORMAT_MAX_CHANNELS     = XAPO_MAX_CHANNELS;       // maximum channel count, applies to WAVEFORMATEX.nChannels
+  XAPOBASE_DEFAULT_FORMAT_MIN_FRAMERATE    = XAPO_MIN_FRAMERATE;      // minimum framerate, applies to WAVEFORMATEX.nSamplesPerSec
+  XAPOBASE_DEFAULT_FORMAT_MAX_FRAMERATE    = XAPO_MAX_FRAMERATE;      // maximum framerate, applies to WAVEFORMATEX.nSamplesPerSec
+  XAPOBASE_DEFAULT_FORMAT_BITSPERSAMPLE    = 32;  // 32-bit float only, applies to WAVEFORMATEX.wBitsPerSample and WAVEFORMATEXTENSIBLE.wValidBitsPerSample when used
+
+  // Default XAPO property flags supported, applies to XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS
+  XAPOBASE_DEFAULT_FLAG               = (XAPO_FLAG_CHANNELS_MUST_MATCH or
+                                         XAPO_FLAG_FRAMERATE_MUST_MATCH or
+                                         XAPO_FLAG_BITSPERSAMPLE_MUST_MATCH or
+                                         XAPO_FLAG_BUFFERCOUNT_MUST_MATCH or
+                                         XAPO_FLAG_INPLACE_SUPPORTED);
+
+  // default number of input and output buffers supported, applies to XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS
+  XAPOBASE_DEFAULT_BUFFER_COUNT       = 1;
+
+  //--------------<D-A-T-A---T-Y-P-E-S>---------------------------------------//
+  //#pragma pack(push, 8) // set packing alignment to ensure consistency across arbitrary build environments, and ensure synchronization variables used by Interlocked functionality are correctly aligned
+  {$ALIGN 8}  // Default for Delphi (Quad Word)
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // These templates do not link to the SDK C++ base-class library.
+  // CXAPOBase and CXAPOParametersBase are Pascal implementation templates.
+  // Format negotiation and locking return E_NOTIMPL until overridden.
+  // Subclasses must implement Process and parameter transfer; SDK matrix mixing
+  // and triple-buffer synchronization helpers are not implemented here.
+  //////////////////////////////////////////////////////////////////////////////
+
+
+
+type
+
+  ////
+  // DESCRIPTION:
+  //  Default implementation of the IXAPO and IUnknown interface.
+  //  Provides overridable implementations for all methods save IXAPO.Process.
+  // Platform Requirements
+  //  Windows 10 (XAudio2.9);
+  //  Windows 8,
+  //  Windows Phone 8 (XAudio 2.8);
+  //  DirectX SDK (XAudio 2.7)
+  ////
+  CXAPOBase = class(TInterfacedObject, IXAPO)
+  private
+{$HINTS OFF}
+    m_pRegistrationProperties: XAPO_REGISTRATION_PROPERTIES;  // registration properties copied by the constructor
+    m_pfnMatrixMixFunction: Pointer;      // optimal matrix function pointer, used for thru processing
+    m_pfl32MatrixCoefficients: PSingle;   // matrix coefficient table, used for thru processing
+    m_nSrcFormatType: UINT32;             // input format type, used for thru processing
+    m_fIsScalarMatrix: BOOL;              // TRUE if m_pfl32MatrixCoefficients is diagonal matrix with all main diagonal entries equal, i.e. m_pfnMatrixMixFunction only used for type conversion (no channel conversion), used for thru processing
+    m_fIsLocked: BOOL;                    // TRUE if XAPO locked via CXAPOBase.LockForProcess
+{$HINTS ON}
+  protected
+
+    // accessors
+    function GetRegistrationPropertiesInternal(): XAPO_REGISTRATION_PROPERTIES; { return m_pRegistrationProperties; }
+    function IsLocked(): BOOL; { return m_fIsLocked; }
+
+  public
+
+    // Constructor & destuctor /////////////////////////////////////////////////
+    //
+    constructor Create(pRegistrationProperties: XAPO_REGISTRATION_PROPERTIES);
+    //
+    // Destructor
+    destructor Destroy(); override;
+    //
+    ////////////////////////////////////////////////////////////////////////////
+
+
+    // IXAPO methods:
+    ////////////////////////////////////////////////////////////////////////////
+
+    // Allocates a copy of the registration properties of the XAPO.
+    // This default implementation returns a copy of the registration
+    // properties given to the constructor, allocated via XAPOAlloc.
+    function GetRegistrationProperties(ppRegistrationProperties: PPXAPO_REGISTRATION_PROPERTIES): HRESULT; virtual; stdcall;
+
+    // Queries if a specific input format is supported for a given output format.
+    // Template stub: returns E_NOTIMPL. Override to negotiate formats.
+    function IsInputFormatSupported(pOutputFormat: PWAVEFORMATEX;
+                                    pRequestedInputFormat: PWAVEFORMATEX;
+                                    ppSupportedInputFormat: PPWAVEFORMATEX): HRESULT; virtual; stdcall;
+
+    // Queries if a specific output format is supported for a given input format.
+    // Template stub: returns E_NOTIMPL. Override to negotiate formats.
+    function IsOutputFormatSupported(pInputFormat: PWAVEFORMATEX;
+                                     pRequestedOutputFormat: PWAVEFORMATEX;
+                                     ppSupportedOutputFormat: PPWAVEFORMATEX): HRESULT; virtual; stdcall;
+
+    // Performs any effect-specific initialization.
+    // This default implementation is a no-op and only returns S_OK.
+    function Initialize(pData: Pointer;
+                        DataByteSize: UINT32): HRESULT; virtual; stdcall;
+
+    {
+        UNREFERENCED_PARAMETER(DataByteSize);
+        return S_OK;
+    }
+
+    // Resets variables dependent on frame history.
+    // This default implementation is a no-op: this base class contains no
+    // relevant state to reset.
+    procedure Reset(); virtual; stdcall;
+
+    // Notifies XAPO of buffer formats Process() will be given.
+    // Template stub: returns E_NOTIMPL. Subclasses must validate formats
+    // and manage their own locked state.
+    function LockForProcess(InputLockedParameterCount: UINT32;
+                            pInputLockedParameters: PXAPO_LOCKFORPROCESS_PARAMETERS;
+                            OutputLockedParameterCount: UINT32;
+                            pOutputLockedParameters: PXAPO_LOCKFORPROCESS_PARAMETERS): HRESULT; virtual; stdcall;
+
+    // Opposite of LockForProcess.
+    // Derived XAPOs should call the base implementation first.
+    procedure UnlockForProcess(); virtual; stdcall;
+
+    // Needs POINTERMATH turned On!
+    procedure Process(InputProcessParameterCount: UINT32;
+                      pInputProcessParameters: PXAPO_PROCESS_BUFFER_PARAMETERS;
+                      OutputProcessParameterCount: UINT32;
+                      pOutputProcessParameters: PXAPO_PROCESS_BUFFER_PARAMETERS;
+                      IsEnabled: BOOL); virtual; stdcall; abstract;
+
+    // Returns the number of input frames required to generate the requested number of output frames.
+    // By default, this method returns the same number of frames it was passed.
+    function CalcInputFrames(OutputFrameCount: UINT32): UINT32; virtual; stdcall;
+
+    // Returns the number of output frames generated for the requested number of input frames.
+    // By default, this method returns the same number of frames it was passed.
+    function CalcOutputFrames(InputFrameCount: UINT32): UINT32; virtual; stdcall;
+
+  end;
+
+
+  //--------------------------------------------------------------------------//
+
+  ////
+  // DESCRIPTION:
+  //  Extends CXAPOBase, providing a default implementation of the
+  //  IXAPOParameters interface with appropriate synchronization to
+  //  protect variables shared between IXAPOParameters::GetParameters
+  //  and IXAPOParameters.SetParameters/IXAPO.Process.
+  //
+  //  This class is for parameter blocks whose size is larger than 4 bytes.
+  //  For smaller parameter blocks, use atomic operations directly
+  //  on the parameters for synchronization.
+  ////
+  CXAPOParametersBase = class(CXAPOBase, IXAPOParameters)
+  private
+{$HINTS OFF}
+    m_pParameterBlocks: PByte;             // three contiguous process parameter blocks used for synchronization, user responsible for initialization of parameter blocks before IXAPO::Process/SetParameters/GetParameters called
+    m_pCurrentParameters: PByte;           // pointer to current process parameters, must be aligned for atomic operations
+    m_pCurrentParametersInternal: PByte;   // pointer to current process parameters (temp pointer read by SetParameters/BeginProcess/EndProcess)
+    m_uCurrentParametersIndex: UINT32;     // index of current process parameters
+    m_uParameterBlockByteSize: UINT32;     // size of a single parameter block in bytes, must be > 0
+    m_fNewerResultsReady: BOOL;            // TRUE if there exists new processing results not yet picked up by GetParameters(), must be aligned for atomic operations
+    m_fProducer: BOOL;                     // TRUE if IXAPO::Process produces data to be returned by GetParameters(), SetParameters() and ParametersChanged() disallowed
+{$HINTS ON}
+
+  public
+
+    ////
+    // PARAMETERS:
+    //  pRegistrationProperties - [in] registration properties of the XAPO
+    //  pParameterBlocks        - [in] three contiguous process parameter blocks used for synchronization
+    //  uParameterBlockByteSize - [in] size of one of the parameter blocks, must be > 0, should be > 4
+    //  fProducer               - [in] TRUE if IXAPO.Process produces data to be returned by GetParameters() (SetParameters() and ParametersChanged() disallowed)
+    ////
+    // CXAPOParametersBase
+    // Constructor & destuctor /////////////////////////////////////////////////
+    //
+    constructor Create(pRegistrationProperties: XAPO_REGISTRATION_PROPERTIES;
+                       pParameterBlocks: PByte;
+                       uParameterBlockByteSize: UINT32;
+                       fProducer: BOOL); virtual;
+    //
+    // Destructor
+    destructor Destroy(); override;
+    //
+    ////////////////////////////////////////////////////////////////////////////
+
+
+    // IXAPOParameters methods:
+    // Sets effect-specific parameters.
+    // This method may only be called on the realtime audio processing thread.
+    procedure SetParameters(pParameters: Pointer;
+                            ParameterByteSize: UINT32); virtual; stdcall; abstract;
+
+
+    // Gets effect-specific parameters.
+    // This method may block and should not be called from the realtime thread.
+    // Subclasses must supply parameter storage and synchronization.
+    procedure GetParameters(pParameters: Pointer;
+                            ParameterByteSize: UINT32); virtual; stdcall; abstract;
+
+
+    // Called by SetParameters() to allow for user-defined parameter validation.
+    // SetParameters validates that ParameterByteSize = m_uParameterBlockByteSize
+    // so the user may assume/assert ParameterByteSize = m_uParameterBlockByteSize.
+    // This method should not block as it is called from the realtime thread.
+    // Users are expected to use asserts for parameter validation in OnSetParameters.
+    //
+    // Note: You should not use Asserts when not in debug build configuration.
+    // example:
+    //    {$IFDEF DEBUG}
+    //      Assert(m_uParameterBlockByteSize > 0,
+    //             'XAPO ASSERT: Procedure OnSetParameters, m_uParameterBlockByteSize <= 0');
+    //      Assert(pParameters > nil,
+    //             'XAPO ASSERT: Procedure OnSetParameters, pParameters < nil');
+    //      Assert(ParameterByteSize = m_uParameterBlockByteSize,
+    //             'XAPO ASSERT: Procedure OnSetParameters, ParameterByteSize <> m_uParameterBlockByteSize');
+    //    {$ELSE}
+    //       If (m_uParameterBlockByteSize <= 0) or (pParameters = nil) or (ParameterByteSize <> m_uParameterBlockByteSize) then
+    //         goto yourerrorhandler
+    //    {$END IF}
+    //
+    //
+    procedure OnSetParameters(pParameters: Pointer;
+                              ParameterByteSize: UINT32); virtual; stdcall;
+
+    ////////////////////////////////////////////////////////////////////////////
+    ///
+    ///  IMPLEMENTATIONS FOR CXAPOPARAMETERSBASE
+    ///
+    ////////////////////////////////////////////////////////////////////////////
+
+
+  end;
+
+  //#pragma pack(pop) // revert packing alignment
+  // set back to default
+  {$IFDEF WIN32}
+    {$ALIGN 1}
+  {$ELSE}
+    {$ALIGN 8} // Win64
+  {$ENDIF}
+
+  //---------------------------------<-EOF->----------------------------------//
+
+
+  // Additional Prototypes for ALL interfaces
+
+  // End of Additional Prototypes
+
+implementation
+
+
+// Constructor & destuctor /////////////////////////////////////////////////////
+//
+// Constructor
+constructor CXAPOBase.Create(pRegistrationProperties: XAPO_REGISTRATION_PROPERTIES);
+begin
+  inherited Create();
+  m_pRegistrationProperties := pRegistrationProperties;
+
+end;
+//
+//
+// Destructor
+destructor CXAPOBase.Destroy();
+begin
+
+  inherited Destroy();
+end;
+//
+////////////////////////////////////////////////////////////////////////////////
+
+
+function CXAPOBase.GetRegistrationPropertiesInternal(): XAPO_REGISTRATION_PROPERTIES;
+begin
+
+  Result := m_pRegistrationProperties;
+
+end;
+
+
+function CXAPOBase.IsLocked(): BOOL;
+begin
+
+  Result := m_fIsLocked;
+
+end;
+
+
+function CXAPOBase.Initialize(pData: Pointer;
+                              DataByteSize: UINT32): HRESULT;
+begin
+  // UNREFERENCED_PARAMETER(DataByteSize);  >> a C++ workaround to surpress compiler W4 warning "Unreferenced Parameter"
+  // Just translated this for completeness.
+  Result :=  S_OK;
+end;
+
+
+
+// IXAPO implementations ///////////////////////////////////////////////////////
+
+function CXAPOBase.GetRegistrationProperties(ppRegistrationProperties: PPXAPO_REGISTRATION_PROPERTIES): HRESULT;
+var
+  Properties: PXAPO_REGISTRATION_PROPERTIES;
+begin
+  if ppRegistrationProperties = nil then
+    Exit(E_POINTER);
+  Properties := XAPOAlloc(SizeOf(XAPO_REGISTRATION_PROPERTIES));
+  if Properties = nil then
+    Exit(E_OUTOFMEMORY);
+  Properties^ := m_pRegistrationProperties;
+  ppRegistrationProperties^ := Properties;
+  Result := S_OK;
+end;
+
+
+function CXAPOBase.IsInputFormatSupported(pOutputFormat: PWAVEFORMATEX;
+                                          pRequestedInputFormat: PWAVEFORMATEX;
+                                          ppSupportedInputFormat: PPWAVEFORMATEX): HRESULT;
+begin
+
+  Result := E_NOTIMPL; // Do your implementations here, by replacing this line for your code.
+
+end;
+
+
+function CXAPOBase.IsOutputFormatSupported(pInputFormat: PWAVEFORMATEX;
+                                           pRequestedOutputFormat: PWAVEFORMATEX;
+                                           ppSupportedOutputFormat: PPWAVEFORMATEX): HRESULT;
+begin
+
+  Result := E_NOTIMPL; // Do your implementations here, by replacing this line for your code.
+
+end;
+
+
+procedure CXAPOBase.Reset();
+begin
+
+   // Do your implementations here
+
+end;
+
+function CXAPOBase.LockForProcess(InputLockedParameterCount: UINT32;
+                                  pInputLockedParameters: PXAPO_LOCKFORPROCESS_PARAMETERS;
+                                  OutputLockedParameterCount: UINT32;
+                                  pOutputLockedParameters: PXAPO_LOCKFORPROCESS_PARAMETERS): HRESULT; stdcall;
+begin
+
+  Result := E_NOTIMPL; // Do your implementations here, by replacing this line for your code.
+
+end;
+
+
+procedure CXAPOBase.UnlockForProcess();
+begin
+
+   // Do your implementations here
+
+end;
+
+
+
+
+function CXAPOBase.CalcInputFrames(OutputFrameCount: UINT32): UINT32;
+begin
+
+  Result := OutputFrameCount;
+
+end;
+
+
+function CXAPOBase.CalcOutputFrames(InputFrameCount: UINT32): UINT32;
+begin
+
+  Result := InputFrameCount;
+
+end;
+
+
+
+// CXAPOParametersBase
+// Constructor & destuctor /////////////////////////////////////////////////
+//
+constructor CXAPOParametersBase.Create(pRegistrationProperties: XAPO_REGISTRATION_PROPERTIES;
+                                       pParameterBlocks: PByte;
+                                       uParameterBlockByteSize: UINT32;
+                                       fProducer: BOOL);
+begin
+  inherited create(pRegistrationProperties);
+
+  m_pParameterBlocks := pParameterBlocks;
+  m_uParameterBlockByteSize := uParameterBlockByteSize;
+  m_fProducer := fProducer;
+
+
+end;
+//
+// Destructor
+destructor CXAPOParametersBase.Destroy();
+begin
+
+  inherited Destroy();
+end;
+//
+////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+procedure CXAPOParametersBase.OnSetParameters(pParameters: Pointer;
+                                              ParameterByteSize: UINT32);
+begin
+{$IFDEF DEBUG}
+  Assert(m_uParameterBlockByteSize > 0,
+         'XAPO ASSERT: Procedure OnSetParameters, m_uParameterBlockByteSize <= 0');
+  Assert(pParameters <> nil,
+         'XAPO ASSERT: Procedure OnSetParameters, pParameters = nil');
+  Assert(ParameterByteSize = m_uParameterBlockByteSize,
+         'XAPO ASSERT: Procedure OnSetParameters, ParameterByteSize <> m_uParameterBlockByteSize');
+{$ENDIF}
+
+  // Do your implementations here
+
+
+end;
+
+//Implement Additional functions here.
+
+end.

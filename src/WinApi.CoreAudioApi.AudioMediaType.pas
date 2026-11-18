@@ -1,0 +1,193 @@
+// FactoryX
+//
+// Copyright: © FactoryX. All rights reserved.
+//
+// Project: MfPack - FPC/Lazarus port
+// Project location: https://sourceforge.net/projects/MFPack
+//                   https://github.com/FactoryXCode/MfPack
+// Module: WinApi.CoreAudioApi.AudioMediaType.pas
+// Kind: Free Pascal unit (Lazarus compatible)
+// Release date: 24-09-2015
+// Language: ENU
+//
+// Upstream revision: 4.1.0
+// Description: IAudioMediaType definition.
+//
+// Organisation: FactoryX
+// Initiator(s): Tony (maXcomX), Peter (OzShips)
+// Contributor(s): Tony Kalf (maXcomX), Peter Larson (ozships)
+//
+//------------------------------------------------------------------------------
+// CHANGE LOG
+// Date       Person              Reason
+// ---------- ------------------- ----------------------------------------------
+// 15/11/2026 All                 Eels release  SDK 10.0.28000.2705 (Windows 11)
+//------------------------------------------------------------------------------
+//
+// Remarks: Pay close attention for supported platforms (ie Vista or Win 7/8/8.1/10).
+//
+//          FPC: Use the MfPack COM interface declarations consistently.
+//          Use declared COM interfaces and their reference-counting ownership rules.
+//          
+//          The interface and type definitions for base APO functionality.
+//          Requires Windows Vista or later.
+//
+// Related objects: -
+// Related projects: MfPack FPC/Lazarus port
+// Known Issues: -
+//
+// Compiler version: FPC 3.2.2 (Windows x64 port baseline)
+// SDK version: 10.0.28000.2705
+//
+// Todo: -
+//
+//==============================================================================
+// Source: audiomediatype.h
+//
+// Copyright (c) Microsoft Corporation. All rights reserved.
+//==============================================================================
+//
+// FPC port updated: 2026-11-14
+// Lazarus version: 4.8
+// FPC mode: DelphiUnicode; COM interfaces; UTF-8 source.
+// COM headers: MfPack WinApi.ActiveX.* and WinApi.ComBaseApi.
+//
+//==============================================================================
+// LICENSE
+//
+// The contents of this file are subject to the Mozilla Public License
+// Version 2.0 (the "License"); you may not use this file except in
+// compliance with the License. You may obtain a copy of the License at
+// https://www.mozilla.org/en-US/MPL/2.0/
+//
+// Software distributed under the License is distributed on an "AS IS"
+// basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+// License for the specific language governing rights and limitations
+// under the License.
+//
+// Non commercial users may distribute this sourcecode provided that this
+// header is included in full at the top of the file.
+// Commercial users are not allowed to distribute this sourcecode as part of
+// their product.
+//
+//==============================================================================
+unit WinApi.CoreAudioApi.AudioMediaType;
+
+{$I MfPack.Fpc.inc}
+
+
+interface
+
+uses
+
+  {WinApi}
+  Windows,
+  {WinMM}
+  WinApi.WinMM.MMeApi;
+
+  {$PACKENUM 4}
+
+  {$IFDEF WIN32}
+    {$ALIGN 1}
+  {$ELSE}
+    {$ALIGN 8} // Win64
+  {$ENDIF}
+
+
+const
+
+  // IsEqual flags
+  // =============
+  // subtype match = format types match = iscompressed for both matches
+  // format_data match = format blocks match exactly
+
+  AUDIOMEDIATYPE_EQUAL_FORMAT_TYPES               = $00000002;
+  AUDIOMEDIATYPE_EQUAL_FORMAT_DATA                = $00000004;
+  AUDIOMEDIATYPE_EQUAL_FORMAT_USER_DATA           = $00000008;
+
+
+//
+// UNCOMPRESSEDAUDIOFORMAT
+//
+
+type
+
+  PUNCOMPRESSEDAUDIOFORMAT = ^UNCOMPRESSEDAUDIOFORMAT;
+   _UNCOMPRESSEDAUDIOFORMAT = record
+    guidFormatType: TGUID;
+    dwSamplesPerFrame: DWORD;
+    dwBytesPerSampleContainer: DWORD;
+    dwValidBitsPerSample: DWORD;
+    fFramesPerSecond: Single;
+    dwChannelMask: DWORD;
+  end;
+  UNCOMPRESSEDAUDIOFORMAT = _UNCOMPRESSEDAUDIOFORMAT;
+
+
+type
+
+  // Interface IAudioMediaType
+  // =========================
+  //
+  PIAudioMediaType = ^IAudioMediaType;
+  IAudioMediaType = interface(IUnknown)
+  ['{4E997F73-B71F-4798-873B-ED7DFCF15B4D}']
+    function IsCompressedFormat(out pfCompressed: BOOL): HResult; stdcall;
+
+    function IsEqual(pIAudioType: IAudioMediaType;
+                     out pdwFlags: DWORD): HResult; stdcall;
+
+    function GetAudioFormat(): PWAVEFORMATEX; stdcall;
+
+    function GetUncompressedAudioFormat(out pUncompressedAudioFormat: UNCOMPRESSEDAUDIOFORMAT): HResult; stdcall;
+
+  end;
+  IID_IAudioMediaType = IAudioMediaType;
+
+
+
+  {$IFDEF MFPACK_LINK_SDK_APO_HELPERS}
+  function CreateAudioMediaType(pAudioFormat: PWAVEFORMATEX;
+                                cbAudioFormatSize: UINT32;
+                                var ppIAudioMediaType: IAudioMediaType): HResult; stdcall;
+  {$ENDIF}
+  // The CreateAudioMediaType function uses the format specified by the caller to create
+  // a media type object that describes the audio format.
+  // Parameters:
+  // pAudioFormat         Specifies a pointer to a WAVEFORMATEX structure.
+  // cbAudioFormatSize    Specifies the size of the WAVEFORMATEX structure pointed to by the pAudioFormat parameter.
+  // ppIAudioMediaType    Specifies a pointer to an IAudioMediaType interface.
+  // Return value:
+
+  // The CreateAudioMediaType function returns S_OK if the call to the function is successful.
+  // Otherwise, it returns an appropriate HRESULT error code.
+  // Remarks:
+  // When you implement custom audio system effects, the CreateAudioMediaType function works with
+  // IAudioSystemEffectsCustomFormats.GetFormat to represent a custom audio data format and to
+  // provide information about the custom format.
+
+
+
+  {$IFDEF MFPACK_LINK_SDK_APO_HELPERS}
+  function CreateAudioMediaTypeFromUncompressedAudioFormat(pUncompressedAudioFormat: PUNCOMPRESSEDAUDIOFORMAT;
+                                                           var ppIAudioMediaType: IAudioMediaType): HResult; stdcall;
+  {$ENDIF}
+
+
+
+
+
+  // Additional Prototypes for ALL interfaces
+
+  // End of Additional Prototypes
+
+implementation
+
+  // Implement Additional functions here.
+
+// SDK static AudioBaseProcessingObject helpers; not mf.dll exports.
+  {$IFDEF MFPACK_LINK_SDK_APO_HELPERS}
+  function CreateAudioMediaType; external;
+  function CreateAudioMediaTypeFromUncompressedAudioFormat; external;
+  {$ENDIF}
+end.

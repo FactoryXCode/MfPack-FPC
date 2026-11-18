@@ -1,0 +1,4128 @@
+// FactoryX
+//
+// Copyright: © FactoryX. All rights reserved.
+//
+// Project: MfPack - FPC/Lazarus port
+// Project location: https://sourceforge.net/projects/MfPack
+//                   https://github.com/FactoryXCode/MfPack
+// Module: WinApi.DirectX.D3D12Video.pas
+// Kind: Free Pascal unit (Lazarus compatible)
+// Release date: 13-08-2022
+// Language: ENU
+//
+// Upstream revision: 4.1.0
+// Description: -
+//
+// Organisation: FactoryX
+// Initiator(s): Tony (maXcomX), Peter (OzShips)
+// Contributor(s): Tony (maXcomX).
+//
+//------------------------------------------------------------------------------
+// CHANGE LOG
+// Date       Person              Reason
+// ---------- ------------------- ----------------------------------------------
+// 15/11/2026 All                 Eels release  SDK 10.0.28000.2705 (Windows 11)
+//------------------------------------------------------------------------------
+//
+//          FPC port uses MfPack SDK declarations; validate optional interfaces before use.
+//          Search "Update May 2024", to find updates until May 2024.
+//
+// Related objects: -
+// Related projects: MfPack FPC/Lazarus port
+// Known Issues: -
+//
+// Compiler version: FPC 3.2.2 (Windows x64 port baseline)
+// SDK version: 10.0.28000.2705
+//
+// Todo: -
+//
+//==============================================================================
+// Source: D3D12Video.h
+//
+// Copyright (c) Microsoft Corporation. Licensed under the MIT license.
+//==============================================================================
+//
+// FPC port updated: 2026-11-16
+// Lazarus version: 4.8
+// FPC mode: DelphiUnicode; COM interfaces; UTF-8 source.
+// COM headers: MfPack WinApi.ActiveX.* and WinApi.ComBaseApi.
+//
+//==============================================================================
+// LICENSE
+//
+// The contents of this file are subject to the Mozilla Public License
+// Version 2.0 (the "License"); you may not use this file except in
+// compliance with the License. You may obtain a copy of the License at
+// https://www.mozilla.org/en-US/MPL/2.0/
+//
+// Software distributed under the License is distributed on an "AS IS"
+// basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+// License for the specific language governing rights and limitations
+// under the License.
+//
+// Non commercial users may distribute this sourcecode provided that this
+// header is included in full at the top of the file.
+// Commercial users are not allowed to distribute this sourcecode as part of
+// their product.
+//
+//==============================================================================
+unit WinApi.DirectX.D3D12Video;
+
+{$I MfPack.Fpc.inc}
+
+interface
+
+
+uses
+
+  {WinApi}
+  Windows,
+  WinApi.WinApiTypes,
+  {System}
+  {DirectX}
+  WinApi.DirectX.DXGIFormat,
+  WinApi.DirectX.DXGICommon,
+  WinApi.DirectX.D3D12,
+  WinApi.DirectX.D3DCommon;
+
+  {$PACKENUM 4}
+
+  {$IFDEF WIN32}
+    {$ALIGN 1}
+  {$ELSE}
+    {$ALIGN 8} // Win64
+  {$ENDIF}
+
+type
+
+  PD3D12_VIDEO_FIELD_TYPE = ^D3D12_VIDEO_FIELD_TYPE;
+  D3D12_VIDEO_FIELD_TYPE = (D3D12_VIDEO_FIELD_TYPE_NONE                          = 0,
+                            D3D12_VIDEO_FIELD_TYPE_INTERLACED_TOP_FIELD_FIRST    = 1,
+                            D3D12_VIDEO_FIELD_TYPE_INTERLACED_BOTTOM_FIELD_FIRST = 2
+                           );
+
+  PD3D12_VIDEO_FRAME_STEREO_FORMAT = ^D3D12_VIDEO_FRAME_STEREO_FORMAT;
+  D3D12_VIDEO_FRAME_STEREO_FORMAT = (D3D12_VIDEO_FRAME_STEREO_FORMAT_NONE       = 0,
+                                     D3D12_VIDEO_FRAME_STEREO_FORMAT_MONO       = 1,
+                                     D3D12_VIDEO_FRAME_STEREO_FORMAT_HORIZONTAL = 2,
+                                     D3D12_VIDEO_FRAME_STEREO_FORMAT_VERTICAL   = 3,
+                                     D3D12_VIDEO_FRAME_STEREO_FORMAT_SEPARATE   = 4
+                                    );
+
+
+  PDD3D12_VIDEO_FORMAT = ^D3D12_VIDEO_FORMAT;
+  D3D12_VIDEO_FORMAT = record
+    Format: DXGI_FORMAT;
+    ColorSpace: DXGI_COLOR_SPACE_TYPE;
+  end;
+
+
+  PD3D12_VIDEO_SAMPLE = ^D3D12_VIDEO_SAMPLE;
+  D3D12_VIDEO_SAMPLE = record
+    Width: UINT;
+    Height: UINT;
+    Format: D3D12_VIDEO_FORMAT;
+  end;
+
+
+  PD3D12_VIDEO_FRAME_CODED_INTERLACE_TYPE = ^D3D12_VIDEO_FRAME_CODED_INTERLACE_TYPE;
+  D3D12_VIDEO_FRAME_CODED_INTERLACE_TYPE = (D3D12_VIDEO_FRAME_CODED_INTERLACE_TYPE_NONE        = 0,
+                                            D3D12_VIDEO_FRAME_CODED_INTERLACE_TYPE_FIELD_BASED = 1
+                                           );
+
+
+  PD3D12_FEATURE_VIDEO = ^D3D12_FEATURE_VIDEO;
+  D3D12_FEATURE_VIDEO = (D3D12_FEATURE_VIDEO_DECODE_SUPPORT                         = 0,
+                         D3D12_FEATURE_VIDEO_DECODE_PROFILES                        = 1,
+                         D3D12_FEATURE_VIDEO_DECODE_FORMATS                         = 2,
+                         D3D12_FEATURE_VIDEO_DECODE_CONVERSION_SUPPORT              = 3,
+                         D3D12_FEATURE_VIDEO_PROCESS_SUPPORT                        = 5,
+                         D3D12_FEATURE_VIDEO_PROCESS_MAX_INPUT_STREAMS              = 6,
+                         D3D12_FEATURE_VIDEO_PROCESS_REFERENCE_INFO                 = 7,
+                         D3D12_FEATURE_VIDEO_DECODER_HEAP_SIZE                      = 8,
+                         D3D12_FEATURE_VIDEO_PROCESSOR_SIZE                         = 9,
+                         D3D12_FEATURE_VIDEO_DECODE_PROFILE_COUNT                   = 10,
+                         D3D12_FEATURE_VIDEO_DECODE_FORMAT_COUNT                    = 11,
+                         D3D12_FEATURE_VIDEO_ARCHITECTURE                           = 17,
+                         D3D12_FEATURE_VIDEO_DECODE_HISTOGRAM                       = 18,
+                         D3D12_FEATURE_VIDEO_FEATURE_AREA_SUPPORT                   = 19,
+                         D3D12_FEATURE_VIDEO_MOTION_ESTIMATOR                       = 20,
+                         D3D12_FEATURE_VIDEO_MOTION_ESTIMATOR_SIZE                  = 21,
+                         D3D12_FEATURE_VIDEO_EXTENSION_COMMAND_COUNT                = 22,
+                         D3D12_FEATURE_VIDEO_EXTENSION_COMMANDS                     = 23,
+                         D3D12_FEATURE_VIDEO_EXTENSION_COMMAND_PARAMETER_COUNT      = 24,
+                         D3D12_FEATURE_VIDEO_EXTENSION_COMMAND_PARAMETERS           = 25,
+                         D3D12_FEATURE_VIDEO_EXTENSION_COMMAND_SUPPORT              = 26,
+                         D3D12_FEATURE_VIDEO_EXTENSION_COMMAND_SIZE                 = 27,
+                         D3D12_FEATURE_VIDEO_DECODE_PROTECTED_RESOURCES             = 28,
+                         D3D12_FEATURE_VIDEO_PROCESS_PROTECTED_RESOURCES            = 29,
+                         D3D12_FEATURE_VIDEO_MOTION_ESTIMATOR_PROTECTED_RESOURCES   = 30,
+                         D3D12_FEATURE_VIDEO_DECODER_HEAP_SIZE1                     = 31,
+                         D3D12_FEATURE_VIDEO_PROCESSOR_SIZE1                        = 32,
+                         D3D12_FEATURE_VIDEO_ENCODER_CODEC                          = 33,
+                         D3D12_FEATURE_VIDEO_ENCODER_PROFILE_LEVEL                  = 34,
+                         D3D12_FEATURE_VIDEO_ENCODER_OUTPUT_RESOLUTION_RATIOS_COUNT = 35,
+                         D3D12_FEATURE_VIDEO_ENCODER_OUTPUT_RESOLUTION              = 36,
+                         D3D12_FEATURE_VIDEO_ENCODER_INPUT_FORMAT                   = 37,
+                         D3D12_FEATURE_VIDEO_ENCODER_RATE_CONTROL_MODE              = 38,
+                         D3D12_FEATURE_VIDEO_ENCODER_INTRA_REFRESH_MODE             = 39,
+                         D3D12_FEATURE_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE    = 40,
+                         D3D12_FEATURE_VIDEO_ENCODER_HEAP_SIZE                      = 41,
+                         D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT    = 42,
+                         D3D12_FEATURE_VIDEO_ENCODER_SUPPORT                        = 43,
+                         D3D12_FEATURE_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT  = 44,
+                         D3D12_FEATURE_VIDEO_ENCODER_RESOURCE_REQUIREMENTS          = 45,
+                         // Update May 2024
+                         D3D12_FEATURE_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_CONFIG  = 46,
+                         D3D12_FEATURE_VIDEO_ENCODER_SUPPORT1                        = 47,
+                         // ==
+                         { 10.0.28000.0 }
+                         D3D12_FEATURE_VIDEO_ENCODER_RESOURCE_REQUIREMENTS1          = 48,
+                         D3D12_FEATURE_VIDEO_ENCODER_RESOLVE_INPUT_PARAM_LAYOUT      = 49,
+                         D3D12_FEATURE_VIDEO_ENCODER_QPMAP_INPUT                     = 50,
+                         D3D12_FEATURE_VIDEO_ENCODER_DIRTY_REGIONS                   = 51,
+                         D3D12_FEATURE_VIDEO_ENCODER_MOTION_SEARCH                   = 52,
+                         D3D12_FEATURE_VIDEO_ENCODER_SUPPORT2                        = 55,
+                         D3D12_FEATURE_VIDEO_ENCODER_HEAP_SIZE1                      = 56,
+                         D3D12_FEATURE_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS     = 57
+                        );
+
+
+  PD3D12_BITSTREAM_ENCRYPTION_TYPE = ^D3D12_BITSTREAM_ENCRYPTION_TYPE;
+  D3D12_BITSTREAM_ENCRYPTION_TYPE = (D3D12_BITSTREAM_ENCRYPTION_TYPE_NONE = 0
+                                    );
+
+  PD3D12_VIDEO_DECODE_CONFIGURATION = ^D3D12_VIDEO_DECODE_CONFIGURATION;
+  D3D12_VIDEO_DECODE_CONFIGURATION = record
+    DecodeProfile: TGUID;
+    BitstreamEncryption: D3D12_BITSTREAM_ENCRYPTION_TYPE;
+    InterlaceType: D3D12_VIDEO_FRAME_CODED_INTERLACE_TYPE;
+  end;
+
+
+  PD3D12_VIDEO_DECODER_DESC = ^D3D12_VIDEO_DECODER_DESC;
+  D3D12_VIDEO_DECODER_DESC = record
+    NodeMask: UINT;
+    Configuration: D3D12_VIDEO_DECODE_CONFIGURATION;
+  end;
+
+
+  PD3D12_VIDEO_DECODER_HEAP_DESC = ^D3D12_VIDEO_DECODER_HEAP_DESC;
+  D3D12_VIDEO_DECODER_HEAP_DESC = record
+    NodeMask: UINT;
+    Configuration: D3D12_VIDEO_DECODE_CONFIGURATION;
+    DecodeWidth: UINT;
+    DecodeHeight: UINT;
+    Format: DXGI_FORMAT;
+    FrameRate: DXGI_RATIONAL;
+    BitRate: UINT;
+    MaxDecodePictureBufferCount: UINT;
+  end;
+
+
+  PD3D12_VIDEO_SIZE_RANGE = ^D3D12_VIDEO_SIZE_RANGE;
+  D3D12_VIDEO_SIZE_RANGE = record
+    MaxWidth: UINT;
+    MaxHeight: UINT;
+    MinWidth: UINT;
+    MinHeight: UINT;
+  end;
+
+
+  PD3D12_VIDEO_PROCESS_FILTER = ^D3D12_VIDEO_PROCESS_FILTER;
+  D3D12_VIDEO_PROCESS_FILTER = (D3D12_VIDEO_PROCESS_FILTER_BRIGHTNESS         = 0,
+                                D3D12_VIDEO_PROCESS_FILTER_CONTRAST           = 1,
+                                D3D12_VIDEO_PROCESS_FILTER_HUE                = 2,
+                                D3D12_VIDEO_PROCESS_FILTER_SATURATION         = 3,
+                                D3D12_VIDEO_PROCESS_FILTER_NOISE_REDUCTION    = 4,
+                                D3D12_VIDEO_PROCESS_FILTER_EDGE_ENHANCEMENT   = 5,
+                                D3D12_VIDEO_PROCESS_FILTER_ANAMORPHIC_SCALING = 6,
+                                D3D12_VIDEO_PROCESS_FILTER_STEREO_ADJUSTMENT  = 7
+                               );
+
+
+type
+  PD3D12_VIDEO_PROCESS_FILTER_FLAGS = ^D3D12_VIDEO_PROCESS_FILTER_FLAGS;
+  D3D12_VIDEO_PROCESS_FILTER_FLAGS = UINT;
+const
+    D3D12_VIDEO_PROCESS_FILTER_FLAG_NONE               = D3D12_VIDEO_PROCESS_FILTER_FLAGS($0);
+    D3D12_VIDEO_PROCESS_FILTER_FLAG_BRIGHTNESS         = D3D12_VIDEO_PROCESS_FILTER_FLAGS(1 shl 0 {D3D12_VIDEO_PROCESS_FILTER_BRIGHTNESS});
+    D3D12_VIDEO_PROCESS_FILTER_FLAG_CONTRAST           = D3D12_VIDEO_PROCESS_FILTER_FLAGS(1 shl 1 {D3D12_VIDEO_PROCESS_FILTER_CONTRAST});
+    D3D12_VIDEO_PROCESS_FILTER_FLAG_HUE                = D3D12_VIDEO_PROCESS_FILTER_FLAGS(1 shl 2 {D3D12_VIDEO_PROCESS_FILTER_HUE});
+    D3D12_VIDEO_PROCESS_FILTER_FLAG_SATURATION         = D3D12_VIDEO_PROCESS_FILTER_FLAGS(1 shl 3 {D3D12_VIDEO_PROCESS_FILTER_SATURATION});
+    D3D12_VIDEO_PROCESS_FILTER_FLAG_NOISE_REDUCTION    = D3D12_VIDEO_PROCESS_FILTER_FLAGS(1 shl 4 {D3D12_VIDEO_PROCESS_FILTER_NOISE_REDUCTION});
+    D3D12_VIDEO_PROCESS_FILTER_FLAG_EDGE_ENHANCEMENT   = D3D12_VIDEO_PROCESS_FILTER_FLAGS(1 shl 5 {D3D12_VIDEO_PROCESS_FILTER_EDGE_ENHANCEMENT});
+    D3D12_VIDEO_PROCESS_FILTER_FLAG_ANAMORPHIC_SCALING = D3D12_VIDEO_PROCESS_FILTER_FLAGS(1 shl 6 {D3D12_VIDEO_PROCESS_FILTER_ANAMORPHIC_SCALING});
+    D3D12_VIDEO_PROCESS_FILTER_FLAG_STEREO_ADJUSTMENT  = D3D12_VIDEO_PROCESS_FILTER_FLAGS(1 shl 7 {D3D12_VIDEO_PROCESS_FILTER_STEREO_ADJUSTMENT});
+
+  // MACRO to do bitwise operations defined in winnt.h
+  // DEFINE_ENUM_FLAG_OPERATORS(D3D12_VIDEO_PROCESS_FILTER_FLAGS);
+
+type
+  PD3D12_VIDEO_PROCESS_DEINTERLACE_FLAGS = ^D3D12_VIDEO_PROCESS_DEINTERLACE_FLAGS;
+  D3D12_VIDEO_PROCESS_DEINTERLACE_FLAGS = UINT;
+const
+    D3D12_VIDEO_PROCESS_DEINTERLACE_FLAG_NONE   = D3D12_VIDEO_PROCESS_DEINTERLACE_FLAGS($0);
+    D3D12_VIDEO_PROCESS_DEINTERLACE_FLAG_BOB    = D3D12_VIDEO_PROCESS_DEINTERLACE_FLAGS($1);
+    D3D12_VIDEO_PROCESS_DEINTERLACE_FLAG_CUSTOM = D3D12_VIDEO_PROCESS_DEINTERLACE_FLAGS($80000000);
+
+
+type
+
+  PD3D12_VIDEO_PROCESS_ALPHA_BLENDING = ^D3D12_VIDEO_PROCESS_ALPHA_BLENDING;
+  D3D12_VIDEO_PROCESS_ALPHA_BLENDING = record
+    Enable: BOOL;
+    Alpha: FLOAT;
+  end;
+
+
+  PD3D12_VIDEO_PROCESS_LUMA_KEY = ^D3D12_VIDEO_PROCESS_LUMA_KEY;
+  D3D12_VIDEO_PROCESS_LUMA_KEY = record
+    Enable: BOOL;
+    Lower: FLOAT;
+    Upper: FLOAT;
+  end;
+
+
+  PD3D12_VIDEO_PROCESS_INPUT_STREAM_DESC = ^D3D12_VIDEO_PROCESS_INPUT_STREAM_DESC;
+  D3D12_VIDEO_PROCESS_INPUT_STREAM_DESC = record
+    Format: DXGI_FORMAT;
+    ColorSpace: DXGI_COLOR_SPACE_TYPE;
+    SourceAspectRatio: DXGI_RATIONAL;
+    DestinationAspectRatio: DXGI_RATIONAL;
+    FrameRate: DXGI_RATIONAL;
+    SourceSizeRange: D3D12_VIDEO_SIZE_RANGE;
+    DestinationSizeRange: D3D12_VIDEO_SIZE_RANGE;
+    EnableOrientation: BOOL;
+    FilterFlags: D3D12_VIDEO_PROCESS_FILTER_FLAGS;
+    StereoFormat: D3D12_VIDEO_FRAME_STEREO_FORMAT;
+    FieldType: D3D12_VIDEO_FIELD_TYPE;
+    DeinterlaceMode: D3D12_VIDEO_PROCESS_DEINTERLACE_FLAGS;
+    EnableAlphaBlending: BOOL;
+    LumaKey: D3D12_VIDEO_PROCESS_LUMA_KEY;
+    NumPastFrames: UINT;
+    NumFutureFrames: UINT;
+    EnableAutoProcessing: BOOL;
+  end;
+
+
+  PD3D12_VIDEO_PROCESS_ALPHA_FILL_MODE = ^D3D12_VIDEO_PROCESS_ALPHA_FILL_MODE;
+  D3D12_VIDEO_PROCESS_ALPHA_FILL_MODE = (D3D12_VIDEO_PROCESS_ALPHA_FILL_MODE_OPAQUE        = 0,
+                                         D3D12_VIDEO_PROCESS_ALPHA_FILL_MODE_BACKGROUND    = 1,
+                                         D3D12_VIDEO_PROCESS_ALPHA_FILL_MODE_DESTINATION   = 2,
+                                         D3D12_VIDEO_PROCESS_ALPHA_FILL_MODE_SOURCE_STREAM = 3
+                                        );
+
+
+  PD3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC = ^D3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC;
+  D3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC = record
+    Format: DXGI_FORMAT;
+    ColorSpace: DXGI_COLOR_SPACE_TYPE;
+    AlphaFillMode: D3D12_VIDEO_PROCESS_ALPHA_FILL_MODE;
+    AlphaFillModeSourceStreamIndex: UINT;
+    BackgroundColor: Fixed3FLOATArray;
+    FrameRate: DXGI_RATIONAL;
+    EnableStereo: BOOL;
+  end;
+
+
+  // Interface ID3D12VideoDecoderHeap
+  // ================================
+  // Represents a Direct3D 12 video decoder heap that contains resolution-dependent
+  // resources and state for performing the decode operation.
+  //
+  PID3D12VideoDecoderHeap = ^ID3D12VideoDecoderHeap;
+  ID3D12VideoDecoderHeap = interface(ID3D12Pageable)
+    ['{0946B7C9-EBF6-4047-BB73-8683E27DBB1F}']
+
+    procedure GetDesc(out RetVal: D3D12_VIDEO_DECODER_HEAP_DESC); stdcall;
+  end;
+  IID_ID3D12VideoDecoderHeap = ID3D12VideoDecoderHeap;
+
+
+  // Interface ID3D12VideoDevice
+  // ===========================
+  //
+  ID3D12VideoDevice = interface(IUnknown)
+    ['{1F052807-0B46-4ACC-8A89-364F793718A4}']
+
+    function CheckFeatureSupport(FeatureVideo: D3D12_FEATURE_VIDEO;
+                                 pFeatureSupportData: Pointer;
+                                 FeatureSupportDataSize: UINT): HRESULT; stdcall;
+
+    function CreateVideoDecoder(pDesc: PD3D12_VIDEO_DECODER_DESC;
+                                const riid: TGUID;
+                                ppVideoDecoder: PPointer): HRESULT; stdcall;
+
+    function CreateVideoDecoderHeap(pVideoDecoderHeapDesc: PD3D12_VIDEO_DECODER_HEAP_DESC;
+                                    const riid: TGUID;
+                                    ppVideoDecoderHeap: PPointer): HRESULT; stdcall;
+
+    function CreateVideoProcessor(NodeMask: UINT;
+                                  pOutputStreamDesc: PD3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC;
+                                  NumInputStreamDescs: UINT;
+                                  pInputStreamDescs: PD3D12_VIDEO_PROCESS_INPUT_STREAM_DESC;
+                                  const riid: TGUID;
+                                  ppVideoProcessor: PPointer): HRESULT; stdcall;
+  end;
+  IID_ID3D12VideoDevice = ID3D12VideoDevice;
+
+
+  // Interface ID3D12VideoDecoder
+  // ============================
+  //
+  ID3D12VideoDecoder = interface(ID3D12Pageable)
+    ['{C59B6BDC-7720-4074-A136-17A156037470}']
+
+    procedure GetDesc(out RetVal: D3D12_VIDEO_DECODER_DESC); stdcall;
+  end;
+  IID_ID3D12VideoDecoder = ID3D12VideoDecoder;
+
+
+
+  PD3D12_VIDEO_DECODE_TIER = ^D3D12_VIDEO_DECODE_TIER;
+  D3D12_VIDEO_DECODE_TIER = (D3D12_VIDEO_DECODE_TIER_NOT_SUPPORTED = 0,
+                             D3D12_VIDEO_DECODE_TIER_1             = 1,
+                             D3D12_VIDEO_DECODE_TIER_2             = 2,
+                             D3D12_VIDEO_DECODE_TIER_3             = 3
+                            );
+
+
+type
+  PD3D12_VIDEO_DECODE_SUPPORT_FLAGS = ^D3D12_VIDEO_DECODE_SUPPORT_FLAGS;
+  D3D12_VIDEO_DECODE_SUPPORT_FLAGS = UINT;
+const
+    D3D12_VIDEO_DECODE_SUPPORT_FLAG_NONE      = D3D12_VIDEO_DECODE_SUPPORT_FLAGS($0);
+    D3D12_VIDEO_DECODE_SUPPORT_FLAG_SUPPORTED = D3D12_VIDEO_DECODE_SUPPORT_FLAGS($1);
+
+
+type
+  PD3D12_VIDEO_DECODE_CONFIGURATION_FLAGS = ^D3D12_VIDEO_DECODE_CONFIGURATION_FLAGS;
+  D3D12_VIDEO_DECODE_CONFIGURATION_FLAGS = UINT;
+const
+    D3D12_VIDEO_DECODE_CONFIGURATION_FLAG_NONE                                     = D3D12_VIDEO_DECODE_CONFIGURATION_FLAGS($0);
+    D3D12_VIDEO_DECODE_CONFIGURATION_FLAG_HEIGHT_ALIGNMENT_MULTIPLE_32_REQUIRED    = D3D12_VIDEO_DECODE_CONFIGURATION_FLAGS($1);
+    D3D12_VIDEO_DECODE_CONFIGURATION_FLAG_POST_PROCESSING_SUPPORTED                = D3D12_VIDEO_DECODE_CONFIGURATION_FLAGS($2);
+    D3D12_VIDEO_DECODE_CONFIGURATION_FLAG_REFERENCE_ONLY_ALLOCATIONS_REQUIRED      = D3D12_VIDEO_DECODE_CONFIGURATION_FLAGS($4);
+    D3D12_VIDEO_DECODE_CONFIGURATION_FLAG_ALLOW_RESOLUTION_CHANGE_ON_NON_KEY_FRAME = D3D12_VIDEO_DECODE_CONFIGURATION_FLAGS($8);
+
+type
+
+  PD3D12_VIDEO_DECODE_STATUS = ^D3D12_VIDEO_DECODE_STATUS;
+  D3D12_VIDEO_DECODE_STATUS = (D3D12_VIDEO_DECODE_STATUS_OK                    = 0,
+                               D3D12_VIDEO_DECODE_STATUS_CONTINUE              = 1,
+                               D3D12_VIDEO_DECODE_STATUS_CONTINUE_SKIP_DISPLAY = 2,
+                               D3D12_VIDEO_DECODE_STATUS_RESTART               = 3,
+                               D3D12_VIDEO_DECODE_STATUS_RATE_EXCEEDED         = 4
+                              );
+
+
+  PD3D12_VIDEO_DECODE_ARGUMENT_TYPE = ^D3D12_VIDEO_DECODE_ARGUMENT_TYPE;
+  D3D12_VIDEO_DECODE_ARGUMENT_TYPE = (D3D12_VIDEO_DECODE_ARGUMENT_TYPE_PICTURE_PARAMETERS          = 0,
+                                      D3D12_VIDEO_DECODE_ARGUMENT_TYPE_INVERSE_QUANTIZATION_MATRIX = 1,
+                                      D3D12_VIDEO_DECODE_ARGUMENT_TYPE_SLICE_CONTROL               = 2,
+                                      // Update May 2024
+                                      D3D12_VIDEO_DECODE_ARGUMENT_TYPE_HUFFMAN_TABLE               = 3
+                                      // D3D12_VIDEO_DECODE_ARGUMENT_TYPE_MAX_VALID                   = 3
+                                      // ==
+                                     );
+
+
+  PD3D12_FEATURE_DATA_VIDEO_DECODE_SUPPORT = ^D3D12_FEATURE_DATA_VIDEO_DECODE_SUPPORT;
+  D3D12_FEATURE_DATA_VIDEO_DECODE_SUPPORT = record
+    NodeIndex: UINT;                                              // input
+    Configuration: D3D12_VIDEO_DECODE_CONFIGURATION;              // input
+    Width: UINT;                                                  // input
+    Height: UINT;                                                 // input
+    DecodeFormat: DXGI_FORMAT;                                    // input
+    FrameRate: DXGI_RATIONAL;                                     // input
+    BitRate: UINT;                                                // input
+    SupportFlags: D3D12_VIDEO_DECODE_SUPPORT_FLAGS;               // output
+    ConfigurationFlags: D3D12_VIDEO_DECODE_CONFIGURATION_FLAGS;   // output
+    DecodeTier: D3D12_VIDEO_DECODE_TIER;                          // output
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_DECODE_PROFILE_COUNT = ^D3D12_FEATURE_DATA_VIDEO_DECODE_PROFILE_COUNT;
+  D3D12_FEATURE_DATA_VIDEO_DECODE_PROFILE_COUNT = record
+    NodeIndex: UINT;                 // input
+    ProfileCount: UINT;              // output
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_DECODE_PROFILES = ^D3D12_FEATURE_DATA_VIDEO_DECODE_PROFILES;
+  D3D12_FEATURE_DATA_VIDEO_DECODE_PROFILES = record
+    NodeIndex: UINT;               // input
+    ProfileCount: UINT;            // input
+    pProfiles: PGUID;              // output. The list of supported profiles. The caller allocates storage for the profile list before calling CheckFeatureSupport.
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_DECODE_FORMAT_COUNT = ^D3D12_FEATURE_DATA_VIDEO_DECODE_FORMAT_COUNT;
+  D3D12_FEATURE_DATA_VIDEO_DECODE_FORMAT_COUNT = record
+    NodeIndex: UINT;                                   // input
+    Configuration: D3D12_VIDEO_DECODE_CONFIGURATION;   // input
+    FormatCount: UINT;                                 // output
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_DECODE_FORMATS = ^D3D12_FEATURE_DATA_VIDEO_DECODE_FORMATS;
+  D3D12_FEATURE_DATA_VIDEO_DECODE_FORMATS = record
+    NodeIndex: UINT;                                   // input
+    Configuration: D3D12_VIDEO_DECODE_CONFIGURATION;   // input
+    FormatCount: UINT;                                 // input
+    pOutputFormats: PDXGI_FORMAT;                      // output. The list of supported video formats.
+                                                       // The caller allocates storage for the format list before calling CheckFeatureSupport.
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ARCHITECTURE = ^D3D12_FEATURE_DATA_VIDEO_ARCHITECTURE;
+  D3D12_FEATURE_DATA_VIDEO_ARCHITECTURE = record
+    IOCoherent: BOOL;
+  end;
+
+
+  PD3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT = ^D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT;
+  D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT = type Integer;
+
+
+type
+  PD3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAGS = ^D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAGS;
+  D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAGS = UINT;
+const
+    D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAG_NONE = D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAGS($0);
+
+    D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAG_Y    = D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAGS(1 shl 0 {D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_Y});
+    D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAG_U    = D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAGS(1 shl 1 {D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_U});
+    D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAG_V    = D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAGS(1 shl 2 {D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_V});
+
+    D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAG_R    = D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAGS(1 shl 0 {D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_R});
+    D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAG_G    = D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAGS(1 shl 1 {D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_G});
+    D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAG_B    = D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAGS(1 shl 2 {D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_B});
+
+    D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAG_A    = (1 shl 3 {D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_A});
+
+
+type
+
+  PD3D12_FEATURE_DATA_VIDEO_DECODE_HISTOGRAM = ^D3D12_FEATURE_DATA_VIDEO_DECODE_HISTOGRAM;
+  D3D12_FEATURE_DATA_VIDEO_DECODE_HISTOGRAM = record
+    NodeIndex: UINT;                                            // in
+    DecodeProfile: TGUID;                                       // in
+    Width: UINT;                                                // in
+    Height: UINT;                                               // in
+    DecodeFormat: DXGI_FORMAT;                                  // in
+    Components: D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_FLAGS;   // out
+    BinCount: UINT;                                             // out
+    CounterBitDepth: UINT;                                      // out
+  end;
+
+
+type
+  PD3D12_VIDEO_DECODE_CONVERSION_SUPPORT_FLAGS = ^D3D12_VIDEO_DECODE_CONVERSION_SUPPORT_FLAGS;
+  D3D12_VIDEO_DECODE_CONVERSION_SUPPORT_FLAGS = UINT;
+const
+    D3D12_VIDEO_DECODE_CONVERSION_SUPPORT_FLAG_NONE      = D3D12_VIDEO_DECODE_CONVERSION_SUPPORT_FLAGS($0);
+    D3D12_VIDEO_DECODE_CONVERSION_SUPPORT_FLAG_SUPPORTED = D3D12_VIDEO_DECODE_CONVERSION_SUPPORT_FLAGS($1);
+
+
+type
+  {https://learn.microsoft.com/en-us/windows/win32/api/d3d12video/ne-d3d12video-d3d12_video_scale_support_flags}
+  PD3D12_VIDEO_SCALE_SUPPORT_FLAGS = ^D3D12_VIDEO_SCALE_SUPPORT_FLAGS;
+  D3D12_VIDEO_SCALE_SUPPORT_FLAGS = UINT;
+const
+    D3D12_VIDEO_SCALE_SUPPORT_FLAG_NONE                 = D3D12_VIDEO_SCALE_SUPPORT_FLAGS($0);
+    D3D12_VIDEO_SCALE_SUPPORT_FLAG_POW2_ONLY            = D3D12_VIDEO_SCALE_SUPPORT_FLAGS($1);
+    D3D12_VIDEO_SCALE_SUPPORT_FLAG_EVEN_DIMENSIONS_ONLY = D3D12_VIDEO_SCALE_SUPPORT_FLAGS($2);
+    { 10.0.28000.0  }
+    D3D12_VIDEO_SCALE_SUPPORT_FLAG_DPB_ENCODER_RESOURCES = D3D12_VIDEO_SCALE_SUPPORT_FLAGS($4);
+
+
+type
+
+  PD3D12_VIDEO_SCALE_SUPPORT = ^D3D12_VIDEO_SCALE_SUPPORT;
+  D3D12_VIDEO_SCALE_SUPPORT = record
+    OutputSizeRange: D3D12_VIDEO_SIZE_RANGE;
+    Flags: D3D12_VIDEO_SCALE_SUPPORT_FLAGS;
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_DECODE_CONVERSION_SUPPORT = ^D3D12_FEATURE_DATA_VIDEO_DECODE_CONVERSION_SUPPORT;
+  D3D12_FEATURE_DATA_VIDEO_DECODE_CONVERSION_SUPPORT = record
+    NodeIndex: UINT;                                             // input
+    Configuration: D3D12_VIDEO_DECODE_CONFIGURATION;             // input
+    DecodeSample: D3D12_VIDEO_SAMPLE;                            // input
+    OutputFormat: D3D12_VIDEO_FORMAT;                            // input
+    FrameRate: DXGI_RATIONAL;                                    // input
+    BitRate: UINT;                                               // input
+    SupportFlags: D3D12_VIDEO_DECODE_CONVERSION_SUPPORT_FLAGS;   // output
+    ScaleSupport: D3D12_VIDEO_SCALE_SUPPORT;                     // output
+  end;
+
+  PD3D12_FEATURE_DATA_VIDEO_DECODER_HEAP_SIZE = ^D3D12_FEATURE_DATA_VIDEO_DECODER_HEAP_SIZE;
+  D3D12_FEATURE_DATA_VIDEO_DECODER_HEAP_SIZE = record
+    VideoDecoderHeapDesc: D3D12_VIDEO_DECODER_HEAP_DESC;  // input
+    MemoryPoolL0Size: UINT64;                             // output
+    MemoryPoolL1Size: UINT64;                             // output
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_PROCESSOR_SIZE = ^D3D12_FEATURE_DATA_VIDEO_PROCESSOR_SIZE;
+  D3D12_FEATURE_DATA_VIDEO_PROCESSOR_SIZE = record
+    NodeMask: UINT;
+    pOutputStreamDesc: PD3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC;  // input
+    NumInputStreamDescs: UINT;                                   // input
+    pInputStreamDescs: PD3D12_VIDEO_PROCESS_INPUT_STREAM_DESC;   // input
+    MemoryPoolL0Size: UINT64;                                    // output
+    MemoryPoolL1Size: UINT64;                                    // output
+  end;
+
+
+  PD3D12_QUERY_DATA_VIDEO_DECODE_STATISTICS = ^D3D12_QUERY_DATA_VIDEO_DECODE_STATISTICS;
+  D3D12_QUERY_DATA_VIDEO_DECODE_STATISTICS = record
+    Status: UINT64;                 // see D3D12_VIDEO_DECODE_STATUS
+    NumMacroblocksAffected: UINT64;
+    FrameRate: DXGI_RATIONAL;
+    BitRate: UINT;
+  end;
+
+
+  PD3D12_VIDEO_DECODE_FRAME_ARGUMENT = ^D3D12_VIDEO_DECODE_FRAME_ARGUMENT;
+  D3D12_VIDEO_DECODE_FRAME_ARGUMENT = record
+    Type_: D3D12_VIDEO_DECODE_ARGUMENT_TYPE;
+    Size: UINT;
+    {[annotation("_Field_size_bytes_full_(Size)")]}
+    pData: Pointer;
+  end;
+
+
+  PD3D12_VIDEO_DECODE_REFERENCE_FRAMES = ^D3D12_VIDEO_DECODE_REFERENCE_FRAMES;
+  D3D12_VIDEO_DECODE_REFERENCE_FRAMES = record
+    NumTexture2Ds: UINT;
+    //[annotation("_Field_size_full_(NumTexture2Ds)")]
+    ppTexture2Ds: PID3D12Resource;
+    //[annotation("_Field_size_full_(NumTexture2Ds)")]
+    pSubresources: PUINT;
+    //[annotation("_Field_size_full_opt_(NumTexture2Ds)")]
+    ppHeaps: PID3D12VideoDecoderHeap;  // If null, assume single decoder heap from input args.
+  end;
+
+
+  PD3D12_VIDEO_DECODE_COMPRESSED_BITSTREAM = ^D3D12_VIDEO_DECODE_COMPRESSED_BITSTREAM;
+  D3D12_VIDEO_DECODE_COMPRESSED_BITSTREAM = record
+    pBuffer: ID3D12Resource;
+    Offset: UINT64;
+    Size: UINT64;
+  end;
+
+
+  PD3D12_VIDEO_DECODE_CONVERSION_ARGUMENTS = ^D3D12_VIDEO_DECODE_CONVERSION_ARGUMENTS;
+  D3D12_VIDEO_DECODE_CONVERSION_ARGUMENTS = record
+    Enable: BOOL;
+    pReferenceTexture2D: ID3D12Resource;
+    ReferenceSubresource: UINT;
+    OutputColorSpace: DXGI_COLOR_SPACE_TYPE;
+    DecodeColorSpace: DXGI_COLOR_SPACE_TYPE;
+  end;
+
+
+  PD3D12_VIDEO_DECODE_INPUT_STREAM_ARGUMENTS = ^D3D12_VIDEO_DECODE_INPUT_STREAM_ARGUMENTS;
+  D3D12_VIDEO_DECODE_INPUT_STREAM_ARGUMENTS = record
+    NumFrameArguments: UINT;
+    FrameArguments: array[0..D3D12_VIDEO_DECODE_MAX_ARGUMENTS - 1] of D3D12_VIDEO_DECODE_FRAME_ARGUMENT;
+    ReferenceFrames: D3D12_VIDEO_DECODE_REFERENCE_FRAMES;
+    CompressedBitstream: D3D12_VIDEO_DECODE_COMPRESSED_BITSTREAM;
+    pHeap: Pointer; // Borrowed ID3D12VideoDecoderHeap reference; keep the owner alive.
+  end;
+
+
+  PD3D12_VIDEO_DECODE_OUTPUT_STREAM_ARGUMENTS = ^D3D12_VIDEO_DECODE_OUTPUT_STREAM_ARGUMENTS;
+  D3D12_VIDEO_DECODE_OUTPUT_STREAM_ARGUMENTS = record
+    pOutputTexture2D: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    OutputSubresource: UINT;
+    ConversionArguments: D3D12_VIDEO_DECODE_CONVERSION_ARGUMENTS;
+  end;
+
+
+
+  // Interface ID3D12VideoProcessor
+  // ==============================
+  //
+  ID3D12VideoProcessor = interface(ID3D12Pageable)
+    ['{304FDB32-BEDE-410A-8545-943AC6A46138}']
+
+    function GetNodeMask(): UINT; stdcall;
+
+    function GetNumInputStreamDescs(): UINT; stdcall;
+
+    function GetInputStreamDescs(NumInputStreamDescs: UINT;
+                                 pInputStreamDescs: PD3D12_VIDEO_PROCESS_INPUT_STREAM_DESC): HRESULT; stdcall;
+
+    // Update May 2024
+
+    procedure GetOutputStreamDesc(out RetVal: D3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC); stdcall;
+
+    // ==
+  end;
+  IID_ID3D12VideoProcessor = ID3D12VideoProcessor;
+
+
+type
+  PD3D12_VIDEO_PROCESS_FEATURE_FLAGS = ^D3D12_VIDEO_PROCESS_FEATURE_FLAGS;
+  D3D12_VIDEO_PROCESS_FEATURE_FLAGS = UINT;
+const
+    D3D12_VIDEO_PROCESS_FEATURE_FLAG_NONE               = D3D12_VIDEO_PROCESS_FEATURE_FLAGS($0);
+    D3D12_VIDEO_PROCESS_FEATURE_FLAG_ALPHA_FILL         = D3D12_VIDEO_PROCESS_FEATURE_FLAGS($1);
+    D3D12_VIDEO_PROCESS_FEATURE_FLAG_LUMA_KEY           = D3D12_VIDEO_PROCESS_FEATURE_FLAGS($2);
+    D3D12_VIDEO_PROCESS_FEATURE_FLAG_STEREO             = D3D12_VIDEO_PROCESS_FEATURE_FLAGS($4);
+    D3D12_VIDEO_PROCESS_FEATURE_FLAG_ROTATION           = D3D12_VIDEO_PROCESS_FEATURE_FLAGS($8);
+    D3D12_VIDEO_PROCESS_FEATURE_FLAG_FLIP               = D3D12_VIDEO_PROCESS_FEATURE_FLAGS($10);
+    D3D12_VIDEO_PROCESS_FEATURE_FLAG_ALPHA_BLENDING     = D3D12_VIDEO_PROCESS_FEATURE_FLAGS($20);
+    D3D12_VIDEO_PROCESS_FEATURE_FLAG_PIXEL_ASPECT_RATIO = D3D12_VIDEO_PROCESS_FEATURE_FLAGS($40);
+
+
+type
+  PD3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS = ^D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS;
+  D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS = UINT;
+const
+    D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAG_NONE                = D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS($0);
+    D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAG_DENOISE             = D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS($01);
+    D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAG_DERINGING           = D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS($02);
+    D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAG_EDGE_ENHANCEMENT    = D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS($04);
+    D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAG_COLOR_CORRECTION    = D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS($08);
+    D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAG_FLESH_TONE_MAPPING  = D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS($10);
+    D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAG_IMAGE_STABILIZATION = D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS($20);
+    D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAG_SUPER_RESOLUTION    = D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS($40);
+    D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAG_ANAMORPHIC_SCALING  = D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS($80);
+    D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAG_CUSTOM              = D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS($80000000);
+
+
+type
+
+  PD3D12_VIDEO_PROCESS_ORIENTATION = ^D3D12_VIDEO_PROCESS_ORIENTATION;
+  D3D12_VIDEO_PROCESS_ORIENTATION = (D3D12_VIDEO_PROCESS_ORIENTATION_DEFAULT                       = 0,
+                                     D3D12_VIDEO_PROCESS_ORIENTATION_FLIP_HORIZONTAL               = 1,
+                                     D3D12_VIDEO_PROCESS_ORIENTATION_CLOCKWISE_90                  = 2,
+                                     D3D12_VIDEO_PROCESS_ORIENTATION_CLOCKWISE_90_FLIP_HORIZONTAL  = 3,
+                                     D3D12_VIDEO_PROCESS_ORIENTATION_CLOCKWISE_180                 = 4,
+                                     D3D12_VIDEO_PROCESS_ORIENTATION_FLIP_VERTICAL                 = 5,
+                                     D3D12_VIDEO_PROCESS_ORIENTATION_CLOCKWISE_270                 = 6,
+                                     D3D12_VIDEO_PROCESS_ORIENTATION_CLOCKWISE_270_FLIP_HORIZONTAL = 7
+                                    );
+
+
+type
+  PD3D12_VIDEO_PROCESS_INPUT_STREAM_FLAGS = ^D3D12_VIDEO_PROCESS_INPUT_STREAM_FLAGS;
+  D3D12_VIDEO_PROCESS_INPUT_STREAM_FLAGS = UINT;
+const
+    D3D12_VIDEO_PROCESS_INPUT_STREAM_FLAG_NONE                = D3D12_VIDEO_PROCESS_INPUT_STREAM_FLAGS($0);
+    D3D12_VIDEO_PROCESS_INPUT_STREAM_FLAG_FRAME_DISCONTINUITY = D3D12_VIDEO_PROCESS_INPUT_STREAM_FLAGS($1);
+    D3D12_VIDEO_PROCESS_INPUT_STREAM_FLAG_FRAME_REPEAT        = D3D12_VIDEO_PROCESS_INPUT_STREAM_FLAGS($2);
+
+
+type
+
+  PD3D12_VIDEO_PROCESS_FILTER_RANGE = ^D3D12_VIDEO_PROCESS_FILTER_RANGE;
+  D3D12_VIDEO_PROCESS_FILTER_RANGE = record
+    Minimum: INT;
+    Maximum: INT;
+    Default: INT;
+    Multiplier: FLOAT;
+  end;
+
+type
+  PD3D12_VIDEO_PROCESS_SUPPORT_FLAGS = ^D3D12_VIDEO_PROCESS_SUPPORT_FLAGS;
+  D3D12_VIDEO_PROCESS_SUPPORT_FLAGS = UINT;
+const
+    D3D12_VIDEO_PROCESS_SUPPORT_FLAG_NONE      = D3D12_VIDEO_PROCESS_SUPPORT_FLAGS($0);
+    D3D12_VIDEO_PROCESS_SUPPORT_FLAG_SUPPORTED = D3D12_VIDEO_PROCESS_SUPPORT_FLAGS($1);
+
+type
+
+  PD3D12_FEATURE_DATA_VIDEO_PROCESS_SUPPORT = ^D3D12_FEATURE_DATA_VIDEO_PROCESS_SUPPORT;
+  D3D12_FEATURE_DATA_VIDEO_PROCESS_SUPPORT = record
+    NodeIndex: UINT;                                                                                         // input
+    InputSample: D3D12_VIDEO_SAMPLE;                                                                         // input
+    InputFieldType: D3D12_VIDEO_FIELD_TYPE;                                                                  // input
+    InputStereoFormat: D3D12_VIDEO_FRAME_STEREO_FORMAT;                                                      // input
+    InputFrameRate: DXGI_RATIONAL;                                                                           // input
+    OutputFormat: D3D12_VIDEO_FORMAT;                                                                        // input
+    OutputStereoFormat: D3D12_VIDEO_FRAME_STEREO_FORMAT;                                                     // input
+    OutputFrameRate: DXGI_RATIONAL;                                                                          // input
+    SupportFlags: D3D12_VIDEO_PROCESS_SUPPORT_FLAGS;                                                         // output
+    ScaleSupport: D3D12_VIDEO_SCALE_SUPPORT;                                                                 // output
+    FeatureSupport: D3D12_VIDEO_PROCESS_FEATURE_FLAGS;                                                       // output
+    DeinterlaceSupport: D3D12_VIDEO_PROCESS_DEINTERLACE_FLAGS;                                               // output
+    AutoProcessingSupport: D3D12_VIDEO_PROCESS_AUTO_PROCESSING_FLAGS;                                        // output
+    FilterSupport: D3D12_VIDEO_PROCESS_FILTER_FLAGS;                                                         // output
+    FilterRangeSupport: array[0..D3D12_VIDEO_PROCESS_MAX_FILTERS - 1] of D3D12_VIDEO_PROCESS_FILTER_RANGE;   // output
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_PROCESS_MAX_INPUT_STREAMS = ^D3D12_FEATURE_DATA_VIDEO_PROCESS_MAX_INPUT_STREAMS;
+  D3D12_FEATURE_DATA_VIDEO_PROCESS_MAX_INPUT_STREAMS = record
+    NodeIndex: UINT;                 // input
+    MaxInputStreams: UINT;           // output
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_PROCESS_REFERENCE_INFO = ^D3D12_FEATURE_DATA_VIDEO_PROCESS_REFERENCE_INFO;
+  D3D12_FEATURE_DATA_VIDEO_PROCESS_REFERENCE_INFO = record
+    NodeIndex: UINT;                                          // input
+    DeinterlaceMode: D3D12_VIDEO_PROCESS_DEINTERLACE_FLAGS;   // input
+    Filters: D3D12_VIDEO_PROCESS_FILTER_FLAGS;                // input
+    FeatureSupport: D3D12_VIDEO_PROCESS_FEATURE_FLAGS;        // input
+    InputFrameRate: DXGI_RATIONAL;                            // input
+    OutputFrameRate: DXGI_RATIONAL;                           // input
+    EnableAutoProcessing: BOOL;                               // input
+    PastFrames: UINT;                                         // output
+    FutureFrames: UINT;                                       // output
+  end;
+
+
+  PD3D12_VIDEO_PROCESS_REFERENCE_SET = ^D3D12_VIDEO_PROCESS_REFERENCE_SET;
+  D3D12_VIDEO_PROCESS_REFERENCE_SET = record
+    NumPastFrames: UINT;
+    ppPastFrames: PID3D12Resource;
+    pPastSubresources: PUINT;
+    NumFutureFrames: UINT;
+    ppFutureFrames: PID3D12Resource;
+    pFutureSubresources: PUINT;
+  end;
+
+
+  PD3D12_VIDEO_PROCESS_TRANSFORM = ^D3D12_VIDEO_PROCESS_TRANSFORM;
+  D3D12_VIDEO_PROCESS_TRANSFORM = record
+    SourceRectangle: D3D12_RECT;
+    DestinationRectangle: D3D12_RECT;
+    Orientation: D3D12_VIDEO_PROCESS_ORIENTATION;
+  end;
+
+
+  PD3D12_VIDEO_PROCESS_INPUT_STREAM_RATE = ^D3D12_VIDEO_PROCESS_INPUT_STREAM_RATE;
+  D3D12_VIDEO_PROCESS_INPUT_STREAM_RATE = record
+    OutputIndex: UINT;
+    InputFrameOrField: UINT;
+  end;
+
+
+  PD3D12_VIDEO_PROCESS_INPUT_STREAM = ^D3D12_VIDEO_PROCESS_INPUT_STREAM;
+  D3D12_VIDEO_PROCESS_INPUT_STREAM = record
+    pTexture2D: ID3D12Resource;
+    Subresource: UINT;
+    ReferenceSet: D3D12_VIDEO_PROCESS_REFERENCE_SET;
+  end;
+
+
+  PD3D12_VIDEO_PROCESS_INPUT_STREAM_ARGUMENTS = ^D3D12_VIDEO_PROCESS_INPUT_STREAM_ARGUMENTS;
+  D3D12_VIDEO_PROCESS_INPUT_STREAM_ARGUMENTS = record
+    InputStream: array[0..D3D12_VIDEO_PROCESS_STEREO_VIEWS - 1] of D3D12_VIDEO_PROCESS_INPUT_STREAM;
+    Transform: D3D12_VIDEO_PROCESS_TRANSFORM;
+    Flags: D3D12_VIDEO_PROCESS_INPUT_STREAM_FLAGS;
+    RateInfo: D3D12_VIDEO_PROCESS_INPUT_STREAM_RATE;
+    FilterLevels: array[0..D3D12_VIDEO_PROCESS_MAX_FILTERS - 1] of INT;
+    AlphaBlending: D3D12_VIDEO_PROCESS_ALPHA_BLENDING;
+  end;
+
+
+  PD3D12_VIDEO_PROCESS_OUTPUT_STREAM = ^D3D12_VIDEO_PROCESS_OUTPUT_STREAM;
+  D3D12_VIDEO_PROCESS_OUTPUT_STREAM = record
+    pTexture2D: ID3D12Resource;
+    Subresource: UINT;
+  end;
+
+
+  PD3D12_VIDEO_PROCESS_OUTPUT_STREAM_ARGUMENTS = ^D3D12_VIDEO_PROCESS_OUTPUT_STREAM_ARGUMENTS;
+  D3D12_VIDEO_PROCESS_OUTPUT_STREAM_ARGUMENTS = record
+    OutputStream: array[0..D3D12_VIDEO_PROCESS_STEREO_VIEWS - 1] of D3D12_VIDEO_PROCESS_OUTPUT_STREAM;
+    TargetRectangle: D3D12_RECT;
+  end;
+
+
+  // Interface ID3D12VideoDecodeCommandList
+  // ======================================
+  //
+  ID3D12VideoDecodeCommandList = interface(ID3D12CommandList)
+    ['{3B60536E-AD29-4E64-A269-F853837E5E53}']
+
+    function Close(): HRESULT; stdcall;
+
+    function Reset(pAllocator: ID3D12CommandAllocator): HRESULT; stdcall;
+
+    procedure ClearState(); stdcall;
+
+    procedure ResourceBarrier(NumBarriers: UINT;
+                              pBarriers: PD3D12_RESOURCE_BARRIER); stdcall;
+
+    procedure DiscardResource(pResource: ID3D12Resource;
+                              pRegion: PD3D12_DISCARD_REGION); stdcall;
+
+    procedure BeginQuery(pQueryHeap: ID3D12QueryHeap;
+                         Type_: D3D12_QUERY_TYPE;
+                         Index: UINT); stdcall;
+
+    procedure EndQuery(pQueryHeap: ID3D12QueryHeap;
+                       Type_: D3D12_QUERY_TYPE;
+                       Index: UINT); stdcall;
+
+    procedure ResolveQueryData(pQueryHeap: ID3D12QueryHeap;
+                               Type_: D3D12_QUERY_TYPE;
+                               StartIndex: UINT;
+                               NumQueries: UINT;
+                               pDestinationBuffer: ID3D12Resource;
+                               AlignedDestinationBufferOffset: UINT64); stdcall;
+
+    procedure SetPredication(pBuffer: ID3D12Resource;
+                             AlignedBufferOffset: UINT64;
+                             Operation: D3D12_PREDICATION_OP); stdcall;
+
+    procedure SetMarker(Metadata: UINT;
+                        pData: Pointer;
+                        Size: UINT); stdcall;
+
+    procedure BeginEvent(Metadata: UINT;
+                         pData: Pointer;
+                         Size: UINT); stdcall;
+
+    procedure EndEvent(); stdcall;
+
+    procedure DecodeFrame(pDecoder: ID3D12VideoDecoder;
+                          pOutputArguments: PD3D12_VIDEO_DECODE_OUTPUT_STREAM_ARGUMENTS;
+                          pInputArguments: PD3D12_VIDEO_DECODE_INPUT_STREAM_ARGUMENTS); stdcall;procedure WriteBufferImmediate(Count: UINT;
+                                   pParams: PD3D12_WRITEBUFFERIMMEDIATE_PARAMETER;
+                                   pModes: PD3D12_WRITEBUFFERIMMEDIATE_MODE); stdcall;
+  end;
+  IID_ID3D12VideoDecodeCommandList = ID3D12VideoDecodeCommandList;
+
+
+  // Interface ID3D12VideoProcessCommandList
+  // =======================================
+  //
+  ID3D12VideoProcessCommandList = interface(ID3D12CommandList)
+    ['{AEB2543A-167F-4682-ACC8-D159ED4A6209}']
+
+    function Close(): HRESULT; stdcall;
+
+    function Reset(pAllocator: ID3D12CommandAllocator): HRESULT; stdcall;
+
+    procedure ClearState(); stdcall;
+
+    procedure ResourceBarrier(NumBarriers: UINT;
+                              pBarriers: PD3D12_RESOURCE_BARRIER); stdcall;
+
+    procedure DiscardResource(pResource: ID3D12Resource;
+                              pRegion: PD3D12_DISCARD_REGION); stdcall;
+
+    procedure BeginQuery(pQueryHeap: ID3D12QueryHeap;
+                         Type_: D3D12_QUERY_TYPE;
+                         Index: UINT); stdcall;
+
+    procedure EndQuery(pQueryHeap: ID3D12QueryHeap;
+                       Type_: D3D12_QUERY_TYPE;
+                       Index: UINT); stdcall;
+
+    procedure ResolveQueryData(pQueryHeap: ID3D12QueryHeap;
+                               Type_: D3D12_QUERY_TYPE;
+                               StartIndex: UINT;
+                               NumQueries: UINT;
+                               pDestinationBuffer: ID3D12Resource;
+                               AlignedDestinationBufferOffset: UINT64); stdcall;
+
+    procedure SetPredication(pBuffer: ID3D12Resource;
+                             AlignedBufferOffset: UINT64;
+                             Operation: D3D12_PREDICATION_OP); stdcall;
+
+    procedure SetMarker(Metadata: UINT;
+                        pData: Pointer;
+                        Size: UINT); stdcall;
+
+    procedure BeginEvent(Metadata: UINT;
+                         pData: Pointer;
+                         Size: UINT); stdcall;
+
+    procedure EndEvent(); stdcall;
+
+    procedure ProcessFrames(pVideoProcessor: ID3D12VideoProcessor;
+                            pOutputArguments: PD3D12_VIDEO_PROCESS_OUTPUT_STREAM_ARGUMENTS;
+                            NumInputStreams: UINT;
+                            pInputArguments: PD3D12_VIDEO_PROCESS_INPUT_STREAM_ARGUMENTS); stdcall;
+
+    procedure WriteBufferImmediate(Count: UINT;
+                                   pParams: PD3D12_WRITEBUFFERIMMEDIATE_PARAMETER;
+                                   pModes: PD3D12_WRITEBUFFERIMMEDIATE_MODE); stdcall;
+  end;
+  IID_ID3D12VideoProcessCommandList = ID3D12VideoProcessCommandList;
+
+
+  PD3D12_VIDEO_DECODE_OUTPUT_HISTOGRAM = ^D3D12_VIDEO_DECODE_OUTPUT_HISTOGRAM;
+  D3D12_VIDEO_DECODE_OUTPUT_HISTOGRAM = record
+    Offset: UINT64;
+    pBuffer: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+  end;
+
+
+  PD3D12_VIDEO_DECODE_CONVERSION_ARGUMENTS1 = ^D3D12_VIDEO_DECODE_CONVERSION_ARGUMENTS1;
+  D3D12_VIDEO_DECODE_CONVERSION_ARGUMENTS1 = record
+    Enable: BOOL;
+    pReferenceTexture2D: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    ReferenceSubresource: UINT;
+    OutputColorSpace: DXGI_COLOR_SPACE_TYPE;
+    DecodeColorSpace: DXGI_COLOR_SPACE_TYPE;
+    OutputWidth: UINT;
+    OutputHeight: UINT;
+  end;
+
+
+  PD3D12_VIDEO_DECODE_OUTPUT_STREAM_ARGUMENTS1 = ^D3D12_VIDEO_DECODE_OUTPUT_STREAM_ARGUMENTS1;
+  D3D12_VIDEO_DECODE_OUTPUT_STREAM_ARGUMENTS1 = record
+    pOutputTexture2D: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    OutputSubresource: UINT;
+    ConversionArguments: D3D12_VIDEO_DECODE_CONVERSION_ARGUMENTS1;
+    Histograms: array[0..D3D12_VIDEO_DECODE_MAX_HISTOGRAM_COMPONENTS - 1] of D3D12_VIDEO_DECODE_OUTPUT_HISTOGRAM;
+  end;
+
+
+
+  // Interface ID3D12VideoDecodeCommandList1
+  // =======================================
+  //
+  ID3D12VideoDecodeCommandList1 = interface(ID3D12VideoDecodeCommandList)
+    ['{D52F011B-B56E-453C-A05A-A7F311C8F472}']
+
+    procedure DecodeFrame1(pDecoder: ID3D12VideoDecoder;
+                           pOutputArguments: PD3D12_VIDEO_DECODE_OUTPUT_STREAM_ARGUMENTS1;
+                           pInputArguments: PD3D12_VIDEO_DECODE_INPUT_STREAM_ARGUMENTS); stdcall;
+  end;
+  IID_ID3D12VideoDecodeCommandList1 = ID3D12VideoDecodeCommandList1;
+
+
+  PD3D12_VIDEO_PROCESS_INPUT_STREAM_ARGUMENTS1 = ^D3D12_VIDEO_PROCESS_INPUT_STREAM_ARGUMENTS1;
+  D3D12_VIDEO_PROCESS_INPUT_STREAM_ARGUMENTS1 = record
+    InputStream: array[0..D3D12_VIDEO_PROCESS_STEREO_VIEWS - 1] of D3D12_VIDEO_PROCESS_INPUT_STREAM;
+    Transform: D3D12_VIDEO_PROCESS_TRANSFORM;
+    Flags: D3D12_VIDEO_PROCESS_INPUT_STREAM_FLAGS;
+    RateInfo: D3D12_VIDEO_PROCESS_INPUT_STREAM_RATE;
+    FilterLevels: array[0..D3D12_VIDEO_PROCESS_MAX_FILTERS - 1] of INT;
+    AlphaBlending: D3D12_VIDEO_PROCESS_ALPHA_BLENDING;
+    FieldType: D3D12_VIDEO_FIELD_TYPE;
+  end;
+
+
+  // Interface ID3D12VideoProcessCommandList1
+  // ========================================
+  //
+  ID3D12VideoProcessCommandList1 = interface(ID3D12VideoProcessCommandList)
+    ['{542C5C4D-7596-434F-8C93-4EFA6766F267}']
+
+    procedure ProcessFrames1(pVideoProcessor: ID3D12VideoProcessor;
+                             pOutputArguments: PD3D12_VIDEO_PROCESS_OUTPUT_STREAM_ARGUMENTS;
+                             NumInputStreams: UINT;
+                             pInputArguments: PD3D12_VIDEO_PROCESS_INPUT_STREAM_ARGUMENTS1); stdcall;
+  end;
+  IID_ID3D12VideoProcessCommandList1 = ID3D12VideoProcessCommandList1;
+
+
+  PD3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE = ^D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE;
+  D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE = (D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_8X8   = 0,
+                                                    D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_16X16 = 1
+                                                   );
+
+
+type
+  PD3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_FLAGS = ^D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_FLAGS;
+  D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_FLAGS = UINT;
+const
+    D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_FLAG_NONE  = D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_FLAGS(0);
+    D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_FLAG_8X8   = D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_FLAGS(1 shl 0 {D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_8X8});
+    D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_FLAG_16X16 = D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_FLAGS(1 shl 1 {D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_16X16});
+
+type
+
+  PD3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION = ^D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION;
+  D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION = (D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION_QUARTER_PEL = 0
+                                                  );
+
+
+type
+  PD3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION_FLAGS = ^D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION_FLAGS;
+  D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION_FLAGS = UINT;
+const
+    D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION_FLAG_NONE        = D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION_FLAGS(0);
+    D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION_FLAG_QUARTER_PEL = D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION_FLAGS(1 shl 0 {D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION_QUARTER_PEL});
+
+
+type
+
+  // D3D12_FEATURE_VIDEO_FEATURE_AREA_SUPPORT
+  PD3D12_FEATURE_DATA_VIDEO_FEATURE_AREA_SUPPORT = ^D3D12_FEATURE_DATA_VIDEO_FEATURE_AREA_SUPPORT;
+  D3D12_FEATURE_DATA_VIDEO_FEATURE_AREA_SUPPORT = record
+    NodeIndex: UINT;                 // input
+    VideoDecodeSupport: BOOL;        // output
+    VideoProcessSupport: BOOL;       // output
+    VideoEncodeSupport: BOOL;        // output
+  end;
+
+
+  // D3D12_FEATURE_VIDEO_MOTION_ESTIMATOR
+  PD3D12_FEATURE_DATA_VIDEO_MOTION_ESTIMATOR = ^D3D12_FEATURE_DATA_VIDEO_MOTION_ESTIMATOR;
+  D3D12_FEATURE_DATA_VIDEO_MOTION_ESTIMATOR = record
+    NodeIndex: UINT;                                                        // input
+    InputFormat: DXGI_FORMAT;                                               // input
+    BlockSizeFlags: D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE_FLAGS;   // output
+    PrecisionFlags: D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION_FLAGS;    // output
+    SizeRange: D3D12_VIDEO_SIZE_RANGE;                                      // output
+  end;
+
+
+  // D3D12_FEATURE_VIDEO_MOTION_ESTIMATOR_SIZE
+  PD3D12_FEATURE_DATA_VIDEO_MOTION_ESTIMATOR_SIZE = ^D3D12_FEATURE_DATA_VIDEO_MOTION_ESTIMATOR_SIZE;
+  D3D12_FEATURE_DATA_VIDEO_MOTION_ESTIMATOR_SIZE = record
+    NodeIndex: UINT;                                             // input
+    InputFormat: DXGI_FORMAT;                                    // input
+    BlockSize: D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE;   // input
+    Precision: D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION;    // input
+    SizeRange: D3D12_VIDEO_SIZE_RANGE;                           // input
+    Protected_: BOOL;                                            // input
+    MotionVectorHeapMemoryPoolL0Size: UINT64;                    // output
+    MotionVectorHeapMemoryPoolL1Size: UINT64;                    // output
+    MotionEstimatorMemoryPoolL0Size: UINT64;                     // output
+    MotionEstimatorMemoryPoolL1Size: UINT64;                     // output
+  end;
+
+
+  PD3D12_VIDEO_MOTION_ESTIMATOR_DESC = ^D3D12_VIDEO_MOTION_ESTIMATOR_DESC;
+  D3D12_VIDEO_MOTION_ESTIMATOR_DESC = record
+    NodeMask: UINT;
+    InputFormat: DXGI_FORMAT;
+    BlockSize: D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE;
+    Precision: D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION;
+    SizeRange: D3D12_VIDEO_SIZE_RANGE;
+  end;
+
+
+  // Interface ID3D12VideoMotionEstimator
+  // ====================================
+  //
+  ID3D12VideoMotionEstimator = interface(ID3D12Pageable)
+    ['{33FDAE0E-098B-428F-87BB-34B695DE08F8}']
+
+    // Update May 2024
+
+    procedure GetDesc(out RetVal: D3D12_VIDEO_MOTION_ESTIMATOR_DESC); stdcall;
+
+    // ==
+
+    function GetProtectedResourceSession(const riid: TGUID;
+                                         ppProtectedSession: PPointer): HRESULT; stdcall;
+  end;
+  IID_ID3D12VideoMotionEstimator = ID3D12VideoMotionEstimator;
+
+
+
+  PD3D12_VIDEO_MOTION_VECTOR_HEAP_DESC = ^D3D12_VIDEO_MOTION_VECTOR_HEAP_DESC;
+  D3D12_VIDEO_MOTION_VECTOR_HEAP_DESC = record
+    NodeMask: UINT;
+    InputFormat: DXGI_FORMAT;
+    BlockSize: D3D12_VIDEO_MOTION_ESTIMATOR_SEARCH_BLOCK_SIZE;
+    Precision: D3D12_VIDEO_MOTION_ESTIMATOR_VECTOR_PRECISION;
+    SizeRange: D3D12_VIDEO_SIZE_RANGE;
+  end;
+
+
+  // Interface ID3D12VideoMotionVectorHeap
+  // =====================================
+  //
+  ID3D12VideoMotionVectorHeap = interface(ID3D12Pageable)
+    ['{5BE17987-743A-4061-834B-23D22DAEA505}']
+
+    // Update May 2024
+
+    procedure GetDesc(out RetVal: D3D12_VIDEO_MOTION_VECTOR_HEAP_DESC); stdcall;
+
+    // ==
+
+    function GetProtectedResourceSession(const riid: TGUID;
+                                         ppProtectedSession: PPointer): HRESULT; stdcall;
+  end;
+  IID_ID3D12VideoMotionVectorHeap = ID3D12VideoMotionVectorHeap;
+
+
+  // Interface ID3D12VideoDevice1
+  // ============================
+  //
+  ID3D12VideoDevice1 = interface(ID3D12VideoDevice)
+    ['{981611AD-A144-4C83-9890-F30E26D658AB}']
+
+    function CreateVideoMotionEstimator(pDesc: PD3D12_VIDEO_MOTION_ESTIMATOR_DESC;
+                                        pProtectedResourceSession: ID3D12ProtectedResourceSession;
+                                        const riid: TGUID;
+                                        ppVideoMotionEstimator: PPointer): HRESULT; stdcall;
+
+    function CreateVideoMotionVectorHeap(pDesc: PD3D12_VIDEO_MOTION_VECTOR_HEAP_DESC;
+                                         pProtectedResourceSession: ID3D12ProtectedResourceSession;
+                                         const riid: TGUID;
+                                         ppVideoMotionVectorHeap: PPointer): HRESULT; stdcall;
+  end;
+  IID_ID3D12VideoDevice1 = ID3D12VideoDevice1;
+
+
+  PD3D12_RESOURCE_COORDINATE = ^D3D12_RESOURCE_COORDINATE;
+  D3D12_RESOURCE_COORDINATE = record
+    // Coordinate values below index pixels.
+    X: UINT64;                       // Used for buffer, 1D, 2D, 3D
+    Y: UINT;                         // Used for 2D, 3D
+    Z: UINT;                         // Used for 3D
+    SubresourceIndex: UINT;          // indexes into mips, arrays, and planes. Used for 1D, 2D, 3D
+  end;
+
+
+  PD3D12_VIDEO_MOTION_ESTIMATOR_OUTPUT = ^D3D12_VIDEO_MOTION_ESTIMATOR_OUTPUT;
+  D3D12_VIDEO_MOTION_ESTIMATOR_OUTPUT = record
+    pMotionVectorHeap: ID3D12VideoMotionVectorHeap;
+  end;
+
+
+  PD3D12_VIDEO_MOTION_ESTIMATOR_INPUT = ^D3D12_VIDEO_MOTION_ESTIMATOR_INPUT;
+  D3D12_VIDEO_MOTION_ESTIMATOR_INPUT = record
+    pInputTexture2D: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    InputSubresourceIndex: UINT;
+    pReferenceTexture2D: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    ReferenceSubresourceIndex: UINT;
+    pHintMotionVectorHeap: ID3D12VideoMotionVectorHeap;
+  end;
+
+
+  PD3D12_RESOLVE_VIDEO_MOTION_VECTOR_HEAP_OUTPUT = ^D3D12_RESOLVE_VIDEO_MOTION_VECTOR_HEAP_OUTPUT;
+  D3D12_RESOLVE_VIDEO_MOTION_VECTOR_HEAP_OUTPUT = record
+    pMotionVectorTexture2D: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    MotionVectorCoordinate: D3D12_RESOURCE_COORDINATE;
+  end;
+
+
+  PD3D12_RESOLVE_VIDEO_MOTION_VECTOR_HEAP_INPUT = ^D3D12_RESOLVE_VIDEO_MOTION_VECTOR_HEAP_INPUT;
+  D3D12_RESOLVE_VIDEO_MOTION_VECTOR_HEAP_INPUT = record
+    pMotionVectorHeap: ID3D12VideoMotionVectorHeap;
+    PixelWidth: UINT;
+    PixelHeight: UINT;
+  end;
+
+
+  // Interface ID3D12VideoEncodeCommandList
+  // =======================================
+  //
+  ID3D12VideoEncodeCommandList = interface(ID3D12CommandList)
+    ['{8455293A-0CBD-4831-9B39-FBDBAB724723}']
+
+    function Close(): HRESULT; stdcall;
+
+    function Reset(pAllocator: ID3D12CommandAllocator): HRESULT; stdcall;
+
+    procedure ClearState(); stdcall;
+
+    procedure ResourceBarrier(NumBarriers: UINT;
+                              pBarriers: PD3D12_RESOURCE_BARRIER); stdcall;
+
+    procedure DiscardResource(pResource: ID3D12Resource;
+                              pRegion: PD3D12_DISCARD_REGION); stdcall;
+
+    procedure BeginQuery(pQueryHeap: ID3D12QueryHeap;
+                         Type_: D3D12_QUERY_TYPE;
+                         Index: UINT); stdcall;
+
+    procedure EndQuery(pQueryHeap: ID3D12QueryHeap;
+                       Type_: D3D12_QUERY_TYPE;
+                       Index: UINT); stdcall;
+
+    procedure ResolveQueryData(pQueryHeap: ID3D12QueryHeap;
+                               Type_: D3D12_QUERY_TYPE;
+                               StartIndex: UINT;
+                               NumQueries: UINT;
+                               pDestinationBuffer: ID3D12Resource;
+                               AlignedDestinationBufferOffset: UINT64); stdcall;
+
+    procedure SetPredication(pBuffer: ID3D12Resource;
+                             AlignedBufferOffset: UINT64;
+                             Operation: D3D12_PREDICATION_OP); stdcall;
+
+    procedure SetMarker(Metadata: UINT;
+                        pData: Pointer;
+                        Size: UINT); stdcall;
+
+    procedure BeginEvent(Metadata: UINT;
+                         pData: Pointer;
+                         Size: UINT); stdcall;
+
+    procedure EndEvent(); stdcall;
+
+    procedure EstimateMotion(pMotionEstimator: ID3D12VideoMotionEstimator;
+                             pOutputArguments: PD3D12_VIDEO_MOTION_ESTIMATOR_OUTPUT;
+                             pInputArguments: PD3D12_VIDEO_MOTION_ESTIMATOR_INPUT); stdcall;
+
+    procedure ResolveMotionVectorHeap(pOutputArguments: PD3D12_RESOLVE_VIDEO_MOTION_VECTOR_HEAP_OUTPUT;
+                                      pInputArguments: PD3D12_RESOLVE_VIDEO_MOTION_VECTOR_HEAP_INPUT); stdcall;
+
+    procedure WriteBufferImmediate(Count: UINT;
+                                   pParams: PD3D12_WRITEBUFFERIMMEDIATE_PARAMETER;
+                                   pModes: PD3D12_WRITEBUFFERIMMEDIATE_MODE); stdcall;
+
+    procedure SetProtectedResourceSession(pProtectedResourceSession: ID3D12ProtectedResourceSession); stdcall;
+  end;
+  IID_ID3D12VideoEncodeCommandList = ID3D12VideoEncodeCommandList;
+
+
+type
+  PD3D12_VIDEO_PROTECTED_RESOURCE_SUPPORT_FLAGS = ^D3D12_VIDEO_PROTECTED_RESOURCE_SUPPORT_FLAGS;
+  D3D12_VIDEO_PROTECTED_RESOURCE_SUPPORT_FLAGS = UINT;
+const
+    D3D12_VIDEO_PROTECTED_RESOURCE_SUPPORT_FLAG_NONE      = D3D12_VIDEO_PROTECTED_RESOURCE_SUPPORT_FLAGS($0);
+    D3D12_VIDEO_PROTECTED_RESOURCE_SUPPORT_FLAG_SUPPORTED = D3D12_VIDEO_PROTECTED_RESOURCE_SUPPORT_FLAGS($1);
+
+type
+
+  // D3D12_FEATURE_VIDEO_DECODE_PROTECTED_RESOURCES
+  PD3D12_FEATURE_DATA_VIDEO_DECODE_PROTECTED_RESOURCES = ^D3D12_FEATURE_DATA_VIDEO_DECODE_PROTECTED_RESOURCES;
+  D3D12_FEATURE_DATA_VIDEO_DECODE_PROTECTED_RESOURCES = record
+    NodeIndex: UINT;                                              // input
+    Configuration: D3D12_VIDEO_DECODE_CONFIGURATION;              // input
+    SupportFlags: D3D12_VIDEO_PROTECTED_RESOURCE_SUPPORT_FLAGS;  // output
+  end;
+
+
+  // D3D12_FEATURE_VIDEO_PROCESS_PROTECTED_RESOURCES
+  PD3D12_FEATURE_DATA_VIDEO_PROCESS_PROTECTED_RESOURCES = ^D3D12_FEATURE_DATA_VIDEO_PROCESS_PROTECTED_RESOURCES;
+  D3D12_FEATURE_DATA_VIDEO_PROCESS_PROTECTED_RESOURCES = record
+    NodeIndex: UINT;                                              // input
+    SupportFlags: D3D12_VIDEO_PROTECTED_RESOURCE_SUPPORT_FLAGS;  // output
+  end;
+
+
+  // D3D12_FEATURE_VIDEO_MOTION_ESTIMATOR_PROTECTED_RESOURCES
+  PD3D12_FEATURE_DATA_VIDEO_MOTION_ESTIMATOR_PROTECTED_RESOURCES = ^D3D12_FEATURE_DATA_VIDEO_MOTION_ESTIMATOR_PROTECTED_RESOURCES;
+  D3D12_FEATURE_DATA_VIDEO_MOTION_ESTIMATOR_PROTECTED_RESOURCES = record
+    NodeIndex: UINT;                                              // input
+    SupportFlags: D3D12_VIDEO_PROTECTED_RESOURCE_SUPPORT_FLAGS;  // output
+  end;
+
+
+  //D3D12_FEATURE_VIDEO_DECODER_HEAP_SIZE1
+  PD3D12_FEATURE_DATA_VIDEO_DECODER_HEAP_SIZE1 = ^D3D12_FEATURE_DATA_VIDEO_DECODER_HEAP_SIZE1;
+  D3D12_FEATURE_DATA_VIDEO_DECODER_HEAP_SIZE1 = record
+    VideoDecoderHeapDesc: D3D12_VIDEO_DECODER_HEAP_DESC; // input
+    Protected_: BOOL;                                    // input
+    MemoryPoolL0Size: UINT64;                            // output
+    MemoryPoolL1Size: UINT64;                            // output
+  end;
+
+
+  // D3D12_FEATURE_VIDEO_PROCESSOR_SIZE1
+  PD3D12_FEATURE_DATA_VIDEO_PROCESSOR_SIZE1 = ^D3D12_FEATURE_DATA_VIDEO_PROCESSOR_SIZE1;
+  D3D12_FEATURE_DATA_VIDEO_PROCESSOR_SIZE1 = record
+    NodeMask: UINT;
+    pOutputStreamDesc: PD3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC;  // input
+    NumInputStreamDescs: UINT;                                   // input
+    pInputStreamDescs: PD3D12_VIDEO_PROCESS_INPUT_STREAM_DESC;   // input
+    Protected_: BOOL;                                            // input
+    MemoryPoolL0Size: UINT64;                                    // output
+    MemoryPoolL1Size: UINT64;                                    // output
+  end;
+
+
+  PD3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_STAGE = ^D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_STAGE;
+  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_STAGE = (D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_STAGE_CREATION              = 0,
+                                                   D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_STAGE_INITIALIZATION        = 1,
+                                                   D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_STAGE_EXECUTION             = 2,
+                                                   D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_STAGE_CAPS_INPUT            = 3,
+                                                   D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_STAGE_CAPS_OUTPUT           = 4,
+                                                   D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_STAGE_DEVICE_EXECUTE_INPUT  = 5,
+                                                   D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_STAGE_DEVICE_EXECUTE_OUTPUT = 6
+                                                  );
+
+
+  PD3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE = ^D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE;
+  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE = (D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE_UINT8    = 0,
+                                                  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE_UINT16   = 1,
+                                                  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE_UINT32   = 2,
+                                                  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE_UINT64   = 3,
+                                                  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE_SINT8    = 4,
+                                                  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE_SINT16   = 5,
+                                                  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE_SINT32   = 6,
+                                                  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE_SINT64   = 7,
+                                                  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE_FLOAT    = 8,
+                                                  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE_DOUBLE   = 9,
+                                                  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE_RESOURCE = 10
+                                                 );
+
+
+type
+  PD3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_FLAGS = ^D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_FLAGS;
+  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_FLAGS = UINT;
+const
+    D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_FLAG_NONE  = D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_FLAGS($00000000);
+    D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_FLAG_READ  = D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_FLAGS($00000001);
+    D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_FLAG_WRITE = D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_FLAGS($00000002);
+
+type
+
+
+  PD3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_COUNT = ^D3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_COUNT;
+  D3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_COUNT = record
+    NodeIndex: UINT;                // in
+    CommandCount: UINT;             // out
+  end;
+
+
+  PD3D12_VIDEO_EXTENSION_COMMAND_INFO = ^D3D12_VIDEO_EXTENSION_COMMAND_INFO;
+  D3D12_VIDEO_EXTENSION_COMMAND_INFO = record
+    CommandId: TGUID;
+    Name: PWideChar;
+    CommandListSupportFlags: D3D12_COMMAND_LIST_SUPPORT_FLAGS;
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMANDS = ^D3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMANDS;
+  D3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMANDS = record
+    NodeIndex: UINT;
+    CommandCount: UINT;
+    pCommandInfos: PD3D12_VIDEO_EXTENSION_COMMAND_INFO;
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_PARAMETER_COUNT = ^D3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_PARAMETER_COUNT;
+  D3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_PARAMETER_COUNT = record
+    CommandId: TGUID;                                       // in
+    Stage: D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_STAGE;   // in
+    ParameterCount: UINT;                                   // out
+    ParameterPacking: UINT;                                 // out
+  end;
+
+
+  PD3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_INFO = ^D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_INFO;
+  D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_INFO = record
+    Name: PWideChar;
+    Type_: D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_TYPE;
+    Flags: D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_FLAGS;
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_PARAMETERS = ^D3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_PARAMETERS;
+  D3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_PARAMETERS = record
+    CommandId: TGUID;                                                 // in
+    Stage: D3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_STAGE;             // in
+    ParameterCount: UINT;                                             // in
+    pParameterInfos: PD3D12_VIDEO_EXTENSION_COMMAND_PARAMETER_INFO;   // out
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_SUPPORT = ^D3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_SUPPORT;
+  D3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_SUPPORT = record
+    NodeIndex: UINT;
+    CommandId: TGUID;
+    pInputData: Pointer;
+    InputDataSizeInBytes: SIZE_T;
+    pOutputData: Pointer;
+    OutputDataSizeInBytes: SIZE_T;
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_SIZE = ^D3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_SIZE;
+  D3D12_FEATURE_DATA_VIDEO_EXTENSION_COMMAND_SIZE = record
+    NodeIndex: UINT;
+    CommandId: TGUID;
+    pCreationParameters: Pointer;
+    CreationParametersSizeInBytes: SIZE_T;
+    MemoryPoolL0Size: UINT64;       // output
+    MemoryPoolL1Size: UINT64;       // output
+  end;
+
+
+  PD3D12_VIDEO_EXTENSION_COMMAND_DESC = ^D3D12_VIDEO_EXTENSION_COMMAND_DESC;
+  D3D12_VIDEO_EXTENSION_COMMAND_DESC = record
+    NodeMask: UINT;
+    CommandId: TGUID;
+  end;
+
+
+  // Interface ID3D12VideoDecoder1
+  // ==============================
+  //
+  ID3D12VideoDecoder1 = interface(ID3D12VideoDecoder)
+    ['{79A2E5FB-CCD2-469A-9FDE-195D10951F7E}']
+
+    function GetProtectedResourceSession(const riid: TGUID;
+                                         ppProtectedSession: PPointer): HRESULT; stdcall;
+  end;
+  IID_ID3D12VideoDecoder1 = ID3D12VideoDecoder1;
+
+
+  // Interface ID3D12VideoDecoderHeap1
+  // ==================================
+  //
+  ID3D12VideoDecoderHeap1 = interface(ID3D12VideoDecoderHeap)
+    ['{DA1D98C5-539F-41B2-BF6B-1198A03B6D26}']
+
+    function GetProtectedResourceSession(const riid: TGUID;
+                                         ppProtectedSession: PPointer): HRESULT; stdcall;
+  end;
+  IID_ID3D12VideoDecoderHeap1 = ID3D12VideoDecoderHeap1;
+
+
+  // Interface ID3D12VideoProcessor1
+  // ================================
+  //
+  ID3D12VideoProcessor1 = interface(ID3D12VideoProcessor)
+    ['{F3CFE615-553F-425C-86D8-EE8C1B1FB01C}']
+
+    function GetProtectedResourceSession(const riid: TGUID;
+                                         ppProtectedSession: PPointer): HRESULT; stdcall;
+  end;
+  IID_ID3D12VideoProcessor1 = ID3D12VideoProcessor1;
+
+
+  // Interface ID3D12VideoExtensionCommand
+  // ======================================
+  //
+  ID3D12VideoExtensionCommand = interface(ID3D12Pageable)
+    ['{554E41E8-AE8E-4A8C-B7D2-5B4F274A30E4}']
+
+    // Update May 2024
+
+    procedure GetDesc(out RetVal: D3D12_VIDEO_EXTENSION_COMMAND_DESC); stdcall;
+
+    // ==
+
+    function GetProtectedResourceSession(const riid: TGUID;
+                                         ppProtectedSession: PPointer): HRESULT; stdcall;
+  end;
+  IID_ID3D12VideoExtensionCommand = ID3D12VideoExtensionCommand;
+
+
+  // Interface ID3D12VideoDevice2
+  // =============================
+  //
+  ID3D12VideoDevice2 = interface(ID3D12VideoDevice1)
+    ['{F019AC49-F838-4A95-9B17-579437C8F513}']
+
+    function CreateVideoDecoder1(pDesc: PD3D12_VIDEO_DECODER_DESC;
+                                 pProtectedResourceSession: ID3D12ProtectedResourceSession;
+                                 const riid: TGUID;
+                                 ppVideoDecoder: PPointer): HRESULT; stdcall;
+
+    function CreateVideoDecoderHeap1(pVideoDecoderHeapDesc: PD3D12_VIDEO_DECODER_HEAP_DESC;
+                                     pProtectedResourceSession: ID3D12ProtectedResourceSession;
+                                     const riid: TGUID;
+                                     ppVideoDecoderHeap: PPointer): HRESULT; stdcall;
+
+    function CreateVideoProcessor1(NodeMask: UINT;
+                                   pOutputStreamDesc: PD3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC;
+                                   NumInputStreamDescs: UINT;
+                                   pInputStreamDescs: PD3D12_VIDEO_PROCESS_INPUT_STREAM_DESC;
+                                   pProtectedResourceSession: ID3D12ProtectedResourceSession;
+                                   const riid: TGUID;
+                                   ppVideoProcessor: PPointer): HRESULT; stdcall;
+
+    function CreateVideoExtensionCommand(pDesc: PD3D12_VIDEO_EXTENSION_COMMAND_DESC;
+                                         pCreationParameters: Pointer;
+                                         CreationParametersDataSizeInBytes: SIZE_T;
+                                         pProtectedResourceSession: ID3D12ProtectedResourceSession;
+                                         const riid: TGUID;
+                                         ppVideoExtensionCommand: PPointer): HRESULT; stdcall;
+
+    function ExecuteExtensionCommand(pExtensionCommand: ID3D12VideoExtensionCommand;
+                                     pExecutionParameters: Pointer;
+                                     ExecutionParametersSizeInBytes: SIZE_T;
+                                     pOutputData: Pointer;
+                                     OutputDataSizeInBytes: SIZE_T): HRESULT; stdcall;
+  end;
+  IID_ID3D12VideoDevice2 = ID3D12VideoDevice2;
+
+
+  // Interface ID3D12VideoDecodeCommandList2
+  // ========================================
+  //
+  ID3D12VideoDecodeCommandList2 = interface(ID3D12VideoDecodeCommandList1)
+    ['{6E120880-C114-4153-8036-D247051E1729}']
+
+    procedure SetProtectedResourceSession(pProtectedResourceSession: ID3D12ProtectedResourceSession); stdcall;
+
+    procedure InitializeExtensionCommand(pExtensionCommand: ID3D12VideoExtensionCommand;
+                                         pInitializationParameters: Pointer;
+                                         InitializationParametersSizeInBytes: SIZE_T); stdcall;
+
+    procedure ExecuteExtensionCommand(pExtensionCommand: ID3D12VideoExtensionCommand;
+                                      pExecutionParameters: Pointer;
+                                      ExecutionParametersSizeInBytes: SIZE_T); stdcall;
+  end;
+  IID_ID3D12VideoDecodeCommandList2 = ID3D12VideoDecodeCommandList2;
+
+
+  // Interface ID3D12VideoDecodeCommandList3
+  // ========================================
+  //
+  ID3D12VideoDecodeCommandList3 = interface(ID3D12VideoDecodeCommandList2)
+    ['{2AEE8C37-9562-42DA-8ABF-61EFEB2E4513}']
+
+    procedure Barrier(NumBarrierGroups: UINT32;
+                      pBarrierGroups: PD3D12_BARRIER_GROUP); stdcall;
+  end;
+  IID_ID3D12VideoDecodeCommandList3 = ID3D12VideoDecodeCommandList3;
+
+
+  // Interface ID3D12VideoProcessCommandList2
+  // =========================================
+  //
+  ID3D12VideoProcessCommandList2 = interface(ID3D12VideoProcessCommandList1)
+    ['{DB525AE4-6AD6-473C-BAA7-59B2E37082E4}']
+
+    procedure SetProtectedResourceSession(pProtectedResourceSession: ID3D12ProtectedResourceSession); stdcall;
+
+    procedure InitializeExtensionCommand(pExtensionCommand: ID3D12VideoExtensionCommand;
+                                         pInitializationParameters: Pointer;
+                                         InitializationParametersSizeInBytes: SIZE_T); stdcall;
+
+    procedure ExecuteExtensionCommand(pExtensionCommand: ID3D12VideoExtensionCommand;
+                                      pExecutionParameters: Pointer;
+                                      ExecutionParametersSizeInBytes: SIZE_T); stdcall;
+  end;
+  IID_ID3D12VideoProcessCommandList2 = ID3D12VideoProcessCommandList2;
+
+
+  // Interface ID3D12VideoProcessCommandList3
+  // =========================================
+  //
+  ID3D12VideoProcessCommandList3 = interface(ID3D12VideoProcessCommandList2)
+    ['{1A0A4CA4-9F08-40CE-9558-B411FD2666FF}']
+
+    procedure Barrier(NumBarrierGroups: UINT32;
+                      pBarrierGroups: PD3D12_BARRIER_GROUP); stdcall;
+  end;
+  IID_ID3D12VideoProcessCommandList3 = ID3D12VideoProcessCommandList3;
+
+
+  // Interface ID3D12VideoEncodeCommandList1
+  // ========================================
+  //
+  ID3D12VideoEncodeCommandList1 = interface(ID3D12VideoEncodeCommandList)
+    ['{94971ECA-2BDB-4769-88CF-3675EA757EBC}']
+
+    procedure InitializeExtensionCommand(pExtensionCommand: ID3D12VideoExtensionCommand;
+                                         pInitializationParameters: Pointer;
+                                         InitializationParametersSizeInBytes: SIZE_T); stdcall;
+
+    procedure ExecuteExtensionCommand(pExtensionCommand: ID3D12VideoExtensionCommand;
+                                      pExecutionParameters: Pointer;
+                                      ExecutionParametersSizeInBytes: SIZE_T); stdcall;
+  end;
+  IID_ID3D12VideoEncodeCommandList1 = ID3D12VideoEncodeCommandList1;
+
+
+const
+
+  D3D12_VIDEO_DECODE_PROFILE_MPEG2                    : TGUID = '{ee27417f-5e28-4e65-beea-1d26b508adc9}';
+  D3D12_VIDEO_DECODE_PROFILE_MPEG1_AND_MPEG2          : TGUID = '{86695f12-340e-4f04-9fd3-9253dd327460}';
+  D3D12_VIDEO_DECODE_PROFILE_H264                     : TGUID = '{1b81be68-a0c7-11d3-b984-00c04f2e73c5}';
+  D3D12_VIDEO_DECODE_PROFILE_H264_STEREO_PROGRESSIVE  : TGUID = '{d79be8da-0cf1-4c81-b82a-69a4e236f43d}';
+  D3D12_VIDEO_DECODE_PROFILE_H264_STEREO              : TGUID = '{f9aaccbb-c2b6-4cfc-8779-5707b1760552}';
+  D3D12_VIDEO_DECODE_PROFILE_H264_MULTIVIEW           : TGUID = '{705b9d82-76cf-49d6-b7e6-ac8872db013c}';
+  D3D12_VIDEO_DECODE_PROFILE_VC1                      : TGUID = '{1b81beA3-a0c7-11d3-b984-00c04f2e73c5}';
+  D3D12_VIDEO_DECODE_PROFILE_VC1_D2010                : TGUID = '{1b81beA4-a0c7-11d3-b984-00c04f2e73c5}';
+  D3D12_VIDEO_DECODE_PROFILE_MPEG4PT2_SIMPLE          : TGUID = '{efd64d74-c9e8-41d7-a5e9-e9b0e39fa319}';
+  D3D12_VIDEO_DECODE_PROFILE_MPEG4PT2_ADVSIMPLE_NOGMC : TGUID = '{ed418a9f-010d-4eda-9ae3-9a65358d8d2e}';
+  D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN                : TGUID = '{5b11d51b-2f4c-4452-bcc3-09f2a1160cc0}';
+  D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN10              : TGUID = '{107af0e0-ef1a-4d19-aba8-67a163073d13}';
+
+  // Update May 2024
+
+  D3D12_VIDEO_DECODE_PROFILE_HEVC_MONOCHROME          : TGUID = '{0685b993-3d8c-43a0-8b28-d74c2d6899a4}';
+  D3D12_VIDEO_DECODE_PROFILE_HEVC_MONOCHROME10        : TGUID = '{142a1d0f-69dd-4ec9-8591-b12ffcb91a29}';
+  D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN12              : TGUID = '{1a72925f-0c2c-4f15-96fb-b17d1473603f}';
+  D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN10_422          : TGUID = '{0bac4fe5-1532-4429-a854-f84de04953db}';
+  D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN12_422          : TGUID = '{55bcac81-f311-4093-a7d0-1cbc0b849bee}';
+  D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN_444            : TGUID = '{4008018f-f537-4b36-98cf-61af8a2c1a33}';
+  D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN10_EXT          : TGUID = '{9cc55490-e37c-4932-8684-4920f9f6409c}';
+  D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN10_444          : TGUID = '{0dabeffa-4458-4602-bc03-0795659d617c}';
+  D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN12_444          : TGUID = '{9798634d-fe9d-48e5-b4da-dbec45b3df01}';
+  D3D12_VIDEO_DECODE_PROFILE_HEVC_MAIN16              : TGUID = '{a4fbdbb0-a113-482b-a232-635cc0697f6d}';
+
+  // ==
+
+  D3D12_VIDEO_DECODE_PROFILE_VP9                      : TGUID = '{463707f8-a1d0-4585-876d-83aa6d60b89e}';
+  D3D12_VIDEO_DECODE_PROFILE_VP9_10BIT_PROFILE2       : TGUID = '{a4c749ef-6ecf-48aa-8448-50a7a1165ff7}';
+  D3D12_VIDEO_DECODE_PROFILE_VP8                      : TGUID = '{90b899ea-3a62-4705-88b3-8df04b2744e7}';
+  D3D12_VIDEO_DECODE_PROFILE_AV1_PROFILE0             : TGUID = '{b8be4ccb-cf53-46ba-8d59-d6b8a6da5d2a}';
+  D3D12_VIDEO_DECODE_PROFILE_AV1_PROFILE1             : TGUID = '{6936ff0f-45b1-4163-9cc1-646ef6946108}';
+  D3D12_VIDEO_DECODE_PROFILE_AV1_PROFILE2             : TGUID = '{0c5f2aa1-e541-4089-bb7b-98110a19d7c8}';
+  D3D12_VIDEO_DECODE_PROFILE_AV1_12BIT_PROFILE2       : TGUID = '{17127009-a00f-4ce1-994e-bf4081f6f3f0}';
+  D3D12_VIDEO_DECODE_PROFILE_AV1_12BIT_PROFILE2_420   : TGUID = '{2d80bed6-9cac-4835-9e91-327bbc4f9ee8}';
+
+  // Update May 2024
+
+  D3D12_VIDEO_DECODE_PROFILE_MJPEG_VLD_420            : TGUID = '{725cb506-0c29-43c4-9440-8e9397903a04}';
+  D3D12_VIDEO_DECODE_PROFILE_MJPEG_VLD_422            : TGUID = '{5b77b9cd-1a35-4c30-9fd8-ef4b60c035dd}';
+  D3D12_VIDEO_DECODE_PROFILE_MJPEG_VLD_444            : TGUID = '{d95161f9-0d44-47e6-bcf5-1bfbfb268f97}';
+  D3D12_VIDEO_DECODE_PROFILE_MJPEG_VLD_4444           : TGUID = '{c91748d5-fd18-4aca-9db3-3a6634ab547d}';
+  D3D12_VIDEO_DECODE_PROFILE_JPEG_VLD_420             : TGUID = '{cf782c83-bef5-4a2c-87cb-6019e7b175ac}';
+  D3D12_VIDEO_DECODE_PROFILE_JPEG_VLD_422             : TGUID = '{f04df417-eee2-4067-a778-f35c15ab9721}';
+  D3D12_VIDEO_DECODE_PROFILE_JPEG_VLD_44              : TGUID = '{4cd00e17-89ba-48ef-b9f9-edcb82713f65}';
+  D3D12_VIDEO_DECODE_PROFILE_JPEG_VLD_444             : TGUID = '{4cd00e17-89ba-48ef-b9f9-edcb82713f65}';
+
+
+type
+  PD3D12_VIDEO_ENCODER_AV1_PROFILE = ^D3D12_VIDEO_ENCODER_AV1_PROFILE;
+  D3D12_VIDEO_ENCODER_AV1_PROFILE = (D3D12_VIDEO_ENCODER_AV1_PROFILE_MAIN         = 0,
+                                     D3D12_VIDEO_ENCODER_AV1_PROFILE_HIGH         = 1,
+                                     D3D12_VIDEO_ENCODER_AV1_PROFILE_PROFESSIONAL = 2
+                                    );
+
+
+  PD3D12_VIDEO_ENCODER_AV1_LEVELS = ^D3D12_VIDEO_ENCODER_AV1_LEVELS;
+  D3D12_VIDEO_ENCODER_AV1_LEVELS = (D3D12_VIDEO_ENCODER_AV1_LEVELS_2_0 = 0,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_2_1 = 1,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_2_2 = 2,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_2_3 = 3,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_3_0 = 4,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_3_1 = 5,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_3_2 = 6,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_3_3 = 7,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_4_0 = 8,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_4_1 = 9,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_4_2 = 10,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_4_3 = 11,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_5_0 = 12,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_5_1 = 13,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_5_2 = 14,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_5_3 = 15,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_6_0 = 16,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_6_1 = 17,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_6_2 = 18,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_6_3 = 19,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_7_0 = 20,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_7_1 = 21,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_7_2 = 22,
+                                    D3D12_VIDEO_ENCODER_AV1_LEVELS_7_3 = 23
+                                   );
+
+
+  PD3D12_VIDEO_ENCODER_AV1_TIER = ^D3D12_VIDEO_ENCODER_AV1_TIER;
+  D3D12_VIDEO_ENCODER_AV1_TIER = (D3D12_VIDEO_ENCODER_AV1_TIER_MAIN = 0,
+                                  D3D12_VIDEO_ENCODER_AV1_TIER_HIGH = 1
+                                 );
+
+
+  PD3D12_VIDEO_ENCODER_AV1_LEVEL_TIER_CONSTRAINTS = ^D3D12_VIDEO_ENCODER_AV1_LEVEL_TIER_CONSTRAINTS;
+  D3D12_VIDEO_ENCODER_AV1_LEVEL_TIER_CONSTRAINTS = record
+    Level: D3D12_VIDEO_ENCODER_AV1_LEVELS;
+    Tier: D3D12_VIDEO_ENCODER_AV1_TIER;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS = ^D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS;
+  D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS = (D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_NONE                           = 0,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_128x128_SUPERBLOCK             = $1,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_FILTER_INTRA                   = $2,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_INTRA_EDGE_FILTER              = $4,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_INTERINTRA_COMPOUND            = $8,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_MASKED_COMPOUND                = $10,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_WARPED_MOTION                  = $20,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_DUAL_FILTER                    = $40,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_JNT_COMP                       = $80,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_FORCED_INTEGER_MOTION_VECTORS  = $100,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_SUPER_RESOLUTION               = $200,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_RESTORATION_FILTER        = $400,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_PALETTE_ENCODING               = $800,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_CDEF_FILTERING                 = $1000,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_INTRA_BLOCK_COPY               = $2000,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_FRAME_REFERENCE_MOTION_VECTORS = $4000,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_ORDER_HINT_TOOLS               = $8000,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_AUTO_SEGMENTATION              = $10000,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_CUSTOM_SEGMENTATION            = $20000,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_LOOP_FILTER_DELTAS             = $40000,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_QUANTIZATION_DELTAS            = $80000,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_QUANTIZATION_MATRIX            = $100000,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_REDUCED_TX_SET                 = $200000,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_MOTION_MODE_SWITCHABLE         = $400000,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_ALLOW_HIGH_PRECISION_MV        = $800000,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_SKIP_MODE_PRESENT              = $1000000,
+                                           D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAG_DELTA_LF_PARAMS                = $2000000
+                                          );
+
+  // DEFINE_ENUM_FLAG_OPERATORS(D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS);
+
+
+  PD3D12_VIDEO_ENCODER_AV1_TX_MODE = ^D3D12_VIDEO_ENCODER_AV1_TX_MODE;
+  D3D12_VIDEO_ENCODER_AV1_TX_MODE = (D3D12_VIDEO_ENCODER_AV1_TX_MODE_ONLY4x4 = 0,
+                                     D3D12_VIDEO_ENCODER_AV1_TX_MODE_LARGEST = 1,
+                                     D3D12_VIDEO_ENCODER_AV1_TX_MODE_SELECT  = 2
+                                    );
+
+
+  PD3D12_VIDEO_ENCODER_AV1_TX_MODE_FLAGS = ^D3D12_VIDEO_ENCODER_AV1_TX_MODE_FLAGS;
+  D3D12_VIDEO_ENCODER_AV1_TX_MODE_FLAGS = (D3D12_VIDEO_ENCODER_AV1_TX_MODE_FLAG_NONE    = 0,
+                                           D3D12_VIDEO_ENCODER_AV1_TX_MODE_FLAG_ONLY4x4 = 1, // (1 shl D3D12_VIDEO_ENCODER_AV1_TX_MODE_ONLY4x4),
+                                           D3D12_VIDEO_ENCODER_AV1_TX_MODE_FLAG_LARGEST = 2, // (1 shl D3D12_VIDEO_ENCODER_AV1_TX_MODE_LARGEST),
+                                           D3D12_VIDEO_ENCODER_AV1_TX_MODE_FLAG_SELECT  = 4 // (1 shl D3D12_VIDEO_ENCODER_AV1_TX_MODE_SELECT)
+                                          );
+
+  // DEFINE_ENUM_FLAG_OPERATORS(D3D12_VIDEO_ENCODER_AV1_TX_MODE_FLAGS);
+
+  PD3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS = ^D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS;
+  D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS = (D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_EIGHTTAP        = 0,
+                                                   D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_EIGHTTAP_SMOOTH = 1,
+                                                   D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_EIGHTTAP_SHARP  = 2,
+                                                   D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_BILINEAR        = 3,
+                                                   D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_SWITCHABLE      = 4
+                                                  );
+
+
+  PD3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAGS = ^D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAGS;
+  D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAGS = (D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAG_NONE            = 0,
+                                                         D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAG_EIGHTTAP        = 1,  // (1  shl D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_EIGHTTAP),
+                                                         D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAG_EIGHTTAP_SMOOTH = 2,  // (1  shl D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_EIGHTTAP_SMOOTH),
+                                                         D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAG_EIGHTTAP_SHARP  = 4,  // (1  shl D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_EIGHTTAP_SHARP),
+                                                         D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAG_BILINEAR        = 8,  // (1  shl D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_BILINEAR),
+                                                         D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAG_SWITCHABLE      = 16  // (1  shl D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_SWITCHABLE)
+                                                        );
+
+  // DEFINE_ENUM_FLAG_OPERATORS(D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAGS);
+
+  PD3D12_VIDEO_ENCODER_AV1_SEGMENTATION_BLOCK_SIZE = ^D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_BLOCK_SIZE;
+  D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_BLOCK_SIZE = (D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_BLOCK_SIZE_4x4   = 0,
+                                                     D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_BLOCK_SIZE_8x8   = 1,
+                                                     D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_BLOCK_SIZE_16x16 = 2,
+                                                     D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_BLOCK_SIZE_32x32 = 3,
+                                                     D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_BLOCK_SIZE_64x64 = 4
+                                                    );
+
+
+  PD3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE = ^D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE;
+  D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE = (D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_DISABLED      = 0,
+                                               D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_Q         = 1,
+                                               D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_LF_Y_V    = 2,
+                                               D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_LF_Y_H    = 3,
+                                               D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_LF_U      = 4,
+                                               D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_LF_V      = 5,
+                                               D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_REF_FRAME = 6,
+                                               D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_SKIP      = 7,
+                                               D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_GLOBALMV  = 8
+                                              );
+
+
+  PD3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAGS = ^D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAGS;
+  D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAGS = (D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAG_NONE         = 0,
+                                                     D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAG_DISABLED     = 1,    // (1  shl D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_DISABLED ),
+                                                     D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAG_ALT_Q        = 2,    // (1  shl D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_Q),
+                                                     D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAG_ALT_LF_Y_V   = 4,    // (1  shl D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_LF_Y_V),
+                                                     D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAG_ALT_LF_Y_H   = 8,    // (1  shl D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_LF_Y_H),
+                                                     D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAG_ALT_LF_U     = 16,   // (1  shl D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_LF_U),
+                                                     D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAG_ALT_LF_V     = 32,   // (1  shl D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_LF_V),
+                                                     D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAG_REF_FRAME    = 64,   // (1  shl D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_REF_FRAME),
+                                                     D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAG_ALT_SKIP     = 128,  // (1  shl D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_SKIP),
+                                                     D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAG_ALT_GLOBALMV = 256   // (1  shl D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_ALT_GLOBALMV)
+                                                    );
+
+  // DEFINE_ENUM_FLAG_OPERATORS(D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAGS);
+
+  PD3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE = ^D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE;
+  D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE = (D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_DISABLED   = 0,
+                                              D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_SWITCHABLE = 1,
+                                              D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_WIENER     = 2,
+                                              D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE_SGRPROJ    = 3
+                                             );
+
+
+  PD3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE = ^D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE;
+  D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE = (D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_DISABLED = 0,
+                                                  D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_32x32    = 1,
+                                                  D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_64x64    = 2,
+                                                  D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_128x128  = 3,
+                                                  D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE_256x256  = 4
+                                                 );
+
+
+  PD3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAGS = ^D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAGS;
+  D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAGS = (D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAG_NOT_SUPPORTED = 0,
+                                                       D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAG_32x32         = $1,
+                                                       D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAG_64x64         = $2,
+                                                       D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAG_128x128       = $4,
+                                                       D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAG_256x256       = $8
+                                                      );
+
+  // DEFINE_ENUM_FLAG_OPERATORS(D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAGS);
+
+  PD3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION = ^D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION;
+  D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION = (D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_IDENTITY    = 0,
+                                                                    D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_TRANSLATION = 1,
+                                                                    D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_ROTZOOM     = 2,
+                                                                    D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_AFFINE      = 3
+                                                                   );
+
+
+  PD3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_FLAGS = ^D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_FLAGS;
+  D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_FLAGS = (D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_FLAG_NONE        = 0,
+                                                                          D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_FLAG_IDENTITY    = 1,  // (1  shl D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_IDENTITY),
+                                                                          D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_FLAG_TRANSLATION = 2,  // (1  shl D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_TRANSLATION),
+                                                                          D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_FLAG_ROTZOOM     = 4,  // (1  shl D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_ROTZOOM),
+                                                                          D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_FLAG_AFFINE      = 8  // (1  shl D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_AFFINE)
+                                                                         );
+
+  // DEFINE_ENUM_FLAG_OPERATORS(D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_FLAGS);
+
+  PD3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS = ^D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS;
+  D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS = (D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_NONE                     = 0,
+                                                      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_QUANTIZATION             = $1,
+                                                      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_QUANTIZATION_DELTA       = $2,
+                                                      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_LOOP_FILTER              = $4,
+                                                      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_LOOP_FILTER_DELTA        = $8,
+                                                      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_CDEF_DATA                = $10,
+                                                      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_CONTEXT_UPDATE_TILE_ID   = $20,
+                                                      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_COMPOUND_PREDICTION_MODE = $40,
+                                                      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_PRIMARY_REF_FRAME        = $80,
+                                                      D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAG_REFERENCE_INDICES        = $100
+                                                     );
+
+  // DEFINE_ENUM_FLAG_OPERATORS(D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS);
+
+
+  PD3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION_SUPPORT = ^D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION_SUPPORT;
+  D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION_SUPPORT = record
+    SupportedFeatureFlags: D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS;
+    RequiredFeatureFlags: D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS;
+    SupportedInterpolationFilters: D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS_FLAGS;
+    SupportedRestorationParams: array[0..2, 0..2] of D3D12_VIDEO_ENCODER_AV1_RESTORATION_SUPPORT_FLAGS;
+    SupportedSegmentationModes: D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MODE_FLAGS;
+    SupportedTxModes: array[0..3] of D3D12_VIDEO_ENCODER_AV1_TX_MODE_FLAGS;
+    SegmentationBlockSize: D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_BLOCK_SIZE;
+    PostEncodeValuesFlags: D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS;
+    MaxTemporalLayers: UINT;
+    MaxSpatialLayers: UINT;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_FRAME_TYPE = ^D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE;
+  D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE = (D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_KEY_FRAME        = 0,
+                                        D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_INTER_FRAME      = 1,
+                                        D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_INTRA_ONLY_FRAME = 2,
+                                        D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_SWITCH_FRAME     = 3
+                                       );
+
+
+  PD3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_FLAGS = ^D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_FLAGS;
+  D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_FLAGS = (D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_FLAG_NONE             = 0,
+                                              D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_FLAG_KEY_FRAME        = 1,  // (1  shl D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_KEY_FRAME),
+                                              D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_FLAG_INTER_FRAME      = 2,  // (1  shl D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_INTER_FRAME),
+                                              D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_FLAG_INTRA_ONLY_FRAME = 4,  // (1  shl D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_INTRA_ONLY_FRAME),
+                                              D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_FLAG_SWITCH_FRAME     = 8   // (1  shl D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_SWITCH_FRAME)
+                                             );
+
+  // DEFINE_ENUM_FLAG_OPERATORS(D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_FLAGS);
+
+  PD3D12_VIDEO_ENCODER_AV1_COMP_PREDICTION_TYPE = ^D3D12_VIDEO_ENCODER_AV1_COMP_PREDICTION_TYPE;
+  D3D12_VIDEO_ENCODER_AV1_COMP_PREDICTION_TYPE = (D3D12_VIDEO_ENCODER_AV1_COMP_PREDICTION_TYPE_SINGLE_REFERENCE   = 0,
+                                                  D3D12_VIDEO_ENCODER_AV1_COMP_PREDICTION_TYPE_COMPOUND_REFERENCE = 1
+                                                 );
+
+
+  PD3D12_VIDEO_ENCODER_CODEC_AV1_PICTURE_CONTROL_SUPPORT = ^D3D12_VIDEO_ENCODER_CODEC_AV1_PICTURE_CONTROL_SUPPORT;
+  D3D12_VIDEO_ENCODER_CODEC_AV1_PICTURE_CONTROL_SUPPORT = record
+    PredictionMode: D3D12_VIDEO_ENCODER_AV1_COMP_PREDICTION_TYPE;
+    MaxUniqueReferencesPerFrame: UINT;
+    SupportedFrameTypes: D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE_FLAGS;
+    SupportedReferenceWarpedMotionFlags: D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION_FLAGS;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION = ^D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION;
+  D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION = record
+    FeatureFlags: D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS;
+    OrderHintBitsMinus1: UINT;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_SEQUENCE_STRUCTURE = ^D3D12_VIDEO_ENCODER_AV1_SEQUENCE_STRUCTURE;
+  D3D12_VIDEO_ENCODER_AV1_SEQUENCE_STRUCTURE = record
+    IntraDistance: UINT;
+    InterFramePeriod: UINT;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_REFERENCE_PICTURE_WARPED_MOTION_INFO = ^D3D12_VIDEO_ENCODER_AV1_REFERENCE_PICTURE_WARPED_MOTION_INFO;
+  D3D12_VIDEO_ENCODER_AV1_REFERENCE_PICTURE_WARPED_MOTION_INFO = record
+    TransformationType: D3D12_VIDEO_ENCODER_AV1_REFERENCE_WARPED_MOTION_TRANSFORMATION;
+    TransformationMatrix: array[0..7] of INT;
+    InvalidAffineSet: BOOL;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_REFERENCE_PICTURE_DESCRIPTOR = ^D3D12_VIDEO_ENCODER_AV1_REFERENCE_PICTURE_DESCRIPTOR;
+  D3D12_VIDEO_ENCODER_AV1_REFERENCE_PICTURE_DESCRIPTOR = record
+    ReconstructedPictureResourceIndex: UINT;
+    TemporalLayerIndexPlus1: UINT;
+    SpatialLayerIndexPlus1: UINT;
+    FrameType: D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE;
+    WarpedMotionInfo: D3D12_VIDEO_ENCODER_AV1_REFERENCE_PICTURE_WARPED_MOTION_INFO;
+    OrderHint: UINT;
+    PictureIndex: UINT;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAGS = ^D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAGS;
+  D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAGS = (D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_NONE                             = 0,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_ENABLE_ERROR_RESILIENT_MODE      = $1,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_DISABLE_CDF_UPDATE               = $2,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_ENABLE_PALETTE_ENCODING          = $4,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_ENABLE_SKIP_MODE                 = $8,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_FRAME_REFERENCE_MOTION_VECTORS   = $10,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_FORCE_INTEGER_MOTION_VECTORS     = $20,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_ALLOW_INTRA_BLOCK_COPY           = $40,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_USE_SUPER_RESOLUTION             = $80,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_DISABLE_FRAME_END_UPDATE_CDF     = $100,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_ENABLE_FRAME_SEGMENTATION_AUTO   = $200,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_ENABLE_FRAME_SEGMENTATION_CUSTOM = $400,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_ENABLE_WARPED_MOTION             = $800,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_REDUCED_TX_SET                   = $1000,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_MOTION_MODE_SWITCHABLE           = $2000,
+                                                   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAG_ALLOW_HIGH_PRECISION_MV          = $4000
+                                                  );
+
+  // DEFINE_ENUM_FLAG_OPERATORS(D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAGS);
+
+
+  PD3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG = ^D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG;
+  D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG = record
+    FrameRestorationType: array[0..2] of D3D12_VIDEO_ENCODER_AV1_RESTORATION_TYPE;
+    LoopRestorationPixelSize: array[0..2] of D3D12_VIDEO_ENCODER_AV1_RESTORATION_TILESIZE;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_SEGMENT_DATA = ^D3D12_VIDEO_ENCODER_AV1_SEGMENT_DATA;
+  D3D12_VIDEO_ENCODER_AV1_SEGMENT_DATA = record
+    EnabledFeatures: UINT64;
+    FeatureValue: array[0..7] of INT64;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_SEGMENTATION_CONFIG = ^D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_CONFIG;
+  D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_CONFIG = record
+    UpdateMap: UINT64;
+    TemporalUpdate: UINT64;
+    UpdateData: UINT64;
+    NumSegments: UINT64;
+    SegmentsData: array[0..7] of D3D12_VIDEO_ENCODER_AV1_SEGMENT_DATA;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MAP = ^D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MAP;
+  D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MAP = record
+    SegmentsMapByteSize: UINT;
+    pSegmentsMap: PUINT8;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_CODEC_AV1_LOOP_FILTER_CONFIG = ^D3D12_VIDEO_ENCODER_CODEC_AV1_LOOP_FILTER_CONFIG;
+  D3D12_VIDEO_ENCODER_CODEC_AV1_LOOP_FILTER_CONFIG = record
+    LoopFilterLevel: array[0..1] of UINT64;
+    LoopFilterLevelU: UINT64;
+    LoopFilterLevelV: UINT64;
+    LoopFilterSharpnessLevel: UINT64;
+    LoopFilterDeltaEnabled: UINT64;
+    UpdateRefDelta: UINT64;
+    RefDeltas: array[0..7] of INT64;
+    UpdateModeDelta: UINT64;
+    ModeDeltas: array[0..1] of INT64;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_CODEC_AV1_LOOP_FILTER_DELTA_CONFIG = ^D3D12_VIDEO_ENCODER_CODEC_AV1_LOOP_FILTER_DELTA_CONFIG;
+  D3D12_VIDEO_ENCODER_CODEC_AV1_LOOP_FILTER_DELTA_CONFIG = record
+    DeltaLFPresent: UINT64;
+    DeltaLFMulti: UINT64;
+    DeltaLFRes: UINT64;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_CODEC_AV1_QUANTIZATION_CONFIG = ^D3D12_VIDEO_ENCODER_CODEC_AV1_QUANTIZATION_CONFIG;
+  D3D12_VIDEO_ENCODER_CODEC_AV1_QUANTIZATION_CONFIG = record
+    BaseQIndex: UINT64;
+    YDCDeltaQ: INT64;
+    UDCDeltaQ: INT64;
+    UACDeltaQ: INT64;
+    VDCDeltaQ: INT64;
+    VACDeltaQ: INT64;
+    UsingQMatrix: UINT64;
+    QMY: UINT64;
+    QMU: UINT64;
+    QMV: UINT64;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_CODEC_AV1_QUANTIZATION_DELTA_CONFIG = ^D3D12_VIDEO_ENCODER_CODEC_AV1_QUANTIZATION_DELTA_CONFIG;
+  D3D12_VIDEO_ENCODER_CODEC_AV1_QUANTIZATION_DELTA_CONFIG = record
+    DeltaQPresent: UINT64;
+    DeltaQRes: UINT64;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_CDEF_CONFIG = ^D3D12_VIDEO_ENCODER_AV1_CDEF_CONFIG;
+  D3D12_VIDEO_ENCODER_AV1_CDEF_CONFIG = record
+    CdefBits: UINT64;
+    CdefDampingMinus3: UINT64;
+    CdefYPriStrength: array[0..7] of UINT64;
+    CdefUVPriStrength: array[0..7] of UINT64;
+    CdefYSecStrength: array[0..7] of UINT64;
+    CdefUVSecStrength: array[0..7] of UINT64;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_CODEC_DATA = ^D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_CODEC_DATA;
+  D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_CODEC_DATA = record
+    Flags: D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_FLAGS;
+    FrameType: D3D12_VIDEO_ENCODER_AV1_FRAME_TYPE;
+    CompoundPredictionType: D3D12_VIDEO_ENCODER_AV1_COMP_PREDICTION_TYPE;
+    InterpolationFilter: D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS;
+    FrameRestorationConfig: D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG;
+    TxMode: D3D12_VIDEO_ENCODER_AV1_TX_MODE;
+    SuperResDenominator: UINT;
+    OrderHint: UINT;
+    PictureIndex: UINT;
+    TemporalLayerIndexPlus1: UINT;
+    SpatialLayerIndexPlus1: UINT;
+    ReferenceFramesReconPictureDescriptors: array[0..7] of D3D12_VIDEO_ENCODER_AV1_REFERENCE_PICTURE_DESCRIPTOR;
+    ReferenceIndices: array[0..6] of UINT;
+    PrimaryRefFrame: UINT;
+    RefreshFrameFlags: UINT;
+    LoopFilter: D3D12_VIDEO_ENCODER_CODEC_AV1_LOOP_FILTER_CONFIG;
+    LoopFilterDelta: D3D12_VIDEO_ENCODER_CODEC_AV1_LOOP_FILTER_DELTA_CONFIG;
+    Quantization: D3D12_VIDEO_ENCODER_CODEC_AV1_QUANTIZATION_CONFIG;
+    QuantizationDelta: D3D12_VIDEO_ENCODER_CODEC_AV1_QUANTIZATION_DELTA_CONFIG;
+    CDEF: D3D12_VIDEO_ENCODER_AV1_CDEF_CONFIG;
+    QPMapValuesCount: UINT;
+    pRateControlQPMap: PSmallInt;
+    CustomSegmentation: D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_CONFIG;
+    CustomSegmentsMap: D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_MAP;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_TILES = ^D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_TILES;
+  D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_TILES = record
+    RowCount: UINT64;
+    ColCount: UINT64;
+    RowHeights: array[0..63] of UINT64;
+    ColWidths: array[0..63] of UINT64;
+    ContextUpdateTileId: UINT64;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES = ^D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES;
+  D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES = record
+    CompoundPredictionType: UINT64;
+    LoopFilter: D3D12_VIDEO_ENCODER_CODEC_AV1_LOOP_FILTER_CONFIG;
+    LoopFilterDelta: D3D12_VIDEO_ENCODER_CODEC_AV1_LOOP_FILTER_DELTA_CONFIG;
+    Quantization: D3D12_VIDEO_ENCODER_CODEC_AV1_QUANTIZATION_CONFIG;
+    QuantizationDelta: D3D12_VIDEO_ENCODER_CODEC_AV1_QUANTIZATION_DELTA_CONFIG;
+    CDEF: D3D12_VIDEO_ENCODER_AV1_CDEF_CONFIG;
+    SegmentationConfig: D3D12_VIDEO_ENCODER_AV1_SEGMENTATION_CONFIG;
+    PrimaryRefFrame: UINT64;
+    ReferenceIndices: array[0..6] of UINT64;
+  end;
+
+   // ==
+
+type
+
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL_MODE = ^D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE;
+  D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE = (D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_ABSOLUTE_QP_MAP = 0,
+                                           D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP             = 1,
+                                           D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CBR             = 2,
+                                           D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_VBR             = 3,
+                                           D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_QVBR            = 4
+                                          );
+
+
+type
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS = ^D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS;
+  D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAG_NONE                  = D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS($0);
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAG_ENABLE_DELTA_QP       = D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS($1);
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAG_ENABLE_FRAME_ANALYSIS = D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS($2);
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAG_ENABLE_QP_RANGE       = D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS($4);
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAG_ENABLE_INITIAL_QP     = D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS($8);
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAG_ENABLE_MAX_FRAME_SIZE = D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS($10);
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAG_ENABLE_VBV_SIZES      = D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS($20);
+    // Update May 2024
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAG_ENABLE_EXTENSION1_SUPPORT	= D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS($40);
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAG_ENABLE_QUALITY_VS_SPEED	  = D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS($80);
+    { 10.0.28000.0  }
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAG_ENABLE_SPATIAL_ADAPTIVE_QP = D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS($100);
+    // ==
+type
+
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL_CQP = ^D3D12_VIDEO_ENCODER_RATE_CONTROL_CQP;
+  D3D12_VIDEO_ENCODER_RATE_CONTROL_CQP = record
+    ConstantQP_FullIntracodedFrame: UINT;
+    ConstantQP_InterPredictedFrame_PrevRefOnly: UINT;
+    ConstantQP_InterPredictedFrame_BiDirectionalRef: UINT;
+  end;
+
+  // Update May 2024
+
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL_CQP1 = ^D3D12_VIDEO_ENCODER_RATE_CONTROL_CQP1;
+  D3D12_VIDEO_ENCODER_RATE_CONTROL_CQP1 = record
+    ConstantQP_FullIntracodedFrame: UINT;
+    ConstantQP_InterPredictedFrame_PrevRefOnly: UINT;
+    ConstantQP_InterPredictedFrame_BiDirectionalRef: UINT;
+    QualityVsSpeed: UINT;
+  end;
+
+  // ==
+
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL_CBR = ^D3D12_VIDEO_ENCODER_RATE_CONTROL_CBR;
+  D3D12_VIDEO_ENCODER_RATE_CONTROL_CBR = record
+    InitialQP: UINT;
+    MinQP: UINT;
+    MaxQP: UINT;
+    MaxFrameBitSize: UINT64;
+    TargetBitRate: UINT64;
+    VBVCapacity: UINT64;
+    InitialVBVFullness: UINT64;
+  end;
+
+  // Update May 2024
+
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL_CBR1 = ^D3D12_VIDEO_ENCODER_RATE_CONTROL_CBR1;
+  D3D12_VIDEO_ENCODER_RATE_CONTROL_CBR1 = record
+    InitialQP: UINT;
+    MinQP: UINT;
+    MaxQP: UINT;
+    MaxFrameBitSize: UINT64;
+    TargetBitRate: UINT64;
+    VBVCapacity: UINT64;
+    InitialVBVFullness: UINT64;
+    QualityVsSpeed: UINT;
+  end;
+
+  // ==
+
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL_VBR = ^D3D12_VIDEO_ENCODER_RATE_CONTROL_VBR;
+  D3D12_VIDEO_ENCODER_RATE_CONTROL_VBR = record
+    InitialQP: UINT;
+    MinQP: UINT;
+    MaxQP: UINT;
+    MaxFrameBitSize: UINT64;
+    TargetAvgBitRate: UINT64;
+    PeakBitRate: UINT64;
+    VBVCapacity: UINT64;
+    InitialVBVFullness: UINT64;
+  end;
+
+  // Update May 2024
+
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL_VBR1 = ^D3D12_VIDEO_ENCODER_RATE_CONTROL_VBR1;
+  D3D12_VIDEO_ENCODER_RATE_CONTROL_VBR1 = record
+    InitialQP: UINT;
+    MinQP: UINT;
+    MaxQP: UINT;
+    MaxFrameBitSize: UINT64;
+    TargetAvgBitRate: UINT64;
+    PeakBitRate: UINT64;
+    VBVCapacity: UINT64;
+    InitialVBVFullness: UINT64;
+    QualityVsSpeed: UINT;
+  end;
+
+  // ==
+
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL_QVBR = ^D3D12_VIDEO_ENCODER_RATE_CONTROL_QVBR;
+  D3D12_VIDEO_ENCODER_RATE_CONTROL_QVBR = record
+    InitialQP: UINT;
+    MinQP: UINT;
+    MaxQP: UINT;
+    MaxFrameBitSize: UINT64;
+    TargetAvgBitRate: UINT64;
+    PeakBitRate: UINT64;
+    ConstantQualityTarget: UINT;
+  end;
+
+  // Update May 2024
+
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL_QVBR1 = ^D3D12_VIDEO_ENCODER_RATE_CONTROL_QVBR1;
+  D3D12_VIDEO_ENCODER_RATE_CONTROL_QVBR1 = record
+    InitialQP: UINT;
+    MinQP: UINT;
+    MaxQP: UINT;
+    MaxFrameBitSize: UINT64;
+    TargetAvgBitRate: UINT64;
+    PeakBitRate: UINT64;
+    ConstantQualityTarget: UINT;
+    VBVCapacity: UINT64;
+    InitialVBVFullness: UINT64;
+    QualityVsSpeed: UINT;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL_ABSOLUTE_QP_MAP = ^D3D12_VIDEO_ENCODER_RATE_CONTROL_ABSOLUTE_QP_MAP;
+  D3D12_VIDEO_ENCODER_RATE_CONTROL_ABSOLUTE_QP_MAP = record
+    QualityVsSpeed: UINT;
+  end;
+
+  // ==
+
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL_CONFIGURATION_PARAMS = ^D3D12_VIDEO_ENCODER_RATE_CONTROL_CONFIGURATION_PARAMS;
+  D3D12_VIDEO_ENCODER_RATE_CONTROL_CONFIGURATION_PARAMS = record
+    DataSize: UINT;
+    case Integer of
+      { 10.0.28000.0  }
+      0: (pConfiguration_CQP: PD3D12_VIDEO_ENCODER_RATE_CONTROL_CQP);
+      1: (pConfiguration_CBR: PD3D12_VIDEO_ENCODER_RATE_CONTROL_CBR);
+      2: (pConfiguration_VBR: PD3D12_VIDEO_ENCODER_RATE_CONTROL_VBR);
+      3: (pConfiguration_QVBR: PD3D12_VIDEO_ENCODER_RATE_CONTROL_QVBR);
+      4: (pConfiguration_CQP1: PD3D12_VIDEO_ENCODER_RATE_CONTROL_CQP1);
+      // Update May 2024
+      5: (pConfiguration_CBR1: PD3D12_VIDEO_ENCODER_RATE_CONTROL_CBR1);
+      6: (pConfiguration_VBR1: PD3D12_VIDEO_ENCODER_RATE_CONTROL_VBR1);
+      7: (pConfiguration_QVBR1: PD3D12_VIDEO_ENCODER_RATE_CONTROL_QVBR1);
+      8: (pConfiguration_AbsoluteQPMap: PD3D12_VIDEO_ENCODER_RATE_CONTROL_ABSOLUTE_QP_MAP);
+      // ==
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL = ^D3D12_VIDEO_ENCODER_RATE_CONTROL;
+  D3D12_VIDEO_ENCODER_RATE_CONTROL = record
+    Mode: D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE;
+    Flags: D3D12_VIDEO_ENCODER_RATE_CONTROL_FLAGS;
+    ConfigParams: D3D12_VIDEO_ENCODER_RATE_CONTROL_CONFIGURATION_PARAMS;
+    TargetFrameRate: DXGI_RATIONAL;
+  end;
+
+
+  //
+  // Video Encoder support API
+  //
+
+  PD3D12_VIDEO_ENCODER_CODEC = ^D3D12_VIDEO_ENCODER_CODEC;
+  D3D12_VIDEO_ENCODER_CODEC = (D3D12_VIDEO_ENCODER_CODEC_H264 = 0,
+                               D3D12_VIDEO_ENCODER_CODEC_HEVC = 1,
+                               D3D12_VIDEO_ENCODER_CODEC_AV1	 = 2 // Update May 2024
+                              );
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC = record
+    NodeIndex: UINT;                    // input
+    Codec: D3D12_VIDEO_ENCODER_CODEC;   // input
+    IsSupported: BOOL;                  // output
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_PROFILE_H264 = ^D3D12_VIDEO_ENCODER_PROFILE_H264;
+  D3D12_VIDEO_ENCODER_PROFILE_H264 = (D3D12_VIDEO_ENCODER_PROFILE_H264_MAIN    = 0,
+                                      D3D12_VIDEO_ENCODER_PROFILE_H264_HIGH    = 1,
+                                      D3D12_VIDEO_ENCODER_PROFILE_H264_HIGH_10 = 2
+                                     );
+
+
+  PD3D12_VIDEO_ENCODER_PROFILE_HEVC = ^D3D12_VIDEO_ENCODER_PROFILE_HEVC;
+  D3D12_VIDEO_ENCODER_PROFILE_HEVC = (D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN   = 0,
+                                      D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10 = 1,
+                                      { 10.0.28000.0  }
+                                      D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN12 = 2,
+                                      D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_422 = 3,
+                                      D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN12_422 = 4,
+                                      D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN_444 = 5,
+                                      D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN10_444 = 6,
+                                      D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN12_444 = 7,
+                                      D3D12_VIDEO_ENCODER_PROFILE_HEVC_MAIN16_444 = 8
+                                     );
+
+
+  PD3D12_VIDEO_ENCODER_PROFILE_DESC = ^D3D12_VIDEO_ENCODER_PROFILE_DESC;
+  D3D12_VIDEO_ENCODER_PROFILE_DESC = record
+    DataSize: UINT;
+    case Integer of
+      { 10.0.28000.0  }
+      0: (pH264Profile: PD3D12_VIDEO_ENCODER_PROFILE_H264);
+      1: (pHEVCProfile: PD3D12_VIDEO_ENCODER_PROFILE_HEVC);
+      2: (pAV1Profile: PD3D12_VIDEO_ENCODER_AV1_PROFILE); // Update May 2024
+    end;
+
+
+  PD3D12_VIDEO_ENCODER_LEVELS_H264 = ^D3D12_VIDEO_ENCODER_LEVELS_H264;
+  D3D12_VIDEO_ENCODER_LEVELS_H264 = (D3D12_VIDEO_ENCODER_LEVELS_H264_1  = 0,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_1b = 1,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_11 = 2,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_12 = 3,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_13 = 4,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_2  = 5,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_21 = 6,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_22 = 7,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_3  = 8,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_31 = 9,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_32 = 10,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_4  = 11,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_41 = 12,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_42 = 13,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_5  = 14,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_51 = 15,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_52 = 16,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_6  = 17,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_61 = 18,
+                                     D3D12_VIDEO_ENCODER_LEVELS_H264_62 = 19
+                                    );
+
+  PD3D12_VIDEO_ENCODER_TIER_HEVC = ^D3D12_VIDEO_ENCODER_TIER_HEVC;
+  D3D12_VIDEO_ENCODER_TIER_HEVC = (D3D12_VIDEO_ENCODER_TIER_HEVC_MAIN = 0,
+                                   D3D12_VIDEO_ENCODER_TIER_HEVC_HIGH = 1
+                                  );
+
+
+  PD3D12_VIDEO_ENCODER_LEVELS_HEVC = ^D3D12_VIDEO_ENCODER_LEVELS_HEVC;
+  D3D12_VIDEO_ENCODER_LEVELS_HEVC = (D3D12_VIDEO_ENCODER_LEVELS_HEVC_1  = 0,
+                                     D3D12_VIDEO_ENCODER_LEVELS_HEVC_2  = 1,
+                                     D3D12_VIDEO_ENCODER_LEVELS_HEVC_21 = 2,
+                                     D3D12_VIDEO_ENCODER_LEVELS_HEVC_3  = 3,
+                                     D3D12_VIDEO_ENCODER_LEVELS_HEVC_31 = 4,
+                                     D3D12_VIDEO_ENCODER_LEVELS_HEVC_4  = 5,
+                                     D3D12_VIDEO_ENCODER_LEVELS_HEVC_41 = 6,
+                                     D3D12_VIDEO_ENCODER_LEVELS_HEVC_5  = 7,
+                                     D3D12_VIDEO_ENCODER_LEVELS_HEVC_51 = 8,
+                                     D3D12_VIDEO_ENCODER_LEVELS_HEVC_52 = 9,
+                                     D3D12_VIDEO_ENCODER_LEVELS_HEVC_6  = 10,
+                                     D3D12_VIDEO_ENCODER_LEVELS_HEVC_61 = 11,
+                                     D3D12_VIDEO_ENCODER_LEVELS_HEVC_62 = 12
+                                    );
+
+
+  PD3D12_VIDEO_ENCODER_LEVEL_TIER_CONSTRAINTS_HEVC = ^D3D12_VIDEO_ENCODER_LEVEL_TIER_CONSTRAINTS_HEVC;
+  D3D12_VIDEO_ENCODER_LEVEL_TIER_CONSTRAINTS_HEVC = record
+    Level: D3D12_VIDEO_ENCODER_LEVELS_HEVC;
+    Tier: D3D12_VIDEO_ENCODER_TIER_HEVC;
+  end;
+
+  PD3D12_VIDEO_ENCODER_LEVEL_SETTING = ^D3D12_VIDEO_ENCODER_LEVEL_SETTING;
+  D3D12_VIDEO_ENCODER_LEVEL_SETTING = record
+    DataSize: UINT;
+    case Integer of
+      { 10.0.28000.0  }
+      0: (pH264LevelSetting: PD3D12_VIDEO_ENCODER_LEVELS_H264);
+      1: (pHEVCLevelSetting: PD3D12_VIDEO_ENCODER_LEVEL_TIER_CONSTRAINTS_HEVC);
+      2: (pAV1LevelSetting: PD3D12_VIDEO_ENCODER_AV1_LEVEL_TIER_CONSTRAINTS);
+  end;
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_PROFILE_LEVEL = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_PROFILE_LEVEL;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_PROFILE_LEVEL = record
+    NodeIndex: UINT;                                        // input
+    Codec: D3D12_VIDEO_ENCODER_CODEC;                       // input
+    Profile: D3D12_VIDEO_ENCODER_PROFILE_DESC;              // input
+    IsSupported: BOOL;                                      // output
+    MinSupportedLevel: D3D12_VIDEO_ENCODER_LEVEL_SETTING;   // output
+    MaxSupportedLevel: D3D12_VIDEO_ENCODER_LEVEL_SETTING;   // output
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC = ^D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+  D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC = record
+    Width: UINT;
+    Height: UINT;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_RATIO_DESC = ^D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_RATIO_DESC;
+  D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_RATIO_DESC = record
+    WidthRatio: UINT;
+    HeightRatio: UINT;
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_OUTPUT_RESOLUTION_RATIOS_COUNT = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_OUTPUT_RESOLUTION_RATIOS_COUNT;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_OUTPUT_RESOLUTION_RATIOS_COUNT = record
+    NodeIndex: UINT;                    // input
+    Codec: D3D12_VIDEO_ENCODER_CODEC;   // input
+    ResolutionRatiosCount: UINT;        // output
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_OUTPUT_RESOLUTION = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_OUTPUT_RESOLUTION;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_OUTPUT_RESOLUTION = record
+    NodeIndex: UINT;                                                       // input
+    Codec: D3D12_VIDEO_ENCODER_CODEC;                                      // input
+    ResolutionRatiosCount: UINT;                                           // input
+    IsSupported: BOOL;                                                     // output
+    MinResolutionSupported: D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;   // output
+    MaxResolutionSupported: D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;   // output
+    ResolutionWidthMultipleRequirement: UINT;                              // output
+    ResolutionHeightMultipleRequirement: UINT;                             // output
+    pResolutionRatios: PD3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_RATIO_DESC;
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_INPUT_FORMAT = record
+    NodeIndex: UINT;                             // input
+    Codec: D3D12_VIDEO_ENCODER_CODEC;            // input
+    Profile: D3D12_VIDEO_ENCODER_PROFILE_DESC;   // input
+    Format: DXGI_FORMAT;                         // input
+    IsSupported: BOOL;                           // output
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_RATE_CONTROL_MODE = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_RATE_CONTROL_MODE;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_RATE_CONTROL_MODE = record
+    NodeIndex: UINT;                                          // input
+    Codec: D3D12_VIDEO_ENCODER_CODEC;                         // input
+    RateControlMode: D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE;   // input
+    IsSupported: BOOL;                                        // output
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_INTRA_REFRESH_MODE = ^D3D12_VIDEO_ENCODER_INTRA_REFRESH_MODE;
+  D3D12_VIDEO_ENCODER_INTRA_REFRESH_MODE = (D3D12_VIDEO_ENCODER_INTRA_REFRESH_MODE_NONE      = 0,
+                                            D3D12_VIDEO_ENCODER_INTRA_REFRESH_MODE_ROW_BASED = 1
+                                           );
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_INTRA_REFRESH_MODE = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_INTRA_REFRESH_MODE;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_INTRA_REFRESH_MODE = record
+    NodeIndex: UINT;                                            // input
+    Codec: D3D12_VIDEO_ENCODER_CODEC;                           // input
+    Profile: D3D12_VIDEO_ENCODER_PROFILE_DESC;                  // input
+    Level: D3D12_VIDEO_ENCODER_LEVEL_SETTING;                   // input
+    IntraRefreshMode: D3D12_VIDEO_ENCODER_INTRA_REFRESH_MODE;   // input
+    IsSupported: BOOL;                                          // output
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE = ^D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE;
+  D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE = (D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE_FULL_FRAME                                = 0,
+                                                     D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE_BYTES_PER_SUBREGION                       = 1,
+                                                     D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE_SQUARE_UNITS_PER_SUBREGION_ROW_UNALIGNED  = 2,
+                                                     D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE_UNIFORM_PARTITIONING_ROWS_PER_SUBREGION   = 3,
+                                                     D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE_UNIFORM_PARTITIONING_SUBREGIONS_PER_FRAME = 4,
+                                                     // Update May 2024
+                                                     D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE_UNIFORM_GRID_PARTITION	                  = 5,
+                                                     D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE_CONFIGURABLE_GRID_PARTITION               = 6,
+                                                     { 10.0.28000.0  }
+                                                     D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE_AUTO                                      = 7
+                                                     // ==
+                                                    );
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE = record
+    NodeIndex: UINT;                                                  // input
+    Codec: D3D12_VIDEO_ENCODER_CODEC;                                 // input
+    Profile: D3D12_VIDEO_ENCODER_PROFILE_DESC;                        // input
+    Level: D3D12_VIDEO_ENCODER_LEVEL_SETTING;                         // input
+    SubregionMode: D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE;   // input
+    IsSupported: BOOL;                                                // output
+  end;
+
+  // Update May 2024
+
+  PD3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAGS = ^D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAGS;
+  D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAGS = (D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAG_NONE                = 0,
+                                                                            D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAG_NOT_SPECIFIED       = $1,
+                                                                            D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAG_CODEC_CONSTRAINT    = $2,
+                                                                            D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAG_HARDWARE_CONSTRAINT = $4,
+                                                                            D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAG_ROWS_COUNT          = $8,
+                                                                            D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAG_COLS_COUNT          = $10,
+                                                                            D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAG_WIDTH               = $20,
+                                                                            D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAG_AREA                = $40,
+                                                                            D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAG_TOTAL_TILES         = $80
+                                                                           );
+
+  // DEFINE_ENUM_FLAG_OPERATORS(D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAGS);
+
+  PD3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_SUPPORT = ^D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_SUPPORT;
+  D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_SUPPORT = record
+    Use128SuperBlocks: BOOL;
+    TilesConfiguration: D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_TILES;
+    ValidationFlags: D3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_VALIDATION_FLAGS;
+    MinTileRows: UINT;
+    MaxTileRows: UINT;
+    MinTileCols: UINT;
+    MaxTileCols: UINT;
+    MinTileWidth: UINT;
+    MaxTileWidth: UINT;
+    MinTileArea: UINT;
+    MaxTileArea: UINT;
+    TileSizeBytesMinus1: UINT;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_CONFIG_SUPPORT = ^D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_CONFIG_SUPPORT;
+  D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_CONFIG_SUPPORT = record
+    DataSize: UINT;
+    case Integer of
+      0: (pAV1Support: PD3D12_VIDEO_ENCODER_AV1_FRAME_SUBREGION_LAYOUT_CONFIG_SUPPORT);
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_CONFIG = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_CONFIG;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_CONFIG = record
+    NodeIndex: UINT;
+    Codec: D3D12_VIDEO_ENCODER_CODEC;
+    Profile: D3D12_VIDEO_ENCODER_PROFILE_DESC;
+    Level: D3D12_VIDEO_ENCODER_LEVEL_SETTING;
+    SubregionMode: D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE;
+    FrameResolution: D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    CodecSupport: D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_CONFIG_SUPPORT;
+    IsSupported: BOOL;
+  end;
+
+  // ==
+
+type
+  PD3D12_VIDEO_ENCODER_HEAP_FLAGS = ^D3D12_VIDEO_ENCODER_HEAP_FLAGS;
+  D3D12_VIDEO_ENCODER_HEAP_FLAGS       = UINT;
+  const
+    D3D12_VIDEO_ENCODER_HEAP_FLAG_NONE = D3D12_VIDEO_ENCODER_HEAP_FLAGS($0);
+    { 10.0.28000.0 }
+    D3D12_VIDEO_ENCODER_HEAP_FLAG_ALLOW_SUBREGION_NOTIFICATION_ARRAY_OF_BUFFERS = D3D12_VIDEO_ENCODER_HEAP_FLAGS($1);
+    D3D12_VIDEO_ENCODER_HEAP_FLAG_ALLOW_SUBREGION_NOTIFICATION_SINGLE_BUFFER = D3D12_VIDEO_ENCODER_HEAP_FLAGS($2);
+    D3D12_VIDEO_ENCODER_HEAP_FLAG_ALLOW_DIRTY_REGIONS = D3D12_VIDEO_ENCODER_HEAP_FLAGS($4);
+    D3D12_VIDEO_ENCODER_HEAP_FLAG_ALLOW_RATE_CONTROL_FRAME_ANALYSIS = D3D12_VIDEO_ENCODER_HEAP_FLAGS($8);
+
+type
+
+  PD3D12_VIDEO_ENCODER_HEAP_DESC = ^D3D12_VIDEO_ENCODER_HEAP_DESC;
+  D3D12_VIDEO_ENCODER_HEAP_DESC = record
+    NodeMask: UINT;
+    Flags: D3D12_VIDEO_ENCODER_HEAP_FLAGS;
+    EncodeCodec: D3D12_VIDEO_ENCODER_CODEC;
+    EncodeProfile: D3D12_VIDEO_ENCODER_PROFILE_DESC;
+    EncodeLevel: D3D12_VIDEO_ENCODER_LEVEL_SETTING;
+    ResolutionsListCount: UINT;
+    pResolutionList: PD3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_HEAP_SIZE = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_HEAP_SIZE;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_HEAP_SIZE = record
+    HeapDesc: D3D12_VIDEO_ENCODER_HEAP_DESC;  // input
+    IsSupported: BOOL;                        // output
+    MemoryPoolL0Size: UINT64;                 // output
+    MemoryPoolL1Size: UINT64;                 // output
+  end;
+
+  { 10.0.28000.0  }
+  PD3D12_VIDEO_ENCODER_HEAP_DESC1 = ^D3D12_VIDEO_ENCODER_HEAP_DESC1;
+  D3D12_VIDEO_ENCODER_HEAP_DESC1 = record
+    NodeMask: UINT;
+    Flags: D3D12_VIDEO_ENCODER_HEAP_FLAGS;
+    EncodeCodec: D3D12_VIDEO_ENCODER_CODEC;
+    EncodeProfile: D3D12_VIDEO_ENCODER_PROFILE_DESC;
+    EncodeLevel: D3D12_VIDEO_ENCODER_LEVEL_SETTING;
+    ResolutionsListCount: UINT;
+    pResolutionList: PD3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    Pow2DownscaleFactor: UINT;
+  end;
+
+
+type
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAGS = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAGS;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_NONE                                     = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAGS($0);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_CABAC_ENCODING_SUPPORT                   = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAGS($1);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_INTRA_SLICE_CONSTRAINED_ENCODING_SUPPORT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAGS($2);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_BFRAME_LTR_COMBINED_SUPPORT              = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAGS($4);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_ADAPTIVE_8x8_TRANSFORM_ENCODING_SUPPORT  = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAGS($8);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_DIRECT_SPATIAL_ENCODING_SUPPORT          = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAGS($10);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_DIRECT_TEMPORAL_ENCODING_SUPPORT         = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAGS($20);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_CONSTRAINED_INTRAPREDICTION_SUPPORT      = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAGS($40);
+    // Update May 2024
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_NUM_REF_IDX_ACTIVE_OVERRIDE_FLAG_SLICE_SUPPORT	= D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAGS($80);
+    // ==
+type
+
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODES = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODES;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODES = type Integer;
+
+
+type
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAGS = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAGS;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAG_NONE                                                           = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAGS($0);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAG_0_ALL_LUMA_CHROMA_SLICE_BLOCK_EDGES_ALWAYS_FILTERED            = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAGS(1 shl 0 {D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_0_ALL_LUMA_CHROMA_SLICE_BLOCK_EDGES_ALWAYS_FILTERED});
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAG_1_DISABLE_ALL_SLICE_BLOCK_EDGES                                = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAGS(1 shl 1 {D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_1_DISABLE_ALL_SLICE_BLOCK_EDGES});
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAG_2_DISABLE_SLICE_BOUNDARIES_BLOCKS                              = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAGS(1 shl 2 {D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_2_DISABLE_SLICE_BOUNDARIES_BLOCKS});
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAG_3_USE_TWO_STAGE_DEBLOCKING                                     = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAGS(1 shl 3 {D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_3_USE_TWO_STAGE_DEBLOCKING});
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAG_4_DISABLE_CHROMA_BLOCK_EDGES                                   = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAGS(1 shl 4 {D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_4_DISABLE_CHROMA_BLOCK_EDGES});
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAG_5_DISABLE_CHROMA_BLOCK_EDGES_AND_LUMA_BOUNDARIES               = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAGS(1 shl 5 {D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_5_DISABLE_CHROMA_BLOCK_EDGES_AND_LUMA_BOUNDARIES});
+    D3D12_VIDEO_ENCODER_H264_DEBLOCKING_MODE_FLAG_6 = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAGS(1 shl 6 {D3D12_VIDEO_ENCODER_H264_DEBLOCKING_MODE_6});
+
+
+type
+
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264 = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264 = record
+    SupportFlags: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAGS;
+    DisableDeblockingFilterSupportedModes: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAGS;
+  end;
+
+
+type
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_NONE                                        = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($0);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_BFRAME_LTR_COMBINED_SUPPORT                 = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($1);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_INTRA_SLICE_CONSTRAINED_ENCODING_SUPPORT    = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($2);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_CONSTRAINED_INTRAPREDICTION_SUPPORT         = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($4);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_SAO_FILTER_SUPPORT                          = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($8);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_ASYMETRIC_MOTION_PARTITION_SUPPORT          = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($10);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_ASYMETRIC_MOTION_PARTITION_REQUIRED         = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($20);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_TRANSFORM_SKIP_SUPPORT                      = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($40);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_DISABLING_LOOP_FILTER_ACROSS_SLICES_SUPPORT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($80);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_P_FRAMES_IMPLEMENTED_AS_LOW_DELAY_B_FRAMES  = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($100);
+    // Update May 2024
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_NUM_REF_IDX_ACTIVE_OVERRIDE_FLAG_SLICE_SUPPORT	= D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($200);
+    { 10.0.28000.0  }
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_TRANSFORM_SKIP_ROTATION_ENABLED_SUPPORT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($400);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_TRANSFORM_SKIP_ROTATION_ENABLED_REQUIRED = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($800);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_TRANSFORM_SKIP_CONTEXT_ENABLED_SUPPORT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($1000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_TRANSFORM_SKIP_CONTEXT_ENABLED_REQUIRED = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($2000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_IMPLICIT_RDPCM_ENABLED_SUPPORT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($4000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_IMPLICIT_RDPCM_ENABLED_REQUIRED = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($8000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_EXPLICIT_RDPCM_ENABLED_SUPPORT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($10000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_EXPLICIT_RDPCM_ENABLED_REQUIRED = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($20000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_EXTENDED_PRECISION_PROCESSING_SUPPORT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($40000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_EXTENDED_PRECISION_PROCESSING_REQUIRED = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($80000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_INTRA_SMOOTHING_DISABLED_SUPPORT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($100000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_INTRA_SMOOTHING_DISABLED_REQUIRED = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($200000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_HIGH_PRECISION_OFFSETS_ENABLED_SUPPORT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($400000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_HIGH_PRECISION_OFFSETS_ENABLED_REQUIRED = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($800000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_PERSISTENT_RICE_ADAPTATION_ENABLED_SUPPORT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($1000000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_PERSISTENT_RICE_ADAPTATION_ENABLED_REQUIRED = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($2000000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_CABAC_BYPASS_ALIGNMENT_ENABLED_SUPPORT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($4000000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_CABAC_BYPASS_ALIGNMENT_ENABLED_REQUIRED = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($8000000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_CROSS_COMPONENT_PREDICTION_ENABLED_FLAG_SUPPORT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($10000000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_CROSS_COMPONENT_PREDICTION_ENABLED_FLAG_REQUIRED = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($20000000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_CHROMA_QP_OFFSET_LIST_ENABLED_FLAG_SUPPORT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($40000000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_CHROMA_QP_OFFSET_LIST_ENABLED_FLAG_REQUIRED = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS($80000000);
+    // ==
+type
+
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE = (D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE_8x8   = 0,
+                                                         D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE_16x16 = 1,
+                                                         D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE_32x32 = 2,
+                                                         D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE_64x64 = 3
+                                                        );
+
+
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE = (D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE_4x4   = 0,
+                                                         D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE_8x8   = 1,
+                                                         D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE_16x16 = 2,
+                                                         D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE_32x32 = 3
+                                                        );
+
+
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC = record
+    SupportFlags: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS;
+    MinLumaCodingUnitSize: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE;
+    MaxLumaCodingUnitSize: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE;
+    MinLumaTransformUnitSize: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE;
+    MaxLumaTransformUnitSize: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE;
+    max_transform_hierarchy_depth_inter: UCHAR;
+    max_transform_hierarchy_depth_intra: UCHAR;
+  end;
+
+  { 10.0.28000.0  }
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS1 = UINT;
+  const
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG1_NONE = 0;
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG1_SEPARATE_COLOUR_PLANE_SUPPORT = $1;
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG1_SEPARATE_COLOUR_PLANE_REQUIRED = $2;
+  type
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC1 = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC1;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC1 = record
+    SupportFlags: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS;
+    MinLumaCodingUnitSize: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE;
+    MaxLumaCodingUnitSize: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE;
+    MinLumaTransformUnitSize: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE;
+    MaxLumaTransformUnitSize: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE;
+    max_transform_hierarchy_depth_inter: UCHAR;
+    max_transform_hierarchy_depth_intra: UCHAR;
+    allowed_diff_cu_chroma_qp_offset_depth_values: UINT;
+    allowed_log2_sao_offset_scale_luma_values: UINT;
+    allowed_log2_sao_offset_scale_chroma_values: UINT;
+    allowed_log2_max_transform_skip_block_size_minus2_values: UINT;
+    allowed_chroma_qp_offset_list_len_minus1_values: UINT;
+    allowed_cb_qp_offset_list_values: array[0..5] of UINT;
+    allowed_cr_qp_offset_list_values: array[0..5] of UINT;
+    SupportFlags1: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS1;
+  end;
+
+
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT = record
+    DataSize: UINT;
+    case Integer of
+      { 10.0.28000.0  }
+      0: (pH264Support: PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264);
+      1: (pHEVCSupport: PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC);
+      2: (pAV1Support: PD3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION_SUPPORT); // Update May 2024
+      { 10.0.28000.0  }
+      3: (pHEVCSupport1: PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC1);
+    end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT = record
+    NodeIndex: UINT;                                                       // input
+    Codec: D3D12_VIDEO_ENCODER_CODEC;                                      // input
+    Profile: D3D12_VIDEO_ENCODER_PROFILE_DESC;                             // input
+    IsSupported: BOOL;                                                     // output
+    CodecSupportLimits: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT;   // input/output
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_H264 = ^D3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_H264;
+  D3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_H264 = record
+    MaxL0ReferencesForP: UINT;
+    MaxL0ReferencesForB: UINT;
+    MaxL1ReferencesForB: UINT;
+    MaxLongTermReferences: UINT;
+    MaxDPBCapacity: UINT;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_HEVC = ^D3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_HEVC;
+  D3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_HEVC = record
+    MaxL0ReferencesForP: UINT;
+    MaxL0ReferencesForB: UINT;
+    MaxL1ReferencesForB: UINT;
+    MaxLongTermReferences: UINT;
+    MaxDPBCapacity: UINT;
+  end;
+
+
+  D3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT = record
+    DataSize: UINT;
+    case Integer of
+      { 10.0.28000.0  }
+      0: (pH264Support: PD3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_H264);
+      1: (pHEVCSupport: PD3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_HEVC);
+      2: (pAV1Support: PD3D12_VIDEO_ENCODER_CODEC_AV1_PICTURE_CONTROL_SUPPORT); // Update May 2024
+  end;
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT = record
+    NodeIndex: UINT;                                                     // input
+    Codec: D3D12_VIDEO_ENCODER_CODEC;                                    // input
+    Profile: D3D12_VIDEO_ENCODER_PROFILE_DESC;                           // input
+    IsSupported: BOOL;                                                   // output
+    PictureSupport: D3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT;   // output
+  end;
+
+
+type
+  PD3D12_VIDEO_ENCODER_SUPPORT_FLAGS = ^D3D12_VIDEO_ENCODER_SUPPORT_FLAGS;
+  D3D12_VIDEO_ENCODER_SUPPORT_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_NONE                                             = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($0);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK                               = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($1);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RATE_CONTROL_RECONFIGURATION_AVAILABLE           = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($2);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RESOLUTION_RECONFIGURATION_AVAILABLE             = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($4);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RATE_CONTROL_VBV_SIZE_CONFIG_AVAILABLE           = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($8);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RATE_CONTROL_FRAME_ANALYSIS_AVAILABLE            = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($10);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RECONSTRUCTED_FRAMES_REQUIRE_TEXTURE_ARRAYS      = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($20);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RATE_CONTROL_DELTA_QP_AVAILABLE                  = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($40);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_SUBREGION_LAYOUT_RECONFIGURATION_AVAILABLE       = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($80);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RATE_CONTROL_ADJUSTABLE_QP_RANGE_AVAILABLE       = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($100);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RATE_CONTROL_INITIAL_QP_AVAILABLE                = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($200);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RATE_CONTROL_MAX_FRAME_SIZE_AVAILABLE            = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($400);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_SEQUENCE_GOP_RECONFIGURATION_AVAILABLE           = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($800);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_MOTION_ESTIMATION_PRECISION_MODE_LIMIT_AVAILABLE = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($1000);
+    // Update May 2024
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RATE_CONTROL_EXTENSION1_SUPPORT	                = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($2000);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RATE_CONTROL_QUALITY_VS_SPEED_AVAILABLE	        = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($4000);
+    { 10.0.28000.0  }
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_READABLE_RECONSTRUCTED_PICTURE_LAYOUT_AVAILABLE = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($8000);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_PER_BLOCK_QP_MAP_METADATA_AVAILABLE = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($10000);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_PER_BLOCK_SATD_MAP_METADATA_AVAILABLE = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($20000);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_PER_BLOCK_RC_BIT_ALLOCATION_MAP_METADATA_AVAILABLE = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($40000);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_SUBREGION_NOTIFICATION_ARRAY_OF_BUFFERS_AVAILABLE = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($80000);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_SUBREGION_NOTIFICATION_SINGLE_BUFFER_AVAILABLE = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($100000);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_FRAME_PSNR_METADATA_AVAILABLE = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($200000);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_SUBREGIONS_PSNR_METADATA_AVAILABLE = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($400000);
+    D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RATE_CONTROL_SPATIAL_ADAPTIVE_QP_AVAILABLE = D3D12_VIDEO_ENCODER_SUPPORT_FLAGS($800000);
+    // ==
+
+type
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAGS = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAGS;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAG_NONE                                   = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAGS($0);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAG_USE_CONSTRAINED_INTRAPREDICTION        = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAGS($1);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAG_USE_ADAPTIVE_8x8_TRANSFORM             = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAGS($2);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAG_ENABLE_CABAC_ENCODING                  = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAGS($4);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAG_ALLOW_REQUEST_INTRA_CONSTRAINED_SLICES = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAGS($8);
+
+type
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_DIRECT_MODES = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_DIRECT_MODES;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_DIRECT_MODES = (D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_DIRECT_MODES_DISABLED = 0,
+                                                               D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_DIRECT_MODES_TEMPORAL = 1,
+                                                               D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_DIRECT_MODES_SPATIAL  = 2
+                                                              );
+
+
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264 = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264 = record
+    ConfigurationFlags: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAGS;
+    DirectModeConfig: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_DIRECT_MODES;
+    DisableDeblockingFilterConfig: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODES;
+  end;
+
+
+type
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_NONE                                   = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($0);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_DISABLE_LOOP_FILTER_ACROSS_SLICES      = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($1);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_ALLOW_REQUEST_INTRA_CONSTRAINED_SLICES = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($2);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_ENABLE_SAO_FILTER                      = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($4);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_ENABLE_LONG_TERM_REFERENCES            = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($8);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_USE_ASYMETRIC_MOTION_PARTITION         = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($10);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_ENABLE_TRANSFORM_SKIPPING              = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($20);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_USE_CONSTRAINED_INTRAPREDICTION        = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($40);
+    { 10.0.28000.0  }
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_TRANSFORM_SKIP_ROTATION = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($80);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_TRANSFORM_SKIP_CONTEXT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($100);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_IMPLICIT_RDPCM = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($200);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_EXPLICIT_RDPCM = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($400);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_EXTENDED_PRECISION_PROCESSING = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($800);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_INTRA_SMOOTHING_DISABLED = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($1000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_HIGH_PRECISION_OFFSETS = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($2000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_PERSISTENT_RICE_ADAPTATION = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($4000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_CABAC_BYPASS_ALIGNMENT = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($8000);
+    D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAG_SEPARATE_COLOUR_PLANE = D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS($10000);
+
+
+type
+
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC = record
+    ConfigurationFlags: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_FLAGS;
+    MinLumaCodingUnitSize: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE;
+    MaxLumaCodingUnitSize: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE;
+    MinLumaTransformUnitSize: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE;
+    MaxLumaTransformUnitSize: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE;
+    max_transform_hierarchy_depth_inter: UCHAR;
+    max_transform_hierarchy_depth_intra: UCHAR;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION = record
+    DataSize: UINT;
+    case Integer of
+      { 10.0.28000.0  }
+      0: (pH264Config: PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264);
+      1: (pHEVCConfig: PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC);
+      2: (pAV1Config: PD3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION);  // Update May 2024
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_INTRA_REFRESH = ^D3D12_VIDEO_ENCODER_INTRA_REFRESH;
+  D3D12_VIDEO_ENCODER_INTRA_REFRESH = record
+    Mode: D3D12_VIDEO_ENCODER_INTRA_REFRESH_MODE;
+    IntraRefreshDuration: UINT;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_MOTION_ESTIMATION_PRECISION_MODE = ^D3D12_VIDEO_ENCODER_MOTION_ESTIMATION_PRECISION_MODE;
+  D3D12_VIDEO_ENCODER_MOTION_ESTIMATION_PRECISION_MODE = (D3D12_VIDEO_ENCODER_MOTION_ESTIMATION_PRECISION_MODE_MAXIMUM       = 0,
+                                                          D3D12_VIDEO_ENCODER_MOTION_ESTIMATION_PRECISION_MODE_FULL_PIXEL    = 1,
+                                                          D3D12_VIDEO_ENCODER_MOTION_ESTIMATION_PRECISION_MODE_HALF_PIXEL    = 2,
+                                                          D3D12_VIDEO_ENCODER_MOTION_ESTIMATION_PRECISION_MODE_QUARTER_PIXEL = 3,
+                                                          D3D12_VIDEO_ENCODER_MOTION_ESTIMATION_PRECISION_MODE_EIGHTH_PIXEL	 = 4  // Update May 2024
+                                                         );
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_LIMITS = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_LIMITS;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_LIMITS = record
+    MaxSubregionsNumber: UINT;
+    MaxIntraRefreshFrameDuration: UINT;
+    SubregionBlockPixelsSize: UINT;
+    QPMapRegionPixelsSize: UINT;
+  end;
+
+
+type
+  PD3D12_VIDEO_ENCODER_VALIDATION_FLAGS = ^D3D12_VIDEO_ENCODER_VALIDATION_FLAGS;
+  D3D12_VIDEO_ENCODER_VALIDATION_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_NONE                                     = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($0);
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_CODEC_NOT_SUPPORTED                      = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($1);
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_INPUT_FORMAT_NOT_SUPPORTED               = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($8);
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_CODEC_CONFIGURATION_NOT_SUPPORTED        = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($10);
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_RATE_CONTROL_MODE_NOT_SUPPORTED          = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($20);
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_RATE_CONTROL_CONFIGURATION_NOT_SUPPORTED = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($40);
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_INTRA_REFRESH_MODE_NOT_SUPPORTED         = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($80);
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_SUBREGION_LAYOUT_MODE_NOT_SUPPORTED      = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($100);
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_RESOLUTION_NOT_SUPPORTED_IN_LIST         = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($200);
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_GOP_STRUCTURE_NOT_SUPPORTED              = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($800);
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_SUBREGION_LAYOUT_DATA_NOT_SUPPORTED	     = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($1000);
+    { 10.0.28000.0  }
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_QPMAP_NOT_SUPPORTED                 = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($2000);
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_DIRTY_REGIONS_NOT_SUPPORTED         = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($4000);
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_MOTION_SEARCH_NOT_SUPPORTED         = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($8000);
+    D3D12_VIDEO_ENCODER_VALIDATION_FLAG_FRAME_ANALYSIS_NOT_SUPPORTED        = D3D12_VIDEO_ENCODER_VALIDATION_FLAGS($10000);
+
+type
+
+  PD3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE_H264 = ^D3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE_H264;
+  D3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE_H264 = record
+    GOPLength: UINT;
+    PPicturePeriod: UINT;
+    pic_order_cnt_type: UCHAR;
+    log2_max_frame_num_minus4: UCHAR;
+    log2_max_pic_order_cnt_lsb_minus4: UCHAR;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE_HEVC = ^D3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE_HEVC;
+  D3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE_HEVC = record
+    GOPLength: UINT;
+    PPicturePeriod: UINT;
+    log2_max_pic_order_cnt_lsb_minus4: UCHAR;
+  end;
+
+
+  D3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE = record
+    DataSize: UINT;
+    case Integer of
+      0: (pH264GroupOfPictures: PD3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE_H264);
+      1: (pHEVCGroupOfPictures: PD3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE_HEVC);
+      2: (pAV1SequenceStructure: PD3D12_VIDEO_ENCODER_AV1_SEQUENCE_STRUCTURE); // Update May 2024
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT = record
+    // input
+    NodeIndex: UINT;
+    Codec: D3D12_VIDEO_ENCODER_CODEC;
+    InputFormat: DXGI_FORMAT;
+    CodecConfiguration: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION;
+    CodecGopSequence: D3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE;
+    RateControl: D3D12_VIDEO_ENCODER_RATE_CONTROL;
+    IntraRefresh: D3D12_VIDEO_ENCODER_INTRA_REFRESH_MODE;
+    SubregionFrameEncoding: D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE;
+    ResolutionsListCount: UINT;
+    pResolutionList: PD3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    MaxReferenceFramesInDPB: UINT;
+    // single value output
+    ValidationFlags: D3D12_VIDEO_ENCODER_VALIDATION_FLAGS;
+    SupportFlags: D3D12_VIDEO_ENCODER_SUPPORT_FLAGS;
+    SuggestedProfile: D3D12_VIDEO_ENCODER_PROFILE_DESC;
+    SuggestedLevel: D3D12_VIDEO_ENCODER_LEVEL_SETTING;  // assuming max resolution from input list
+    // resolution dependent output
+    pResolutionDependentSupport: PD3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_LIMITS;
+  end;
+
+  // Update May 2024
+
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_SLICES = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_SLICES;
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_SLICES = record
+    case Integer of
+      0: (MaxBytesPerSlice: UINT);
+      1: (NumberOfCodingUnitsPerSlice: UINT);
+      3: (NumberOfRowsPerSlice: UINT);
+      4: (NumberOfSlicesPerFrame: UINT);
+  end;
+
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA;
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA = record
+    DataSize: UINT;
+   case Integer of
+     { 10.0.28000.0 }
+     0: (pSlicesPartition_H264: PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_SLICES);
+     2: (pSlicesPartition_HEVC: PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_SLICES);
+     3: (pTilesPartition_AV1: PD3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA_TILES);
+  end;
+
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT1 = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT1;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT1 = record
+    NodeIndex: UINT;
+    Codec: D3D12_VIDEO_ENCODER_CODEC;
+    InputFormat: DXGI_FORMAT;
+    CodecConfiguration: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION;
+    CodecGopSequence: D3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE;
+    RateControl: D3D12_VIDEO_ENCODER_RATE_CONTROL;
+    IntraRefresh: D3D12_VIDEO_ENCODER_INTRA_REFRESH_MODE;
+    SubregionFrameEncoding: D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE;
+    ResolutionsListCount: UINT;
+    pResolutionList: PD3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    MaxReferenceFramesInDPB: UINT;
+    ValidationFlags: D3D12_VIDEO_ENCODER_VALIDATION_FLAGS;
+    SupportFlags: D3D12_VIDEO_ENCODER_SUPPORT_FLAGS;
+    SuggestedProfile: D3D12_VIDEO_ENCODER_PROFILE_DESC;
+    SuggestedLevel: D3D12_VIDEO_ENCODER_LEVEL_SETTING;
+    pResolutionDependentSupport: PD3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_LIMITS;
+    SubregionFrameEncodingData: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA;
+    MaxQualityVsSpeed: UINT;
+  end;
+
+  // ==
+
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_RESOURCE_REQUIREMENTS = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOURCE_REQUIREMENTS;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOURCE_REQUIREMENTS = record
+    NodeIndex: UINT;                                                        // input
+    Codec: D3D12_VIDEO_ENCODER_CODEC;                                       // input
+    Profile: D3D12_VIDEO_ENCODER_PROFILE_DESC;                              // input
+    InputFormat: DXGI_FORMAT;                                               // input
+    PictureTargetResolution: D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;   // input
+    IsSupported: BOOL;                                                      // output
+    CompressedBitstreamBufferAccessAlignment: UINT;                         // output
+    EncoderMetadataBufferAccessAlignment: UINT;                             // output
+    MaxEncoderOutputMetadataBufferSize: UINT;                               // output
+  end;
+
+
+  //
+  // Video Encoder creation API
+  //
+
+type
+  PD3D12_VIDEO_ENCODER_FLAGS = ^D3D12_VIDEO_ENCODER_FLAGS;
+  D3D12_VIDEO_ENCODER_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_FLAG_NONE = D3D12_VIDEO_ENCODER_FLAGS($0);
+
+type
+
+  PD3D12_VIDEO_ENCODER_DESC = ^D3D12_VIDEO_ENCODER_DESC;
+  D3D12_VIDEO_ENCODER_DESC = record
+    NodeMask: UINT;
+    Flags: D3D12_VIDEO_ENCODER_FLAGS;
+    EncodeCodec: D3D12_VIDEO_ENCODER_CODEC;
+    EncodeProfile: D3D12_VIDEO_ENCODER_PROFILE_DESC;
+    InputFormat: DXGI_FORMAT;
+    CodecConfiguration: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION;
+    MaxMotionEstimationPrecision: D3D12_VIDEO_ENCODER_MOTION_ESTIMATION_PRECISION_MODE;
+  end;
+
+
+  // Interface ID3D12VideoEncoder
+  // =============================
+  //
+  ID3D12VideoEncoder = interface(ID3D12Pageable)
+    ['{2E0D212D-8DF9-44A6-A770-BB289B182737}']
+
+    function GetNodeMask(): UINT; stdcall;
+
+    function GetEncoderFlags(): D3D12_VIDEO_ENCODER_FLAGS; stdcall;
+
+    function GetCodec(): D3D12_VIDEO_ENCODER_CODEC; stdcall;
+
+    function GetCodecProfile(dstProfile: D3D12_VIDEO_ENCODER_PROFILE_DESC): HRESULT; stdcall;
+
+    function GetCodecConfiguration(dstCodecConfig: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION): HRESULT; stdcall;
+
+    function GetInputFormat(): DXGI_FORMAT; stdcall;
+
+    function GetMaxMotionEstimationPrecision(): D3D12_VIDEO_ENCODER_MOTION_ESTIMATION_PRECISION_MODE; stdcall;
+  end;
+  IID_ID3D12VideoEncoder = ID3D12VideoEncoder;
+
+
+  // Interface ID3D12VideoEncoderHeap
+  // =================================
+  //
+  ID3D12VideoEncoderHeap = interface(ID3D12Pageable)
+    ['{22B35D96-876A-44C0-B25E-FB8C9C7F1C4A}']
+
+    function GetNodeMask(): UINT; stdcall;
+
+    function GetEncoderHeapFlags(): D3D12_VIDEO_ENCODER_HEAP_FLAGS; stdcall;
+
+    function GetCodec(): D3D12_VIDEO_ENCODER_CODEC; stdcall;
+
+    function GetCodecProfile(dstProfile: D3D12_VIDEO_ENCODER_PROFILE_DESC): HRESULT; stdcall;
+
+    function GetCodecLevel(dstLevel: D3D12_VIDEO_ENCODER_LEVEL_SETTING): HRESULT; stdcall;
+
+    function GetResolutionListCount(): UINT; stdcall;
+
+    function GetResolutionList(ResolutionsListCount: UINT;
+                               pResolutionList: PD3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC): HRESULT; stdcall;
+  end;
+  IID_ID3D12VideoEncoderHeap = ID3D12VideoEncoderHeap;
+
+  { 10.0.28000.0  }
+  ID3D12VideoEncoderHeap1 = interface(ID3D12VideoEncoderHeap)
+    ['{EA8F1968-4AA0-43A4-9D30-BA86EC84D4F9}']
+    function GetPow2DownscaleFactor(): UINT; stdcall;
+  end;
+  IID_ID3D12VideoEncoderHeap1 = ID3D12VideoEncoderHeap1;
+
+
+
+  // Interface ID3D12VideoDevice3
+  // =============================
+  //
+  ID3D12VideoDevice3 = interface(ID3D12VideoDevice2)
+    ['{4243ADB4-3A32-4666-973C-0CCC5625DC44}']
+
+    function CreateVideoEncoder(pDesc: PD3D12_VIDEO_ENCODER_DESC;
+                                const riid: TGUID;
+                                ppVideoEncoder: PPointer): HRESULT; stdcall;
+
+    function CreateVideoEncoderHeap(pDesc: PD3D12_VIDEO_ENCODER_HEAP_DESC;
+                                    const riid: TGUID;
+                                    ppVideoEncoderHeap: PPointer): HRESULT; stdcall;
+  end;
+  IID_ID3D12VideoDevice3 = ID3D12VideoDevice3;
+
+  { 10.0.28000.0  }
+  ID3D12VideoDevice4 = interface(ID3D12VideoDevice3)
+    ['{E59AD09E-F1AE-42BB-8983-9F6E5586C4EB}']
+    function CreateVideoEncoderHeap1(pDesc: PD3D12_VIDEO_ENCODER_HEAP_DESC1;
+                                     const riid: TGUID;
+                                     ppVideoEncoderHeap: PPointer): HRESULT; stdcall;
+  end;
+  IID_ID3D12VideoDevice4 = ID3D12VideoDevice4;
+
+  //
+  // Video Encoder operation API
+  //
+
+  PD3D12_VIDEO_ENCODER_FRAME_TYPE_H264 = ^D3D12_VIDEO_ENCODER_FRAME_TYPE_H264;
+  D3D12_VIDEO_ENCODER_FRAME_TYPE_H264 = (D3D12_VIDEO_ENCODER_FRAME_TYPE_H264_I_FRAME   = 0,
+                                         D3D12_VIDEO_ENCODER_FRAME_TYPE_H264_P_FRAME   = 1,
+                                         D3D12_VIDEO_ENCODER_FRAME_TYPE_H264_B_FRAME   = 2,
+                                         D3D12_VIDEO_ENCODER_FRAME_TYPE_H264_IDR_FRAME = 3
+                                        );
+
+
+  PD3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_H264 = ^D3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_H264;
+  D3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_H264 = record
+    ReconstructedPictureResourceIndex: UINT;
+    IsLongTermReference: BOOL;
+    LongTermPictureIdx: UINT;
+    PictureOrderCountNumber: UINT;
+    FrameDecodingOrderNumber: UINT;
+    TemporalLayerIndex: UINT;
+  end;
+
+
+type
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_FLAGS = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_FLAGS;
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_FLAG_NONE                             = D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_FLAGS($0);
+    D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_FLAG_REQUEST_INTRA_CONSTRAINED_SLICES = D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_FLAGS($1);
+    // Update May 2024
+    D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_FLAG_REQUEST_NUM_REF_IDX_ACTIVE_OVERRIDE_FLAG_SLICE	= D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_FLAGS($2);
+    // ==
+
+
+type
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_REFERENCE_PICTURE_MARKING_OPERATION = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_REFERENCE_PICTURE_MARKING_OPERATION;
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_REFERENCE_PICTURE_MARKING_OPERATION = record
+    memory_management_control_operation: UCHAR;
+    difference_of_pic_nums_minus1: UINT;
+    long_term_pic_num: UINT;
+    long_term_frame_idx: UINT;
+    max_long_term_frame_idx_plus1: UINT;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_REFERENCE_PICTURE_LIST_MODIFICATION_OPERATION = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_REFERENCE_PICTURE_LIST_MODIFICATION_OPERATION;
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_REFERENCE_PICTURE_LIST_MODIFICATION_OPERATION = record
+    modification_of_pic_nums_idc: UCHAR;
+    abs_diff_pic_num_minus1: UINT;
+    long_term_pic_num: UINT;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264 = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264;
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264 = record
+    Flags: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_FLAGS;
+    FrameType: D3D12_VIDEO_ENCODER_FRAME_TYPE_H264;
+    pic_parameter_set_id: UINT;
+    idr_pic_id: UINT;
+    PictureOrderCountNumber: UINT;
+    FrameDecodingOrderNumber: UINT;
+    TemporalLayerIndex: UINT;
+    List0ReferenceFramesCount: UINT;
+    // [annotation("_Field_size_full_(List0ReferenceFramesCount)")]
+    pList0ReferenceFrames: PUINT;
+    List1ReferenceFramesCount: UINT;
+    // [annotation("_Field_size_full_(List1ReferenceFramesCount)")]
+    pList1ReferenceFrames: PUINT;
+    ReferenceFramesReconPictureDescriptorsCount: UINT;
+    // [annotation("_Field_size_full_(ReferenceFramesReconPictureDescriptorsCount)")]
+    pReferenceFramesReconPictureDescriptors: PD3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_H264;
+    adaptive_ref_pic_marking_mode_flag: UCHAR;
+    RefPicMarkingOperationsCommandsCount: UINT;
+    // [annotation("_Field_size_full_(RefPicMarkingOperationsCommandsCount)")]
+    pRefPicMarkingOperationsCommands: PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_REFERENCE_PICTURE_MARKING_OPERATION;
+    List0RefPicModificationsCount: UINT;
+    // [annotation("_Field_size_full_(List0RefPicModificationsCount)")]
+    pList0RefPicModifications: PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_REFERENCE_PICTURE_LIST_MODIFICATION_OPERATION;
+    List1RefPicModificationsCount: UINT;
+    // [annotation("_Field_size_full_(List1RefPicModificationsCount)")]
+    pList1RefPicModifications: PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264_REFERENCE_PICTURE_LIST_MODIFICATION_OPERATION;
+    QPMapValuesCount: UINT;
+    // [annotation("_Field_size_full_(QPMapValuesCount)")]
+    pRateControlQPMap: PINT8;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC = ^D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC;
+  D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC = (D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC_I_FRAME   = 0,
+                                         D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC_P_FRAME   = 1,
+                                         D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC_B_FRAME   = 2,
+                                         D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC_IDR_FRAME = 3
+                                        );
+
+
+  PD3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_HEVC = ^D3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_HEVC;
+  D3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_HEVC = record
+    ReconstructedPictureResourceIndex: UINT;
+    IsRefUsedByCurrentPic: BOOL;
+    IsLongTermReference: BOOL;
+    PictureOrderCountNumber: UINT;
+    TemporalLayerIndex: UINT;
+  end;
+
+
+type
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAGS = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAGS;
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAG_NONE                             = D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAGS($0);
+    D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAG_REQUEST_INTRA_CONSTRAINED_SLICES = D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAGS($1);
+    // Update May 2024
+    D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAG_REQUEST_NUM_REF_IDX_ACTIVE_OVERRIDE_FLAG_SLICE	= D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAGS($2);
+    { 10.0.28000.0  }
+    D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAG_CROSS_COMPONENT_PREDICTION = D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAGS($4);
+    D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAG_CHROMA_QP_OFFSET_LIST = D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAGS($8);
+
+
+type
+
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC;
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC = record
+    Flags: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAGS;
+    FrameType: D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC;
+    slice_pic_parameter_set_id: UINT;
+    PictureOrderCountNumber: UINT;
+    TemporalLayerIndex: UINT;
+    List0ReferenceFramesCount: UINT;
+    // [annotation("_Field_size_full_(List0ReferenceFramesCount)")]
+    pList0ReferenceFrames: PUINT;
+    List1ReferenceFramesCount: UINT;
+    // [annotation("_Field_size_full_(List1ReferenceFramesCount)")]
+    pList1ReferenceFrames: PUINT;
+    ReferenceFramesReconPictureDescriptorsCount: UINT;
+    // [annotation("_Field_size_full_(ReferenceFramesReconPictureDescriptorsCount)")]
+    pReferenceFramesReconPictureDescriptors: PD3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_HEVC;
+    List0RefPicModificationsCount: UINT;
+    // [annotation("_Field_size_full_(List0RefPicModificationsCount)")]
+    pList0RefPicModifications: PUINT;
+    List1RefPicModificationsCount: UINT;
+    // [annotation("_Field_size_full_(List1RefPicModificationsCount)")]
+    pList1RefPicModifications: PUINT;
+    QPMapValuesCount: UINT;
+    // [annotation("_Field_size_full_(QPMapValuesCount)")]
+    pRateControlQPMap: PINT8;
+  end;
+
+  { 10.0.28000.0  }
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC1 = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC1;
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC1 = record
+    Flags: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAGS;
+    FrameType: D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC;
+    slice_pic_parameter_set_id: UINT;
+    PictureOrderCountNumber: UINT;
+    TemporalLayerIndex: UINT;
+    List0ReferenceFramesCount: UINT;
+    pList0ReferenceFrames: PUINT;
+    List1ReferenceFramesCount: UINT;
+    pList1ReferenceFrames: PUINT;
+    ReferenceFramesReconPictureDescriptorsCount: UINT;
+    pReferenceFramesReconPictureDescriptors: PD3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_HEVC;
+    List0RefPicModificationsCount: UINT;
+    pList0RefPicModifications: PUINT;
+    List1RefPicModificationsCount: UINT;
+    pList1RefPicModifications: PUINT;
+    QPMapValuesCount: UINT;
+    pRateControlQPMap: PINT8;
+    diff_cu_chroma_qp_offset_depth: UCHAR;
+    log2_sao_offset_scale_luma: UCHAR;
+    log2_sao_offset_scale_chroma: UCHAR;
+    log2_max_transform_skip_block_size_minus2: UCHAR;
+    chroma_qp_offset_list_len_minus1: UCHAR;
+    cb_qp_offset_list: array[0..5] of ShortInt;
+    cr_qp_offset_list: array[0..5] of ShortInt;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA;
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA = record
+    DataSize: UINT;
+    case Integer of
+      0: (pH264PicData: PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264);
+      1: (pHEVCPicData: PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC);
+      2: (pAV1PicData: PD3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_CODEC_DATA); // Update May 2024
+      { 10.0.28000.0  }
+      3: (pHEVCPicData1: PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC1);
+  end;
+
+
+  PD3D12_VIDEO_ENCODE_REFERENCE_FRAMES = ^D3D12_VIDEO_ENCODE_REFERENCE_FRAMES;
+  D3D12_VIDEO_ENCODE_REFERENCE_FRAMES = record
+    NumTexture2Ds: UINT;
+    // [annotation("_Field_size_full_(NumTexture2Ds)")]
+    ppTexture2Ds: PID3D12Resource;
+    // [annotation("_Field_size_full_(NumTexture2Ds)")]
+    pSubresources: PUINT;
+  end;
+
+
+type
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAGS = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAGS;
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_NONE                      = D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAGS($0);
+    D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_USED_AS_REFERENCE_PICTURE = D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAGS($1);
+    { 10.0.28000.0  }
+    D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_ENABLE_QUANTIZATION_MATRIX_INPUT = D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAGS($2);
+    D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_ENABLE_DIRTY_REGIONS_INPUT = D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAGS($4);
+    D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAG_ENABLE_MOTION_VECTORS_INPUT = D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAGS($8);
+
+
+type
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_DESC = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_DESC;
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_DESC = record
+    IntraRefreshFrameIndex: UINT;
+    Flags: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAGS;
+    PictureControlCodecData: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA;
+    ReferenceFrames: D3D12_VIDEO_ENCODE_REFERENCE_FRAMES;
+  end;
+
+
+type
+  PD3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAGS = ^D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAGS;
+  D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAGS = UINT;
+
+const
+    D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAG_NONE                    = D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAGS($0);
+    D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAG_RESOLUTION_CHANGE       = D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAGS($1);
+    D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAG_RATE_CONTROL_CHANGE     = D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAGS($2);
+    D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAG_SUBREGION_LAYOUT_CHANGE = D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAGS($4);
+    D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAG_REQUEST_INTRA_REFRESH   = D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAGS($8);
+    D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAG_GOP_SEQUENCE_CHANGE     = D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAGS($10);
+
+
+type
+  PD3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_DESC = ^D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_DESC;
+  D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_DESC = record
+    Flags: D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_FLAGS;
+    IntraRefreshConfig: D3D12_VIDEO_ENCODER_INTRA_REFRESH;
+    RateControl: D3D12_VIDEO_ENCODER_RATE_CONTROL;
+    PictureTargetResolution: D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    SelectedLayoutMode: D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE;
+    FrameSubregionsLayoutData: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA;
+    CodecGopSequence: D3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE;
+  end;
+
+
+  //
+  // Video Encoder operation commands API
+  //
+
+  PD3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS = ^D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS;
+  D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS = record
+    SequenceControlDesc: D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_DESC;
+    PictureControlDesc: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_DESC;
+    pInputFrame: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    InputFrameSubresource: UINT;
+    CurrentFrameBitstreamMetadataSize: UINT;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM = ^D3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM;
+  D3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM = record
+    pBuffer: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    FrameStartOffset: UINT64;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE = ^D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE;
+  D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE = record
+    pReconstructedPicture: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    ReconstructedPictureSubresource: UINT;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_FRAME_SUBREGION_METADATA = ^D3D12_VIDEO_ENCODER_FRAME_SUBREGION_METADATA;
+  D3D12_VIDEO_ENCODER_FRAME_SUBREGION_METADATA = record
+    bSize: UINT64;
+    bStartOffset: UINT64;
+    bHeaderSize: UINT64;
+  end;
+
+
+type
+  PD3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAGS = ^D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAGS;
+  D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAG_NO_ERROR                                     = D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAGS($0);
+    D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAG_CODEC_PICTURE_CONTROL_NOT_SUPPORTED          = D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAGS($1);
+    D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAG_SUBREGION_LAYOUT_CONFIGURATION_NOT_SUPPORTED = D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAGS($2);
+    D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAG_INVALID_REFERENCE_PICTURES                   = D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAGS($4);
+    D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAG_RECONFIGURATION_REQUEST_NOT_SUPPORTED        = D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAGS($8);
+    D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAG_INVALID_METADATA_BUFFER_SOURCE               = D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAGS($10);
+
+
+type
+
+  PD3D12_VIDEO_ENCODER_OUTPUT_METADATA_STATISTICS = ^D3D12_VIDEO_ENCODER_OUTPUT_METADATA_STATISTICS;
+  D3D12_VIDEO_ENCODER_OUTPUT_METADATA_STATISTICS = record
+    AverageQP: UINT64;
+    IntraCodingUnitsCount: UINT64;
+    InterCodingUnitsCount: UINT64;
+    SkipCodingUnitsCount: UINT64;
+    AverageMotionEstimationXDirection: UINT64;
+    AverageMotionEstimationYDirection: UINT64;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_OUTPUT_METADATA = ^D3D12_VIDEO_ENCODER_OUTPUT_METADATA;
+  D3D12_VIDEO_ENCODER_OUTPUT_METADATA = record
+    EncodeErrorFlags: UINT64;       // D3D12_VIDEO_ENCODER_ENCODE_ERROR_FLAGS
+    EncodeStats: D3D12_VIDEO_ENCODER_OUTPUT_METADATA_STATISTICS;
+    EncodedBitstreamWrittenBytesCount: UINT64;
+    WrittenSubregionsCount: UINT64;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_ENCODE_OPERATION_METADATA_BUFFER = ^D3D12_VIDEO_ENCODER_ENCODE_OPERATION_METADATA_BUFFER;
+  D3D12_VIDEO_ENCODER_ENCODE_OPERATION_METADATA_BUFFER = record
+    pBuffer: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    Offset: UINT64;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_RESOLVE_METADATA_INPUT_ARGUMENTS = ^D3D12_VIDEO_ENCODER_RESOLVE_METADATA_INPUT_ARGUMENTS;
+  D3D12_VIDEO_ENCODER_RESOLVE_METADATA_INPUT_ARGUMENTS = record
+    EncoderCodec: D3D12_VIDEO_ENCODER_CODEC;
+    EncoderProfile: D3D12_VIDEO_ENCODER_PROFILE_DESC;
+    EncoderInputFormat: DXGI_FORMAT;
+    EncodedPictureEffectiveResolution: D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    HWLayoutMetadata: D3D12_VIDEO_ENCODER_ENCODE_OPERATION_METADATA_BUFFER;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_RESOLVE_METADATA_OUTPUT_ARGUMENTS = ^D3D12_VIDEO_ENCODER_RESOLVE_METADATA_OUTPUT_ARGUMENTS;
+  D3D12_VIDEO_ENCODER_RESOLVE_METADATA_OUTPUT_ARGUMENTS = record
+    ResolvedLayoutMetadata: D3D12_VIDEO_ENCODER_ENCODE_OPERATION_METADATA_BUFFER;
+  end;
+
+
+  PD3D12_VIDEO_ENCODER_ENCODEFRAME_OUTPUT_ARGUMENTS = ^D3D12_VIDEO_ENCODER_ENCODEFRAME_OUTPUT_ARGUMENTS;
+  D3D12_VIDEO_ENCODER_ENCODEFRAME_OUTPUT_ARGUMENTS = record
+    Bitstream: D3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM;
+    ReconstructedPicture: D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE;
+    EncoderOutputMetadata: D3D12_VIDEO_ENCODER_ENCODE_OPERATION_METADATA_BUFFER;
+  end;
+
+  { 10.0.28000.0 }
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_HEAP_SIZE1 = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_HEAP_SIZE1;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_HEAP_SIZE1 = record
+    HeapDesc: D3D12_VIDEO_ENCODER_HEAP_DESC1;
+    IsSupported: BOOL;
+    MemoryPoolL0Size: UINT64;
+    MemoryPoolL1Size: UINT64;
+  end;
+
+  D3D12_VIDEO_ENCODER_OPTIONAL_METADATA_ENABLE_FLAGS = UINT;
+  const
+    D3D12_VIDEO_ENCODER_OPTIONAL_METADATA_ENABLE_FLAG_NONE = 0;
+    D3D12_VIDEO_ENCODER_OPTIONAL_METADATA_ENABLE_FLAG_QP_MAP = $1;
+    D3D12_VIDEO_ENCODER_OPTIONAL_METADATA_ENABLE_FLAG_SATD_MAP = $2;
+    D3D12_VIDEO_ENCODER_OPTIONAL_METADATA_ENABLE_FLAG_RC_BIT_ALLOCATION_MAP = $4;
+    D3D12_VIDEO_ENCODER_OPTIONAL_METADATA_ENABLE_FLAG_FRAME_PSNR = $8;
+    D3D12_VIDEO_ENCODER_OPTIONAL_METADATA_ENABLE_FLAG_SUBREGIONS_PSNR = $10;
+
+  type
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_RESOURCE_REQUIREMENTS1 = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOURCE_REQUIREMENTS1;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOURCE_REQUIREMENTS1 = record
+    NodeIndex: UINT;
+    Codec: D3D12_VIDEO_ENCODER_CODEC;
+    Profile: D3D12_VIDEO_ENCODER_PROFILE_DESC;
+    InputFormat: DXGI_FORMAT;
+    PictureTargetResolution: D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    IsSupported: BOOL;
+    CompressedBitstreamBufferAccessAlignment: UINT;
+    EncoderMetadataBufferAccessAlignment: UINT;
+    MaxEncoderOutputMetadataBufferSize: UINT;
+    OptionalMetadata: D3D12_VIDEO_ENCODER_OPTIONAL_METADATA_ENABLE_FLAGS;
+    CodecConfiguration: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION;
+    EncoderOutputMetadataQPMapTextureDimensions: D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    EncoderOutputMetadataSATDMapTextureDimensions: D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    EncoderOutputMetadataBitAllocationMapTextureDimensions: D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    EncoderOutputMetadataFramePSNRComponentsNumber: UINT;
+    EncoderOutputMetadataSubregionsPSNRComponentsNumber: UINT;
+    EncoderOutputMetadataSubregionsPSNRResolvedMetadataBufferSize: UINT;
+  end;
+
+  D3D12_VIDEO_ENCODER_RESOLVE_METADATA_OUTPUT_PSNR_RESOLVED_LAYOUT = record
+    PSNRY: FLOAT;
+    PSNRU: FLOAT;
+    PSNRV: FLOAT;
+  end;
+
+  D3D12_VIDEO_ENCODER_INPUT_MAP_SOURCE = (D3D12_VIDEO_ENCODER_INPUT_MAP_SOURCE_CPU_BUFFER = 0,
+                                          D3D12_VIDEO_ENCODER_INPUT_MAP_SOURCE_GPU_TEXTURE = 1
+                                         );
+
+  D3D12_VIDEO_ENCODER_DIRTY_REGIONS_MAP_VALUES_MODE = (D3D12_VIDEO_ENCODER_DIRTY_REGIONS_MAP_VALUES_MODE_DIRTY = 0,
+                                                       D3D12_VIDEO_ENCODER_DIRTY_REGIONS_MAP_VALUES_MODE_SKIP = 1
+                                                      );
+
+
+  D3D12_VIDEO_ENCODER_INPUT_MAP_SESSION_INFO = record
+    Codec: D3D12_VIDEO_ENCODER_CODEC;
+    Profile: D3D12_VIDEO_ENCODER_PROFILE_DESC;
+    Level: D3D12_VIDEO_ENCODER_LEVEL_SETTING;
+    InputFormat: DXGI_FORMAT;
+    InputResolution: D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    CodecConfiguration: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION;
+    SubregionFrameEncoding: D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE;
+    SubregionFrameEncodingData: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA;
+  end;
+
+  D3D12_VIDEO_ENCODER_INPUT_MAP_TYPE = (D3D12_VIDEO_ENCODER_INPUT_MAP_TYPE_QUANTIZATION_MATRIX = 0,
+                                        D3D12_VIDEO_ENCODER_INPUT_MAP_TYPE_DIRTY_REGIONS = 1,
+                                        D3D12_VIDEO_ENCODER_INPUT_MAP_TYPE_MOTION_VECTORS = 2
+                                       );
+
+  D3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE = (D3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE_FULL_SEARCH = 0,
+                                                  D3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE_START_HINT = 1,
+                                                  D3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE_START_HINT_LIMITED_DISTANCE = 2
+                                                 );
+
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_QPMAP_INPUT = record
+    NodeIndex: UINT;
+    SessionInfo: D3D12_VIDEO_ENCODER_INPUT_MAP_SESSION_INFO;
+    MapSource: D3D12_VIDEO_ENCODER_INPUT_MAP_SOURCE;
+    IsSupported: BOOL;
+    MapSourcePreferenceRanking: UINT;
+    BlockSize: UINT;
+  end;
+
+  D3D12_VIDEO_ENCODER_DIRTY_REGIONS_SUPPORT_FLAGS = UINT;
+  const
+    D3D12_VIDEO_ENCODER_DIRTY_REGIONS_SUPPORT_FLAG_NONE = 0;
+    D3D12_VIDEO_ENCODER_DIRTY_REGIONS_SUPPORT_FLAG_REPEAT_FRAME = $1;
+    D3D12_VIDEO_ENCODER_DIRTY_REGIONS_SUPPORT_FLAG_DIRTY_REGIONS = $2;
+    D3D12_VIDEO_ENCODER_DIRTY_REGIONS_SUPPORT_FLAG_DIRTY_REGIONS_REQUIRE_FULL_ROW = $4;
+
+type
+
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_DIRTY_REGIONS = record
+    NodeIndex: UINT;
+    SessionInfo: D3D12_VIDEO_ENCODER_INPUT_MAP_SESSION_INFO;
+    MapSource: D3D12_VIDEO_ENCODER_INPUT_MAP_SOURCE;
+    MapValuesType: D3D12_VIDEO_ENCODER_DIRTY_REGIONS_MAP_VALUES_MODE;
+    SupportFlags: D3D12_VIDEO_ENCODER_DIRTY_REGIONS_SUPPORT_FLAGS;
+    MapSourcePreferenceRanking: UINT;
+  end;
+
+  D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION = (D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION_FULL_PIXEL = 0,
+                                                           D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION_HALF_PIXEL = 1,
+                                                           D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION_QUARTER_PIXEL = 2
+                                                          );
+
+  D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION_SUPPORT_FLAGS = UINT;
+  D3D12_VIDEO_ENCODER_MOTION_SEARCH_SUPPORT_FLAGS = UINT;
+
+  const
+    D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION_SUPPORT_FLAG_NONE = 0;
+    D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION_SUPPORT_FLAG_FULL_PIXEL = $1;
+    D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION_SUPPORT_FLAG_HALF_PIXEL = $2;
+    D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION_SUPPORT_FLAG_QUARTER_PIXEL = $4;
+    D3D12_VIDEO_ENCODER_MOTION_SEARCH_SUPPORT_FLAG_NONE = 0;
+    D3D12_VIDEO_ENCODER_MOTION_SEARCH_SUPPORT_FLAG_SUPPORTED = $1;
+    D3D12_VIDEO_ENCODER_MOTION_SEARCH_SUPPORT_FLAG_MULTIPLE_HINTS = $2;
+    D3D12_VIDEO_ENCODER_MOTION_SEARCH_SUPPORT_FLAG_GPU_TEXTURE_MULTIPLE_REFERENCES = $4;
+
+type
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_MOTION_SEARCH = record
+    NodeIndex: UINT;
+    SessionInfo: D3D12_VIDEO_ENCODER_INPUT_MAP_SESSION_INFO;
+    MotionSearchMode: D3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE;
+    MapSource: D3D12_VIDEO_ENCODER_INPUT_MAP_SOURCE;
+    BidirectionalRefFrameEnabled: BOOL;
+    SupportFlags: D3D12_VIDEO_ENCODER_MOTION_SEARCH_SUPPORT_FLAGS;
+    MaxMotionHints: UINT;
+    MinDeviation: UINT;
+    MaxDeviation: UINT;
+    MapSourcePreferenceRanking: UINT;
+    MotionUnitPrecisionSupport: D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION_SUPPORT_FLAGS;
+  end;
+
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLVE_INPUT_PARAM_LAYOUT = record
+    NodeIndex: UINT;
+    SessionInfo: D3D12_VIDEO_ENCODER_INPUT_MAP_SESSION_INFO;
+    MapType: D3D12_VIDEO_ENCODER_INPUT_MAP_TYPE;
+    IsSupported: BOOL;
+    MaxResolvedBufferAllocationSize: UINT64;
+  end;
+
+  D3D12_VIDEO_ENCODER_QPMAP_CONFIGURATION = record
+    Enabled: BOOL;
+    MapSource: D3D12_VIDEO_ENCODER_INPUT_MAP_SOURCE;
+  end;
+
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_QPMAP = record
+    MapSourcePreferenceRanking: UINT;
+  end;
+
+  D3D12_VIDEO_ENCODER_DIRTY_REGIONS_CONFIGURATION = record
+    Enabled: BOOL;
+    MapSource: D3D12_VIDEO_ENCODER_INPUT_MAP_SOURCE;
+    MapValuesType: D3D12_VIDEO_ENCODER_DIRTY_REGIONS_MAP_VALUES_MODE;
+  end;
+
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_DIRTY_REGIONS = record
+    DirtyRegionsSupportFlags: D3D12_VIDEO_ENCODER_DIRTY_REGIONS_SUPPORT_FLAGS;
+    MapSourcePreferenceRanking: UINT;
+  end;
+
+  D3D12_VIDEO_ENCODER_MOTION_SEARCH_CONFIGURATION = record
+    Enabled: BOOL;
+    MapSource: D3D12_VIDEO_ENCODER_INPUT_MAP_SOURCE;
+    MotionSearchMode: D3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE;
+    BidirectionalRefFrameEnabled: BOOL;
+  end;
+
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_MOTION_SEARCH = record
+    MaxMotionHints: UINT;
+    MinDeviation: UINT;
+    MaxDeviation: UINT;
+    MapSourcePreferenceRanking: UINT;
+    MotionUnitPrecisionSupportFlags: D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION_SUPPORT_FLAGS;
+    SupportFlags: D3D12_VIDEO_ENCODER_MOTION_SEARCH_SUPPORT_FLAGS;
+  end;
+
+  D3D12_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS_SUPPORT_FLAGS = UINT;
+  const
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS_SUPPORT_FLAG_NONE = 0;
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS_SUPPORT_FLAG_INTRACODED_FRAME_SUPPORTED = $1;
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS_SUPPORT_FLAG_UNIDIR_INTER_FRAME_SUPPORTED = $2;
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS_SUPPORT_FLAG_BIDIR_INTER_FRAME_SUPPORTED = $4;
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS_SUPPORT_FLAG_EXTERNAL_DPB_DOWNSCALING = $8;
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS_SUPPORT_FLAG_DYNAMIC_1ST_PASS_SKIP = $10;
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS_SUPPORT_FLAG_DYNAMIC_DOWNSCALE_FACTOR_CHANGE_KEY_FRAME = $20;
+    D3D12_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS_SUPPORT_FLAG_SUPPORTED = $7;
+
+type
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS = record
+    NodeIndex: UINT;
+    Codec: D3D12_VIDEO_ENCODER_CODEC;
+    Profile: D3D12_VIDEO_ENCODER_PROFILE_DESC;
+    Level: D3D12_VIDEO_ENCODER_LEVEL_SETTING;
+    InputFormat: DXGI_FORMAT;
+    InputResolution: D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    CodecConfiguration: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION;
+    SubregionFrameEncoding: D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE;
+    SubregionFrameEncodingData: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA;
+    QPMap: D3D12_VIDEO_ENCODER_QPMAP_CONFIGURATION;
+    DirtyRegions: D3D12_VIDEO_ENCODER_DIRTY_REGIONS_CONFIGURATION;
+    MotionSearch: D3D12_VIDEO_ENCODER_MOTION_SEARCH_CONFIGURATION;
+    Pow2DownscaleFactor: UINT;
+    SupportFlags: D3D12_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS_SUPPORT_FLAGS;
+  end;
+
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_FRAME_ANALYSIS = record
+    SupportFlags: D3D12_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS_SUPPORT_FLAGS;
+  end;
+
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_LIMITS1 = record
+    MaxSubregionsNumber: UINT;
+    MaxIntraRefreshFrameDuration: UINT;
+    SubregionBlockPixelsSize: UINT;
+    QPMapRegionPixelsSize: UINT;
+    QPMap: D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_QPMAP;
+    DirtyRegions: D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_DIRTY_REGIONS;
+    MotionSearch: D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_MOTION_SEARCH;
+    FrameAnalysis: D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_FRAME_ANALYSIS;
+  end;
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_LIMITS1 = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_LIMITS1;
+
+  D3D12_VIDEO_ENCODER_FRAME_ANALYSIS_CONFIGURATION = record
+    Enabled: BOOL;
+    Pow2DownscaleFactor: UINT;
+  end;
+
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT2 = record
+    NodeIndex: UINT;
+    Codec: D3D12_VIDEO_ENCODER_CODEC;
+    InputFormat: DXGI_FORMAT;
+    CodecConfiguration: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION;
+    CodecGopSequence: D3D12_VIDEO_ENCODER_SEQUENCE_GOP_STRUCTURE;
+    RateControl: D3D12_VIDEO_ENCODER_RATE_CONTROL;
+    IntraRefresh: D3D12_VIDEO_ENCODER_INTRA_REFRESH_MODE;
+    SubregionFrameEncoding: D3D12_VIDEO_ENCODER_FRAME_SUBREGION_LAYOUT_MODE;
+    ResolutionsListCount: UINT;
+    pResolutionList: PD3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    MaxReferenceFramesInDPB: UINT;
+    ValidationFlags: D3D12_VIDEO_ENCODER_VALIDATION_FLAGS;
+    SupportFlags: D3D12_VIDEO_ENCODER_SUPPORT_FLAGS;
+    SuggestedProfile: D3D12_VIDEO_ENCODER_PROFILE_DESC;
+    SuggestedLevel: D3D12_VIDEO_ENCODER_LEVEL_SETTING;
+    pResolutionDependentSupport: PD3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_LIMITS1;
+    SubregionFrameEncodingData: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_SUBREGIONS_LAYOUT_DATA;
+    MaxQualityVsSpeed: UINT;
+    QPMap: D3D12_VIDEO_ENCODER_QPMAP_CONFIGURATION;
+    DirtyRegions: D3D12_VIDEO_ENCODER_DIRTY_REGIONS_CONFIGURATION;
+    MotionSearch: D3D12_VIDEO_ENCODER_MOTION_SEARCH_CONFIGURATION;
+    FrameAnalysis: D3D12_VIDEO_ENCODER_FRAME_ANALYSIS_CONFIGURATION;
+  end;
+
+  D3D12_VIDEO_ENCODER_DIRTY_RECT_INFO = record
+    FullFrameIdentical: BOOL;
+    MapValuesType: D3D12_VIDEO_ENCODER_DIRTY_REGIONS_MAP_VALUES_MODE;
+    NumDirtyRects: UINT;
+    pDirtyRects: PRect;
+    SourceDPBFrameReference: UINT;
+  end;
+
+  PD3D12_VIDEO_ENCODER_DIRTY_RECT_INFO = ^D3D12_VIDEO_ENCODER_DIRTY_RECT_INFO;
+  D3D12_VIDEO_ENCODER_DIRTY_REGIONS = record
+    MapSource: D3D12_VIDEO_ENCODER_INPUT_MAP_SOURCE;
+    case Integer of
+      0: (pOpaqueLayoutBuffer: PID3D12Resource);
+      1: (pCPUBuffer: PD3D12_VIDEO_ENCODER_DIRTY_RECT_INFO);
+  end;
+
+
+  D3D12_VIDEO_ENCODER_QUANTIZATION_OPAQUE_MAP = record
+    pOpaqueQuantizationMap: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+  end;
+
+  D3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE_CONFIG = record
+    MotionSearchMode: D3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE;
+    SearchDeviationLimit: UINT;
+  end;
+
+  D3D12_VIDEO_ENCODER_MOVE_RECT = record
+    SourcePoint: TPoint;
+    DestRect: TRect;
+  end;
+  PD3D12_VIDEO_ENCODER_MOVE_RECT = ^D3D12_VIDEO_ENCODER_MOVE_RECT;
+
+type
+  D3D12_VIDEO_ENCODER_MOVEREGION_INFO_FLAGS = UINT;
+const
+    D3D12_VIDEO_ENCODER_MOVEREGION_INFO_FLAG_NONE = 0;
+    D3D12_VIDEO_ENCODER_MOVEREGION_INFO_FLAG_MULTIPLE_HINTS = $1;
+
+type
+  D3D12_VIDEO_ENCODER_MOVEREGION_INFO = record
+    NumMoveRegions: UINT;
+    pMoveRegions: PD3D12_VIDEO_ENCODER_MOVE_RECT;
+    MotionSearchModeConfiguration: D3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE_CONFIG;
+    SourceDPBFrameReference: UINT;
+    MotionUnitPrecision: D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION;
+    Flags: D3D12_VIDEO_ENCODER_MOVEREGION_INFO_FLAGS;
+  end;
+
+  PD3D12_VIDEO_ENCODER_MOVEREGION_INFO = ^D3D12_VIDEO_ENCODER_MOVEREGION_INFO;
+  D3D12_VIDEO_ENCODER_FRAME_MOTION_VECTORS = record
+    MapSource: D3D12_VIDEO_ENCODER_INPUT_MAP_SOURCE;
+    case Integer of
+      0: (pOpaqueLayoutBuffer: PID3D12Resource);
+      1: (pCPUBuffer: PD3D12_VIDEO_ENCODER_MOVEREGION_INFO);
+  end;
+
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC2 = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC2;
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC2 = record
+    Flags: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC_FLAGS;
+    FrameType: D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC;
+    slice_pic_parameter_set_id: UINT;
+    PictureOrderCountNumber: UINT;
+    TemporalLayerIndex: UINT;
+    List0ReferenceFramesCount: UINT;
+    pList0ReferenceFrames: PUINT;
+    List1ReferenceFramesCount: UINT;
+    pList1ReferenceFrames: PUINT;
+    ReferenceFramesReconPictureDescriptorsCount: UINT;
+    pReferenceFramesReconPictureDescriptors: PD3D12_VIDEO_ENCODER_REFERENCE_PICTURE_DESCRIPTOR_HEVC;
+    List0RefPicModificationsCount: UINT;
+    pList0RefPicModifications: PUINT;
+    List1RefPicModificationsCount: UINT;
+    pList1RefPicModifications: PUINT;
+    QPMapValuesCount: UINT;
+    pRateControlQPMap: PShortInt;
+    diff_cu_chroma_qp_offset_depth: UCHAR;
+    log2_sao_offset_scale_luma: UCHAR;
+    log2_sao_offset_scale_chroma: UCHAR;
+    log2_max_transform_skip_block_size_minus2: UCHAR;
+    chroma_qp_offset_list_len_minus1: UCHAR;
+    cb_qp_offset_list: array[0..5] of ShortInt;
+    cr_qp_offset_list: array[0..5] of ShortInt;
+    num_ref_idx_l0_active_minus1: UINT;
+    num_ref_idx_l1_active_minus1: UINT;
+  end;
+
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA1 = record
+    DataSize: UINT;
+    case Integer of
+      0: (pH264PicData: PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_H264);
+      1: (pHEVCPicData: PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA_HEVC2);
+      2: (pAV1PicData: PD3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_CODEC_DATA);
+  end;
+
+  D3D12_VIDEO_ENCODER_FRAME_ANALYSIS = record
+    pDownscaledFrame: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    Subresource: UINT64;
+    DownscaledReferences: D3D12_VIDEO_ENCODE_REFERENCE_FRAMES;
+  end;
+
+  D3D12_VIDEO_ENCODER_PICTURE_CONTROL_DESC1 = record
+    IntraRefreshFrameIndex: UINT;
+    Flags: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_FLAGS;
+    PictureControlCodecData: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA1;
+    ReferenceFrames: D3D12_VIDEO_ENCODE_REFERENCE_FRAMES;
+    MotionVectors: D3D12_VIDEO_ENCODER_FRAME_MOTION_VECTORS;
+    DirtyRects: D3D12_VIDEO_ENCODER_DIRTY_REGIONS;
+    QuantizationTextureMap: D3D12_VIDEO_ENCODER_QUANTIZATION_OPAQUE_MAP;
+    FrameAnalysis: D3D12_VIDEO_ENCODER_FRAME_ANALYSIS;
+  end;
+
+  D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS1 = record
+    SequenceControlDesc: D3D12_VIDEO_ENCODER_SEQUENCE_CONTROL_DESC;
+    PictureControlDesc: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_DESC1;
+    pInputFrame: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    InputFrameSubresource: UINT;
+    CurrentFrameBitstreamMetadataSize: UINT;
+    OptionalMetadata: D3D12_VIDEO_ENCODER_OPTIONAL_METADATA_ENABLE_FLAGS;
+  end;
+
+  PD3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS1 = ^D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS1;
+
+  D3D12_VIDEO_ENCODER_SUBREGION_COMPRESSED_BITSTREAM_BUFFER_MODE = (D3D12_VIDEO_ENCODER_SUBREGION_COMPRESSED_BITSTREAM_BUFFER_MODE_ARRAY_OF_BUFFERS = 0,
+                                                                    D3D12_VIDEO_ENCODER_SUBREGION_COMPRESSED_BITSTREAM_BUFFER_MODE_SINGLE_BUFFER = 1
+                                                                   );
+
+  D3D12_VIDEO_ENCODER_SUBREGION_COMPRESSED_BITSTREAM = record
+    BufferMode: D3D12_VIDEO_ENCODER_SUBREGION_COMPRESSED_BITSTREAM_BUFFER_MODE;
+    ExpectedSubregionCount: UINT;
+    pSubregionBitstreamsBaseOffsets: PUINT64;
+    ppSubregionBitstreams: PPointer;
+    ppSubregionSizes: PPointer;
+    ppSubregionOffsets: PPointer;
+    ppSubregionFences: PPointer;
+    pSubregionFenceValues: PUINT64;
+  end;
+
+  D3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM_NOTIFICATION_MODE = (D3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM_NOTIFICATION_MODE_FULL_FRAME = 0,
+                                                                D3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM_NOTIFICATION_MODE_SUBREGIONS = 1
+                                                               );
+
+  D3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM1 = record
+    NotificationMode: D3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM_NOTIFICATION_MODE;
+    case Integer of
+      0: (FrameOutputBuffer: D3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM);
+      1: (SubregionOutputBuffers: D3D12_VIDEO_ENCODER_SUBREGION_COMPRESSED_BITSTREAM);
+  end;
+
+  D3D12_VIDEO_ENCODER_ENCODEFRAME_OUTPUT_ARGUMENTS1 = record
+    Bitstream: D3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM1;
+    ReconstructedPicture: D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE;
+    EncoderOutputMetadata: D3D12_VIDEO_ENCODER_ENCODE_OPERATION_METADATA_BUFFER;
+    FrameAnalysisReconstructedPicture: D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE;
+  end;
+  PD3D12_VIDEO_ENCODER_ENCODEFRAME_OUTPUT_ARGUMENTS1 = ^D3D12_VIDEO_ENCODER_ENCODEFRAME_OUTPUT_ARGUMENTS1;
+
+ D3D12_VIDEO_ENCODER_RESOLVE_METADATA_INPUT_ARGUMENTS1 = record
+    EncoderCodec: D3D12_VIDEO_ENCODER_CODEC;
+    EncoderProfile: D3D12_VIDEO_ENCODER_PROFILE_DESC;
+    EncoderInputFormat: DXGI_FORMAT;
+    EncodedPictureEffectiveResolution: D3D12_VIDEO_ENCODER_PICTURE_RESOLUTION_DESC;
+    HWLayoutMetadata: D3D12_VIDEO_ENCODER_ENCODE_OPERATION_METADATA_BUFFER;
+    OptionalMetadata: D3D12_VIDEO_ENCODER_OPTIONAL_METADATA_ENABLE_FLAGS;
+    CodecConfiguration: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION;
+  end;
+
+  PD3D12_VIDEO_ENCODER_RESOLVE_METADATA_INPUT_ARGUMENTS1 = ^D3D12_VIDEO_ENCODER_RESOLVE_METADATA_INPUT_ARGUMENTS1;
+  D3D12_VIDEO_ENCODER_RESOLVE_METADATA_OUTPUT_ARGUMENTS1 = record
+    ResolvedLayoutMetadata: D3D12_VIDEO_ENCODER_ENCODE_OPERATION_METADATA_BUFFER;
+    pOutputQPMap: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    pOutputSATDMap: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    pOutputBitAllocationMap: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    ResolvedFramePSNRData: D3D12_VIDEO_ENCODER_ENCODE_OPERATION_METADATA_BUFFER;
+    ResolvedSubregionsPSNRData: D3D12_VIDEO_ENCODER_ENCODE_OPERATION_METADATA_BUFFER;
+  end;
+
+  PD3D12_VIDEO_ENCODER_RESOLVE_METADATA_OUTPUT_ARGUMENTS1 = ^D3D12_VIDEO_ENCODER_RESOLVE_METADATA_OUTPUT_ARGUMENTS1;
+
+  D3D12_VIDEO_ENCODER_INPUT_MAP_DATA_QUANTIZATION_MATRIX = record
+    pQuantizationMap: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+  end;
+
+  D3D12_VIDEO_ENCODER_INPUT_MAP_DATA_DIRTY_REGIONS = record
+    FullFrameIdentical: BOOL;
+    MapValuesType: D3D12_VIDEO_ENCODER_DIRTY_REGIONS_MAP_VALUES_MODE;
+    pDirtyRegionsMap: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+    SourceDPBFrameReference: UINT;
+  end;
+
+  D3D12_VIDEO_ENCODER_INPUT_MAP_DATA_MOTION_VECTORS = record
+    MotionSearchModeConfiguration: D3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE_CONFIG;
+    NumHintsPerPixel: UINT;
+    ppMotionVectorMaps: PPointer;
+    pMotionVectorMapsSubresources: PUINT;
+    ppMotionVectorMapsMetadata: PPointer;
+    pMotionVectorMapsMetadataSubresources: PUINT;
+    MotionUnitPrecision: D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION;
+    PictureControlConfiguration: D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA1;
+  end;
+
+  D3D12_VIDEO_ENCODER_INPUT_MAP_DATA = record
+    MapType: D3D12_VIDEO_ENCODER_INPUT_MAP_TYPE;
+    case Integer of
+      0: (Quantization: D3D12_VIDEO_ENCODER_INPUT_MAP_DATA_QUANTIZATION_MATRIX);
+      1: (DirtyRegions: D3D12_VIDEO_ENCODER_INPUT_MAP_DATA_DIRTY_REGIONS);
+      2: (MotionVectors: D3D12_VIDEO_ENCODER_INPUT_MAP_DATA_MOTION_VECTORS);
+  end;
+
+  D3D12_VIDEO_ENCODER_RESOLVE_INPUT_PARAM_LAYOUT_INPUT_ARGUMENTS = record
+    SessionInfo: D3D12_VIDEO_ENCODER_INPUT_MAP_SESSION_INFO;
+    InputData: D3D12_VIDEO_ENCODER_INPUT_MAP_DATA;
+  end;
+
+  PD3D12_VIDEO_ENCODER_RESOLVE_INPUT_PARAM_LAYOUT_INPUT_ARGUMENTS = ^D3D12_VIDEO_ENCODER_RESOLVE_INPUT_PARAM_LAYOUT_INPUT_ARGUMENTS;
+  D3D12_VIDEO_ENCODER_RESOLVE_INPUT_PARAM_LAYOUT_OUTPUT_ARGUMENTS = record
+    pOpaqueLayoutBuffer: Pointer; // Borrowed ID3D12Resource reference; keep the owner alive.
+  end;
+  PD3D12_VIDEO_ENCODER_RESOLVE_INPUT_PARAM_LAYOUT_OUTPUT_ARGUMENTS = ^D3D12_VIDEO_ENCODER_RESOLVE_INPUT_PARAM_LAYOUT_OUTPUT_ARGUMENTS;
+
+  { 10.0.28000.0 }
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_DIRTY_REGIONS = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_DIRTY_REGIONS;
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_MOTION_SEARCH = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_MOTION_SEARCH;
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_QPMAP_INPUT = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_QPMAP_INPUT;
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS;
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_DIRTY_REGIONS = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_DIRTY_REGIONS;
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_FRAME_ANALYSIS = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_FRAME_ANALYSIS;
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_MOTION_SEARCH = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_MOTION_SEARCH;
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_QPMAP = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLUTION_SUPPORT_QPMAP;
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLVE_INPUT_PARAM_LAYOUT = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_RESOLVE_INPUT_PARAM_LAYOUT;
+  PD3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT2 = ^D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT2;
+  PD3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS1 = ^D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAGS1;
+  PD3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM_NOTIFICATION_MODE = ^D3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM_NOTIFICATION_MODE;
+  PD3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM1 = ^D3D12_VIDEO_ENCODER_COMPRESSED_BITSTREAM1;
+  PD3D12_VIDEO_ENCODER_DIRTY_REGIONS = ^D3D12_VIDEO_ENCODER_DIRTY_REGIONS;
+  PD3D12_VIDEO_ENCODER_DIRTY_REGIONS_CONFIGURATION = ^D3D12_VIDEO_ENCODER_DIRTY_REGIONS_CONFIGURATION;
+  PD3D12_VIDEO_ENCODER_DIRTY_REGIONS_MAP_VALUES_MODE = ^D3D12_VIDEO_ENCODER_DIRTY_REGIONS_MAP_VALUES_MODE;
+  PD3D12_VIDEO_ENCODER_DIRTY_REGIONS_SUPPORT_FLAGS = ^D3D12_VIDEO_ENCODER_DIRTY_REGIONS_SUPPORT_FLAGS;
+  PD3D12_VIDEO_ENCODER_FRAME_ANALYSIS = ^D3D12_VIDEO_ENCODER_FRAME_ANALYSIS;
+  PD3D12_VIDEO_ENCODER_FRAME_ANALYSIS_CONFIGURATION = ^D3D12_VIDEO_ENCODER_FRAME_ANALYSIS_CONFIGURATION;
+  PD3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION = ^D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION;
+  PD3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION_SUPPORT_FLAGS = ^D3D12_VIDEO_ENCODER_FRAME_INPUT_MOTION_UNIT_PRECISION_SUPPORT_FLAGS;
+  PD3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE = ^D3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE;
+  PD3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE_CONFIG = ^D3D12_VIDEO_ENCODER_FRAME_MOTION_SEARCH_MODE_CONFIG;
+  PD3D12_VIDEO_ENCODER_FRAME_MOTION_VECTORS = ^D3D12_VIDEO_ENCODER_FRAME_MOTION_VECTORS;
+  PD3D12_VIDEO_ENCODER_INPUT_MAP_DATA = ^D3D12_VIDEO_ENCODER_INPUT_MAP_DATA;
+  PD3D12_VIDEO_ENCODER_INPUT_MAP_DATA_DIRTY_REGIONS = ^D3D12_VIDEO_ENCODER_INPUT_MAP_DATA_DIRTY_REGIONS;
+  PD3D12_VIDEO_ENCODER_INPUT_MAP_DATA_MOTION_VECTORS = ^D3D12_VIDEO_ENCODER_INPUT_MAP_DATA_MOTION_VECTORS;
+  PD3D12_VIDEO_ENCODER_INPUT_MAP_DATA_QUANTIZATION_MATRIX = ^D3D12_VIDEO_ENCODER_INPUT_MAP_DATA_QUANTIZATION_MATRIX;
+  PD3D12_VIDEO_ENCODER_INPUT_MAP_SESSION_INFO = ^D3D12_VIDEO_ENCODER_INPUT_MAP_SESSION_INFO;
+  PD3D12_VIDEO_ENCODER_INPUT_MAP_SOURCE = ^D3D12_VIDEO_ENCODER_INPUT_MAP_SOURCE;
+  PD3D12_VIDEO_ENCODER_INPUT_MAP_TYPE = ^D3D12_VIDEO_ENCODER_INPUT_MAP_TYPE;
+  PD3D12_VIDEO_ENCODER_MOTION_SEARCH_CONFIGURATION = ^D3D12_VIDEO_ENCODER_MOTION_SEARCH_CONFIGURATION;
+  PD3D12_VIDEO_ENCODER_MOTION_SEARCH_SUPPORT_FLAGS = ^D3D12_VIDEO_ENCODER_MOTION_SEARCH_SUPPORT_FLAGS;
+  PD3D12_VIDEO_ENCODER_MOVEREGION_INFO_FLAGS = ^D3D12_VIDEO_ENCODER_MOVEREGION_INFO_FLAGS;
+  PD3D12_VIDEO_ENCODER_OPTIONAL_METADATA_ENABLE_FLAGS = ^D3D12_VIDEO_ENCODER_OPTIONAL_METADATA_ENABLE_FLAGS;
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA1 = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_CODEC_DATA1;
+  PD3D12_VIDEO_ENCODER_PICTURE_CONTROL_DESC1 = ^D3D12_VIDEO_ENCODER_PICTURE_CONTROL_DESC1;
+  PD3D12_VIDEO_ENCODER_QPMAP_CONFIGURATION = ^D3D12_VIDEO_ENCODER_QPMAP_CONFIGURATION;
+  PD3D12_VIDEO_ENCODER_QUANTIZATION_OPAQUE_MAP = ^D3D12_VIDEO_ENCODER_QUANTIZATION_OPAQUE_MAP;
+  PD3D12_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS_SUPPORT_FLAGS = ^D3D12_VIDEO_ENCODER_RATE_CONTROL_FRAME_ANALYSIS_SUPPORT_FLAGS;
+  PD3D12_VIDEO_ENCODER_RESOLVE_METADATA_OUTPUT_PSNR_RESOLVED_LAYOUT = ^D3D12_VIDEO_ENCODER_RESOLVE_METADATA_OUTPUT_PSNR_RESOLVED_LAYOUT;
+  PD3D12_VIDEO_ENCODER_SUBREGION_COMPRESSED_BITSTREAM = ^D3D12_VIDEO_ENCODER_SUBREGION_COMPRESSED_BITSTREAM;
+  PD3D12_VIDEO_ENCODER_SUBREGION_COMPRESSED_BITSTREAM_BUFFER_MODE = ^D3D12_VIDEO_ENCODER_SUBREGION_COMPRESSED_BITSTREAM_BUFFER_MODE;
+
+
+  // Interface ID3D12VideoEncodeCommandList2
+  // ========================================
+  //
+  ID3D12VideoEncodeCommandList2 = interface(ID3D12VideoEncodeCommandList1)
+    ['{895491E2-E701-46A9-9A1F-8D3480ED867A}']
+
+    procedure EncodeFrame(pEncoder: ID3D12VideoEncoder;
+                          pHeap: ID3D12VideoEncoderHeap;
+                          pInputArguments: PD3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS;
+                          pOutputArguments: PD3D12_VIDEO_ENCODER_ENCODEFRAME_OUTPUT_ARGUMENTS); stdcall;
+
+    procedure ResolveEncoderOutputMetadata(pInputArguments: PD3D12_VIDEO_ENCODER_RESOLVE_METADATA_INPUT_ARGUMENTS;
+                                           pOutputArguments: PD3D12_VIDEO_ENCODER_RESOLVE_METADATA_OUTPUT_ARGUMENTS); stdcall;
+  end;
+  IID_ID3D12VideoEncodeCommandList2 = ID3D12VideoEncodeCommandList2;
+
+
+  // Interface ID3D12VideoEncodeCommandList3
+  // ========================================
+  //
+  ID3D12VideoEncodeCommandList3 = interface(ID3D12VideoEncodeCommandList2)
+    ['{7F027B22-1515-4E85-AA0D-026486580576}']
+
+    procedure Barrier(NumBarrierGroups: UINT32;
+                      pBarrierGroups: PD3D12_BARRIER_GROUP); stdcall;
+  end;
+  IID_ID3D12VideoEncodeCommandList3 = ID3D12VideoEncodeCommandList3;
+
+  { 10.0.28000.0  }
+  ID3D12VideoEncodeCommandList4 = interface(ID3D12VideoEncodeCommandList3)
+    ['{69AEB5B7-55F2-4012-8B73-3A88D65A204C}']
+    procedure EncodeFrame1(pEncoder: ID3D12VideoEncoder;
+                           pHeap: ID3D12VideoEncoderHeap1;
+                           pInputArguments: PD3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS1;
+                           pOutputArguments: PD3D12_VIDEO_ENCODER_ENCODEFRAME_OUTPUT_ARGUMENTS1); stdcall;
+    procedure ResolveEncoderOutputMetadata1(pInputArguments: PD3D12_VIDEO_ENCODER_RESOLVE_METADATA_INPUT_ARGUMENTS1;
+                                            pOutputArguments: PD3D12_VIDEO_ENCODER_RESOLVE_METADATA_OUTPUT_ARGUMENTS1); stdcall;
+    procedure ResolveInputParamLayout(pInputArguments: PD3D12_VIDEO_ENCODER_RESOLVE_INPUT_PARAM_LAYOUT_INPUT_ARGUMENTS;
+                                      pOutputArguments: PD3D12_VIDEO_ENCODER_RESOLVE_INPUT_PARAM_LAYOUT_OUTPUT_ARGUMENTS); stdcall;
+  end;
+  IID_ID3D12VideoEncodeCommandList4 = ID3D12VideoEncodeCommandList4;
+
+
+  // Additional Prototypes for ALL interfaces
+
+  // End of Additional Prototypes
+
+const
+  D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_Y : D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT = 0;
+  D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_U : D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT = 1;
+  D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_V : D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT = 2;
+  D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_R : D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT = 0;
+  D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_G : D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT = 1;
+  D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_B : D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT = 2;
+  D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT_A : D3D12_VIDEO_DECODE_HISTOGRAM_COMPONENT = 3;
+
+const
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_0_ALL_LUMA_CHROMA_SLICE_BLOCK_EDGES_ALWAYS_FILTERED: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODES = 0;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_1_DISABLE_ALL_SLICE_BLOCK_EDGES: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODES = 1;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_2_DISABLE_SLICE_BOUNDARIES_BLOCKS: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODES = 2;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_3_USE_TWO_STAGE_DEBLOCKING: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODES = 3;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_4_DISABLE_CHROMA_BLOCK_EDGES: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODES = 4;
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_5_DISABLE_CHROMA_BLOCK_EDGES_AND_LUMA_BOUNDARIES: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODES = 5;
+  D3D12_VIDEO_ENCODER_H264_DEBLOCKING_MODE_6: D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODES = 6;
+
+implementation
+
+  // Implement Additional Prototypes here.
+
+end.
