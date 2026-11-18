@@ -39,7 +39,9 @@ Those you can buy from Microsoft Store or download elsewhere.
   
 ---
   
-## Porting is still in progress, updates will be published as soon as possible.
+# Updates and porting status
+### The porting of the complete MfPack Windows API sources (src) and Tools has been completed.  
+### Porting the samples, Cast, and FxServe are still in progress, these and updates will be published as soon as possible.
   
 ---
   
