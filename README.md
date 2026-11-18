@@ -54,7 +54,7 @@ Demonstrates using the IMFSourceReader API to extract uncompressed media data fr
 a media file. This sample application reads audio data from a media file and writes  
 the uncompressed audio to a WAVE file.
   
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/Master/MfPack/Pic/AudioClipExSample.jpg)
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/AudioClipExSample.jpg)
   
 ---
   
@@ -66,7 +66,7 @@ This tool can be used to determine HResult or Error codes returned by the Window
 featuring a detailed build in "HResult Lookup tool", the "Windows System Error Code Lookup Tool" and  
 the "System.SysUtils.SysErrorMessage" function, that provides the localized translation (language of your OS) of the HResult.  
   
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/Master/MfPack/Pic/HResultLookUpToolApp.png)
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/HResultLookUpToolApp.png)
   
   
 **Copyright © FactoryX. All rights reserved.**
