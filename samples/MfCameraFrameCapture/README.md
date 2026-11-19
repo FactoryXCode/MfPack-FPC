@@ -1,0 +1,24 @@
+# MfCameraFrameCapture
+  
+Version: 4.1.0  
+  
+Description:  
+  
+Demonstrates how to capture a still image or so called snapshot (A-synchronous) from a  
+capture device such as a webcam or camera using the Source Reader.  
+  
+NOTES:  
+  
+* This release is updated for compiler version 3.2.2 (64 bit).
+* SDK version 10.0.28000.2705 (Win 11)
+* Requires Windows 8 or later.
+* Minimum supported MfPack version: 4.1.0
+  
+Project: Media Foundation - MFPack - Samples  
+Project location: https://github.com/FactoryXCode/MfPack-FPC  
+  
+First release date: 05-07-2020  
+Final release date: 18/11/2026  
+  
+Copyright © FactoryX. All rights reserved.
+
