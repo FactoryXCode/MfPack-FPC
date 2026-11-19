@@ -1,6 +1,6 @@
-﻿# About MfPack
+﻿# About MfPack-FPC
   
- Delphi to Free Pascal port for Microsoft Media Foundation and related API's.
+MfPack-FPC ia a Free Pascal/Lazarus port for Microsoft Media Foundation and related API's.
   
 # MfPack covers the following API's:
   
@@ -27,7 +27,7 @@
 # <u>Latest release:</u> 
   
 # MfPack Version 4.1.0  
-FPC/Lazarus version 3.2.2 (64 bit)
+FPC/Lazarus version 3.2.2 (64 bit)  
 SDK version: 10.0.28000.2705 (Windows 11).  
   
   
@@ -41,14 +41,15 @@ Those you can buy from Microsoft Store or download elsewhere.
   
 # Updates and porting status
 ### The porting of the complete MfPack Windows API sources (src) and Tools has been completed.  
-### Porting the samples, Cast, and FxServe are still in progress, these and updates will be published as soon as possible.
+### The porting of Cast and FxServe has been completed.
+### Porting of all samples are still in progress, these will be published as soon as possible.
   
 ---
   
 # Samples
   
   
-**AudioClip sample**
+## AudioClip sample
   
 Demonstrates using the IMFSourceReader API to extract uncompressed media data from  
 a media file. This sample application reads audio data from a media file and writes  
@@ -57,14 +58,14 @@ the uncompressed audio to a WAVE file.
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/AudioClipExSample.jpg)
 
 ---  
-**SimpleVolumeControl sample**
+## SimpleVolumeControl sample
   
 This example shows how to use the MfAudioEndPoint component.  
 Note that the maximum value of the maximum static DB values () are arbitrary!  
 Please, install the '..\Samples\Components' first before loading this project.
   
 ---
-**MfPlayer samples**
+## MfPlayer samples
 
 The player samples are based on the original Microsoft CPlayer sample.  
 There are 4 samples in 4 project degrees.  
@@ -85,7 +86,7 @@ There are 4 samples in 4 project degrees.
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfMediaPlayer_X.jfif)
 
 ---
-**MfSimpleCapture Sample**
+## MfSimpleCapture Sample
 
 This example shows, how you have to implement capturing within a session.  
 Note: The old MS sample used the deprecated IMFplayer interface. 
@@ -93,7 +94,7 @@ Note: The old MS sample used the deprecated IMFplayer interface.
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfSimpleCapture.png)
 
 ---
-**MfTransode samples**
+## MfTransode samples
   
 Demonstrates using the transcode API to transcode a source file (audio or video) to  
 a different format (audio or video) supported by Media Foundation.  
@@ -116,7 +117,7 @@ Supported, but not limited, formats in this sample are:
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfTranscode%20Sample%202.png)
 
 ---
-**MfWebCamStreamer Sample**
+## MfWebCamStreamer Sample
   
 This sample is the extended version of MfSimpleWebCamStreamer, that uses FxServe to  
 stream over the internet. Within the browser or installable PWA,  
@@ -135,7 +136,7 @@ The browser player includes:
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfWebCamStreamer.png)
 
 ---
-**MfComponents Samples**
+## MfComponents Samples
 
 This package contains the following -installable- components:  
   
@@ -149,7 +150,7 @@ This package contains the following -installable- components:
 * MfAudioVisualizer - A visual component that uses WASAPI loopback, Peak/RMS, optional spectrum bars or VU.
 * MfAudioVisualizerEx - Extended MfAudioVisualizer with MMCS support.
   
-# WASAPI player / dsp / mft components:
+**WASAPI player / dsp / mft components:**
   
 * MfWasApiPlayerEngineComponent - WasApi renderer component supporting the MfWasApiEffectsRack and effects.
 * MfParametricEqComponent - Parametric equalizer component.
@@ -166,6 +167,8 @@ Note: On how to use these components, please read the WasApiPlayer sample 5 docu
 * WASAPIEngine.pas - Universal WASAPIEngine .
     
 ---
+## MfCastPlayer Samples
+  
 **MfSimpleCastPlayer Sample**
   
 **This sample demonstrates:**
@@ -186,6 +189,48 @@ Please read the white paper document MfPack/Cast/MfPack_Chromecast_API_White_Pap
 full details using the MfPack Cast API.  
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfSimpleCastPlayer.png)
+  
+---
+
+**MfCastPlayer Sample**
+  
+This it the extended version of MfSimpleCastPlayer.  
+  
+**This sample demonstrates the following additions of MfSimpleCastPlayer:**
+  
+- Casting a YouTube URL through an application-provided
+  `IMfCastSourceResolver` implementation;
+- A fast YouTube mode that resolves a combined H.264/AAC stream for direct
+  playback;
+- A best-quality YouTube mode that downloads separate video and audio streams
+  and merges them into an MP4 file;
+- Local video and audio preview through the `TMfCast` main interface;
+- Audio-only playback with optional JPG, PNG, BMP, or GIF artwork;
+- Heartbeat monitoring and automatic cleanup when the receiver is switched
+  off or stops responding.
+  
+The sample enables the optional Media Foundation conversion stack.  
+Compatible MP4/H.264/AAC, WebM, MP3, M4A, AAC, FLAC, WAV, and Ogg sources can use direct  
+playback. Other containers and codecs, including AVI and MKV when required,  
+are remuxed or converted to fragmented MP4 and published by the local HTTP  
+server.  
+  
+Please read `MfPack/Cast/MfPack_Chromecast_API_White_Paper.txt` for full details  
+about using the MfPack Cast API.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfCastPlayer.png)
+
+---
+
+**MfCastPlayer Sample II**
+  
+This is the alternative version of MfCastPlayer.  
+  
+**This sample demonstrates the following differences of MfCastPlayer:**  
+  
+The sample uses DXGI desktop duplication to make it possible casting from for example browser or other player content.  
+It avoids installing 3th party apps viewing web content like YouTube.  
+There is some trade off: The quality of origin is downgraded to the monitor resolution it play's on.
   
 ---
 
@@ -238,7 +283,7 @@ This sample demonstrates a **real-time audio playback engine on Windows** using:
 - Thread-safe **GUI and engine** command routing.
 - The EQ settings are stored in an **INI file**.
   
-## Features
+**Features**
   
 - Glitch-free real-time playback.
 - Low / Mid / High EQ with live control.
@@ -277,6 +322,157 @@ Please read the documents included with this sample.
   
 ---
 
+## LoopBackCapture Samples
+
+**LoopBackCapture Sample 1**
+  
+Demonstrates how to capture sound from the default rendering device (soundcard) using WASAPI in combination with mmio to write wav-files.  
+Note that mmioOpen() is deprecated as mentioned in the documents, but this seems to be a bug in the documentation since Windows Vista.  
+The sample difference from the original sample where the audioclient buffersize is fixed that leads to an oversized buffer on modern audio devices.  
+This sample lets you to choose between different latency's for better sound to eliminate buffer related gliches.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/LoopBackCapture.png)
+  
+---
+  
+**LoopBackCapture Sample 2**
+  
+This sample demonstrates how to capture system audio either from a  
+specific process tree or for all process except  
+a process tree and the use of ActivateAudioInterfaceAsync Win32 API  
+with a new initialization structure.  
+The new data structure makes it possible to restrict captured  
+audio data to that rendered by a specific process and any of its child processes.  
+Windows 10 has always supported capturing all audio that is played on  
+an audio endpoint (referred to as "system" loopback capture),  
+which captures all audio from all apps that are playing sounds on  
+the chosen audio endpoint.  
+  
+With the new structure, only audio from the specified process,  
+and its children, will be captured. Audio rendered by other processes will not be captured.  
+A flag is also provided to reverse the behavior, capturing all system  
+audio *except* those from the the specified process (and its children).  
+Furthermore, the capture is not tied to a specific audio endpoint,  
+eliminating the need to create a separate IAudioClient to capture from each physical  
+audio endpoint.  
+  
+If the processes whose audio will be captured does not have any audio rendering streams,  
+then the capturing process receives silence.  
+  
+It also demonstrates how to get a process by using the tlhelp32 API,  
+to list a snapshot of running processes and be able to pick one.  
+The application is provided with a dialog to select a running process from  
+the process tree you want to pick and has a button to get the current PID of your application.  
+  
+The application is using MMCSS and runs the rendering part in a separate thread.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/LoopbackCapture2.png)
+  
+---
+  
+**Threaded Loopback Capture Sample**
+  
+Demonstrates how to capture sound from a rendering or capture device (one of the soundcard's endpoints) using  in combination with mmio to write wav-files.  
+This sample lets you to choose between different latency's and buffersize for better sound to eliminate buffer related gliches.  
+  
+*It has some more advanced features like:*  
+   - *The rendering part is running in a separate thread to eliminate glitches.*
+   - *Able to use MMCSS (Multimedia Class Scheduler service).*
+   - *Stream switch detection.*
+   - *Possibility to write wav data in native format 44.1 kHz/ 16 bit PCM or* 
+     *the soundcard's audio format (including Uncompressed IEEE floating-point audio).*
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/ThreadedLoopbackCapture.png)
+  
+---
+  
+## MfCaptureVideoFromGPU Samples
+  
+**MfCaptureVideoFromGPU Sample 1**
+  
+This sample demonstrates how to capture from screen using your videocard GPU.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/CaptureVideoFromGPUSample.png)
+  
+---
+  
+**MfCaptureVideoFromGPU Sample 2**
+  
+This sample demonstrates how to capture a selected monitor (screen)  
+connected with the graphics card GPU using DXGI Desktop Duplication,  
+optionally captures system audio via WASAPI loopback, shows a live preview,  
+and writes the result to a file (typically MP4 with H.264 video and AAC or FLAC audio).  
+  
+Audio-only recording can be done separately to WAV or FLAC using the  
+dedicated recorder unit.  
+  
+**Note:**  
+You need good knowledge of Media Foundation, DirectX and GPU processing.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfCaptureVideoFromScreen2s.png)
+  
+---
+## SinkWriterToEncodeVideo Samples
+
+
+
+---
+
+## MfPack API's
+
+**MfPack Cast V2.2 API**  
+
+MfCast is an independent Chromecast subsystem for Delphi and FPC.
+It handles device discovery, receiver control, local media serving,
+media preparation, subtitles, track selection,
+and optional remuxing/transcoding behind a small public API.
+  
+MfCast can be used by:
+  
+- MfPack media-player samples.
+- Audio players.
+- Broadcast applications.
+- Slideshow or image applications.
+- Dedicated Chromecast control applications.
+- Third-party Delphi applications that use MfPack.
+- Applications that do not otherwise use MfPack player classes.
+  
+  
+**MfPack FxServe V1.1 API**  
+  
+FxServe is the lightweight FactoryX HTTP media server for MfPack, MfRdj, RDJ Pro and MfWebCamStreamer.  
+It serves the web player and generated media files and forwards the small set of live endpoints currently handled by Caddy.  
+  
+FxServe can run interactively as a console application or as a native Windows service.  
+Its LAN listener remains on port 8080. An optional HTTP.sys front end adds HTTPS on port 443 and redirects port 80 to HTTPS for WAN use.  
+WAN mode is disabled by default. When WAN HTTPS is enabled, FxServe obtains, installs, renews, validates, and binds its certificate itself.  
+  
+**Current capabilities**
+  
+- Concurrent client connections.
+- Static files rooted in one configured directory.
+- `GET`, `HEAD`, and `OPTIONS`.
+- Single HTTP byte ranges, including suffix and open-ended ranges.
+- HLS/fMP4 and common web/media MIME types.
+- Configurable CORS and no-cache routes.
+- Streaming reverse proxy routes for `/live`, `/status`, and `/video.mjpg`.
+- Explicit `403 Forbidden` responses for `/admin` and `/admin.xsl`.
+- URL decoding and protection against paths escaping the web root.
+- Console and file logging.
+- Daily log rotation with configurable retention; the default keeps 14 calendar
+  days and has no size-based boundary.
+- Graceful Ctrl+C shutdown.
+- Native Windows service start, stop, and shutdown handling.
+- HTTP.sys TLS termination with an SNI certificate binding.
+- Built-in ACME v2 certificate issue and renewal using an in-memory HTTP-01
+  challenge.
+- Host-name validation and HTTP-to-HTTPS permanent redirects.
+- HTTP.sys-to-localhost forwarding, including byte ranges used by fMP4/MSE.
+- Optional per-client request-rate, burst, and concurrent-request limits at the
+  public HTTP.sys edge, with HTTP `429` and `Retry-After` responses.
+- Automatic validated configuration reload in console and Windows-service mode.
+  
+---
   
 # Tools
   
