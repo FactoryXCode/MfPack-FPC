@@ -1,6 +1,6 @@
-﻿# About MfPack
+﻿# About MfPack-FPC
   
-MfPack Free Pascal/Lazarus port for Microsoft Media Foundation and related API's.
+MfPack-FPC ia a Free Pascal/Lazarus port for Microsoft Media Foundation and related API's.
   
 # MfPack covers the following API's:
   
