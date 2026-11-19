@@ -414,6 +414,18 @@ You need good knowledge of Media Foundation, DirectX and GPU processing.
 ---
 ## SinkWriterToEncodeVideo Samples
 
+*Example 1*  
+creates a simple green bitmap (640x480) and stores it to a file with a length of 20 seconds.  
+  
+*Example 2*  
+Demonstrates how to use the SinkWriter to create a video from one or more bitmap files.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/SinkWriterSample.png)
+  
+*Example 3*  
+Demonstrates how to use the SinkWriter to create a video from one or more image files including audio.
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/ImageToVideo_3.jpg)
 
 
 ---
