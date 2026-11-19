@@ -81,7 +81,7 @@ There are 4 samples in 4 project degrees.
   *The Player also demonstrates how Media Foundation playback, timed text,*
   *MFT processing, Source Reader/Sink Writer transcoding, IMFByteStream,*
   *mDNS, TLS, MfPack Cast V2 messages, and a local HTTP server can work together*
-  *inside a Delphi application, without using 3th party components.*
+  *inside a FPC/Lazarus application, without using 3th party components.*
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfMediaPlayer_X.jfif)
 
@@ -302,8 +302,7 @@ This is not a sample for absolute beginners. Please read the documents included 
 ** Player Sample 5**
   
 This is a non-visual components application sample using .  
-The sample shows you how to build a real-time audio playback engine for  
-Windows using Delphi style components.  
+The sample shows you how to build a real-time audio playback engine for Windows using FPC/Lazarus style components.  
   
 ## Features  
 This sample also demonstrates how to create and implement a:
@@ -434,7 +433,7 @@ Demonstrates how to use the SinkWriter to create a video from one or more image 
 
 **MfPack Cast V2.2 API**  
 
-MfCast is an independent Chromecast subsystem for Delphi and FPC.
+MfCast is an independent Chromecast subsystem for FPC/Lazarus.
 It handles device discovery, receiver control, local media serving,
 media preparation, subtitles, track selection,
 and optional remuxing/transcoding behind a small public API.
@@ -446,7 +445,7 @@ MfCast can be used by:
 - Broadcast applications.
 - Slideshow or image applications.
 - Dedicated Chromecast control applications.
-- Third-party Delphi applications that use MfPack.
+- Third-party FPC/Lazarus applications that use MfPack.
 - Applications that do not otherwise use MfPack player classes.
   
   
