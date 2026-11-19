@@ -56,15 +56,116 @@ the uncompressed audio to a WAVE file.
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/AudioClipExSample.jpg)
 
-  
+---  
 **SimpleVolumeControl sample**
-
+  
 This example shows how to use the MfAudioEndPoint component.  
 Note that the maximum value of the maximum static DB values () are arbitrary!  
 Please, install the '..\Samples\Components' first before loading this project.
   
 ---
+**MfPlayer samples**
+
+The player samples are based on the original Microsoft CPlayer sample.  
+There are 4 samples in 4 project degrees.  
   
+- *MfPlayer I : The basic player sample.*
+- *MfPlayer II : The extended version I sample.*
+- *MfPlayer X : This is an example that shows how to use the IMFTimer, language tags,*  
+  *subtitles (SubRip, MicroDvd and WebVTT), RegEx (Regular Expressions) and how to get media properties.*
+- *MfPlayer X2 : This example is based on the MfPlayer X project, but replaces the floating*
+  *subtitle overlay with a real video-frame subtitle pipeline.*
+  *Subtitles are now injected into the decoded video for local playback.*
+  *Added MP4 export and Chromecast/Android TV/Google TV streaming support.*
+  *The Player also demonstrates how Media Foundation playback, timed text,*
+  *MFT processing, Source Reader/Sink Writer transcoding, IMFByteStream,*
+  *mDNS, TLS, MfPack Cast V2 messages, and a local HTTP server can work together*
+  *inside a Delphi application, without using 3th party components.*
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfMediaPlayer_X.jfif)
+
+---
+**MfSimpleCapture Sample**
+
+This example shows, how you have to implement capturing within a session.  
+Note: The old MS sample used the deprecated IMFplayer interface. 
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfSimpleCapture.png)
+
+---
+**MfTransode samples**
+  
+Demonstrates using the transcode API to transcode a source file (audio or video) to  
+a different format (audio or video) supported by Media Foundation.  
+  
+Supported, but not limited, formats in this sample are:
+  
+- Audio
+   * Waveform Audio File Format (wav)
+   * MPEG Audio Layer III (mp3)
+   * Free Lossless Audio Codec (flac)
+   * MPEG-4 Audio (m4a)
+   * Windows Media Audio (wma)
+  
+- Video
+   * Audio Video Interleave (avi)
+   * MPEG-4 Video with AAC Audio (mp4)
+   * MPEG-4 Video with Dolby AC-3 Audio (mp4) 
+   * Windows Media Video (wmv)
+
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfTranscode%20Sample%202.png)
+
+---
+**MfWebCamStreamer Sample**
+  
+This sample is the extended version of MfSimpleWebCamStreamer, that uses FxServe to  
+stream over the internet. Within the browser or installable PWA,  
+users can watch the video and are able to take snapshots or record the camera stream. 
+Note: The PWA operates like an app, that can be installed via the Install button in the browser.  
+There is no need to get the PWA from any "Store".
+  
+The browser player includes:
+  
+- A live elapsed timer;
+- PNG snapshots of the current camera frame;
+- Client-side recording through `MediaRecorder` (downloaded as WebM);
+- Live viewer count with privacy-masked IP addresses;
+- Sound, playback, reconnect, and live-edge controls.
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfWebCamStreamer.png)
+
+---
+**MfComponents Samples**
+
+This package contains the following -installable- components:  
+  
+* TQTimer - Queue Timer component. For precise timing.
+* MfPeakMeter - Simple PeakMeter control.
+* MfPeakMeterEx - Enhanged PeakMeter control.
+* MfPeakMeterMmcs - Derived from MfPeakMeterEx with MMCS support and direct feed from external sources.
+* MfAudioEndPoint - Audio EndPoint component that responds to volume changes.
+  Uses: IAudioEndpointVolumeEx, IAudioEndpointVolumeCallback and IMMDeviceEnumerator.
+* TThreadedQTimer - A threaded queue timer (experimental)
+* MfAudioVisualizer - A visual component that uses WASAPI loopback, Peak/RMS, optional spectrum bars or VU.
+* MfAudioVisualizerEx - Extended MfAudioVisualizer with MMCS support.
+  
+# WASAPI player / dsp / mft components:
+  
+* MfWasApiPlayerEngineComponent - WasApi renderer component supporting the MfWasApiEffectsRack and effects.
+* MfParametricEqComponent - Parametric equalizer component.
+* MfFlangerEchoComponent - Flanger / Echo component.
+* MfCompressorLimiterComponent - Compressor / Limiter component.
+* MfPitchTempoComponent - Pitching / tempo component.
+* MfChorusComponent - Chorus component.
+* MfWasApiEffectsRack - Effects rack component that controls FX DSP's and MFT's.
+  
+Note: On how to use these components, please read the WasApiPlayer sample 5 documentation.
+  
+# Other files/ helpers for the components.
+* PcmLib.pas - A very convenient unit that is capable of recoding diverse WAV formats.
+* WASAPIEngine.pas - Universal WASAPIEngine .
+    
+---
 **MfSimpleCastPlayer Sample**
   
 **This sample demonstrates:**
