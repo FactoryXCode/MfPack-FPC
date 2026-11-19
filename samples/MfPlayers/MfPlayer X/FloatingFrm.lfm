@@ -1,0 +1,54 @@
+object FloatingForm: TFloatingForm
+  Left = 540
+  Top = 263
+  BorderIcons = []
+  BorderStyle = bsNone
+  Caption = 'TFloatingForm'
+  ClientHeight = 473
+  ClientWidth = 840
+  Color = clNone  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWhite
+  Font.Height = -16
+  Font.Name = 'Arial'
+  Font.Style = [fsBold]
+  Position = poDefault
+  SnapBuffer = 0
+  OnDestroy = FormDestroy  object lblSubTitle: TLabel
+    Left = 0
+    Top = 30
+    Width = 840
+    Height = 443
+    Align = alClient
+    Alignment = taCenter
+    Caption = 'Subtitle'
+    Color = clNone
+    ParentColor = False
+    Transparent = True
+    Layout = tlBottom  end
+  object Label1: TLabel
+    Left = 0
+    Top = 0
+    Width = 840
+    Height = 15
+    Align = alTop
+    Caption = '-'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -12
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False  end
+  object Label2: TLabel
+    Left = 0
+    Top = 15
+    Width = 840
+    Height = 15
+    Align = alTop
+    Caption = '-'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -12
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False  end
+end

@@ -1,0 +1,30 @@
+object FullScreenLayer: TFullScreenLayer
+  Left = 0
+  Top = 0
+  BorderIcons = []
+  BorderStyle = bsNone
+  ClientHeight = 270
+  ClientWidth = 521
+  Color = clNone
+  DefaultMonitor = dmMainForm  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []  Position = poDesktopCenter
+  WindowState = wsMaximized  OnKeyUp = FormKeyUp
+  OnMouseUp = FormMouseUp
+  PixelsPerInch = 96  object PopupMenu1: TPopupMenu
+    Left = 30
+    Top = 64
+    object Fullscreen1: TMenuItem
+      AutoCheck = True
+      Caption = 'Fullscreen'
+      OnClick = Fullscreen1Click
+    end
+    object mnuEnableSubtitling: TMenuItem
+      AutoCheck = True
+      Caption = 'Enable Subtitling'
+      Checked = True
+    end
+  end
+end
