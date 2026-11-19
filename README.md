@@ -1,6 +1,6 @@
 ﻿# About MfPack-FPC
   
-MfPack-FPC is a Free Pascal/Lazarus translation for Microsoft Media Foundation and related API's.
+MfPack-FPC is a Delphi port to Free Pascal/Lazarus for Microsoft Media Foundation and related API's.
   
 # MfPack-FPC covers the following API's:
   
