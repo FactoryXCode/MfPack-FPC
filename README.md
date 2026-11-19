@@ -94,7 +94,7 @@ Note: The old MS sample used the deprecated IMFplayer interface.
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfSimpleCapture.png)
 
 ---
-## MfTransode samples
+## MfTranscode samples
   
 Demonstrates using the transcode API to transcode a source file (audio or video) to  
 a different format (audio or video) supported by Media Foundation.  
@@ -115,7 +115,32 @@ Supported, but not limited, formats in this sample are:
    * Windows Media Video (wmv)
 
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfTranscode%20Sample%202.png)
+  
+---
+## CameraFrameCapture Sample
+  
+Demonstrates how to capture a still image or so called snapshot (A-synchronous) from a    
+capture device such as a webcam or camera using the IMFSourceReader.
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/CameraFrameCaptureSample.png)
+  
+---
+## CaptureEngineVideoCapture Samples
 
+**CaptureEngineVideoCapture Sample**  
+  
+Demonstrates how to capture a snapshot or a recording (A-synchronous) from a capture device,  
+such as a webcam using the IMFCaptureEngine and IMFCapturePreviewSink.  
+This sample also demonstrates how to use the MfMediaTypeDebug API.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MFCaptureEngineVideoCapture.jpg)
+  
+---
+**CaptureEngineVideoCapture Sample 2** 
+  
+This is an extension of the CaptureEngineVideoCapture Sample.  
+The sample is extended with camera and video setting options, including rotation.
+  
 ---
 ## MfWebCamStreamer Sample
   
