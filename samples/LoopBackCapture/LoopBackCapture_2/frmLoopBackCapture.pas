@@ -1,0 +1,675 @@
+﻿// FactoryX
+//
+// Copyright: © FactoryX. All rights reserved.
+//
+// Project: MfPack - CoreAudio - WASAPI
+// Project location: https://sourceforge.net/projects/MFPack
+//                   https://github.com/FactoryXCode/MfPack
+// Module: frmLoopBackCapture.pas
+// Kind: Pascal / Delphi unit
+// Release date: 13-08-2025
+// Language: ENU
+//
+// Revision Version: 4.1.0
+// Description: The audio loopbackcapture engine.
+//
+// Organisation: FactoryX
+// Initiator(s): Tony (maXcomX), Peter (OzShips)
+// Contributor(s): Tony Kalf (maXcomX), Peter Larson (ozships), Jacob C.
+//
+//------------------------------------------------------------------------------
+// CHANGE LOG
+// Date       Person              Reason
+// ---------- ------------------- ----------------------------------------------
+// 15/11/2026 All                 Eels release  SDK 10.0.28000.2705 (Windows 11)
+//------------------------------------------------------------------------------
+//
+// Remarks: Requires Windows 10 or later.
+//
+// Related objects: -
+// Related projects: MfPackX410
+// Known Issues: -
+//
+// Compiler version: 23 up to 35
+// SDK version: 10.0.28000.2705
+//
+// Todo: -
+//
+//==============================================================================
+// Source: LoopBackAudio Capture example.
+//
+//==============================================================================
+//
+// LICENSE
+//
+// The contents of this file are subject to the Mozilla Public License
+// Version 2.0 (the "License"); you may not use this file except in
+// compliance with the License. You may obtain a copy of the License at
+// https://www.mozilla.org/en-US/MPL/2.0/
+//
+// Software distributed under the License is distributed on an "AS IS"
+// basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+// License for the specific language governing rights and limitations
+// under the License.
+//
+// Non commercial users may distribute this sourcecode provided that this
+// header is included in full at the top of the file.
+// Commercial users are not allowed to distribute this sourcecode as part of
+// their product.
+//
+//==============================================================================
+unit frmLoopBackCapture;
+
+{$I MfPack.Fpc.inc}
+{$POINTERMATH ON}
+
+interface
+
+uses
+  MfLoopbackSamples.Platform,
+  LMessages,
+{WinApi}
+  Windows,
+  Messages,
+  WinApi.ComBaseApi,
+  ShellAPI,
+  WinApi.WinApiTypes,
+  {ActiveX}
+  WinApi.ActiveX.ObjBase,
+  {System}
+  SysUtils,
+  Variants,
+  Classes,
+  MfLoopbackSamples.Diagnostics,
+  {Vcl}
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  ComCtrls,
+  StdCtrls,
+  Clipbrd,
+  ExtCtrls,
+  Spin,
+  {MediaFoundationApi}
+  WinApi.MediaFoundationApi.MfApi,
+  WinApi.MediaFoundationApi.MfUtils,
+  WinApi.CoreAudioApi.MMDeviceApi,
+  WinApi.CoreAudioApi.AudioClient,
+  {Application}
+  Common,
+  LoopbackCapture,
+  ProcessInfoDlg,
+  UniThreadTimer;
+
+type
+  TfrmMain = class(TForm)
+    edPID: TEdit;
+    Label3: TLabel;
+    rb2: TRadioButton;
+    rb1: TRadioButton;
+    butGetPID: TButton;
+    butShowProcesses: TButton;
+    Bevel2: TBevel;
+    Label2: TLabel;
+    edProcName: TEdit;
+    cbxStayOnTop: TCheckBox;
+    Panel1: TPanel;
+    Label1: TLabel;
+    edFileName: TEdit;
+    cbxDontOverWrite: TCheckBox;
+    butStart: TButton;
+    butStop: TButton;
+    butPlayData: TButton;
+    lblMsg: TLabel;
+    Bevel1: TBevel;
+    Bevel3: TBevel;
+    Panel3: TPanel;
+    Label4: TLabel;
+    sedBufferSize: TSpinEdit;
+    cbxAutoBufferSize: TCheckBox;
+    lblCaptureBufferDuration: TLabel;
+    lblBufferDuration: TLabel;
+    cbxWavFormats: TComboBox;
+    lblFileExt: TLabel;
+    cbxOutputFormat: TComboBox;
+    lblOutputFmt: TLabel;
+    dlgSave: TSaveDialog;
+    Label5: TLabel;
+    spedLatency: TSpinEdit;
+
+    procedure FormCreate(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
+
+    procedure butPlayDataClick(Sender: TObject);
+    procedure butStartClick(Sender: TObject);
+    procedure butStopClick(Sender: TObject);
+
+    procedure butGetPIDClick(Sender: TObject);
+    procedure edFileNameKeyUp(Sender: TObject;
+                              var Key: Word;
+                              Shift: TShiftState);
+    procedure butShowProcessesClick(Sender: TObject);
+    procedure edPIDKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure cbxStayOnTopClick(Sender: TObject);
+    procedure cbxOutputFormatChange(Sender: TObject);
+
+  private
+
+    { Private declarations }
+
+    FFileName: string;
+    FOrgFileName: string;
+    bEdited: Boolean;
+    FFileNameEditWindowProc: TWndMethod;
+    iTotalBytesWritten: Int64;
+    pvBufferDuration: REFERENCE_TIME;
+    pvTargetLatency: REFERENCE_TIME;
+    bIncludeProcessTree: Boolean;
+    FLoopbackCapture: TLoopbackCapture;
+    aMainProcessId: Integer;
+    aWavFmt: TWavFormat;
+
+    // We use timers here, to prevent distortions when quering the capturethread for timing and processed data.
+    // The timer must be set to 1 millisecond resolution.
+    thrTimer: TUniThreadedTimer;
+    aStopWatch: TStopwatch;
+
+    function CreateEngine(): Boolean;
+    procedure RemoveEngine();
+    procedure SetBufferDuration();
+    procedure FileNameEditWindowProc(var Message: TLMessage);
+
+    // Event handlers.
+    procedure OnCapturingStartEvent(Sender: TObject);
+    procedure OnCapturingStoppedEvent(Sender: TObject);
+
+    function StartCapture(): HResult;
+    procedure TimerTimer(sender: TObject);
+
+  public
+    { Public declarations }
+
+  end;
+
+var
+  frmMain: TfrmMain;
+
+
+implementation
+
+
+{$R *.lfm}
+
+
+procedure TfrmMain.butPlayDataClick(Sender: TObject);
+begin
+
+  ShellExecute(Handle,
+               'open',
+               StrToPWideChar(FFileName),
+               nil,
+               nil,
+               SW_SHOWNORMAL) ;
+end;
+
+
+procedure TfrmMain.butStartClick(Sender: TObject);
+var
+  hr: HResult;
+
+begin
+
+  // Set to default, if user selected nothing.
+  if (aMainProcessId = 0) then
+    begin
+      butGetPIDClick(nil);
+      rb1.Checked := true;
+    end;
+
+  hr := StartCapture();
+
+  if FAILED(hr) then
+    begin
+      MessageBoxW(0,
+                 LPCWSTR('Start Capture failed with result ' + IntToStr(hr)),
+                 LPCWSTR('Start Capture Failure!'),
+                 MB_ICONSTOP);
+      Exit;
+    end;
+
+  butStart.Enabled := FAILED(hr);
+  butStop.Enabled := SUCCEEDED(hr);
+end;
+
+
+procedure TfrmMain.butStopClick(Sender: TObject);
+var
+  hr: HResult;
+
+begin
+
+  hr := FLoopbackCapture.StopCaptureAsync();
+  butStart.Enabled := SUCCEEDED(hr);
+  butStop.Enabled := not SUCCEEDED(hr);
+end;
+
+
+procedure TfrmMain.butShowProcessesClick(Sender: TObject);
+begin
+
+  // Create the dialog if it's not allready done.
+  if not Assigned(dlgProcessInfo) then
+    begin
+      Application.CreateForm(TdlgProcessInfo,
+                             dlgProcessInfo);
+      dlgProcessInfo.Visible := False;
+    end;
+
+  // Ask the user to select one.
+  if (dlgProcessInfo.ShowModal = mrOk) then
+    begin
+      aMainProcessId := dlgProcessInfo.SelectedMainPID; //dlgProcessInfo.SelectedPID;
+      edPID.Text := IntToStr(aMainProcessId);
+      edProcName.Text := dlgProcessInfo.SelectedProcName;
+      rb2.Checked := True;
+    end
+  else
+    begin
+      // User canceled.
+      rb1.Checked := True;
+    end;
+end;
+
+
+procedure TfrmMain.cbxOutputFormatChange(Sender: TObject);
+begin
+
+  case cbxOutputFormat.ItemIndex of
+    0: begin
+
+          dlgSave.Filter := 'WAV audio (*.wav)|*.wav';
+          dlgSave.DefaultExt := 'wav';
+          lblFileExt.Caption := '.wav';
+        end;
+
+    1:  begin
+          dlgSave.Filter := 'FLAC audio (*.flac)|*.flac';
+          dlgSave.DefaultExt := 'flac';
+          lblFileExt.Caption := '.flac';
+        end
+    else
+      begin
+
+        dlgSave.Filter := 'WAV audio (*.wav)|*.wav';
+        dlgSave.DefaultExt := 'wav';
+        lblFileExt.Caption := '.wav';
+      end;
+  end;
+end;
+
+
+procedure TfrmMain.cbxStayOnTopClick(Sender: TObject);
+begin
+
+  if cbxStayOnTop.Checked then
+    SetWindowPos(Handle,
+                 HWND_TOPMOST,
+                 0,
+                 0,
+                 0,
+                 0,
+                 SWP_NoMove or SWP_NoSize)
+  else
+    SetWindowPos(Handle,
+                 HWND_NOTOPMOST,
+                 0,
+                 0,
+                 0,
+                 0,
+                 SWP_NoMove or SWP_NoSize);
+end;
+
+
+procedure TfrmMain.edFileNameKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+
+  bEdited := True;
+end;
+
+
+procedure TfrmMain.edPIDKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+  i: Integer;
+
+begin
+
+  if TryStrToInt(edPID.Text, i) and (i >= 0) then
+   aMainProcessId := i;
+end;
+
+
+// Get the PID from this application
+procedure TfrmMain.butGetPIDClick(Sender: TObject);
+begin
+
+  edPID.Text := IntToStr(GetCurrentProcessId());
+  edProcName.Text := Application.Title;
+end;
+
+
+procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+
+  CanClose := False;
+  aStopWatch.Stop;
+  thrTimer.Enabled := False;
+
+  FreeAndNil(FLoopbackCapture);
+  FreeAndNil(thrTimer);
+  CanClose := True;
+end;
+
+
+procedure TfrmMain.FormCreate(Sender: TObject);
+begin
+
+  aStopWatch := TStopwatch.Create;
+  thrTimer := TUniThreadedTimer.Create(nil);
+  thrTimer.Period := 1;  // One millisecond resolution.
+  thrTimer.Enabled := False;
+  thrTimer.OnTimerEvent := TimerTimer;
+
+  CreateEngine();
+  butGetPID.OnClick(Self);
+  bEdited := False;
+
+  // Browsers can place text on the clipboard in a Unicode-only format that
+  // the standard edit control does not always consume correctly.
+  FFileNameEditWindowProc := edFileName.WindowProc;
+  edFileName.WindowProc := FileNameEditWindowProc;
+end;
+
+
+procedure TfrmMain.FileNameEditWindowProc(var Message: TLMessage);
+var
+  ClipboardText: string;
+
+begin
+
+  if (Message.Msg = WM_PASTE) and Clipboard.HasFormat(CF_UNICODETEXT) then
+    begin
+
+      ClipboardText := Clipboard.AsText;
+      ClipboardText := StringReplace(ClipboardText,
+                                     #13#10,
+                                     ' ',
+                                     [rfReplaceAll]);
+      ClipboardText := StringReplace(ClipboardText,
+                                     #13,
+                                     ' ',
+                                     [rfReplaceAll]);
+      ClipboardText := StringReplace(ClipboardText,
+                                     #10,
+                                     ' ',
+                                     [rfReplaceAll]);
+
+      edFileName.SelText := ClipboardText;
+      bEdited := True;
+      Message.Result := 0;
+      Exit;
+    end;
+
+  FFileNameEditWindowProc(Message);
+end;
+
+
+function TfrmMain.StartCapture(): HResult;
+var
+  hr: HResult;
+  i: Integer;
+  bFileExists: Boolean;
+  hnsPeriod: REFERENCE_TIME;
+
+begin
+
+  iTotalBytesWritten := 0;
+
+  if not Assigned(FLoopbackCapture) then
+    CreateEngine();
+
+  // Check for valid inputs
+  aMainProcessId := StrToInt(edPID.Text);
+  if (aMainProcessId <= 0) then
+    begin
+      aMainProcessId := 0;
+      edPID.Text := IntToStr(aMainProcessId);
+    end;
+
+  if rb1.Checked then
+    bIncludeProcessTree := False
+  else if rb2.Checked then
+    bIncludeProcessTree := True;
+
+  // Check filename format.
+
+  // Don't use the extension yet, because we want to check if user edited a different name.
+  FFileName := Format('%s', [edFileName.Text]);
+
+  if (FOrgFileName = '') or bEdited then
+    begin
+
+      FOrgFileName := FFileName;
+      bEdited := False;
+    end;
+
+  if cbxDontOverWrite.Checked then
+    begin
+
+      bFileExists := True;
+      i := 0;
+
+      while (bFileExists = True) do
+        begin
+
+          if FileExists(FFileName + lblFileExt.Caption) then
+            begin
+
+              if (FOrgFileName = FFileName) then
+                FFileName := Format('%s(%d)',
+                                     [edFileName.Text, i])
+              else
+                begin
+
+                  FFileName := Format('%s(%d)',
+                                      [FOrgFileName, i]);
+                  edFileName.Text := FFileName;
+                end;
+                 Inc(i);
+            end
+             else
+               bFileExists := False;
+        end;
+    end;
+
+  // Set output format/extension from UI (WAV/FLAC)
+  cbxOutputFormatChange(nil);
+
+  // Show new filename to user and make the filename complete incl. extension.
+  edFileName.Text := FFileName;
+  FFileName := Format('%s%s',
+                      [edFileName.Text, lblFileExt.Caption]);
+
+  butPlayData.Enabled := False;
+
+  pvTargetLatency := spedLatency.Value * REFTIMES_PER_MILLISEC;
+
+  butStop.Enabled := True;
+  butStart.Enabled := False;
+  butPlayData.Enabled := False;
+  SetBufferDuration();
+
+  // Bitrate and resolution.
+  case cbxWavFormats.ItemIndex of
+    0: aWavFmt := fmt44100b16;
+    1: aWavFmt := fmt48000b24;
+    2: aWavFmt := fmt48000b32;
+    3: aWavFmt := fmt96000b24;
+    4: aWavFmt := fmt96000b32;
+  end;
+
+  // Capture the audio stream from the default rendering device.
+  hr := FLoopbackCapture.StartCaptureAsync(Handle,
+                                           aMainProcessId,
+                                           bIncludeProcessTree,
+                                           LPCWSTR(FFileName),
+                                           aWavFmt,
+                                           pvBufferDuration);
+  if FAILED(hr) then
+    begin
+
+      butStop.Enabled := False;
+      butStart.Enabled := True;
+      Exit(hr);
+    end;
+
+  hnsPeriod := Round(1000 * (FLoopbackCapture.CaptureBufferLength / FLoopbackCapture.CurrentWavFormat.nSamplesPerSec));
+  lblCaptureBufferDuration.Caption := Format('Capture Buffer Duration: %d ms.', [hnsPeriod]);
+
+
+  Result := hr;
+end;
+
+
+function TFrmMain.CreateEngine(): Boolean;
+begin
+
+  // Destroy an existing capture engine.
+  if Assigned(FLoopbackCapture) then
+    RemoveEngine();
+
+  // Create capture engine.
+  FLoopbackCapture := TLoopbackCapture.Create();
+
+  if not Assigned(FLoopbackCapture) then
+    begin
+
+      ErrMsg('Unable create the WASCapture engine.',
+              E_POINTER);
+      Exit(False);
+    end
+  else
+    begin
+
+      // Set event handlers.
+      FLoopbackCapture.OnStoppedCapturing := OnCapturingStoppedEvent;
+      FLoopbackCapture.OnStartCapturing := OnCapturingStartEvent;
+
+      ErrMsg('The Loopback Capture engine is successfully initialized.',
+              S_OK);
+
+      SetBufferDuration();
+      Result := True;
+    end;
+end;
+
+
+procedure TFrmMain.RemoveEngine();
+begin
+
+  if Assigned(FLoopbackCapture) then
+    begin
+
+      FLoopbackCapture.StopCaptureAsync();
+      FLoopbackCapture.OnStoppedCapturing := nil;
+      FLoopbackCapture.OnStartCapturing := nil;
+
+      FreeAndNil(FLoopbackCapture);
+    end;
+end;
+
+
+procedure TFrmMain.SetBufferDuration();
+var
+  sms: string;
+
+begin
+
+  if cbxAutoBufferSize.Checked then
+    pvBufferDuration := 0
+  else
+    pvBufferDuration := (REFTIMES_PER_SEC) * sedBufferSize.Value;
+
+  if (pvBufferDuration > REFTIMES_PER_SEC) then
+    sms := 'milliseconds'
+  else
+    sms := 'millisecond';
+
+  if (pvBufferDuration = 0) then
+    lblBufferDuration.Caption := 'The audioclient will automaticly adjust the buffer duration.'
+  else
+    lblBufferDuration.Caption := Format('Capture buffer duration(%d %s)',
+                                        [sedBufferSize.Value,
+                                         sms])
+end;
+
+
+procedure TfrmMain.OnCapturingStartEvent(Sender: TObject);
+begin
+
+  thrTimer.Enabled := True;
+  aStopWatch.Start;
+  aStopWatch.StartNew;
+end;
+
+
+procedure TfrmMain.OnCapturingStoppedEvent(Sender: TObject);
+begin
+
+  // Stop the timer and stopwatch.
+  thrTimer.Enabled := False;
+  aStopWatch.Stop();
+  aStopWatch.Reset();
+
+  if not Assigned(FLoopbackCapture) then
+    Exit;
+
+  butPlayData.Enabled := True;
+  lblMsg.Caption := Format('Capturing stopped. Captured %f Mb.',
+                           [FLoopbackCapture.BytesWritten / (1000 * 1000)]);
+end;
+
+
+procedure TfrmMain.TimerTimer(sender: TObject);
+begin
+
+  lblMsg.Caption := 'Capturing from source: ' + FormatDateTime('hh:nn:ss:zzz',
+                                                               aStopWatch.ElapsedMilliseconds / MSecsPerDay);
+  HandleThreadMessages(GetCurrentThread());
+end;
+
+
+
+// initialization and finalization =============================================
+
+
+initialization
+
+  if FAILED(MFStartup(MF_VERSION,
+                      MFSTARTUP_LITE)) then
+      begin
+        MessageBoxW(0,
+                   lpcwstr('Your computer does not support this Media Foundation API version ' +
+                           IntToStr(MF_VERSION) + '.'),
+                   lpcwstr('MFStartup Failure!'),
+                           MB_ICONSTOP);
+      end;
+
+finalization
+
+  MFShutdown();
+
+end.

@@ -1,0 +1,105 @@
+unit FxProxy.JSON;
+
+{$mode delphiunicode}
+
+interface
+
+uses SysUtils,fpjson,jsonparser;
+
+type
+  TJSONValue = fpjson.TJSONData;
+  TJSONObject = fpjson.TJSONObject;
+  TJSONArray = fpjson.TJSONArray;
+
+  TJSONNumber = record
+    class function Create(Value: Int64): TJSONValue; overload; static;
+    class function Create(Value: Double): TJSONValue; overload; static;
+  end;
+
+  TJSONTrue = record
+    class function Create: TJSONValue; static;
+  end;
+
+  TJSONFalse = record
+    class function Create: TJSONValue; static;
+  end;
+
+  TFxJSONValueHelper = class helper for TJSONValue
+    function ToJSON: UnicodeString;
+  end;
+
+  TFxJSONObjectHelper = class helper for TJSONObject
+    procedure AddPair(const Name,Value: UnicodeString); overload;
+    procedure AddPair(const Name: UnicodeString;Value: TJSONValue); overload;
+  end;
+
+  TFxJSONArrayHelper = class helper for TJSONArray
+    procedure AddElement(Value: TJSONValue);
+  end;
+
+function FxParseJSON(const Text: UnicodeString): TJSONValue;
+function FxJsonText(Value: TJSONValue): UnicodeString;
+
+implementation
+
+class function TJSONNumber.Create(Value: Int64): TJSONValue;
+begin
+  Result := fpjson.TJSONInt64Number.Create(Value);
+end;
+
+class function TJSONNumber.Create(Value: Double): TJSONValue;
+begin
+  Result := fpjson.TJSONFloatNumber.Create(Value);
+end;
+
+class function TJSONTrue.Create: TJSONValue;
+begin
+  Result := fpjson.TJSONBoolean.Create(True);
+end;
+
+class function TJSONFalse.Create: TJSONValue;
+begin
+  Result := fpjson.TJSONBoolean.Create(False);
+end;
+
+function TFxJSONValueHelper.ToJSON: UnicodeString;
+begin
+  Result := UTF8Decode(AsJSON);
+end;
+
+procedure TFxJSONObjectHelper.AddPair(const Name,Value: UnicodeString);
+begin
+  Add(UTF8Encode(Name),UTF8Encode(Value));
+end;
+
+procedure TFxJSONObjectHelper.AddPair(const Name: UnicodeString;Value: TJSONValue);
+begin
+  Add(UTF8Encode(Name),Value);
+end;
+
+procedure TFxJSONArrayHelper.AddElement(Value: TJSONValue);
+begin
+  Add(Value);
+end;
+
+function FxParseJSON(const Text: UnicodeString): TJSONValue;
+begin
+  try
+    Result := GetJSON(UTF8Encode(Text),True);
+  except
+    on E: EJSONParser do Result := nil;
+  end;
+end;
+
+function FxJsonText(Value: TJSONValue): UnicodeString;
+begin
+  if Value = nil then Result := ''
+  else if Value.JSONType = jtNull then Result := 'null'
+  else if Value.JSONType = jtBoolean then
+    begin
+      if Value.AsBoolean then Result := 'true' else Result := 'false';
+    end
+  else Result := UTF8Decode(Value.AsString);
+end;
+
+end.
