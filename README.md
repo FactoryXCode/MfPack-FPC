@@ -167,7 +167,9 @@ Note: On how to use these components, please read the WasApiPlayer sample 5 docu
 * WASAPIEngine.pas - Universal WASAPIEngine .
     
 ---
-## MfSimpleCastPlayer Sample
+## MfCastPlayer Samples
+  
+**MfSimpleCastPlayer Sample**
   
 **This sample demonstrates:**
   
@@ -187,6 +189,48 @@ Please read the white paper document MfPack/Cast/MfPack_Chromecast_API_White_Pap
 full details using the MfPack Cast API.  
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfSimpleCastPlayer.png)
+  
+---
+
+**MfCastPlayer Sample**
+  
+This it the extended version of MfSimpleCastPlayer.  
+  
+**This sample demonstrates the following additions of MfSimpleCastPlayer:**
+  
+- Casting a YouTube URL through an application-provided
+  `IMfCastSourceResolver` implementation;
+- A fast YouTube mode that resolves a combined H.264/AAC stream for direct
+  playback;
+- A best-quality YouTube mode that downloads separate video and audio streams
+  and merges them into an MP4 file;
+- Local video and audio preview through the `TMfCast` main interface;
+- Audio-only playback with optional JPG, PNG, BMP, or GIF artwork;
+- Heartbeat monitoring and automatic cleanup when the receiver is switched
+  off or stops responding.
+  
+The sample enables the optional Media Foundation conversion stack.  
+Compatible MP4/H.264/AAC, WebM, MP3, M4A, AAC, FLAC, WAV, and Ogg sources can use direct  
+playback. Other containers and codecs, including AVI and MKV when required,  
+are remuxed or converted to fragmented MP4 and published by the local HTTP  
+server.  
+  
+Please read `MfPack/Cast/MfPack_Chromecast_API_White_Paper.txt` for full details  
+about using the MfPack Cast API.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfCastPlayer.png)
+
+---
+
+**MfCastPlayer Sample II**
+  
+This is the alternative version of MfCastPlayer.  
+  
+**This sample demonstrates the following differences of MfCastPlayer:**  
+  
+The sample uses DXGI desktop duplication to make it possible casting from for example browser or other player content.  
+It avoids installing 3th party apps viewing web content like YouTube.  
+There is some trade off: The quality of origin is downgraded to the monitor resolution it play's on.
   
 ---
 
@@ -367,6 +411,11 @@ You need good knowledge of Media Foundation, DirectX and GPU processing.
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfCaptureVideoFromScreen2s.png)
   
+---
+## SinkWriterToEncodeVideo Samples
+
+
+
 ---
 
 ## MfPack API's
