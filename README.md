@@ -1,8 +1,8 @@
 ﻿# About MfPack-FPC
   
-MfPack-FPC ia a Free Pascal/Lazarus port for Microsoft Media Foundation and related API's.
+MfPack-FPC is a Free Pascal/Lazarus translation for Microsoft Media Foundation and related API's.
   
-# MfPack covers the following API's:
+# MfPack-FPC covers the following API's:
   
 - Core Audio API's:
   * Windows Audio Session API (WASAPI) 
@@ -17,7 +17,7 @@ MfPack-FPC ia a Free Pascal/Lazarus port for Microsoft Media Foundation and rela
 - MPEG2 API.
 - The complete Windows Media (WinMM) API.
   
-# MfPack API's and Samples
+# MfPack-FPC API's and Samples
   
 - MfPack Cast V2.2 API.
 - MfPack FxServe V1.1 API.
