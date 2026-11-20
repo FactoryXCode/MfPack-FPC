@@ -21,6 +21,7 @@ MfPack-FPC is a Delphi port to Free Pascal/Lazarus for Microsoft Media Foundatio
   
 - MfPack Cast V2.2 API.
 - MfPack FxServe V1.1 API.
+- MfPack HEOS.
 - Media Foundation, WASAPI, XAudio2 and streaming samples.
   
   
@@ -41,19 +42,25 @@ Those you can buy from Microsoft Store or download elsewhere.
   
 # Updates and porting status
 ### The porting of the complete MfPack Windows API sources (src) and Tools has been completed.  
-### The porting of Cast and FxServe has been completed.
-### Porting of all samples are still in progress, these will be published as soon as possible.
+### The porting of Cast and FxServe are completed.
+### Porting of some samples are still in progress, these will be published when ready.
   
 ---
   
 # Samples
   
   
-## AudioClip sample
+**AudioClip, AudioClipEx and AudioClipEx2 samples**
   
 Demonstrates using the IMFSourceReader API to extract uncompressed media data from  
 a media file. This sample application reads audio data from a media file and writes  
-the uncompressed audio to a WAVE file.
+the uncompressed audio to a WAVE file.  
+The AudioClipEx sample demonstrates using the IMFSourceReader and 
+IMFSourceReaderCallback API to extract uncompressed audiodata from a media file.  
+  
+The AudioClipEx2 sample demonstrates using the IMFSourceReader,  
+IMFSourceReaderCallback and IMFSinkWriter API to extract uncompressed audiodata from a  
+media file and write the audio to a wav. It also uses threads for better responsiveness.
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/AudioClipExSample.jpg)
 
@@ -86,6 +93,28 @@ There are 4 samples in 4 project degrees.
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfMediaPlayer_X.jfif)
 
 ---
+  
+## MediaEngine player samples
+
+**MfMediaEngine Player 1**
+
+This is the basic class of MfMediaEnginePlayer, containing the necessary methodes to play a mediafile.  
+
+For indepth information see the Microsoft MediaEnginePlayer example and documentation, containing the complete information about MfMediaEnginePlayer. 
+  
+---
+  
+**MfMediaEngine Player 2 & IMFTimedText sample**
+  
+MediaEngine player (IMFMediaEngine(Ex)) with support for subtitles (closed captions) using  
+the IMFTimedTextNotify interface.
+  
+![](https://github.com/FactoryXCode/MfPack/blob/Master/MfPack/Pic/MediaEnginePlayer2.jfif)
+  
+For indepth information see the Microsoft MediaEnginePlayer example and documentation, containing the complete information about MfMediaEnginePlayer. 
+
+---
+  
 ## MfSimpleCapture Sample
 
 This example shows, how you have to implement capturing within a session.  
@@ -94,6 +123,19 @@ Note: The old MS sample used the deprecated IMFplayer interface.
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfSimpleCapture.png)
 
 ---
+  
+## MfVideoThumbNails sample
+  
+Demonstrates how to use the source reader to get video thumbnail images.  
+For indepth information see the [VideoThumbNails example and documentation.](https://learn.microsoft.com/en-us/windows/win32/medfound/videothumbnail-sample)
+  
+*This sample app needs the D2D1 Api. If your Delphi version doesn't have the  
+D2D1 API, May 2019 update or later, use the D2D1 MfPack version.*
+
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/VideoThumbNailsSample.jpg)
+  
+---
+  
 ## MfTranscode samples
   
 Demonstrates using the transcode API to transcode a source file (audio or video) to  
@@ -117,14 +159,7 @@ Supported, but not limited, formats in this sample are:
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfTranscode%20Sample%202.png)
   
 ---
-## CameraFrameCapture Sample
   
-Demonstrates how to capture a still image or so called snapshot (A-synchronous) from a    
-capture device such as a webcam or camera using the IMFSourceReader.
-  
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/CameraFrameCaptureSample.png)
-  
----
 ## CaptureEngineVideoCapture Samples
 
 **CaptureEngineVideoCapture Sample**  
@@ -166,14 +201,24 @@ The browser player includes:
 This package contains the following -installable- components:  
   
 * TQTimer - Queue Timer component. For precise timing.
-* MfPeakMeter - Simple PeakMeter control.
-* MfPeakMeterEx - Enhanged PeakMeter control.
-* MfPeakMeterMmcs - Derived from MfPeakMeterEx with MMCS support and direct feed from external sources.
 * MfAudioEndPoint - Audio EndPoint component that responds to volume changes.
   Uses: IAudioEndpointVolumeEx, IAudioEndpointVolumeCallback and IMMDeviceEnumerator.
 * TThreadedQTimer - A threaded queue timer (experimental)
-* MfAudioVisualizer - A visual component that uses WASAPI loopback, Peak/RMS, optional spectrum bars or VU.
-* MfAudioVisualizerEx - Extended MfAudioVisualizer with MMCS support.
+
+**Visual controls**
+
+**MfPeakMeter, MfPeakMeterEx MfPeakMeterMmcs component samples**
+  
+An example about how to create a MfPeakMeter control. This sample is part of the  
+Samples/MfComponents package.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfPeakmeter.jfif)
+  
+An example about how to create a MfAudioVisualizer control - A visual component that  
+uses  loopback, Peak/RMS, optional spectrum bars or VU.  
+This sample is part of the Samples/MfComponents package.  
+
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfAudioVisualizer.png)
   
 **WASAPI player / dsp / mft components:**
   
@@ -190,75 +235,9 @@ Note: On how to use these components, please read the WasApiPlayer sample 5 docu
 # Other files/ helpers for the components.
 * PcmLib.pas - A very convenient unit that is capable of recoding diverse WAV formats.
 * WASAPIEngine.pas - Universal WASAPIEngine .
-    
----
-## MfCastPlayer Samples
-  
-**MfSimpleCastPlayer Sample**
-  
-**This sample demonstrates:**
-  
-- Asynchronous Chromecast discovery.
-- Device selection.
-- Casting a compatible local file through a built-in HTTP server.
-- Casting a directly reachable HTTP/HTTPS media URL.
-- Play, pause, stop, seek, volume, mute, and disconnect.
-- External subtitle files and embedded text-subtitle enumeration. External subtitle  
-  files are preferred when the same language exists in both sources.
-- Exact embedded-track selection and subtitle switching while casting.
-  
-The sample enables the optional Media Foundation conversion stack. Compatible  
-MP4/H.264/AAC, WebM, MP3, M4A, and AAC sources use direct play. Containers such  
-as MKV are converted to fragmented MP4 and published by the build-in HTTP server.  
-Please read the white paper document MfPack/Cast/MfPack_Chromecast_API_White_Paper.txt for  
-full details using the MfPack Cast API.  
-  
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfSimpleCastPlayer.png)
   
 ---
-
-**MfCastPlayer Sample**
   
-This it the extended version of MfSimpleCastPlayer.  
-  
-**This sample demonstrates the following additions of MfSimpleCastPlayer:**
-  
-- Casting a YouTube URL through an application-provided
-  `IMfCastSourceResolver` implementation;
-- A fast YouTube mode that resolves a combined H.264/AAC stream for direct
-  playback;
-- A best-quality YouTube mode that downloads separate video and audio streams
-  and merges them into an MP4 file;
-- Local video and audio preview through the `TMfCast` main interface;
-- Audio-only playback with optional JPG, PNG, BMP, or GIF artwork;
-- Heartbeat monitoring and automatic cleanup when the receiver is switched
-  off or stops responding.
-  
-The sample enables the optional Media Foundation conversion stack.  
-Compatible MP4/H.264/AAC, WebM, MP3, M4A, AAC, FLAC, WAV, and Ogg sources can use direct  
-playback. Other containers and codecs, including AVI and MKV when required,  
-are remuxed or converted to fragmented MP4 and published by the local HTTP  
-server.  
-  
-Please read `MfPack/Cast/MfPack_Chromecast_API_White_Paper.txt` for full details  
-about using the MfPack Cast API.  
-  
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfCastPlayer.png)
-
----
-
-**MfCastPlayer Sample II**
-  
-This is the alternative version of MfCastPlayer.  
-  
-**This sample demonstrates the following differences of MfCastPlayer:**  
-  
-The sample uses DXGI desktop duplication to make it possible casting from for example browser or other player content.  
-It avoids installing 3th party apps viewing web content like YouTube.  
-There is some trade off: The quality of origin is downgraded to the monitor resolution it play's on.
-  
----
-
 ## WASAPI Player samples
   
 **Player Sample 1**
@@ -345,9 +324,190 @@ Please read the documents included with this sample.
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/WasApiPlayer5.png)
   
 ---
+  
+## MfProtectedPlayback
+  
+This sample demonstrates playback of clear and protected media with  
+Microsoft Media Foundation and the Protected Media Path (PMP). It is a close  
+Delphi translation of Microsoft's `ProtectedPlayback` C++ sample and uses the  
+Media Foundation declarations supplied by MfPack.  
+  
+The translation of this Microsoft sample preserves the structure, class names, method names, and
+control flow of the original sample wherever Delphi permits them. 
+The sample includes the original C++ code for references.  
 
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfProtectedPlayback.png)
+
+---
+
+## Ducking samples
+  
+**Ducking Media Player**
+  
+This sample implements a simple media player that responds to the "ducking"  
+feature in Windows 7 and later. It also implements a volume control which tracks  
+to the volume control in the volume mixer.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/DuckingMediaPlayerSample.jpg)
+  
+---
+  
+**Ducking Capture Sample**
+  
+This sample implements a simple "Chat" that demonstrates the Windows audio  
+ducking feature. In capture mode, audio from the default communications  
+capture endpoint is routed to the default playback endpoint.  
+Select 'Use default input device' in the application to hear the routed input.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/ChatDemo.jfif)
+  
+---
+  
+## Webcam streamer samples
+  
+**MfSimpleWebCamStreamer**
+  
+This sample demonstrates how to capture from a webcam and  
+microphone with Microsoft Media Foundation, encoding the result as H.264  
+and AAC, and publishing the live stream directly to a web browser through  
+fragmented MP4 and Media Source Extensions (MSE).  
+It demonstrates the complete path from Media Foundation capture to a  
+browser-playable live stream without requiring another external  
+media server on a local network.
+
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfSimpleWebCamStreamer.png)
+  
+---
+  
+**MfWebCamStreamer**
+  
+This sample is the extended version of MfSimpleWebCamStreamer, that uses FxServe to  
+stream over the internet. Within the browser or installable PWA,  
+users can watch the video and are able to take snapshots or record the camera stream. 
+Note: The PWA operates like an app, that can be installed via the Install button in the browser.  
+There is no need to get the PWA from any "Store".
+  
+The browser player includes:
+  
+- A live elapsed timer;
+- PNG snapshots of the current camera frame;
+- Client-side recording through `MediaRecorder` (downloaded as WebM);
+- Live viewer count with privacy-masked IP addresses;
+- Sound, playback, reconnect, and live-edge controls.
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfWebCamStreamer.png)
+  
+---
+  
+## MfCastPlayer Samples
+  
+**MfSimpleCastPlayer Sample**
+  
+**This sample demonstrates:**
+  
+- Asynchronous Chromecast discovery.
+- Device selection.
+- Casting a compatible local file through a built-in HTTP server.
+- Casting a directly reachable HTTP/HTTPS media URL.
+- Play, pause, stop, seek, volume, mute, and disconnect.
+- External subtitle files and embedded text-subtitle enumeration. External subtitle  
+  files are preferred when the same language exists in both sources.
+- Exact embedded-track selection and subtitle switching while casting.
+  
+The sample enables the optional Media Foundation conversion stack. Compatible  
+MP4/H.264/AAC, WebM, MP3, M4A, and AAC sources use direct play. Containers such  
+as MKV are converted to fragmented MP4 and published by the build-in HTTP server.  
+Please read the white paper document MfPack/Cast/MfPack_Chromecast_API_White_Paper.txt for  
+full details using the MfPack Cast API.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfSimpleCastPlayer.png)
+  
+---
+
+**MfCastPlayer Sample**
+  
+This it the extended version of MfSimpleCastPlayer.  
+  
+**This sample demonstrates the following additions of MfSimpleCastPlayer:**
+  
+- Casting a YouTube URL through an application-provided
+  `IMfCastSourceResolver` implementation;
+- A fast YouTube mode that resolves a combined H.264/AAC stream for direct
+  playback;
+- A best-quality YouTube mode that downloads separate video and audio streams
+  and merges them into an MP4 file;
+- Local video and audio preview through the `TMfCast` main interface;
+- Audio-only playback with optional JPG, PNG, BMP, or GIF artwork;
+- Heartbeat monitoring and automatic cleanup when the receiver is switched
+  off or stops responding.
+  
+The sample enables the optional Media Foundation conversion stack.  
+Compatible MP4/H.264/AAC, WebM, MP3, M4A, AAC, FLAC, WAV, and Ogg sources can use direct  
+playback. Other containers and codecs, including AVI and MKV when required,  
+are remuxed or converted to fragmented MP4 and published by the local HTTP  
+server.  
+  
+Please read `MfPack/Cast/MfPack_Chromecast_API_White_Paper.txt` for full details  
+about using the MfPack Cast API.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfCastPlayer.png)
+  
+---
+
+**MfCastPlayer Sample II**
+  
+This is the alternative version of MfCastPlayer.  
+  
+**This sample demonstrates the following differences of MfCastPlayer:**  
+  
+The sample uses DXGI desktop duplication to make it possible casting from for example a browser or other player content.  
+It avoids installing 3th party apps viewing web content like YouTube.  
+There is some trade off: The quality of origin is downgraded to the monitor resolution it play's on.
+    
+---
+  
+## CameraFrameCapture Sample
+  
+Demonstrates how to capture a still image or so called snapshot (A-synchronous) from a    
+capture device such as a webcam or camera using the IMFSourceReader.
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/CameraFrameCaptureSample.png)
+  
+---
+  
+## CaptureEngineVideoCapture sample
+  
+Demonstrates how to capture a snapshot or a recording (A-synchronous) from a capture device,  
+such as a webcam using the IMFCaptureEngine and IMFCapturePreviewSink.  
+This sample also demonstrates how to use the MfMediaTypeDebug API.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MFCaptureEngineVideoCapture.jpg)
+  
+---
+    
+## SinkWriterToEncodeVideo Samples
+
+*Example 1*  
+This sample creates a simple green bitmap (640x480) and stores it to a file with a length of 20 seconds.  
+  
+*Example 2*  
+Demonstrates how to use the SinkWriter to create a video from one or more bitmap files.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/SinkWriterSample.png)
+  
+*Example 3*  
+Demonstrates how to use the SinkWriter to create a video from one or more image files including audio.
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/ImageToVideo_3.jpg)
+  
+---
+
+
+
+---
+  
 ## LoopBackCapture Samples
-
+  
 **LoopBackCapture Sample 1**
   
 Demonstrates how to capture sound from the default rendering device (soundcard) using WASAPI in combination with mmio to write wav-files.  
@@ -436,24 +596,8 @@ You need good knowledge of Media Foundation, DirectX and GPU processing.
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfCaptureVideoFromScreen2s.png)
   
 ---
-## SinkWriterToEncodeVideo Samples
-
-*Example 1*  
-This sample creates a simple green bitmap (640x480) and stores it to a file with a length of 20 seconds.  
   
-*Example 2*  
-Demonstrates how to use the SinkWriter to create a video from one or more bitmap files.  
   
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/SinkWriterSample.png)
-  
-*Example 3*  
-Demonstrates how to use the SinkWriter to create a video from one or more image files including audio.
-  
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/ImageToVideo_3.jpg)
-
-
----
-
 ## MfPack API's
 
 **MfPack Cast V2.2 API**  
