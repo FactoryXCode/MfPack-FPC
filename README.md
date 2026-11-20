@@ -596,6 +596,61 @@ You need good knowledge of Media Foundation, DirectX and GPU processing.
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfCaptureVideoFromScreen2s.png)
   
 ---
+
+# MfRDJ Samples
+
+MfRDJ and MfRDJ Pro are FPC projects containing source code and binaries.
+The minimum supported compiler is FPC 3.2.2 / Lazarus 4.8.
+
+**MfRDJ**  
+
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/RDJ_Interface_s.png)
+  
+This application is a multi-channel audio mixer with effects.  
+The Mixer is fully adjustable for audio endpoint assignments, mixer decks and loopback decks.
+This mixer is primarily intended for live music, but it's capable of internet broadcasting with Caddy/IceCast.
+
+**Important note:**  
+Before opening the project in the IDE, make sure you have all needed components installed (see instructions).
+  
+  
+  
+**MfRDJ Pro** 
+MfRDJPro is the extended version of MfRDJ.  
+  
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/RDJPro_Interface_s.png)
+  
+Where MfRDJ mainly demonstrates DJ-style audio playback and mixing with MfPack,  
+MfRDJ Pro adds a complete live broadcast layer around the mixer.  
+MfRDJ Pro still provides the familiar RDJ functions: channel decks,  
+loopback decks, microphone input, effects, PFL/cue monitoring, playlist editing,  
+tag editing, and local recording.
+
+The Pro version expands this into an audio/video streaming application.  
+It can combine the live program audio with camera video or a static video source,  
+encode the result with Microsoft Media Foundation, and publish it as a browser-playable stream.
+
+The main technical difference is the broadcast pipeline.  
+MfRDJ Pro uses Media Foundation Sink Writer and the MPEG-4 media sink to create fragmented MP4.
+MfRDJ Pro observes the generated MP4 byte stream, extracts and patches fMP4 fragments,
+writes a rolling live.json manifest, and serves the result through FxServe or an alternative proxy server like Caddy.
+Modern browsers can then play the stream using Media Source Extensions.
+MfRDJ Pro also writes now-playing metadata, artwork links, on-air state, and
+listener counts to JSON files for the web interface.
+
+It includes safeguards for long-running broadcasts, such as bounded queues,  
+fragment cleanup, FxServe mirroring, sleep prevention options, and clean shutdown handling.  
+MfRDJ Pro supports casting to Cromecast devices on your local network using the MfPack Cast V2 protocols.
+  
+An extra tool FxRecord is provided for broadcast stations that needs to record their broadcasts for a period by law.
+FxRecord is designed to run on a local pc or server as a Windows service.
+FxRecordAdmin is a tool that is able to control FxRecord within the local network.
+An FxAlert App running on smartphones or pc's is provided to watch FxRecord and alert admins of the recording/server status.
+  
+**Important note:**  
+Before opening the project in the IDE, make sure you have all needed components installed (see instructions).
+  
+---
   
   
 ## MfPack API's
@@ -652,6 +707,32 @@ WAN mode is disabled by default. When WAN HTTPS is enabled, FxServe obtains, ins
   public HTTP.sys edge, with HTTP `429` and `Retry-After` responses.
 - Automatic validated configuration reload in console and Windows-service mode.
   
+---
+  
+## HEOS CLI and AVR
+
+FactoryX HEOS CLI provides FPC APIs for controlling HEOS-enabled audio devices from Denon and Marantz.
+It supports player control, volume and mute, music browsing, queues, playlists, grouping and receiver events.
+The APIs use native Windows sockets; no Indy or third-party JSON libraries are needed.
+
+**AVR control**
+
+The AVR API adds receiver power, Main Zone and Zone 2 activation, input selection, volume, mute, balance and tone controls.
+It also provides surround mode and Dynamic EQ commands.
+HEOS playback and AVR settings use separate protocols, with availability depending on the receiver, firmware and music service.
+
+**Remote samples**
+
+The API's have the following samples:
+- A simple HEOS remote demonstrates the CLI with standard Delphi VCL components.
+
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/SimpleHEOSRemote_s.png)  
+  
+- The complete HEOS Remote application adds playlist editing, file streaming, playlist streaming and Windows audio (loopback) streaming.
+Its controls and form layouts are included for editing in the Delphi IDE.
+
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/HEOSRemote_s.png)
+    
 ---
   
 # Tools
