@@ -1,0 +1,72 @@
+object Frm_SimpleCapture: TFrm_SimpleCapture
+  Left = 0
+  Top = 0
+  Caption = 'MfSimpleCapture example'
+  ClientHeight = 516
+  ClientWidth = 609
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -17
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  Position = poScreenCenter
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnPaint = FormPaint
+  PixelsPerInch = 144
+  object pnlControls: TPanel
+    Left = 0
+    Top = 443
+    Width = 609
+    Height = 73
+    BorderSpacing.Left = 5
+    BorderSpacing.Top = 5
+    BorderSpacing.Right = 5
+    BorderSpacing.Bottom = 5
+    Align = alBottom
+    TabOrder = 0
+    object Button1: TButton
+      Left = 15
+      Top = 20
+      Width = 113
+      Height = 37
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      BorderSpacing.Bottom = 5
+      Caption = 'Exit'
+      TabOrder = 0
+      OnClick = Button1Click
+    end
+    object butGetDevice: TButton
+      Left = 137
+      Top = 20
+      Width = 162
+      Height = 37
+      BorderSpacing.Left = 5
+      BorderSpacing.Top = 5
+      BorderSpacing.Right = 5
+      BorderSpacing.Bottom = 5
+      Caption = 'Get Capture Device'
+      TabOrder = 1
+      OnClick = butGetDeviceClick
+    end
+  end
+  object pnlVideo: TPanel
+    Left = 0
+    Top = 0
+    Width = 609
+    Height = 443
+    BorderSpacing.Left = 5
+    BorderSpacing.Top = 5
+    BorderSpacing.Right = 5
+    BorderSpacing.Bottom = 5
+    Align = alClient
+    AutoSize = True
+    Color = clNone
+    ShowCaption = False
+    TabOrder = 1
+    OnResize = pnlVideoResize
+  end
+end

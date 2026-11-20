@@ -1,0 +1,50 @@
+program MfAudioDelayFile;
+
+{$I MfPack.Fpc.inc}
+{$POINTERMATH ON}
+
+uses
+  Interfaces,
+{WinApi}
+  Windows,
+  WinApi.ComBaseApi,
+  {ActiveX}
+  WinApi.ActiveX.ObjBase,
+  {System}
+  SysUtils,
+  {Vcl}
+  Forms,
+  {MediaFoundationApi}
+  WinApi.MediaFoundationApi.MfApi,
+  {Application}
+  Form.AudioDelay in 'Form.AudioDelay.pas' {frmAudioDelay},
+  AudioDelayFileEngine in 'AudioDelayFileEngine.pas',
+  MfAudioDelayMFT in '..\Sample 9\MfAudioDelayMFT.pas';
+
+var
+  Hr: HResult;
+
+begin
+  Hr := CoInitializeEx(nil, COINIT_APARTMENTTHREADED);
+  if FAILED(Hr) then
+    raise Exception.CreateFmt('CoInitializeEx failed (HRESULT %.8x).',
+                              [Cardinal(Hr)]);
+  try
+    Hr := MFStartup(MF_VERSION, MFSTARTUP_FULL);
+    if FAILED(Hr) then
+      raise Exception.CreateFmt('MFStartup failed (HRESULT %.8x).',
+                                [Cardinal(Hr)]);
+    try
+      Application.Initialize;
+      Application.MainFormOnTaskbar := True;
+      Application.CreateForm(TfrmAudioDelay, frmAudioDelay);
+      if ParamStr(1) = '--smoke' then Application.ProcessMessages
+      else Application.Run;
+    finally
+      FreeAndNil(frmAudioDelay);
+      MFShutdown;
+    end;
+  finally
+    CoUninitialize;
+  end;
+end.

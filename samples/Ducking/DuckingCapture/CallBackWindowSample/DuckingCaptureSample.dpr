@@ -1,0 +1,52 @@
+program DuckingCaptureSample;
+
+{$I MfPack.Fpc.inc}
+{$POINTERMATH ON}
+
+uses
+  MfCapturePlatform,
+Interfaces,
+SysUtils,
+  Math,
+  ComObj,
+  WinApi.ComBaseApi,
+  WinApi.ActiveX.ObjBase,
+{$IFDEF FASTMM}
+  FastMM4,
+  {$ENDIF}
+  Forms,
+  IddDialogChat in 'IddDialogChat.pas' {Form1},
+  ChatTransport in 'ChatTransport.pas',
+  WasapiChat in 'WasapiChat.pas',
+  WaveChat in 'WaveChat.pas';
+
+{$R *.res}
+
+var
+  SavedMask: TFPUExceptionMask;
+
+begin
+  try
+    SavedMask := GetExceptionMask();
+    SetExceptionMask([exInvalidOp,exDenormalized,exZeroDivide,exOverflow,exUnderflow,exPrecision]);
+    OleCheck(CoInitializeEx(nil,COINIT_APARTMENTTHREADED));
+    try
+      Application.Initialize;
+      Application.MainFormOnTaskbar := True;
+      Application.CreateForm(TForm1, Form1);
+      if ParamStr(1) = '--smoke' then Application.ProcessMessages
+      else Application.Run;
+    finally
+      FreeAndNil(Form1);
+      CoUninitialize();
+      ClearExceptions(False);
+      SetExceptionMask(SavedMask);
+    end;
+  except
+    on E: Exception do
+      begin
+        if ParamStr(1) = '--smoke' then begin Writeln('FAIL: '+E.ClassName+': '+E.Message);Halt(1);end;
+        raise;
+      end;
+  end;
+end.

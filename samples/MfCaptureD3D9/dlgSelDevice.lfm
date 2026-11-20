@@ -1,0 +1,49 @@
+object dlgSelectDevice: TdlgSelectDevice
+  Left = 227
+  Top = 108
+  ActiveControl = butOk
+  BorderStyle = bsDialog
+  Caption = 'Select Device'
+  ClientHeight = 93
+  ClientWidth = 377
+  Color = clBtnFace
+  ParentFont = True
+  Position = poScreenCenter
+  object Bevel1: TBevel
+    Left = 0
+    Top = 0
+    Width = 281
+    Height = 93
+    Align = alLeft
+    Shape = bsFrame
+  end
+  object butOk: TButton
+    Left = 294
+    Top = 9
+    Width = 75
+    Height = 25
+    Caption = 'Ok'
+    Default = True
+    ModalResult = 1
+    TabOrder = 0
+    OnClick = butOkClick
+  end
+  object butCancel: TButton
+    Left = 294
+    Top = 40
+    Width = 75
+    Height = 25
+    Cancel = True
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 1
+  end
+  object ComboBox1: TComboBox
+    Left = 5
+    Top = 12
+    Width = 268
+    Height = 21
+    TabOrder = 2
+    Text = 'ComboBox1'
+  end
+end
