@@ -41,9 +41,7 @@ Those you can buy from Microsoft Store or download elsewhere.
 ---
   
 # Updates and porting status
-### The porting of the complete MfPack Windows API sources (src) and Tools are completed.  
-### The porting of Cast and FxServe are completed.
-### Porting of RDJ and HEOS samples are still in progress, these will be published when ready.
+### The complete port of MfPack to FPC / Lazarus is ready!
   
 ---
   
