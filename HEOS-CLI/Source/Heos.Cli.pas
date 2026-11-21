@@ -67,9 +67,7 @@ unit Heos.Cli;
 interface
 
 uses Heos.Fpc.Text,
-LMessages,
-  LCLType,
-  Heos.Fpc.Platform,
+Heos.Fpc.Platform,
 {System}
   Classes,
   SysUtils,

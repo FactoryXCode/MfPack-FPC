@@ -64,9 +64,7 @@ unit Heos.Files;
 {$POINTERMATH ON}
 
 interface
-uses LMessages,
-  LCLType,
-  Heos.Fpc.Platform,
+uses Heos.Fpc.Platform,
 Classes, SysUtils, IniFiles;
 
 // INI persistence for live controls: OS failures return status, never a dialog.

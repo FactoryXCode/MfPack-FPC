@@ -64,9 +64,7 @@ unit Avr.Client;
 
 interface
 
-uses LMessages,
-  LCLType,
-  Heos.Fpc.Platform,
+uses Heos.Fpc.Platform,
 {System}
   SysUtils,
   Classes,

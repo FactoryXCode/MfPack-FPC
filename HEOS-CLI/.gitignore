@@ -1,0 +1,9 @@
+Build/
+**/bin/
+**/lib/
+*.ppu
+*.o
+*.or
+*.compiled
+*.lps
+*.bak

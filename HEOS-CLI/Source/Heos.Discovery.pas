@@ -66,9 +66,7 @@ unit Heos.Discovery;
 interface
 
 uses Heos.Fpc.Text,
-LMessages,
-  LCLType,
-  Heos.Fpc.Platform,
+Heos.Fpc.Platform,
 {WinApi}
   Windows,
   {System}

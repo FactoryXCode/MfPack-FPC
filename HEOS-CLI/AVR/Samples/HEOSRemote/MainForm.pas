@@ -1,0 +1,4533 @@
+// FactoryX
+//
+// Copyright: FactoryX. All rights reserved.
+//
+// Project: Media Foundation - MFPack - Samples
+// Project location: https://sourceforge.net/projects/MFPack
+//                   https://github.com/FactoryXCode/MfPack
+// Module: MainForm.pas
+// Kind: Pascal Unit
+// Release date: 24-01-2026
+// Language: ENU
+//
+// Revision Version: 1.1.0.0
+// Description: Main remote GUI.
+//
+// Company: FactoryX
+// Intiator(s): Tony (maXcomX), Carmen (carmenh).
+// Contributor(s): Tony Kalf (maXcomX), Carmen (carmenh).
+//
+//------------------------------------------------------------------------------
+// CHANGE LOG
+// Date       Person              Reason
+// ---------- ------------------- ----------------------------------------------
+// 15/11/2026 All                 Eels release  SDK 10.0.28000.2705 (Windows 11)
+//------------------------------------------------------------------------------
+//
+// Remarks: Requires Windows 10 or higher.
+//
+// Related objects: RDJ Pro
+// Related projects: MfPackX410
+// Known Issues: -
+//
+// Compiler version: 23 up to 35
+// SDK version: 10.0.28000.2705
+//
+// Todo: -
+//
+// =============================================================================
+// Source: FactoryX.Code - RDJ Pro
+// =============================================================================
+//
+// LICENSE
+//
+// The contents of this file are subject to the Mozilla Public License
+// Version 2.0 (the "License"); you may not use this file except in
+// compliance with the License. You may obtain a copy of the License at
+// https://www.mozilla.org/en-US/MPL/2.0/
+//
+// Software distributed under the License is distributed on an "AS IS"
+// basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+// License for the specific language governing rights and limitations
+// under the License.
+//
+// Non commercial users may distribute this sourcecode provided that this
+// header is included in full at the top of the file.
+// Commercial users are not allowed to distribute this sourcecode as part of
+// their product.
+//
+//==============================================================================
+unit MainForm;
+{$I Heos.Fpc.inc}
+{$POINTERMATH ON}
+
+interface
+
+uses MfCastText,
+Rdj.Platform,
+LMessages,
+  LCLType,
+  MfCastPlayerPlatform,
+{System}
+  Classes,
+  SysUtils,
+  Generics.Collections,
+  Messages,
+  {Vcl}
+  Forms,
+  Controls,
+  StdCtrls,
+  ExtCtrls,
+  ComCtrls,
+  Graphics,
+  Dialogs,
+  Menus,
+  {Application}
+  Avr.Capabilities,
+  Heos.Cli,
+  HEOSTransport,
+  Heos,
+  HEOSAudioServer,
+  HEOSLoopback,
+  HEOSAacEncoder,
+  HEOSDiscovery,
+  HEOSRadioForm,
+  HEOSPlaylistForm,
+  RDJ.PlaylistTypes,
+  RDJ.PlaylistDb,
+  RDJ.PlaylistManager,
+  // Controls
+  HEOSLevelProgressBar,
+  HEOSButton,
+  HEOSTrackBar;
+
+
+const
+  // Data storage folder.
+  HEOS_REMOTE_DATADIR = 'FactoryX\HEOSRemote\';
+  // Stored in C:\Users\xxxxxxxx\AppData\Local\FactoryX\HEOSRemote
+  RECEIVERINIFILE = 'Receiver.ini';
+  CAPABIILITIESINIFILE = 'Capabilities.ini';
+  RADIOSTATIONSINIFILE = 'RadioStations.ini';
+
+
+type
+
+  TReceiverAvailabilityProbe = class(TThread)
+  private
+
+    FHost: string;
+    FAvailable: Boolean;
+    FAvrAvailable: Boolean;
+    FErrorText: string;
+
+  protected
+
+    procedure Execute(); override;
+
+  public
+
+    constructor Create(const Host: string);
+    property Host: string read FHost;
+    property Available: Boolean read FAvailable;
+    property AvrAvailable: Boolean read FAvrAvailable;
+    property ErrorText: string read FErrorText;
+  end;
+
+
+  THEOSTrackInfo = class(TThread)
+  private
+    FFileName: string;
+    FDurationMs: Int64;
+
+  protected
+    procedure Execute(); override;
+
+  public
+
+    constructor Create(const FileName: string);
+
+    property FileName: string read FFileName;
+    property DurationMs: Int64 read FDurationMs;
+  end;
+
+
+  THEOSStreamAction = record
+    Action: Integer;
+    FileName: string;
+    QueueStarting: Boolean;
+    PositionMs: Int64;
+    Receiver: string;
+    StopCompleted: Boolean;
+    RadioCommand: THeosCommand;
+    StationName: string;
+  end;
+
+  THEOSForm = class(TForm)
+    pnlSettings: TPanel;
+    AddressLabel: TLabel;
+    FStatus: TLabel;
+    edHost: TEdit;
+    cbxHEOSDevices: TComboBox;
+    VolumeTimer: TTimer;
+    StreamTimer: TTimer;
+    StreamActionTimer: TTimer;
+    pnlPlay: TPanel;
+    Panel3: TPanel;
+    imgLogo: TImage;
+    btnSettings: TDnButton;
+    btnPlayer: TDnButton;
+    btnStop: TDnButton;
+    btnPlayPause: TDnButton;
+    btnLoadFile: TDnButton;
+    btnPlayList: TDnButton;
+    btnPrevious: TDnButton;
+    btnNext: TDnButton;
+    btnShuffle: TDnButton;
+    btnLoop: TDnButton;
+    btnStreamWinAudio: TDnButton;
+    lblDuration: TLabel;
+    lblPlayed: TLabel;
+    PcAddressLabel: TLabel;
+    PcAddressEdit: TEdit;
+    PortLabel: TLabel;
+    StreamPortEdit: TEdit;
+    btnFindHEOSDevice: TDnButton;
+    tbVolume: TDnTrackBar;
+    tbBalance: TDnTrackBar;
+    lblBalance: TLabel;
+    Bevel1: TBevel;
+    pbProgress: TDnLevelProgressBar;
+    lblSeekTime: TLabel;
+    SeekHintTimer: TTimer;
+    lblVolumePerc: TLabel;
+    lblVol: TLabel;
+    btnMainZone: TDnButton;
+    btnZone2: TDnButton;
+    Bevel2: TBevel;
+    lblZones: TLabel;
+    pmPlaylists: TPopupMenu;
+    Bevel3: TBevel;
+    btnMute: TDnButton;
+    chkTone: TDnButton;
+    tbBass: TDnTrackBar;
+    tbTreble: TDnTrackBar;
+    lblBass: TLabel;
+    lblTreble: TLabel;
+    lblToneStatus: TLabel;
+    DnButton2: TDnButton;
+    FSource: TComboBox;
+    memFLog: TMemo;
+    Label2: TLabel;
+    Label3: TLabel;
+    Bevel5: TBevel;
+    btnSelectInput: TDnButton;
+    btnWebInterface: TDnButton;
+    btnReadStatus: TDnButton;
+    Label1: TLabel;
+    Bevel4: TBevel;
+    Bevel6: TBevel;
+    Bevel7: TBevel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    btnRadio: TDnButton;
+    btnClose: TDnButton;
+    btnMinimize: TDnButton;
+    lblFrmCaption: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    chkPlayListAutoNext: TDnButton;
+    Bevel9: TBevel;
+    Label10: TLabel;
+    Label11: TLabel;
+    ComboBox1: TComboBox;
+    Label12: TLabel;
+    ComboBox2: TComboBox;
+    lblStreamInfo: TLabel;
+
+    procedure FormCreate(Sender: TObject);
+    procedure pbProgressMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure pbProgressMouseUp(Sender: TObject; Button: TMouseButton;
+                                Shift: TShiftState; X, Y: Integer);
+    procedure SeekHintTick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure ActionClick(Sender: TObject);
+    procedure VolumeChange(Sender: TObject);
+    procedure VolumeTick(Sender: TObject);
+    procedure BalanceChange(Sender: TObject);
+    procedure BalanceDblClick(Sender: TObject);
+    procedure ZoneClick(Sender: TObject);
+    procedure BrowserClick(Sender: TObject);
+    procedure BrowseMusicClick(Sender: TObject);
+    procedure StreamTick(Sender: TObject);
+    procedure StreamActionTick(Sender: TObject);
+    procedure FindHEOSDeviceClick(Sender: TObject);
+    procedure HEOSDeviceChange(Sender: TObject);
+    procedure PlaylistClick(Sender: TObject);
+    procedure TrackClick(Sender: TObject);
+    procedure MainCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure btnStreamWinAudioClick(Sender: TObject);
+    procedure StreamClick(Sender: TObject);
+    procedure PlayPauseClick(Sender: TObject);
+    procedure AacSettingsChange(Sender: TObject);
+    procedure SettingsClick(Sender: TObject);
+    procedure PlayerClick(Sender: TObject);
+    procedure RadioClick(Sender: TObject);
+    procedure QueueModeClick(Sender: TObject);
+    procedure PlaylistPopup(Sender: TObject);
+    procedure PlaylistPopupItemClick(Sender: TObject);
+    procedure tbVolumeDblClick(Sender: TObject);
+    procedure ToneClick(Sender: TObject);
+    procedure ToneChange(Sender: TObject);
+    procedure ToneDblClick(Sender: TObject);
+    procedure Panel3MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure imgLogoMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure btnCloseClick(Sender: TObject);
+    procedure btnMinimizeClick(Sender: TObject);
+    procedure lblStreamInfoMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+
+  private
+    FReceiverSettingsFile: string;
+    FPreferredDeviceId: string;
+    FVerifiedHost: string;
+    FCapabilities: TAvrCapabilityManager;
+    FAvrAvailabilityKnown: Boolean;
+    FAvrReachable: Boolean;
+    FReceiverVerified: Boolean;
+    FOpenRadioPending: Boolean;
+
+    procedure BeginCapabilityRefresh();
+    procedure PollCapabilities();
+    procedure UpdateControlAvailability();
+    function FeatureAllowed(Feature: TAvrFeature): Boolean;
+    function ReceiverCommandAllowed(const Command: string): Boolean;
+    function CreateReceiverRequest(const Host: string;
+                                   const Commands: array of string;
+                                   Port: Integer = 23;
+                                   StopOnVolumeReply: Boolean = False;
+                                   StopOnChannelReply: Boolean = False;
+                                   StopOnZoneReply: Boolean = False;
+                                   StopOnToneReply: Boolean = False): TDenonRequest;
+
+    function TryReadAacSettings(out Settings: TDenonAudioSettings): Boolean;
+
+    procedure LoadReceiverSettings();
+    procedure SaveReceiverSettings();
+
+    procedure ContinuePendingRadio();
+    function NewDiscovery(): THEOSDiscovery; virtual;
+
+    procedure ApplyDiscoveredDevices(const Devices: TArray<THEOSDevice>;
+                                     const ErrorText: string);
+
+  private
+    FRadioForm: THEOSRadioForm;
+    FRadioPlaying: Boolean;
+    FRadioStartedTick: UInt64;
+
+    procedure BeforeRadioPlay(Sender: TObject;
+                                const Command: THeosCommand;
+                                const StationName: string);
+    procedure RadioPlayback(Sender: TObject;
+                            const StationName: string;
+                            Playing: Boolean);
+
+  private
+    FWorker: TDenonRequest;
+    FUpdatingTone: Boolean;
+    FToneKnown: Boolean;
+    FToneEnabled: Boolean;
+    FDesiredToneEnabled: Boolean;
+    FDesiredBass: Integer;
+    FDesiredTreble: Integer;
+    FTonePending: Boolean;
+    FBassPending: Boolean;
+    FTreblePending: Boolean;
+    FToneReadPending: Boolean;
+    FToneRequest: Boolean;
+    FToneReadAttempts: Integer;
+    FToneReadReadyAt: UInt64;
+    FToneMode: string;
+    FDynamicEq: Boolean;
+    FPowerText: string;
+    FZone2PowerText: string;
+    FMainZonePending: Boolean;
+    FMainZoneDesired: Boolean;
+    FZone2Pending: Boolean;
+    FZone2Desired: Boolean;
+    FZoneReadPending: Boolean;
+    FZoneRequest: Boolean;
+    FZoneRequestKind: Integer;
+    FZoneRequestTarget: Boolean;
+    FStartupZoneReadAttempts: Integer;
+    FExpectedPowerReply: string;
+    FVolumeText: string;
+    FVolumePending: Boolean;
+    FVolumeReadPending: Boolean;
+    FInitialVolumeRead: Boolean;
+    FReceiverCheck: TReceiverAvailabilityProbe;
+    FReceiverCheckReadAll: Boolean;
+    FReceiverCheckDiscover: Boolean;
+    FDiscoveryReconnect: Boolean;
+    FDiscoveryReadAll: Boolean;
+    FDiscoveryComplete: Boolean;
+    FVolumeRequest: Boolean;
+    FUpdatingVolume: Boolean;
+    FVolumeReady: Boolean;
+    FDesiredVolume: Integer;
+    FBalancePending: Boolean;
+    FBalanceReadPending: Boolean;
+    FBalanceRequest: Boolean;
+    FBalanceReadingBase: Boolean;
+    FStartupBalanceReadAttempts: Integer;
+    FBalanceKnown: Boolean;
+    FUpdatingBalance: Boolean;
+    FBalanceBaseHost: string;
+    FBalanceBaseInput: string;
+    FBalanceLeft: Integer;
+    FBalanceRight: Integer;
+    FBalanceReplyLeft: Integer;
+    FBalanceReplyRight: Integer;
+    FBalanceLeftReceived: Boolean;
+    FBalanceRightReceived: Boolean;
+    FDesiredBalance: Integer;
+    FMuteText: string;
+    FInputText: string;
+    FAudioServer: THEOSAudioServer;
+    FLoopback: THEOSLoopback;
+    FHeos: THeosRequest;
+    FWaitingForCapture: Boolean;
+    FStreamReceiver: string;
+    FStreamDescription: string;
+    FLastServerError: string;
+    FLastHeosAction: THeosAction;
+    FPlaybackState: string;
+    FPlaybackFile: string;
+    FSelectedFile: string;
+    FTrackDurationMs: Int64;
+    FReceiverDurationMs: Int64;
+    FPlayedMs: Int64;
+    FActiveSeekMs: Int64;
+    FSeekGuardUntil: UInt64;
+    FProgressTick: UInt64;
+    FProgressSequence: Cardinal;
+    FClockRunning: Boolean;
+    FTrackInfoThreads: TList<THEOSTrackInfo>;
+    FProgressMonitors: TList<THeosProgressMonitor>;
+    FProgressMonitor: THeosProgressMonitor;
+    FStreamActions: TList<THEOSStreamAction>;
+    FDesiredPlaybackState: string;
+    FDesiredPlaybackFile: string;
+    FProcessingStreamActions: Boolean;
+    FClosePending: Boolean;
+    FCloseStopSent: Boolean;
+    FCloseReady: Boolean;
+    FDiscovery: THEOSDiscovery;
+    FDevices: TArray<THEOSDevice>;
+    FPlaylistEditor: THEOSPlaylistEditor;
+    FPlaylistDb: TRDJPlaylistDb;
+    FPlaylistManager: TRDJPlaylistManager;
+    FPlaylistPopupVisible: Boolean;
+    FQueue: TStringList;
+    FQueueIndex: Integer;
+    FQueueActive: Boolean;
+    FQueueIsPlaylist: Boolean;
+    FQueueSawPlaying: Boolean;
+    FQueueNextPending: Boolean;
+    FQueueStarting: Boolean;
+    FQueuePollTicks: Integer;
+
+    procedure DiscoveryFinished(Sender: TObject);
+
+    procedure PlayPlaylist(Sender: TObject;
+                           Playlist: TRDJPlaylist;
+                           StartIndex: Integer);
+
+    procedure LoadPlaylistForDenon(Sender: TObject;
+                                   Playlist: TRDJPlaylist;
+                                   StartIndex: Integer);
+
+    procedure PlayQueueIndex(Index: Integer);
+    procedure ShuffleUpcoming(StartIndex: Integer);
+    procedure EnsurePlaylistManager();
+    procedure StartStreamAction(Action: Integer);
+    procedure ProcessClose();
+    procedure ExecuteStreamAction(Action: Integer);
+    procedure ProcessStreamActions();
+
+    procedure StreamActionsReady(var message: TLMessage); message WM_APP + $126;
+
+    function RequestedPlaybackState(): string;
+    procedure SelectAudioFile(const FileName: string);
+    procedure UpdatePlaybackProgress();
+    procedure UpdateProgressDisplay();
+    procedure StartProgressMonitor();
+
+    procedure BeginReceiverCheck(ReadAll: Boolean = False;
+                                  Discover: Boolean = True);
+
+    procedure BeginDiscovery(Reconnect: Boolean;
+                             ReadAll: Boolean);
+
+    procedure CompleteReceiverCheck();
+
+    function ProgressPositionAt(X: Integer;
+                                Y: Integer;
+                                out PositionMs: Int64): Boolean;
+    function CanSeekPlayback(): Boolean;
+
+    procedure StopLocalStream();
+    procedure HeosFinished(Sender: TObject);
+
+    procedure SendHeos(Action: THeosAction;
+                       const Url: string = '';
+                       PositionMs: Int64 = 0);
+
+    procedure UpdateStreamButtons();
+    function ValidAddress(): Boolean;
+
+    procedure StartRequest(const Commands: array of string;
+                           const ExpectedPowerReply: string = '');
+
+    procedure RequestFinished(Sender: TObject);
+    procedure ParseStatus(const Line: string);
+    procedure SetVolumeBusy(Busy: Boolean);
+    procedure StartBalanceRequest();
+    procedure StartToneRequest();
+    procedure UpdateToneDisplay();
+    procedure UpdateBalanceDisplay();
+
+    procedure QueueZoneChange(MainZone: Boolean;
+                              Active: Boolean);
+
+    procedure StartZoneRequest();
+    procedure UpdateZoneButtons();
+    procedure RetryStartupZoneRead();
+    function ReceiverActionsPending(): Boolean;
+    function VolumeCaption(HalfSteps: Integer): string;
+
+  public
+
+    destructor Destroy(); override;
+
+    property AudioFileName: string read FSelectedFile write SelectAudioFile;
+
+  end;
+
+  function GetTickCount64(): UInt64; stdcall;
+
+var
+  HEOSForm: THEOSForm;
+
+
+implementation
+
+{$R *.lfm}
+
+uses
+
+  {System}
+  Windows,
+  ShellAPI,
+  WinApi.ComBaseApi,
+  {System}
+  StrUtils,
+  IniFiles,
+  Types,
+  {Vcl}
+  Clipbrd,
+  {ActiveX}
+  WinApi.ActiveX.ObjBase,
+  WinApi.WinApiTypes,
+  {MediaFoundationApi}
+  WinApi.MediaFoundationApi.MfApi,
+  {Application}
+  Heos.Files,
+  HEOSSockets,
+  RDJ.FilenameParser,
+  RDJ.TagReader,
+  LWFileBrowserExDlg;
+
+
+const
+
+  Kernel32Lib = 'kernel32.dll';
+
+  SourceCommands: array[0..7] of string = ('SITV',
+                                           'SIBD',
+                                           'SIGAME',
+                                           'SIMPLAY',
+                                           'SISAT/CBL',
+                                           'SICD',
+                                           'SITUNER',
+                                           'SINET');
+
+
+constructor TReceiverAvailabilityProbe.Create(const Host: string);
+begin
+
+  inherited Create(True);
+
+  FreeOnTerminate := False;
+  FHost := Host;
+end;
+
+
+procedure TReceiverAvailabilityProbe.Execute();
+var
+  AvrError: string;
+
+begin
+
+  FAvailable := ProbeReceiver(FHost,
+                              1255,
+                              2000,
+                              FErrorText);
+
+  if FAvailable and not Terminated then
+    FAvrAvailable := ProbeReceiver(FHost,
+                                   23,
+                                   800,
+                                   AvrError);
+end;
+
+
+constructor THEOSTrackInfo.Create(const FileName: string);
+begin
+
+  inherited Create(True);
+
+  FreeOnTerminate := False;
+  FFileName := FileName;
+end;
+
+
+procedure THEOSTrackInfo.Execute();
+var
+  Track: TRDJTrack;
+
+begin
+
+  if Failed(CoInitializeEx(nil,
+                           COINIT_MULTITHREADED)) then
+    Exit;
+
+  try
+    if Failed(MFStartup(MF_VERSION,
+                        MFSTARTUP_FULL)) then
+      Exit;
+
+    try
+      try
+        Track := RDJEmptyTrack;
+
+        if not Terminated and ReadDurationMf(FFileName,
+                                             Track) then
+          FDurationMs := Track.DurationMs;
+
+      except
+        // Unknown duration is valid for unsupported files and live sources.
+      end;
+
+    finally
+      MFShutdown();
+    end;
+
+  finally
+    CoUninitialize();
+  end;
+end;
+
+
+function PlaybackTimeText(Milliseconds: Int64): string;
+var
+  Seconds: Int64;
+
+begin
+
+  if (Milliseconds < 0) then
+    Milliseconds := 0;
+
+  Seconds := Milliseconds div 1000;
+  Result := Format('%.2d:%.2d:%.2d',
+                   [Seconds div 3600, (Seconds div 60) mod 60, Seconds mod 60]);
+end;
+
+
+procedure THEOSForm.SelectAudioFile(const FileName: string);
+var
+  Artist: string;
+  Title: string;
+  Info: THEOSTrackInfo;
+  Changed: Boolean;
+
+begin
+
+  Changed := not SameFileName(FSelectedFile,
+                              FileName);
+  FSelectedFile := FileName;
+  TFileNameParser.ParseArtistTitleFromFileName(FileName,
+                                               Artist,
+                                               Title);
+
+  lblStreamInfo.Caption := TFileNameParser.BuildIceCastSongText(Artist,
+                                                                Title,
+                                                                ChangeFileExt(ExtractFileName(FileName),
+                                                                ''));
+  lblStreamInfo.Hint := FileName;
+
+  if Changed then
+    begin
+      FTrackDurationMs := 0;
+      FReceiverDurationMs := 0;
+      FPlayedMs := 0;
+      FClockRunning := False;
+      FProgressTick := GetTickCount64;
+
+      if FileExists(FileName) then
+        begin
+          Info := THEOSTrackInfo.Create(FileName);
+          FTrackInfoThreads.Add(Info);
+          Info.Start;
+        end;
+    end;
+
+  UpdateProgressDisplay();
+end;
+
+
+procedure THEOSForm.StartProgressMonitor();
+begin
+
+  if Assigned(FProgressMonitor) then
+    FProgressMonitor.Terminate;
+
+  FProgressMonitor := THeosProgressMonitor.Create(FStreamReceiver);
+  FProgressMonitors.Add(FProgressMonitor);
+  FProgressSequence := 0;
+  FProgressMonitor.Start;
+end;
+
+
+function THEOSForm.ProgressPositionAt(X, Y: Integer;
+                                        out PositionMs: Int64): Boolean;
+var
+  DurationMs: Int64;
+  Coordinate: Integer;
+  Extent: Integer;
+  Inset: Integer;
+
+begin
+
+  Result := False;
+  PositionMs := 0;
+  DurationMs := FTrackDurationMs;
+
+  if (FReceiverDurationMs > 0) then
+    DurationMs := FReceiverDurationMs;
+
+  if Assigned(FLoopback) or (DurationMs <= 0) then
+    Exit;
+
+  Inset := pbProgress.Padding;
+
+  if (pbProgress.Orientation = poHorizontal) then
+    begin
+      Coordinate := X - Inset;
+      Extent := pbProgress.ClientWidth - 2 * Inset;
+    end
+  else
+    begin
+      Coordinate := pbProgress.ClientHeight - Inset - Y;
+      Extent := pbProgress.ClientHeight - 2 * Inset;
+    end;
+
+  if (Extent <= 0) then
+    Exit;
+
+  if (Coordinate < 0) then
+    Coordinate := 0;
+  if (Coordinate > Extent) then
+    Coordinate := Extent;
+
+  PositionMs := Round((Coordinate / Extent) * DurationMs / 1000) * 1000;
+
+  // Avoid seeking to EOF, which can advance a playing playlist.
+  if (PositionMs >= DurationMs) then
+    PositionMs := DurationMs - 1;
+
+  PositionMs := (PositionMs div 1000) * 1000;
+  Result := True;
+end;
+
+
+function THEOSForm.CanSeekPlayback(): Boolean;
+begin
+
+  Result := Assigned(FAudioServer) and not Assigned(FLoopback) and
+            (FPlaybackFile <> '') and
+            SameFileName(FSelectedFile, FPlaybackFile) and
+            ((FPlaybackState = 'play') or (FPlaybackState = 'pause')) and
+            (RequestedPlaybackState() <> 'stop');
+end;
+
+
+procedure THEOSForm.pbProgressMouseMove(Sender: TObject;
+                                         Shift: TShiftState;
+                                         X, Y: Integer);
+var
+  PositionMs: Int64;
+  P: TPoint;
+
+begin
+
+  if not ProgressPositionAt(X, Y, PositionMs) then
+    begin
+      lblSeekTime.Visible := False;
+      SeekHintTimer.Enabled := False;
+      Exit;
+    end;
+
+  lblSeekTime.Caption := ' ' + PlaybackTimeText(PositionMs) + ' ';
+  P := lblSeekTime.Parent.ScreenToClient(pbProgress.ClientToScreen(Types.Point(X, pbProgress.Height)));
+  P.X := P.X - lblSeekTime.Width div 2;
+
+  if (P.X > lblSeekTime.Parent.ClientWidth - lblSeekTime.Width - 2) then
+    P.X := lblSeekTime.Parent.ClientWidth - lblSeekTime.Width - 2;
+  if (P.X < 2) then
+    P.X := 2;
+
+  lblSeekTime.Left := P.X;
+  lblSeekTime.Top := P.Y + 1;
+  lblSeekTime.BringToFront();
+  lblSeekTime.Visible := True;
+  SeekHintTimer.Enabled := True;
+end;
+
+
+procedure THEOSForm.SeekHintTick(Sender: TObject);
+var
+  P: TPoint;
+
+begin
+
+  P := pbProgress.ScreenToClient(Mouse.CursorPos);
+
+  if not pbProgress.Showing or (P.X < 0) or (P.Y < 0) or
+     (P.X >= pbProgress.ClientWidth) or (P.Y >= pbProgress.ClientHeight) or
+     (WindowState = wsMinimized) then
+    begin
+      lblSeekTime.Visible := False;
+      SeekHintTimer.Enabled := False;
+    end;
+end;
+
+
+procedure THEOSForm.pbProgressMouseUp(Sender: TObject;
+                                       Button: TMouseButton;
+                                       Shift: TShiftState;
+                                       X, Y: Integer);
+var
+  PositionMs: Int64;
+  Command: THEOSStreamAction;
+  i: Integer;
+
+begin
+
+  if (Button <> mbLeft) or not CanSeekPlayback() then
+    Exit;
+
+  if not ProgressPositionAt(X,
+                            Y,
+                            PositionMs) then
+    Exit;
+
+  Command := Default(THEOSStreamAction);
+  Command.Action := 5;
+  Command.PositionMs := PositionMs;
+  Command.FileName := FPlaybackFile;
+  Command.Receiver := FStreamReceiver;
+
+  // Keep the latest click while a transport request is in flight.
+  for i := FStreamActions.Count - 1 downto 0 do
+    if (FStreamActions[i].Action = 5) then
+      FStreamActions.Delete(i);
+
+  FStreamActions.Add(Command);
+  StreamActionTimer.Enabled := True;
+  ProcessStreamActions();
+end;
+
+
+procedure THEOSForm.UpdateProgressDisplay();
+var
+  DurationMs: Int64;
+begin
+
+  if not Assigned(pbProgress) or not Assigned(lblDuration) or not Assigned(lblPlayed) then
+    Exit;
+
+  if FRadioPlaying then
+    begin
+      lblDuration.Caption := 'Duration: Live radio';
+      lblPlayed.Caption := 'Played: ' + PlaybackTimeText(Int64(GetTickCount64() - FRadioStartedTick));
+      pbProgress.Position := 0;
+      Exit;
+    end;
+
+  DurationMs := FTrackDurationMs;
+
+  if (FReceiverDurationMs > 0) then
+    DurationMs := FReceiverDurationMs;
+
+  if Assigned(FLoopback) then
+    lblDuration.Caption := 'Duration: Live'
+  else
+    if (DurationMs > 0) then
+      lblDuration.Caption := 'Duration: ' + PlaybackTimeText(DurationMs)
+    else
+      if (FSelectedFile <> '') then
+        lblDuration.Caption := 'Duration: --:--:--'
+      else
+        lblDuration.Caption := 'Duration: 00:00:00';
+
+  if not Assigned(FLoopback) and (DurationMs > 0) and (FPlayedMs > DurationMs) then
+    FPlayedMs := DurationMs;
+
+  lblPlayed.Caption := 'Played: ' + PlaybackTimeText(FPlayedMs);
+
+  if not Assigned(FLoopback) and (DurationMs > 0) then
+    pbProgress.Position := Round((FPlayedMs / DurationMs) * pbProgress.Maximum)
+  else
+    pbProgress.Position := 0;
+end;
+
+
+procedure THEOSForm.UpdatePlaybackProgress();
+var
+  I: Integer;
+  Info: THEOSTrackInfo;
+  Monitor: THEOSProgressMonitor;
+  Progress: THEOSProgress;
+  Tick: UInt64;
+  CurrentSource: Boolean;
+
+begin
+
+  Tick := GetTickCount64;
+
+  if FClockRunning then
+    Inc(FPlayedMs,
+        Int64(Tick - FProgressTick));
+
+  FProgressTick := Tick;
+
+  for I := FTrackInfoThreads.Count - 1 downto 0 do
+    begin
+      Info := FTrackInfoThreads[I];
+
+      if not Info.Finished then
+        Continue;
+
+      if SameFileName(Info.FileName,
+                      FSelectedFile) then
+        FTrackDurationMs := Info.DurationMs;
+
+      FTrackInfoThreads.Delete(I);
+      Info.Free;
+    end;
+
+  for I := FProgressMonitors.Count - 1 downto 0 do
+    begin
+      Monitor := FProgressMonitors[I];
+
+      if not Monitor.Finished then
+        Continue;
+
+      if (Monitor = FProgressMonitor) then
+        FProgressMonitor := nil;
+
+      FProgressMonitors.Delete(I);
+      Monitor.Free;
+    end;
+
+  if FRadioPlaying then
+    begin
+      FClockRunning := False;
+      UpdateProgressDisplay();
+      Exit;
+    end;
+
+  CurrentSource := Assigned(FLoopback) or ((FPlaybackFile <> '') and SameFileName(FSelectedFile,
+                                                                                  FPlaybackFile));
+
+  if CurrentSource and Assigned(FProgressMonitor) then
+    begin
+      Progress := FProgressMonitor.Snapshot();
+
+      if (Progress.Sequence <> FProgressSequence) then
+        begin
+          FProgressSequence := Progress.Sequence;
+
+          if (Tick >= FSeekGuardUntil) or (Abs(Progress.PositionMs - FActiveSeekMs) <= 3000) then
+            begin
+              FPlayedMs := Progress.PositionMs;
+              FSeekGuardUntil := 0;
+            end;
+
+          FReceiverDurationMs := Progress.DurationMs;
+        end;
+    end;
+
+  FClockRunning := CurrentSource and
+                   (FPlaybackState = 'play') and
+                   Assigned(FAudioServer) and
+                   (FAudioServer.Requests > 0);
+
+  UpdateProgressDisplay();
+end;
+
+
+procedure THEOSForm.FormCreate(Sender: TObject);
+begin
+
+  FQueue := TStringList.Create;
+  FStreamActions := TList<THEOSStreamAction>.Create;
+  FTrackInfoThreads := TList<THEOSTrackInfo>.Create;
+  FProgressMonitors := TList<THEOSProgressMonitor>.Create;
+  FProgressTick := GetTickCount64;
+  pbProgress.Minimum := 0;
+  pbProgress.Maximum := 1000;
+  UpdateProgressDisplay();
+  FQueueIndex := -1;
+  FPlaybackState := 'stop';
+  Randomize;
+  PlayerClick(Self);
+
+  FPowerText := '?';
+  FZone2PowerText := '?';
+  UpdateZoneButtons();
+  FVolumeText := '?';
+  lblVolumePerc.Caption := '--';
+  lblBalance.Caption := 'Balance: --';
+  FMuteText := '?';
+  FInputText := '?';
+  FVolumeReady := True;
+  UpdateToneDisplay();
+  LoadReceiverSettings();
+
+  if (FReceiverSettingsFile <> '') then
+    FCapabilities := TAvrCapabilityManager.Create(ExtractFilePath(FReceiverSettingsFile) + CAPABIILITIESINIFILE)
+  else
+    FCapabilities := TAvrCapabilityManager.Create('');
+
+  FCapabilities.SelectDevice(Trim(edHost.Text),
+                             FPreferredDeviceId);
+
+  if FCapabilities.FromCache then
+    memFLog.Lines.Add('Cached receiver capabilities restored.');
+
+  UpdateControlAvailability();
+  Sleep(250);
+end;
+
+
+procedure THEOSForm.FormShow(Sender: TObject);
+begin
+
+  SetWindowLong(Handle,
+                GWL_STYLE,
+                GetWindowLong(Handle,
+                              GWL_STYLE) and not WS_CAPTION or WS_BORDER);
+
+  Width := Width - 10;
+  Height := Height - 20;
+
+  if FInitialVolumeRead then
+    Exit;
+
+  FInitialVolumeRead := True;
+  if IPv4Valid(Trim(edHost.Text)) then
+    BeginReceiverCheck()
+  else
+    BeginDiscovery(True,
+                   False);
+end;
+
+
+procedure THEOSForm.BeginReceiverCheck(ReadAll: Boolean;
+                                         Discover: Boolean);
+begin
+
+  if Assigned(FReceiverCheck) then
+    Exit;
+
+  if Assigned(FWorker) and not FWorker.Finished then
+    Exit;
+
+  if Assigned(FDiscovery) and not FDiscovery.Finished and
+     not FDiscoveryComplete then
+    Exit;
+
+  FReceiverCheckReadAll := ReadAll;
+  FReceiverCheckDiscover := Discover;
+  FReceiverCheck := TReceiverAvailabilityProbe.Create(Trim(edHost.Text));
+  VolumeTimer.Enabled := False;
+  FStatus.Caption := 'Checking receiver availability ...';
+  lblStreamInfo.Caption := FStatus.Caption;
+
+  FReceiverCheck.Start;
+end;
+
+
+procedure THEOSForm.CompleteReceiverCheck();
+var
+  Available: Boolean;
+  AvrAvailable: Boolean;
+  Host: string;
+  ErrorText: string;
+  ReadAll: Boolean;
+
+begin
+
+  if not Assigned(FReceiverCheck) or not FReceiverCheck.Finished then
+    Exit;
+
+  Available := FReceiverCheck.Available;
+  AvrAvailable := FReceiverCheck.AvrAvailable;
+  Host := FReceiverCheck.Host;
+  ErrorText := FReceiverCheck.ErrorText;
+  ReadAll := FReceiverCheckReadAll;
+  FreeAndNil(FReceiverCheck);
+
+  if (Host <> Trim(edHost.Text)) then
+    begin
+
+      BeginReceiverCheck(ReadAll);
+      Exit;
+    end;
+
+  FAvrAvailabilityKnown := True;
+  FAvrReachable := Available and AvrAvailable;
+  UpdateControlAvailability();
+
+  if not Available then
+    begin
+      FReceiverVerified := False;
+      FVerifiedHost := '';
+
+      FVolumePending := False;
+      FVolumeReadPending := False;
+      FBalancePending := False;
+      FBalanceReadPending := False;
+      FMainZonePending := False;
+      FZone2Pending := False;
+      FZoneReadPending := False;
+      FTonePending := False;
+      FBassPending := False;
+      FTreblePending := False;
+      FToneReadPending := False;
+      VolumeTimer.Enabled := False;
+
+      FStatus.Caption := 'HEOS unavailable at ' + Host + ':1255. ' +
+                         'Status read skipped. Check power, IP and Network Control; ' +
+                         'click Read status to retry.';
+
+      lblStreamInfo.Caption := FStatus.Caption;
+      memFLog.Lines.Add('! ' + FStatus.Caption + ' ' + ErrorText);
+
+      if FReceiverCheckDiscover then
+        BeginDiscovery(True,
+                       ReadAll);
+
+      Exit;
+    end;
+
+  FReceiverVerified := True;
+  FVerifiedHost := Host;
+  SaveReceiverSettings();
+
+  if AvrAvailable then
+    BeginCapabilityRefresh();
+
+  if not AvrAvailable then
+    begin
+      FStatus.Caption := 'HEOS confirmed at ' + Host + '. AVR controls are unavailable; radio is ready.';
+      lblStreamInfo.Caption := FStatus.Caption;
+      memFLog.Lines.Add(FStatus.Caption);
+      VolumeTimer.Enabled := False;
+      Exit;
+    end;
+
+  FStatus.Caption := 'Receiver available. Reading settings ...';
+  lblStreamInfo.Caption := FStatus.Caption;
+
+  FVolumeReadPending := True;
+  FBalanceReadPending := True;
+  FZoneReadPending := True;
+  FToneReadPending := True;
+  FToneReadAttempts := 0;
+  FToneReadReadyAt := 0;
+  // The timer also leaves time for the receiver to release the probe socket.
+  VolumeTimer.Enabled := True;
+
+  if ReadAll then
+    StartRequest(['PW?', 'ZM?', 'Z2?', 'MV?', 'MU?', 'SI?']);
+
+end;
+
+
+function THEOSForm.FeatureAllowed(Feature: TAvrFeature): Boolean;
+begin
+
+  Result := not Assigned(FCapabilities) or
+              (FCapabilities.Support(Feature) <> asUnsupported);
+  Result := Result and (not FAvrAvailabilityKnown or FAvrReachable);
+end;
+
+
+procedure THEOSForm.BeginCapabilityRefresh();
+begin
+
+  if not Assigned(FCapabilities) then
+    Exit;
+  FCapabilities.SelectDevice(Trim(edHost.Text), FPreferredDeviceId);
+  FCapabilities.Refresh();
+  UpdateControlAvailability();
+end;
+
+
+procedure THEOSForm.PollCapabilities();
+var
+  DeviceId: string;
+
+begin
+
+  if not Assigned(FCapabilities) then
+    Exit;
+  DeviceId := FPreferredDeviceId;
+  if not SameText(FCapabilities.Host, Trim(edHost.Text)) then
+    begin
+      // A manually entered address is unconfirmed until the startup probe finishes.
+      if not FReceiverVerified or (FVerifiedHost <> Trim(edHost.Text)) then
+        DeviceId := '';
+      FCapabilities.SelectDevice(Trim(edHost.Text), DeviceId);
+      FAvrAvailabilityKnown := False;
+      UpdateControlAvailability();
+    end;
+  if FCapabilities.Poll() then
+    begin
+      if (FCapabilities.ErrorText <> '') then
+        memFLog.Lines.Add('! Capabilities: ' + FCapabilities.ErrorText)
+      else
+        memFLog.Lines.Add(Format('Capabilities refreshed: %s, %d ms.',
+                                  [FCapabilities.Data.Model, FCapabilities.ElapsedMs]));
+      UpdateToneDisplay();
+      UpdateControlAvailability();
+    end;
+end;
+
+
+procedure THEOSForm.UpdateControlAvailability();
+var
+  ToneAvailable: Boolean;
+
+  procedure Apply(Control: TControl;
+                  Feature: TAvrFeature;
+                  const Name: string);
+  begin
+
+    Control.Enabled := FeatureAllowed(Feature);
+    Control.ShowHint := True;
+    if FAvrAvailabilityKnown and not FAvrReachable then
+      Control.Hint := Name + ': receiver AVR connection is unavailable.'
+    else
+      if Assigned(FCapabilities) and
+         (FCapabilities.Support(Feature) = asUnsupported) then
+        Control.Hint := Name + ': not supported by this receiver.'
+    else
+      if Assigned(FCapabilities) and
+         (FCapabilities.Support(Feature) = asUnknown) then
+        Control.Hint := Name + ': capability not confirmed; standard AVR control is available.'
+    else
+      Control.Hint := Name;
+  end;
+
+begin
+
+  Apply(tbVolume,
+        afVolume,
+        'Receiver volume');
+
+  Apply(btnMute,
+        afMute,
+        'Mute');
+
+  Apply(tbBalance,
+        afBalance,
+        'Front left / right balance');
+
+  Apply(btnMainZone,
+        afMainZone,
+        'Main Zone');
+
+  Apply(btnZone2,
+        afZone2,
+        'Zone 2');
+
+  Apply(chkTone,
+        afTone,
+        'Tone control');
+
+  Apply(tbBass,
+        afBass,
+        'Bass');
+
+  Apply(tbTreble,
+        afTreble,
+        'Treble');
+
+
+  ToneAvailable := chkTone.Enabled and
+                   (FPowerText = 'On') and
+                   not FMainZonePending and
+                   not (FZoneRequest and (FZoneRequestKind = 1)) and
+                   FToneKnown and not
+                   ContainsText(FToneMode,
+                                'DIRECT') and not
+                   FDynamicEq;
+
+  chkTone.Enabled := ToneAvailable;
+
+  tbBass.Enabled := tbBass.Enabled and
+                    ToneAvailable and
+                    FToneEnabled and not
+                    (FTonePending and not
+                    FDesiredToneEnabled);
+
+  tbTreble.Enabled := tbTreble.Enabled and
+                      ToneAvailable and
+                      FToneEnabled and not
+                      (FTonePending and not
+                      FDesiredToneEnabled);
+
+  if not FeatureAllowed(afTone) then
+    begin
+      if FAvrAvailabilityKnown and not FAvrReachable then
+        lblToneStatus.Caption := 'Receiver AVR connection is unavailable.'
+      else
+        lblToneStatus.Caption := 'Tone control is not supported by this receiver.';
+    end;
+
+  if FeatureAllowed(afTone) then
+    begin
+      if not chkTone.Enabled or not FToneEnabled then
+        chkTone.Hint := 'Tone: ' + lblToneStatus.Caption;
+
+      if not tbBass.Enabled and FeatureAllowed(afBass) then
+        tbBass.Hint := 'Bass: ' + lblToneStatus.Caption;
+
+      if not tbTreble.Enabled and FeatureAllowed(afTreble) then
+        tbTreble.Hint := 'Treble: ' + lblToneStatus.Caption;
+    end;
+
+  // Do not queue commands which the device explicitly says it cannot provide.
+  if not FeatureAllowed(afVolume) then
+    begin
+      FVolumePending := False;
+      FVolumeReadPending := False;
+    end;
+
+  if not FeatureAllowed(afBalance) then
+    begin
+      FBalancePending := False;
+      FBalanceReadPending := False;
+    end;
+
+  if not FeatureAllowed(afMainZone) then
+    FMainZonePending := False;
+
+  if not FeatureAllowed(afZone2) then
+    FZone2Pending := False;
+
+  if not FeatureAllowed(afMainZone) and not FeatureAllowed(afZone2) then
+    FZoneReadPending := False;
+
+  if not FeatureAllowed(afTone) then
+    begin
+      FTonePending := False;
+      FToneReadPending := False;
+    end;
+
+  if not FeatureAllowed(afBass) then
+    FBassPending := False;
+
+  if not FeatureAllowed(afTreble) then
+    FTreblePending := False;
+end;
+
+
+function THEOSForm.ReceiverCommandAllowed(const Command: string): Boolean;
+var
+  Text: string;
+
+begin
+
+  Text := UpperCase(Trim(Command));
+  Result := True;
+  if StartsText('MV',
+                Text) then
+    Result := FeatureAllowed(afVolume)
+  else
+    if StartsText('MU',
+                  Text) then
+      Result := FeatureAllowed(afMute)
+    else
+      if StartsText('ZM',
+                    Text) then
+        Result := FeatureAllowed(afMainZone)
+      else
+        if StartsText('Z2',
+                      Text) then
+          Result := FeatureAllowed(afZone2)
+        else
+          if StartsText('CV',
+                        Text) then
+            Result := FeatureAllowed(afBalance)
+          else
+            if StartsText('PSTONE',
+                          Text) then
+              Result := FeatureAllowed(afTone)
+            else
+              if StartsText('PSBAS',
+                            Text) then
+                Result := FeatureAllowed(afBass)
+              else
+                if StartsText('PSTRE',
+                              Text) then
+                  Result := FeatureAllowed(afTreble);
+end;
+
+
+function THEOSForm.CreateReceiverRequest(const Host: string;
+                                         const Commands: array of string;
+                                         Port: Integer;
+                                         StopOnVolumeReply: Boolean;
+                                         StopOnChannelReply: Boolean;
+                                         StopOnZoneReply: Boolean;
+                                         StopOnToneReply: Boolean): TDenonRequest;
+var
+  Allowed: TList<string>;
+  Command: string;
+
+begin
+
+  Allowed := TList<string>.Create;
+  try
+    for Command in Commands do
+      if ReceiverCommandAllowed(Command) then
+        Allowed.Add(Command);
+    if (Allowed.Count = 0) then
+      Allowed.Add('PW?');
+
+    Result := TDenonRequest.Create(Host,
+                                   Allowed.ToArray,
+                                   Port,
+                                   StopOnVolumeReply and FeatureAllowed(afVolume),
+                                   StopOnChannelReply and FeatureAllowed(afBalance),
+                                   StopOnZoneReply and (FeatureAllowed(afMainZone) or FeatureAllowed(afZone2)),
+                                   StopOnToneReply and FeatureAllowed(afTone));
+  finally
+    Allowed.Free;
+  end;
+end;
+
+
+destructor THEOSForm.Destroy();
+var
+  Info: THEOSTrackInfo;
+  Monitor: THeosProgressMonitor;
+
+begin
+
+  FreeAndNil(FCapabilities);
+
+
+  if Assigned(FReceiverCheck) then
+    begin
+      FReceiverCheck.Terminate;
+      FReceiverCheck.WaitFor;
+      FreeAndNil(FReceiverCheck);
+    end;
+
+  if Assigned(StreamActionTimer) then
+    StreamActionTimer.Enabled := False;
+
+  if Assigned(VolumeTimer) then
+    VolumeTimer.Enabled := False;
+
+  if Assigned(FDiscovery) then
+    begin
+      FDiscovery.OnTerminate := nil;
+      FDiscovery.Terminate;
+      FDiscovery.WaitFor;
+      FreeAndNil(FDiscovery);
+    end;
+
+  FreeAndNil(FRadioForm);
+  FreeAndNil(FPlaylistEditor);
+  FreeAndNil(FPlaylistManager);
+  FreeAndNil(FPlaylistDb);
+  FreeAndNil(FQueue);
+
+  if Assigned(StreamTimer) then
+    StreamTimer.Enabled := False;
+
+  if Assigned(FHeos) then
+    begin
+      FHeos.OnTerminate := nil;
+      FHeos.Terminate;
+      FHeos.WaitFor;
+      FreeAndNil(FHeos);
+    end;
+
+  // Destruction must also work when form streaming failed before controls exist.
+  if Assigned(FProgressMonitor) then
+    begin FProgressMonitor.Terminate;FProgressMonitor:=nil;end;
+  FreeAndNil(FLoopback);
+  FreeAndNil(FAudioServer);
+
+  if Assigned(FProgressMonitors) then
+    begin
+      for Monitor in FProgressMonitors do
+        Monitor.Terminate;
+
+      for Monitor in FProgressMonitors do
+        Monitor.Free;
+
+      FreeAndNil(FProgressMonitors);
+    end;
+
+  if Assigned(FTrackInfoThreads) then
+    begin
+      for Info in FTrackInfoThreads do
+        Info.Terminate;
+
+      for Info in FTrackInfoThreads do
+        begin
+          Info.WaitFor;
+          Info.Free;
+        end;
+
+      FreeAndNil(FTrackInfoThreads);
+    end;
+
+  FreeAndNil(FStreamActions);
+
+  if Assigned(FWorker) then
+    begin
+      FWorker.OnTerminate := nil;
+      FWorker.Terminate;
+      FWorker.WaitFor();
+      FWorker.Free;
+    end;
+
+  inherited;
+end;
+
+
+procedure THEOSForm.BrowseMusicClick(Sender: TObject);
+var
+  FileName: UnicodeString;
+  FileURI: string;
+  Duration: string;
+
+begin
+
+  if BrowseLWFileEx(Self,
+                    fbxAudio,
+                    FileName,
+                    FileURI,
+                    Duration,
+                    ExtractFilePath(FSelectedFile)) then
+    begin
+      // Loading another file ends the current source; Play starts the new file.
+      if (FPlaybackState <> 'stop') or
+         Assigned(FAudioServer) or
+         FWaitingForCapture or
+         (FStreamActions.Count > 0) then
+        StartStreamAction(4);
+
+      SelectAudioFile(FileName);
+    end;
+end;
+
+
+procedure THEOSForm.StopLocalStream();
+begin
+
+  FRadioPlaying := False;
+
+  if Assigned(FRadioForm) then
+    FRadioForm.NotifyStopped();
+
+  if Assigned(FProgressMonitor) then
+    begin
+      FProgressMonitor.Terminate;
+      FProgressMonitor := nil;
+    end;
+
+  FPlayedMs := 0;
+  FReceiverDurationMs := 0;
+  FSeekGuardUntil := 0;
+  lblSeekTime.Visible := False;
+  SeekHintTimer.Enabled := False;
+  FClockRunning := False;
+  FProgressSequence := 0;
+  FProgressTick := GetTickCount64;
+  FWaitingForCapture := False;
+  FreeAndNil(FLoopback);
+  FreeAndNil(FAudioServer);
+
+  if Assigned(btnStreamWinAudio) then
+    btnStreamWinAudio.Checked := False;
+
+  FStreamDescription := '';
+  FLastServerError := '';
+  FPlaybackState := 'stop';
+  FPlaybackFile := '';
+
+  if (FSelectedFile <> '') then
+    SelectAudioFile(FSelectedFile);
+
+  UpdateProgressDisplay();
+end;
+
+
+procedure THEOSForm.UpdateStreamButtons();
+var
+  Busy: Boolean;
+
+begin
+
+  // Background playlist status polls must not disable playback controls.
+  // Source changes made during a poll are serialized by ProcessStreamActions.
+  Busy := FWaitingForCapture or (Assigned(FHeos) and not FHeos.Finished and
+                                 (FLastHeosAction <> haGetState));
+  if Assigned(FRadioForm) then
+    Busy := Busy or FRadioForm.PlaybackPending();
+
+  ComboBox1.Enabled := not Assigned(FLoopback) and not FWaitingForCapture;
+  ComboBox2.Enabled := ComboBox1.Enabled;
+  btnStreamWinAudio.Enabled := not Busy;
+
+  btnStreamWinAudio.Checked := Assigned(FAudioServer) and
+                               Assigned(FLoopback) and
+                               FLoopback.Ready and
+                               FLoopback.Initialized and not
+                               FLoopback.Finished and not
+                               FWaitingForCapture and
+                               (FPlaybackState = 'play') and
+                               (RequestedPlaybackState() = 'play');
+
+
+  btnPrevious.Enabled := (not Busy) and (FQueueIndex > 0);
+  btnNext.Enabled := (not Busy) and Assigned(FQueue) and (FQueueIndex + 1 < FQueue.Count);
+
+  btnStop.Enabled := True;
+  btnPlayPause.Enabled := not (FRadioPlaying or Assigned(FLoopback) or FWaitingForCapture) or (FSelectedFile <> '');
+
+  btnPrevious.Enabled := not Busy and Assigned(FQueue) and ((FQueueIndex > 0) or (btnLoop.Checked and (FQueue.Count > 0)));
+
+  btnNext.Enabled := not Busy and Assigned(FQueue) and
+                     ((FQueueIndex + 1 < FQueue.Count) or
+                      (btnLoop.Checked and (FQueue.Count > 0)));
+
+  if (RequestedPlaybackState() = 'play') then
+    btnPlayPause.Caption := 'Pause'
+  else
+    if RequestedPlaybackState() = 'pause' then
+      btnPlayPause.Caption := 'Resume'
+    else
+      btnPlayPause.Caption := 'Play';
+
+  if FRadioPlaying or Assigned(FLoopback) or FWaitingForCapture then
+    begin
+      btnPrevious.Enabled := False;
+      btnNext.Enabled := False;
+      btnPlayPause.Caption := 'Play file';
+    end;
+
+  // Preserve the checkbox toggle until the mouse click is dispatched.
+  if not (csLButtonDown in btnPlayList.ControlState) then
+    btnPlayList.Checked := FPlaylistPopupVisible or
+                           (FQueueIsPlaylist and FQueueActive and (FQueue.Count > 0));
+end;
+
+
+procedure THEOSForm.SendHeos(Action: THeosAction;
+                             const Url: string;
+                             PositionMs: Int64);
+begin
+
+  if Assigned(FHeos) and not FHeos.Finished then
+    Exit;
+
+  FreeAndNil(FHeos);
+  FLastHeosAction := Action;
+
+  if (Action = haSeek) then
+    FActiveSeekMs := PositionMs;
+
+  FHeos := THeosRequest.Create(FStreamReceiver,
+                               Action,
+                               Url,
+                               1255,
+                               PositionMs);
+
+  FHeos.OnTerminate := HeosFinished;
+
+  if (Action <> haGetState) then
+    begin
+      lblStreamInfo.Caption := 'Contacting HEOS ...';
+    end;
+
+  FHeos.Start();
+  UpdateStreamButtons();
+end;
+
+
+procedure THEOSForm.HeosFinished(Sender: TObject);
+begin
+
+  if FClosePending then
+    begin
+      PostMessageW(Handle, WM_APP + $126, 0, 0);
+      Exit;
+    end;
+
+  UpdatePlaybackProgress();
+  // Dispatch after OnTerminate returns; the request cannot be freed here.
+  PostMessageW(Handle, WM_APP + $126, 0, 0);
+  if (FLastHeosAction = haGetState) then
+    begin
+      if (FHeos.ErrorText = '') then
+        FPlaybackState := FHeos.PlayState;
+
+      if (FHeos.ErrorText <> '') then
+        begin
+          // A failed status read does not stop playback or leave playlist mode.
+          // Keep the queue armed so a later confirmed Stop can advance it.
+          memFLog.Lines.Add('! Playlist state: ' + FHeos.ErrorText);
+        end
+      else
+        if (FHeos.PlayState = 'play') then
+          FQueueSawPlaying := True
+      else
+        if (FHeos.PlayState = 'stop') and FQueueSawPlaying and
+           (FStreamActions.Count = 0) and (FDesiredPlaybackState <> 'stop') then
+          FQueueNextPending := True;
+
+      UpdatePlaybackProgress();
+      Exit;
+  end;
+
+  if (FHeos.ErrorText <> '') then
+    begin
+      memFLog.Lines.Add('! HEOS: ' + FHeos.ErrorText);
+      lblStreamInfo.Caption := FHeos.ErrorText;
+
+      if (FLastHeosAction = haStop) then
+        begin
+          // A failed Stop must not be followed by a new source.
+          FStreamActions.Clear;
+          FDesiredPlaybackState := '';
+          FDesiredPlaybackFile := '';
+          FQueueActive := False;
+        end;
+
+      if (FLastHeosAction = haPlayUrl) then
+        begin
+          FQueueActive := False;
+          StopLocalStream();
+
+          if (FStreamActions.Count > 0) and (FStreamActions[0].Action <> 4) then
+            FStreamActions.Clear;
+        end;
+    end
+  else
+    begin
+
+      case FLastHeosAction of
+        haSeek:   begin
+                    FPlayedMs := FActiveSeekMs;
+                    FProgressTick := GetTickCount64;
+                    FSeekGuardUntil := FProgressTick + 2500;
+                  end;
+
+        haPlayUrl,
+        haResume: FPlaybackState := 'play';
+
+        haPause:  FPlaybackState := 'pause';
+
+        haStop:   FPlaybackState := 'stop';
+      end;
+
+      if (FLastHeosAction = haPlayUrl) then
+        begin
+          StartProgressMonitor();
+          FToneReadPending := True;
+          VolumeTimer.Enabled := True;
+        end;
+
+      memFLog.Lines.Add('HEOS: ' + FHeos.Summary);
+      lblStreamInfo.Caption := FHeos.Summary;
+    end;
+
+  UpdatePlaybackProgress();
+end;
+
+
+procedure THEOSForm.imgLogoMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+
+  // Drag window
+  ReleaseCapture;
+  SendMessageW(Handle,
+              WM_SYSCOMMAND,
+              SC_MOVE + HTCAPTION,
+              0);
+end;
+
+
+procedure THEOSForm.lblStreamInfoMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+
+  if (Button = mbRight) then
+    begin
+      Clipboard.AsText := lblStreamInfo.Caption;
+      lblStreamInfo.Hint := lblStreamInfo.Caption;
+    end;
+
+end;
+
+
+procedure THEOSForm.StreamTick(Sender: TObject);
+var
+  CaptureError: string;
+  ServerError: string;
+
+begin
+
+  if FClosePending then
+    begin
+      ProcessClose();
+      Exit;
+    end;
+
+  CompleteReceiverCheck();
+  PollCapabilities();
+  ContinuePendingRadio();
+
+  UpdatePlaybackProgress();
+
+  if Assigned(FLoopback) and FLoopback.Ready then
+    begin
+      if ((not FLoopback.Initialized) or FLoopback.Finished) and (FLoopback.ErrorText <> '') then
+        begin
+          CaptureError := FLoopback.ErrorText;
+          memFLog.Lines.Add('! Windows audio: ' + CaptureError);
+
+          if Assigned(FHeos) and not FHeos.Finished then
+           begin
+              FHeos.OnTerminate := nil;
+              FHeos.Terminate;
+              FHeos.WaitFor;
+              FreeAndNil(FHeos);
+           end;
+
+          StopLocalStream();
+          lblStreamInfo.Caption := CaptureError;
+        end
+      else
+       if FWaitingForCapture then
+         begin
+           FWaitingForCapture := False;
+           SendHeos(haPlayUrl,
+                    FAudioServer.Url);
+         end;
+    end;
+
+  if Assigned(FAudioServer) and
+     Assigned(FHeos) and
+     FHeos.Finished and
+     (FHeos.ErrorText = '') then
+    begin
+      lblStreamInfo.Caption := FStreamDescription + ' | HTTP requests: ' + IntToStr(FAudioServer.Requests);
+    end;
+
+  if Assigned(FAudioServer) then
+    begin
+      ServerError := FAudioServer.LastError();
+
+      if (ServerError <> '') then
+        begin
+          lblStreamInfo.Caption := FStreamDescription + ' | ' + ServerError;
+
+          if (ServerError <> FLastServerError) then
+            memFLog.Lines.Add('! Audio HTTP: ' + ServerError);
+        end;
+
+      FLastServerError := ServerError;
+    end;
+
+  ProcessStreamActions();
+  UpdateStreamButtons();
+
+  if FQueueNextPending and Assigned(FHeos) and FHeos.Finished then
+    begin
+      FQueueNextPending := False;
+      if FQueueActive and chkPlayListAutoNext.Checked then
+        PlayQueueIndex(FQueueIndex + 1);
+    end;
+
+  if (FStreamActions.Count = 0) and (FDesiredPlaybackState = '') and
+     Assigned(FAudioServer) and not Assigned(FLoopback) and
+     (not Assigned(FHeos) or FHeos.Finished) then
+    begin
+      Inc(FQueuePollTicks);
+
+      if (FQueuePollTicks >= 5) then
+        begin
+          FQueuePollTicks := 0;
+          SendHeos(haGetState);
+        end;
+    end;
+end;
+
+
+procedure THEOSForm.tbVolumeDblClick(Sender: TObject);
+begin
+
+  tbVolume.AnimateTrackBarToPosition(0,
+                                     2);
+end;
+
+
+procedure THEOSForm.FindHEOSDEviceClick(Sender: TObject);
+begin
+
+  BeginDiscovery(False, False);
+end;
+
+
+procedure THEOSForm.BeginDiscovery(Reconnect: Boolean; ReadAll: Boolean);
+begin
+
+  if not edHost.Enabled or Assigned(FReceiverCheck) then
+    Exit;
+
+  if Assigned(FDiscovery) and not FDiscovery.Finished then
+    Exit;
+
+  FreeAndNil(FDiscovery);
+  FDiscoveryComplete := False;
+  FReceiverVerified := False;
+  FVerifiedHost := '';
+  FDiscoveryReconnect := Reconnect;
+  FDiscoveryReadAll := ReadAll;
+  btnFindHEOSDevice.Enabled := False;
+  btnFindHEOSDevice.Caption := 'Searching ...';
+  FStatus.Caption := 'Searching local network interfaces for HEOS devices ...';
+  lblStreamInfo.Caption := FStatus.Caption;
+  memFLog.Lines.Add(FStatus.Caption);
+  FDiscovery := NewDiscovery();
+  FDiscovery.OnTerminate := DiscoveryFinished;
+  FDiscovery.Start;
+end;
+
+
+function THEOSForm.NewDiscovery(): THEOSDiscovery;
+begin
+
+  Result := THEOSDiscovery.Create;
+end;
+
+
+procedure THEOSForm.DiscoveryFinished(Sender: TObject);
+begin
+
+  ApplyDiscoveredDevices(FDiscovery.Devices, FDiscovery.ErrorText);
+end;
+
+
+procedure THEOSForm.HEOSDeviceChange(Sender: TObject);
+var
+  Index: Integer;
+  OldHost: string;
+
+begin
+
+  Index := cbxHEOSDevices.ItemIndex;
+
+  if (Index < 0) or (Index >= Length(FDevices)) then
+    Exit;
+
+  OldHost := Trim(edHost.Text);
+  edHost.Text := FDevices[Index].Address;
+  FVerifiedHost := edHost.Text;
+  FReceiverVerified := True;
+  FPreferredDeviceId := FDevices[Index].DeviceId;
+  FStatus.Caption := 'HEOS receiver confirmed at ' + edHost.Text;
+
+  if (OldHost <> '') and (OldHost <> edHost.Text) then
+    FStatus.Caption := FStatus.Caption + ' (previous IP: ' + OldHost + ')';
+
+  if not FDevices[Index].AvrAvailable then
+    FStatus.Caption := FStatus.Caption + '. AVR controls are unavailable; HEOS radio remains available.';
+
+  lblStreamInfo.Caption := FStatus.Caption;
+  memFLog.Lines.Add(FStatus.Caption);
+
+  SaveReceiverSettings();
+  FAvrAvailabilityKnown := True;
+  FAvrReachable := FDevices[Index].AvrAvailable;
+
+  if FAvrReachable then
+    BeginCapabilityRefresh()
+  else
+    begin
+      FCapabilities.SelectDevice(Trim(edHost.Text), FPreferredDeviceId);
+      UpdateControlAvailability();
+    end;
+
+  if FDiscoveryReconnect then
+    begin
+      FDiscoveryReconnect := False;
+      if FDevices[Index].AvrAvailable then
+        BeginReceiverCheck(FDiscoveryReadAll,
+                           False);
+    end;
+end;
+
+
+procedure THEOSForm.PlaylistClick(Sender: TObject);
+var
+  P: TPoint;
+  I: Integer;
+  Action: THEOSStreamAction;
+
+begin
+
+  if (Sender = btnPlayList) then
+    begin
+      if FPlaylistPopupVisible or (csDesigning in ComponentState) then
+        Exit;
+
+      if not btnPlayList.Checked then
+        begin
+          // Leave playlist mode without stopping the current track.
+          FQueueActive := False;
+          FQueueIsPlaylist := False;
+          FQueueNextPending := False;
+          FQueueSawPlaying := False;
+          FQueueStarting := False;
+          FQueue.Clear();
+          FQueueIndex := -1;
+
+          // Already-requested playback may finish starting as a single file.
+          for I := 0 to FStreamActions.Count - 1 do
+            begin
+              Action := FStreamActions[I];
+              Action.QueueStarting := False;
+              FStreamActions[I] := Action;
+            end;
+
+          UpdateStreamButtons();
+          Exit;
+        end;
+
+      FPlaylistPopupVisible := True;
+
+      try
+        P := btnPlayList.ClientToScreen(Types.Point(0,
+                                              btnPlayList.Height));
+        pmPlaylists.Popup(P.X,
+                          P.Y);
+
+      finally
+        FPlaylistPopupVisible := False;
+        UpdateStreamButtons();
+      end;
+
+      Exit;
+    end;
+
+  if (FPlaylistEditor = nil) then
+    begin
+      FPlaylistEditor := THEOSPlaylistEditor.Create(Self);
+      FPlaylistEditor.OnPlay := PlayPlaylist;
+      FPlaylistEditor.OnLoad := LoadPlaylistForDenon;
+    end;
+
+  FPlaylistEditor.Show();
+  FPlaylistEditor.BringToFront();
+end;
+
+
+procedure THEOSForm.EnsurePlaylistManager();
+begin
+
+  if not Assigned(FPlaylistDb) then
+    FPlaylistDb := TRDJPlaylistDb.Create;
+
+  if not FPlaylistDb.IsOpen() then
+    FPlaylistDb.Open(IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'Data\RDJLibrary.db');
+
+  if not Assigned(FPlaylistManager) then
+    FPlaylistManager := TRDJPlaylistManager.Create(FPlaylistDb,
+                                                   nil);
+end;
+
+
+procedure THEOSForm.PlaylistPopup(Sender: TObject);
+var
+  Playlists: TList<TRDJPlaylistInfo>;
+  I: Integer;
+  Item: TMenuItem;
+
+begin
+
+  pmPlaylists.Items.Clear;
+  Playlists := nil;
+
+  try
+    try
+      EnsurePlaylistManager();
+      Playlists := FPlaylistManager.GetAllPlaylists();
+
+      if (Playlists.Count = 0) then
+        begin
+          Item := TMenuItem.Create(pmPlaylists);
+          Item.Caption := '(No playlists found)';
+          Item.Enabled := False;
+          pmPlaylists.Items.Add(Item);
+        end;
+
+      for I := 0 to Playlists.Count - 1 do
+        begin
+          Item := TMenuItem.Create(pmPlaylists);
+          Item.Caption := StringReplace(Playlists[I].Name,
+                                        '&',
+                                        '&&',
+                                        [rfReplaceAll]);
+
+          Item.Tag := Playlists[I].PlaylistID;
+          Item.OnClick := PlaylistPopupItemClick;
+          pmPlaylists.Items.Add(Item);
+        end;
+
+    except
+      on E: Exception do
+        begin
+          pmPlaylists.Items.Clear;
+          Item := TMenuItem.Create(pmPlaylists);
+          Item.Caption := '(Playlists unavailable)';
+          Item.Enabled := False;
+          pmPlaylists.Items.Add(Item);
+          lblStreamInfo.Caption := E.Message;
+          memFLog.Lines.Add('! Playlists: ' + E.Message);
+        end;
+    end;
+
+  finally
+    Playlists.Free;
+  end;
+
+  Item := TMenuItem.Create(pmPlaylists);
+  Item.Caption := '-';
+  pmPlaylists.Items.Add(Item);
+  Item := TMenuItem.Create(pmPlaylists);
+  Item.Caption := 'Edit playlists...';
+  Item.OnClick := PlaylistClick;
+  pmPlaylists.Items.Add(Item);
+end;
+
+
+procedure THEOSForm.PlaylistPopupItemClick(Sender: TObject);
+var
+  Playlist: TRDJPlaylist;
+
+begin
+
+  if not (Sender is TMenuItem) or (TMenuItem(Sender).Tag <= 0) then
+    Exit;
+
+  Playlist := nil;
+
+  try
+    try
+      if Assigned(FHeos) and not FHeos.Finished then
+        begin
+          lblStreamInfo.Caption := 'Wait for the current receiver request to finish';
+          Exit;
+        end;
+
+      EnsurePlaylistManager();
+      Playlist := FPlaylistManager.LoadPlaylist(TMenuItem(Sender).Tag);
+
+      if (Playlist.Count = 0) then
+        begin
+          lblStreamInfo.Caption := 'Selected playlist is empty.';
+          Exit;
+        end;
+
+      chkPlayListAutoNext.Checked := True;
+      PlayPlaylist(Sender,
+                   Playlist,
+                   0);
+
+    except
+      on E: Exception do
+        begin
+          lblStreamInfo.Caption := E.Message;
+          memFLog.Lines.Add('! Playlists: ' + E.Message);
+        end;
+    end;
+
+  finally
+    Playlist.Free;
+    UpdateStreamButtons();
+  end;
+end;
+
+
+procedure THEOSForm.MainCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+
+  CanClose := FCloseReady;
+
+  if CanClose or FClosePending then
+    Exit;
+
+  if Assigned(FPlaylistEditor) and not FPlaylistEditor.ConfirmSave() then
+    Exit;
+
+  // No playback was requested by this app; leave other receiver sources alone.
+  if (FStreamReceiver = '') then
+    begin
+      CanClose := True;
+      Exit;
+    end;
+
+  FClosePending := True;
+  FCloseStopSent := False;
+  FQueueActive := False;
+  FQueueNextPending := False;
+  FOpenRadioPending := False;
+  FStreamActions.Clear;
+  FDesiredPlaybackState := 'stop';
+  FDesiredPlaybackFile := '';
+  Enabled := False;
+
+  if Assigned(FRadioForm) then
+    begin
+      FRadioForm.Enabled := False;
+      FRadioForm.NotifyStopped();
+    end;
+
+  lblStreamInfo.Caption := 'Stopping receiver playback before closing ...';
+  StreamActionTimer.Enabled := True;
+  ProcessClose();
+end;
+
+
+procedure THEOSForm.ProcessClose();
+begin
+
+  if not FClosePending or FCloseReady then
+    Exit;
+
+  // An accepted Play must finish before the final Stop is sent.
+  if Assigned(FRadioForm) and FRadioForm.PlaybackPending() then
+    Exit;
+
+  if Assigned(FHeos) and not FHeos.Finished then
+    Exit;
+
+  if not FCloseStopSent then
+    begin
+      FCloseStopSent := True;
+      SendHeos(haStop);
+      Exit;
+    end;
+
+  if (FHeos.ErrorText <> '') then
+    begin
+      FClosePending := False;
+      FCloseStopSent := False;
+      StreamActionTimer.Enabled := False;
+      FDesiredPlaybackState := '';
+      Enabled := True;
+
+      if Assigned(FRadioForm) then
+        FRadioForm.Enabled := True;
+
+      lblStreamInfo.Caption := 'Cannot stop receiver before closing: ' + FHeos.ErrorText;
+      memFLog.Lines.Add('! ' + lblStreamInfo.Caption);
+      Exit;
+    end;
+
+  StopLocalStream();
+  FCloseReady := True;
+  StreamActionTimer.Enabled := False;
+
+  PostMessageW(Handle,
+              WM_CLOSE,
+              0,
+              0);
+end;
+
+
+procedure THEOSForm.LoadPlaylistForDenon(Sender: TObject;
+                                         Playlist: TRDJPlaylist;
+                                         StartIndex: Integer);
+var
+  I: Integer;
+
+begin
+
+  StopLocalStream();
+  FQueue.Clear();
+  FQueueIsPlaylist := Playlist.Count > 0;
+
+  for I := 0 to Playlist.Count - 1 do
+    FQueue.Add(Playlist[I].Track.FullPath);
+
+  FQueueIndex := StartIndex;
+
+  if btnShuffle.Checked then
+    ShuffleUpcoming(StartIndex + 1);
+
+  FQueueActive := False;
+  FQueueNextPending := False;
+
+  if (StartIndex >= 0) and (StartIndex < FQueue.Count) then
+    SelectAudioFile(FQueue[StartIndex]);
+
+  UpdateStreamButtons();
+end;
+
+
+procedure THEOSForm.PlayPlaylist(Sender: TObject;
+                                 Playlist: TRDJPlaylist;
+                                 StartIndex: Integer);
+var
+  I: Integer;
+
+begin
+
+  if Assigned(FHeos) and not FHeos.Finished then
+    begin
+      lblStreamInfo.Caption := 'Wait for the current receiver request to finish';
+      Exit;
+    end;
+
+  FQueue.Clear();
+  FQueueIsPlaylist := Playlist.Count > 0;
+
+  for I := 0 to Playlist.Count - 1 do
+    FQueue.Add(Playlist[I].Track.FullPath);
+
+  if btnShuffle.Checked then
+    ShuffleUpcoming(StartIndex + 1);
+
+  PlayQueueIndex(StartIndex);
+end;
+
+
+procedure THEOSForm.PlayQueueIndex(Index: Integer);
+begin
+
+  if (Index >= FQueue.Count) then
+    begin
+      if btnLoop.Checked and (FQueue.Count > 0) then
+        begin
+          if btnShuffle.Checked then
+            ShuffleUpcoming(0);
+
+          PlayQueueIndex(0);
+          Exit;
+        end;
+
+      FQueueActive := False;
+      StopLocalStream();
+      lblStreamInfo.Caption := 'Playlist finished.';
+
+      UpdateStreamButtons();
+      Exit;
+    end;
+
+  if (Index < 0) then
+    begin
+      if btnLoop.Checked and (FQueue.Count > 0) then
+        PlayQueueIndex(FQueue.Count - 1);
+
+      Exit;
+    end;
+
+  if not FileExists(FQueue[Index]) then
+    begin
+      FQueueActive := False;
+      lblStreamInfo.Caption := 'Playlist stopped: missing file ' + FQueue[Index];
+      UpdateStreamButtons();
+      Exit;
+    end;
+
+  FQueueIndex := Index;
+  FQueueActive := True;
+  FQueueSawPlaying := False;
+  FQueueNextPending := False;
+  FQueuePollTicks := 0;
+  SelectAudioFile(FQueue[Index]);
+  FQueueStarting := True;
+
+  try
+    StartStreamAction(0);
+
+  finally
+    FQueueStarting := False;
+  end;
+
+  memFLog.Lines.Add(Format('Playlist track %d / %d: %s',
+                           [Index + 1, FQueue.Count, ExtractFileName(FQueue[Index])]));
+end;
+
+
+procedure THEOSForm.TrackClick(Sender: TObject);
+begin
+
+  if Assigned(FHeos) and not FHeos.Finished then
+    Exit;
+
+  PlayQueueIndex(FQueueIndex + TComponent(Sender).Tag);
+end;
+
+
+function THEOSForm.ValidAddress(): Boolean;
+var
+  Parts: TArray<string>;
+  Part: string;
+  Value, I: Integer;
+
+begin
+
+  Result := False;
+  Parts := MfCastSplit(UTF8Decode(Trim(edHost.Text)),'.');
+
+  if (Length(Parts) <> 4) then
+    Exit;
+
+  for Part in Parts do
+    begin
+      if (Length(Part) = 0) or (Length(Part) > 3) then
+        Exit;
+
+      for I := 1 to Length(Part) do
+        if not CharInSet(Part[I],
+                         ['0'..'9']) then
+          Exit;
+
+        if not TryStrToInt(Part,
+                           Value) then
+          Exit;
+
+        if (Value < 0) or (Value > 255) then
+          Exit;
+    end;
+  Result := True;
+end;
+
+
+procedure THEOSForm.StartRequest(const Commands: array of string;
+                                   const ExpectedPowerReply: string);
+var
+  Command: string;
+
+begin
+
+  if Assigned(FWorker) and (not FWorker.Finished) then
+    Exit;
+
+  if not ValidAddress then
+    begin
+      FStatus.Caption := 'Enter the current receiver IPv4 address or click Find HEOS.';
+      memFLog.Lines.Add(FStatus.Caption);
+      Exit;
+    end;
+
+  FreeAndNil(FWorker);
+  FExpectedPowerReply := ExpectedPowerReply;
+  FVolumeText := '?';
+  FMuteText := '?';
+  FInputText := '?';
+
+  FWorker := CreateReceiverRequest(Trim(edHost.Text),
+                                  Commands);
+  FWorker.OnTerminate := RequestFinished;
+  edHost.Enabled := False;
+  btnFindHEOSDevice.Enabled := False;
+  cbxHEOSDevices.Enabled := False;
+
+  FStatus.Caption := 'Contacting ' + Trim(edHost.Text) + ':23 ...';
+  memFLog.Lines.Add(FormatDateTime('hh:nn:ss', Now) + '  ' + FStatus.Caption);
+
+  for Command in Commands do
+    memFLog.Lines.Add('> ' + Command);
+
+  FWorker.Start();
+end;
+
+
+function THEOSForm.VolumeCaption(HalfSteps: Integer): string;
+begin
+
+  Result := IntToStr(HalfSteps div 2) + '.' +
+              IntToStr((HalfSteps mod 2) * 5) + '%';
+end;
+
+
+procedure THEOSForm.SetVolumeBusy(Busy: Boolean);
+begin
+
+  edHost.Enabled := not Busy;
+  cbxHEOSDevices.Enabled := not Busy;
+  btnFindHEOSDevice.Enabled := not Busy and (not Assigned(FDiscovery) or FDiscovery.Finished);
+
+  if not Busy then
+    UpdateStreamButtons();
+  UpdateControlAvailability();
+end;
+
+
+procedure THEOSForm.VolumeChange(Sender: TObject);
+begin
+
+  if not FeatureAllowed(afVolume) or not FVolumeReady or FUpdatingVolume or (csLoading in ComponentState) then
+    Exit;
+
+  FDesiredVolume := tbVolume.Position;
+  FVolumePending := True;
+  lblVolumePerc.Caption := VolumeCaption(FDesiredVolume);
+  VolumeTimer.Enabled := False;
+  VolumeTimer.Enabled := True;
+end;
+
+
+procedure THEOSForm.UpdateBalanceDisplay();
+var
+  Amount: Integer;
+  Direction: string;
+
+begin
+
+  Amount := Abs(FDesiredBalance);
+
+  if (FDesiredBalance = 0) then
+    lblBalance.Caption := 'Balance: Centre'
+  else
+    begin
+      if FDesiredBalance < 0 then
+        Direction := 'Left'
+      else
+        Direction := 'Right';
+
+      lblBalance.Caption := 'Balance: ' + Direction + ' ' + IntToStr(Amount div 2) +  '.' + IntToStr((Amount mod 2) * 5) + ' dB';
+    end;
+
+end;
+
+
+procedure THEOSForm.BalanceChange(Sender: TObject);
+begin
+
+  if not FeatureAllowed(afBalance) or not FVolumeReady or FUpdatingBalance or (csLoading in ComponentState) then
+    Exit;
+
+  FDesiredBalance := tbBalance.Position;
+  FBalancePending := True;
+  UpdateBalanceDisplay();
+  VolumeTimer.Enabled := False;
+  VolumeTimer.Enabled := True;
+end;
+
+
+procedure THEOSForm.BalanceDblClick(Sender: TObject);
+begin
+
+  tbBalance.AnimateTrackBarToPosition(0,
+                                      2);
+end;
+
+
+procedure THEOSForm.UpdateToneDisplay();
+var
+  Available: Boolean;
+
+  function ToneCaption(const Name: string;
+                       Value: Integer): string;
+  begin
+    Result := Name{ + ': '};
+
+    if (Value > 0) then
+      Result := Result + '+';
+
+    Result := Result + IntToStr(Value) + ' dB';
+  end;
+
+begin
+
+  FUpdatingTone := True;
+
+  try
+    if not FTonePending and not FToneRequest then
+      chkTone.Checked := FToneKnown and FToneEnabled;
+
+    lblBass.Caption := ToneCaption('',
+                                   tbBass.Position);
+
+    lblTreble.Caption := ToneCaption('',
+                                     tbTreble.Position);
+
+    Available := (FPowerText = 'On') and
+                  not FMainZonePending and
+                  not (FZoneRequest and (FZoneRequestKind = 1)) and
+                  FToneKnown and not
+                  ContainsText(FToneMode,
+                               'DIRECT') and not
+                  FDynamicEq;
+
+    chkTone.Enabled := Available;
+    tbBass.Enabled := Available and FToneEnabled and not (FTonePending and not FDesiredToneEnabled);
+    tbTreble.Enabled := tbBass.Enabled;
+
+    if (FPowerText <> 'On') then
+      lblToneStatus.Caption := 'Activate Main Zone to adjust tone.'
+    else
+      if ContainsText(FToneMode,
+                      'DIRECT') then
+        lblToneStatus.Caption := 'Tone is unavailable in Direct / Pure Direct mode.'
+      else
+        if FDynamicEq then
+          lblToneStatus.Caption := 'Tone is unavailable while Dynamic EQ is on.'
+      else
+        if not FToneKnown then
+          begin
+            if (FToneReadAttempts >= 3) and not FToneReadPending and not FToneRequest then
+              lblToneStatus.Caption := 'Tone settings could not be read. Click Read status to retry.'
+            else
+              if (GetTickCount64 < FToneReadReadyAt) then
+                lblToneStatus.Caption := 'Waiting for receiver tone settings ...'
+              else
+                lblToneStatus.Caption := 'Reading receiver tone settings ...';
+          end
+        else
+          if not FToneEnabled then
+            lblToneStatus.Caption := 'Enable Tone to adjust bass and treble.'
+          else
+            lblToneStatus.Caption := 'Bass / treble: -6 to +6 dB.' + #13 + 'Double-click for 0 dB.';
+
+  finally
+    FUpdatingTone := False;
+  end;
+  UpdateControlAvailability();
+end;
+
+
+procedure THEOSForm.ToneClick(Sender: TObject);
+begin
+
+  if not FeatureAllowed(afTone) or FUpdatingTone or not FVolumeReady then
+    Exit;
+
+  if (FPowerText <> 'On') or not FToneKnown or FMainZonePending or
+     (FZoneRequest and (FZoneRequestKind = 1)) then
+    begin
+      UpdateToneDisplay();
+      Exit;
+    end;
+
+  FDesiredToneEnabled := chkTone.Checked;
+  FTonePending := True;
+
+  if not FDesiredToneEnabled then
+    begin
+      FBassPending := False;
+      FTreblePending := False;
+    end;
+
+  UpdateToneDisplay();
+  VolumeTimer.Enabled := True;
+end;
+
+
+procedure THEOSForm.ToneChange(Sender: TObject);
+begin
+
+  if not FeatureAllowed(afTone) or
+     ((Sender = tbBass) and not
+     FeatureAllowed(afBass)) or
+     ((Sender = tbTreble) and not
+     FeatureAllowed(afTreble)) or
+     FUpdatingTone or not
+     FVolumeReady or (csLoading in ComponentState) then
+    Exit;
+
+  if (FPowerText <> 'On') or not FToneKnown or FMainZonePending or
+     (FZoneRequest and (FZoneRequestKind = 1)) then
+    Exit;
+
+  if (Sender = tbBass) then
+    begin
+      FDesiredBass := tbBass.Position;
+      FBassPending := True;
+    end
+  else if (Sender = tbTreble) then
+    begin
+      FDesiredTreble := tbTreble.Position;
+      FTreblePending := True;
+    end
+  else
+    Exit;
+
+  UpdateToneDisplay();
+  VolumeTimer.Enabled := False;
+  VolumeTimer.Enabled := True;
+end;
+
+
+procedure THEOSForm.ToneDblClick(Sender: TObject);
+begin
+
+  if (Sender = tbBass) then
+    tbBass.Position := 0
+  else if (Sender = tbTreble) then
+    tbTreble.Position := 0;
+end;
+
+
+procedure THEOSForm.StartToneRequest();
+var
+  Commands: TList<string>;
+  Command: string;
+  WriteRequest: Boolean;
+
+begin
+
+  if (FPowerText <> 'On') then
+    begin
+      FToneReadPending := False;
+      FTonePending := False;
+      FBassPending := False;
+      FTreblePending := False;
+      UpdateToneDisplay();
+      Exit;
+    end;
+
+  if (GetTickCount64 < FToneReadReadyAt) then
+    begin
+      VolumeTimer.Enabled := True;
+      Exit;
+    end;
+
+  WriteRequest := FToneKnown and (FTonePending or FBassPending or FTreblePending);
+
+  if not WriteRequest then
+    Inc(FToneReadAttempts);
+
+  Commands := TList<string>.Create;
+  try
+    if WriteRequest and FTonePending then
+      if FDesiredToneEnabled then
+        Commands.Add('PSTONE CTRL ON')
+      else
+        Commands.Add('PSTONE CTRL OFF');
+
+    if WriteRequest and FBassPending then
+      Commands.Add('PSBAS ' + Format('%.2d',
+                                     [50 + FDesiredBass]));
+
+    if WriteRequest and FTreblePending then
+      Commands.Add('PSTRE ' + Format('%.2d',
+                                     [50 + FDesiredTreble]));
+
+    Commands.Add('MS?');
+    Commands.Add('PSDYNEQ ?');
+    Commands.Add('PSTONE CTRL ?');
+    Commands.Add('PSBAS ?');
+    Commands.Add('PSTRE ?');
+
+    FreeAndNil(FWorker);
+    FExpectedPowerReply := '';
+    FWorker := CreateReceiverRequest(Trim(edHost.Text),
+                                    Commands.ToArray,
+                                    23,
+                                    False,
+                                    False,
+                                    False,
+                                    True);
+
+    FToneRequest := True;
+    if WriteRequest then
+      begin
+        FTonePending := False;
+        FBassPending := False;
+        FTreblePending := False;
+      end;
+    FToneReadPending := False;
+    FWorker.OnTerminate := RequestFinished;
+    FStatus.Caption := 'Updating receiver tone settings ...';
+
+    for Command in Commands do
+      memFLog.Lines.Add('> ' + Command);
+
+    SetVolumeBusy(True);
+    VolumeTimer.Enabled := ReceiverActionsPending();
+    FWorker.Start();
+
+  finally
+    Commands.Free;
+  end;
+end;
+
+
+procedure THEOSForm.StartBalanceRequest();
+var
+  Left: Integer;
+  Right: Integer;
+  LeftCommand: string;
+  RightCommand: string;
+
+  //Helper
+  function ChannelValue(HalfSteps: Integer): string;
+  begin
+    if (HalfSteps < 76) then
+      HalfSteps := 76;
+
+    if (HalfSteps > 124) then
+      HalfSteps := 124;
+
+    Result := Format('%.2d',
+                     [HalfSteps div 2]);
+
+    if (HalfSteps mod 2 <> 0) then
+      Result := Result + '5';
+  end;
+
+begin
+
+  FreeAndNil(FWorker);
+  FExpectedPowerReply := '';
+  FBalanceRequest := True;
+  FBalanceLeftReceived := False;
+  FBalanceRightReceived := False;
+  FBalanceReadingBase := not FBalanceKnown or FBalanceReadPending or (FBalanceBaseHost <> Trim(edHost.Text));
+  FBalanceReadPending := False;
+
+  if FBalanceReadingBase then
+    begin
+      Inc(FStartupBalanceReadAttempts);
+      FWorker := CreateReceiverRequest(Trim(edHost.Text),
+                                      ['SI?',
+                                      'CV?'],
+                                      23,
+                                      False,
+                                      True);
+
+      FStatus.Caption := 'Reading front channel levels ...';
+      memFLog.Lines.Add('> SI?');
+      memFLog.Lines.Add('> CV?');
+    end
+  else
+    begin
+      Left := FBalanceLeft;
+      Right := FBalanceRight;
+
+      if (FDesiredBalance > 0) then
+        Dec(Left,
+            FDesiredBalance)
+      else
+        Inc(Right,
+            FDesiredBalance);
+
+      LeftCommand := 'CVFL ' + ChannelValue(Left);
+      RightCommand := 'CVFR ' + ChannelValue(Right);
+
+      FWorker := CreateReceiverRequest(Trim(edHost.Text),
+                                       [LeftCommand,
+                                       RightCommand,
+                                       'CV?'],
+                                       23,
+                                       False,
+                                       True);
+
+      FBalancePending := False;
+      FStatus.Caption := 'Setting receiver balance ...';
+      memFLog.Lines.Add('> ' + LeftCommand);
+      memFLog.Lines.Add('> ' + RightCommand);
+      memFLog.Lines.Add('> CV?');
+    end;
+
+  FWorker.OnTerminate := RequestFinished;
+  SetVolumeBusy(True);
+  VolumeTimer.Enabled := ReceiverActionsPending();
+  FWorker.Start();
+end;
+
+
+function THEOSForm.ReceiverActionsPending(): Boolean;
+begin
+
+  Result := FVolumePending or
+            FVolumeReadPending or
+            FBalancePending or
+            FBalanceReadPending or
+            FMainZonePending or
+            FZone2Pending or
+            FZoneReadPending or
+            FTonePending or
+            FBassPending or
+            FTreblePending or
+            FToneReadPending;
+end;
+
+
+procedure THEOSForm.UpdateZoneButtons();
+begin
+
+  if FMainZonePending then
+    btnMainZone.Checked := FMainZoneDesired
+  else
+    if FZoneRequest and (FZoneRequestKind = 1) then
+      btnMainZone.Checked := FZoneRequestTarget
+    else
+      btnMainZone.Checked := FPowerText = 'On';
+
+  if FZone2Pending then
+    btnZone2.Checked := FZone2Desired
+  else
+    if FZoneRequest and (FZoneRequestKind = 2) then
+      btnZone2.Checked := FZoneRequestTarget
+    else
+      btnZone2.Checked := FZone2PowerText = 'On';
+end;
+
+
+procedure THEOSForm.ZoneClick(Sender: TObject);
+begin
+
+  if Sender = btnMainZone then
+    QueueZoneChange(True,
+                    btnMainZone.Checked)
+  else
+    if (Sender = btnZone2) then
+      QueueZoneChange(False,
+                      btnZone2.Checked);
+end;
+
+
+procedure THEOSForm.RetryStartupZoneRead();
+begin
+
+  if (((FPowerText = '?') and
+      FeatureAllowed(afMainZone)) or
+      ((FZone2PowerText = '?') and
+      FeatureAllowed(afZone2))) and
+     (FStartupZoneReadAttempts < 3) then
+    begin
+      FZoneReadPending := True;
+      if FVolumeText = '?' then
+        FVolumeReadPending := True;
+      VolumeTimer.Enabled := True;
+    end;
+end;
+
+
+procedure THEOSForm.QueueZoneChange(MainZone: Boolean;
+                                    Active: Boolean);
+begin
+
+  if (MainZone and not FeatureAllowed(afMainZone)) or
+     (not MainZone and not FeatureAllowed(afZone2)) then
+    Exit;
+
+  if MainZone then
+    begin
+      FToneKnown := False;
+      FTonePending := False;
+      FBassPending := False;
+      FTreblePending := False;
+      FToneReadPending := False;
+      FToneReadAttempts := 0;
+      FToneReadReadyAt := 0;
+      FMainZoneDesired := Active;
+      FMainZonePending := True;
+
+      if not Active then
+        begin
+          FQueueActive := False;
+          FQueueNextPending := False;
+        end;
+    end
+  else
+    begin
+      FZone2Desired := Active;
+      FZone2Pending := True;
+    end;
+
+  UpdateZoneButtons();
+  UpdateToneDisplay();
+  VolumeTimer.Enabled := True;
+  VolumeTick(nil);
+end;
+
+
+procedure THEOSForm.StartZoneRequest();
+var
+  Command: string;
+  Commands: TArray<string>;
+
+begin
+
+  Command := '';
+  FZoneRequestKind := 0;
+
+  if FMainZonePending then
+    begin
+      FMainZonePending := False;
+      FZoneRequestKind := 1;
+      FZoneRequestTarget := FMainZoneDesired;
+
+      if FZoneRequestTarget then
+        Command := 'ZMON'
+      else
+        Command := 'ZMOFF';
+    end
+  else
+    if FZone2Pending then
+      begin
+        FZone2Pending := False;
+        FZoneRequestKind := 2;
+        FZoneRequestTarget := FZone2Desired;
+
+        if FZoneRequestTarget then
+          Command := 'Z2ON'
+        else
+          Command := 'Z2OFF';
+      end;
+
+  FZoneReadPending := False;
+
+  if (Command = '') then
+    begin
+      Inc(FStartupZoneReadAttempts);
+      Commands := TArray<string>.Create('ZM?',
+                                        'Z2?');
+    end
+  else
+    Commands := TArray<string>.Create(Command,
+                                      'ZM?',
+                                      'Z2?');
+
+  FreeAndNil(FWorker);
+  FExpectedPowerReply := Command;
+  FZoneRequest := True;
+
+  FWorker := CreateReceiverRequest(Trim(edHost.Text),
+                                   Commands,
+                                   23,
+                                   False,
+                                   False,
+                                   True);
+
+  FWorker.OnTerminate := RequestFinished;
+  SetVolumeBusy(True);
+  FStatus.Caption := 'Updating receiver zones ...';
+
+  for Command in Commands do
+    memFLog.Lines.Add('> ' + Command);
+
+  UpdateZoneButtons();
+  VolumeTimer.Enabled := ReceiverActionsPending();
+  FWorker.Start();
+end;
+
+
+procedure THEOSForm.VolumeTick(Sender: TObject);
+var
+  Command: string;
+
+begin
+
+  UpdateControlAvailability();
+
+  if Assigned(FReceiverCheck) or FDiscoveryReconnect then
+    begin
+
+      VolumeTimer.Enabled := False;
+      Exit;
+    end;
+
+  if not ReceiverActionsPending() then
+    begin
+      VolumeTimer.Enabled := False;
+      Exit;
+    end;
+
+  if Assigned(FWorker) and not FWorker.Finished then
+    Exit;
+
+  VolumeTimer.Enabled := False;
+
+  if not ValidAddress() then
+    begin
+      FVolumePending := False;
+      FVolumeReadPending := False;
+      FBalancePending := False;
+      FBalanceReadPending := False;
+      FMainZonePending := False;
+      FZone2Pending := False;
+      FZoneReadPending := False;
+      FTonePending := False;
+      FBassPending := False;
+      FTreblePending := False;
+      FToneReadPending := False;
+      UpdateZoneButtons();
+      FStatus.Caption := 'Enter a valid receiver IPv4 address before setting volume.';
+      Exit;
+    end;
+
+  if FMainZonePending or FZone2Pending or (FZoneReadPending and not FVolumeReadPending) then
+    begin
+      StartZoneRequest();
+      Exit;
+    end;
+
+  if not FVolumePending and not FVolumeReadPending then
+    begin
+      if FBalancePending or FBalanceReadPending then
+        StartBalanceRequest()
+      else
+        StartToneRequest();
+      Exit;
+    end;
+
+  FreeAndNil(FWorker);
+  FExpectedPowerReply := '';
+  FVolumeRequest := True;
+
+  if FVolumePending then
+    begin
+      Command := 'MV' + Format('%.2d',
+                               [FDesiredVolume div 2]);
+
+      if (FDesiredVolume mod 2 <> 0) then
+        Command := Command + '5';
+
+      FWorker := CreateReceiverRequest(Trim(edHost.Text),
+                                       [Command,
+                                       'MV?'],
+                                       23,
+                                       True);
+
+      FStatus.Caption := 'Setting volume to ' + VolumeCaption(FDesiredVolume) + ' ...';
+      memFLog.Lines.Add('> ' + Command);
+    end
+  else
+    begin
+      if FZoneReadPending then
+        begin
+          Inc(FStartupZoneReadAttempts);
+          FWorker := CreateReceiverRequest(Trim(edHost.Text),
+                                           ['ZM?',
+                                            'Z2?',
+                                            'MV?'],
+                                           23,
+                                           True,
+                                           False,
+                                           True);
+
+          FZoneReadPending := False;
+          FStatus.Caption := 'Reading receiver volume and zone states ...';
+          memFLog.Lines.Add('> ZM?');
+          memFLog.Lines.Add('> Z2?');
+        end
+      else
+        begin
+          FWorker := CreateReceiverRequest(Trim(edHost.Text),
+                                          ['MV?'],
+                                          23,
+                                          True);
+
+          FStatus.Caption := 'Reading receiver volume ...';
+        end;
+      memFLog.Lines.Add('> MV?');
+    end;
+
+  FVolumePending := False;
+  FVolumeReadPending := False;
+  VolumeTimer.Enabled := ReceiverActionsPending();
+  FWorker.OnTerminate := RequestFinished;
+  SetVolumeBusy(True);
+  FWorker.Start();
+end;
+
+
+procedure THEOSForm.ActionClick(Sender: TObject);
+var
+  Command: string;
+
+begin
+
+  if not (Sender is TComponent) then
+    Exit;
+
+  case TComponent(Sender).Tag of
+    0: begin
+         BeginReceiverCheck(True);
+         Exit;
+       end;
+    1: begin
+         QueueZoneChange(True,
+                         True);
+         Exit;
+       end;
+    2: begin
+         QueueZoneChange(True,
+                         False);
+         Exit;
+       end;
+    5: begin
+         if (Sender = btnMute) and not btnMute.Checked then
+           Command := 'MUOFF'
+         else
+           Command := 'MUON';
+       end;
+    6: Command := 'MUOFF';
+    8: begin
+         QueueZoneChange(False,
+                         True);
+         Exit;
+       end;
+    9: begin
+         QueueZoneChange(False,
+                         False);
+         Exit;
+       end;
+    7: begin
+         if (FSource.ItemIndex < Low(SourceCommands)) or (FSource.ItemIndex > High(SourceCommands)) then
+           Exit;
+
+         Command := SourceCommands[FSource.ItemIndex];
+         FQueueActive := False;
+         FQueueNextPending := False;
+       end;
+  else
+    Exit;
+  end;
+
+  StartRequest([Command,
+                'ZM?',
+                'Z2?',
+                'MV?',
+                'MU?',
+                'SI?']);
+end;
+
+
+procedure THEOSForm.RequestFinished(Sender: TObject);
+var
+  Line: string;
+  PowerConfirmed: Boolean;
+
+begin
+
+  PowerConfirmed := (FExpectedPowerReply = '');
+
+  for Line in FWorker.Lines do
+    begin
+      memFLog.Lines.Add('< ' + Line);
+      ParseStatus(Line);
+
+      if (Line = FExpectedPowerReply) then
+        PowerConfirmed := True;
+    end;
+
+  if (FWorker.ErrorText = '') and PowerConfirmed and
+     (lblStreamInfo.Caption = 'Receiver available. Reading settings ...') then
+    lblStreamInfo.Caption := 'Receiver settings where received successfully.';
+
+  RetryStartupZoneRead();
+  if FToneRequest then
+    begin
+      FToneRequest := False;
+
+      if (FWorker.ErrorText = '') and FToneKnown then
+        begin
+          FToneReadAttempts := 0;
+          FToneReadReadyAt := 0;
+        end
+      else
+        begin
+          FToneKnown := False;
+
+          if (FWorker.ErrorText <> '') then
+            memFLog.Lines.Add('! Tone: ' + FWorker.ErrorText);
+
+          // Missing write replies leave delivery uncertain. Reconcile using
+          // reads only, with a bounded delay while the receiver becomes ready.
+          if (FPowerText = 'On') and FeatureAllowed(afTone) and
+             not FMainZonePending and not ContainsText(FToneMode,
+                                                       'DIRECT') and
+             not FDynamicEq and (FToneReadAttempts < 3) then
+            begin
+              FToneReadPending := True;
+              FToneReadReadyAt := GetTickCount64 + 1000;
+            end
+          else
+            begin
+              FToneReadPending := False;
+              FTonePending := False;
+              FBassPending := False;
+              FTreblePending := False;
+            end;
+        end;
+
+      UpdateToneDisplay();
+
+      SetVolumeBusy(False);
+      VolumeTimer.Enabled := ReceiverActionsPending();
+      Exit;
+    end;
+
+  if FZoneRequest then
+    begin
+      FZoneRequest := False;
+
+      if (FZoneRequestKind = 1) and (FPowerText = 'On') and not FToneKnown then
+        begin
+          FToneReadPending := True;
+
+          if (FToneReadReadyAt = 0) then
+            FToneReadReadyAt := GetTickCount64 + 2000;
+        end;
+
+      UpdateZoneButtons();
+      SetVolumeBusy(False);
+
+      if (FWorker.ErrorText <> '') then
+        begin
+          FStatus.Caption := FWorker.ErrorText;
+          memFLog.Lines.Add('! Zones: ' + FWorker.ErrorText);
+        end
+      else
+        if not PowerConfirmed then
+          begin
+            FStatus.Caption := 'Receiver did not confirm the requested zone change.';
+            memFLog.Lines.Add('! Zone change not confirmed: ' + FExpectedPowerReply);
+          end
+        else
+          FStatus.Caption := 'Receiver zone states updated.';
+
+      VolumeTimer.Enabled := ReceiverActionsPending();
+      Exit;
+    end;
+
+  UpdateZoneButtons();
+
+  if FBalanceRequest then
+    begin
+      FBalanceRequest := False;
+
+      if (FWorker.ErrorText = '') and FBalanceLeftReceived and FBalanceRightReceived then
+        begin
+          if FBalanceReadingBase then
+            begin
+              // A centred balance has equal channel levels. Keep the louder
+              // channel as the reference so the reported balance is reproduced.
+              FBalanceLeft := FBalanceReplyLeft;
+
+              if (FBalanceReplyRight > FBalanceLeft) then
+                FBalanceLeft := FBalanceReplyRight;
+
+              FBalanceRight := FBalanceLeft;
+              FBalanceBaseHost := Trim(edHost.Text);
+              FBalanceBaseInput := FInputText;
+              FBalanceKnown := True;
+
+              if not FBalancePending then
+                begin
+                  FDesiredBalance := FBalanceReplyRight - FBalanceReplyLeft;
+
+                  if (FDesiredBalance < tbBalance.Minimum) then
+                    FDesiredBalance := tbBalance.Minimum;
+
+                  if (FDesiredBalance > tbBalance.Maximum) then
+                    FDesiredBalance := tbBalance.Maximum;
+
+                  FUpdatingBalance := True;
+
+                  try
+                    tbBalance.Position := FDesiredBalance;
+
+                  finally
+                    FUpdatingBalance := False;
+                  end;
+
+                  UpdateBalanceDisplay();
+                end;
+            end;
+          FStatus.Caption := 'Receiver balance updated.';
+        end
+      else
+        begin
+          if FBalanceReadingBase and (FStartupBalanceReadAttempts < 3) then
+            FBalanceReadPending := True
+          else
+            FBalancePending := False;
+
+          if (FWorker.ErrorText <> '') then
+            FStatus.Caption := FWorker.ErrorText
+          else
+            FStatus.Caption := 'Receiver did not return valid front channel levels.';
+
+          memFLog.Lines.Add('! Balance: ' + FStatus.Caption);
+        end;
+
+      SetVolumeBusy(False);
+      VolumeTimer.Enabled := ReceiverActionsPending();
+      Exit;
+    end;
+
+  if FVolumeRequest then
+    begin
+      FVolumeRequest := False;
+      SetVolumeBusy(False);
+
+      if (FWorker.ErrorText <> '') then
+        begin
+          FStatus.Caption := FWorker.ErrorText;
+          memFLog.Lines.Add('! ' + FWorker.ErrorText);
+        end
+      else
+        FStatus.Caption := 'Receiver volume: ' + FVolumeText;
+
+      VolumeTimer.Enabled := ReceiverActionsPending();
+      Exit;
+    end;
+
+  if (FWorker.ErrorText <> '') then
+    begin
+      FStatus.Caption := FWorker.ErrorText;
+      memFLog.Lines.Add('! ' + FWorker.ErrorText);
+    end
+  else
+    if not PowerConfirmed then
+      begin
+        FStatus.Caption := 'Receiver replied, but the requested power change was not confirmed. Click Read status to check.';
+        memFLog.Lines.Add('! Power change not confirmed: ' + FExpectedPowerReply);
+      end
+    else
+      FStatus.Caption := 'Reply received at ' + FormatDateTime('hh:nn:ss',
+                                                               Now) + '. Values below reflect receiver replies; click Read status to refresh.';
+  pnlPlay.Enabled := True;
+  edHost.Enabled := True;
+  btnFindHEOSDevice.Enabled := not Assigned(FDiscovery) or FDiscovery.Finished;
+  cbxHEOSDevices.Enabled := True;
+end;
+
+
+procedure THEOSForm.Panel3MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+
+  // Drag window
+  ReleaseCapture;
+  SendMessageW(Handle,
+              WM_SYSCOMMAND,
+              SC_MOVE + HTCAPTION,
+              0);
+end;
+
+
+procedure THEOSForm.ParseStatus(const Line: string);
+var
+  Raw: string;
+  Value: Integer;
+  HalfSteps: Integer;
+
+begin
+
+  if (Line = 'PSTONE CTRL ON') or (Line = 'PSTONE CTRL OFF') then
+    begin
+      FToneKnown := True;
+      FToneEnabled := Line = 'PSTONE CTRL ON';
+      UpdateToneDisplay();
+      Exit;
+    end;
+
+  if StartsText('PSBAS ', Line) or StartsText('PSTRE ', Line) then
+    begin
+      if TryStrToInt(Copy(Line, 7, MaxInt), Value) and (Value >= 44) and (Value <= 56) then
+        begin
+          FUpdatingTone := True;
+
+          try
+            if StartsText('PSBAS ', Line) then
+              begin
+                if not FBassPending then
+                  tbBass.Position := Value - 50;
+              end
+            else
+              if not FTreblePending then
+                tbTreble.Position := Value - 50;
+
+          finally
+            FUpdatingTone := False;
+          end;
+
+          UpdateToneDisplay();
+        end;
+
+      Exit;
+    end;
+
+  if StartsText('MS', Line) then
+    begin
+      FToneMode := Copy(Line, 3, MaxInt);
+      UpdateToneDisplay();
+      Exit;
+    end;
+
+  if (Line = 'PSDYNEQ ON') or (Line = 'PSDYNEQ OFF') then
+    begin
+      FDynamicEq := Line = 'PSDYNEQ ON';
+      UpdateToneDisplay();
+      Exit;
+    end;
+
+  if (Copy(Line,
+           1,
+           5) = 'CVFL ') or (Copy(Line,
+                                  1,
+                                  5) = 'CVFR ') then
+    begin
+      Raw := Copy(Line, 6, MaxInt);
+
+      if not TryStrToInt(Raw, Value) then
+        Exit;
+
+      if Length(Raw) = 2 then
+        HalfSteps := Value * 2
+      else
+        if (Length(Raw) = 3) and (Value mod 5 = 0) then
+          HalfSteps := Value div 5
+        else
+          Exit;
+
+      if (HalfSteps < 76) or (HalfSteps > 124) then
+        Exit;
+
+      if Copy(Line,
+              1,
+              5) = 'CVFL ' then
+        begin
+          FBalanceReplyLeft := HalfSteps;
+          FBalanceLeftReceived := True;
+        end
+      else
+        begin
+          FBalanceReplyRight := HalfSteps;
+          FBalanceRightReceived := True;
+        end;
+
+      Exit;
+    end;
+
+  if (Line = 'ZMON') then
+    begin
+      if (FPowerText <> 'On') then
+        begin
+          // Main Zone power acknowledgement precedes DSP/tone readiness.
+          FToneKnown := False;
+          FToneMode := '';
+          FDynamicEq := False;
+          FToneReadAttempts := 0;
+          FToneReadReadyAt := GetTickCount64 + 2000;
+          FToneReadPending := True;
+          VolumeTimer.Enabled := True;
+        end;
+      FPowerText := 'On';
+      UpdateToneDisplay();
+    end
+  else
+    if (Line = 'ZMOFF') then
+      begin
+        FPowerText := 'Standby';
+        FToneKnown := False;
+        FTonePending := False;
+        FBassPending := False;
+        FTreblePending := False;
+        FToneReadPending := False;
+        FToneReadAttempts := 0;
+        FToneReadReadyAt := 0;
+        UpdateToneDisplay();
+      end;
+
+  if (Line = 'Z2ON') then
+    FZone2PowerText := 'On'
+  else
+    if (Line = 'Z2OFF') then
+      FZone2PowerText := 'Standby';
+
+  if (Line = 'MUON') then
+    begin
+      FMuteText := 'On';
+      btnMute.Checked := True;
+    end
+  else
+    if (Line = 'MUOFF') then
+      begin
+        FMuteText := 'Off';
+        btnMute.Checked := False;
+      end;
+
+  if StartsText('SI', Line) then
+    begin
+      if (FInputText <> Copy(Line,
+                             3,
+                             MaxInt)) then
+        begin
+          FToneKnown := False;
+          FTonePending := False;
+          FBassPending := False;
+          FTreblePending := False;
+          FToneReadPending := True;
+          FToneReadAttempts := 0;
+          FToneReadReadyAt := GetTickCount64 + 1000;
+          FToneMode := '';
+          FDynamicEq := False;
+          VolumeTimer.Enabled := True;
+          UpdateToneDisplay();
+        end;
+
+      FInputText := Copy(Line,
+                         3,
+                         MaxInt);
+
+      if FBalanceKnown and (FInputText <> FBalanceBaseInput) then
+        begin
+          FBalanceKnown := False;
+          FStartupBalanceReadAttempts := 0;
+          FBalancePending := False;
+          FBalanceReadPending := True;
+          VolumeTimer.Enabled := True;
+        end;
+    end;
+
+  if StartsText('MVMAX ', Line) then
+    begin
+      Raw := Trim(Copy(Line, 7, MaxInt));
+
+      if ((Length(Raw) = 2) or (Length(Raw) = 3)) and
+         TryStrToInt(Raw, Value) then
+        begin
+          if (Length(Raw) = 2) then
+            HalfSteps := Value * 2
+          else
+            if (Value mod 5 = 0) then
+              HalfSteps := Value div 5
+            else
+              Exit;
+
+          if (HalfSteps <= 0) or (HalfSteps > 196) then
+            Exit;
+
+          FUpdatingVolume := True;
+          try
+            tbVolume.Maximum := HalfSteps;
+            if (FDesiredVolume > HalfSteps) then
+              FDesiredVolume := HalfSteps;
+            lblVolumePerc.Caption := VolumeCaption(tbVolume.Position);
+          finally
+            FUpdatingVolume := False;
+          end;
+        end;
+      Exit;
+    end;
+
+  if StartsText('MV',
+                Line) and (not StartsText('MVMAX',
+                                          Line)) then
+    begin
+
+      Raw := Copy(Line,
+                  3,
+                  MaxInt);
+
+      if ((Length(Raw) = 2) or (Length(Raw) = 3)) and TryStrToInt(Raw,
+                                                                  Value) then
+        begin
+          if (Length(Raw) = 3) then
+            begin
+              if (Value mod 5 <> 0) then
+                Exit;
+              HalfSteps := Value div 5;
+            end
+          else
+            HalfSteps := Value * 2;
+
+          if (HalfSteps < 0) or (HalfSteps > 196) then
+            Exit;
+
+          FVolumeText := VolumeCaption(HalfSteps);
+
+          if not FVolumePending then
+            begin
+              FUpdatingVolume := True;
+
+              try
+                tbVolume.Position := HalfSteps;
+                lblVolumePerc.Caption := FVolumeText;
+              finally
+                FUpdatingVolume := False;
+              end;
+            end;
+        end;
+    end;
+end;
+
+
+procedure THEOSForm.BrowserClick(Sender: TObject);
+var
+  URL: string;
+
+begin
+
+  if not ValidAddress then
+    begin
+      begin FStatus.Caption := 'Enter a valid receiver IPv4 address first.'; memFLog.Lines.Add(FStatus.Caption); end;
+      Exit;
+    end;
+
+  URL := 'http://' + Trim(edHost.Text);
+
+  if (ShellExecuteW(Handle,
+                   'open',
+                   PChar(URL),
+                   nil,
+                   nil,
+                   SW_SHOWNORMAL) <= 32) then
+    begin
+      FStatus.Caption := 'Windows could not open the browser. Open ' + URL + ' manually.';
+      memFLog.Lines.Add(FStatus.Caption);
+    end;
+end;
+
+
+function THEOSForm.TryReadAacSettings(out Settings: TDenonAudioSettings): Boolean;
+var
+  Text: string;
+
+begin
+
+  Settings := Default(TDenonAudioSettings);
+  Settings.SampleRate := 44100;
+  Text := Trim(ComboBox1.Text);
+
+  if SameText(Copy(Text,
+                   Length(Text) - 3,
+                   4),
+              'Kbps') then
+    Text := Trim(Copy(Text,
+                      1,
+                      Length(Text) - 4));
+
+  Result := TryStrToInt(Text,
+                        Settings.BitrateKbps);
+  if not Result then
+    Exit;
+
+  Result := Settings.BitrateKbps in [96, 128, 160, 192];
+
+  if SameText(Trim(ComboBox2.Text),
+                   'Stereo') then
+    Settings.Channels := 2
+  else
+    if SameText(Trim(ComboBox2.Text),
+                     'Mono') then
+      Settings.Channels := 1
+  else
+    Result := False;
+end;
+
+
+procedure THEOSForm.AacSettingsChange(Sender: TObject);
+var
+  Settings: TDenonAudioSettings;
+
+begin
+
+  // The existing combo boxes allow typing. Save complete valid choices only.
+  if not Assigned(FLoopback) and not FWaitingForCapture and
+     TryReadAacSettings(Settings) then
+    SaveReceiverSettings();
+end;
+
+
+procedure THEOSForm.SettingsClick(Sender: TObject);
+begin
+
+  pnlPlay.Visible := False;
+  pnlSettings.Visible := True;
+  pnlSettings.BringToFront;
+end;
+
+
+procedure THEOSForm.PlayerClick(Sender: TObject);
+begin
+
+  pnlSettings.Visible := False;
+  pnlPlay.Visible := True;
+  pnlPlay.BringToFront;
+end;
+
+
+procedure THEOSForm.ShuffleUpcoming(StartIndex: Integer);
+var
+  I: Integer;
+  J: Integer;
+
+begin
+
+  if (StartIndex < 0) then
+    StartIndex := 0;
+
+  for I := FQueue.Count - 1 downto StartIndex + 1 do
+    begin
+      J := StartIndex + Random(I - StartIndex + 1);
+      FQueue.Exchange(I,
+                      J);
+    end;
+end;
+
+
+procedure THEOSForm.QueueModeClick(Sender: TObject);
+begin
+
+  if (Sender = btnShuffle) and btnShuffle.Checked then
+    ShuffleUpcoming(FQueueIndex + 1);
+
+  UpdateStreamButtons();
+end;
+
+
+procedure THEOSForm.StreamClick(Sender: TObject);
+begin
+
+  StartStreamAction(TComponent(Sender).Tag);
+end;
+
+
+procedure THEOSForm.btnCloseClick(Sender: TObject);
+begin
+
+  Close();
+end;
+
+
+procedure THEOSForm.btnMinimizeClick(Sender: TObject);
+begin
+
+  WindowState := wsMinimized;
+end;
+
+
+procedure THEOSForm.btnStreamWinAudioClick(Sender: TObject);
+begin
+
+  if Assigned(FLoopback) or FWaitingForCapture then
+    StartStreamAction(4)
+  else
+    StartStreamAction(1);
+end;
+
+
+procedure THEOSForm.PlayPauseClick(Sender: TObject);
+var
+  SameTrack: Boolean;
+  QueueSelection: Boolean;
+
+begin
+
+  if FRadioPlaying or Assigned(FLoopback) or FWaitingForCapture then
+    begin
+      if (FSelectedFile <> '') then
+        StartStreamAction(0);
+      Exit;
+    end;
+
+  if (FDesiredPlaybackFile <> '') then
+    SameTrack := SameFileName(FSelectedFile,
+                              FDesiredPlaybackFile)
+  else
+    SameTrack := (FPlaybackFile <> '') and SameFileName(FSelectedFile,
+                                                        FPlaybackFile);
+
+  QueueSelection := (FQueueIndex >= 0) and (FQueueIndex < FQueue.Count) and SameFileName(FSelectedFile,
+                                                                                         FQueue[FQueueIndex]);
+  if SameTrack and (RequestedPlaybackState() = 'play') then
+    StartStreamAction(2)
+  else
+    if SameTrack and (RequestedPlaybackState() = 'pause') then
+      StartStreamAction(3)
+    else
+      if FileExists(FSelectedFile) then
+        begin
+          if not QueueSelection then
+            begin
+              FQueue.Clear;
+              FQueueIsPlaylist := False;
+              FQueue.Add(FSelectedFile);
+              FQueueIndex := 0;
+            end;
+          PlayQueueIndex(FQueueIndex);
+        end
+      else
+        StartStreamAction(0);
+end;
+
+
+procedure THEOSForm.StartStreamAction(Action: Integer);
+var
+  Command: THEOSStreamAction;
+
+begin
+
+  if FClosePending then
+    Exit;
+
+  Command := Default(THEOSStreamAction);
+  Command.Action := Action;
+  Command.FileName := FSelectedFile;
+  Command.QueueStarting := FQueueStarting;
+  Command.Receiver := Trim(edHost.Text);
+
+  if (Action in [0, 1]) and FWaitingForCapture then
+    StopLocalStream();
+
+  if (Action = 4) then
+    begin
+      FStreamActions.Clear;
+      FQueueActive := False;
+      FQueueNextPending := False;
+      StopLocalStream();
+      FDesiredPlaybackFile := '';
+    end;
+
+  case Action of
+    0:    begin
+            FDesiredPlaybackState := 'play';
+            FDesiredPlaybackFile := Command.FileName;
+          end;
+
+    1, 3: FDesiredPlaybackState := 'play';
+
+    2:    FDesiredPlaybackState := 'pause';
+
+    4:    FDesiredPlaybackState := 'stop';
+  end;
+
+  FStreamActions.Add(Command);
+  StreamActionTimer.Enabled := True;
+  UpdateStreamButtons();
+  ProcessStreamActions();
+end;
+
+
+function THEOSForm.RequestedPlaybackState(): string;
+begin
+
+  if (FDesiredPlaybackState <> '') then
+    Result := FDesiredPlaybackState
+  else
+    Result := FPlaybackState;
+end;
+
+
+procedure THEOSForm.StreamActionsReady(var Message: TLMessage);
+begin
+
+  ProcessStreamActions();
+end;
+
+
+procedure THEOSForm.StreamActionTick(Sender: TObject);
+begin
+
+  ProcessStreamActions();
+end;
+
+
+procedure THEOSForm.ProcessStreamActions();
+var
+  Command: THEOSStreamAction;
+  QueueStarting: Boolean;
+
+begin
+
+  if FClosePending then
+    begin
+      ProcessClose();
+      Exit;
+    end;
+
+  if FProcessingStreamActions then
+    Exit;
+
+  // Console controls remain live; serialize source changes with radio requests.
+  if Assigned(FRadioForm) and FRadioForm.PlaybackPending() then
+    Exit;
+
+  FProcessingStreamActions := True;
+
+  try
+    while not FWaitingForCapture and (not Assigned(FHeos) or FHeos.Finished) do
+      begin
+        if (FStreamActions.Count = 0) then
+          begin
+            FDesiredPlaybackState := '';
+            FDesiredPlaybackFile := '';
+            StreamActionTimer.Enabled := False;
+            Break;
+          end;
+
+        Command := FStreamActions[0];
+
+        if (Command.Action = 6) and (not Assigned(FRadioForm) or not FRadioForm.ReadyForPlayback()) then
+          Break;
+
+        if (Command.Action in [0, 1, 6]) and not Command.StopCompleted then
+          begin
+
+            // Release the old source and wait for its receiver Stop before starting another.
+            Command.StopCompleted := True;
+            FStreamActions[0] := Command;
+
+            if (FStreamReceiver = '') then
+              FStreamReceiver := Command.Receiver;
+
+            StopLocalStream();
+            SendHeos(haStop);
+            Break;
+          end;
+
+        FStreamActions.Delete(0);
+        QueueStarting := FQueueStarting;
+
+        try
+          FQueueStarting := Command.QueueStarting;
+
+          if (Command.Action = 6) then
+            begin
+              FStreamReceiver := Command.Receiver;
+              FRadioForm.StartPlayback(Command.RadioCommand,
+                                       Command.StationName);
+              Break;
+            end;
+
+          if (Command.Action in [0, 1]) then
+            FStreamReceiver := Command.Receiver;
+
+          if (Command.Action = 5) then
+            begin
+              if CanSeekPlayback() and SameFileName(Command.FileName,
+                                                    FPlaybackFile) and (Command.Receiver = FStreamReceiver) then
+                SendHeos(haSeek,
+                         '',
+                         Command.PositionMs);
+              Continue;
+            end;
+
+          if (Command.Action = 0) then
+            begin
+              SelectAudioFile(Command.FileName);
+
+              if Command.QueueStarting then
+                FQueueActive := True;
+            end;
+
+          ExecuteStreamAction(Command.Action);
+
+        finally
+          FQueueStarting := QueueStarting;
+        end;
+      end;
+
+  finally
+    FProcessingStreamActions := False;
+  end;
+
+  UpdateStreamButtons();
+end;
+
+
+procedure THEOSForm.ExecuteStreamAction(Action: Integer);
+var
+  Port: Integer;
+  LocalIP: string;
+  AudioSettings: TDenonAudioSettings;
+  ErrorText: string;
+
+  procedure FailStream(const Text: string);
+  begin
+
+    FQueueActive := False;
+    FStreamActions.Clear;
+    StopLocalStream();
+    lblStreamInfo.Caption := Text;
+    memFLog.Lines.Add('! Streaming: ' + Text);
+    UpdateStreamButtons();
+  end;
+
+
+begin
+
+  if Assigned(FHeos) and not FHeos.Finished then
+    Exit;
+
+  if ((Action = 0) and not FQueueStarting) or (Action = 1) or (Action = 4) then
+    begin
+      FQueueActive := False;
+      FQueueNextPending := False;
+    end;
+
+  try
+
+    if (Action >= 2) then
+      begin
+        if (FStreamReceiver = '') then
+          FStreamReceiver := Trim(edHost.Text);
+
+        case Action of
+          2: SendHeos(haPause);
+
+          3: SendHeos(haResume);
+
+          4: begin
+               StopLocalStream;
+               SendHeos(haStop);
+             end;
+        end;
+        Exit;
+      end;
+
+    if not IPv4Valid(FStreamReceiver) then
+      begin
+        FailStream('Enter a valid receiver IPv4 address');
+        Exit;
+      end;
+
+    if (Action = 0) and not FileExists(FSelectedFile) then
+      begin
+        FailStream('Choose a music file first');
+        Exit;
+      end;
+
+    if not TryStrToInt(StreamPortEdit.Text, Port) or (Port < 1024) or (Port > 65535) then
+      begin
+        FailStream('Choose a streaming port between 1024 and 65535');
+        Exit;
+      end;
+
+    LocalIP := Trim(PcAddressEdit.Text);
+
+    if (LocalIP = '') then
+      if not TryLocalAddressFor(FStreamReceiver, LocalIP, ErrorText) then
+        begin
+          FailStream(ErrorText);
+          Exit;
+        end;
+
+    if not IPv4Valid(LocalIP) then
+      begin
+        FailStream('Enter a valid PC IPv4 address or leave it blank for automatic detection');
+        Exit;
+      end;
+
+    if (Action = 1) and not TryReadAacSettings(AudioSettings) then
+      begin
+        FailStream('Choose an AAC bitrate of 96, 128, 160 or 192 Kbps and Stereo or Mono channels.');
+        Exit;
+      end;
+
+    StopLocalStream();
+    FAudioServer := THEOSAudioServer.Create(LocalIP,
+                                            Port,
+                                            FSelectedFile,
+                                            Action = 1);
+    if not FAudioServer.Initialized then
+      begin FailStream(FAudioServer.LastError()); Exit; end;
+    FAudioServer.Start;
+    memFLog.Lines.Add('Stream URL: ' + FAudioServer.Url);
+
+    if (Action = 1) then
+      begin
+        FStreamDescription := Format('Windows sound (default playback device), %d kbps %s AAC',
+                                     [AudioSettings.BitrateKbps, Trim(ComboBox2.Text)]);
+
+        lblStreamInfo.Caption := FStreamDescription;
+
+        FLoopback := THEOSLoopback.Create(FAudioServer,
+                                          False,
+                                          AudioSettings.BitrateKbps,
+                                          AudioSettings.Channels);
+        FWaitingForCapture := True;
+        FLoopback.Start();
+        lblStreamInfo.Caption := 'Starting Windows audio capture ...';
+        UpdateStreamButtons();
+      end
+    else
+      begin
+        FStreamDescription := lblStreamInfo.Caption;
+        FPlaybackFile := FSelectedFile;
+
+        SendHeos(haPlayUrl,
+                 FAudioServer.Url);
+      end;
+
+  except
+    on E: Exception do
+      begin
+        FailStream(E.Message);
+      end;
+  end;
+end;
+
+
+procedure THEOSForm.RadioClick(Sender: TObject);
+begin
+
+  FOpenRadioPending := True;
+
+  if Assigned(FReceiverCheck) or (Assigned(FDiscovery) and not FDiscoveryComplete) then
+    begin
+      lblStreamInfo.Caption := 'Finding the receiver. Radio will open after its current IP is confirmed ...';
+      Exit;
+    end;
+
+  if not FReceiverVerified or (FVerifiedHost <> Trim(edHost.Text)) then
+    begin
+      if IPv4Valid(Trim(edHost.Text)) then
+        BeginReceiverCheck()
+      else
+        BeginDiscovery(True, False);
+      Exit;
+    end;
+
+  FOpenRadioPending := False;
+
+  if not Assigned(FRadioForm) then
+    begin
+      FRadioForm := THEOSRadioForm.Create(Self);
+      FRadioForm.OnBeforePlay := BeforeRadioPlay;
+      FRadioForm.OnPlayback := RadioPlayback;
+    end;
+
+  if not FRadioForm.PlaybackPending() then
+    FRadioForm.ConnectTo(FVerifiedHost);
+
+  FRadioForm.Show;
+  //FRadioForm.WindowState := wsNormal;
+  //FRadioForm.BringToFront;
+end;
+
+
+procedure THEOSForm.BeforeRadioPlay(Sender: TObject;
+                                    const Command: THeosCommand;
+                                    const StationName: string);
+var
+  Action: THEOSStreamAction;
+
+begin
+
+  if FClosePending then
+    Exit;
+
+  if not SameText(FRadioForm.Host, Trim(edHost.Text)) then
+    begin
+      lblStreamInfo.Caption := 'The selected receiver changed. Reopen the Radio window.';
+      Exit;
+    end;
+
+  FQueueActive := False;
+  FQueueNextPending := False;
+  FQueueSawPlaying := False;
+  FStreamActions.Clear;
+
+  if FWaitingForCapture then
+    StopLocalStream();
+
+  Action := Default(THEOSStreamAction);
+  Action.Action := 6;
+  Action.Receiver := FRadioForm.Host;
+  Action.RadioCommand := Command;
+  Action.StationName := StationName;
+  FStreamActions.Add(Action);
+  FDesiredPlaybackState := 'play';
+  FDesiredPlaybackFile := '';
+  StreamActionTimer.Enabled := True;
+  ProcessStreamActions();
+end;
+
+
+procedure THEOSForm.RadioPlayback(Sender: TObject;
+                                  const StationName: string;
+                                  Playing: Boolean);
+begin
+
+  if FClosePending then
+    Exit;
+
+  FRadioPlaying := Playing;
+  if Playing then
+    begin
+      FRadioStartedTick := GetTickCount64();
+
+      if FRadioForm.PlaybackConfirmed then
+        FPlaybackState := 'play'
+      else
+        FPlaybackState := 'loading';
+
+      FStreamReceiver := FRadioForm.Host;
+      lblStreamInfo.Caption := FRadioForm.PlaybackStatus + ': ' + StationName;
+      memFLog.Lines.Add(lblStreamInfo.Caption);
+    end
+  else
+    begin
+      FPlaybackState := 'stop';
+      lblStreamInfo.Caption := FRadioForm.PlaybackStatus;
+      memFLog.Lines.Add(lblStreamInfo.Caption);
+    end;
+  UpdateProgressDisplay();
+  UpdateStreamButtons();
+end;
+
+
+procedure THEOSForm.LoadReceiverSettings();
+var
+  Directory: string;
+  Settings: TMemIniFile;
+  ErrorText: string;
+
+begin
+
+  //Directory := ExtractFilePath(ParamStr(0));
+
+  Directory := SysUtils.GetEnvironmentVariable('LOCALAPPDATA');
+
+  if (Directory = '') then
+    Directory := SysUtils.GetEnvironmentVariable('APPDATA');
+
+  if (Directory = '') then
+    Exit;
+
+  FReceiverSettingsFile := IncludeTrailingPathDelimiter(Directory) + HEOS_REMOTE_DATADIR + RECEIVERINIFILE;
+  if not FileExists(FReceiverSettingsFile) then
+    Exit;
+
+  try
+    Settings := TMemIniFile.Create('');
+
+    try
+      if not TryLoadHeosIni(FReceiverSettingsFile,
+                            Settings,
+                            ErrorText) then
+        begin
+          memFLog.Lines.Add('! Receiver settings: ' + ErrorText);
+          Exit;
+        end;
+
+      edHost.Text := Settings.ReadString('Receiver',
+                                         'Host',
+                                         '');
+
+      FPreferredDeviceId := Settings.ReadString('Receiver',
+                                                'DeviceId',
+                                                '');
+
+      case Settings.ReadInteger('AAC',
+                                'BitrateKbps',
+                                192) of
+        96: ComboBox1.ItemIndex := 0;
+        128: ComboBox1.ItemIndex := 1;
+        160: ComboBox1.ItemIndex := 2;
+      else
+        ComboBox1.ItemIndex := 3;
+      end;
+
+      if (Settings.ReadInteger('AAC',
+                               'Channels',
+                               2) = 1) then
+        ComboBox2.ItemIndex := 1
+      else
+        ComboBox2.ItemIndex := 0;
+
+    finally
+      Settings.Free;
+    end;
+
+    if (edHost.Text <> '') then
+      memFLog.Lines.Add('Last confirmed receiver IP restored: ' + edHost.Text);
+
+  except
+    on E: Exception do
+      memFLog.Lines.Add('! Receiver settings: ' + E.Message);
+  end;
+end;
+
+
+procedure THEOSForm.SaveReceiverSettings();
+var
+  Settings: TMemIniFile;
+  ErrorText: string;
+  AudioSettings: TDenonAudioSettings;
+
+begin
+
+  if (FReceiverSettingsFile = '') then
+    Exit;
+
+  try
+    if not ForceDirectories(ExtractFilePath(FReceiverSettingsFile)) then
+      begin
+        memFLog.Lines.Add('! Cannot create the receiver settings directory.');
+        Exit;
+      end;
+
+    Settings := TMemIniFile.Create('');
+
+    try
+      if not TryLoadHeosIni(FReceiverSettingsFile, Settings, ErrorText) then
+        begin memFLog.Lines.Add('! Receiver settings: ' + ErrorText); Exit; end;
+
+      // Audio preferences can be saved before a receiver is connected.
+      if FReceiverVerified then
+        begin
+          Settings.WriteString('Receiver', 'Host', FVerifiedHost);
+          Settings.WriteString('Receiver', 'DeviceId', FPreferredDeviceId);
+        end;
+      if TryReadAacSettings(AudioSettings) then
+        begin
+          Settings.WriteInteger('AAC', 'BitrateKbps', AudioSettings.BitrateKbps);
+          Settings.WriteInteger('AAC', 'Channels', AudioSettings.Channels);
+        end;
+      if not TrySaveHeosIni(FReceiverSettingsFile, Settings, ErrorText) then
+        memFLog.Lines.Add('! Receiver settings: ' + ErrorText);
+    finally
+      Settings.Free;
+    end;
+  except
+    on E: Exception do
+      memFLog.Lines.Add('! Receiver settings: ' + E.Message);
+  end;
+end;
+
+
+procedure THEOSForm.ContinuePendingRadio();
+begin
+
+  if FOpenRadioPending and FReceiverVerified and
+     (FVerifiedHost = Trim(edHost.Text)) and
+     not Assigned(FReceiverCheck) and
+     (not Assigned(FDiscovery) or FDiscoveryComplete) then
+    begin
+      FOpenRadioPending := False;
+      RadioClick(nil);
+    end;
+end;
+
+
+procedure THEOSForm.ApplyDiscoveredDevices(const Devices: TArray<THEOSDevice>;
+                                            const ErrorText: string);
+var
+  I: Integer;
+  Selected: Integer;
+  Description: string;
+
+begin
+
+  FDiscoveryComplete := True;
+  FDevices := Copy(Devices);
+  cbxHEOSDevices.Items.Clear();
+  Selected := -1;
+  for I := 0 to Length(FDevices) - 1 do
+    begin
+      Description := FDevices[I].Name + ' - ' + FDevices[I].Address;
+      if not FDevices[I].AvrAvailable then
+        Description := Description + ' (HEOS available; AVR control unavailable)';
+      cbxHEOSDevices.Items.Add(Description);
+      memFLog.Lines.Add('Found HEOS device: ' + Description + ' (' + FDevices[I].Model + ')');
+      if (FPreferredDeviceId <> '') then
+        begin
+          if SameText(FDevices[I].DeviceId, FPreferredDeviceId) then
+            Selected := I;
+        end
+      else
+        if (FDevices[I].Address = Trim(edHost.Text)) then
+          Selected := I;
+    end;
+  if (Selected < 0) and (Length(FDevices) = 1) and (FPreferredDeviceId = '') then
+    Selected := 0;
+  cbxHEOSDevices.Visible := Length(FDevices) > 0;
+  cbxHEOSDevices.ItemIndex := Selected;
+  btnFindHEOSDevice.Caption := 'Find HEOS';
+  btnFindHEOSDevice.Enabled := True;
+  if (Selected >= 0) then
+    begin
+      HEOSDeviceChange(cbxHEOSDevices);
+      Exit;
+    end;
+  FReceiverVerified := False;
+  FVerifiedHost := '';
+  if (ErrorText <> '') then
+    FStatus.Caption := 'Discovery: ' + ErrorText
+  else
+    if (Length(FDevices) = 0) then
+      FStatus.Caption := 'No HEOS device found. Check power, Network Control and the local network, then click Find HEOS.'
+    else
+      FStatus.Caption := 'Select your HEOS receiver from the device list. The saved device was not uniquely identified.';
+
+  lblStreamInfo.Caption := FStatus.Caption;
+  memFLog.Lines.Add(FStatus.Caption);
+  FDiscoveryReconnect := False;
+end;
+
+
+// External
+
+{$WARN SYMBOL_PLATFORM OFF}
+
+function GetTickCount64;  external Kernel32Lib name 'GetTickCount64' ;
+
+{$WARN SYMBOL_PLATFORM ON}
+
+end.
+

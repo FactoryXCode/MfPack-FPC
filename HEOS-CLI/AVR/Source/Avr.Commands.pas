@@ -64,9 +64,7 @@ unit Avr.Commands;
 
 interface
 
-uses LMessages,
-  LCLType,
-  Heos.Fpc.Platform,
+uses Heos.Fpc.Platform,
 SysUtils;
 
 type

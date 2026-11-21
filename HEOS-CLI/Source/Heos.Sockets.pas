@@ -66,9 +66,7 @@ unit Heos.Sockets;
 interface
 
 uses Heos.Fpc.Text,
-LMessages,
-  LCLType,
-  Heos.Fpc.Platform,
+Heos.Fpc.Platform,
 Windows, WinSock, SysUtils;
 
 type
