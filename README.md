@@ -601,7 +601,7 @@ MfRDJ Pro supports casting to Cromecast devices on your local network using the 
 You have to know the principles of WASAPI, MFT's (see MFT samples), MfPack Cast V2, FxServe and audio manipulation.  
 Before compiling this sample make sure, you have all needed components compiled and installed (see instructions). 
   
-![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/RDJPro_Interface_s.png)
+![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/RDJPro_Interface_s.png?raw=true)
   
 ---
 **MfMftExplorer sample**
