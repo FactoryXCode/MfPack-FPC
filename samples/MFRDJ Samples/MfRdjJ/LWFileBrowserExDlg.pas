@@ -265,7 +265,9 @@ type
                             const ARect: TRect;
                             const AText: string;
                             const AIconIndex: Integer;
-                            const ASelected: Boolean);
+                            const ASelected: Boolean;
+                            const ABackgroundColor: TColor;
+                            const AFont: TFont);
 
 
   public
@@ -1299,7 +1301,9 @@ procedure TLWFileBrowserExDlg.DrawShellItem(ACanvas: TCanvas;
                                             const ARect: TRect;
                                             const AText: string;
                                             const AIconIndex: Integer;
-                                            const ASelected: Boolean);
+                                            const ASelected: Boolean;
+                                            const ABackgroundColor: TColor;
+                                            const AFont: TFont);
 var
   TextRect: TRect;
   IconY: Integer;
@@ -1307,6 +1311,19 @@ var
 
 begin
 
+  ACanvas.Font.Assign(AFont);
+  ACanvas.Brush.Style := bsSolid;
+
+  if ASelected then
+    begin
+      ACanvas.Brush.Color := clHighlight;
+      ACanvas.Font.Color := clHighlightText;
+    end
+  else
+    begin
+      ACanvas.Brush.Color := ABackgroundColor;
+      ACanvas.Font.Color := AFont.Color;
+    end;
   ACanvas.FillRect(ARect);
 
   IconY := ARect.Top + (((ARect.Bottom - ARect.Top) - GetSystemMetrics(SM_CYSMICON)) div 2);
@@ -1363,7 +1380,9 @@ begin
                 Rect,
                 TextValue,
                 IconIndex,
-                LCLType.odSelected in State);
+                LCLType.odSelected in State,
+                cbxLocations.Color,
+                cbxLocations.Font);
 end;
 
 
@@ -1396,7 +1415,9 @@ begin
                 Rect,
                 TextValue,
                 IconIndex,
-                LCLType.odSelected in State);
+                LCLType.odSelected in State,
+                lbFolders.Color,
+                lbFolders.Font);
 end;
 
 
