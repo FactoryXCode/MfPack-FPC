@@ -65,7 +65,7 @@ the IMFTimedTextNotify interface.*
   
 **MfTranscode sample**
   
-Demonstrates using the transcode API to transcode a source file (audio or video) to  
+Demonstrates using the transcode API to transcode a source file (audio or video) to 
 a different format (audio or video) supported by Media Foundation.  
   
 Supported, but not limited, formats in this sample are:
@@ -109,8 +109,8 @@ This package contains the following -installable- components:
 
 **MfPeakMeter, MfPeakMeterEx MfPeakMeterMmcs component samples**
   
-An example about how to create a MfPeakMeter control. This sample is part of the  
-Samples\MfComponents package.  
+An example about how to create a MfPeakMeter control.
+This sample is part of the Samples\MfComponents package.  
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfPeakmeter.jfif)
   
@@ -131,7 +131,8 @@ This sample is part of the Samples/MfComponents package.
   
 Note: On how to use these components, please read the WasApiPlayer sample 5 documentation.
   
-**Other files and helpers for the components.**
+**Other files and helpers for the components.**  
+  
 * PcmLib.pas - A very convenient unit that is capable of recoding diverse WAV formats.
 * WASAPIEngine.pas - Universal WASAPIEngine .
   
@@ -144,8 +145,8 @@ This sample application reads audio data from a media file and writes the uncomp
 The AudioClipEx sample demonstrates using the IMFSourceReader and IMFSourceReaderCallback API to extract uncompressed audiodata from a media file.  
   
 The AudioClipEx2 sample demonstrates using the IMFSourceReader,  
-IMFSourceReaderCallback and IMFSinkWriter API to extract uncompressed audiodata from a  
-media file and write the audio to a wav. It also uses threads for better responsiveness.  
+IMFSourceReaderCallback and IMFSinkWriter API to extract uncompressed audiodata from a media file and write the audio to a wav.
+It also uses threads for better responsiveness.  
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/AudioClipExSample.jpg)
   
@@ -189,9 +190,8 @@ The sample includes the original C++ code for references.
   
 **Ducking Media Player**
   
-This sample implements a simple media player that responds to the "ducking"  
-feature in Windows 7 and later. It also implements a volume control which tracks  
-to the volume control in the volume mixer.  
+This sample implements a simple media player that responds to the "ducking" feature in Windows 7 and later.
+It also implements a volume control which tracks to the volume control in the volume mixer.  
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/DuckingMediaPlayerSample.jpg)
   
@@ -199,9 +199,8 @@ to the volume control in the volume mixer.
   
 **Ducking Capture Sample**
   
-This sample implements a simple "Chat" that demonstrates the Windows audio  
-ducking feature. In capture mode, audio from the default communications  
-capture endpoint is routed to the default playback endpoint.  
+This sample implements a simple "Chat" that demonstrates the Windows audio ducking feature.
+In capture mode, audio from the default communications capture endpoint is routed to the default playback endpoint.  
 Select 'Use default input device' in the application to hear the routed input.  
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/ChatDemo.jfif)
@@ -210,12 +209,9 @@ Select 'Use default input device' in the application to hear the routed input.
   
 **MfSimpleWebCamStreamer**
   
-This sample demonstrates how to capture from a webcam and  
-microphone with Microsoft Media Foundation, encoding the result as H.264  
-and AAC, and publishing the live stream directly to a web browser through  
-fragmented MP4 and Media Source Extensions (MSE).  
-It demonstrates the complete path from Media Foundation capture to a  
-browser-playable live stream without requiring another external  
+This sample demonstrates how to capture from a webcam and microphone with Microsoft Media Foundation, encoding the result as H.264  
+and AAC, and publishing the live stream directly to a web browser through fragmented MP4 and Media Source Extensions (MSE).  
+It demonstrates the complete path from Media Foundation capture to a browser-playable live stream without requiring another external
 media server on a local network.
 
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfSimpleWebCamStreamer.png)
@@ -224,9 +220,8 @@ media server on a local network.
   
 **MfWebCamStreamer**
   
-This sample is the extended version of MfSimpleWebCamStreamer, that uses FxServe to  
-stream over the internet. Within the browser or installable PWA,  
-users can watch the video and are able to take snapshots or record the camera stream. 
+This sample is the extended version of MfSimpleWebCamStreamer, that uses FxServe to stream over the internet.
+Within the browser or installable PWA, users can watch the video and are able to take snapshots or record the camera stream. 
 Note: The PWA operates like an app, that can be installed via the Install button in the browser.  
 There is no need to get the PWA from any "Store".
   
@@ -270,24 +265,19 @@ This it the extended version of MfSimpleCastPlayer.
   
 **This sample demonstrates the following additions of MfSimpleCastPlayer:**
   
-- Casting a YouTube URL through an application-provided
-  `IMfCastSourceResolver` implementation;
-- A fast YouTube mode that resolves a combined H.264/AAC stream for direct
-  playback;
-- A best-quality YouTube mode that downloads separate video and audio streams
-  and merges them into an MP4 file;
+- Casting a YouTube URL through an application-provided `IMfCastSourceResolver` implementation;
+- A fast YouTube mode that resolves a combined H.264/AAC stream for direct playback;
+- A best-quality YouTube mode that downloads separate video and audio streams and merges them into an MP4 file;
 - Local video and audio preview through the `TMfCast` main interface;
 - Audio-only playback with optional JPG, PNG, BMP, or GIF artwork;
-- Heartbeat monitoring and automatic cleanup when the receiver is switched
-  off or stops responding.
+- Heartbeat monitoring and automatic cleanup when the receiver is switched off or stops responding.
   
 The sample enables the optional Media Foundation conversion stack.  
-Compatible MP4/H.264/AAC, WebM, MP3, M4A, AAC, FLAC, WAV, and Ogg sources can use direct  
-playback. Other containers and codecs, including AVI and MKV when required,  
+Compatible MP4/H.264/AAC, WebM, MP3, M4A, AAC, FLAC, WAV, and Ogg sources can use direct playback.
+Other containers and codecs, including AVI and MKV when required, 
 are remuxed or converted to fragmented MP4 and published by the local build-in HTTP server.  
   
-Please read `MfPack/Cast/MfPack_Chromecast_API_White_Paper.txt` for full details  
-about using the MfPack Cast API.  
+Please read `MfPack/Cast/MfPack_Chromecast_API_White_Paper.txt` for full details about using the MfPack Cast API.  
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/MfCastPlayer.png)
   
@@ -315,7 +305,7 @@ Demonstrates how to capture an image (synchronous or A-synchronous) using the IM
   
 **CameraFrameCapture sample**
   
-Demonstrates how to capture a still image or so called snapshot (A-synchronous) from a    
+Demonstrates how to capture a still image or so called snapshot (A-synchronous) from a 
 capture device such as a webcam or camera using the IMFSourceReader.
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/CameraFrameCaptureSample.png)
@@ -324,7 +314,7 @@ capture device such as a webcam or camera using the IMFSourceReader.
   
 **CaptureEngineVideoCapture sample**
   
-Demonstrates how to capture a snapshot or a recording (A-synchronous) from a capture device,  
+Demonstrates how to capture a snapshot or a recording (A-synchronous) from a capture device, 
 such as a webcam using the IMFCaptureEngine and IMFCapturePreviewSink.  
 This sample also demonstrates how to use the MfMediaTypeDebug API.  
   
@@ -340,7 +330,7 @@ Example 2 demonstrates how to use the SinkWriter to create a video from one or m
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/SinkWriterSample.png)
   
 *Example 3*  
-Demonstrates how to use the SinkWriter to create a video from one or more image files including audio.
+Demonstrates how to use the SinkWriter to create a video from one or more image files including audio.  
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/ImageToVideo_3.jpg)
   
@@ -440,9 +430,9 @@ In your projectsettings you have to add ..MfPack\Samples\MfComponents in the pro
   
 This sample demonstrates a Media Foundation–based streaming audio player built on top of XAudio2.  
   
-Audio files (WAV, MP3, FLAC, AAC, etc.) are decoded on-the-fly using the  
+Audio files (WAV, MP3, FLAC, AAC, etc.) are decoded on-the-fly using the 
 Media Foundation Source Reader and rendered through XAudio2 using a multi-buffer* *streaming model.  
-Playback control (Play, Pause, Stop, Replay, Seek) is fully thread-safe and  
+Playback control (Play, Pause, Stop, Replay, Seek) is fully thread-safe and 
 handled by a dedicated worker thread, avoiding UI blocking and audio glitches.  
   
 *The sample also shows how to:*
@@ -465,15 +455,13 @@ making it suitable for large audio files (e.g. FLAC > 100 MB).
   
 **Player Sample 1**
   
-This sample demonstrates how to use the IAudioClient to render different  
-audio formats like WAV, FLAC, MP3 etc.  
-using the IMFSourceReader to decode the format suitable for playing in  
-'s IAudioClient and renderer.  
+This sample demonstrates how to use the IAudioClient to render different audio formats like WAV, FLAC, MP3 etc.  
+using the IMFSourceReader to decode the format suitable for playing in 's IAudioClient and renderer.  
   
 The sample plays formats like WAV (pcm and floatingpoint), MP3 and FLAC.  
-It shows you the basics of using the IAudioClient, iAudioRenderer,  
-IAudioClock and IAudioStreamVolume interfaces.  
-The sample uses the MfPeakMeter component. This requires that you install the MfComponents.  
+It shows you the basics of using the IAudioClient, iAudioRenderer, IAudioClock and IAudioStreamVolume interfaces.  
+The sample uses the MfPeakMeter component.  
+This requires that you install the MfComponents.  
 In your projectsettings you have to add ..MfPack\Samples\MfComponents in the project options searchpath.  
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/WasApiPlayer1.png)
@@ -482,7 +470,7 @@ In your projectsettings you have to add ..MfPack\Samples\MfComponents in the pro
   
 **Player Sample 2**
   
-This sample is based on Sample 1, but includes full threaded code,  
+This sample is based on Sample 1, but includes full threaded code, 
 using threadsafe events and also uses a custom MFT for bass and treble control.  
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/WasApiPlayer2.png)
@@ -491,7 +479,7 @@ using threadsafe events and also uses a custom MFT for bass and treble control.
   
 **Player Sample 3**
   
-This sample is based on Sample 2, instead of a bass/treble MFT, this one is equiped with  
+This sample is based on Sample 2, instead of a bass/treble MFT, this one is equiped with 
 a 3 band High, Mid(Peaking or Notch) and Low EQ MFT and a spectrum analizer.  
 It also stores and read back settings for the MFT.  
   
@@ -520,7 +508,8 @@ This sample demonstrates a **real-time audio playback engine on Windows** using:
 - Compressor / Limiter DSP with live control from the settings menu.
   
 **Note:**  
-This is not a sample for absolute beginners. Please read the documents included with this sample.  
+This is not a sample for absolute beginners.  
+Please read the documents included with this sample.  
   
 ![](https://github.com/FactoryXCode/MfPack-FPC/blob/main/Pic/WasApiPlayer4.png)
   
@@ -558,13 +547,11 @@ This sample demonstrates how to capture from screen using your videocard GPU.
   
 **MfCaptureVideoFromGPU Sample 2**
   
-This sample demonstrates how to capture a selected monitor (screen)  
-connected with the graphics card GPU using DXGI Desktop Duplication,  
-optionally captures system audio via WASAPI loopback, shows a live preview,  
+This sample demonstrates how to capture a selected monitor (screen) connected with the graphics card GPU using DXGI Desktop Duplication, 
+optionally captures system audio via WASAPI loopback, shows a live preview, 
 and writes the result to a file (typically MP4 with H.264 video and AAC or FLAC audio).  
   
-Audio-only recording can be done separately to WAV or FLAC using the  
-dedicated recorder unit.  
+Audio-only recording can be done separately to WAV or FLAC using the dedicated recorder unit.  
   
 **Note:**  
 You need good knowledge of Media Foundation, DirectX DXGI processing.  
@@ -576,8 +563,7 @@ You need good knowledge of Media Foundation, DirectX DXGI processing.
 ***Complex samples***
   
 **RDJ Mixer sample**  
-This application demonstrates how to build an audio mixer,  
-effects and how to implement IceCast/Caddy for internet broadcasting.  
+This application demonstrates how to build an audio mixer, effects and how to implement IceCast/Caddy for internet broadcasting.  
 The Mixer is fully adjustable for audio endpoint assignments, mixer decks and loopback decks.  
 All WASAPI and MFT sample code comes together in this sample.  
   
@@ -592,26 +578,24 @@ All WASAPI and MFT sample code comes together in this sample.
 **RDJ Pro Mixer sample**  
 RDJ Pro is the extended version of RDJ.
   
-Where RDJ mainly demonstrates DJ-style audio playback and mixing with MfPack,  
+Where RDJ mainly demonstrates DJ-style audio playback and mixing with MfPack, 
 RDJ Pro adds a complete live broadcast layer around the mixer.  
-RDJ Pro still provides the familiar RDJ functions: channel decks,  
-loopback decks, microphone input, effects, PFL/cue monitoring, playlist editing,  
-tag editing, and local recording.  
+RDJ Pro still provides the familiar RDJ functions: channel decks, 
+loopback decks, microphone input, effects, PFL/cue monitoring, playlist editing, tag editing, and local recording.  
   
 The Pro version expands this into an audio/video streaming application.  
-It can combine the live program audio with camera video or a static video source,  
+It can combine the live program audio with camera video or a static video source, 
 encode the result with Microsoft Media Foundation, and publish it as a browser-playable stream.  
 The main technical difference is the broadcast pipeline.  
 MfRDJ Pro uses Media Foundation Sink Writer and the MPEG-4 media sink to create fragmented MP4.  
-MfRDJ Pro observes the generated MP4 byte stream, extracts and patches fMP4 fragments,  
+MfRDJ Pro observes the generated MP4 byte stream, extracts and patches fMP4 fragments, 
 writes a rolling live.json manifest, and serves the result through FxServe or an alternative proxy server like Caddy.  
 Modern browsers can then play the stream using Media Source Extensions.  
-MfRDJ Pro also writes now-playing metadata, artwork links, on-air state, and  
+MfRDJ Pro also writes now-playing metadata, artwork links, on-air state, and 
 listener counts to JSON files for the web interface.  
-It includes safeguards for long-running broadcasts, such as bounded queues,  
+It includes safeguards for long-running broadcasts, such as bounded queues, 
 fragment cleanup, FxServe mirroring, sleep prevention options, and clean shutdown handling.  
-MfRDJ Pro supports casting to Cromecast devices on your local network using the  
-MfPack Cast V2 protocols.  
+MfRDJ Pro supports casting to Cromecast devices on your local network using the MfPack Cast V2 protocols.  
   
 **Note:**  
 You have to know the principles of WASAPI, MFT's (see MFT samples), MfPack Cast V2, FxServe and audio manipulation.  
@@ -654,7 +638,7 @@ FxServe can run interactively as a console application or as a native Windows se
 Its LAN listener remains on port 8080. An optional HTTP.sys front end adds HTTPS on port 443 and redirects port 80 to HTTPS for WAN use.
 WAN mode is disabled by default.
 When WAN HTTPS is enabled, FxServe obtains, installs, renews, validates, and binds its certificate itself.  
-MfPack includes a Zip file that contains the necessary files that needs to be copied to your server of local machine that should run the service,  
+MfPack includes a Zip file that contains the necessary files that needs to be copied to your server of local machine that should run the service, 
 typically a remote server in your network. No installation app is needed.  
 FxServe has an FxServeAdmin app, to install, configure and control FxServe as a Windows service.
   
@@ -663,14 +647,13 @@ FxServe has an FxServeAdmin app, to install, configure and control FxServe as a 
 Caddy is a 3th party proxy server with much more features than FxServe.
 Use this 
 app as a service, just like FxServe for LAN/WAN streaming.  
-The Caddy version in MfPack is packed in a zip file together with the needed files to run on a server or   
-local PC. The Caddy version also has a CaddyAdmin app, to install,  
-configure and control Caddy as a Windows service.  
+The Caddy version in MfPack is packed in a zip file together with the needed files to run on a server or 
+local PC. The Caddy version also has a CaddyAdmin app, to install, configure and control Caddy as a Windows service.  
   
 ---
 ***MfCast V2.2***
   
-MfCast is an independent Chromecast subsystem for FPC/Lazarus.
+MfCast is an independent Chromecast subsystem for FPC/Lazarus.  
 It handles device discovery, receiver control, local media serving, media preparation, subtitles, track selection, and optional remuxing/transcoding behind a small public API.
   
 MfCast can be used by:
