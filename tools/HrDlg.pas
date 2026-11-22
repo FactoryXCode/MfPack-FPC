@@ -60,7 +60,9 @@
 //==============================================================================
 unit HrDlg;
 
-{$mode delphi}{$H+}{$codepage utf8}
+{$mode delphi}
+{$H+}
+{$codepage utf8}
 
 interface
 
@@ -133,11 +135,12 @@ type
     procedure butSearchMouseMove(Sender: TObject;
                                  Shift: TShiftState;
                                  X,
-      Y: Integer);
+                                 Y: Integer);
     procedure butMakeHResultClick(Sender: TObject);
 
   private
     { Private declarations }
+
   public
     destructor Destroy; override;
     procedure ShowTransforms(Sender: TObject);
@@ -148,20 +151,37 @@ var
 
 implementation
 
-uses MediaTransformToolDlg;
+uses
+  MediaTransformToolDlg;
 
-{$R *.lfm}
+  {$R *.lfm}
 
 
 function UiText(const Text: UnicodeString): string;
+
 begin
-  Result := {$IFDEF FPC}UTF8Encode(Text){$ELSE}Text{$ENDIF};
+
+  Result :=
+  {$IFDEF FPC}
+    UTF8Encode(Text)
+  {$ELSE}
+Text
+  {$ENDIF}
+  ;
 end;
 
 
 function UiValue(const Text: string): UnicodeString;
+
 begin
-  Result := {$IFDEF FPC}UTF8Decode(Text){$ELSE}Text{$ENDIF};
+
+  Result :=
+  {$IFDEF FPC}
+    UTF8Decode(Text)
+  {$ELSE}
+Text
+  {$ENDIF}
+  ;
 end;
 
 
@@ -170,10 +190,14 @@ var
   Value: HResult;
   HexText: UnicodeString;
   DecText: UnicodeString;
+
 begin
-  if cbxAutoPaste.Checked and TryParseHResult(UiValue(Clipboard.AsText),Value) then
+
+  if cbxAutoPaste.Checked and TryParseHResult(UiValue(Clipboard.AsText), Value) then
     begin
-      OxValToHexVal(UiValue(Clipboard.AsText),HexText,DecText);
+      OxValToHexVal(UiValue(Clipboard.AsText),
+                    HexText,
+                    DecText);
       edHrHex.Text := UiText(HexText);
       edHrDec.Text := UiText(DecText);
     end;
@@ -181,7 +205,9 @@ end;
 
 
 procedure TdlgHrTools.butCloseClick(Sender: TObject);
+
 begin
+
   Close;
 end;
 
@@ -191,19 +217,21 @@ var
   Severity: HResult;
   Facility: HResult;
   Code: HResult;
+
 begin
+
   edHResult.Clear;
-  if not TryParseHResult(UiValue(edSeverity.Text),Severity) or
-     not TryParseHResult(UiValue(edFacility.Text),Facility) or
-     not TryParseHResult(UiValue(edErrCode.Text),Code) or
-     (Severity < 0) or (Severity > 1) or
-     (Facility < 0) or (Facility > $1FFF) or
-     (Code < 0) or (Code > $FFFF) then
+  if not TryParseHResult(UiValue(edSeverity.Text), Severity) or not TryParseHResult(UiValue(edFacility.Text), Facility) or not TryParseHResult(UiValue(edErrCode.Text), Code) or
+    (Severity < 0) or (Severity > 1) or
+    (Facility < 0) or (Facility > $1FFF) or
+    (Code < 0) or (Code > $FFFF) then
     begin
       mmoDescription.Text := 'Use severity 0..1, facility 0..8191 and code 0..65535.';
       Exit;
     end;
-  edHResult.Text := UiText(UnicodeString(IntToStr(MAKE_HRESULT(Severity,Facility,Code))));
+  edHResult.Text := UiText(UnicodeString(IntToStr(MAKE_HRESULT(Severity,
+                                                               Facility,
+                                                               Code))));
 end;
 
 
@@ -215,12 +243,15 @@ var
   ToolPath: UnicodeString;
   I: Integer;
   HrCode: HResult;
+
 begin
+
   mmoDescription.Clear;
   lbxReference.Clear;
   Text := UiValue(edHrHex.Text);
-  if Text = '' then Text := UiValue(edHrDec.Text);
-  if not TryParseHResult(Text,HrCode) then
+  if (Text = '') then
+    Text := UiValue(edHrDec.Text);
+  if not TryParseHResult(Text, HrCode) then
     begin
       mmoDescription.Text := 'Please enter a valid 32-bit HRESULT value.';
       Exit;
@@ -230,16 +261,16 @@ begin
       if SUCCEEDED(FWinHResultCracker.GetHResultDetails(HrCode)) then
         begin
           Text := 'HResult:              ' + FWinHResultCracker.HResultAsString + CRLF +
-                  'Description:          ' + FWinHResultCracker.HResultDescription + CRLF +
-                  'Region:               ' + FWinHResultCracker.HResultRegion + CRLF + CRLF +
-                  'Facility Tag:         ' + FWinHResultCracker.FacilityTagAsString + CRLF +
-                  'Facility Description: ' + FWinHResultCracker.FacilityDescription + CRLF + CRLF +
-                  'Severity Tag:         ' + FWinHResultCracker.SeveretyValue + CRLF +
-                  'Severity Description: ' + FWinHResultCracker.SeveretyDescription + CRLF + CRLF +
-                  'Header file:          ' + FWinHResultCracker.HeaderFile + CRLF;
+            'Description:          ' + FWinHResultCracker.HResultDescription + CRLF +
+            'Region:               ' + FWinHResultCracker.HResultRegion + CRLF + CRLF +
+            'Facility Tag:         ' + FWinHResultCracker.FacilityTagAsString + CRLF +
+            'Facility Description: ' + FWinHResultCracker.FacilityDescription + CRLF + CRLF +
+            'Severity Tag:         ' + FWinHResultCracker.SeveretyValue + CRLF +
+            'Severity Description: ' + FWinHResultCracker.SeveretyDescription + CRLF + CRLF +
+            'Header file:          ' + FWinHResultCracker.HeaderFile + CRLF;
           mmoDescription.Text := UiText(Text);
           for I := 0 to Length(FWinHResultCracker.ReferenceUrls) - 1 do
-            if FWinHResultCracker.ReferenceUrls[I] <> '' then
+            if (FWinHResultCracker.ReferenceUrls[I] <> '') then
               lbxReference.Items.Add(UiText(FWinHResultCracker.ReferenceUrls[I]));
         end
       else
@@ -261,9 +292,11 @@ begin
         end;
       Command := '"' + ToolPath + '" ' + UnicodeString(IntToStr(HrCode));
       try
-        mmoDescription.Text := UiText(FWinHResultCracker.RunWinErrorTool(Command,WorkDir));
+        mmoDescription.Text := UiText(FWinHResultCracker.RunWinErrorTool(Command,
+                                                                         WorkDir));
       except
-        on E: Exception do mmoDescription.Text := E.Message;
+        on E: Exception do
+          mmoDescription.Text := E.Message;
       end;
     end
   else if rbSEMLTDLG.Checked then
@@ -273,8 +306,11 @@ end;
 
 procedure TdlgHrTools.butSearchMouseMove(Sender: TObject;
                                          Shift: TShiftState;
-                                         X,Y: Integer);
+                                         X,
+                                         Y: Integer);
+
 begin
+
   AppOnActivate(Self);
 end;
 
@@ -282,27 +318,38 @@ end;
 procedure TdlgHrTools.butTransToDecClick(Sender: TObject);
 var
   Value: HResult;
+
 begin
-  if TryParseHResult(UiValue(edHrHex.Text),Value) then
+
+  if TryParseHResult(UiValue(edHrHex.Text), Value) then
     edHrDec.Text := UiText(UnicodeString(IntToStr(Value)));
 end;
 
 
 procedure TdlgHrTools.butTransToHexClick(Sender: TObject);
+
 begin
+
   edHrHex.Text := UiText(DecimalToHex(UiValue(edHrDec.Text)));
 end;
 
 
 procedure TdlgHrTools.cbxFormStyleClick(Sender: TObject);
+
 begin
-  if cbxFormStyle.Checked then FormStyle := fsStayOnTop else FormStyle := fsNormal;
+
+  if cbxFormStyle.Checked then
+    FormStyle := fsStayOnTop
+  else
+    FormStyle := fsNormal;
 end;
 
 
 procedure TdlgHrTools.FormCloseQuery(Sender: TObject;
                                      var CanClose: Boolean);
+
 begin
+
   CanClose := True;
 end;
 
@@ -311,7 +358,9 @@ procedure TdlgHrTools.FormCreate(Sender: TObject);
 var
   ToolsMenu: TMenuItem;
   TransformItem: TMenuItem;
+
 begin
+
   Menu := TMainMenu.Create(Self);
   ToolsMenu := TMenuItem.Create(Self);
   ToolsMenu.Caption := 'Tools';
@@ -320,7 +369,8 @@ begin
   TransformItem.Caption := 'Media Foundation transforms...';
   TransformItem.OnClick := ShowTransforms;
   ToolsMenu.Add(TransformItem);
-  if not Assigned(FWinHResultCracker) then FWinHResultCracker := TWinHResultCracker.Create;
+  if not Assigned(FWinHResultCracker) then
+    FWinHResultCracker := TWinHResultCracker.Create;
   OnActivate := AppOnActivate;
   cbxFormStyle.Checked := True;
   Caption := UiText('HRESULT Lookup Tool (Windows SDK ' + SDK_API_VERSION + ')');
@@ -328,8 +378,11 @@ end;
 
 
 destructor TdlgHrTools.Destroy;
+
 begin
-  if dlgHrTools = Self then dlgHrTools := nil;
+
+  if (dlgHrTools = Self) then
+    dlgHrTools := nil;
   FreeAndNil(FWinHResultCracker);
   inherited;
 end;
@@ -338,15 +391,28 @@ end;
 procedure TdlgHrTools.lbxReferenceClick(Sender: TObject);
 var
   Url: UnicodeString;
+
 begin
-  if (lbxReference.ItemIndex < 0) or (lbxReference.Items.Count = 0) then Exit;
+
+  if (lbxReference.ItemIndex < 0) or (lbxReference.Items.Count = 0) then
+    Exit;
   Url := UiValue(lbxReference.Items[lbxReference.ItemIndex]);
-  ShellExecuteW(Handle,'open',PWideChar(Url),nil,nil,SW_SHOWNORMAL);
+  ShellExecuteW(Handle,
+                'open',
+                PWideChar(Url),
+                nil,
+                nil,
+                SW_SHOWNORMAL);
 end;
 
+
 procedure TdlgHrTools.ShowTransforms(Sender: TObject);
+
 begin
-  if not Assigned(dlgMediaTransformTool) then Application.CreateForm(TdlgMediaTransformTool,dlgMediaTransformTool);
+
+  if not Assigned(dlgMediaTransformTool) then
+    Application.CreateForm(TdlgMediaTransformTool,
+                           dlgMediaTransformTool);
   dlgMediaTransformTool.Show;
 end;
 

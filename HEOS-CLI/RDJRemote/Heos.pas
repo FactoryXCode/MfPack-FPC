@@ -66,10 +66,11 @@ unit Heos;
 
 interface
 
-uses LMessages,
+uses
+  LMessages,
   LCLType,
   Heos.Fpc.Platform,
-{System}
+  {System}
   Classes,
   SysUtils,
   Heos.Fpc.JSON,
@@ -87,15 +88,17 @@ type
   end;
 
   THeosApiThread = class(TThread)
+
   protected
 
     function Exchange(Client: THeosClient;
-                         const Command: THeosCommand): THeosMessage;
+                      const Command: THeosCommand): THeosMessage;
     function FindPlayer(Client: THeosClient;
-                           const Host: string): Int64;
+                        const Host: string): Int64;
   end;
 
   THeosProgressMonitor = class(THeosApiThread)
+
   private
 
     FHost: string;
@@ -111,19 +114,20 @@ type
   public
 
     constructor Create(const Host: string;
-                           Port: Word = 1255);
+                       Port: Word = 1255);
     destructor Destroy(); override;
     function Snapshot(): THeosProgress;
   end;
 
   THeosAction = (haPlayUrl,
-                  haPause,
-                  haResume,
-                  haStop,
-                  haGetState,
-                  haSeek);
+                 haPause,
+                 haResume,
+                 haStop,
+                 haGetState,
+                 haSeek);
 
   THeosRequest = class(THeosApiThread)
+
   private
 
     FHost: string;
@@ -142,10 +146,10 @@ type
   public
 
     constructor Create(const Host: string;
-                           Action: THeosAction;
-                           const Url: string = '';
-                           Port: Word = 1255;
-                           SeekPositionMs: Int64 = 0);
+                       Action: THeosAction;
+                       const Url: string = '';
+                       Port: Word = 1255;
+                       SeekPositionMs: Int64 = 0);
     property ErrorText: string read FError;
     property Summary: string read FSummary;
     property PlayState: string read FPlayState;
@@ -160,8 +164,9 @@ uses
   {Application}
   HEOS.UPnP;
 
+
 function JsonText(Obj: TJSONObject;
-                     const Name: string): string;
+                  const Name: string): string;
 var
   Value: TJSONValue;
 
@@ -178,7 +183,7 @@ end;
 
 
 function THeosApiThread.Exchange(Client: THeosClient;
-                                    const Command: THeosCommand): THeosMessage;
+                                 const Command: THeosCommand): THeosMessage;
 var
   Id: UInt64;
   Message: THeosMessage;
@@ -204,8 +209,7 @@ begin
       try
 
         // Events and progress replies cannot complete a queued command.
-        if (Message.RequestId <> Id) or
-           not (Message.Kind in [hmReply, hmError]) then
+        if (Message.RequestId <> Id) or not (Message.Kind in [hmReply, hmError]) then
           Continue;
 
         if not Message.Success then
@@ -213,7 +217,7 @@ begin
 
             if Message.DeliveryUnknown then
               raise EHeosProtocol.Create(Message.ErrorText +
-                                          ' Delivery is uncertain; command was not replayed.');
+                ' Delivery is uncertain; command was not replayed.');
             raise EHeosProtocol.Create(Message.ErrorText);
           end;
 
@@ -230,7 +234,7 @@ end;
 
 
 function THeosApiThread.FindPlayer(Client: THeosClient;
-                                      const Host: string): Int64;
+                                   const Host: string): Int64;
 var
   Reply: THeosMessage;
   Players: TJSONArray;
@@ -239,7 +243,8 @@ var
 
 begin
 
-  Reply := Exchange(Client, THeosCommands.GetPlayers());
+  Reply := Exchange(Client,
+                    THeosCommands.GetPlayers());
   try
 
     if not (Reply.Payload is TJSONArray) then
@@ -252,12 +257,16 @@ begin
 
           Player := TJSONObject(Players.Items[I]);
           if (JsonText(Player, 'ip') = Host) and
-             TryStrToInt64(JsonText(Player, 'pid'), Result) then
+            TryStrToInt64(JsonText(Player,
+                                   'pid'),
+                          Result) then
             Exit;
         end;
 
     if (Players.Count = 1) and (Players.Items[0] is TJSONObject) and
-       TryStrToInt64(JsonText(TJSONObject(Players.Items[0]), 'pid'), Result) then
+      TryStrToInt64(JsonText(TJSONObject(Players.Items[0]),
+                             'pid'),
+                    Result) then
       Exit;
 
     raise EHeosProtocol.Create('Could not identify this receiver in HEOS.');
@@ -268,7 +277,8 @@ end;
 
 
 constructor THeosProgressMonitor.Create(const Host: string;
-                                            Port: Word);
+                                        Port: Word);
+
 begin
 
   inherited Create(True);
@@ -280,6 +290,7 @@ end;
 
 
 destructor THeosProgressMonitor.Destroy();
+
 begin
 
   Terminate;
@@ -290,6 +301,7 @@ end;
 
 
 function THeosProgressMonitor.Snapshot(): THeosProgress;
+
 begin
 
   FLock.Acquire;
@@ -310,8 +322,10 @@ var
 
 begin
 
-  Pid := FindPlayer(Client, FHost);
-  Message := Exchange(Client, THeosCommands.RegisterForChangeEvents(True));
+  Pid := FindPlayer(Client,
+                    FHost);
+  Message := Exchange(Client,
+                      THeosCommands.RegisterForChangeEvents(True));
   Message.Free;
 
   while not Terminated do
@@ -330,21 +344,21 @@ begin
           raise EHeosProtocol.Create(Message.ErrorText);
 
         if (Message.Kind = hmEvent) and
-           (Message.EventKind = hePlayersChanged) then
+          (Message.EventKind = hePlayersChanged) then
           begin
 
-            Pid := FindPlayer(Client, FHost);
+            Pid := FindPlayer(Client,
+                              FHost);
             Continue;
           end;
 
         if (Message.Kind <> hmEvent) or
-           (Message.EventKind <> heNowPlayingProgress) or
-           (Message.IntegerParameter('pid') <> Pid) then
+          (Message.EventKind <> heNowPlayingProgress) or
+          (Message.IntegerParameter('pid') <> Pid) then
           Continue;
 
-        if not TryStrToInt64(Message.Parameter('cur_pos'), PositionMs) or
-           not TryStrToInt64(Message.Parameter('duration'), DurationMs) or
-           (PositionMs < 0) or (DurationMs < 0) then
+        if not TryStrToInt64(Message.Parameter('cur_pos'), PositionMs) or not TryStrToInt64(Message.Parameter('duration'), DurationMs) or
+          (PositionMs < 0) or (DurationMs < 0) then
           Continue;
 
         FLock.Acquire;
@@ -375,7 +389,8 @@ begin
       Client := nil;
       try
         try
-          Client := THeosClient.Create(FHost, FPort);
+          Client := THeosClient.Create(FHost,
+                                       FPort);
           Client.TimeoutMs := 6000;
           Listen(Client);
         except
@@ -397,10 +412,11 @@ end;
 
 
 constructor THeosRequest.Create(const Host: string;
-                                    Action: THeosAction;
-                                    const Url: string;
-                                    Port: Word;
-                                    SeekPositionMs: Int64);
+                                Action: THeosAction;
+                                const Url: string;
+                                Port: Word;
+                                SeekPositionMs: Int64);
+
 begin
 
   inherited Create(True);
@@ -429,14 +445,17 @@ begin
       if (FAction = haSeek) then
         begin
 
-          SeekReceiverPosition(FHost, FSeekPositionMs);
+          SeekReceiverPosition(FHost,
+                               FSeekPositionMs);
           FSummary := 'Receiver accepted seek position.';
           Exit;
         end;
 
-      Client := THeosClient.Create(FHost, FPort);
+      Client := THeosClient.Create(FHost,
+                                   FPort);
       Client.TimeoutMs := 6000;
-      Pid := FindPlayer(Client, FHost);
+      Pid := FindPlayer(Client,
+                        FHost);
       if Terminated then
         Exit;
 
@@ -444,14 +463,17 @@ begin
         haPlayUrl:
           begin
 
-            Reply := Exchange(Client, THeosCommands.PlayUrl(Pid, FUrl));
+            Reply := Exchange(Client,
+                              THeosCommands.PlayUrl(Pid,
+                                                    FUrl));
             Reply.Free;
             FSummary := 'HEOS accepted the stream URL. Playback may take a few seconds.';
           end;
         haGetState:
           begin
 
-            Reply := Exchange(Client, THeosCommands.GetPlayState(Pid));
+            Reply := Exchange(Client,
+                              THeosCommands.GetPlayState(Pid));
             try
               FPlayState := Reply.Parameter('state');
               FSummary := 'Playback state: ' + FPlayState;
@@ -459,20 +481,22 @@ begin
               Reply.Free;
             end;
           end;
-      else
-        begin
+        else
+          begin
 
-          case FAction of
-            haPause: State := hpsPause;
-            haResume: State := hpsPlay;
-          else
-            State := hpsStop;
+            case FAction of
+              haPause: State := hpsPause;
+              haResume: State := hpsPlay;
+              else
+                State := hpsStop;
+            end;
+
+            Reply := Exchange(Client,
+                              THeosCommands.SetPlayState(Pid,
+                                                         State));
+            FSummary := 'HEOS accepted playback state: ' + Reply.Parameter('state');
+            Reply.Free;
           end;
-
-          Reply := Exchange(Client, THeosCommands.SetPlayState(Pid, State));
-          FSummary := 'HEOS accepted playback state: ' + Reply.Parameter('state');
-          Reply.Free;
-        end;
       end;
     except
       on E: Exception do

@@ -68,7 +68,7 @@ interface
 uses
   MfLoopbackSamples.Platform,
   LMessages,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.ComBaseApi,
@@ -151,7 +151,9 @@ type
                               var Key: Word;
                               Shift: TShiftState);
     procedure butShowProcessesClick(Sender: TObject);
-    procedure edPIDKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure edPIDKeyUp(Sender: TObject;
+                         var Key: Word;
+                         Shift: TShiftState);
     procedure cbxStayOnTopClick(Sender: TObject);
     procedure cbxOutputFormatChange(Sender: TObject);
 
@@ -204,6 +206,7 @@ implementation
 
 
 procedure TfrmMain.butPlayDataClick(Sender: TObject);
+
 begin
 
   ShellExecute(Handle,
@@ -211,7 +214,7 @@ begin
                StrToPWideChar(FFileName),
                nil,
                nil,
-               SW_SHOWNORMAL) ;
+               SW_SHOWNORMAL);
 end;
 
 
@@ -233,9 +236,9 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(0,
-                 LPCWSTR('Start Capture failed with result ' + IntToStr(hr)),
-                 LPCWSTR('Start Capture Failure!'),
-                 MB_ICONSTOP);
+                  LPCWSTR('Start Capture failed with result ' + IntToStr(hr)),
+                  LPCWSTR('Start Capture Failure!'),
+                  MB_ICONSTOP);
       Exit;
     end;
 
@@ -257,6 +260,7 @@ end;
 
 
 procedure TfrmMain.butShowProcessesClick(Sender: TObject);
+
 begin
 
   // Create the dialog if it's not allready done.
@@ -284,21 +288,22 @@ end;
 
 
 procedure TfrmMain.cbxOutputFormatChange(Sender: TObject);
+
 begin
 
   case cbxOutputFormat.ItemIndex of
-    0: begin
+      0: begin
 
-          dlgSave.Filter := 'WAV audio (*.wav)|*.wav';
-          dlgSave.DefaultExt := 'wav';
-          lblFileExt.Caption := '.wav';
-        end;
+        dlgSave.Filter := 'WAV audio (*.wav)|*.wav';
+        dlgSave.DefaultExt := 'wav';
+        lblFileExt.Caption := '.wav';
+      end;
 
-    1:  begin
-          dlgSave.Filter := 'FLAC audio (*.flac)|*.flac';
-          dlgSave.DefaultExt := 'flac';
-          lblFileExt.Caption := '.flac';
-        end
+      1: begin
+        dlgSave.Filter := 'FLAC audio (*.flac)|*.flac';
+        dlgSave.DefaultExt := 'flac';
+        lblFileExt.Caption := '.flac';
+      end
     else
       begin
 
@@ -311,6 +316,7 @@ end;
 
 
 procedure TfrmMain.cbxStayOnTopClick(Sender: TObject);
+
 begin
 
   if cbxStayOnTop.Checked then
@@ -332,28 +338,32 @@ begin
 end;
 
 
-procedure TfrmMain.edFileNameKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TfrmMain.edFileNameKeyUp(Sender: TObject;
+                                   var Key: Word;
+                                   Shift: TShiftState);
+
 begin
 
   bEdited := True;
 end;
 
 
-procedure TfrmMain.edPIDKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TfrmMain.edPIDKeyUp(Sender: TObject;
+                              var Key: Word;
+                              Shift: TShiftState);
 var
   i: Integer;
 
 begin
 
   if TryStrToInt(edPID.Text, i) and (i >= 0) then
-   aMainProcessId := i;
+    aMainProcessId := i;
 end;
 
 
 // Get the PID from this application
 procedure TfrmMain.butGetPIDClick(Sender: TObject);
+
 begin
 
   edPID.Text := IntToStr(GetCurrentProcessId());
@@ -361,7 +371,9 @@ begin
 end;
 
 
-procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfrmMain.FormCloseQuery(Sender: TObject;
+                                  var CanClose: Boolean);
+
 begin
 
   CanClose := False;
@@ -375,6 +387,7 @@ end;
 
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+
 begin
 
   aStopWatch := TStopwatch.Create;
@@ -457,7 +470,8 @@ begin
   // Check filename format.
 
   // Don't use the extension yet, because we want to check if user edited a different name.
-  FFileName := Format('%s', [edFileName.Text]);
+  FFileName := Format('%s',
+                      [edFileName.Text]);
 
   if (FOrgFileName = '') or bEdited then
     begin
@@ -480,7 +494,7 @@ begin
 
               if (FOrgFileName = FFileName) then
                 FFileName := Format('%s(%d)',
-                                     [edFileName.Text, i])
+                                    [edFileName.Text, i])
               else
                 begin
 
@@ -488,10 +502,10 @@ begin
                                       [FOrgFileName, i]);
                   edFileName.Text := FFileName;
                 end;
-                 Inc(i);
+              Inc(i);
             end
-             else
-               bFileExists := False;
+          else
+            bFileExists := False;
         end;
     end;
 
@@ -537,7 +551,8 @@ begin
     end;
 
   hnsPeriod := Round(1000 * (FLoopbackCapture.CaptureBufferLength / FLoopbackCapture.CurrentWavFormat.nSamplesPerSec));
-  lblCaptureBufferDuration.Caption := Format('Capture Buffer Duration: %d ms.', [hnsPeriod]);
+  lblCaptureBufferDuration.Caption := Format('Capture Buffer Duration: %d ms.',
+                                             [hnsPeriod]);
 
 
   Result := hr;
@@ -545,6 +560,7 @@ end;
 
 
 function TFrmMain.CreateEngine(): Boolean;
+
 begin
 
   // Destroy an existing capture engine.
@@ -558,7 +574,7 @@ begin
     begin
 
       ErrMsg('Unable create the WASCapture engine.',
-              E_POINTER);
+             E_POINTER);
       Exit(False);
     end
   else
@@ -569,7 +585,7 @@ begin
       FLoopbackCapture.OnStartCapturing := OnCapturingStartEvent;
 
       ErrMsg('The Loopback Capture engine is successfully initialized.',
-              S_OK);
+             S_OK);
 
       SetBufferDuration();
       Result := True;
@@ -578,6 +594,7 @@ end;
 
 
 procedure TFrmMain.RemoveEngine();
+
 begin
 
   if Assigned(FLoopbackCapture) then
@@ -613,11 +630,12 @@ begin
   else
     lblBufferDuration.Caption := Format('Capture buffer duration(%d %s)',
                                         [sedBufferSize.Value,
-                                         sms])
+      sms])
 end;
 
 
 procedure TfrmMain.OnCapturingStartEvent(Sender: TObject);
+
 begin
 
   thrTimer.Enabled := True;
@@ -627,6 +645,7 @@ end;
 
 
 procedure TfrmMain.OnCapturingStoppedEvent(Sender: TObject);
+
 begin
 
   // Stop the timer and stopwatch.
@@ -644,6 +663,7 @@ end;
 
 
 procedure TfrmMain.TimerTimer(sender: TObject);
+
 begin
 
   lblMsg.Caption := 'Capturing from source: ' + FormatDateTime('hh:nn:ss:zzz',
@@ -659,14 +679,14 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_LITE)) then
-      begin
-        MessageBoxW(0,
-                   lpcwstr('Your computer does not support this Media Foundation API version ' +
-                           IntToStr(MF_VERSION) + '.'),
-                   lpcwstr('MFStartup Failure!'),
-                           MB_ICONSTOP);
-      end;
+    MFSTARTUP_LITE)) then
+    begin
+      MessageBoxW(0,
+                  lpcwstr('Your computer does not support this Media Foundation API version ' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
+    end;
 
 finalization
 

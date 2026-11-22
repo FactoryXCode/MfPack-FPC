@@ -68,9 +68,10 @@ unit MfCaptureToFileClass;
 {$POINTERMATH ON}
 
 interface
+
 uses
   MfSmallSamplesPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -107,6 +108,7 @@ type
 
 
   TDeviceList = class
+
   protected
     m_cDevices: UINT32;
     m_ppDevices: PIMFActivate; // Pointer to IMFActivate array
@@ -150,7 +152,9 @@ type
 
 type
 
-  TCaptureToFile = class(TInterfacedPersistent, IMFSourceReaderCallback)
+  TCaptureToFile = class(TInterfacedPersistent,
+                         IMFSourceReaderCallback)
+
   private
     FLock: SyncObjs.TCriticalSection;
     FFlushEvent: THandle;
@@ -213,31 +217,31 @@ type
     property DeviceSymbolicLink: string read m_strSymbolicLink;
     property VideoStatistics: MF_SINK_WRITER_STATISTICS read m_VideoStats;
 
-end;
+  end;
 
 var
   MfDeviceList: TDeviceList;
   MfStatus: TMfStatus;       // Status of MediaFoundation
 
 
-// Helpers
-//========
+  // Helpers
+  //========
 
-  function ConfigureSourceReader(pReader: IMFSourceReader): HRESULT;
+function ConfigureSourceReader(pReader: IMFSourceReader): HRESULT;
 
-  function ConfigureEncoder(const params: EncodingParameters;
-                            pType: IMFMediaType;
-                            pWriter: IMFSinkWriter;
-                            pdwStreamIndex: DWORD): HRESULT;
+function ConfigureEncoder(const params: EncodingParameters;
+                          pType: IMFMediaType;
+                          pWriter: IMFSinkWriter;
+                          pdwStreamIndex: DWORD): HRESULT;
 
-  function CopyAttribute(pSrc: IMFAttributes;
-                         pDest: IMFAttributes;
-                         const key: REFGUID): HRESULT;
+function CopyAttribute(pSrc: IMFAttributes;
+                       pDest: IMFAttributes;
+                       const key: REFGUID): HRESULT;
 
-  // Register for Device Notification.
-  // Before you start capturing from a device, call the RegisterDeviceNotification
-  // function to register for device notifications.
-  // Register for the KSCATEGORY_CAPTURE device class, as shown in this function.
+// Register for Device Notification.
+// Before you start capturing from a device, call the RegisterDeviceNotification
+// function to register for device notifications.
+// Register for the KSCATEGORY_CAPTURE device class, as shown in this function.
 
 
 implementation
@@ -247,7 +251,9 @@ implementation
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TCaptureToFile.Clear();
+
 begin
+
   m_hwndEvent := 0;
   m_bFirstSample := False;
   m_llBaseTime := 0;
@@ -257,23 +263,39 @@ end;
 
 // Constructor & destructor section ////////////////////////////////////////////
 constructor TCaptureToFile.Create(hMainForm: HWND);
+
 begin
- inherited Create;m_hwndEvent:=hMainForm;
- FLock:=SyncObjs.TCriticalSection.Create;
- FFlushEvent:=CreateEventW(nil,True,False,nil);
- if FFlushEvent=0 then RaiseLastOSError;
+
+  inherited Create;
+  m_hwndEvent := hMainForm;
+  FLock := SyncObjs.TCriticalSection.Create;
+  FFlushEvent := CreateEventW(nil,
+                              True,
+                              False,
+                              nil);
+  if (FFlushEvent = 0) then
+    RaiseLastOSError;
 end;
 
 //
 procedure TCaptureToFile.BeforeDestruction();
-begin EndCaptureInternal;inherited;end;
+
+begin
+
+  EndCaptureInternal;
+  inherited;
+end;
 
 
 // Caller should call Release!!
 destructor TCaptureToFile.Destroy();
+
 begin
- if FFlushEvent<>0 then CloseHandle(FFlushEvent);
- FLock.Free;inherited;
+
+  if (FFlushEvent <> 0) then
+    CloseHandle(FFlushEvent);
+  FLock.Free;
+  inherited;
 end;
 
 // End Constructor & destructor section ////////////////////////////////////////
@@ -281,30 +303,67 @@ end;
 
 // Event methods ///////////////////////////////////////////////////////////////
 
-function TCaptureToFile.OnReadSample(hrStatus: HRESULT;dwStreamIndex,dwStreamFlags: DWORD;llTimestamp: LONGLONG;pSample: IMFSample): HResult;
+function TCaptureToFile.OnReadSample(hrStatus: HRESULT;
+                                     dwStreamIndex,
+                                     dwStreamFlags: DWORD;
+                                     llTimestamp: LONGLONG;
+                                     pSample: IMFSample): HResult;
+
 begin
- Result:=S_OK;FLock.Enter;
- try
-  if (m_State<>State_Capturing) or (m_pReader=nil) or (m_pWriter=nil) then Exit;
-  Result:=hrStatus;
-  if SUCCEEDED(Result) and (pSample<>nil) then begin
-   if m_bFirstSample then begin m_llBaseTime:=llTimestamp;m_bFirstSample:=False;end;
-   Result:=pSample.SetSampleTime(llTimestamp-m_llBaseTime);
-   if SUCCEEDED(Result) then Result:=m_pWriter.WriteSample(0,pSample);
-   if SUCCEEDED(Result) then begin m_VideoStats:=InitializeStatistics;m_pWriter.GetStatistics(0,m_VideoStats);end;
+
+  Result := S_OK;
+  FLock.Enter;
+  try
+    if (m_State <> State_Capturing) or (m_pReader = nil) or (m_pWriter = nil) then
+      Exit;
+    Result := hrStatus;
+    if SUCCEEDED(Result) and (pSample <> nil) then
+      begin
+        if m_bFirstSample then
+          begin
+            m_llBaseTime := llTimestamp;
+            m_bFirstSample := False;
+          end;
+        Result := pSample.SetSampleTime(llTimestamp - m_llBaseTime);
+        if SUCCEEDED(Result) then
+          Result := m_pWriter.WriteSample(0,
+                                          pSample);
+        if SUCCEEDED(Result) then
+          begin
+            m_VideoStats := InitializeStatistics;
+            m_pWriter.GetStatistics(0,
+                                    m_VideoStats);
+          end;
+      end;
+    if SUCCEEDED(Result) and ((dwStreamFlags and MF_SOURCE_READERF_ENDOFSTREAM) = 0) then
+      Result := m_pReader.ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+                                     0,
+                                     nil,
+                                     nil,
+                                     nil,
+                                     nil);
+    if FAILED(Result) then
+      begin
+        FLastError := Result;
+        m_State := State_NotReady;
+        PostMessageW(m_hwndEvent,
+                     WM_APP_PREVIEW_ERROR,
+                     WPARAM(DWORD(Result)),
+                     0);
+      end;
+  finally
+    FLock.Leave;
   end;
-  if SUCCEEDED(Result) and ((dwStreamFlags and MF_SOURCE_READERF_ENDOFSTREAM)=0) then
-   Result:=m_pReader.ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,0,nil,nil,nil,nil);
-  if FAILED(Result) then begin
-   FLastError:=Result;m_State:=State_NotReady;
-   PostMessageW(m_hwndEvent,WM_APP_PREVIEW_ERROR,WPARAM(DWORD(Result)),0);
-  end;
- finally FLock.Leave;end;
 end;
 
 
 function TCaptureToFile.OnFlush(dwStreamIndex: DWORD): HResult;
-begin SetEvent(FFlushEvent);Result:=S_OK;end;
+
+begin
+
+  SetEvent(FFlushEvent);
+  Result := S_OK;
+end;
 
 
 function TCaptureToFile.OnEvent(dwStreamIndex: DWORD;
@@ -314,6 +373,7 @@ var
   pmet: MediaEventType;
 
 begin
+
   // For example...
   hr := pEvent.GetType(pmet);
 
@@ -353,10 +413,11 @@ begin
 
   sink_stream := 0;
 
-  hr:= ConfigureSourceReader(m_pReader);
+  hr := ConfigureSourceReader(m_pReader);
 
   if SUCCEEDED(hr) then
-    hr:= m_pReader.GetCurrentMediaType(DWORD(MF_SOURCE_READER_FIRST_VIDEO_STREAM),@pType);
+    hr := m_pReader.GetCurrentMediaType(DWORD(MF_SOURCE_READER_FIRST_VIDEO_STREAM),
+                                        @pType);
 
   if SUCCEEDED(hr) then
     hr := ConfigureEncoder(param,
@@ -397,23 +458,45 @@ end;
 // Stops capture.
 //------------------------------------------------------------------------------
 function TCaptureToFile.EndCaptureInternal(): HResult;
-var Reader: IMFSourceReader;Writer: IMFSinkWriter;Source: IMFMediaSource;Activation: IMFActivate;
+var
+  Reader: IMFSourceReader;
+  Writer: IMFSinkWriter;
+  Source: IMFMediaSource;
+  Activation: IMFActivate;
+
 begin
- Result:=S_OK;if FLock=nil then Exit;
- FLock.Enter;
- try
-  m_State:=State_NotReady;Reader:=m_pReader;m_pReader:=nil;
-  Writer:=m_pWriter;m_pWriter:=nil;Source:=FSource;FSource:=nil;
-  Activation:=FActivation;FActivation:=nil;
- finally FLock.Leave;end;
- if Reader<>nil then begin
-  ResetEvent(FFlushEvent);
-  if SUCCEEDED(Reader.Flush(MF_SOURCE_READER_ALL_STREAMS)) then WaitForSingleObject(FFlushEvent,5000);
- end;
- if Source<>nil then Source.Shutdown;
- if Activation<>nil then Activation.ShutdownObject;
- Reader:=nil;
- if Writer<>nil then Result:=Writer.Finalize;
+
+  Result := S_OK;
+  if (FLock = nil) then
+    Exit;
+  FLock.Enter;
+  try
+    m_State := State_NotReady;
+    Reader := m_pReader;
+    m_pReader := nil;
+    Writer := m_pWriter;
+    m_pWriter := nil;
+    Source := FSource;
+    FSource := nil;
+    Activation := FActivation;
+    FActivation := nil;
+  finally
+    FLock.Leave;
+  end;
+  if (Reader <> nil) then
+    begin
+      ResetEvent(FFlushEvent);
+      if SUCCEEDED(Reader.Flush(MF_SOURCE_READER_ALL_STREAMS)) then
+        WaitForSingleObject(FFlushEvent,
+                            5000);
+    end;
+  if (Source <> nil) then
+    Source.Shutdown;
+  if (Activation <> nil) then
+    Activation.ShutdownObject;
+  Reader := nil;
+  if (Writer <> nil) then
+    Result := Writer.Finalize;
 end;
 
 
@@ -423,30 +506,80 @@ end;
 //
 // Start capturing.
 //------------------------------------------------------------------------------
-function TCaptureToFile.StartCapture(pActivate: IMFActivate;const wszFileName: WideString;param: EncodingParameters): HResult;
-var Attributes: IMFAttributes;Name,Link: PWideChar;Count: UINT32;
+function TCaptureToFile.StartCapture(pActivate: IMFActivate;
+                                     const wszFileName: WideString;
+                                     param: EncodingParameters): HResult;
+var
+  Attributes: IMFAttributes;
+  Name, Link: PWideChar;
+  Count: UINT32;
+
 begin
- if (pActivate=nil) or (wszFileName='') then Exit(E_INVALIDARG);
- EndCaptureInternal;Name:=nil;Link:=nil;FLock.Enter;
- try
-  FLastError:=S_OK;FActivation:=pActivate;
-  Result:=pActivate.ActivateObject(IID_IMFMediaSource,Pointer(FSource));
-  if SUCCEEDED(Result) then Result:=pActivate.GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,Name,Count);
-  if SUCCEEDED(Result) then Result:=pActivate.GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,Link,Count);
-  if SUCCEEDED(Result) then begin m_strName:=UnicodeString(Name);m_strSymbolicLink:=UnicodeString(Link);end;
-  if SUCCEEDED(Result) then Result:=MFCreateAttributes(Attributes,1);
-  if SUCCEEDED(Result) then Result:=Attributes.SetUnknown(MF_SOURCE_READER_ASYNC_CALLBACK,Self);
-  if SUCCEEDED(Result) then Result:=MFCreateSourceReaderFromMediaSource(FSource,Attributes,m_pReader);
-  if SUCCEEDED(Result) then Result:=MFCreateSinkWriterFromURL(PWideChar(wszFileName),nil,nil,m_pWriter);
-  if SUCCEEDED(Result) then Result:=ConfigureCapture(param);
-  if SUCCEEDED(Result) then Result:=m_pWriter.BeginWriting;
-  if SUCCEEDED(Result) then begin
-   m_bFirstSample:=True;m_llBaseTime:=0;m_State:=State_Capturing;
-   Result:=m_pReader.ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,0,nil,nil,nil,nil);
+
+  if (pActivate = nil) or (wszFileName = '') then
+    Exit(E_INVALIDARG);
+  EndCaptureInternal;
+  Name := nil;
+  Link := nil;
+  FLock.Enter;
+  try
+    FLastError := S_OK;
+    FActivation := pActivate;
+    Result := pActivate.ActivateObject(IID_IMFMediaSource,
+                                       Pointer(FSource));
+    if SUCCEEDED(Result) then
+      Result := pActivate.GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
+                                             Name,
+                                             Count);
+    if SUCCEEDED(Result) then
+      Result := pActivate.GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,
+                                             Link,
+                                             Count);
+    if SUCCEEDED(Result) then
+      begin
+        m_strName := UnicodeString(Name);
+        m_strSymbolicLink := UnicodeString(Link);
+      end;
+    if SUCCEEDED(Result) then
+      Result := MFCreateAttributes(Attributes,
+                                   1);
+    if SUCCEEDED(Result) then
+      Result := Attributes.SetUnknown(MF_SOURCE_READER_ASYNC_CALLBACK,
+                                      Self);
+    if SUCCEEDED(Result) then
+      Result := MFCreateSourceReaderFromMediaSource(FSource,
+                                                    Attributes,
+                                                    m_pReader);
+    if SUCCEEDED(Result) then
+      Result := MFCreateSinkWriterFromURL(PWideChar(wszFileName),
+                                          nil,
+                                          nil,
+                                          m_pWriter);
+    if SUCCEEDED(Result) then
+      Result := ConfigureCapture(param);
+    if SUCCEEDED(Result) then
+      Result := m_pWriter.BeginWriting;
+    if SUCCEEDED(Result) then
+      begin
+        m_bFirstSample := True;
+        m_llBaseTime := 0;
+        m_State := State_Capturing;
+        Result := m_pReader.ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+                                       0,
+                                       nil,
+                                       nil,
+                                       nil,
+                                       nil);
+      end;
+    if FAILED(Result) then
+      m_State := State_NotReady;
+  finally
+    CoTaskMemFree(Name);
+    CoTaskMemFree(Link);
+    FLock.Leave;
   end;
-  if FAILED(Result) then m_State:=State_NotReady;
- finally CoTaskMemFree(Name);CoTaskMemFree(Link);FLock.Leave;end;
- if FAILED(Result) then EndCaptureInternal;
+  if FAILED(Result) then
+    EndCaptureInternal;
 end;
 
 //------------------------------------------------------------------------------
@@ -458,7 +591,11 @@ end;
 // To start another capture session, call SetCaptureFile.
 //------------------------------------------------------------------------------
 function TCaptureToFile.EndCaptureSession(): HResult;
-begin Result:=EndCaptureInternal;end;
+
+begin
+
+  Result := EndCaptureInternal;
+end;
 
 
 function TCaptureToFile.IsCapturing(): BOOL;
@@ -466,7 +603,8 @@ var
   bIsCapturing: BOOL;
 
 begin
-  bIsCapturing := (m_pWriter <> nil) ;
+
+  bIsCapturing := (m_pWriter <> nil);
   Result := bIsCapturing;
 end;
 
@@ -491,39 +629,53 @@ end;
 
 
 constructor TDeviceList.Create();
+
 begin
+
   inherited Create();
 end;
 
 // Before Destroy is called, release the interfaces.
 procedure TDeviceList.BeforeDestruction();
+
 begin
+
   Clear();
   inherited;
 end;
 
 // Caller should call Release.
 destructor TDeviceList.Destroy();
+
 begin
+
   inherited;
 end;
 
 
 procedure TDeviceList.Clear();
-var I: Integer;
+var
+  I: Integer;
+
 begin
- if m_ppDevices<>nil then begin
-  {$POINTERMATH ON}
-  for I:=0 to Integer(m_cDevices)-1 do m_ppDevices[I]:=nil;
-  {$POINTERMATH OFF}
-  CoTaskMemFree(m_ppDevices);
- end;
- m_ppDevices:=nil;m_cDevices:=0;
+
+  if (m_ppDevices <> nil) then
+    begin
+      {$POINTERMATH ON}
+      for I := 0 to Integer(m_cDevices) - 1 do
+        m_ppDevices[I] := nil;
+      {$POINTERMATH OFF}
+      CoTaskMemFree(m_ppDevices);
+    end;
+  m_ppDevices := nil;
+  m_cDevices := 0;
 end;
 
 
 function TDeviceList.Count(): UINT32;
+
 begin
+
   Result := m_cDevices;
 end;
 
@@ -553,8 +705,8 @@ begin
   if SUCCEEDED(hr) then
     begin
       hr := MFEnumDeviceSources(pAttributes, {in}
-                                m_ppDevices, {out}
-                                m_cDevices); {out}
+        m_ppDevices, {out}
+        m_cDevices); {out}
     end;
   Result := hr;
 end;
@@ -563,6 +715,7 @@ end;
 //
 function TDeviceList.GetDevice(const index: UINT32;
                                out ppActivate: IMFActivate): HRESULT;
+
 begin
 
   if (index >= Count()) then
@@ -571,13 +724,13 @@ begin
       Exit;
     end;
 
-{$POINTERMATH ON}
+  {$POINTERMATH ON}
 
   ppActivate := m_ppDevices[index];
 
 
-{$POINTERMATH OFF}
-  Result :=  S_OK;
+  {$POINTERMATH OFF}
+  Result := S_OK;
 end;
 
 //
@@ -599,20 +752,23 @@ begin
       goto Done;
     end;
 
-{$POINTERMATH ON}
+  {$POINTERMATH ON}
   hr := m_ppDevices[index].GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
                                               ppszName,
                                               pcchLength);
-{$POINTERMATH OFF}
+  {$POINTERMATH OFF}
 
   // Convert to string strName
   if SUCCEEDED(hr) then
-    begin strName := WideCharToString(ppszName);CoTaskMemFree(ppszName);end
+    begin
+      strName := WideCharToString(ppszName);
+      CoTaskMemFree(ppszName);
+    end
   else
     strName := 'Unknown';
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -633,14 +789,14 @@ begin
       goto Done;
     end;
 
-{$POINTERMATH ON}
-  hr:= m_ppDevices[index].GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,
-                                             ppszSymLink,
-                                             pcchLength);
-{$POINTERMATH OFF}
+  {$POINTERMATH ON}
+  hr := m_ppDevices[index].GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,
+                                              ppszSymLink,
+                                              pcchLength);
+  {$POINTERMATH OFF}
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -661,14 +817,20 @@ var
   subtype: TGuid;
   pType: IMFMediaType;
   // The list of acceptable types.
- const subtypes : array[0..5] of ^Tguid = (@MFVideoFormat_NV12, @MFVideoFormat_YUY2, @MFVideoFormat_UYVY,
-                                           @MFVideoFormat_RGB32, @MFVideoFormat_RGB24, @MFVideoFormat_IYUV);
+const
+  subtypes: array[0..5] of ^Tguid = (@MFVideoFormat_NV12,
+                                     @MFVideoFormat_YUY2,
+                                     @MFVideoFormat_UYVY,
+                                     @MFVideoFormat_RGB32,
+                                     @MFVideoFormat_RGB24,
+                                     @MFVideoFormat_IYUV);
 
 
 label
   Done;
 
 begin
+
   bUseNativeType := False;
   subtype := GUID_NULL;
 
@@ -684,7 +846,7 @@ begin
 
   hr := pReader.GetNativeMediaType(DWORD(MF_SOURCE_READER_FIRST_VIDEO_STREAM),
                                    0,  // Type index
-                                   @pType);
+    @pType);
 
   if FAILED(hr) then
     goto Done;
@@ -694,9 +856,9 @@ begin
 
   if FAILED(hr) then
     goto Done;
-    // The list of acceptable types.
-    // MFVideoFormat_NV12, MFVideoFormat_YUY2, MFVideoFormat_UYVY,
-    // MFVideoFormat_RGB32, MFVideoFormat_RGB24, MFVideoFormat_IYUV);
+  // The list of acceptable types.
+  // MFVideoFormat_NV12, MFVideoFormat_YUY2, MFVideoFormat_UYVY,
+  // MFVideoFormat_RGB32, MFVideoFormat_RGB24, MFVideoFormat_IYUV);
 
 
   for _i := 0 to High(subtypes) do
@@ -720,23 +882,23 @@ begin
       // Try adding a decoder.
       for _i := 0 to Length(subtypes) - 1 do
         begin
-            hr := pType.SetGUID(MF_MT_SUBTYPE,
-                                subtypes[_i]^);
+          hr := pType.SetGUID(MF_MT_SUBTYPE,
+                              subtypes[_i]^);
 
-            if FAILED(hr) then
-              Break;
+          if FAILED(hr) then
+            Break;
 
-            hr := pReader.SetCurrentMediaType(DWORD(MF_SOURCE_READER_FIRST_VIDEO_STREAM),
-                                              0,
-                                              pType);
+          hr := pReader.SetCurrentMediaType(DWORD(MF_SOURCE_READER_FIRST_VIDEO_STREAM),
+                                            0,
+                                            pType);
 
-            if SUCCEEDED(hr) then
-              Break;
+          if SUCCEEDED(hr) then
+            Break;
         end;
     end;
 
-done:
-    Result:= hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -809,7 +971,8 @@ begin
 
   PropVariantInit(pvar);
 
-  hr := pSrc.GetItem(key,@pvar);
+  hr := pSrc.GetItem(key,
+                     @pvar);
 
   if SUCCEEDED(hr) then
     hr := pDest.SetItem(key,
@@ -834,13 +997,13 @@ initialization
 
   // Initialize Media Foundation
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_FULL)) then
+    MFSTARTUP_FULL)) then
     begin
       MessageBoxW(0,
-                 lpcwstr('Your computer does not support this Media Foundation API version' +
-                         IntToStr(MF_VERSION) + '.'),
-                 lpcwstr('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  lpcwstr('Your computer does not support this Media Foundation API version' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
       Abort;
     end;
 

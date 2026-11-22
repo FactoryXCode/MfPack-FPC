@@ -68,9 +68,9 @@ interface
 
 uses
   LCLType,
-LMessages,
+  LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -94,20 +94,20 @@ const
   // Aspectratio's
   //////////////////////////////////////
   // Television
-  AR_4_3   : Single = 1.333333333333333;
-  AR_5_3   : Single = 1.666666666666667;
+  AR_4_3: Single = 1.333333333333333;
+  AR_5_3: Single = 1.666666666666667;
   // HDTV / WideScreen
-  AR_16_9  : Single = 1.777777777777778;
+  AR_16_9: Single = 1.777777777777778;
   // Mobile phones
-  AR_9_16  : Single = 0.5625;
-  AR_18_9  : Single = 2.0;   // Univisium format: Google Pix, LG, Huawei etc.
-  AR_195_9 : Single = 2.16;  // Apple, Samsung
+  AR_9_16: Single = 0.5625;
+  AR_18_9: Single = 2.0;   // Univisium format: Google Pix, LG, Huawei etc.
+  AR_195_9: Single = 2.16;  // Apple, Samsung
   // Cinema
-  AR_186_1 : Single = 1.86;
-  AR_21_9  : Single = 2.37037037037037; // = 64:27 !
-  AR_235_1 : Single = 2.35; // European cinema format
-  AR_239_1 : Single = 2.39;
-  AR_24_1  : Single = 2.4;
+  AR_186_1: Single = 1.86;
+  AR_21_9: Single = 2.37037037037037; // = 64:27 !
+  AR_235_1: Single = 2.35; // European cinema format
+  AR_239_1: Single = 2.39;
+  AR_24_1: Single = 2.4;
 
 
 type
@@ -177,7 +177,9 @@ const
 
 
 procedure TFloatingForm.FormCreate(Sender: TObject);
+
 begin
+
   // Initial settings
   btOpacity := 255;  // all controls on the form will be visible
   crTransparency := clBlack;
@@ -193,7 +195,10 @@ begin
   FormStyle := fsStayOnTop; // Keep the form always on top
   BorderStyle := bsNone;
   BorderIcons := [];
-  SetLayeredWindowAttributes(Handle,ColorToRGB(clBlack),btOpacity,LWA_COLORKEY or LWA_ALPHA);
+  SetLayeredWindowAttributes(Handle,
+                             ColorToRGB(clBlack),
+                             btOpacity,
+                             LWA_COLORKEY or LWA_ALPHA);
   AlphaBlend := True;
   AlphaBlendValue := btOpacity;
   Show();
@@ -201,13 +206,17 @@ end;
 
 
 procedure TFloatingForm.FormDestroy(Sender: TObject);
+
 begin
+
   FreeAndNil(fLayerFont);
 end;
 
 
 procedure TFloatingForm.SetFormPosition();
+
 begin
+
   // Note: We replace the top and left for the found position X and Y
   {void} SetWindowPos(Self.Handle,
                       HWND_TOPMOST,
@@ -220,12 +229,14 @@ end;
 
 
 procedure TFloatingForm.SetSubTitleText(aValue: string);
+
 begin
+
   sSubTitleTxt := aValue;
   GetTextLines(aValue);
   if not Assigned(fLayerFont) then
     begin
-      lblSubTitle.Font.Size  := 12;
+      lblSubTitle.Font.Size := 12;
       lblSubTitle.Font.Style := [fsBold];
       lblSubTitle.Font.Color := clWhite;
     end
@@ -245,16 +256,19 @@ var
   i: integer;
 
 begin
+
   iTextLines := 1; // default value
   // Get the textlines
-  for i := 1 to Length(aValue)-1 do
+  for i := 1 to Length(aValue) - 1 do
     if (aValue[i] = #13) then
       inc(iTextLines);
 end;
 
 
 procedure TFloatingForm.CreateParams(var Params: TCreateParams);
+
 begin
+
   inherited CreateParams(Params);
 
   if not (csDesigning in ComponentState) then
@@ -267,8 +281,11 @@ end;
 
 // Sets the font of the window (the label Parentfont has been set to True)
 procedure TFloatingForm.SetFont(aValue: TFont);
+
 begin
-  if Assigned(aValue) then fLayerFont.Assign(aValue);
+
+  if Assigned(aValue) then
+    fLayerFont.Assign(aValue);
   Font := fLayerFont;
   lblSubTitle.Font := fLayerFont;
   Invalidate;
@@ -276,7 +293,9 @@ end;
 
 
 procedure TFloatingForm.SetBottomMargin(aValue: Integer);
+
 begin
+
   iBottomMargin := aValue;
   lblSubTitle.BorderSpacing.Bottom := iBottomMargin;
 end;
@@ -287,6 +306,7 @@ var
   dc: THandle; // the Display Context
 
 begin
+
   dc := GetDC(Handle);
   Result.ScrResH := GetDeviceCaps(dc,
                                   HORZRES);
@@ -302,7 +322,9 @@ end;
 
 
 procedure TFloatingForm.OnParentChanged(var message: TLMessage);
+
 begin
+
   SetFormPosition();
 end;
 
@@ -318,6 +340,7 @@ var
   perc: Single;
 
 begin
+
   // Realtime video measurement: aspectratio 2,37 : 1 (which is the cinema format)
   // Calculate the fontsize as a percentage of the videosurface (aspectratio 16:9)
   // If the videosurfacesize is (H, W) 0,0 the percentage = 0
@@ -369,7 +392,9 @@ end;
 
 // Here the fontsize will be adjusted when the formsize is changing.
 procedure TFloatingForm.WMSize(var message: TLMSize);
+
 begin
+
   inherited;
   CalculateFontSize();
 end;

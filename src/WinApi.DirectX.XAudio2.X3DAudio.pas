@@ -125,7 +125,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -138,103 +139,103 @@ const
 
   // Speaker geometry configuration flags, specifies assignment of channels to
   // speaker positions, defined as per WAVEFORMATEXTENSIBLE.dwChannelMask.
-{$IFNDEF _SPEAKER_POSITIONS_}
+  {$IFNDEF _SPEAKER_POSITIONS_}
   {$DEFINE _SPEAKER_POSITIONS_}
 
-  SPEAKER_FRONT_LEFT                  = $00000001;
-  SPEAKER_FRONT_RIGHT                 = $00000002;
-  SPEAKER_FRONT_CENTER                = $00000004;
-  SPEAKER_LOW_FREQUENCY               = $00000008;
-  SPEAKER_BACK_LEFT                   = $00000010;
-  SPEAKER_BACK_RIGHT                  = $00000020;
-  SPEAKER_FRONT_LEFT_OF_CENTER        = $00000040;
-  SPEAKER_FRONT_RIGHT_OF_CENTER       = $00000080;
-  SPEAKER_BACK_CENTER                 = $00000100;
-  SPEAKER_SIDE_LEFT                   = $00000200;
-  SPEAKER_SIDE_RIGHT                  = $00000400;
-  SPEAKER_TOP_CENTER                  = $00000800;
-  SPEAKER_TOP_FRONT_LEFT              = $00001000;
-  SPEAKER_TOP_FRONT_CENTER            = $00002000;
-  SPEAKER_TOP_FRONT_RIGHT             = $00004000;
-  SPEAKER_TOP_BACK_LEFT               = $00008000;
-  SPEAKER_TOP_BACK_CENTER             = $00010000;
-  SPEAKER_TOP_BACK_RIGHT              = $00020000;
-  SPEAKER_RESERVED                    = $7FFC0000;  // bit mask locations reserved for future use
-  SPEAKER_ALL                         = $80000000;  // used to specify that any possible permutation of speaker configurations
-{$ENDIF}
+  SPEAKER_FRONT_LEFT = $00000001;
+  SPEAKER_FRONT_RIGHT = $00000002;
+  SPEAKER_FRONT_CENTER = $00000004;
+  SPEAKER_LOW_FREQUENCY = $00000008;
+  SPEAKER_BACK_LEFT = $00000010;
+  SPEAKER_BACK_RIGHT = $00000020;
+  SPEAKER_FRONT_LEFT_OF_CENTER = $00000040;
+  SPEAKER_FRONT_RIGHT_OF_CENTER = $00000080;
+  SPEAKER_BACK_CENTER = $00000100;
+  SPEAKER_SIDE_LEFT = $00000200;
+  SPEAKER_SIDE_RIGHT = $00000400;
+  SPEAKER_TOP_CENTER = $00000800;
+  SPEAKER_TOP_FRONT_LEFT = $00001000;
+  SPEAKER_TOP_FRONT_CENTER = $00002000;
+  SPEAKER_TOP_FRONT_RIGHT = $00004000;
+  SPEAKER_TOP_BACK_LEFT = $00008000;
+  SPEAKER_TOP_BACK_CENTER = $00010000;
+  SPEAKER_TOP_BACK_RIGHT = $00020000;
+  SPEAKER_RESERVED = $7FFC0000;  // bit mask locations reserved for future use
+  SPEAKER_ALL = $80000000;  // used to specify that any possible permutation of speaker configurations
+  {$ENDIF}
 
   // Standard speaker geometry configurations, used with X3DAudioInitialize.
-{$IFNDEF SPEAKER_MONO}
-  SPEAKER_MONO                        = SPEAKER_FRONT_CENTER;
-  SPEAKER_STEREO                      = (SPEAKER_FRONT_LEFT or
-                                         SPEAKER_FRONT_RIGHT);
-  SPEAKER_2POINT1                     = (SPEAKER_FRONT_LEFT or
-                                         SPEAKER_FRONT_RIGHT or
-                                         SPEAKER_LOW_FREQUENCY);
-  SPEAKER_SURROUND                    = (SPEAKER_FRONT_LEFT or
-                                         SPEAKER_FRONT_RIGHT or
-                                         SPEAKER_FRONT_CENTER or
-                                         SPEAKER_BACK_CENTER);
-  SPEAKER_QUAD                        = (SPEAKER_FRONT_LEFT or
-                                         SPEAKER_FRONT_RIGHT or
-                                         SPEAKER_BACK_LEFT or
-                                         SPEAKER_BACK_RIGHT);
-  SPEAKER_4POINT1                     = (SPEAKER_FRONT_LEFT or
-                                         SPEAKER_FRONT_RIGHT or
-                                         SPEAKER_LOW_FREQUENCY or
-                                         SPEAKER_BACK_LEFT or
-                                         SPEAKER_BACK_RIGHT);
-  SPEAKER_5POINT1                     = (SPEAKER_FRONT_LEFT or
-                                         SPEAKER_FRONT_RIGHT or
-                                         SPEAKER_FRONT_CENTER or
-                                         SPEAKER_LOW_FREQUENCY or
-                                         SPEAKER_BACK_LEFT or
-                                         SPEAKER_BACK_RIGHT);
-  SPEAKER_7POINT1                     = (SPEAKER_FRONT_LEFT or
-                                         SPEAKER_FRONT_RIGHT or
-                                         SPEAKER_FRONT_CENTER or
-                                         SPEAKER_LOW_FREQUENCY or
-                                         SPEAKER_BACK_LEFT or
-                                         SPEAKER_BACK_RIGHT or
-                                         SPEAKER_FRONT_LEFT_OF_CENTER or
-                                         SPEAKER_FRONT_RIGHT_OF_CENTER);
-  SPEAKER_5POINT1_SURROUND            = (SPEAKER_FRONT_LEFT or
-                                         SPEAKER_FRONT_RIGHT or
-                                         SPEAKER_FRONT_CENTER or
-                                         SPEAKER_LOW_FREQUENCY or
-                                         SPEAKER_SIDE_LEFT or
-                                         SPEAKER_SIDE_RIGHT);
-  SPEAKER_7POINT1_SURROUND            = (SPEAKER_FRONT_LEFT or
-                                         SPEAKER_FRONT_RIGHT or
-                                         SPEAKER_FRONT_CENTER or
-                                         SPEAKER_LOW_FREQUENCY or
-                                         SPEAKER_BACK_LEFT or
-                                         SPEAKER_BACK_RIGHT or
-                                         SPEAKER_SIDE_LEFT or
-                                         SPEAKER_SIDE_RIGHT);
-{$ENDIF}
+  {$IFNDEF SPEAKER_MONO}
+  SPEAKER_MONO = SPEAKER_FRONT_CENTER;
+  SPEAKER_STEREO = (SPEAKER_FRONT_LEFT or
+    SPEAKER_FRONT_RIGHT);
+  SPEAKER_2POINT1 = (SPEAKER_FRONT_LEFT or
+    SPEAKER_FRONT_RIGHT or
+    SPEAKER_LOW_FREQUENCY);
+  SPEAKER_SURROUND = (SPEAKER_FRONT_LEFT or
+    SPEAKER_FRONT_RIGHT or
+    SPEAKER_FRONT_CENTER or
+    SPEAKER_BACK_CENTER);
+  SPEAKER_QUAD = (SPEAKER_FRONT_LEFT or
+    SPEAKER_FRONT_RIGHT or
+    SPEAKER_BACK_LEFT or
+    SPEAKER_BACK_RIGHT);
+  SPEAKER_4POINT1 = (SPEAKER_FRONT_LEFT or
+    SPEAKER_FRONT_RIGHT or
+    SPEAKER_LOW_FREQUENCY or
+    SPEAKER_BACK_LEFT or
+    SPEAKER_BACK_RIGHT);
+  SPEAKER_5POINT1 = (SPEAKER_FRONT_LEFT or
+    SPEAKER_FRONT_RIGHT or
+    SPEAKER_FRONT_CENTER or
+    SPEAKER_LOW_FREQUENCY or
+    SPEAKER_BACK_LEFT or
+    SPEAKER_BACK_RIGHT);
+  SPEAKER_7POINT1 = (SPEAKER_FRONT_LEFT or
+    SPEAKER_FRONT_RIGHT or
+    SPEAKER_FRONT_CENTER or
+    SPEAKER_LOW_FREQUENCY or
+    SPEAKER_BACK_LEFT or
+    SPEAKER_BACK_RIGHT or
+    SPEAKER_FRONT_LEFT_OF_CENTER or
+    SPEAKER_FRONT_RIGHT_OF_CENTER);
+  SPEAKER_5POINT1_SURROUND = (SPEAKER_FRONT_LEFT or
+    SPEAKER_FRONT_RIGHT or
+    SPEAKER_FRONT_CENTER or
+    SPEAKER_LOW_FREQUENCY or
+    SPEAKER_SIDE_LEFT or
+    SPEAKER_SIDE_RIGHT);
+  SPEAKER_7POINT1_SURROUND = (SPEAKER_FRONT_LEFT or
+    SPEAKER_FRONT_RIGHT or
+    SPEAKER_FRONT_CENTER or
+    SPEAKER_LOW_FREQUENCY or
+    SPEAKER_BACK_LEFT or
+    SPEAKER_BACK_RIGHT or
+    SPEAKER_SIDE_LEFT or
+    SPEAKER_SIDE_RIGHT);
+  {$ENDIF}
 
   // Size of instance handle in bytes.
-  X3DAUDIO_HANDLE_BYTESIZE            = 20;
+  X3DAUDIO_HANDLE_BYTESIZE = 20;
 
   // Float math constants.
-  X3DAUDIO_PI                         = Pi;
-  X3DAUDIO_2PI                        = Pi * 2;
+  X3DAUDIO_PI = Pi;
+  X3DAUDIO_2PI = Pi * 2;
 
   // Speed of sound in meters per second for dry air at approximately 20C, used with X3DAudioInitialize.
-  X3DAUDIO_SPEED_OF_SOUND             = 343.5;
+  X3DAUDIO_SPEED_OF_SOUND = 343.5;
 
   // calculation control flags, used with X3DAudioCalculate
-  X3DAUDIO_CALCULATE_MATRIX           = $00000001;  // enable matrix coefficient table calculation
-  X3DAUDIO_CALCULATE_DELAY            = $00000002;  // enable delay time array calculation (stereo final mix only)
-  X3DAUDIO_CALCULATE_LPF_DIRECT       = $00000004;  // enable LPF direct-path coefficient calculation
-  X3DAUDIO_CALCULATE_LPF_REVERB       = $00000008;  // enable LPF reverb-path coefficient calculation
-  X3DAUDIO_CALCULATE_REVERB           = $00000010;  // enable reverb send level calculation
-  X3DAUDIO_CALCULATE_DOPPLER          = $00000020;  // enable doppler shift factor calculation
-  X3DAUDIO_CALCULATE_EMITTER_ANGLE    = $00000040;  // enable emitter-to-listener interior angle calculation
+  X3DAUDIO_CALCULATE_MATRIX = $00000001;  // enable matrix coefficient table calculation
+  X3DAUDIO_CALCULATE_DELAY = $00000002;  // enable delay time array calculation (stereo final mix only)
+  X3DAUDIO_CALCULATE_LPF_DIRECT = $00000004;  // enable LPF direct-path coefficient calculation
+  X3DAUDIO_CALCULATE_LPF_REVERB = $00000008;  // enable LPF reverb-path coefficient calculation
+  X3DAUDIO_CALCULATE_REVERB = $00000010;  // enable reverb send level calculation
+  X3DAUDIO_CALCULATE_DOPPLER = $00000020;  // enable doppler shift factor calculation
+  X3DAUDIO_CALCULATE_EMITTER_ANGLE = $00000040;  // enable emitter-to-listener interior angle calculation
 
-  X3DAUDIO_CALCULATE_ZEROCENTER       = $00010000;  // do not position to front center speaker, signal positioned to remaining speakers instead, front center destination channel will be zero in returned matrix coefficient table, valid only for matrix calculations with final mix formats that have a front center channel
-  X3DAUDIO_CALCULATE_REDIRECT_TO_LFE  = $00020000;  // apply equal mix of all source channels to LFE destination channel, valid only for matrix calculations with sources that have no LFE channel and final mix formats that have an LFE channel
+  X3DAUDIO_CALCULATE_ZEROCENTER = $00010000;  // do not position to front center speaker, signal positioned to remaining speakers instead, front center destination channel will be zero in returned matrix coefficient table, valid only for matrix calculations with final mix formats that have a front center channel
+  X3DAUDIO_CALCULATE_REDIRECT_TO_LFE = $00020000;  // apply equal mix of all source channels to LFE destination channel, valid only for matrix calculations with sources that have no LFE channel and final mix formats that have an LFE channel
 
   //--------------<D-A-T-A---T-Y-P-E-S>---------------------------------------//
   //#pragma pack(push, 1) // set packing alignment to ensure consistency across arbitrary build environments
@@ -247,7 +248,7 @@ type
   // primitive types
   //PFloat32 = ^TFloat32; 
   //FLOAT32 = Single; 
-   
+
   // 32-bit IEEE float 
   PX3DAUDIO_VECTOR = PD3DVECTOR;
   X3DAUDIO_VECTOR = D3DVECTOR;    // float 3D vector
@@ -262,6 +263,7 @@ type
   // Defines a DSP setting at a given normalized distance.
   PX3DAUDIO_DISTANCE_CURVE_POINT = ^X3DAUDIO_DISTANCE_CURVE_POINT;
   LPX3DAUDIO_DISTANCE_CURVE_POINT = ^X3DAUDIO_DISTANCE_CURVE_POINT;
+
   X3DAUDIO_DISTANCE_CURVE_POINT = record
     Distance: FLOAT32;               // normalized distance, must be within [0.0f, 1.0f]
     DSPSetting: FLOAT32;             // DSP setting
@@ -284,6 +286,7 @@ type
 
   PX3DAUDIO_DISTANCE_CURVE = ^X3DAUDIO_DISTANCE_CURVE;
   LPX3DAUDIO_DISTANCE_CURVE = ^X3DAUDIO_DISTANCE_CURVE;
+
   X3DAUDIO_DISTANCE_CURVE = record
     pPoints: PX3DAUDIO_DISTANCE_CURVE_POINT;  // distance curve point array, must have at least PointCount elements with no duplicates and be sorted in ascending order with respect to Distance
     PointCount: UINT32;                       // number of distance curve points, must be >= 2 as all distance curves must have at least two endpoints, defining DSP settings at 0.0f and 1.0f normalized distance
@@ -293,9 +296,9 @@ const
 
   //static const X3DAUDIO_DISTANCE_CURVE_POINT X3DAudioDefault_LinearCurvePoints[2] = { 0.0f, 1.0f, 1.0f, 0.0f };
   X3DAudioDefault_LinearCurvePoints: array[0..1] of X3DAUDIO_DISTANCE_CURVE_POINT = ((Distance: 0.0;
-                                                                                      DSPSetting: 1.0),
+    DSPSetting: 1.0),
                                                                                      (Distance: 1.0;
-                                                                                      DSPSetting: 0.0));
+    DSPSetting: 0.0));
 
   //static const X3DAUDIO_DISTANCE_CURVE   X3DAudioDefault_LinearCurve  = { (X3DAUDIO_DISTANCE_CURVE_POINT*)&X3DAudioDefault_LinearCurvePoints[0], 2 };
   X3DAudioDefault_LinearCurve: X3DAUDIO_DISTANCE_CURVE = (pPoints: @X3DAudioDefault_LinearCurvePoints[0]; PointCount: 2);
@@ -313,6 +316,7 @@ type
   // omnidirectionality using only the outer or inner values respectively.
   PX3DAUDIO_CONE = ^X3DAUDIO_CONE;
   LPX3DAUDIO_CONE = ^X3DAUDIO_CONE;
+
   X3DAUDIO_CONE = record
     InnerAngle: FLOAT32;             // inner cone angle in radians, must be within [0.0f, X3DAUDIO_2PI]
     OuterAngle: FLOAT32;             // outer cone angle in radians, must be within [InnerAngle, X3DAUDIO_2PI]
@@ -327,13 +331,13 @@ type
 const
 
   X3DAudioDefault_DirectionalCone: X3DAUDIO_CONE = (InnerAngle: X3DAUDIO_PI / 2;
-                                                    OuterAngle: X3DAUDIO_PI;
-                                                    InnerVolume: 1.0;
-                                                    OuterVolume: 0.708;
-                                                    InnerLPF: 0.0;
-                                                    OuterLPF: 0.25;
-                                                    InnerReverb: 0.708;
-                                                    OuterReverb: 1.0 );
+    OuterAngle: X3DAUDIO_PI;
+    InnerVolume: 1.0;
+    OuterVolume: 0.708;
+    InnerLPF: 0.0;
+    OuterLPF: 0.25;
+    InnerReverb: 0.708;
+    OuterReverb: 1.0);
 
 
 type
@@ -345,6 +349,7 @@ type
 
   PX3DAUDIO_LISTENER = ^X3DAUDIO_LISTENER;
   LPX3DAUDIO_LISTENER = ^X3DAUDIO_LISTENER;
+
   X3DAUDIO_LISTENER = record
     OrientFront: X3DAUDIO_VECTOR;    // orientation of front direction, used only for matrix and delay calculations or listeners with cones for matrix, LPF (both direct and reverb paths), and reverb calculations, must be normalized when used
     OrientTop: X3DAUDIO_VECTOR;      // orientation of top direction, used only for matrix and delay calculations, must be orthonormal with OrientFront when used
@@ -386,6 +391,7 @@ type
   // For instance, volume and LFE calculations do not affect one another.
   PX3DAUDIO_EMITTER = ^X3DAUDIO_EMITTER;
   LPX3DAUDIO_EMITTER = ^X3DAUDIO_EMITTER;
+
   X3DAUDIO_EMITTER = record
     pCone: PX3DAUDIO_CONE;                       // sound cone, used only with single-channel emitters for matrix, LPF (both direct and reverb paths), and reverb calculations, NULL specifies omnidirectionality
     OrientFront: X3DAUDIO_VECTOR;                // orientation of front direction, used only for emitter angle calculations or with multi-channel emitters for matrix calculations or single-channel emitters with cones for matrix, LPF (both direct and reverb paths), and reverb calculations, must be normalized when used
@@ -414,6 +420,7 @@ type
   // delay time array, and initializing the channel counts when used.
   PX3DAUDIO_DSP_SETTINGS = ^X3DAUDIO_DSP_SETTINGS;
   LPX3DAUDIO_DSP_SETTINGS = ^X3DAUDIO_DSP_SETTINGS;
+
   X3DAUDIO_DSP_SETTINGS = record
     pMatrixCoefficients: PFloat32;        // [inout] matrix coefficient table, receives an array representing the volume level used to send from source channel S to destination channel D, stored as pMatrixCoefficients[SrcChannelCount * D + S], must have at least SrcChannelCount*DstChannelCount elements
     pDelayTimes: PFloat;                  // [inout] delay time array, receives delays for each destination channel in milliseconds, must have at least DstChannelCount elements (stereo final mix only)
@@ -430,38 +437,39 @@ type
   end;
 
 
-  //--------------<F-U-N-C-T-I-O-N-S>-----------------------------------------//
-  // initializes instance handle
-  function X3DAudioInitialize(SpeakerChannelMask: UINT32;
-                              SpeedOfSound: FLOAT32;
-                              Instance: PX3DAUDIO_HANDLE): HRESULT; cdecl;
+//--------------<F-U-N-C-T-I-O-N-S>-----------------------------------------//
+// initializes instance handle
+function X3DAudioInitialize(SpeakerChannelMask: UINT32;
+                            SpeedOfSound: FLOAT32;
+                            Instance: PX3DAUDIO_HANDLE): HRESULT; cdecl;
 
-  // calculates DSP settings with respect to 3D parameters
-  procedure X3DAudioCalculate(Instance: PX3DAUDIO_HANDLE;
-                              pListener: PX3DAUDIO_LISTENER;
-                              pEmitter: PX3DAUDIO_EMITTER;
-                              Flags: UINT32;
-                              pDSPSettings: PX3DAUDIO_DSP_SETTINGS); cdecl;
+// calculates DSP settings with respect to 3D parameters
+procedure X3DAudioCalculate(Instance: PX3DAUDIO_HANDLE;
+                            pListener: PX3DAUDIO_LISTENER;
+                            pEmitter: PX3DAUDIO_EMITTER;
+                            Flags: UINT32;
+                            pDSPSettings: PX3DAUDIO_DSP_SETTINGS); cdecl;
 
 
-  //#pragma pack(pop) // revert packing alignment
-  // set back to default
-  {$IFDEF WIN32}
+//#pragma pack(pop) // revert packing alignment
+// set back to default
+{$IFDEF WIN32}
     {$ALIGN 1}
-  {$ELSE}
-    {$ALIGN 8} // Win64
-  {$ENDIF}
+{$ELSE}
+{$ALIGN 8}
+// Win64
+{$ENDIF}
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
 
 function X3DAudioInitialize; external X3DAUDIO_DLL name 'X3DAudioInitialize';
-procedure X3DAudioCalculate; external X3DAUDIO_DLL name 'X3DAudioCalculate' ;
+procedure X3DAudioCalculate; external X3DAUDIO_DLL name 'X3DAudioCalculate';
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

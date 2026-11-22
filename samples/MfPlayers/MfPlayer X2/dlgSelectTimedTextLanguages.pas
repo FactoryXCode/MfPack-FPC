@@ -47,7 +47,7 @@ interface
 
 uses
   MfPlayerSample.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinError,
@@ -91,8 +91,11 @@ type
     procedure FormShow(Sender: TObject);
     procedure butOkClick(Sender: TObject);
     procedure butCancelClick(Sender: TObject);
-    procedure lvTTxtLangMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure lvTTxtLangMouseUp(Sender: TObject;
+                                Button: TMouseButton;
+                                Shift: TShiftState;
+                                X,
+                                Y: Integer);
 
   protected
     procedure WMLButtonDown(var Msg: TWMLBUTTONDOWN); message WM_LBUTTONDOWN;
@@ -125,10 +128,12 @@ implementation
 
 {$R *.lfm}
 
-uses frmMfPlayer;
+uses
+  frmMfPlayer;
 
 
 procedure TDlgTimedTextLanguages.WMLButtonDown(var Msg: TWMLBUTTONDOWN);
+
 begin
 
   if (lvTTxtLang.GetItemAt(Msg.XPos, Msg.YPos) <> nil) then
@@ -137,6 +142,7 @@ end;
 
 
 procedure TDlgTimedTextLanguages.butOkClick(Sender: TObject);
+
 begin
 
   Close();
@@ -144,6 +150,7 @@ end;
 
 
 procedure TDlgTimedTextLanguages.butCancelClick(Sender: TObject);
+
 begin
 
   Close();
@@ -220,17 +227,17 @@ begin
         IsActive := False;
 
         case Entry.Source of
-          slsSidecar:  if (Entry.SourceIndex >= Low(pc_LanguageTags.TimedTxtPropsArray)) and
-                          (Entry.SourceIndex <= High(pc_LanguageTags.TimedTxtPropsArray)) then
-                         IsActive := (not MfPlayerX.GetActiveSubtitleIsEmbedded()) and
-                                     SameText(pc_LanguageTags.TimedTxtPropsArray[Entry.SourceIndex].sLanguageTag,
-                                              MfPlayerX.SubtitleLanguage);
+          slsSidecar: if (Entry.SourceIndex >= Low(pc_LanguageTags.TimedTxtPropsArray)) and
+              (Entry.SourceIndex <= High(pc_LanguageTags.TimedTxtPropsArray)) then
+              IsActive := (not MfPlayerX.GetActiveSubtitleIsEmbedded()) and
+                SameText(pc_LanguageTags.TimedTxtPropsArray[Entry.SourceIndex].sLanguageTag,
+                         MfPlayerX.SubtitleLanguage);
 
           slsEmbedded: if (Entry.SourceIndex >= Low(FEmbeddedTracks)) and
-                          (Entry.SourceIndex <= High(FEmbeddedTracks)) then
-                         IsActive := MfPlayerX.GetActiveSubtitleIsEmbedded() and
-                                     (MfPlayerX.GetActiveEmbeddedSubtitleStreamIndex() =
-                                      Integer(FEmbeddedTracks[Entry.SourceIndex].StreamIndex));
+              (Entry.SourceIndex <= High(FEmbeddedTracks)) then
+              IsActive := MfPlayerX.GetActiveSubtitleIsEmbedded() and
+                (MfPlayerX.GetActiveEmbeddedSubtitleStreamIndex() =
+                Integer(FEmbeddedTracks[Entry.SourceIndex].StreamIndex));
         end;
 
         lvTTxtLang.Items[I].Checked := IsActive;
@@ -242,6 +249,7 @@ end;
 
 
 procedure TDlgTimedTextLanguages.SubtitleLoadStarted();
+
 begin
 
   Caption := 'Select preferred subtitle language - loading...';
@@ -255,6 +263,7 @@ end;
 
 procedure TDlgTimedTextLanguages.SubtitleLoadCompleted(
   const LoadResult: HRESULT);
+
 begin
 
   Caption := 'Select preferred subtitle language';
@@ -268,9 +277,10 @@ begin
   UpdateCheckedItems();
 
   if (LoadResult <> S_OK) and
-     (LoadResult <> E_ABORT) then
+    (LoadResult <> E_ABORT) then
     ShowMessage(Format('The subtitle track could not be selected. HRESULT 0x%s',
-                       [IntToHex(DWORD(LoadResult), 8)]));
+                       [IntToHex(DWORD(LoadResult),
+                                 8)]));
 end;
 
 
@@ -304,11 +314,10 @@ begin
                                                                        0,
                                                                        EXTSUBRIP);
 
-    for I := Low(pc_LanguageTags.TimedTxtPropsArray) to
-             High(pc_LanguageTags.TimedTxtPropsArray) do
+    for I := Low(pc_LanguageTags.TimedTxtPropsArray) to High(pc_LanguageTags.TimedTxtPropsArray) do
       begin
         IsActive := (not MfPlayerX.GetActiveSubtitleIsEmbedded()) and
-                    pc_LanguageTags.TimedTxtPropsArray[I].bActiveFile;
+          pc_LanguageTags.TimedTxtPropsArray[I].bActiveFile;
 
         AddEntry(slsSidecar,
                  I,
@@ -334,7 +343,7 @@ begin
           FriendlyName := Trim(FEmbeddedTracks[I].Name);
           if (FriendlyName = '') then
             FriendlyName := pc_LanguageTags.GetLangOrCountryFromTag(
-                              FEmbeddedTracks[I].Language);
+              FEmbeddedTracks[I].Language);
           if (FriendlyName = '') then
             FriendlyName := Trim(FEmbeddedTracks[I].Language);
 
@@ -342,17 +351,17 @@ begin
             FriendlyName := 'Embedded subtitle track';
 
           case FEmbeddedTracks[I].Format of
-            esfSrt:         SourceName := 'MKV SRT/UTF-8';
-            esfSsaAss:      SourceName := 'MKV SSA/ASS';
+            esfSrt: SourceName := 'MKV SRT/UTF-8';
+            esfSsaAss: SourceName := 'MKV SSA/ASS';
             esfGenericText: SourceName := 'MKV text subtitles';
-            esfVobSub:      SourceName := 'MKV VobSub (unsupported)';
-            esfPgs:         SourceName := 'MKV PGS (unsupported)';
-          else
-            SourceName := 'MKV subtitle (unsupported)';
+            esfVobSub: SourceName := 'MKV VobSub (unsupported)';
+            esfPgs: SourceName := 'MKV PGS (unsupported)';
+            else
+              SourceName := 'MKV subtitle (unsupported)';
           end;
 
           IsActive := MfPlayerX.GetActiveSubtitleIsEmbedded() and
-                      (MfPlayerX.GetActiveEmbeddedSubtitleStreamIndex() = Integer(FEmbeddedTracks[I].StreamIndex));
+            (MfPlayerX.GetActiveEmbeddedSubtitleStreamIndex() = Integer(FEmbeddedTracks[I].StreamIndex));
 
           AddEntry(slsEmbedded,
                    I,
@@ -379,7 +388,7 @@ begin
   end;
 
   if Assigned(frm_MfPlayer) and
-     frm_MfPlayer.SubtitleLoadPending() then
+    frm_MfPlayer.SubtitleLoadPending() then
     SubtitleLoadStarted()
   else
     begin
@@ -393,7 +402,10 @@ end;
 
 
 procedure TDlgTimedTextLanguages.lvTTxtLangMouseUp(Sender: TObject;
-                                                   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                                   Button: TMouseButton;
+                                                   Shift: TShiftState;
+                                                   X,
+                                                   Y: Integer);
 var
   HitTests: THitTests;
   Item: TListItem;
@@ -407,7 +419,8 @@ begin
   if not (htOnStateIcon in HitTests) then
     Exit;
 
-  Item := (Sender as TCustomListView).GetItemAt(X, Y);
+  Item := (Sender as TCustomListView).GetItemAt(X,
+                                                Y);
   if not Assigned(Item) then
     Exit;
 
@@ -426,27 +439,27 @@ begin
   Hr := E_FAIL;
 
   case Entry.Source of
-    slsSidecar:  begin
+      slsSidecar: begin
 
-                   if (Entry.SourceIndex >= Low(pc_LanguageTags.TimedTxtPropsArray)) and
-                      (Entry.SourceIndex <= High(pc_LanguageTags.TimedTxtPropsArray)) then
-                     Hr := frm_MfPlayer.SelectSidecarSubtitleLanguageAsync(
-                             pc_LanguageTags.TimedTxtPropsArray[Entry.SourceIndex].sLanguageTag);
-                 end;
+        if (Entry.SourceIndex >= Low(pc_LanguageTags.TimedTxtPropsArray)) and
+          (Entry.SourceIndex <= High(pc_LanguageTags.TimedTxtPropsArray)) then
+          Hr := frm_MfPlayer.SelectSidecarSubtitleLanguageAsync(
+            pc_LanguageTags.TimedTxtPropsArray[Entry.SourceIndex].sLanguageTag);
+      end;
 
-    slsEmbedded: begin
+      slsEmbedded: begin
 
-                   if (Entry.SourceIndex >= Low(FEmbeddedTracks)) and
-                      (Entry.SourceIndex <= High(FEmbeddedTracks)) then
-                     begin
+        if (Entry.SourceIndex >= Low(FEmbeddedTracks)) and
+          (Entry.SourceIndex <= High(FEmbeddedTracks)) then
+          begin
 
-                       if not FEmbeddedTracks[Entry.SourceIndex].Supported then
-                         Hr := MF_E_INVALIDMEDIATYPE
-                       else
-                         Hr := frm_MfPlayer.SelectEmbeddedSubtitleTrackAsync(
-                                 FEmbeddedTracks[Entry.SourceIndex].StreamIndex);
-                    end;
-                 end;
+            if not FEmbeddedTracks[Entry.SourceIndex].Supported then
+              Hr := MF_E_INVALIDMEDIATYPE
+            else
+              Hr := frm_MfPlayer.SelectEmbeddedSubtitleTrackAsync(
+                FEmbeddedTracks[Entry.SourceIndex].StreamIndex);
+          end;
+      end;
   end;
 
   if (Hr = S_OK) then
@@ -455,7 +468,8 @@ begin
     begin
       Item.Checked := False;
       ShowMessage(Format('The subtitle track could not be selected. HRESULT 0x%s',
-                         [IntToHex(DWORD(Hr), 8)]));
+                         [IntToHex(DWORD(Hr),
+                                   8)]));
       UpdateCheckedItems();
     end;
 end;

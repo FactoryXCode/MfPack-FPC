@@ -68,7 +68,7 @@ interface
 
 uses
   MfSmallSamplesPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -102,6 +102,7 @@ const
 type
 
   TThumbnailGenerator = class(TObject)
+
   private
 
     llSampleTime: LONGLONG;
@@ -147,7 +148,9 @@ implementation
 // ThumbnailGenerator constructor
 //-------------------------------------------------------------------
 constructor TThumbnailGenerator.Create();
+
 begin
+
   if (m_pReader = nil) then
     m_format := Default(TFormatInfo);
 end;
@@ -156,7 +159,9 @@ end;
 // ThumbnailGenerator destructor
 //-------------------------------------------------------------------
 destructor TThumbnailGenerator.Destroy();
+
 begin
+
   SafeRelease(m_pReader);
 end;
 
@@ -252,21 +257,23 @@ begin
       if (FAILED(hr)) then
         begin
           case hr of
-            E_POINTER: begin { Pointer error } end;
+              E_POINTER: begin { Pointer error }
+              end;
             else
-              begin { Other error } end;
+              begin { Other error }
+              end;
           end;
 
 
           goto done;
         end;
 
-      if ((dwFlags and DWORD(MF_SOURCE_READERF_ENDOFSTREAM))<>0) then
+      if ((dwFlags and DWORD(MF_SOURCE_READERF_ENDOFSTREAM)) <> 0) then
         begin
           break;
         end;
 
-      if ((dwFlags and DWORD(MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED))<>0) then
+      if ((dwFlags and DWORD(MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED)) <> 0) then
         begin
           // Type change. Get the new format.
           hr := GetVideoFormat(m_format);
@@ -292,20 +299,20 @@ begin
           // always cache the last sample that we got (pSample).
 
           if ((cSkipped < MAX_FRAMES_TO_SKIP) AND
-                 (hnsTimeStamp + SEEK_TOLERANCE < hnsPos)) then
+            (hnsTimeStamp + SEEK_TOLERANCE < hnsPos)) then
             begin
-                SafeRelease(pSampleTmp);
-                inc(cSkipped);
-                Continue;
+              SafeRelease(pSampleTmp);
+              inc(cSkipped);
+              Continue;
             end;
         end;
 
-        SafeRelease(pSampleTmp);
+      SafeRelease(pSampleTmp);
 
-        hnsPos := hnsTimeStamp;
-        bBreak := TRUE;
+      hnsPos := hnsTimeStamp;
+      bBreak := TRUE;
     end;
-  until bBreak = TRUE;
+  until (bBreak = TRUE);
 
   if Assigned(pSample) then
     begin
@@ -333,9 +340,14 @@ begin
       if (FAILED(hr)) then
         goto done;
 
-      if (UInt64(pitch)*m_format.imageHeightPels>cbBitmapData) then begin hr:=E_INVALIDARG;goto done;end;
+      if (UInt64(pitch) * m_format.imageHeightPels > cbBitmapData) then
+        begin
+          hr := E_INVALIDARG;
+          goto done;
+        end;
 
-      BitmapProps:=D2D1BitmapProperties(D2D1PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM,D2D1_ALPHA_MODE_IGNORE));
+      BitmapProps := D2D1BitmapProperties(D2D1PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM,
+                                                          D2D1_ALPHA_MODE_IGNORE));
       hr := pRT.CreateBitmap(D2D1SizeU(m_format.imageWidthPels,
                                        m_format.imageHeightPels),
                              pBitmapData,
@@ -355,10 +367,10 @@ begin
       hr := MF_E_END_OF_STREAM;
     end;
 
-done:
+  done:
 
-  if Assigned(pBitmapData) then
-    pBuffer.Unlock();
+    if Assigned(pBitmapData) then
+      pBuffer.Unlock();
 
   Result := hr;
 end;
@@ -436,6 +448,7 @@ var
   rcSrc: TRECT;
 
 begin
+
   _width := 0;
   _height := 0;
   par.Numerator := 0;
@@ -458,7 +471,7 @@ begin
   hr := pType.GetGUID(MF_MT_SUBTYPE,
                       subtype);
 
-  if FAILED(hr) or not IsEqualGUID(subtype,MFVideoFormat_RGB32) then
+  if FAILED(hr) or not IsEqualGUID(subtype, MFVideoFormat_RGB32) then
     begin
       hr := E_UNEXPECTED;
       goto done;
@@ -509,8 +522,8 @@ begin
   format.imageHeightPels := _height;
   pFormat := format;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -536,7 +549,7 @@ begin
   if (SUCCEEDED(hr)) then
     begin
       hr := pAttributes.SetUINT32(MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING,
-                                  {TRUE}1);
+        {TRUE}1);
     end;
 
   // Create the source reader from the URL.
@@ -564,6 +577,7 @@ var
   hr: HResult;
 
 begin
+
   PropVariantInit(_var);
 
   if not Assigned(m_pReader) then
@@ -579,7 +593,7 @@ begin
   if (SUCCEEDED(hr)) then
     begin
       {$IFDEF DEBUG}
-      assert(_var.vt = VT_UI8);  // debug
+        assert(_var.vt = VT_UI8);  // debug
       {$ENDIF}
       phnsDuration := _var.hVal.QuadPart;
     end;
@@ -604,7 +618,7 @@ begin
 
   if not Assigned(m_pReader) then
     begin
-      Result:= MF_E_NOT_INITIALIZED;
+      Result := MF_E_NOT_INITIALIZED;
       Exit;
     end;
 
@@ -624,7 +638,7 @@ begin
     begin
       // If the source has slow seeking, we will treat it as
       // not supporting seeking.
-      if ((flags AND ULONG(MFMEDIASOURCE_CAN_SEEK)) and (flags AND ULONG(MFMEDIASOURCE_HAS_SLOW_SEEK))) = 0 then
+      if (((flags AND ULONG(MFMEDIASOURCE_CAN_SEEK)) and (flags AND ULONG(MFMEDIASOURCE_HAS_SLOW_SEEK))) = 0) then
         pbCanSeek := TRUE;
     end;
 
@@ -657,7 +671,9 @@ var
   hPos: LONGLONG;
 
 begin
-  if (pRT=nil) or (count=0) or (count>Length(pSprites)) then Exit(E_INVALIDARG);
+
+  if (pRT = nil) or (count = 0) or (count > Length(pSprites)) then
+    Exit(E_INVALIDARG);
   bCanSeek := FALSE;
 
   hnsDuration := 0;
@@ -667,10 +683,10 @@ begin
   hr := CanSeek(bCanSeek);
 
   if (FAILED(hr)) then
-   begin
-     Result:= hr;
-     Exit;
-   end;
+    begin
+      Result := hr;
+      Exit;
+    end;
 
   if (bCanSeek) then
     begin
@@ -678,7 +694,7 @@ begin
 
       if (FAILED(hr)) then
         begin
-          Result:= hr;
+          Result := hr;
           Exit;
         end;
 
@@ -694,16 +710,20 @@ begin
 
   // Generate the bitmaps and invalidate the button controls so
   // they will be redrawn.
-  for i := 0 to count-1 do
+  for i := 0 to count - 1 do
     begin
       hPos := hnsIncrement * (i + 1);
 
-      if pSprites[i]=nil then Exit(E_POINTER);
-      hr := CreateBitmap(pRT,hPos,pSprites[i]);
-      if FAILED(hr) then Break;
+      if (pSprites[i] = nil) then
+        Exit(E_POINTER);
+      hr := CreateBitmap(pRT,
+                         hPos,
+                         pSprites[i]);
+      if FAILED(hr) then
+        Break;
     end;
 
-  Result:= hr;
+  Result := hr;
 end;
 
 // Helper
@@ -723,9 +743,12 @@ var
   rc: TRECT;
 
 begin
+
   // Start with a rectangle the same size as src, but offset to the origin (0,0).
-  Result:=src;rc:=src;
-  if (srcPAR.Numerator=0) or (srcPAR.Denominator=0) then Exit;
+  Result := src;
+  rc := src;
+  if (srcPAR.Numerator = 0) or (srcPAR.Denominator = 0) then
+    Exit;
 
   if ((srcPAR.Numerator <> 1) OR (srcPAR.Denominator <> 1)) then
     begin
@@ -745,7 +768,7 @@ begin
                               srcPAR.Denominator,
                               srcPAR.Numerator);
         end;
-        // else: PAR is 1:1, which is a no-op.
+      // else: PAR is 1:1, which is a no-op.
     end;
 
   Result := rc;

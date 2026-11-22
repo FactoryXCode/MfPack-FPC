@@ -93,9 +93,16 @@ const
   // CLSID_FunctionDiscovery: TGUID = '{C72BE2EC-8E90-452c-B29A-AB8FF1C071FC}'
 
   CLSID_FunctionDiscovery: TGUID = (D1: $C72BE2EC;
-                                    D2: $8E90;
-                                    D3: $452C;
-                                    D4: ($B2, $9A, $AB, $8F, $F1, $C0, $71, $FC));
+    D2: $8E90;
+    D3: $452C;
+    D4: ($B2,
+         $9A,
+         $AB,
+         $8F,
+         $F1,
+         $C0,
+         $71,
+         $FC));
 
 type
 
@@ -114,24 +121,24 @@ type
 
   tagSystemVisibilityFlags = (
     SVF_SYSTEM = 0,
-    SVF_USER  = 1
-  );
+                              SVF_USER = 1
+    );
   SystemVisibilityFlags = tagSystemVisibilityFlags;
   PSystemVisibilityFlags = ^tagSystemVisibilityFlags;
 
 
   tagQueryUpdateAction = (
     QUA_ADD = 0,
-    QUA_REMOVE = 1,
-    QUA_CHANGE = 2
-  );
+                          QUA_REMOVE = 1,
+                          QUA_CHANGE = 2
+    );
   QueryUpdateAction = tagQueryUpdateAction;
   PQueryUpdateAction = ^tagQueryUpdateAction;
 
   tagQueryCategoryType = (
     QCT_PROVIDER = 0,
-    QCT_LAYERED = 1
-  );
+                          QCT_LAYERED = 1
+    );
   QueryCategoryType = tagQueryCategoryType;
   PQueryCategoryType = ^tagQueryCategoryType;
 
@@ -158,6 +165,7 @@ type
                      pszProvider: LPCWSTR): HRESULT; stdcall;
 
   end;
+
   IID_IFunctionDiscoveryNotification = IFunctionDiscoveryNotification;
 
 
@@ -201,6 +209,7 @@ type
                             pszCategoryIdentity: LPCWSTR): HRESULT; stdcall;
 
   end;
+
   IID_IFunctionDiscovery = IFunctionDiscovery;
 
 
@@ -223,6 +232,7 @@ type
                          out ppszCoMemSubCategory: LPWSTR): HRESULT; stdcall;
 
   end;
+
   IID_IFunctionInstance = IFunctionInstance;
 
 
@@ -251,6 +261,7 @@ type
     function DeleteAll(): HRESULT; stdcall;
 
   end;
+
   IID_IFunctionInstanceCollection = IFunctionInstanceCollection;
 
 
@@ -279,6 +290,7 @@ type
     function DeleteAll(): HRESULT; stdcall;
 
   end;
+
   IID_IPropertyStoreCollection = IPropertyStoreCollection;
 
 
@@ -295,6 +307,7 @@ type
     function Execute(out ppIFunctionInstance: IFunctionInstance): HRESULT; stdcall;
 
   end;
+
   IID_IFunctionInstanceQuery = IFunctionInstanceQuery;
 
 
@@ -314,6 +327,7 @@ type
     function Execute(out ppIFunctionInstanceCollection: IFunctionInstanceCollection): HRESULT; stdcall;
 
   end;
+
   IID_IFunctionInstanceCollectionQuery = IFunctionInstanceCollectionQuery;
 
   // Additional prototypes for ALL interfaces
@@ -322,6 +336,6 @@ type
 
 implementation
 
-  // Implement additional prototypes here.
+// Implement additional prototypes here.
 
 end.

@@ -107,7 +107,7 @@ type
                         Aa2,
                         Bb1,
                         Bb2:
-                        Double);
+      Double);
 
     function Process(const x: Double): Double;
   end;
@@ -115,14 +115,17 @@ type
 
 
   PCoefSet = ^TCoefSet;
+
   TCoefSet = record
-    Low:  TBiquadCoeffs;
-    Mid:  TBiquadCoeffs;
+    Low: TBiquadCoeffs;
+    Mid: TBiquadCoeffs;
     High: TBiquadCoeffs;
     SampleRate: Double;
   end;
 
-  THighMidLowMFT = class(TMfAudioEqBaseMFT, IMfHighMidLowControl)
+  THighMidLowMFT = class(TMfAudioEqBaseMFT,
+                         IMfHighMidLowControl)
+
   private
 
     // NOTE: This MFT is used directly in a realtime WASAPI render loop.
@@ -168,8 +171,7 @@ type
 
     // Biquads per channel: LowShelf -> MidBell -> HighShelf.
     FLowL,
-    FLowR:
-    TBiquad;
+    FLowR: TBiquad;
     FMidL,
     FMidR: TBiquad;
 
@@ -208,12 +210,13 @@ type
     function ProcessAudioLocked(pData: PByte;
                                 cbData: UINT32): HRESULT; override;
 
-  
+
 
     // Lock-free (realtime) processing path.
     function ProcessAudioRT(pData: PByte;
                             cbData: UINT32): HRESULT;
-public
+
+  public
 
     constructor Create();
 
@@ -243,21 +246,24 @@ public
 
   end;
 
-  function CreateHighMidLowMFT(out pMft: IMFTransform): HRESULT;
+function CreateHighMidLowMFT(out pMft: IMFTransform): HRESULT;
 
 
 implementation
 
 
 function SingleToBits(const V: Single): Integer; inline;
+
 begin
 
   Move(V,
-       Result, SizeOf(Result));
+       Result,
+       SizeOf(Result));
 end;
 
 
 function BitsToSingle(const B: Integer): Single; inline;
+
 begin
 
   Move(B,
@@ -267,6 +273,7 @@ end;
 
 
 function AtomicLoadInt(var V: Integer): Integer; inline;
+
 begin
 
   Result := InterlockedCompareExchange(V,
@@ -277,6 +284,7 @@ end;
 
 procedure AtomicStoreInt(var V: Integer;
                          const NewValue: Integer); inline;
+
 begin
 
   InterlockedExchange(V,
@@ -285,6 +293,7 @@ end;
 
 
 function AtomicLoadBool(var V: Integer): Boolean; inline;
+
 begin
 
   Result := (InterlockedCompareExchange(V,
@@ -295,6 +304,7 @@ end;
 
 procedure AtomicStoreBool(var V: Integer;
                           const B: Boolean); inline;
+
 begin
 
   if B then
@@ -307,6 +317,7 @@ end;
 
 
 function AtomicLoadSingleBits(var VBits: Integer): Single; inline;
+
 begin
 
   Result := BitsToSingle(InterlockedCompareExchange(VBits,
@@ -317,6 +328,7 @@ end;
 
 procedure AtomicStoreSingleBits(var VBits: Integer;
                                 const V: Single); inline;
+
 begin
 
   InterlockedExchange(VBits,
@@ -325,6 +337,7 @@ end;
 
 
 function AtomicLoadPtr(var P: Pointer): Pointer; inline;
+
 begin
 
   Result := InterlockedCompareExchangePointer(P,
@@ -335,6 +348,7 @@ end;
 
 procedure AtomicStorePtr(var P: Pointer;
                          const NewValue: Pointer); inline;
+
 begin
 
   System.InterlockedExchange(P,
@@ -345,6 +359,7 @@ end;
 { TBiquad }
 
 procedure TBiquad.Reset;
+
 begin
 
   x1 := 0;
@@ -354,7 +369,12 @@ begin
 end;
 
 
-procedure TBiquad.SetCoeffs(const Aa0, Aa1, Aa2, Bb1, Bb2: Double);
+procedure TBiquad.SetCoeffs(const Aa0,
+                            Aa1,
+                            Aa2,
+                            Bb1,
+                            Bb2: Double);
+
 begin
 
   a0 := Aa0;
@@ -373,7 +393,7 @@ var
 begin
 
   // Biquad (Direct Form I) with denormal protection.
-  y := a0*x + a1*x1 + a2*x2 - b1*y1 - b2*y2;
+  y := a0 * x + a1 * x1 + a2 * x2 - b1 * y1 - b2 * y2;
 
   // Portable denormal flush (FTZ/DAZ is even better, but thread-local).
   if (Abs(y) < 1.0e-30) then
@@ -395,6 +415,7 @@ end;
 
 
 function DbToA(const Db: Double): Double; inline;
+
 begin
 
   // Source: RBJ cookbook: A = 10^(dBgain/40)
@@ -406,6 +427,7 @@ end;
 { THighMidLowMFT }
 
 constructor THighMidLowMFT.Create();
+
 begin
 
   inherited Create;
@@ -423,7 +445,8 @@ begin
   AtomicStoreSingleBits(FMidQBits,
                         1.0);
 
-  AtomicStoreBool(FEnabledI, True);
+  AtomicStoreBool(FEnabledI,
+                  True);
 
   AtomicStoreSingleBits(FLowDbTargetBits,
                         0.0);
@@ -450,8 +473,10 @@ begin
   AtomicStoreInt(FRampTimeMsI,
                  30);
 
-  InterlockedExchange(FParamGen, 1);
-  InterlockedExchange(FResetRampI, 0);
+  InterlockedExchange(FParamGen,
+                      1);
+  InterlockedExchange(FResetRampI,
+                      0);
 
   // Audio-thread smoothing state.
   FLowDbCur := 0.0;
@@ -472,6 +497,7 @@ end;
 
 function THighMidLowMFT.ProcessInPlace(pData: PByte;
                                        cbData: Cardinal): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -487,6 +513,7 @@ end;
 
 
 function THighMidLowMFT.CurrentSampleRate(): Double;
+
 begin
 
   if (FSampleRate <> 0) then
@@ -537,6 +564,7 @@ end;
 
 
 procedure THighMidLowMFT.ClearStateLocked();
+
 begin
 
   FLowL.Reset();
@@ -549,6 +577,7 @@ end;
 
 
 procedure THighMidLowMFT.OnFormatChangedLocked();
+
 begin
 
   ClearStateLocked();
@@ -567,7 +596,7 @@ var
   tgtMid,
   tgtHigh: Single;
 
-  // Helper
+// Helper
   function ModeToMs(const Mode: TMfRampMode): Integer;
   begin
 
@@ -576,8 +605,8 @@ var
       rmFast: Result := 10;
       rmSmooth: Result := 30;
       rmCustom: Result := AtomicLoadInt(FRampTimeMsI);
-    else
-      Result := 30;
+      else
+        Result := 30;
     end;
   end;
 
@@ -617,7 +646,7 @@ begin
   FHighDbCur := FHighDbCur + (tgtHigh - FHighDbCur) * step;
 
   FRampSamplesLeft := Max(0,
-                      FRampSamplesLeft - Frames);
+                          FRampSamplesLeft - Frames);
 end;
 
 
@@ -664,9 +693,9 @@ begin
                  FMidR);
 
   ComputeHighShelf(FHighDbCur,
-                  highHz,
-                  sHigh,
-                  FHighL);
+                   highHz,
+                   sHigh,
+                   FHighL);
 
   ComputeHighShelf(FHighDbCur,
                    highHz,
@@ -743,12 +772,12 @@ begin
   alpha := sinw0 / 2 * Sqrt((A + 1 / A) * (1 / slSlope - 1) + 2.0);
   sqrtA := Sqrt(A);
 
-  b0 := A *( (A + 1) - (A - 1) * cosw0 + 2 * sqrtA * alpha);
+  b0 := A * ((A + 1) - (A - 1) * cosw0 + 2 * sqrtA * alpha);
   b1 := 2 * A * ((A - 1) - (A + 1) * cosw0);
   b2 := A * ((A + 1) - (A - 1) * cosw0 - 2 * sqrtA * alpha);
-  a0 := (A+1) + (A-1) * cosw0 + 2 * sqrtA * alpha;
-  a1 := -2 * ((A-1) + (A+1) * cosw0 );
-  a2 := (A + 1) + ( A - 1) * cosw0 - 2 * sqrtA * alpha;
+  a0 := (A + 1) + (A - 1) * cosw0 + 2 * sqrtA * alpha;
+  a1 := -2 * ((A - 1) + (A + 1) * cosw0);
+  a2 := (A + 1) + (A - 1) * cosw0 - 2 * sqrtA * alpha;
 
   Bq.SetCoeffs(b0 / a0,
                b1 / a0,
@@ -795,11 +824,11 @@ begin
   alpha := sinw0 / 2 * Sqrt((A + 1 / A) * (1 / slSlope - 1) + 2.0);
   sqrtA := Sqrt(A);
 
-  b0 := A*((A + 1) + (A - 1) * cosw0 + 2 * sqrtA * alpha);
-  b1 := -2 * A * ((A-1) + (A + 1) * cosw0);
+  b0 := A * ((A + 1) + (A - 1) * cosw0 + 2 * sqrtA * alpha);
+  b1 := -2 * A * ((A - 1) + (A + 1) * cosw0);
   b2 := A * ((A + 1) + (A - 1) * cosw0 - 2 * sqrtA * alpha);
   a0 := (A + 1) - (A - 1) * cosw0 + 2 * sqrtA * alpha;
-  a1 := 2 * ((A - 1) - (A + 1) * cosw0 );
+  a1 := 2 * ((A - 1) - (A + 1) * cosw0);
   a2 := (A + 1) - (A - 1) * cosw0 - 2 * sqrtA * alpha;
 
   Bq.SetCoeffs(b0 / a0,
@@ -862,11 +891,13 @@ end;
 
 
 function THighMidLowMFT.ProcessAudioLocked(pData: PByte;
-                                cbData: Cardinal): HRESULT;
+                                           cbData: Cardinal): HRESULT;
+
 begin
 
   // Base-class (MFT) processing path (called under FLock).
-  Result := ProcessAudioRT(pData, cbData);
+  Result := ProcessAudioRT(pData,
+                           cbData);
 end;
 
 
@@ -886,8 +917,8 @@ var
 begin
 
   if (not AtomicLoadBool(FEnabledI)) or
-     (pData = nil) or
-     (cbData = 0) then
+    (pData = nil) or
+    (cbData = 0) then
     Exit(S_OK);
 
   if (FChannels = 0) or (FBlockAlign = 0) then
@@ -919,9 +950,8 @@ begin
           s16 := Round(y * 32768.0);
           if (s16 < -32768) then
             s16 := -32768
-          else
-            if (s16 > 32767) then
-              s16 := 32767;
+          else if (s16 > 32767) then
+            s16 := 32767;
 
           ps16^ := s16;
           Inc(ps16);
@@ -938,9 +968,8 @@ begin
               s16 := Round(y * 32768.0);
               if (s16 < -32768) then
                 s16 := -32768
-              else
-                if (s16 > 32767) then
-                  s16 := 32767;
+              else if (s16 > 32767) then
+                s16 := 32767;
 
               ps16^ := s16;
               Inc(ps16);
@@ -962,30 +991,42 @@ begin
       for i := 0 to frames - 1 do
         begin
 
-          if FIsFloat then x := pf32^
-          else x := PInteger(pf32)^ / 2147483648.0;
+          if FIsFloat then
+            x := pf32^
+          else
+            x := PInteger(pf32)^ / 2147483648.0;
           y := FLowL.Process(x);
           y := FMidL.Process(y);
           y := FHighL.Process(y);
-          if FIsFloat then pf32^ := y
-          else if y >= 1.0 then PInteger(pf32)^ := High(Integer)
-          else if y <= -1.0 then PInteger(pf32)^ := Low(Integer)
-          else PInteger(pf32)^ := Round(y * 2147483648.0);
+          if FIsFloat then
+            pf32^ := y
+          else if (y >= 1.0) then
+            PInteger(pf32)^ := High(Integer)
+          else if (y <= -1.0) then
+            PInteger(pf32)^ := Low(Integer)
+          else
+            PInteger(pf32)^ := Round(y * 2147483648.0);
           Inc(pf32);
 
           if (ch > 1) then
             begin
 
-              if FIsFloat then x := pf32^
-          else x := PInteger(pf32)^ / 2147483648.0;
+              if FIsFloat then
+                x := pf32^
+              else
+                x := PInteger(pf32)^ / 2147483648.0;
               y := FLowR.Process(x);
               y := FMidR.Process(y);
               y := FHighR.Process(y);
-             if FIsFloat then pf32^ := y
-          else if y >= 1.0 then PInteger(pf32)^ := High(Integer)
-          else if y <= -1.0 then PInteger(pf32)^ := Low(Integer)
-          else PInteger(pf32)^ := Round(y * 2147483648.0);
-             Inc(pf32);
+              if FIsFloat then
+                pf32^ := y
+              else if (y >= 1.0) then
+                PInteger(pf32)^ := High(Integer)
+              else if (y <= -1.0) then
+                PInteger(pf32)^ := Low(Integer)
+              else
+                PInteger(pf32)^ := Round(y * 2147483648.0);
+              Inc(pf32);
             end;
 
           for c := 2 to ch - 1 do
@@ -1000,6 +1041,7 @@ end;
 
 
 function THighMidLowMFT.SetEnabled(const AEnabled: Boolean): HRESULT;
+
 begin
 
   AtomicStoreBool(FEnabledI,
@@ -1010,6 +1052,7 @@ end;
 
 
 function THighMidLowMFT.SetLowDb(const Db: Single): HRESULT;
+
 begin
 
   AtomicStoreSingleBits(FLowDbTargetBits,
@@ -1025,6 +1068,7 @@ end;
 
 
 function THighMidLowMFT.SetMidDb(const Db: Single): HRESULT;
+
 begin
 
   AtomicStoreSingleBits(FMidDbTargetBits,
@@ -1040,6 +1084,7 @@ end;
 
 
 function THighMidLowMFT.SetHighDb(const Db: Single): HRESULT;
+
 begin
 
   AtomicStoreSingleBits(FHighDbTargetBits,
@@ -1055,6 +1100,7 @@ end;
 
 
 function THighMidLowMFT.SetLowFreqHz(const Hz: Single): HRESULT;
+
 begin
 
   AtomicStoreSingleBits(FLowFreqBits,
@@ -1068,6 +1114,7 @@ end;
 
 
 function THighMidLowMFT.SetMidFreqHz(const Hz: Single): HRESULT;
+
 begin
 
   AtomicStoreSingleBits(FMidFreqBits,
@@ -1080,39 +1127,46 @@ end;
 
 
 function THighMidLowMFT.SetHighFreqHz(const Hz: Single): HRESULT;
+
 begin
 
-  AtomicStoreSingleBits(FHighFreqBits, ClampS(Hz,
-                                              10.0,
-                                              22000.0));
+  AtomicStoreSingleBits(FHighFreqBits,
+                        ClampS(Hz,
+                               10.0,
+                               22000.0));
   InterlockedIncrement(FParamGen);
   Result := S_OK;
 end;
 
 
 function THighMidLowMFT.SetMidQ(const Q: Single): HRESULT;
+
 begin
 
-  AtomicStoreSingleBits(FMidQBits, ClampS(Q,
-                                          0.10,
-                                          10.0));
+  AtomicStoreSingleBits(FMidQBits,
+                        ClampS(Q,
+                               0.10,
+                               10.0));
   InterlockedIncrement(FParamGen);
   Result := S_OK;
 end;
 
 
 function THighMidLowMFT.SetLowShelfSlope(const S: Single): HRESULT;
+
 begin
 
-  AtomicStoreSingleBits(FLowShelfSBits, ClampS(S,
-                                               0.10,
-                                               5.0));
+  AtomicStoreSingleBits(FLowShelfSBits,
+                        ClampS(S,
+                               0.10,
+                               5.0));
   InterlockedIncrement(FParamGen);
   Result := S_OK;
 end;
 
 
 function THighMidLowMFT.SetHighShelfSlope(const S: Single): HRESULT;
+
 begin
 
   AtomicStoreSingleBits(FHighShelfSBits,
@@ -1125,6 +1179,7 @@ end;
 
 
 function THighMidLowMFT.SetMidMode(const Mode: TMfMidMode): HRESULT;
+
 begin
 
   AtomicStoreInt(FMidModeI,
@@ -1136,6 +1191,7 @@ end;
 
 
 function THighMidLowMFT.SetRampMode(const Mode: TMfRampMode): HRESULT;
+
 begin
 
   AtomicStoreInt(FRampModeI,
@@ -1149,6 +1205,7 @@ end;
 
 
 function THighMidLowMFT.SetRampTimeMs(const Ms: Integer): HRESULT;
+
 begin
 
   AtomicStoreInt(FRampTimeMsI,
@@ -1164,6 +1221,7 @@ end;
 
 
 function CreateHighMidLowMFT(out pMft: IMFTransform): HRESULT;
+
 begin
 
   pMft := THighMidLowMFT.Create as IMFTransform;

@@ -84,6 +84,7 @@ uses
 type
 
   TMfChorusEffect = class(TMfWasApiFxComponentBase)
+
   private
 
     FMftObj: TMfChorusMFT;
@@ -158,6 +159,7 @@ implementation
 
 
 procedure Register;
+
 begin
 
   RegisterComponents('MfPack Core Audio Samples',
@@ -167,6 +169,7 @@ end;
 { TMfChorusEffect }
 
 constructor TMfChorusEffect.Create(AOwner: TComponent);
+
 begin
 
   inherited;
@@ -195,7 +198,9 @@ end;
 
 
 procedure TMfChorusEffect.AfterConstruction();
+
 begin
+
   inherited;
 
   CheckForMft();
@@ -203,6 +208,7 @@ end;
 
 
 destructor TMfChorusEffect.Destroy();
+
 begin
 
   // Release COM/MFT
@@ -214,6 +220,7 @@ end;
 
 
 procedure TMfChorusEffect.CheckForMft();
+
 begin
 
   if (FMftObj <> nil) then
@@ -226,12 +233,15 @@ end;
 
 
 function TMfChorusEffect.GetMftInstance: IMFTransform;
+
 begin
 
   Result := FMft;
 end;
 
+
 function TMfChorusEffect.GetSettings: TChorusSettings;
+
 begin
 
   Result := FSettings;
@@ -239,6 +249,7 @@ end;
 
 
 function TMfChorusEffect.GetEnabled: Boolean;
+
 begin
 
   Result := FSettings.Enabled;
@@ -246,6 +257,7 @@ end;
 
 
 function TMfChorusEffect.GetMix: Single;
+
 begin
 
   Result := FSettings.Mix;
@@ -253,6 +265,7 @@ end;
 
 
 function TMfChorusEffect.GetFeedback: Single;
+
 begin
 
   Result := FSettings.Feedback;
@@ -260,6 +273,7 @@ end;
 
 
 function TMfChorusEffect.GetBaseDelayMs: Single;
+
 begin
 
   Result := FSettings.BaseDelayMs;
@@ -267,6 +281,7 @@ end;
 
 
 function TMfChorusEffect.GetDepthMs: Single;
+
 begin
 
   Result := FSettings.DepthMs;
@@ -274,6 +289,7 @@ end;
 
 
 function TMfChorusEffect.GetRateMode: TMfChorusRateMode;
+
 begin
 
   Result := FSettings.RateMode;
@@ -281,6 +297,7 @@ end;
 
 
 function TMfChorusEffect.GetRateHz: Single;
+
 begin
 
   Result := FSettings.RateHz;
@@ -288,12 +305,15 @@ end;
 
 
 function TMfChorusEffect.GetTempoBpm: Single;
+
 begin
+
   Result := FSettings.TempoBpm;
 end;
 
 
 function TMfChorusEffect.GetNoteDiv: TMfChorusNoteDiv;
+
 begin
 
   Result := FSettings.NoteDiv;
@@ -301,6 +321,7 @@ end;
 
 
 function TMfChorusEffect.GetWidthPct: Single;
+
 begin
 
   Result := FSettings.WidthPct;
@@ -308,6 +329,7 @@ end;
 
 
 function TMfChorusEffect.GetSmoothMs: Single;
+
 begin
 
   Result := FSettings.SmoothMs;
@@ -316,6 +338,7 @@ end;
 
 
 procedure TMfChorusEffect.SetEnabled(const AValue: Boolean);
+
 begin
 
   FSettings.Enabled := AValue;
@@ -324,6 +347,7 @@ end;
 
 
 procedure TMfChorusEffect.SetMix(const AValue: Single);
+
 begin
 
   FSettings.Mix := AValue;
@@ -332,13 +356,16 @@ end;
 
 
 procedure TMfChorusEffect.SetFeedback(const AValue: Single);
+
 begin
+
   FSettings.Feedback := AValue;
   SetSettings(FSettings);
 end;
 
 
 procedure TMfChorusEffect.SetBaseDelayMs(const AValue: Single);
+
 begin
 
   FSettings.BaseDelayMs := AValue;
@@ -347,6 +374,7 @@ end;
 
 
 procedure TMfChorusEffect.SetDepthMs(const AValue: Single);
+
 begin
 
   FSettings.DepthMs := AValue;
@@ -355,6 +383,7 @@ end;
 
 
 procedure TMfChorusEffect.SetRateMode(const AValue: TMfChorusRateMode);
+
 begin
 
   FSettings.RateMode := AValue;
@@ -363,6 +392,7 @@ end;
 
 
 procedure TMfChorusEffect.SetRateHz(const AValue: Single);
+
 begin
 
   FSettings.RateHz := AValue;
@@ -371,6 +401,7 @@ end;
 
 
 procedure TMfChorusEffect.SetTempoBpm(const AValue: Single);
+
 begin
 
   FSettings.TempoBpm := AValue;
@@ -379,6 +410,7 @@ end;
 
 
 procedure TMfChorusEffect.SetNoteDiv(const AValue: TMfChorusNoteDiv);
+
 begin
 
   FSettings.NoteDiv := AValue;
@@ -387,6 +419,7 @@ end;
 
 
 procedure TMfChorusEffect.SetWidthPct(const AValue: Single);
+
 begin
 
   FSettings.WidthPct := AValue;
@@ -395,6 +428,7 @@ end;
 
 
 procedure TMfChorusEffect.SetSmoothMs(const AValue: Single);
+
 begin
 
   FSettings.SmoothMs := AValue;
@@ -403,6 +437,7 @@ end;
 
 
 procedure TMfChorusEffect.SetSettings(const S: TChorusSettings);
+
 begin
 
   FSettings := S;
@@ -417,4 +452,3 @@ begin
 end;
 
 end.
-

@@ -120,11 +120,13 @@ begin
 
   Move(ABytes[0],
        AData[OldLength],
-             Length(ABytes));
+       Length(ABytes));
 end;
 
 
-procedure AppendVarUInt(var AData: TBytes; AValue: Cardinal);
+procedure AppendVarUInt(var AData: TBytes;
+                        AValue: Cardinal);
+
 begin
 
   repeat
@@ -135,7 +137,7 @@ begin
       AppendByte(AData,
                  Byte(AValue));
     AValue := AValue shr 7;
-  until AValue = 0;
+  until (AValue = 0);
 end;
 
 
@@ -162,6 +164,7 @@ end;
 procedure AppendProtoVarUInt(var AData: TBytes;
                              const AFieldNumber: Cardinal;
                              const AValue: Cardinal);
+
 begin
 
   AppendVarUInt(AData,
@@ -221,23 +224,27 @@ begin
   AValue := '';
 
   if not ReadVarUInt(AData,
-                     AIndex,
-                     ValueLength) then
+    AIndex,
+    ValueLength) then
     Exit;
 
   if (ValueLength > Cardinal(Length(AData) - AIndex)) then
     Exit;
 
   if (ValueLength > 0) and
-     (MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,PAnsiChar(@AData[AIndex]),
-                           Integer(ValueLength),nil,0) = 0) then
+    (MultiByteToWideChar(CP_UTF8,
+                         MB_ERR_INVALID_CHARS,
+                         PAnsiChar(@AData[AIndex]),
+                         Integer(ValueLength),
+                         nil,
+                         0) = 0) then
     Exit;
 
   AValue := TEncoding.UTF8.GetString(AData,
                                      AIndex,
                                      Integer(ValueLength));
   Inc(AIndex,
-  Integer(ValueLength));
+      Integer(ValueLength));
   Result := True;
 end;
 
@@ -310,66 +317,69 @@ begin
   while (Index < Length(AData)) do
     begin
       if not ReadVarUInt(AData,
-                         Index,
-                         FieldKey) then
+        Index,
+        FieldKey) then
         begin
           Result := E_FAIL;
           Exit;
         end;
 
       FieldNumber := FieldKey shr 3;
-      if FieldNumber = 0 then
+      if (FieldNumber = 0) then
         Exit(E_FAIL);
       WireType := FieldKey and $07;
 
       case WireType of
         0: if not ReadVarUInt(AData,
-                              Index,
-                              IgnoredValue) then
-             begin
-               Result := E_FAIL;
-               Exit;
-             end;
-        1: begin
-             if Length(AData) - Index < 8 then Exit(E_FAIL);
-             Inc(Index,8);
-           end;
+            Index,
+            IgnoredValue) then
+            begin
+              Result := E_FAIL;
+              Exit;
+            end;
+          1: begin
+            if (Length(AData) - Index < 8) then
+              Exit(E_FAIL);
+            Inc(Index,
+                8);
+          end;
         2: if FieldNumber in [2, 3, 4, 6] then
-             begin
-               if not ReadProtoString(AData,
-                                      Index,
-                                      IgnoredString) then
-                 begin
-                   Result := E_FAIL;
-                   Exit;
-                 end;
+            begin
+              if not ReadProtoString(AData,
+                Index,
+                IgnoredString) then
+                begin
+                  Result := E_FAIL;
+                  Exit;
+                end;
 
-               if (FieldNumber = 4) then
-                 ANamespace := IgnoredString
-               else
-                 if (FieldNumber = 6) then
-                   AJsonPayload := IgnoredString;
-             end
-           else
-             begin
-               if not ReadVarUInt(AData, Index, ValueLength) then
-                 begin
-                   Result := E_FAIL;
-                   Exit;
-                 end;
+              if (FieldNumber = 4) then
+                ANamespace := IgnoredString
+              else if (FieldNumber = 6) then
+                AJsonPayload := IgnoredString;
+            end
+          else
+            begin
+              if not ReadVarUInt(AData, Index, ValueLength) then
+                begin
+                  Result := E_FAIL;
+                  Exit;
+                end;
 
-               if ValueLength > Cardinal(Length(AData) - Index) then
-                 Exit(E_FAIL);
-               Inc(Index,
-                   Integer(ValueLength));
-             end;
-        5: begin
-             if Length(AData) - Index < 4 then Exit(E_FAIL);
-             Inc(Index,4);
-           end;
-      else
-        Result := E_FAIL;
-        Exit;
+              if (ValueLength > Cardinal(Length(AData) - Index)) then
+                Exit(E_FAIL);
+              Inc(Index,
+                  Integer(ValueLength));
+            end;
+          5: begin
+            if (Length(AData) - Index < 4) then
+              Exit(E_FAIL);
+            Inc(Index,
+                4);
+          end;
+        else
+          Result := E_FAIL;
+          Exit;
       end;
 
       if (Index > Length(AData)) then

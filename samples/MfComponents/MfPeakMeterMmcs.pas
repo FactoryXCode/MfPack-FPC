@@ -125,12 +125,15 @@ type
   TLightMmcssTimer = class;
 
   TLightMmcssTimerThread = class(TThread)
+
   private
 
     FOwner: TLightMmcssTimer;
+
   protected
 
     procedure Execute(); override;
+
   public
 
     constructor Create(AOwner: TLightMmcssTimer);
@@ -139,6 +142,7 @@ type
   // Lightweight periodic timer that posts WM_MFPEAKMETEREX_TICK to a target window.
   // Runs on its own thread and registers that thread with MMCSS (Pro Audio by default).
   TLightMmcssTimer = class(TComponent)
+
   private
 
     FEnabled: Boolean;
@@ -194,6 +198,7 @@ type
                              isWasapiEngine);
 
   TMfPeakMeterMmcs = class(TGraphicControl)
+
   private
     { private fields }
 
@@ -247,7 +252,7 @@ type
 
     // Input source (endpoint vs engine-fed).
     FInputSource: TMfPeakMeterInputSource;
-    FWasApiEngine: TWasApiEngine              ;
+    FWasApiEngine: TWasApiEngine;
 
     // External (engine-fed) peak values (thread-safe via InterlockedExchange)
     FExtPeakBitsL: LongInt;
@@ -357,6 +362,7 @@ type
     procedure PushPcm(const pData: PByte;
                       const ByteCount: DWord;
                       const Wfx: PWAVEFORMATEX);
+
   published
     { published methods }
     property DragCursor;
@@ -433,6 +439,7 @@ implementation
 { TLightMmcssTimerThread }
 
 constructor TLightMmcssTimerThread.Create(AOwner: TLightMmcssTimer);
+
 begin
 
   FOwner := AOwner;
@@ -461,28 +468,28 @@ begin
                                               @TaskIndex);
   // AvrtHandle = 0 means failed.
   if (AvrtHandle <> 0) then
-    begin
+      begin
 
-      Prio := FOwner.FMmcssPriority;
-      if (Prio < -2) then
-        Prio := -2;        // Low prio
-      if (Prio > 2) then   //
-        Prio := 2;
+        Prio := FOwner.FMmcssPriority;
+        if (Prio < -2) then
+          Prio := -2;        // Low prio
+        if (Prio > 2) then   //
+          Prio := 2;
 
-    // Map -2..+2 into AVRT_PRIORITY_*.
-    case Prio of
-      -2: AvSetMmThreadPriority(AvrtHandle,
-                                AVRT_PRIORITY_VERYLOW);  // Very low prio
-      -1: AvSetMmThreadPriority(AvrtHandle,              // Low prio
-                                AVRT_PRIORITY_LOW);
-       0: AvSetMmThreadPriority(AvrtHandle,
-                                AVRT_PRIORITY_NORMAL);   // Normal prio
-       1: AvSetMmThreadPriority(AvrtHandle,
-                                AVRT_PRIORITY_HIGH);     // High prio
-       2: AvSetMmThreadPriority(AvrtHandle,
-                                AVRT_PRIORITY_CRITICAL); // Critical prio
+      // Map -2..+2 into AVRT_PRIORITY_*.
+      case Prio of
+        -2: AvSetMmThreadPriority(AvrtHandle,
+                                  AVRT_PRIORITY_VERYLOW);  // Very low prio
+        -1: AvSetMmThreadPriority(AvrtHandle,              // Low prio
+                                  AVRT_PRIORITY_LOW);
+         0: AvSetMmThreadPriority(AvrtHandle,
+                                  AVRT_PRIORITY_NORMAL);   // Normal prio
+         1: AvSetMmThreadPriority(AvrtHandle,
+                                  AVRT_PRIORITY_HIGH);     // High prio
+         2: AvSetMmThreadPriority(AvrtHandle,
+                                  AVRT_PRIORITY_CRITICAL); // Critical prio
+      end;
     end;
-  end;
 
   try
 
@@ -493,22 +500,22 @@ begin
                           WaitMs);
 
     while (not Terminated) and (WaitForSingleObject(FOwner.FStopEvent, 0) <> WAIT_OBJECT_0) do
-      begin
+        begin
 
-        if (FOwner.FTargetHwnd <> 0) then
-          PostMessage(FOwner.FTargetHwnd,
-                      WM_MFPEAKMETEREX_TICK,
-                      0,
-                      0);
+          if (FOwner.FTargetHwnd <> 0) then
+            PostMessage(FOwner.FTargetHwnd,
+                        WM_MFPEAKMETEREX_TICK,
+                        0,
+                        0);
 
-      WaitMs := FOwner.FPeriod;
-      if (WaitMs < 1) then
-        WaitMs := 1;
+        WaitMs := FOwner.FPeriod;
+        if (WaitMs < 1) then
+          WaitMs := 1;
 
-      // Wait for next tick, or stop request.
-      WaitForSingleObject(FOwner.FStopEvent,
-                          WaitMs);
-    end;
+        // Wait for next tick, or stop request.
+        WaitForSingleObject(FOwner.FStopEvent,
+                            WaitMs);
+      end;
   finally
 
     if (AvrtHandle <> 0) then
@@ -519,6 +526,7 @@ end;
 { TLightMmcssTimer }
 
 constructor TLightMmcssTimer.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
@@ -529,9 +537,9 @@ begin
   FTargetHwnd := 0;
   FThread := nil;
   FStopEvent := CreateEventW(nil,
-                            True,
-                            False,
-                            nil); // manual-reset.
+                             True,
+                             False,
+                             nil); // manual-reset.
 
   FMmcssTaskName := 'Pro Audio';
   FMmcssPriority := 1;
@@ -539,6 +547,7 @@ end;
 
 
 destructor TLightMmcssTimer.Destroy();
+
 begin
 
   Stop();
@@ -550,104 +559,114 @@ end;
 
 
 procedure TLightMmcssTimer.Start;
+
 begin
 
   if FEnabled and (FThread = nil) then
-    begin
+      begin
 
-      if (csDesigning in ComponentState) then
-        Exit;
-      ResetEvent(FStopEvent);
-      FThread := TLightMmcssTimerThread.Create(Self);
-    end;
+        if (csDesigning in ComponentState) then
+          Exit;
+        ResetEvent(FStopEvent);
+        FThread := TLightMmcssTimerThread.Create(Self);
+      end;
 end;
 
 
 procedure TLightMmcssTimer.Stop();
+
 begin
 
   if (FThread <> nil) then
-    begin
+      begin
 
-      SetEvent(FStopEvent);
-      FThread.Terminate();
-      // Give it a chance to exit quickly (it waits on FStopEvent).
-      WaitForSingleObject(FThread.Handle,
-                          2000);
-      FreeAndNil(FThread);
-    end;
+        SetEvent(FStopEvent);
+        FThread.Terminate();
+        // Give it a chance to exit quickly (it waits on FStopEvent).
+        WaitForSingleObject(FThread.Handle,
+                            2000);
+        FreeAndNil(FThread);
+      end;
 
   FEnabled := False;
 end;
 
 
 procedure TLightMmcssTimer.Reset();
+
 begin
 
   if FEnabled then
-    begin
+      begin
 
-      if (csDesigning in ComponentState) then
-        Exit;
+        if (csDesigning in ComponentState) then
+          Exit;
 
-      Stop();
-      FEnabled := True;
-      Start();
-    end;
+        Stop();
+        FEnabled := True;
+        Start();
+      end;
 end;
 
 
 procedure TLightMmcssTimer.SetEnabled(const Value: Boolean);
+
 begin
 
   if (Value <> FEnabled) then
-    begin
+      begin
 
-      if (csDesigning in ComponentState) then
-        Exit;
+        if (csDesigning in ComponentState) then
+          Exit;
 
-      FEnabled := Value;
-      if FEnabled then
-        Start()
-      else
-        Stop();
-    end;
+        FEnabled := Value;
+        if FEnabled then
+          Start()
+        else
+          Stop();
+      end;
 end;
 
 
 procedure TLightMmcssTimer.SetDueTime(const Value: Cardinal);
+
 begin
 
   if (Value <> FDueTime) then
-    begin
+      begin
 
-      FDueTime := Value;
-      Reset();
-    end;
+        FDueTime := Value;
+        Reset();
+      end;
 end;
 
 
 procedure TLightMmcssTimer.SetPeriod(const Value: Cardinal);
+
 begin
 
   if (Value <> FPeriod) then
-    begin
+      begin
 
-      FPeriod := Value;
-      Reset();
-    end;
+        FPeriod := Value;
+        Reset();
+      end;
 end;
 
 
 procedure Register;
+
 begin
 
-  RegisterComponents('MfPack Core Audio Samples', [TMfPeakMeterMmcs]);
+  RegisterComponents('MfPack Core Audio Samples',
+                     [TMfPeakMeterMmcs]);
 end;
 
 
 constructor TMfPeakMeterMmcs.Create(aOwner: Tcomponent);
+
 begin
+
   inherited Create(aOwner);
 
   fEnabled := False;
@@ -744,14 +763,15 @@ end;
 
 
 destructor TMfPeakMeterMmcs.Destroy();
+
 begin
 
   if Assigned(FTimer) then
-    begin
+      begin
 
-      FTimer.Enabled := False;
-      FTimer.Free;
-    end;
+        FTimer.Enabled := False;
+        FTimer.Free;
+      end;
 
   fBmp.Free;
 
@@ -787,17 +807,17 @@ begin
     goto done;
 
   // Bind to a specific device if EndpointDeviceID is set; otherwise use the default endpoint.
-  if FEndpointDeviceID <> '' then
-    begin
-      hr := pEnumerator.GetDevice(PWideChar(FEndpointDeviceID),
-                                 pDevice);
-    end
+  if (FEndpointDeviceID <> '') then
+      begin
+        hr := pEnumerator.GetDevice(PWideChar(FEndpointDeviceID),
+                                    pDevice);
+      end
   else
-    begin
-      hr := pEnumerator.GetDefaultAudioEndpoint(fDataFlow,
-                                                fRole,
-                                                pDevice);
-    end;
+      begin
+        hr := pEnumerator.GetDefaultAudioEndpoint(fDataFlow,
+                                                  fRole,
+                                                  pDevice);
+      end;
   if FAILED(hr) then
     goto done;
 
@@ -823,6 +843,7 @@ end;
 
 
 procedure TMfPeakMeterMmcs.ReleaseEndpointInterfaces;
+
 begin
 
   SafeRelease(pMeterInfo);
@@ -836,6 +857,7 @@ end;
 
 
 function TMfPeakMeterMmcs.EnsureEndpointInterfaces: HRESULT;
+
 begin
 
   if (pMeterInfo <> nil) then
@@ -856,37 +878,37 @@ begin
 
   FInputSource := Value;
   if (fEnabled = False) then
-    begin
+      begin
 
-      // If disabled, just keep the desired setting; ensure endpoint is not held in engine mode.
-      if (FInputSource = isWasapiEngine) then
-        ReleaseEndpointInterfaces;
-      Exit;
-    end;
+        // If disabled, just keep the desired setting; ensure endpoint is not held in engine mode.
+        if (FInputSource = isWasapiEngine) then
+          ReleaseEndpointInterfaces;
+        Exit;
+      end;
 
   // Enabled and source changed: reconfigure live.
   if (FInputSource = isWasapiEngine) then
-    begin
+      begin
 
-      // Engine-fed mode: release endpoint and reset external peaks.
-      ReleaseEndpointInterfaces();
-      AudioEnded();
-      sPeakValue := 0.0;
-      Paint;
-    end
+        // Engine-fed mode: release endpoint and reset external peaks.
+        ReleaseEndpointInterfaces();
+        AudioEnded();
+        sPeakValue := 0.0;
+        Paint;
+      end
   else
-    begin
+      begin
 
-      // Endpoint mode: ensure endpoint interfaces exist.
-      hr := EnsureEndpointInterfaces();
-      if FAILED(hr) then
-        begin
-          // Fail-safe: keep running but show silence.
-          ReleaseEndpointInterfaces();
-          sPeakValue := 0.0;
-        end;
-      Paint;
-    end;
+        // Endpoint mode: ensure endpoint interfaces exist.
+        hr := EnsureEndpointInterfaces();
+        if FAILED(hr) then
+            begin
+              // Fail-safe: keep running but show silence.
+              ReleaseEndpointInterfaces();
+              sPeakValue := 0.0;
+            end;
+        Paint;
+      end;
 end;
 
 
@@ -901,10 +923,14 @@ begin
   z := 0.0;
   b := PLongInt(@z)^;
 
-  InterlockedExchange(FExtPeakBitsL, b);
-  InterlockedExchange(FExtPeakBitsR, b);
-  InterlockedExchange(FExtRmsBitsL,  b);
-  InterlockedExchange(FExtRmsBitsR,  b);
+  InterlockedExchange(FExtPeakBitsL,
+                      b);
+  InterlockedExchange(FExtPeakBitsR,
+                      b);
+  InterlockedExchange(FExtRmsBitsL,
+                      b);
+  InterlockedExchange(FExtRmsBitsR,
+                      b);
 
   FExtChannels := 0;
   FExtSmoothValue := 0.0;
@@ -970,7 +996,7 @@ type
   begin
 
     // Exponent all 1s => NaN/Inf
-    Result := (u and $7F800000) <> $7F800000;
+    Result := ((u and $7F800000) <> $7F800000);
   end;
 
   function KillDenormal(const x: Single): Single; inline;
@@ -1088,13 +1114,13 @@ begin
   isIeeeFloat := (fmtTag = WAVE_FORMAT_IEEE_FLOAT);
 
   if (fmtTag = WAVE_FORMAT_EXTENSIBLE) then
-    begin
+      begin
 
-      if MfReadWaveExtSubFormat(Wfx,
-                                SubFormat) then
-        isIeeeFloat := IsEqualGUID(SubFormat,
-                                   KSDATAFORMAT_SUBTYPE_IEEE_FLOAT);
-    end;
+        if MfReadWaveExtSubFormat(Wfx,
+                                  SubFormat) then
+          isIeeeFloat := IsEqualGUID(SubFormat,
+                                     KSDATAFORMAT_SUBTYPE_IEEE_FLOAT);
+      end;
 
   peakL := 0.0;
   peakR := 0.0;
@@ -1108,176 +1134,176 @@ begin
   // - mono: compute L and mirror to R (so the UI keeps working).
   // - >2 channels: meter first two channels only (common DJ use-case). Adapt if downmix is needed.
   if isIeeeFloat then
-    begin
+      begin
 
-      // Expect 32-bit float (most MF/WASAPI float meters)
-      if (bits <> 32) then
-        Exit;
+        // Expect 32-bit float (most MF/WASAPI float meters)
+        if (bits <> 32) then
+          Exit;
 
-      for i := 0 to frames - 1 do
-        begin
-
-          // channel 0
-          pF32 := PSingle(p);
-          sL := ReadF32(pF32);
-
-          if (channels >= 2) then
+        for i := 0 to frames - 1 do
             begin
 
-              pF32 := PSingle(p + 4);
-              sR := ReadF32(pF32);
-            end
-          else
-            sR := sL;
+              // channel 0
+              pF32 := PSingle(p);
+              sL := ReadF32(pF32);
 
-          absL := Abs(sL);
-          absR := Abs(sR);
+              if (channels >= 2) then
+                  begin
 
-          if (absL > peakL) then
-            peakL := absL;
-          if (absR > peakR) then
-            peakR := absR;
+                    pF32 := PSingle(p + 4);
+                    sR := ReadF32(pF32);
+                  end
+              else
+                sR := sL;
 
-          sumSqL := sumSqL + (sL * sL);
-          sumSqR := sumSqR + (sR * sR);
+              absL := Abs(sL);
+              absR := Abs(sR);
 
-          Inc(p,
-              blockAlign);
-        end;
-    end
+              if (absL > peakL) then
+                peakL := absL;
+              if (absR > peakR) then
+                peakR := absR;
+
+              sumSqL := sumSqL + (sL * sL);
+              sumSqR := sumSqR + (sR * sR);
+
+              Inc(p,
+                  blockAlign);
+            end;
+      end
   else
-    begin
-      // PCM integer
-      case bits of
-      16:
-        begin
-
-          bytesPerSample := 2;
-          for i := 0 to frames - 1 do
-            begin
-              pS16 := PSmallInt(p);
-              sL := ReadS16(pS16);
-
-              if (channels >= 2) then
-                begin
-
-                  pS16 := PSmallInt(p + bytesPerSample);
-                  sR := ReadS16(pS16);
-                end
-              else
-                sR := sL;
-
-              absL := Abs(sL);
-              absR := Abs(sR);
-
-              if (absL > peakL) then
-                peakL := absL;
-              if (absR > peakR) then
-                peakR := absR;
-
-              sumSqL := sumSqL + _Double(sL) * _Double(sL);
-              sumSqR := sumSqR + _Double(sR) * _Double(sR);
-
-              Inc(p,
-                  blockAlign);
-            end;
-        end;
-
-      24:
-        begin
-
-          // Packed 24-bit (3 bytes per sample)
-          bytesPerSample := 3;
-          for i := 0 to frames - 1 do
+      begin
+        // PCM integer
+        case bits of
+        16:
             begin
 
-              p24 := PInt24(p);
-              sL := ReadS24Packed(p24);
+              bytesPerSample := 2;
+              for i := 0 to frames - 1 do
+                  begin
+                    pS16 := PSmallInt(p);
+                    sL := ReadS16(pS16);
 
-              if (channels >= 2) then
-                begin
+                    if (channels >= 2) then
+                        begin
 
-                  p24 := PInt24(p + bytesPerSample);
-                  sR := ReadS24Packed(p24);
-                end
-              else
-                sR := sL;
+                          pS16 := PSmallInt(p + bytesPerSample);
+                          sR := ReadS16(pS16);
+                        end
+                    else
+                      sR := sL;
 
-              absL := Abs(sL);
-              absR := Abs(sR);
+                    absL := Abs(sL);
+                    absR := Abs(sR);
 
-              if (absL > peakL) then
-                peakL := absL;
-              if (absR > peakR) then
-                peakR := absR;
+                    if (absL > peakL) then
+                      peakL := absL;
+                    if (absR > peakR) then
+                      peakR := absR;
 
-              sumSqL := sumSqL + _Double(sL) * _Double(sL);
-              sumSqR := sumSqR + _Double(sR) * _Double(sR);
+                    sumSqL := sumSqL + _Double(sL) * _Double(sL);
+                    sumSqR := sumSqR + _Double(sR) * _Double(sR);
 
-              Inc(p,
-                  blockAlign);
+                    Inc(p,
+                        blockAlign);
+                  end;
             end;
-        end;
 
-      32:
-        begin
-
-          // Could be 32-bit PCM int (common in some pipelines)
-          bytesPerSample := 4;
-          for i := 0 to frames - 1 do
+        24:
             begin
 
-              pS32 := PInteger(p);
-              sL := ReadS32(pS32);
+              // Packed 24-bit (3 bytes per sample)
+              bytesPerSample := 3;
+              for i := 0 to frames - 1 do
+                  begin
 
-              if (channels >= 2) then
-                begin
+                    p24 := PInt24(p);
+                    sL := ReadS24Packed(p24);
 
-                  pS32 := PInteger(p + bytesPerSample);
-                  sR := ReadS32(pS32);
-                end
-              else
-                sR := sL;
+                    if (channels >= 2) then
+                        begin
 
-              // No NaN/Inf possible here, but denorm-kill is harmless
-              sL := KillDenormal(sL);
-              sR := KillDenormal(sR);
+                          p24 := PInt24(p + bytesPerSample);
+                          sR := ReadS24Packed(p24);
+                        end
+                    else
+                      sR := sL;
 
-              absL := Abs(sL);
-              absR := Abs(sR);
+                    absL := Abs(sL);
+                    absR := Abs(sR);
 
-              if (absL > peakL) then
-                peakL := absL;
-              if (absR > peakR) then
-                peakR := absR;
+                    if (absL > peakL) then
+                      peakL := absL;
+                    if (absR > peakR) then
+                      peakR := absR;
 
-              sumSqL := sumSqL + _Double(sL) * _Double(sL);
-              sumSqR := sumSqR + _Double(sR) * _Double(sR);
+                    sumSqL := sumSqL + _Double(sL) * _Double(sL);
+                    sumSqR := sumSqR + _Double(sR) * _Double(sR);
 
-              Inc(p,
-                blockAlign);
+                    Inc(p,
+                        blockAlign);
+                  end;
             end;
-        end;
 
-    else
-      // Unsupported bit depth for this hardened path
-      Exit;
+        32:
+            begin
+
+              // Could be 32-bit PCM int (common in some pipelines)
+              bytesPerSample := 4;
+              for i := 0 to frames - 1 do
+                  begin
+
+                    pS32 := PInteger(p);
+                    sL := ReadS32(pS32);
+
+                    if (channels >= 2) then
+                        begin
+
+                          pS32 := PInteger(p + bytesPerSample);
+                          sR := ReadS32(pS32);
+                        end
+                    else
+                      sR := sL;
+
+                    // No NaN/Inf possible here, but denorm-kill is harmless
+                    sL := KillDenormal(sL);
+                    sR := KillDenormal(sR);
+
+                    absL := Abs(sL);
+                    absR := Abs(sR);
+
+                    if (absL > peakL) then
+                      peakL := absL;
+                    if (absR > peakR) then
+                      peakR := absR;
+
+                    sumSqL := sumSqL + _Double(sL) * _Double(sL);
+                    sumSqR := sumSqR + _Double(sR) * _Double(sR);
+
+                    Inc(p,
+                        blockAlign);
+                  end;
+            end;
+
+      else
+        // Unsupported bit depth for this hardened path
+        Exit;
+      end;
     end;
-  end;
 
   // Convert sums to RMS (block RMS)
   if (frames > 0) then
-    begin
+      begin
 
-      rmsL := _Single(Sqrt(sumSqL / frames));
-      rmsR := _Single(Sqrt(sumSqR / frames));
-    end
+        rmsL := _Single(Sqrt(sumSqL / frames));
+        rmsR := _Single(Sqrt(sumSqR / frames));
+      end
   else
-    begin
+      begin
 
-      rmsL := 0.0;
-      rmsR := 0.0;
-    end;
+        rmsL := 0.0;
+        rmsR := 0.0;
+      end;
 
   // Final safety: ensure meter values are sane 0..(a bit over 1 allowed if float overshoots)
   // We clamp ONLY the meter outputs (never the audio).
@@ -1286,18 +1312,18 @@ begin
   if not IsFiniteSingle(peakR) then
     peakR := 0.0;
   if not IsFiniteSingle(rmsL) then
-    rmsL  := 0.0;
+    rmsL := 0.0;
   if not IsFiniteSingle(rmsR) then
-    rmsR  := 0.0;
+    rmsR := 0.0;
 
   if (peakL < 0) then
     peakL := 0;
   if (peakR < 0) then
     peakR := 0;
-  if (rmsL  < 0) then
-    rmsL  := 0;
-  if (rmsR  < 0) then
-    rmsR  := 0;
+  if (rmsL < 0) then
+    rmsL := 0;
+  if (rmsR < 0) then
+    rmsR := 0;
 
   // Keep a modest ceiling to avoid UI freakouts on float overs.
   // (If you prefer, set to 1.0 strictly.)
@@ -1305,10 +1331,10 @@ begin
     peakL := 4.0;
   if (peakR > 4.0) then
     peakR := 4.0;
-  if (rmsL  > 4.0) then
-    rmsL  := 4.0;
-  if (rmsR  > 4.0) then
-    rmsR  := 4.0;
+  if (rmsL > 4.0) then
+    rmsL := 4.0;
+  if (rmsR > 4.0) then
+    rmsR := 4.0;
 
   // Publish atomically as Single bits (works with your InterlockedExchangeAdd read trick).
   InterlockedExchange(FExtPeakBitsL,
@@ -1356,7 +1382,7 @@ var
   begin
 
     Result := 20.0 * Log10(Max(lin,
-                           EPS));
+                               EPS));
   end;
 
   function DbToMeter01(const db: Single;
@@ -1388,185 +1414,188 @@ begin
   // Peak-driven display with a little RMS support for body.
   // ===========================================================================
   if (FInputSource = isWasapiEngine) then
-    begin
+      begin
 
-      // Read PEAK values
-      bL :=  InterlockedCompareExchange(FExtPeakBitsL,
-                                        0,
-                                        0);
+        // Read PEAK values
+        bL := InterlockedCompareExchange(FExtPeakBitsL,
+                                         0,
+                                         0);
 
-      bR := InterlockedCompareExchange(FExtPeakBitsR,
-                                        0,
-                                        0);
+        bR := InterlockedCompareExchange(FExtPeakBitsR,
+                                         0,
+                                         0);
 
-      pL := PSingle(@bL)^;
-      pR := PSingle(@bR)^;
+        pL := PSingle(@bL)^;
+        pR := PSingle(@bR)^;
 
-      // Read RMS values
-      bL := InterlockedExchangeAdd(FExtRmsBitsL,
-                                   0);
-      bR := InterlockedExchangeAdd(FExtRmsBitsR,
-                                   0);
-      rL := PSingle(@bL)^;
-      rR := PSingle(@bR)^;
+        // Read RMS values
+        bL := InterlockedExchangeAdd(FExtRmsBitsL,
+                                     0);
+        bR := InterlockedExchangeAdd(FExtRmsBitsR,
+                                     0);
+        rL := PSingle(@bL)^;
+        rR := PSingle(@bR)^;
 
-      // Safety clamp
-      if (pL < 0.0) then
-        pL := 0.0;
-      if (pR < 0.0) then
-        pR := 0.0;
-      if (rL < 0.0) then
-        rL := 0.0;
-      if (rR < 0.0) then
-        rR := 0.0;
+        // Safety clamp
+        if (pL < 0.0) then
+          pL := 0.0;
+        if (pR < 0.0) then
+          pR := 0.0;
+        if (rL < 0.0) then
+          rL := 0.0;
+        if (rR < 0.0) then
+          rR := 0.0;
 
-      // Default = unity
-      //gL := 1.0;
-      //gR := 1.0;
+        // Default = unity
+        //gL := 1.0;
+        //gR := 1.0;
 
-      // Apply GUI gains only for post-fader behaviour
-      //if Assigned(FWasApiEngine) then
-      //  begin
-      //
-      //    FWasApiEngine.GetMeterFaderGains(gL,
-      //                                     gR);
-      //
-      //    pL := pL * gL;
-      //    pR := pR * gR;
-      //    rL := rL * gL;
-      //    rR := rR * gR;
-      //  end;
+        // Apply GUI gains only for post-fader behaviour
+        //if Assigned(FWasApiEngine) then
+        //  begin
+        //
+        //    FWasApiEngine.GetMeterFaderGains(gL,
+        //                                     gR);
+        //
+        //    pL := pL * gL;
+        //    pR := pR * gR;
+        //    rL := rL * gL;
+        //    rR := rR * gR;
+        //  end;
 
-      // Channel handling
-      if Assigned(FWasApiEngine) then
-        FExtChannels := FWasApiEngine.SoundChannels;
+        // Channel handling
+        if Assigned(FWasApiEngine) then
+          FExtChannels := FWasApiEngine.SoundChannels;
 
-      if (FExtChannels <= 1) then
-        begin
+        if (FExtChannels <= 1) then
+            begin
 
-          pR := pL;
-          rR := rL;
-          fMeterChannel := mcLeft;
-        end;
+              pR := pL;
+              rR := rL;
+              fMeterChannel := mcLeft;
+            end;
 
-      // Blend: mostly peak, with a bit of RMS support
-      vL := Max(pL * FEnginePeakWeight, rL * FEngineRmsWeight);
-      vR := Max(pR * FEnginePeakWeight, rR * FEngineRmsWeight);
+        // Blend: mostly peak, with a bit of RMS support
+        vL := Max(pL * FEnginePeakWeight,
+                  rL * FEngineRmsWeight);
+        vR := Max(pR * FEnginePeakWeight,
+                  rR * FEngineRmsWeight);
 
-      // Select channel(s)
-      if (fSampleAllChannels = True) then
-        begin
-          if (vR > vL) then
-            v := vR
-          else
-            v := vL;
-        end
-      else
-        begin
-          if (fMeterChannel = mcRight) and (FExtChannels >= 2) then
-            v := vR
-          else
-            v := vL;
-        end;
+        // Select channel(s)
+        if (fSampleAllChannels = True) then
+            begin
+              if (vR > vL) then
+                v := vR
+              else
+                v := vL;
+            end
+        else
+            begin
+              if (fMeterChannel = mcRight) and (FExtChannels >= 2) then
+                v := vR
+              else
+                v := vL;
+            end;
 
-      // Final safety clamp
-      if (v < 0.0) then
-        v := 0.0
-      else if (v > 1.0) then
-        v := 1.0;
+        // Final safety clamp
+        if (v < 0.0) then
+          v := 0.0
+        else if (v > 1.0) then
+          v := 1.0;
 
-      // Silence gate: avoid tiny residual noise flicker
-      if (v < SILENCE_GATE) then
-        v := 0.0;
+        // Silence gate: avoid tiny residual noise flicker
+        if (v < SILENCE_GATE) then
+          v := 0.0;
 
-      // Convert to display space
-      db := LinearToDbFS(v);
-      v := DbToMeter01(db,
-                       FEngineMeterFloorDb,
-                       FEngineMeterCeilDb);
+        // Convert to display space
+        db := LinearToDbFS(v);
+        v := DbToMeter01(db,
+                         FEngineMeterFloorDb,
+                         FEngineMeterCeilDb);
 
-      if (FEngineMeterGamma <> 1.0) then
-        v := Curve(v,
-                   FEngineMeterGamma);
+        if (FEngineMeterGamma <> 1.0) then
+          v := Curve(v,
+                     FEngineMeterGamma);
 
-      // Ballistics
-      dt := fSafeTimerInterval / 1000.0;
-      if (dt <= 0.0) then
-        dt := 0.01;
+        // Ballistics
+        dt := fSafeTimerInterval / 1000.0;
+        if (dt <= 0.0) then
+          dt := 0.01;
 
-      releaseSec := FEngineReleaseSec;
-      if (releaseSec <= 0.001) then
-        releaseSec := 0.001;
+        releaseSec := FEngineReleaseSec;
+        if (releaseSec <= 0.001) then
+          releaseSec := 0.001;
 
-      coeff := Exp(-dt / releaseSec);
+        coeff := Exp(-dt / releaseSec);
 
-      if (v >= FExtSmoothValue) then
-        FExtSmoothValue := v
-      else
-        FExtSmoothValue := Max(v,
-                               FExtSmoothValue * coeff);
+        if (v >= FExtSmoothValue) then
+          FExtSmoothValue := v
+        else
+          FExtSmoothValue := Max(v,
+                                 FExtSmoothValue * coeff);
 
-      sPeakValue := FExtSmoothValue;
+        sPeakValue := FExtSmoothValue;
 
-      if (sPeakValue >= FPeakHoldValue) then
-        begin
+        if (sPeakValue >= FPeakHoldValue) then
+            begin
 
-          FPeakHoldValue := sPeakValue;
-          FPeakHoldTime := 0.0;
-        end
-      else
-        begin
+              FPeakHoldValue := sPeakValue;
+              FPeakHoldTime := 0.0;
+            end
+        else
+            begin
 
-          FPeakHoldTime := FPeakHoldTime + dt;
-          if (FPeakHoldTime >= FPeakHoldDuration) then
-            FPeakHoldValue := FPeakHoldValue * 0.95; // falloff
-        end;
+              FPeakHoldTime := FPeakHoldTime + dt;
+              if (FPeakHoldTime >= FPeakHoldDuration) then
+                FPeakHoldValue := FPeakHoldValue * 0.95; // falloff
+            end;
 
-      Invalidate;
-      Exit;
-    end;
+        Invalidate;
+        Exit;
+      end;
 
   // ===========================================================================
   // ENDPOINT SOURCE (global Windows meter).
   // ===========================================================================
   if (pMeterInfo = nil) then
-    begin
+      begin
 
-      hr := EnsureEndpointInterfaces();
+        hr := EnsureEndpointInterfaces();
 
-      if FAILED(hr) or (pMeterInfo = nil) then
-        begin
+        if FAILED(hr) or (pMeterInfo = nil) then
+            begin
 
-          sPeakValue := 0.0;
-          Invalidate;
-          Exit;
-        end;
-    end;
+              sPeakValue := 0.0;
+              Invalidate;
+              Exit;
+            end;
+      end;
 
   if (fSampleAllChannels = True) then
     pMeterInfo.GetPeakValue(sPeakValue)
   else
-    begin
+      begin
 
-      pMeterInfo.GetChannelsPeakValues(fChannelCount,
-                                       @afPeakValues[0]);
+        pMeterInfo.GetChannelsPeakValues(fChannelCount,
+                                         @afPeakValues[0]);
 
-      if (fChannelCount = 1) then
-        fMeterChannel := mcLeft;
+        if (fChannelCount = 1) then
+          fMeterChannel := mcLeft;
 
-      if (fMeterChannel = mcLeft) then
-        sPeakValue := afPeakValues[0]
-      else if (fMeterChannel = mcRight) and (fChannelCount = 2) then
-        sPeakValue := afPeakValues[1]
-      else
-        sPeakValue := afPeakValues[0];
-    end;
+        if (fMeterChannel = mcLeft) then
+          sPeakValue := afPeakValues[0]
+        else if (fMeterChannel = mcRight) and (fChannelCount = 2) then
+          sPeakValue := afPeakValues[1]
+        else
+          sPeakValue := afPeakValues[0];
+      end;
 
   Invalidate;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetSafeTimerInterval(value: Cardinal);
+
 begin
 
   if (value < 10) then
@@ -1581,6 +1610,7 @@ end;
 
 
 procedure TMfPeakMeterMmcs.SetDeviceDataFlow(value: EDataFlow);
+
 begin
 
   if (fDataFlow = value) then
@@ -1590,16 +1620,17 @@ begin
 
   // If using default endpoint selection (EndpointDeviceID empty), rebind now.
   if (FEndpointDeviceID = '') and (FEnabled) and (FInputSource = isWasapiEndpoint) then
-    begin
+      begin
 
-      ReleaseEndpointInterfaces();
-      EnsureEndpointInterfaces();
-      Invalidate;
-    end;
+        ReleaseEndpointInterfaces();
+        EnsureEndpointInterfaces();
+        Invalidate;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetDeviceRole(value: ERole);
+
 begin
 
   if (fRole = value) then
@@ -1609,15 +1640,16 @@ begin
 
   // If using default endpoint selection (EndpointDeviceID empty), rebind now.
   if (FEndpointDeviceID = '') and (FEnabled) and (FInputSource = isWasapiEndpoint) then
-    begin
-      ReleaseEndpointInterfaces();
-      EnsureEndpointInterfaces();
-      Invalidate;
-    end;
+      begin
+        ReleaseEndpointInterfaces();
+        EnsureEndpointInterfaces();
+        Invalidate;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetEndpointDeviceID(const Value: UnicodeString);
+
 begin
 
   if (FEndpointDeviceID = Value) then
@@ -1627,75 +1659,85 @@ begin
 
   // If we're currently metering the endpoint, rebind immediately.
   if (FEnabled) and (FInputSource = isWasapiEndpoint) then
-    begin
-      ReleaseEndpointInterfaces();
-      EnsureEndpointInterfaces();
-      Invalidate;
-    end;
+      begin
+        ReleaseEndpointInterfaces();
+        EnsureEndpointInterfaces();
+        Invalidate;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetEngineMeterFloorDb(const Value: Single);
+
 begin
+
   if (FEngineMeterFloorDb <> Value) then
-    begin
-      FEngineMeterFloorDb := Value;
-      Invalidate;
-    end;
+      begin
+        FEngineMeterFloorDb := Value;
+        Invalidate;
+      end;
 end;
 
 procedure TMfPeakMeterMmcs.SetEngineMeterCeilDb(const Value: Single);
+
 begin
+
   if (FEngineMeterCeilDb <> Value) then
-    begin
-      FEngineMeterCeilDb := Value;
-      Invalidate;
-    end;
+      begin
+        FEngineMeterCeilDb := Value;
+        Invalidate;
+      end;
 end;
 
 procedure TMfPeakMeterMmcs.SetEngineMeterGamma(const Value: Single);
 var
   NewValue: Single;
+
 begin
+
   NewValue := Value;
   if (NewValue <= 0.0) then
     NewValue := 0.01;
 
   if (FEngineMeterGamma <> NewValue) then
-    begin
-      FEngineMeterGamma := NewValue;
-      Invalidate;
-    end;
+      begin
+        FEngineMeterGamma := NewValue;
+        Invalidate;
+      end;
 end;
 
 procedure TMfPeakMeterMmcs.SetEnginePeakWeight(const Value: Single);
 var
   NewValue: Single;
+
 begin
+
   NewValue := Value;
   if (NewValue < 0.0) then
     NewValue := 0.0;
 
   if (FEnginePeakWeight <> NewValue) then
-    begin
-      FEnginePeakWeight := NewValue;
-      Invalidate;
-    end;
+      begin
+        FEnginePeakWeight := NewValue;
+        Invalidate;
+      end;
 end;
 
 procedure TMfPeakMeterMmcs.SetEngineRmsWeight(const Value: Single);
 var
   NewValue: Single;
+
 begin
+
   NewValue := Value;
   if (NewValue < 0.0) then
     NewValue := 0.0;
 
   if (FEngineRmsWeight <> NewValue) then
-    begin
-      FEngineRmsWeight := NewValue;
-      Invalidate;
-    end;
+      begin
+        FEngineRmsWeight := NewValue;
+        Invalidate;
+      end;
 end;
 
 procedure TMfPeakMeterMmcs.SetEngineReleaseSec(const Value: Single);
@@ -1709,11 +1751,11 @@ begin
     NewValue := 0.001;
 
   if (FEngineReleaseSec <> NewValue) then
-    begin
+      begin
 
-      FEngineReleaseSec := NewValue;
-      Invalidate;
-    end;
+        FEngineReleaseSec := NewValue;
+        Invalidate;
+      end;
 end;
 
 
@@ -1729,11 +1771,11 @@ begin
     NewValue := 0.0;
 
   if (FPeakHoldDuration <> NewValue) then
-    begin
+      begin
 
-      FPeakHoldDuration := NewValue;
-      Invalidate;
-    end;
+        FPeakHoldDuration := NewValue;
+        Invalidate;
+      end;
 end;
 
 
@@ -1744,32 +1786,32 @@ var
 begin
 
   if (fEnabled = value) then
-    begin
+      begin
 
-      inherited;
-      Exit;
-    end;
+        inherited;
+        Exit;
+      end;
 
   fEnabled := value;
 
   if (fEnabled = False) then
-    begin
+      begin
 
-      // Disable everything.
-      if (FTimer <> nil) then
-        FTimer.Enabled := False;
+        // Disable everything.
+        if (FTimer <> nil) then
+          FTimer.Enabled := False;
 
-      // Release endpoint interfaces so endpoint volume/mute can never influence visuals.
-      ReleaseEndpointInterfaces();
+        // Release endpoint interfaces so endpoint volume/mute can never influence visuals.
+        ReleaseEndpointInterfaces();
 
-      // Reset external peaks and visuals.
-      AudioEnded();
-      sPeakValue := 0.0;
-      Paint;
+        // Reset external peaks and visuals.
+        AudioEnded();
+        sPeakValue := 0.0;
+        Paint;
 
-      inherited;
-      Exit;
-    end;
+        inherited;
+        Exit;
+      end;
 
   // Enabling
   if (FTimer <> nil) and ((csDesigning in ComponentState) = False) then
@@ -1777,24 +1819,24 @@ begin
 
   // Ensure the correct source is active.
   if (FInputSource = isWasapiEndpoint) then
-    begin
+      begin
 
-      hr := EnsureEndpointInterfaces();
-      if FAILED(hr) then
-        begin
-          // Fail-safe: keep running but show silence.
-          ReleaseEndpointInterfaces;
-          sPeakValue := 0.0;
-        end;
-    end
+        hr := EnsureEndpointInterfaces();
+        if FAILED(hr) then
+            begin
+              // Fail-safe: keep running but show silence.
+              ReleaseEndpointInterfaces;
+              sPeakValue := 0.0;
+            end;
+      end
   else
-    begin
+      begin
 
-      // Engine-fed mode: ensure endpoint interfaces are not held.
-      ReleaseEndpointInterfaces();
-      AudioEnded();
-      sPeakValue := 0.0;
-    end;
+        // Engine-fed mode: ensure endpoint interfaces are not held.
+        ReleaseEndpointInterfaces();
+        AudioEnded();
+        sPeakValue := 0.0;
+      end;
 
   Paint;
 
@@ -1803,6 +1845,7 @@ end;
 
 
 function TMfPeakMeterMmcs.CalculateX(X: Integer): Integer;
+
 begin
 
   Result := (Width - X) - 1;
@@ -1810,6 +1853,7 @@ end;
 
 
 function TMfPeakMeterMmcs.CalculateY(Y: Integer): Integer;
+
 begin
 
   Result := (Height - Y) - 1;
@@ -1817,307 +1861,336 @@ end;
 
 
 procedure TMfPeakMeterMmcs.SetBevelWidth(value: Byte);
+
 begin
 
   if (value <> fbevelwidth) then
-    begin
+      begin
 
-      if (value = 0) then
-        value := 1;
-      if (value > (height div 3)) or (value > (width div 3)) then
-        value := 1;
+        if (value = 0) then
+          value := 1;
+        if (value > (height div 3)) or (value > (width div 3)) then
+          value := 1;
 
-      fBevelWidth := value;
-      Paint;
-    end;
+        fBevelWidth := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetBevelStyle(value: TPanelbevel);
+
 begin
 
   if (value <> fBevelStyle) then
-    begin
+      begin
 
-      fBevelStyle := value;
-      Paint;
-    end;
+        fBevelStyle := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetGreenColorOn(value: TColor);
+
 begin
 
   if (value <> fColors[1,
                        True]) then
-    begin
-      fColors[1,
-              True] := value;
-      Paint;
-    end;
+      begin
+        fColors[1,
+                True] := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetGreenMax(value: Integer);
+
 begin
 
   if (value <> fGreenMax) then
-    begin
-      fGreenMax := value;
-      Paint;
-    end;
+      begin
+        fGreenMax := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetgreenLeds(value: Integer);
+
 begin
 
   if (value <> fGreenLeds) then
-    begin
+      begin
 
-      fGreenLeds := value;
-      Paint;
-    end;
+        fGreenLeds := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetGreenColorOff(value: TColor);
+
 begin
 
   if (value <> fColors[1,
                        False]) then
-    begin
+      begin
 
-      fColors[1,
-              False] := value;
-      Paint;
-    end;
+        fColors[1,
+                False] := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetYellowColorOn(value: TColor);
+
 begin
 
   if (value <> fColors[2, True]) then
-    begin
+      begin
 
-      fColors[2,
-              True] := value;
-      Paint;
-    end;
+        fColors[2,
+                True] := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetYellowMax(value: Integer);
+
 begin
 
   if (value <> fYellowMax) then
-    begin
+      begin
 
-      fYellowMax := value;
-      Paint;
-    end;
+        fYellowMax := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetYellowLeds(value: Integer);
+
 begin
 
   if (value <> fYellowLeds) then
-    begin
+      begin
 
-      fYellowLeds := value;
-      Paint;
-    end;
+        fYellowLeds := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetYellowColorOff(value: TColor);
+
 begin
 
-  if value <> fColors[2,
-                      False] then
-    begin
+  if (value <> fColors[2,
+                      False]) then
+      begin
 
-      fColors[2,
-              False] := value;
-      Paint;
-    end;
+        fColors[2,
+                False] := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetRedColorOn(value: TColor);
+
 begin
 
   if (value <> fColors[3,
                        True]) then
-    begin
+      begin
 
-      fColors[3,
-              True] := value;
-      Paint;
-    end;
+        fColors[3,
+                True] := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetRedMax(value: Integer);
+
 begin
 
   if (value <> fRedMax) then
-    begin
+      begin
 
-      fRedmax := value;
-      Paint;
-    end;
+        fRedmax := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetRedLeds(value: Integer);
+
 begin
 
 try
 
   if (value <> fRedLeds) then
-    begin
+      begin
 
-      fRedLeds := value;
-      Paint;
-    end;
+        fRedLeds := value;
+        Paint;
+      end;
 except
 
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetRedColorOff(value: TColor);
+
 begin
 
 try
 
   if (value <> fcolors[3,
                        False]) then
-    begin
-        fColors[3,
-                False] := value;
-        Paint;
-    end;
+      begin
+          fColors[3,
+                  False] := value;
+          Paint;
+      end;
 except
 
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetSingleLed(value: Boolean);
+
 begin
 
 try
 
   if (value <> fShowSingleLed) then
-    begin
+      begin
 
-      fShowSingleLed := value;
-      Paint;
-    end;
+        fShowSingleLed := value;
+        Paint;
+      end;
 except
 
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetSeparatorSpacing(value: Integer);
+
 begin
 
 try
 
   if (value <> fSeparatorSpacing) then
-    begin
+      begin
 
-      fSeparatorSpacing := value;
-      Paint;
-    end;
+        fSeparatorSpacing := value;
+        Paint;
+      end;
 except
 
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetSeparatorColor(value: TColor);
+
 begin
 
 try
 
   if (value <> fSeparatorColor) then
-    begin
+      begin
 
-      fSeparatorColor := value;
-      Paint;
-    end;
+        fSeparatorColor := value;
+        Paint;
+      end;
 except
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetStyle(value: TMfPeakMeterExStyle);
+
 begin
 
 try
 
   if (value <> fstyle) then
-    begin
+      begin
 
-      fStyle := value;
-      Paint;
-    end;
+        fStyle := value;
+        Paint;
+      end;
 except
 
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetDirection(value: TMfPeakMeterExdirection);
+
 begin
 
 try
 
   if (value <> fDirection) then
-    begin
+      begin
 
-      fDirection := value;
-      Paint;
-    end;
+        fDirection := value;
+        Paint;
+      end;
 except
 
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetPeakValue(value: Single);
+
 begin
 
 try
 
   if (value <> sPeakValue) then
-    begin
+      begin
 
-      sPeakValue := value;
-      CalculatePeakValue;
-      Paint;
-    end;
+        sPeakValue := value;
+        CalculatePeakValue;
+        Paint;
+      end;
 except
 
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterMmcs.SetPeakMeterChannel(value: TMfPeakMeterExChannel);
+
 begin
 
   if (fMeterChannel <> value) then
@@ -2178,32 +2251,32 @@ var
 begin
 
   if (fEnabled = False) then
-    begin
+      begin
 
-      iPeakValue := 0;
-      Exit;
-    end;
+        iPeakValue := 0;
+        Exit;
+      end;
 
   // sPeakValue expected 0..1 amplitude
   v := sPeakValue;
   if (v <= 0.0) then
-    begin
+      begin
 
-      iPeakValue := 0;
-      Exit;
-    end;
+        iPeakValue := 0;
+        Exit;
+      end;
 
   // Endpoint mode: keep existing linear mapping if you prefer
   if (FInputSource = isWasapiEndpoint) then
-    begin
+      begin
 
-      if (v > 1.0) then
-        v := 1.0;
+        if (v > 1.0) then
+          v := 1.0;
 
-      totalLeds := fGreenLeds + fYellowLeds + fRedLeds;
-      iPeakValue := Round(v * totalLeds);
-      Exit;
-    end;
+        totalLeds := fGreenLeds + fYellowLeds + fRedLeds;
+        iPeakValue := Round(v * totalLeds);
+        Exit;
+      end;
 
   // Engine-fed: map to dBFS
   if (v < EPS_AMP) then
@@ -2216,44 +2289,44 @@ begin
 
   totalLeds := fGreenLeds + fYellowLeds + fRedLeds;
   if (totalLeds <= 0) then
-    begin
+      begin
 
-      iPeakValue := 0;
-      Exit;
-    end;
+        iPeakValue := 0;
+        Exit;
+      end;
 
   // Piecewise map into LED index (0..totalLeds)
   if (db < DB_GREENHI) then
-    begin
+      begin
 
-      // Green zone: 0..GreenLeds
-      idx := MapDbToCount(db,
-                          FEngineMeterFloorDb,
-                          DB_GREENHI,
-                          fGreenLeds);
-      iPeakValue := idx;
-    end
+        // Green zone: 0..GreenLeds
+        idx := MapDbToCount(db,
+                            FEngineMeterFloorDb,
+                            DB_GREENHI,
+                            fGreenLeds);
+        iPeakValue := idx;
+      end
   else
     if (db < DB_YELLOWHI) then
-      begin
+        begin
 
-        // Yellow zone: GreenLeds..GreenLeds+YellowLeds
-        idx := MapDbToCount(db,
-                            DB_GREENHI,
-                            DB_YELLOWHI,
-                            fYellowLeds);
-        iPeakValue := fGreenLeds + idx;
-      end
+          // Yellow zone: GreenLeds..GreenLeds+YellowLeds
+          idx := MapDbToCount(db,
+                              DB_GREENHI,
+                              DB_YELLOWHI,
+                              fYellowLeds);
+          iPeakValue := fGreenLeds + idx;
+        end
     else
-      begin
+        begin
 
-        // Red zone: Green+Yellow..Total
-        idx := MapDbToCount(db,
-                            DB_YELLOWHI,
-                            DB_TOP,
-                            fRedLeds);
-        iPeakValue := fGreenLeds + fYellowLeds + idx;
-      end;
+          // Red zone: Green+Yellow..Total
+          idx := MapDbToCount(db,
+                              DB_YELLOWHI,
+                              DB_TOP,
+                              fRedLeds);
+          iPeakValue := fGreenLeds + fYellowLeds + idx;
+        end;
 
   if (iPeakValue < 0) then
     iPeakValue := 0
@@ -2306,9 +2379,9 @@ begin
     Msg.Result := 0
   else
     Msg.Result := DefWindowProcW(fHWnd,
-                                Msg.Msg,
-                                Msg.WParam,
-                                Msg.LParam);
+                                 Msg.Msg,
+                                 Msg.WParam,
+                                 Msg.LParam);
 end;
 
 
@@ -2321,8 +2394,8 @@ var
   ileds: Integer;
   ibarwidth: Integer;
   ibarheight: Integer;
-  inum : Integer;
-  bactivate : Boolean;
+  inum: Integer;
+  bactivate: Boolean;
   bcolor: Byte;
   ax: array [0..3] of Integer;
   ay: array [0..3] of Integer;
@@ -2337,11 +2410,11 @@ try
 
   // Initiate the x and y coordinates
   for i := Low(ax) to High(ax) do
-    begin
+      begin
 
-      ax[i] := 0;
-      ay[i] := 0;
-    end;
+        ax[i] := 0;
+        ay[i] := 0;
+      end;
 
   fBmp.Canvas.Pen.Color := fSeparatorColor;
   fBmp.Canvas.Pen.Width := 0;
@@ -2357,115 +2430,115 @@ try
   ileds := (fGreenLeds + fRedLeds + fYellowLeds);
 
   if (ileds > 0) then
-    begin
+      begin
 
-      // Calculate the width.
-      ibarwidth := (Width div ileds);
-      ibarheight := Height;
+        // Calculate the width.
+        ibarwidth := (Width div ileds);
+        ibarheight := Height;
 
-      if (fStyle = dsVertical) then
-        begin
-
-          ibarwidth := Height div ileds;
-          ibarheight := Width;
-        end;
-
-      if (ibarwidth > fSeparatorSpacing) then
-        begin
-
-          // Calculate the last led.
-          inum := GetLastLedPos(ileds);
-          if (inum = 0) then
-            if (iPeakValue <> 0) then
-              inum := 1;
-
-          // Set colors.
-          with fBmp.Canvas do
+        if (fStyle = dsVertical) then
             begin
 
-              Pen.Width := 0;
-              Pen.Style := psSolid;
-              Brush.Style := bsSolid;
+              ibarwidth := Height div ileds;
+              ibarheight := Width;
             end;
 
-          for ileds := 1 to ileds do
+        if (ibarwidth > fSeparatorSpacing) then
             begin
-              bactivate := true;
-              if (ileds < inum) then
-                if fShowSingleLed then
-                  bactivate := False;
 
-              if (ileds > inum) then
-                bactivate := False;
+              // Calculate the last led.
+              inum := GetLastLedPos(ileds);
+              if (inum = 0) then
+                if (iPeakValue <> 0) then
+                  inum := 1;
 
-              bcolor := 1;
-              if (ileds > (GreenLeds + YellowLeds)) then
-                bcolor := 3
-              else if (ileds > GreenLeds) then
-                bcolor := 2;
-
-              fBmp.canvas.brush.color := fColors[bcolor, bactivate];
-              fBmp.canvas.pen.color := fColors[bcolor, bactivate];
-
-              // Calculate positions
-              case fStyle of
-                dsHorizontal: begin
-                                ax[0] := (ileds - 1) * ibarwidth;
-                                ax[1] := ileds * ibarwidth;
-                                ay[0] := 0;
-                                ay[1] := ibarheight - 1;
-                                // Brush
-                                ax[2] := ileds * ibarwidth - fSeparatorSpacing;
-                                ax[3] := ax[2] + fSeparatorSpacing + 1;
-                                ay[2] := 0;
-                                ay[3] := ibarheight - 1;
-
-                                if (fDirection = ddLeftUp) then
-                                  begin
-                                    for i := Low(ax) to High(ax) do
-                                      ax[i] := CalculateX(ax[i]);
-                                  end;
-                              end;
-
-                  dsVertical: begin
-                                ay[0] := (ileds - 1) * ibarwidth;
-                                ay[1] := ileds * ibarwidth;
-                                ax[0] := 0;
-                                ax[1] := ibarheight - 1;
-                                // Brush
-                                ay[2] := ileds * ibarwidth - fSeparatorSpacing;
-                                ay[3] := ay[2] + fSeparatorSpacing + 1;
-                                ax[2] := 0;
-                                ax[3] := ibarheight - 1;
-                                if (fDirection = ddLeftUp) then
-                                  begin
-                                    for i := Low(ay) to High(ay) do
-                                      ay[i] := CalculateY(ay[i]);
-                                  end;
-                              end;
-              end;  //case fStyle of
-
-            // Rectangle
-            fBmp.canvas.rectangle(ax[0],
-                                  ay[0],
-                                  ax[1],
-                                  ay[1]);
-
-            if (fSeparatorSpacing > 0) then
-              begin
-                with fBmp.canvas do
+              // Set colors.
+              with fBmp.Canvas do
                   begin
-                    brush.color := fSeparatorColor;
-                    pen.color := fSeparatorColor;
-                    rectangle(ax[2],
-                              ay[2],
-                              ax[3],
-                              ay[3]);
-                 end;
-             end;
-        end; // for ileds
-      end; // if (ibarwidth > fsepwidth)
-    end; // if (ileds > 0)
+
+                    Pen.Width := 0;
+                    Pen.Style := psSolid;
+                    Brush.Style := bsSolid;
+                  end;
+
+              for ileds := 1 to ileds do
+                  begin
+                    bactivate := true;
+                    if (ileds < inum) then
+                      if fShowSingleLed then
+                        bactivate := False;
+
+                    if (ileds > inum) then
+                      bactivate := False;
+
+                    bcolor := 1;
+                    if (ileds > (GreenLeds + YellowLeds)) then
+                      bcolor := 3
+                    else if (ileds > GreenLeds) then
+                      bcolor := 2;
+
+                    fBmp.canvas.brush.color := fColors[bcolor, bactivate];
+                    fBmp.canvas.pen.color := fColors[bcolor, bactivate];
+
+                    // Calculate positions
+                    case fStyle of
+                        dsHorizontal: begin
+                                        ax[0] := (ileds - 1) * ibarwidth;
+                                        ax[1] := ileds * ibarwidth;
+                                        ay[0] := 0;
+                                        ay[1] := ibarheight - 1;
+                                        // Brush
+                                        ax[2] := ileds * ibarwidth - fSeparatorSpacing;
+                                        ax[3] := ax[2] + fSeparatorSpacing + 1;
+                                        ay[2] := 0;
+                                        ay[3] := ibarheight - 1;
+
+                                        if (fDirection = ddLeftUp) then
+                                            begin
+                                              for i := Low(ax) to High(ax) do
+                                                ax[i] := CalculateX(ax[i]);
+                                            end;
+                                      end;
+
+                          dsVertical: begin
+                                        ay[0] := (ileds - 1) * ibarwidth;
+                                        ay[1] := ileds * ibarwidth;
+                                        ax[0] := 0;
+                                        ax[1] := ibarheight - 1;
+                                        // Brush
+                                        ay[2] := ileds * ibarwidth - fSeparatorSpacing;
+                                        ay[3] := ay[2] + fSeparatorSpacing + 1;
+                                        ax[2] := 0;
+                                        ax[3] := ibarheight - 1;
+                                        if (fDirection = ddLeftUp) then
+                                            begin
+                                              for i := Low(ay) to High(ay) do
+                                                ay[i] := CalculateY(ay[i]);
+                                            end;
+                                      end;
+                    end;  //case fStyle of
+
+                  // Rectangle
+                  fBmp.canvas.rectangle(ax[0],
+                                        ay[0],
+                                        ax[1],
+                                        ay[1]);
+
+                  if (fSeparatorSpacing > 0) then
+                      begin
+                        with fBmp.canvas do
+                            begin
+                              brush.color := fSeparatorColor;
+                              pen.color := fSeparatorColor;
+                              rectangle(ax[2],
+                                        ay[2],
+                                        ax[3],
+                                        ay[3]);
+                           end;
+                     end;
+              end; // for ileds
+          end; // if (ibarwidth > fsepwidth)
+      end; // if (ileds > 0)
 
   tcBottom := clWhite;
   tcTop := clGray;
@@ -2478,60 +2551,62 @@ try
     bw := 1;
 
   if (bw > 0) then
-    begin
-      if (fBevelStyle = bvRaised) then
-        begin
-
-          tcBottom := clGray;
-          tcTop := clWhite;
-        end;
-
-      with fBmp.canvas do
-        begin
-
-          // Bottom right.
-          Pen.Color := tcBottom;
-          for lp := 0 to bw - 1 do
+      begin
+        if (fBevelStyle = bvRaised) then
             begin
 
-              MoveTo(CalculateX(Width),
-                     CalculateY(lp));
-
-              LineTo(CalculateX(lp),
-                     CalculateY(lp));
-
-              LineTo(CalculateX(lp),
-                     CalculateY(Height));
+              tcBottom := clGray;
+              tcTop := clWhite;
             end;
 
-          // Top left.
-          Pen.Color := tcTop;
-          for lp  := 0 to bw - 1 do
+        with fBmp.canvas do
             begin
 
-              MoveTo(Width,
-                     lp);
+              // Bottom right.
+              Pen.Color := tcBottom;
+              for lp := 0 to bw - 1 do
+                  begin
 
-              LineTo(lp,
-                     lp);
+                    MoveTo(CalculateX(Width),
+                           CalculateY(lp));
 
-              LineTo(lp,
-                     Height - bw);
+                    LineTo(CalculateX(lp),
+                           CalculateY(lp));
+
+                    LineTo(CalculateX(lp),
+                           CalculateY(Height));
+                  end;
+
+              // Top left.
+              Pen.Color := tcTop;
+              for lp := 0 to bw - 1 do
+                  begin
+
+                    MoveTo(Width,
+                           lp);
+
+                    LineTo(lp,
+                           lp);
+
+                    LineTo(lp,
+                           Height - bw);
+                  end;
             end;
-        end;
-    end;
+      end;
 
   canvas.draw(0,
               0,
               fBmp);
 except
 
-  on Exception do Exit;    // silent exception
+  on Exception do
+  Exit;    // silent exception
 end;
 end;
 
 
 procedure TMfPeakMeterMmcs.Paint();
+
 begin
 
   PaintBar();

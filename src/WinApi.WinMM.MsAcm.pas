@@ -89,7 +89,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
@@ -102,21 +103,21 @@ uses
 
 const
 
-  DRV_MAPPER_PREFERRED_INPUT_GET      = (DRV_USER + 0);
-  DRV_MAPPER_PREFERRED_OUTPUT_GET     = (DRV_USER + 2);
+  DRV_MAPPER_PREFERRED_INPUT_GET = (DRV_USER + 0);
+  DRV_MAPPER_PREFERRED_OUTPUT_GET = (DRV_USER + 2);
 
-  DRVM_MAPPER                         = ($2000);
-  DRVM_MAPPER_STATUS                  = (DRVM_MAPPER + 0);
+  DRVM_MAPPER = ($2000);
+  DRVM_MAPPER_STATUS = (DRVM_MAPPER + 0);
 
-  WIDM_MAPPER_STATUS                  = (DRVM_MAPPER_STATUS + 0);
-  WAVEIN_MAPPER_STATUS_DEVICE         = 0;
-  WAVEIN_MAPPER_STATUS_MAPPED         = 1;
-  WAVEIN_MAPPER_STATUS_FORMAT         = 2;
+  WIDM_MAPPER_STATUS = (DRVM_MAPPER_STATUS + 0);
+  WAVEIN_MAPPER_STATUS_DEVICE = 0;
+  WAVEIN_MAPPER_STATUS_MAPPED = 1;
+  WAVEIN_MAPPER_STATUS_FORMAT = 2;
 
-  WODM_MAPPER_STATUS                  = (DRVM_MAPPER_STATUS + 0);
-  WAVEOUT_MAPPER_STATUS_DEVICE        = 0;
-  WAVEOUT_MAPPER_STATUS_MAPPED        = 1;
-  WAVEOUT_MAPPER_STATUS_FORMAT        = 2;
+  WODM_MAPPER_STATUS = (DRVM_MAPPER_STATUS + 0);
+  WAVEOUT_MAPPER_STATUS_DEVICE = 0;
+  WAVEOUT_MAPPER_STATUS_MAPPED = 1;
+  WAVEOUT_MAPPER_STATUS_FORMAT = 2;
 
 
   //--------------------------------------------------------------------------;
@@ -170,7 +171,7 @@ type
   PHACMOBJ = ^HACMOBJ;
   LPHACMOBJ = ^HACMOBJ;
 
-    //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   //
   //  ACM Error Codes
   //
@@ -183,11 +184,11 @@ type
 
 const
 
-  ACMERR_BASE                         = (512);
-  ACMERR_NOTPOSSIBLE                  = (ACMERR_BASE + 0);
-  ACMERR_BUSY                         = (ACMERR_BASE + 1);
-  ACMERR_UNPREPARED                   = (ACMERR_BASE + 2);
-  ACMERR_CANCELED                     = (ACMERR_BASE + 3);
+  ACMERR_BASE = (512);
+  ACMERR_NOTPOSSIBLE = (ACMERR_BASE + 0);
+  ACMERR_BUSY = (ACMERR_BASE + 1);
+  ACMERR_UNPREPARED = (ACMERR_BASE + 2);
+  ACMERR_CANCELED = (ACMERR_BASE + 3);
 
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -202,9 +203,9 @@ const
   //
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  MM_ACM_OPEN                         = (MM_STREAM_OPEN);  // conversion callback messages
-  MM_ACM_CLOSE                        = (MM_STREAM_CLOSE);
-  MM_ACM_DONE                         = (MM_STREAM_DONE);
+  MM_ACM_OPEN = (MM_STREAM_OPEN);  // conversion callback messages
+  MM_ACM_CLOSE = (MM_STREAM_CLOSE);
+  MM_ACM_DONE = (MM_STREAM_DONE);
 
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
@@ -226,39 +227,39 @@ const
   //
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmGetVersion(): DWORD; stdcall;
+function acmGetVersion(): DWORD; stdcall;
 
 
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmMetrics()
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmMetrics()
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmMetrics(hao: HACMOBJ;
-                      uMetric: UINT;
-                      pMetric: Pointer): MMRESULT; stdcall;
+function acmMetrics(hao: HACMOBJ;
+                    uMetric: UINT;
+                    pMetric: Pointer): MMRESULT; stdcall;
 
 const
 
-  ACM_METRIC_COUNT_DRIVERS            = 1;
-  ACM_METRIC_COUNT_CODECS             = 2;
-  ACM_METRIC_COUNT_CONVERTERS         = 3;
-  ACM_METRIC_COUNT_FILTERS            = 4;
-  ACM_METRIC_COUNT_DISABLED           = 5;
-  ACM_METRIC_COUNT_HARDWARE           = 6;
-  ACM_METRIC_COUNT_LOCAL_DRIVERS      = 20;
-  ACM_METRIC_COUNT_LOCAL_CODECS       = 21;
-  ACM_METRIC_COUNT_LOCAL_CONVERTERS   = 22;
-  ACM_METRIC_COUNT_LOCAL_FILTERS      = 23;
-  ACM_METRIC_COUNT_LOCAL_DISABLED     = 24;
-  ACM_METRIC_HARDWARE_WAVE_INPUT      = 30;
-  ACM_METRIC_HARDWARE_WAVE_OUTPUT     = 31;
-  ACM_METRIC_MAX_SIZE_FORMAT          = 50;
-  ACM_METRIC_MAX_SIZE_FILTER          = 51;
-  ACM_METRIC_DRIVER_SUPPORT           = 100;
-  ACM_METRIC_DRIVER_PRIORITY          = 101;
+  ACM_METRIC_COUNT_DRIVERS = 1;
+  ACM_METRIC_COUNT_CODECS = 2;
+  ACM_METRIC_COUNT_CONVERTERS = 3;
+  ACM_METRIC_COUNT_FILTERS = 4;
+  ACM_METRIC_COUNT_DISABLED = 5;
+  ACM_METRIC_COUNT_HARDWARE = 6;
+  ACM_METRIC_COUNT_LOCAL_DRIVERS = 20;
+  ACM_METRIC_COUNT_LOCAL_CODECS = 21;
+  ACM_METRIC_COUNT_LOCAL_CONVERTERS = 22;
+  ACM_METRIC_COUNT_LOCAL_FILTERS = 23;
+  ACM_METRIC_COUNT_LOCAL_DISABLED = 24;
+  ACM_METRIC_HARDWARE_WAVE_INPUT = 30;
+  ACM_METRIC_HARDWARE_WAVE_OUTPUT = 31;
+  ACM_METRIC_MAX_SIZE_FORMAT = 50;
+  ACM_METRIC_MAX_SIZE_FILTER = 51;
+  ACM_METRIC_DRIVER_SUPPORT = 100;
+  ACM_METRIC_DRIVER_PRIORITY = 101;
 
 
   //--------------------------------------------------------------------------;
@@ -279,18 +280,18 @@ const
 
 type
 
- ACMDRIVERENUMCB = function(hadid: HACMDRIVERID;
-                            dwInstance: DWORD_PTR;
-                            fdwSupport: DWORD): BOOL; stdcall;
+  ACMDRIVERENUMCB = function(hadid: HACMDRIVERID;
+                             dwInstance: DWORD_PTR;
+                             fdwSupport: DWORD): BOOL; stdcall;
 
- function acmDriverEnum(fnCallback: ACMDRIVERENUMCB;
-                        dwInstance: DWORD_PTR;
-                        fdwEnum: DWORD): MMRESULT; stdcall;
+function acmDriverEnum(fnCallback: ACMDRIVERENUMCB;
+                       dwInstance: DWORD_PTR;
+                       fdwEnum: DWORD): MMRESULT; stdcall;
 
 const
 
-  ACM_DRIVERENUMF_NOLOCAL             = $40000000;
-  ACM_DRIVERENUMF_DISABLED            = $80000000;
+  ACM_DRIVERENUMF_NOLOCAL = $40000000;
+  ACM_DRIVERENUMF_DISABLED = $80000000;
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
   //
@@ -299,44 +300,44 @@ const
   //
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmDriverID(hao: HACMOBJ;
-                       phadid: LPHACMDRIVERID;
-                       fdwDriverID: DWORD): MMRESULT; stdcall;
+function acmDriverID(hao: HACMOBJ;
+                     phadid: LPHACMDRIVERID;
+                     fdwDriverID: DWORD): MMRESULT; stdcall;
 
 
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmDriverAdd()
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmDriverAdd()
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmDriverAddA(phadid: LPHACMDRIVERID;
-                         hinstModule: HMODULE; // Do not use HINSTANCE, this clashes, use HINST or HMODULE (preffered)
-                         lParam: LPARAM;
-                         dwPriority: DWORD;
-                         fdwAdd: DWORD): MMRESULT; stdcall;
+function acmDriverAddA(phadid: LPHACMDRIVERID;
+                       hinstModule: HMODULE; // Do not use HINSTANCE, this clashes, use HINST or HMODULE (preffered)
+  lParam: LPARAM;
+                       dwPriority: DWORD;
+                       fdwAdd: DWORD): MMRESULT; stdcall;
 
-  function acmDriverAddW(phadid: LPHACMDRIVERID;
-                         hinstModule: HMODULE; // Do not use HINSTANCE, this clashes, use HINST or HMODULE (preffered)
-                         lParam: LPARAM;
-                         dwPriority: DWORD;
-                         fdwAdd: DWORD): MMRESULT; stdcall;
+function acmDriverAddW(phadid: LPHACMDRIVERID;
+                       hinstModule: HMODULE; // Do not use HINSTANCE, this clashes, use HINST or HMODULE (preffered)
+  lParam: LPARAM;
+                       dwPriority: DWORD;
+                       fdwAdd: DWORD): MMRESULT; stdcall;
 
-  function acmDriverAdd(phadid: LPHACMDRIVERID;
-                        hinstModule: HMODULE; // Do not use HINSTANCE, this clashes. use HINST or HMODULE (preffered)
-                        lParam: LPARAM;
-                        dwPriority: DWORD;
-                        fdwAdd: DWORD): MMRESULT; stdcall;
+function acmDriverAdd(phadid: LPHACMDRIVERID;
+                      hinstModule: HMODULE; // Do not use HINSTANCE, this clashes. use HINST or HMODULE (preffered)
+  lParam: LPARAM;
+                      dwPriority: DWORD;
+                      fdwAdd: DWORD): MMRESULT; stdcall;
 
 const
 
-  ACM_DRIVERADDF_NAME                 = $00000001;
-  ACM_DRIVERADDF_FUNCTION             = $00000003;  // lParam is a procedure
-  ACM_DRIVERADDF_NOTIFYHWND           = $00000004;  // lParam is notify hwnd
-  ACM_DRIVERADDF_TYPEMASK             = $00000007;  // driver type mask
-  ACM_DRIVERADDF_LOCAL                = $00000000;  // is local to current task
-  ACM_DRIVERADDF_GLOBAL               = $00000008;  // is global
+  ACM_DRIVERADDF_NAME = $00000001;
+  ACM_DRIVERADDF_FUNCTION = $00000003;  // lParam is a procedure
+  ACM_DRIVERADDF_NOTIFYHWND = $00000004;  // lParam is notify hwnd
+  ACM_DRIVERADDF_TYPEMASK = $00000007;  // driver type mask
+  ACM_DRIVERADDF_LOCAL = $00000000;  // is local to current task
+  ACM_DRIVERADDF_GLOBAL = $00000008;  // is global
 
   //
   //  prototype for ACM driver procedures that are installed as _functions_
@@ -358,58 +359,58 @@ type
   //
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmDriverRemove(hadid: HACMDRIVERID;
-                           fdwRemove: DWORD): MMRESULT; stdcall;
+function acmDriverRemove(hadid: HACMDRIVERID;
+                         fdwRemove: DWORD): MMRESULT; stdcall;
 
 
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmDriverOpen()
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmDriverOpen()
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmDriverOpen(phad: LPHACMDRIVER;
-                         hadid: HACMDRIVERID;
-                         fdwOpen: DWORD): MMRESULT; stdcall;
-
-
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmDriverClose()
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-
-  function acmDriverClose(had: HACMDRIVER;
-                          fdwClose: DWORD): MMRESULT; stdcall;
+function acmDriverOpen(phad: LPHACMDRIVER;
+                       hadid: HACMDRIVERID;
+                       fdwOpen: DWORD): MMRESULT; stdcall;
 
 
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmDriverMessage()
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmDriverClose()
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmDriverMessage(had: HACMDRIVER;
-                            uMsg: UINT;
-                            lParam1: LPARAM;
-                            lParam2: LPARAM): LRESULT; stdcall;
+function acmDriverClose(had: HACMDRIVER;
+                        fdwClose: DWORD): MMRESULT; stdcall;
 
 
-  //
-  //
-  //
-  //
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmDriverMessage()
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+
+function acmDriverMessage(had: HACMDRIVER;
+                          uMsg: UINT;
+                          lParam1: LPARAM;
+                          lParam2: LPARAM): LRESULT; stdcall;
+
+
+//
+//
+//
+//
 const
-  ACMDM_USER                          = (DRV_USER + $0000);
-  ACMDM_RESERVED_LOW                  = (DRV_USER + $2000);
-  ACMDM_RESERVED_HIGH                 = (DRV_USER + $2FFF);
+  ACMDM_USER = (DRV_USER + $0000);
+  ACMDM_RESERVED_LOW = (DRV_USER + $2000);
+  ACMDM_RESERVED_HIGH = (DRV_USER + $2FFF);
 
-  ACMDM_BASE                          = ACMDM_RESERVED_LOW;
+  ACMDM_BASE = ACMDM_RESERVED_LOW;
 
-  ACMDM_DRIVER_ABOUT                  = (ACMDM_BASE + 11);
+  ACMDM_DRIVER_ABOUT = (ACMDM_BASE + 11);
 
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
@@ -419,18 +420,18 @@ const
   //
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmDriverPriority(hadid: HACMDRIVERID;
-                             dwPriority: DWORD;
-                             fdwPriority: DWORD): MMRESULT; stdcall;
+function acmDriverPriority(hadid: HACMDRIVERID;
+                           dwPriority: DWORD;
+                           fdwPriority: DWORD): MMRESULT; stdcall;
 
 const
 
-  ACM_DRIVERPRIORITYF_ENABLE          = $00000001;
-  ACM_DRIVERPRIORITYF_DISABLE         = $00000002;
-  ACM_DRIVERPRIORITYF_ABLEMASK        = $00000003;
-  ACM_DRIVERPRIORITYF_BEGIN           = $00010000;
-  ACM_DRIVERPRIORITYF_END             = $00020000;
-  ACM_DRIVERPRIORITYF_DEFERMASK       = $00030000;
+  ACM_DRIVERPRIORITYF_ENABLE = $00000001;
+  ACM_DRIVERPRIORITYF_DISABLE = $00000002;
+  ACM_DRIVERPRIORITYF_ABLEMASK = $00000003;
+  ACM_DRIVERPRIORITYF_BEGIN = $00010000;
+  ACM_DRIVERPRIORITYF_END = $00020000;
+  ACM_DRIVERPRIORITYF_DEFERMASK = $00030000;
 
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
@@ -446,15 +447,16 @@ const
   //  the ACMDRIVERDETAILS structure is used to get various capabilities from
   //  an ACM driver (codec, converter, filter).
   //
-  ACMDRIVERDETAILS_SHORTNAME_CHARS    = 32;
-  ACMDRIVERDETAILS_LONGNAME_CHARS     = 128;
-  ACMDRIVERDETAILS_COPYRIGHT_CHARS    = 80;
-  ACMDRIVERDETAILS_LICENSING_CHARS    = 128;
-  ACMDRIVERDETAILS_FEATURES_CHARS     = 512;
+  ACMDRIVERDETAILS_SHORTNAME_CHARS = 32;
+  ACMDRIVERDETAILS_LONGNAME_CHARS = 128;
+  ACMDRIVERDETAILS_COPYRIGHT_CHARS = 80;
+  ACMDRIVERDETAILS_LICENSING_CHARS = 128;
+  ACMDRIVERDETAILS_FEATURES_CHARS = 512;
 
 type
 
   PACMDRIVERDETAILSA = ^tACMDRIVERDETAILSA;
+
   tACMDRIVERDETAILSA = packed record
     cbStruct: DWORD;                 // number of valid bytes in structure
     fccType: FOURCC;                 // compressor type 'audc'
@@ -477,6 +479,7 @@ type
   LPACMDRIVERDETAILSA = ^tACMDRIVERDETAILSA;
 
   PACMDRIVERDETAILSW = ^tACMDRIVERDETAILSW;
+
   tACMDRIVERDETAILSW = packed record
     cbStruct: DWORD;                 // number of valid bytes in structure
     fccType: FOURCC;                 // compressor type 'audc'
@@ -522,7 +525,7 @@ type
 const
 
   ACMDRIVERDETAILS_FCCTYPE_AUDIOCODEC = ord('a') or (ord('u') shl 8) or (ord('d') shl 16) or (ord('c') shl 24);
-  ACMDRIVERDETAILS_FCCCOMP_UNDEFINED  = ord('0') or (ord('0') shl 8) or (ord('0') shl 16) or (ord('0') shl 24);
+  ACMDRIVERDETAILS_FCCCOMP_UNDEFINED = ord('0') or (ord('0') shl 8) or (ord('0') shl 16) or (ord('0') shl 24);
 
   //
   //  the following flags are used to specify the type of conversion(s) that
@@ -561,45 +564,45 @@ const
   //  driver has been disabled. this flag is also passed set in the fdwSupport
   //  argument to the enumeration callback function for drivers.
   //
-  ACMDRIVERDETAILS_SUPPORTF_CODEC     = $00000001;
+  ACMDRIVERDETAILS_SUPPORTF_CODEC = $00000001;
   ACMDRIVERDETAILS_SUPPORTF_CONVERTER = $00000002;
-  ACMDRIVERDETAILS_SUPPORTF_FILTER    = $00000004;
-  ACMDRIVERDETAILS_SUPPORTF_HARDWARE  = $00000008;
-  ACMDRIVERDETAILS_SUPPORTF_ASYNC     = $00000010;
-  ACMDRIVERDETAILS_SUPPORTF_LOCAL     = $40000000;
-  ACMDRIVERDETAILS_SUPPORTF_DISABLED  = $80000000;
+  ACMDRIVERDETAILS_SUPPORTF_FILTER = $00000004;
+  ACMDRIVERDETAILS_SUPPORTF_HARDWARE = $00000008;
+  ACMDRIVERDETAILS_SUPPORTF_ASYNC = $00000010;
+  ACMDRIVERDETAILS_SUPPORTF_LOCAL = $40000000;
+  ACMDRIVERDETAILS_SUPPORTF_DISABLED = $80000000;
 
 
-  function acmDriverDetailsA(hadid: HACMDRIVERID;
-                             padd: LPACMDRIVERDETAILSA;
-                             fdwDetails: DWORD): MMRESULT; stdcall;
+function acmDriverDetailsA(hadid: HACMDRIVERID;
+                           padd: LPACMDRIVERDETAILSA;
+                           fdwDetails: DWORD): MMRESULT; stdcall;
 
-  function acmDriverDetailsW(hadid: HACMDRIVERID;
-                             padd: LPACMDRIVERDETAILSW;
-                             fdwDetails: DWORD): MMRESULT; stdcall;
+function acmDriverDetailsW(hadid: HACMDRIVERID;
+                           padd: LPACMDRIVERDETAILSW;
+                           fdwDetails: DWORD): MMRESULT; stdcall;
 
-  { unicode }
-  function acmDriverDetails(hadid: HACMDRIVERID;
-                            padd: LPACMDRIVERDETAILSW;
-                            fdwDetails: DWORD): MMRESULT; stdcall;
+{ unicode }
+function acmDriverDetails(hadid: HACMDRIVERID;
+                          padd: LPACMDRIVERDETAILSW;
+                          fdwDetails: DWORD): MMRESULT; stdcall;
 
 
-  //--------------------------------------------------------------------------;
-  //
-  //  ACM Format Tags
-  //
-  //
-  //
-  //
-  //--------------------------------------------------------------------------;
+//--------------------------------------------------------------------------;
+//
+//  ACM Format Tags
+//
+//
+//
+//
+//--------------------------------------------------------------------------;
 
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmFormatTagDetails()
-  //
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmFormatTagDetails()
+//
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
 const
 
@@ -608,6 +611,7 @@ const
 type
 
   PACMFORMATTAGDETAILSA = ^tACMFORMATTAGDETAILSA;
+
   tACMFORMATTAGDETAILSA = packed record
     cbStruct: DWORD;
     dwFormatTagIndex: DWORD;
@@ -621,6 +625,7 @@ type
   LPACMFORMATTAGDETAILSA = ^tACMFORMATTAGDETAILSA;
 
   PACMFORMATTAGDETAILSW = ^tACMFORMATTAGDETAILSW;
+
   tACMFORMATTAGDETAILSW = packed record
     cbStruct: DWORD;
     dwFormatTagIndex: DWORD;
@@ -639,25 +644,25 @@ type
   LPACMFORMATTAGDETAILS = ^tACMFORMATTAGDETAILSW;
 
 
-  function acmFormatTagDetailsA(had: HACMDRIVER;
-                                paftd: LPACMFORMATTAGDETAILSA;
-                                fdwDetails: DWORD): MMRESULT; stdcall;
+function acmFormatTagDetailsA(had: HACMDRIVER;
+                              paftd: LPACMFORMATTAGDETAILSA;
+                              fdwDetails: DWORD): MMRESULT; stdcall;
 
-  function acmFormatTagDetailsW(had: HACMDRIVER;
-                                paftd: LPACMFORMATTAGDETAILSW;
-                                fdwDetails: DWORD): MMRESULT; stdcall;
+function acmFormatTagDetailsW(had: HACMDRIVER;
+                              paftd: LPACMFORMATTAGDETAILSW;
+                              fdwDetails: DWORD): MMRESULT; stdcall;
 
-  { unicode }
-  function acmFormatTagDetails(had: HACMDRIVER;
-                               paftd: LPACMFORMATTAGDETAILSW;
-                               fdwDetails: DWORD): MMRESULT; stdcall;
+{ unicode }
+function acmFormatTagDetails(had: HACMDRIVER;
+                             paftd: LPACMFORMATTAGDETAILSW;
+                             fdwDetails: DWORD): MMRESULT; stdcall;
 
 const
 
-  ACM_FORMATTAGDETAILSF_INDEX         = $00000000;
-  ACM_FORMATTAGDETAILSF_FORMATTAG     = $00000001;
-  ACM_FORMATTAGDETAILSF_LARGESTSIZE   = $00000002;
-  ACM_FORMATTAGDETAILSF_QUERYMASK     = $0000000F;
+  ACM_FORMATTAGDETAILSF_INDEX = $00000000;
+  ACM_FORMATTAGDETAILSF_FORMATTAG = $00000001;
+  ACM_FORMATTAGDETAILSF_LARGESTSIZE = $00000002;
+  ACM_FORMATTAGDETAILSF_QUERYMASK = $0000000F;
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
   //
@@ -673,11 +678,11 @@ type
                                  dwInstance: DWORD_PTR;
                                  fdwSupport: DWORD): BOOL; stdcall;
 
-  function acmFormatTagEnumA(had: HACMDRIVER;
-                             paftd: LPACMFORMATTAGDETAILSA;
-                             fnCallback: ACMFORMATTAGENUMCBA;
-                             dwInstance: DWORD_PTR;
-                             fdwEnum: DWORD): MMRESULT; stdcall;
+function acmFormatTagEnumA(had: HACMDRIVER;
+                           paftd: LPACMFORMATTAGDETAILSA;
+                           fnCallback: ACMFORMATTAGENUMCBA;
+                           dwInstance: DWORD_PTR;
+                           fdwEnum: DWORD): MMRESULT; stdcall;
 
 type
   ACMFORMATTAGENUMCBW = function(hadid: HACMDRIVERID;
@@ -685,39 +690,39 @@ type
                                  dwInstance: DWORD_PTR;
                                  fdwSupport: DWORD): BOOL; stdcall;
 
-  function acmFormatTagEnumW(had: HACMDRIVER;
-                             paftd: LPACMFORMATTAGDETAILSW;
-                             fnCallback: ACMFORMATTAGENUMCBW;
-                             dwInstance: DWORD_PTR;
-                             fdwEnum: DWORD): MMRESULT; stdcall;
+function acmFormatTagEnumW(had: HACMDRIVER;
+                           paftd: LPACMFORMATTAGDETAILSW;
+                           fnCallback: ACMFORMATTAGENUMCBW;
+                           dwInstance: DWORD_PTR;
+                           fdwEnum: DWORD): MMRESULT; stdcall;
 
-  { unicode }
-  function acmFormatTagEnum(had: HACMDRIVER;
-                            paftd: LPACMFORMATTAGDETAILSW;
-                            fnCallback: ACMFORMATTAGENUMCBW;
-                            dwInstance: DWORD_PTR;
-                            fdwEnum: DWORD): MMRESULT; stdcall;
+{ unicode }
+function acmFormatTagEnum(had: HACMDRIVER;
+                          paftd: LPACMFORMATTAGDETAILSW;
+                          fnCallback: ACMFORMATTAGENUMCBW;
+                          dwInstance: DWORD_PTR;
+                          fdwEnum: DWORD): MMRESULT; stdcall;
 
 
-  //--------------------------------------------------------------------------;
-  //
-  //  ACM Formats
-  //
-  //
-  //
-  //
-  //--------------------------------------------------------------------------;
+//--------------------------------------------------------------------------;
+//
+//  ACM Formats
+//
+//
+//
+//
+//--------------------------------------------------------------------------;
 
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmFormatDetails()
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmFormatDetails()
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
 const
 
-  ACMFORMATDETAILS_FORMAT_CHARS       = 128;
+  ACMFORMATDETAILS_FORMAT_CHARS = 128;
 
 
 type
@@ -754,24 +759,24 @@ type
   LPACMFORMATDETAILS = ^tACMFORMATDETAILSW;
 
 
-  function acmFormatDetailsA(had: HACMDRIVER;
-                             pafd: LPACMFORMATDETAILSA;
-                             fdwDetails: DWORD): MMRESULT; stdcall;
+function acmFormatDetailsA(had: HACMDRIVER;
+                           pafd: LPACMFORMATDETAILSA;
+                           fdwDetails: DWORD): MMRESULT; stdcall;
 
-  function acmFormatDetailsW(had: HACMDRIVER;
-                             pafd: LPACMFORMATDETAILSW;
-                             fdwDetails: DWORD): MMRESULT; stdcall;
+function acmFormatDetailsW(had: HACMDRIVER;
+                           pafd: LPACMFORMATDETAILSW;
+                           fdwDetails: DWORD): MMRESULT; stdcall;
 
-  { unicode }
-  function acmFormatDetails(had: HACMDRIVER;
-                            pafd: LPACMFORMATDETAILSW;
-                            fdwDetails: DWORD): MMRESULT; stdcall;
+{ unicode }
+function acmFormatDetails(had: HACMDRIVER;
+                          pafd: LPACMFORMATDETAILSW;
+                          fdwDetails: DWORD): MMRESULT; stdcall;
 
 const
 
-  ACM_FORMATDETAILSF_INDEX            = $00000000;
-  ACM_FORMATDETAILSF_FORMAT           = $00000001;
-  ACM_FORMATDETAILSF_QUERYMASK        = $0000000F;
+  ACM_FORMATDETAILSF_INDEX = $00000000;
+  ACM_FORMATDETAILSF_FORMAT = $00000001;
+  ACM_FORMATDETAILSF_QUERYMASK = $0000000F;
 
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
@@ -787,11 +792,11 @@ type
                               dwInstance: DWORD_PTR;
                               fdwSupport: DWORD): BOOL; stdcall;
 
-  function acmFormatEnumA(had: HACMDRIVER;
-                          pafd: LPACMFORMATDETAILSA;
-                          fnCallback: ACMFORMATENUMCBA;
-                          dwInstance: DWORD_PTR;
-                          fdwEnum: DWORD): MMRESULT; stdcall;
+function acmFormatEnumA(had: HACMDRIVER;
+                        pafd: LPACMFORMATDETAILSA;
+                        fnCallback: ACMFORMATENUMCBA;
+                        dwInstance: DWORD_PTR;
+                        fdwEnum: DWORD): MMRESULT; stdcall;
 
 type
   ACMFORMATENUMCBW = function(hadid: HACMDRIVERID;
@@ -799,30 +804,30 @@ type
                               dwInstance: DWORD_PTR;
                               fdwSupport: DWORD): BOOL; stdcall;
 
-  function acmFormatEnumW(had: HACMDRIVER;
-                          pafd: LPACMFORMATDETAILSW;
-                          fnCallback: ACMFORMATENUMCBW;
-                          dwInstance: DWORD_PTR;
-                          fdwEnum: DWORD): MMRESULT; stdcall;
+function acmFormatEnumW(had: HACMDRIVER;
+                        pafd: LPACMFORMATDETAILSW;
+                        fnCallback: ACMFORMATENUMCBW;
+                        dwInstance: DWORD_PTR;
+                        fdwEnum: DWORD): MMRESULT; stdcall;
 
-  { unicode }
-  function acmFormatEnum(had: HACMDRIVER;
-                          pafd: LPACMFORMATDETAILSW;
-                          fnCallback: ACMFORMATENUMCBW;
-                          dwInstance: DWORD_PTR;
-                          fdwEnum: DWORD): MMRESULT; stdcall;
+{ unicode }
+function acmFormatEnum(had: HACMDRIVER;
+                       pafd: LPACMFORMATDETAILSW;
+                       fnCallback: ACMFORMATENUMCBW;
+                       dwInstance: DWORD_PTR;
+                       fdwEnum: DWORD): MMRESULT; stdcall;
 
 const
 
-  ACM_FORMATENUMF_WFORMATTAG          = $00010000;
-  ACM_FORMATENUMF_NCHANNELS           = $00020000;
-  ACM_FORMATENUMF_NSAMPLESPERSEC      = $00040000;
-  ACM_FORMATENUMF_WBITSPERSAMPLE      = $00080000;
-  ACM_FORMATENUMF_CONVERT             = $00100000;
-  ACM_FORMATENUMF_SUGGEST             = $00200000;
-  ACM_FORMATENUMF_HARDWARE            = $00400000;
-  ACM_FORMATENUMF_INPUT               = $00800000;
-  ACM_FORMATENUMF_OUTPUT              = $01000000;
+  ACM_FORMATENUMF_WFORMATTAG = $00010000;
+  ACM_FORMATENUMF_NCHANNELS = $00020000;
+  ACM_FORMATENUMF_NSAMPLESPERSEC = $00040000;
+  ACM_FORMATENUMF_WBITSPERSAMPLE = $00080000;
+  ACM_FORMATENUMF_CONVERT = $00100000;
+  ACM_FORMATENUMF_SUGGEST = $00200000;
+  ACM_FORMATENUMF_HARDWARE = $00400000;
+  ACM_FORMATENUMF_INPUT = $00800000;
+  ACM_FORMATENUMF_OUTPUT = $01000000;
 
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
@@ -833,20 +838,20 @@ const
   //
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmFormatSuggest(had: HACMDRIVER;
-                            pwfxSrc: LPWAVEFORMATEX;
-                            pwfxDst: LPWAVEFORMATEX;
-                            cbwfxDst: DWORD;
-                            fdwSuggest: DWORD): MMRESULT; stdcall;
+function acmFormatSuggest(had: HACMDRIVER;
+                          pwfxSrc: LPWAVEFORMATEX;
+                          pwfxDst: LPWAVEFORMATEX;
+                          cbwfxDst: DWORD;
+                          fdwSuggest: DWORD): MMRESULT; stdcall;
 
 const
 
-  ACM_FORMATSUGGESTF_WFORMATTAG       = $00010000;
-  ACM_FORMATSUGGESTF_NCHANNELS        = $00020000;
-  ACM_FORMATSUGGESTF_NSAMPLESPERSEC   = $00040000;
-  ACM_FORMATSUGGESTF_WBITSPERSAMPLE   = $00080000;
+  ACM_FORMATSUGGESTF_WFORMATTAG = $00010000;
+  ACM_FORMATSUGGESTF_NCHANNELS = $00020000;
+  ACM_FORMATSUGGESTF_NSAMPLESPERSEC = $00040000;
+  ACM_FORMATSUGGESTF_WBITSPERSAMPLE = $00080000;
 
-  ACM_FORMATSUGGESTF_TYPEMASK         = $00FF0000;
+  ACM_FORMATSUGGESTF_TYPEMASK = $00FF0000;
 
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
@@ -856,23 +861,23 @@ const
   //
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  ACMHELPMSGSTRINGA                   = 'acmchoose_help';
-  ACMHELPMSGSTRINGW                   = 'acmchoose_help';
-  ACMHELPMSGCONTEXTMENUA              = 'acmchoose_contextmenu';
-  ACMHELPMSGCONTEXTMENUW              = 'acmchoose_contextmenu';
-  ACMHELPMSGCONTEXTHELPA              = 'acmchoose_contexthelp';
-  ACMHELPMSGCONTEXTHELPW              = 'acmchoose_contexthelp';
+  ACMHELPMSGSTRINGA = 'acmchoose_help';
+  ACMHELPMSGSTRINGW = 'acmchoose_help';
+  ACMHELPMSGCONTEXTMENUA = 'acmchoose_contextmenu';
+  ACMHELPMSGCONTEXTMENUW = 'acmchoose_contextmenu';
+  ACMHELPMSGCONTEXTHELPA = 'acmchoose_contexthelp';
+  ACMHELPMSGCONTEXTHELPW = 'acmchoose_contexthelp';
 
   { unicode }
-{$IFDEF UNICODE}
-  ACMHELPMSGSTRING                    = ACMHELPMSGSTRINGW;
-  ACMHELPMSGCONTEXTMENU               = ACMHELPMSGCONTEXTMENUW;
-  ACMHELPMSGCONTEXTHELP               = ACMHELPMSGCONTEXTHELPW;
-{$ELSE}
-  ACMHELPMSGSTRING                    = ACMHELPMSGSTRINGA;
-  ACMHELPMSGCONTEXTMENU               = ACMHELPMSGCONTEXTMENUA;
-  ACMHELPMSGCONTEXTHELP               = ACMHELPMSGCONTEXTHELPA;
-{$ENDIF}
+  {$IFDEF UNICODE}
+  ACMHELPMSGSTRING = ACMHELPMSGSTRINGW;
+  ACMHELPMSGCONTEXTMENU = ACMHELPMSGCONTEXTMENUW;
+  ACMHELPMSGCONTEXTHELP = ACMHELPMSGCONTEXTHELPW;
+  {$ELSE}
+  ACMHELPMSGSTRING = ACMHELPMSGSTRINGA;
+  ACMHELPMSGCONTEXTMENU = ACMHELPMSGCONTEXTMENUA;
+  ACMHELPMSGCONTEXTHELP = ACMHELPMSGCONTEXTHELPA;
+  {$ENDIF}
 
   //
   //  MM_ACM_FORMATCHOOSE is sent to hook callbacks by the Format Chooser
@@ -881,12 +886,12 @@ const
 
 const
 
-  MM_ACM_FORMATCHOOSE                 = ($8000);
+  MM_ACM_FORMATCHOOSE = ($8000);
 
-  FORMATCHOOSE_MESSAGE                = 0;
-  FORMATCHOOSE_FORMATTAG_VERIFY       = (FORMATCHOOSE_MESSAGE + 0);
-  FORMATCHOOSE_FORMAT_VERIFY          = (FORMATCHOOSE_MESSAGE + 1);
-  FORMATCHOOSE_CUSTOM_VERIFY          = (FORMATCHOOSE_MESSAGE + 2);
+  FORMATCHOOSE_MESSAGE = 0;
+  FORMATCHOOSE_FORMATTAG_VERIFY = (FORMATCHOOSE_MESSAGE + 0);
+  FORMATCHOOSE_FORMAT_VERIFY = (FORMATCHOOSE_MESSAGE + 1);
+  FORMATCHOOSE_CUSTOM_VERIFY = (FORMATCHOOSE_MESSAGE + 2);
 
 type
   ACMFORMATCHOOSEHOOKPROCA = function(hwnd: HWND;
@@ -900,13 +905,14 @@ type
                                       wParam: WPARAM;
                                       lParam: LPARAM): UINT; stdcall;
 
-{$IFDEF UNICODE}
+  {$IFDEF UNICODE}
 type
-  ACMFORMATCHOOSEHOOKPROC             = ACMFORMATCHOOSEHOOKPROCW;
-{$ELSE}
+  ACMFORMATCHOOSEHOOKPROC = ACMFORMATCHOOSEHOOKPROCW;
+  {$ELSE}
+
 type
-  ACMFORMATCHOOSEHOOKPROC             = ACMFORMATCHOOSEHOOKPROCA;
-{$ENDIF}
+  ACMFORMATCHOOSEHOOKPROC = ACMFORMATCHOOSEHOOKPROCA;
+  {$ENDIF}
 
   //
   //
@@ -959,15 +965,15 @@ type
   PACMFORMATCHOOSEW = ^tACMFORMATCHOOSEW;
   LPACMFORMATCHOOSEW = ^tACMFORMATCHOOSEW;
 
-{$IFDEF UNICODE}
-  _ACMFORMATCHOOSE                    = _ACMFORMATCHOOSEW;
-  PACMFORMATCHOOSE                    = PACMFORMATCHOOSEW;
-  LPACMFORMATCHOOSE                   = LPACMFORMATCHOOSEW;
-{$ELSE}
-  _ACMFORMATCHOOSE                    = _ACMFORMATCHOOSEA;
-  PACMFORMATCHOOSE                    = PACMFORMATCHOOSEA;
-  LPACMFORMATCHOOSE                   = LPACMFORMATCHOOSEA;
-{$ENDIF}
+  {$IFDEF UNICODE}
+  _ACMFORMATCHOOSE = _ACMFORMATCHOOSEW;
+  PACMFORMATCHOOSE = PACMFORMATCHOOSEW;
+  LPACMFORMATCHOOSE = LPACMFORMATCHOOSEW;
+  {$ELSE}
+  _ACMFORMATCHOOSE = _ACMFORMATCHOOSEA;
+  PACMFORMATCHOOSE = PACMFORMATCHOOSEA;
+  LPACMFORMATCHOOSE = LPACMFORMATCHOOSEA;
+  {$ENDIF}
 
   //
   //  ACMFORMATCHOOSE.fdwStyle
@@ -977,37 +983,37 @@ type
 
 const
 
-  ACMFORMATCHOOSE_STYLEF_SHOWHELP     = $00000004;
-  ACMFORMATCHOOSE_STYLEF_ENABLEHOOK   = $00000008;
-  ACMFORMATCHOOSE_STYLEF_ENABLETEMPLATE= $00000010;
-  ACMFORMATCHOOSE_STYLEF_ENABLETEMPLATEHANDLE= $00000020;
-  ACMFORMATCHOOSE_STYLEF_INITTOWFXSTRUCT= $00000040;
-  ACMFORMATCHOOSE_STYLEF_CONTEXTHELP  = $00000080;
+  ACMFORMATCHOOSE_STYLEF_SHOWHELP = $00000004;
+  ACMFORMATCHOOSE_STYLEF_ENABLEHOOK = $00000008;
+  ACMFORMATCHOOSE_STYLEF_ENABLETEMPLATE = $00000010;
+  ACMFORMATCHOOSE_STYLEF_ENABLETEMPLATEHANDLE = $00000020;
+  ACMFORMATCHOOSE_STYLEF_INITTOWFXSTRUCT = $00000040;
+  ACMFORMATCHOOSE_STYLEF_CONTEXTHELP = $00000080;
 
 
-  function acmFormatChooseA(pafmtc: LPACMFORMATCHOOSEA): MMRESULT; stdcall;
+function acmFormatChooseA(pafmtc: LPACMFORMATCHOOSEA): MMRESULT; stdcall;
 
-  function acmFormatChooseW(pafmtc: LPACMFORMATCHOOSEW): MMRESULT; stdcall;
+function acmFormatChooseW(pafmtc: LPACMFORMATCHOOSEW): MMRESULT; stdcall;
 
-  { unicode }
-  function acmFormatChoose(pafmtc: LPACMFORMATCHOOSEW): MMRESULT; stdcall;
+{ unicode }
+function acmFormatChoose(pafmtc: LPACMFORMATCHOOSEW): MMRESULT; stdcall;
 
 
-  //--------------------------------------------------------------------------;
-  //
-  //  ACM Filter Tags
-  //
-  //
-  //
-  //
-  //--------------------------------------------------------------------------;
+//--------------------------------------------------------------------------;
+//
+//  ACM Filter Tags
+//
+//
+//
+//
+//--------------------------------------------------------------------------;
 
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmFilterTagDetails()
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmFilterTagDetails()
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
 const
 
@@ -1016,6 +1022,7 @@ const
 type
 
   PACMFILTERTAGDETAILSA = ^tACMFILTERTAGDETAILSA;
+
   tACMFILTERTAGDETAILSA = packed record
     cbStruct: DWORD;
     dwFilterTagIndex: DWORD;
@@ -1046,24 +1053,24 @@ type
   PACMFILTERTAGDETAILS = ^tACMFILTERTAGDETAILSW;
   LPACMFILTERTAGDETAILS = ^tACMFILTERTAGDETAILSW;
 
-  function acmFilterTagDetailsA(had: HACMDRIVER;
-                                paftd: LPACMFILTERTAGDETAILSA;
-                                fdwDetails: DWORD): MMRESULT; stdcall;
+function acmFilterTagDetailsA(had: HACMDRIVER;
+                              paftd: LPACMFILTERTAGDETAILSA;
+                              fdwDetails: DWORD): MMRESULT; stdcall;
 
-  function acmFilterTagDetailsW(had: HACMDRIVER;
-                                paftd: LPACMFILTERTAGDETAILSW;
-                                fdwDetails: DWORD): MMRESULT; stdcall;
+function acmFilterTagDetailsW(had: HACMDRIVER;
+                              paftd: LPACMFILTERTAGDETAILSW;
+                              fdwDetails: DWORD): MMRESULT; stdcall;
 
-  function acmFilterTagDetails(had: HACMDRIVER;
-                               paftd: LPACMFILTERTAGDETAILSW;
-                               fdwDetails: DWORD): MMRESULT; stdcall;
+function acmFilterTagDetails(had: HACMDRIVER;
+                             paftd: LPACMFILTERTAGDETAILSW;
+                             fdwDetails: DWORD): MMRESULT; stdcall;
 
 const
 
-  ACM_FILTERTAGDETAILSF_INDEX         = $00000000;
-  ACM_FILTERTAGDETAILSF_FILTERTAG     = $00000001;
-  ACM_FILTERTAGDETAILSF_LARGESTSIZE   = $00000002;
-  ACM_FILTERTAGDETAILSF_QUERYMASK     = $0000000F;
+  ACM_FILTERTAGDETAILSF_INDEX = $00000000;
+  ACM_FILTERTAGDETAILSF_FILTERTAG = $00000001;
+  ACM_FILTERTAGDETAILSF_LARGESTSIZE = $00000002;
+  ACM_FILTERTAGDETAILSF_QUERYMASK = $0000000F;
 
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
@@ -1080,11 +1087,11 @@ type
                                  dwInstance: DWORD_PTR;
                                  fdwSupport: DWORD): BOOL; stdcall;
 
-  function acmFilterTagEnumA(had: HACMDRIVER;
-                             paftd: LPACMFILTERTAGDETAILSA;
-                             fnCallback: ACMFILTERTAGENUMCBA;
-                             dwInstance: DWORD_PTR;
-                             fdwEnum: DWORD): MMRESULT; stdcall;
+function acmFilterTagEnumA(had: HACMDRIVER;
+                           paftd: LPACMFILTERTAGDETAILSA;
+                           fnCallback: ACMFILTERTAGENUMCBA;
+                           dwInstance: DWORD_PTR;
+                           fdwEnum: DWORD): MMRESULT; stdcall;
 
 type
   ACMFILTERTAGENUMCBW = function(hadid: HACMDRIVERID;
@@ -1092,47 +1099,48 @@ type
                                  dwInstance: DWORD_PTR;
                                  fdwSupport: DWORD): BOOL; stdcall;
 
-  function acmFilterTagEnumW(had: HACMDRIVER;
-                             paftd: LPACMFILTERTAGDETAILSW;
-                             fnCallback: ACMFILTERTAGENUMCBW;
-                             dwInstance: DWORD_PTR;
-                             fdwEnum: DWORD): MMRESULT; stdcall;
+function acmFilterTagEnumW(had: HACMDRIVER;
+                           paftd: LPACMFILTERTAGDETAILSW;
+                           fnCallback: ACMFILTERTAGENUMCBW;
+                           dwInstance: DWORD_PTR;
+                           fdwEnum: DWORD): MMRESULT; stdcall;
 
-  { unicode }
+{ unicode }
 type
   ACMFILTERTAGENUMCB = ACMFILTERTAGENUMCBW;
 
-  function acmFilterTagEnum(had: HACMDRIVER;
-                            paftd: LPACMFILTERTAGDETAILSW;
-                            fnCallback: ACMFILTERTAGENUMCBW;
-                            dwInstance: DWORD_PTR;
-                            fdwEnum: DWORD): MMRESULT; stdcall;
+function acmFilterTagEnum(had: HACMDRIVER;
+                          paftd: LPACMFILTERTAGDETAILSW;
+                          fnCallback: ACMFILTERTAGENUMCBW;
+                          dwInstance: DWORD_PTR;
+                          fdwEnum: DWORD): MMRESULT; stdcall;
 
 
 
-  //--------------------------------------------------------------------------;
-  //
-  //  ACM Filters
-  //
-  //
-  //
-  //
-  //--------------------------------------------------------------------------;
+//--------------------------------------------------------------------------;
+//
+//  ACM Filters
+//
+//
+//
+//
+//--------------------------------------------------------------------------;
 
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmFilterDetails()
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmFilterDetails()
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
 const
 
-  ACMFILTERDETAILS_FILTER_CHARS       = 128;
+  ACMFILTERDETAILS_FILTER_CHARS = 128;
 
 type
 
   PACMFILTERDETAILSA = ^tACMFILTERDETAILSA;
+
   tACMFILTERDETAILSA = packed record
     cbStruct: DWORD;
     dwFilterIndex: DWORD;
@@ -1146,6 +1154,7 @@ type
   LPACMFILTERDETAILSA = ^tACMFILTERDETAILSA;
 
   PACMFILTERDETAILSW = ^tACMFILTERDETAILSW;
+
   tACMFILTERDETAILSW = packed record
     cbStruct: DWORD;
     dwFilterIndex: DWORD;
@@ -1158,35 +1167,35 @@ type
   _ACMFILTERDETAILSW = tACMFILTERDETAILSW;
   LPACMFILTERDETAILSW = ^tACMFILTERDETAILSW;
 
-{$IFDEF UNICODE}
-  _ACMFILTERDETAILS                   = _ACMFILTERDETAILSW;
-  PACMFILTERDETAILS                   = PACMFILTERDETAILSW;
-  LPACMFILTERDETAILS                  = LPACMFILTERDETAILSW;
-{$ELSE}
-  _ACMFILTERDETAILS                   = _ACMFILTERDETAILSA;
-  PACMFILTERDETAILS                   = PACMFILTERDETAILSA;
-  LPACMFILTERDETAILS                  = LPACMFILTERDETAILSA;
-{$ENDIF}
+  {$IFDEF UNICODE}
+  _ACMFILTERDETAILS = _ACMFILTERDETAILSW;
+  PACMFILTERDETAILS = PACMFILTERDETAILSW;
+  LPACMFILTERDETAILS = LPACMFILTERDETAILSW;
+  {$ELSE}
+  _ACMFILTERDETAILS = _ACMFILTERDETAILSA;
+  PACMFILTERDETAILS = PACMFILTERDETAILSA;
+  LPACMFILTERDETAILS = LPACMFILTERDETAILSA;
+  {$ENDIF}
 
 
-  function acmFilterDetailsA(had: HACMDRIVER;
-                             pafd: LPACMFILTERDETAILSA;
-                             fdwDetails: DWORD): MMRESULT; stdcall;
+function acmFilterDetailsA(had: HACMDRIVER;
+                           pafd: LPACMFILTERDETAILSA;
+                           fdwDetails: DWORD): MMRESULT; stdcall;
 
-  function acmFilterDetailsW(had: HACMDRIVER;
-                             pafd: LPACMFILTERDETAILSW;
-                             fdwDetails: DWORD): MMRESULT; stdcall;
+function acmFilterDetailsW(had: HACMDRIVER;
+                           pafd: LPACMFILTERDETAILSW;
+                           fdwDetails: DWORD): MMRESULT; stdcall;
 
-  { unicode }
-  function acmFilterDetails(had: HACMDRIVER;
-                            pafd: LPACMFILTERDETAILSW;
-                            fdwDetails: DWORD): MMRESULT; stdcall;
+{ unicode }
+function acmFilterDetails(had: HACMDRIVER;
+                          pafd: LPACMFILTERDETAILSW;
+                          fdwDetails: DWORD): MMRESULT; stdcall;
 
 const
 
-  ACM_FILTERDETAILSF_INDEX            = $00000000;
-  ACM_FILTERDETAILSF_FILTER           = $00000001;
-  ACM_FILTERDETAILSF_QUERYMASK        = $0000000F;
+  ACM_FILTERDETAILSF_INDEX = $00000000;
+  ACM_FILTERDETAILSF_FILTER = $00000001;
+  ACM_FILTERDETAILSF_QUERYMASK = $0000000F;
 
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
@@ -1202,11 +1211,11 @@ type
                               dwInstance: DWORD_PTR;
                               fdwSupport: DWORD): BOOL; stdcall;
 
-  function acmFilterEnumA(had: HACMDRIVER;
-                          pafd: LPACMFILTERDETAILSA;
-                          fnCallback: ACMFILTERENUMCBA;
-                          dwInstance: DWORD_PTR;
-                          fdwEnum: DWORD): MMRESULT; stdcall;
+function acmFilterEnumA(had: HACMDRIVER;
+                        pafd: LPACMFILTERDETAILSA;
+                        fnCallback: ACMFILTERENUMCBA;
+                        dwInstance: DWORD_PTR;
+                        fdwEnum: DWORD): MMRESULT; stdcall;
 
 type
   ACMFILTERENUMCBW = function(hadid: HACMDRIVERID;
@@ -1214,25 +1223,25 @@ type
                               dwInstance: DWORD_PTR;
                               fdwSupport: DWORD): BOOL; stdcall;
 
-  function acmFilterEnumW(had: HACMDRIVER;
-                          pafd: LPACMFILTERDETAILSW;
-                          fnCallback: ACMFILTERENUMCBW;
-                          dwInstance: DWORD_PTR;
-                          fdwEnum: DWORD): MMRESULT; stdcall;
+function acmFilterEnumW(had: HACMDRIVER;
+                        pafd: LPACMFILTERDETAILSW;
+                        fnCallback: ACMFILTERENUMCBW;
+                        dwInstance: DWORD_PTR;
+                        fdwEnum: DWORD): MMRESULT; stdcall;
 
-  { unicode }
+{ unicode }
 type
   ACMFILTERENUMCB = ACMFILTERENUMCBW;
 
-  function acmFilterEnum(had: HACMDRIVER;
-                         pafd: LPACMFILTERDETAILSW;
-                         fnCallback: ACMFILTERENUMCBW;
-                         dwInstance: DWORD_PTR;
-                         fdwEnum: DWORD): MMRESULT; stdcall;
+function acmFilterEnum(had: HACMDRIVER;
+                       pafd: LPACMFILTERDETAILSW;
+                       fnCallback: ACMFILTERENUMCBW;
+                       dwInstance: DWORD_PTR;
+                       fdwEnum: DWORD): MMRESULT; stdcall;
 
 const
 
-  ACM_FILTERENUMF_DWFILTERTAG         = $00010000;
+  ACM_FILTERENUMF_DWFILTERTAG = $00010000;
 
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
@@ -1249,12 +1258,12 @@ const
 
 const
 
-  MM_ACM_FILTERCHOOSE                 = ($8000);
+  MM_ACM_FILTERCHOOSE = ($8000);
 
-  FILTERCHOOSE_MESSAGE                = 0;
-  FILTERCHOOSE_FILTERTAG_VERIFY       = (FILTERCHOOSE_MESSAGE + 0);
-  FILTERCHOOSE_FILTER_VERIFY          = (FILTERCHOOSE_MESSAGE + 1);
-  FILTERCHOOSE_CUSTOM_VERIFY          = (FILTERCHOOSE_MESSAGE + 2);
+  FILTERCHOOSE_MESSAGE = 0;
+  FILTERCHOOSE_FILTERTAG_VERIFY = (FILTERCHOOSE_MESSAGE + 0);
+  FILTERCHOOSE_FILTER_VERIFY = (FILTERCHOOSE_MESSAGE + 1);
+  FILTERCHOOSE_CUSTOM_VERIFY = (FILTERCHOOSE_MESSAGE + 2);
 
 type
   ACMFILTERCHOOSEHOOKPROCA = function(hwnd: HWND;
@@ -1284,6 +1293,7 @@ type
 type
 
   PACMFILTERCHOOSEA = ^tACMFILTERCHOOSEA;
+
   tACMFILTERCHOOSEA = packed record
     cbStruct: DWORD;                     // sizeof(ACMFILTERCHOOSE)
     fdwStyle: DWORD;                     // chooser style flags
@@ -1306,6 +1316,7 @@ type
   LPACMFILTERCHOOSEA = ^tACMFILTERCHOOSEA;
 
   PACMFILTERCHOOSEW = ^tACMFILTERCHOOSEW;
+
   tACMFILTERCHOOSEW = packed record
     cbStruct: DWORD;                     // sizeof(ACMFILTERCHOOSE)
     fdwStyle: DWORD;                     // chooser style flags
@@ -1327,15 +1338,15 @@ type
   _ACMFILTERCHOOSEW = tACMFILTERCHOOSEW;
   LPACMFILTERCHOOSEW = ^tACMFILTERCHOOSEW;
 
-{$IFDEF UNICODE}
-  _ACMFILTERCHOOSE                    = _ACMFILTERCHOOSEW;
-  PACMFILTERCHOOSE                    = PACMFILTERCHOOSEW;
-  LPACMFILTERCHOOSE                   = LPACMFILTERCHOOSEW;
-{$ELSE}
-  _ACMFILTERCHOOSE                    = _ACMFILTERCHOOSEA;
-  PACMFILTERCHOOSE                    = PACMFILTERCHOOSEA;
-  LPACMFILTERCHOOSE                   = LPACMFILTERCHOOSEA;
-{$ENDIF}
+  {$IFDEF UNICODE}
+  _ACMFILTERCHOOSE = _ACMFILTERCHOOSEW;
+  PACMFILTERCHOOSE = PACMFILTERCHOOSEW;
+  LPACMFILTERCHOOSE = LPACMFILTERCHOOSEW;
+  {$ELSE}
+  _ACMFILTERCHOOSE = _ACMFILTERCHOOSEA;
+  PACMFILTERCHOOSE = PACMFILTERCHOOSEA;
+  LPACMFILTERCHOOSE = LPACMFILTERCHOOSEA;
+  {$ENDIF}
 
   //
   //  ACMFILTERCHOOSE.fdwStyle
@@ -1344,44 +1355,44 @@ type
 
 const
 
-  ACMFILTERCHOOSE_STYLEF_SHOWHELP     = $00000004;
-  ACMFILTERCHOOSE_STYLEF_ENABLEHOOK   = $00000008;
-  ACMFILTERCHOOSE_STYLEF_ENABLETEMPLATE= $00000010;
-  ACMFILTERCHOOSE_STYLEF_ENABLETEMPLATEHANDLE= $00000020;
-  ACMFILTERCHOOSE_STYLEF_INITTOFILTERSTRUCT= $00000040;
-  ACMFILTERCHOOSE_STYLEF_CONTEXTHELP  = $00000080;
+  ACMFILTERCHOOSE_STYLEF_SHOWHELP = $00000004;
+  ACMFILTERCHOOSE_STYLEF_ENABLEHOOK = $00000008;
+  ACMFILTERCHOOSE_STYLEF_ENABLETEMPLATE = $00000010;
+  ACMFILTERCHOOSE_STYLEF_ENABLETEMPLATEHANDLE = $00000020;
+  ACMFILTERCHOOSE_STYLEF_INITTOFILTERSTRUCT = $00000040;
+  ACMFILTERCHOOSE_STYLEF_CONTEXTHELP = $00000080;
 
 
-  function acmFilterChooseA(pafltrc: LPACMFILTERCHOOSEA): MMRESULT; stdcall;
+function acmFilterChooseA(pafltrc: LPACMFILTERCHOOSEA): MMRESULT; stdcall;
 
-  function acmFilterChooseW(pafltrc: LPACMFILTERCHOOSEW): MMRESULT; stdcall;
+function acmFilterChooseW(pafltrc: LPACMFILTERCHOOSEW): MMRESULT; stdcall;
 
-  { unicode }
-  function acmFilterChoose(pafltrc: LPACMFILTERCHOOSEW): MMRESULT; stdcall;
+{ unicode }
+function acmFilterChoose(pafltrc: LPACMFILTERCHOOSEW): MMRESULT; stdcall;
 
 
-  //--------------------------------------------------------------------------;
-  //
-  //  ACM Stream API's
-  //
-  //
-  //
-  //--------------------------------------------------------------------------;
+//--------------------------------------------------------------------------;
+//
+//  ACM Stream API's
+//
+//
+//
+//--------------------------------------------------------------------------;
 
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmStreamOpen()
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmStreamOpen()
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
 const
 
-{$IFDEF WIN32}
-  _DRVRESERVED                        = 10;
-{$ELSE}
-  _DRVRESERVED                        = 15;  // WIN64
-{$ENDIF}
+  {$IFDEF WIN32}
+  _DRVRESERVED = 10;
+  {$ELSE}
+  _DRVRESERVED = 15;  // WIN64
+  {$ENDIF}
 
 
 type
@@ -1412,25 +1423,25 @@ type
 
 const
 
-  ACMSTREAMHEADER_STATUSF_DONE        = $00010000;
-  ACMSTREAMHEADER_STATUSF_PREPARED    = $00020000;
-  ACMSTREAMHEADER_STATUSF_INQUEUE     = $00100000;
+  ACMSTREAMHEADER_STATUSF_DONE = $00010000;
+  ACMSTREAMHEADER_STATUSF_PREPARED = $00020000;
+  ACMSTREAMHEADER_STATUSF_INQUEUE = $00100000;
 
 
-  function acmStreamOpen(phas: LPHACMSTREAM;      // pointer to stream handle
-                         had: HACMDRIVER;         // optional driver handle
-                         pwfxSrc: LPWAVEFORMATEX; // source format to convert
-                         pwfxDst: LPWAVEFORMATEX; // required destination format
-                         pwfltr: LPWAVEFILTER;    // optional filter
-                         dwCallback: DWORD_PTR;   // callback
-                         dwInstance: DWORD_PTR;   // callback instance data
-                         fdwOpen: DWORD): MMRESULT; stdcall;
+function acmStreamOpen(phas: LPHACMSTREAM;      // pointer to stream handle
+  had: HACMDRIVER;         // optional driver handle
+  pwfxSrc: LPWAVEFORMATEX; // source format to convert
+  pwfxDst: LPWAVEFORMATEX; // required destination format
+  pwfltr: LPWAVEFILTER;    // optional filter
+  dwCallback: DWORD_PTR;   // callback
+  dwInstance: DWORD_PTR;   // callback instance data
+  fdwOpen: DWORD): MMRESULT; stdcall;
 
 const
 
-  ACM_STREAMOPENF_QUERY               = $00000001;
-  ACM_STREAMOPENF_ASYNC               = $00000002;
-  ACM_STREAMOPENF_NONREALTIME         = $00000004;
+  ACM_STREAMOPENF_QUERY = $00000001;
+  ACM_STREAMOPENF_ASYNC = $00000002;
+  ACM_STREAMOPENF_NONREALTIME = $00000004;
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
   //
@@ -1439,27 +1450,27 @@ const
   //
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmStreamClose(has: HACMSTREAM;
-                          fdwClose: DWORD): MMRESULT; stdcall;
+function acmStreamClose(has: HACMSTREAM;
+                        fdwClose: DWORD): MMRESULT; stdcall;
 
 
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmStreamSize()
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmStreamSize()
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmStreamSize(has: HACMSTREAM;
-                         cbInput: DWORD;
-                         pdwOutputBytes: PDWORD;
-                         fdwSize: DWORD): MMRESULT; stdcall;
+function acmStreamSize(has: HACMSTREAM;
+                       cbInput: DWORD;
+                       pdwOutputBytes: PDWORD;
+                       fdwSize: DWORD): MMRESULT; stdcall;
 
 const
 
-  ACM_STREAMSIZEF_SOURCE              = $00000000;
-  ACM_STREAMSIZEF_DESTINATION         = $00000001;
-  ACM_STREAMSIZEF_QUERYMASK           = $0000000F;
+  ACM_STREAMSIZEF_SOURCE = $00000000;
+  ACM_STREAMSIZEF_DESTINATION = $00000001;
+  ACM_STREAMSIZEF_QUERYMASK = $0000000F;
 
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
@@ -1469,38 +1480,38 @@ const
   //
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmStreamReset(has: HACMSTREAM;
-                          fdwReset: DWORD): MMRESULT; stdcall;
+function acmStreamReset(has: HACMSTREAM;
+                        fdwReset: DWORD): MMRESULT; stdcall;
 
 
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmStreamMessage()
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmStreamMessage()
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmStreamMessage(has: HACMSTREAM;
-                            uMsg: UINT;
-                            lParam1: LPARAM;
-                            lParam2: LPARAM): MMRESULT; stdcall;
+function acmStreamMessage(has: HACMSTREAM;
+                          uMsg: UINT;
+                          lParam1: LPARAM;
+                          lParam2: LPARAM): MMRESULT; stdcall;
 
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmStreamConvert()
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmStreamConvert()
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmStreamConvert(has: HACMSTREAM;
-                            pash: LPACMSTREAMHEADER;
-                            fdwConvert: DWORD): MMRESULT; stdcall;
+function acmStreamConvert(has: HACMSTREAM;
+                          pash: LPACMSTREAMHEADER;
+                          fdwConvert: DWORD): MMRESULT; stdcall;
 
 const
 
-  ACM_STREAMCONVERTF_BLOCKALIGN       = $00000004;
-  ACM_STREAMCONVERTF_START            = $00000010;
-  ACM_STREAMCONVERTF_END              = $00000020;
+  ACM_STREAMCONVERTF_BLOCKALIGN = $00000004;
+  ACM_STREAMCONVERTF_START = $00000010;
+  ACM_STREAMCONVERTF_END = $00000020;
 
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
   //
@@ -1509,25 +1520,25 @@ const
   //
   //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function acmStreamPrepareHeader(has: HACMSTREAM;
+function acmStreamPrepareHeader(has: HACMSTREAM;
+                                pash: LPACMSTREAMHEADER;
+                                fdwPrepare: DWORD): MMRESULT; stdcall;
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+//
+//  acmStreamUnprepareHeader()
+//
+//
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+
+function acmStreamUnprepareHeader(has: HACMSTREAM;
                                   pash: LPACMSTREAMHEADER;
-                                  fdwPrepare: DWORD): MMRESULT; stdcall;
-
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-  //
-  //  acmStreamUnprepareHeader()
-  //
-  //
-  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-
-  function acmStreamUnprepareHeader(has: HACMSTREAM;
-                                    pash: LPACMSTREAMHEADER;
-                                    fdwUnprepare: DWORD): MMRESULT; stdcall;
+                                  fdwUnprepare: DWORD): MMRESULT; stdcall;
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
 
@@ -1535,76 +1546,76 @@ const
   MsAcmLib = 'Msacm32.dll';
 
 function acmGetVersion; external MsAcmLib name 'acmGetVersion';
-function acmMetrics;    external MsAcmLib name 'acmMetrics';
+function acmMetrics; external MsAcmLib name 'acmMetrics';
 
 function acmDriverEnum; external MsAcmLib name 'acmDriverEnum';
-function acmDriverID;   external MsAcmLib name 'acmDriverID';
+function acmDriverID; external MsAcmLib name 'acmDriverID';
 
 function acmDriverAddA; external MsAcmLib name 'acmDriverAddA';
 function acmDriverAddW; external MsAcmLib name 'acmDriverAddW';
-function acmDriverAdd;  external MsAcmLib name 'acmDriverAddW';
+function acmDriverAdd; external MsAcmLib name 'acmDriverAddW';
 
-function acmDriverRemove;   external MsAcmLib name 'acmDriverRemove';
-function acmDriverOpen;     external MsAcmLib name 'acmDriverOpen';
-function acmDriverClose;    external MsAcmLib name 'acmDriverClose';
-function acmDriverMessage;  external MsAcmLib name 'acmDriverMessage';
+function acmDriverRemove; external MsAcmLib name 'acmDriverRemove';
+function acmDriverOpen; external MsAcmLib name 'acmDriverOpen';
+function acmDriverClose; external MsAcmLib name 'acmDriverClose';
+function acmDriverMessage; external MsAcmLib name 'acmDriverMessage';
 function acmDriverPriority; external MsAcmLib name 'acmDriverPriority';
 
 function acmDriverDetailsA; external MsAcmLib name 'acmDriverDetailsA';
 function acmDriverDetailsW; external MsAcmLib name 'acmDriverDetailsW';
-function acmDriverDetails;  external MsAcmLib name 'acmDriverDetailsW';
+function acmDriverDetails; external MsAcmLib name 'acmDriverDetailsW';
 
 function acmFormatTagDetailsA; external MsAcmLib name 'acmFormatTagDetailsA';
 function acmFormatTagDetailsW; external MsAcmLib name 'acmFormatTagDetailsW';
-function acmFormatTagDetails;  external MsAcmLib name 'acmFormatTagDetailsW';
+function acmFormatTagDetails; external MsAcmLib name 'acmFormatTagDetailsW';
 
 function acmFormatTagEnumA; external MsAcmLib name 'acmFormatTagEnumA';
 function acmFormatTagEnumW; external MsAcmLib name 'acmFormatTagEnumW';
-function acmFormatTagEnum;  external MsAcmLib name 'acmFormatTagEnumW';
+function acmFormatTagEnum; external MsAcmLib name 'acmFormatTagEnumW';
 
 function acmFormatDetailsA; external MsAcmLib name 'acmFormatDetailsA';
 function acmFormatDetailsW; external MsAcmLib name 'acmFormatDetailsW';
-function acmFormatDetails;  external MsAcmLib name 'acmFormatDetailsW';
+function acmFormatDetails; external MsAcmLib name 'acmFormatDetailsW';
 
 function acmFormatEnumA; external MsAcmLib name 'acmFormatEnumA';
 function acmFormatEnumW; external MsAcmLib name 'acmFormatEnumW';
-function acmFormatEnum;  external MsAcmLib name 'acmFormatEnumW';
+function acmFormatEnum; external MsAcmLib name 'acmFormatEnumW';
 
 function acmFormatSuggest; external MsAcmLib name 'acmFormatSuggest';
 
 function acmFormatChooseA; external MsAcmLib name 'acmFormatChooseA';
 function acmFormatChooseW; external MsAcmLib name 'acmFormatChooseW';
-function acmFormatChoose;  external MsAcmLib name 'acmFormatChooseW';
+function acmFormatChoose; external MsAcmLib name 'acmFormatChooseW';
 
 function acmFilterTagDetailsA; external MsAcmLib name 'acmFilterTagDetailsA';
 function acmFilterTagDetailsW; external MsAcmLib name 'acmFilterTagDetailsW';
-function acmFilterTagDetails;  external MsAcmLib name 'acmFilterTagDetailsW';
+function acmFilterTagDetails; external MsAcmLib name 'acmFilterTagDetailsW';
 
 function acmFilterTagEnumA; external MsAcmLib name 'acmFilterTagEnumA';
 function acmFilterTagEnumW; external MsAcmLib name 'acmFilterTagEnumW';
-function acmFilterTagEnum;  external MsAcmLib name 'acmFilterTagEnumW';
+function acmFilterTagEnum; external MsAcmLib name 'acmFilterTagEnumW';
 
 function acmFilterDetailsA; external MsAcmLib name 'acmFilterDetailsA';
 function acmFilterDetailsW; external MsAcmLib name 'acmFilterDetailsW';
-function acmFilterDetails;  external MsAcmLib name 'acmFilterDetailsW';
+function acmFilterDetails; external MsAcmLib name 'acmFilterDetailsW';
 
 function acmFilterEnumA; external MsAcmLib name 'acmFilterEnumA';
 function acmFilterEnumW; external MsAcmLib name 'acmFilterEnumW';
-function acmFilterEnum;  external MsAcmLib name 'acmFilterEnumW';
+function acmFilterEnum; external MsAcmLib name 'acmFilterEnumW';
 
 function acmFilterChooseA; external MsAcmLib name 'acmFilterChooseA';
 function acmFilterChooseW; external MsAcmLib name 'acmFilterChooseW';
-function acmFilterChoose;  external MsAcmLib name 'acmFilterChooseW';
+function acmFilterChoose; external MsAcmLib name 'acmFilterChooseW';
 
-function acmStreamOpen;            external MsAcmLib name 'acmStreamOpen';
-function acmStreamClose;           external MsAcmLib name 'acmStreamClose';
-function acmStreamSize;            external MsAcmLib name 'acmStreamSize';
-function acmStreamReset;           external MsAcmLib name 'acmStreamReset';
-function acmStreamMessage;         external MsAcmLib name 'acmStreamMessage';
-function acmStreamConvert;         external MsAcmLib name 'acmStreamConvert';
-function acmStreamPrepareHeader;   external MsAcmLib name 'acmStreamPrepareHeader';
+function acmStreamOpen; external MsAcmLib name 'acmStreamOpen';
+function acmStreamClose; external MsAcmLib name 'acmStreamClose';
+function acmStreamSize; external MsAcmLib name 'acmStreamSize';
+function acmStreamReset; external MsAcmLib name 'acmStreamReset';
+function acmStreamMessage; external MsAcmLib name 'acmStreamMessage';
+function acmStreamConvert; external MsAcmLib name 'acmStreamConvert';
+function acmStreamPrepareHeader; external MsAcmLib name 'acmStreamPrepareHeader';
 function acmStreamUnprepareHeader; external MsAcmLib name 'acmStreamUnprepareHeader';
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

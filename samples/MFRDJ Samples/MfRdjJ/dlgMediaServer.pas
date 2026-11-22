@@ -64,11 +64,12 @@ unit dlgMediaServer;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   WinSock,
@@ -115,9 +116,13 @@ type
     procedure chkBroadcastClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure chkAutoRestartClick(Sender: TObject);
-    procedure pnlCaptionMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure pnlCaptionMouseDown(Sender: TObject;
+                                  Button: TMouseButton;
+                                  Shift: TShiftState;
+                                  X,
+                                  Y: Integer);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure btnMinimizeClick(Sender: TObject);
     procedure FormResize(Sender: TObject);
 
@@ -182,6 +187,7 @@ uses
 
 
 procedure TfrmMediaServer.btnMinimizeClick(Sender: TObject);
+
 begin
 
   WindowState := wsMinimized;
@@ -189,6 +195,7 @@ end;
 
 
 procedure TfrmMediaServer.chkAutoRestartClick(Sender: TObject);
+
 begin
 
   if Assigned(FIcecastMgr) then
@@ -197,6 +204,7 @@ end;
 
 
 procedure TfrmMediaServer.chkBroadcastClick(Sender: TObject);
+
 begin
 
   if FUpdatingBroadcastUi then
@@ -212,7 +220,7 @@ begin
   if chkBroadcast.Checked then
     begin
       if IsRemoteServerMode() and
-         (not chkStartStopServer.Checked) then
+        (not chkStartStopServer.Checked) then
         begin
           IcecastLog(Self,
                      'Broadcast disabled: remote server is not confirmed.');
@@ -245,6 +253,7 @@ end;
 
 
 procedure TfrmMediaServer.chkStartStopServerClick(Sender: TObject);
+
 begin
 
   if FUpdatingServerUi then
@@ -255,7 +264,7 @@ end;
 
 
 procedure TfrmMediaServer.FormCloseQuery(Sender: TObject;
-  var CanClose: Boolean);
+                                         var CanClose: Boolean);
 
 begin
 
@@ -265,6 +274,7 @@ end;
 
 
 procedure TfrmMediaServer.FormCreate(Sender: TObject);
+
 begin
 
   FUpdatingBroadcastUi := False;
@@ -286,6 +296,7 @@ end;
 
 
 procedure TfrmMediaServer.FormDestroy(Sender: TObject);
+
 begin
 
   if Assigned(MainMDIFrm) then
@@ -309,6 +320,7 @@ end;
 
 
 procedure TfrmMediaServer.FormResize(Sender: TObject);
+
 begin
 
   MainMdifrm.chkMediaServer.Checked := (chkBroadcast.Tag > 0);
@@ -323,7 +335,8 @@ begin
 
   SetWindowLong(Handle,
                 GWL_STYLE,
-                GetWindowLong(Handle, GWL_STYLE) and not WS_CAPTION or WS_BORDER);
+                GetWindowLong(Handle,
+                              GWL_STYLE) and not WS_CAPTION or WS_BORDER);
 
   Width := Width - 10;
   Height := Height - 30;
@@ -365,9 +378,9 @@ begin
       chkStartStopServer.Enabled := True;
 
       if Assigned(MainMDIFrm.IceCastEngine) and
-         (MainMDIFrm.IceCastEngine.State in [bsConnecting,
-                                             bsLive,
-                                             bsReconnecting]) then
+        (MainMDIFrm.IceCastEngine.State in [bsConnecting,
+        bsLive,
+        bsReconnecting]) then
         begin
           lblIcecastServerStatus.Caption := 'Server: Remote server ready';
           chkStartStopServer.Checked := True;
@@ -391,6 +404,7 @@ end;
 
 procedure TfrmMediaServer.IcecastLog(Sender: TObject;
                                      const AText: string);
+
 begin
 
   if not Assigned(memIcecastLog) then
@@ -414,7 +428,8 @@ end;
 
 
 procedure TfrmMediaServer.IcecastStateChanged(Sender: TObject;
-                                             AState: TMfIcecastServerState);
+                                              AState: TMfIcecastServerState);
+
 begin
 
   UpdateIcecastUi();
@@ -422,6 +437,7 @@ end;
 
 
 procedure TfrmMediaServer.UpdateIcecastUi();
+
 begin
 
   if IsRemoteServerMode() then
@@ -543,10 +559,10 @@ end;
 
 
 procedure TfrmMediaServer.SyncBroadcastUiFromEngine();
+
 begin
 
-  if not Assigned(MainMDIFrm) or
-     not Assigned(MainMDIFrm.IceCastEngine) then
+  if not Assigned(MainMDIFrm) or not Assigned(MainMDIFrm.IceCastEngine) then
     begin
       SetBroadcastUiState(False,
                           False);
@@ -560,15 +576,16 @@ begin
 
     bsLive: SetBroadcastUiState(True,
                                 True);
-  else
-    SetBroadcastUiState(False,
-                        False);
+    else
+      SetBroadcastUiState(False,
+                          False);
   end;
 end;
 
 
 procedure TfrmMediaServer.SetBroadcastUiState(const AChecked,
-                                               AOnAir: Boolean);
+                                              AOnAir: Boolean);
+
 begin
 
   FUpdatingBroadcastUi := True;
@@ -599,7 +616,7 @@ begin
   if IsRemoteServerMode() then
     begin
 
-      { TMPxpButton toggles Checked before OnClick.  Checked=True therefore
+        { TMPxpButton toggles Checked before OnClick.  Checked=True therefore
         means Start was requested; Checked=False means Stop/disconnect. }
       if chkStartStopServer.Checked then
         ConfirmRemoteServerReady()
@@ -629,33 +646,33 @@ begin
     Exit;
 
   case FIcecastMgr.State of
-    issStopped: begin
+      issStopped: begin
 
-                  hr := StartCaddy();
-                  if Failed(hr) then
-                    raise Exception.Create('Could not start Caddy.');
+        hr := StartCaddy();
+        if Failed(hr) then
+          raise Exception.Create('Could not start Caddy.');
 
-                  FIcecastMgr.AutoRestart := chkAutoRestart.Checked;
+        FIcecastMgr.AutoRestart := chkAutoRestart.Checked;
 
-                  hr := FIcecastMgr.Start();
-                  if Failed(hr) then
-                    raise Exception.Create('Could not start Icecast.');
+        hr := FIcecastMgr.Start();
+        if Failed(hr) then
+          raise Exception.Create('Could not start Icecast.');
 
-                  chkStartStopServer.Caption := 'Stop';
-                end;
+        chkStartStopServer.Caption := 'Stop';
+      end;
 
     issRunningNotReady,
-    issReady: begin
+      issReady: begin
 
-                MainMDIFrm.SetBroadcastEnabled(False);
-                SetBroadcastUiState(False,
-                                    False);
+        MainMDIFrm.SetBroadcastEnabled(False);
+        SetBroadcastUiState(False,
+                            False);
 
-                FIcecastMgr.Stop();
-                StopCaddy();
+        FIcecastMgr.Stop();
+        StopCaddy();
 
-                chkStartStopServer.Caption := 'Start';
-              end;
+        chkStartStopServer.Caption := 'Start';
+      end;
 
     issStarting,
     issStopping: UpdateIcecastUi();
@@ -676,6 +693,7 @@ var
   CaddyConfigFile: string;
   CaddyLogFile: string;
   setup: TRDJSetup;
+
 
   function QuoteCmd(const S: string): string;
   begin
@@ -701,7 +719,7 @@ begin
 
   WorkDir := Trim(setup.IcecastCaddyDir);
   CaddyConfigFile := Trim(setup.IcecastCaddyConfigFile);
-  CaddyLogFile :=  IncludeTrailingPathDelimiter(WorkDir) + Trim(setup.IcecastCaddyLogFile);
+  CaddyLogFile := IncludeTrailingPathDelimiter(WorkDir) + Trim(setup.IcecastCaddyLogFile);
 
   if (WorkDir = '') then
     Exit(S_OK);
@@ -712,7 +730,7 @@ begin
     Exit(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
 
   if (CaddyConfigFile <> '') and
-     (not FileExists(CaddyConfigFile)) then
+    (not FileExists(CaddyConfigFile)) then
     Exit(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
 
   if (CaddyLogFile = '') then
@@ -729,14 +747,14 @@ begin
   SA.bInheritHandle := True;
 
   LogHandle := CreateFileW(PChar(CaddyLogFile),
-                          GENERIC_WRITE,
-                          FILE_SHARE_READ,
-                          @SA,
-                          CREATE_ALWAYS,
-                          FILE_ATTRIBUTE_NORMAL,
-                          0);
+                           GENERIC_WRITE,
+                           FILE_SHARE_READ,
+                           @SA,
+                           CREATE_ALWAYS,
+                           FILE_ATTRIBUTE_NORMAL,
+                           0);
 
-  if LogHandle = INVALID_HANDLE_VALUE then
+  if (LogHandle = INVALID_HANDLE_VALUE) then
     Exit(HRESULT_FROM_WIN32(GetLastError));
 
   try
@@ -744,7 +762,7 @@ begin
     if (CaddyConfigFile <> '') then
       CmdLine := Format('%s run --config %s --adapter caddyfile',
                         [QuoteCmd(CaddyExe),
-                         QuoteCmd(CaddyConfigFile)])
+        QuoteCmd(CaddyConfigFile)])
     else
       CmdLine := Format('%s run',
                         [QuoteCmd(CaddyExe)]);
@@ -763,15 +781,15 @@ begin
     SI.hStdInput := GetStdHandle(STD_INPUT_HANDLE);
 
     if not CreateProcessW(nil,
-                         PChar(CmdLine),
-                         nil,
-                         nil,
-                         True,
-                         CREATE_NO_WINDOW,
-                         nil,
-                         PChar(WorkDir),
-                         SI,
-                         PI) then
+      PChar(CmdLine),
+      nil,
+      nil,
+      True,
+      CREATE_NO_WINDOW,
+      nil,
+      PChar(WorkDir),
+      SI,
+      PI) then
       hr := HRESULT_FROM_WIN32(GetLastError)
     else
       hr := S_OK;
@@ -809,7 +827,7 @@ begin
     Exit;
 
   if GetExitCodeProcess(FCaddyProcessHandle,
-                        ExitCode) then
+    ExitCode) then
     begin
 
       if (ExitCode = STILL_ACTIVE) then
@@ -831,25 +849,30 @@ end;
 
 
 function TfrmMediaServer.IsCaddyRunning(): Boolean;
+
 begin
 
   Result := TcpPortOpen('127.0.0.1',
                         443) or
-            TcpPortOpen('127.0.0.1',
-                        80);
+    TcpPortOpen('127.0.0.1',
+                80);
 end;
 
 
 procedure TfrmMediaServer.pnlCaptionMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                              Button: TMouseButton;
+                                              Shift: TShiftState;
+                                              X,
+                                              Y: Integer);
+
 begin
 
   // Drag window
   ReleaseCapture;
   SendMessageW(Handle,
-              WM_SYSCOMMAND,
-              SC_MOVE + HTCAPTION,
-              0);
+               WM_SYSCOMMAND,
+               SC_MOVE + HTCAPTION,
+               0);
 end;
 
 
@@ -858,10 +881,11 @@ var
   S: string;
 
 begin
+
   S := Trim(APath);
   Result := (Length(S) >= 2) and
-            (S[1] = '\') and
-            (S[2] = '\');
+    (S[1] = '\') and
+    (S[2] = '\');
 end;
 
 
@@ -871,6 +895,7 @@ var
   Host: string;
 
 begin
+
   Result := False;
 
   if not Assigned(MainMDIFrm) then
@@ -880,14 +905,16 @@ begin
   Host := Trim(Setup.IcecastHost);
 
   Result := IsUncPath(Setup.IcecastExePath) or
-            IsUncPath(Setup.IcecastConfigPath) or
-            IsUncPath(Setup.IcecastWorkingDir) or
-            IsUncPath(Setup.IcecastCaddyDir) or
-            IsUncPath(Setup.IcecastCaddyConfigFile) or
-            IsUncPath(Setup.IcecastNowPlayingJsonFile) or
-            ((Host <> '') and
-             (not SameText(Host, '127.0.0.1')) and
-             (not SameText(Host, 'localhost')));
+    IsUncPath(Setup.IcecastConfigPath) or
+    IsUncPath(Setup.IcecastWorkingDir) or
+    IsUncPath(Setup.IcecastCaddyDir) or
+    IsUncPath(Setup.IcecastCaddyConfigFile) or
+    IsUncPath(Setup.IcecastNowPlayingJsonFile) or
+    ((Host <> '') and
+    (not SameText(Host,
+                  '127.0.0.1')) and
+    (not SameText(Host,
+                  'localhost')));
 end;
 
 
@@ -897,6 +924,7 @@ var
   Port: Word;
 
 begin
+
   Result := False;
 
   if not Assigned(MainMDIFrm) then
@@ -905,14 +933,14 @@ begin
   Host := Trim(MainMDIFrm.Setup.IcecastHost);
   Port := MainMDIFrm.Setup.IcecastPort;
 
-  if Host = '' then
+  if (Host = '') then
     Host := Trim(MainMDIFrm.Setup.Broadcast.Host);
 
-  if Port = 0 then
+  if (Port = 0) then
     Port := MainMDIFrm.Setup.Broadcast.Port;
 
   if (Host = '') or
-     (Port = 0) then
+    (Port = 0) then
     Exit;
 
   Result := TcpPortOpen(Host,
@@ -926,6 +954,7 @@ var
   JsonFile: string;
 
 begin
+
   Result := True;
 
   if not Assigned(MainMDIFrm) then
@@ -934,11 +963,11 @@ begin
   Dir := Trim(MainMDIFrm.Setup.IcecastCaddyDir);
   JsonFile := Trim(MainMDIFrm.Setup.IcecastNowPlayingJsonFile);
 
-  if Dir <> '' then
+  if (Dir <> '') then
     Result := DirectoryExists(Dir);
 
   if Result and
-     (JsonFile <> '') then
+    (JsonFile <> '') then
     Result := DirectoryExists(ExtractFilePath(JsonFile));
 end;
 
@@ -949,6 +978,7 @@ var
   CaddyShareOk: Boolean;
 
 begin
+
   IcecastOk := IsIcecastReachable();
   CaddyShareOk := IsCaddyShareReady();
 
@@ -994,7 +1024,7 @@ end;
 
 
 function TfrmMediaServer.TcpPortOpen(const AHost: string;
-                                    const APort: Word): Boolean;
+                                     const APort: Word): Boolean;
 var
   WSAData: TWSAData;
   Sock: TSocket;
@@ -1005,7 +1035,7 @@ begin
   Result := False;
 
   if (WSAStartup($0202,
-                WSAData) <> 0) then
+    WSAData) <> 0) then
     Exit;
 
   try
@@ -1022,9 +1052,9 @@ begin
       Addr.sin_port := htons(APort);
       Addr.sin_addr.S_addr := inet_addr(PAnsiChar(AnsiString(AHost)));
 
-      Result := connect(Sock,
-                        Addr,
-                        SizeOf(Addr)) = 0;
+      Result := (connect(Sock,
+                         Addr,
+                         SizeOf(Addr)) = 0);
 
     finally
 

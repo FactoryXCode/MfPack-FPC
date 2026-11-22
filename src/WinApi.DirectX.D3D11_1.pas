@@ -76,7 +76,7 @@ unit WinApi.DirectX.D3D11_1;
 interface
 
 uses
-  
+
   {WinApi}
   Windows,
   WinApi.WinApiTypes,
@@ -94,7 +94,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
@@ -104,13 +105,13 @@ type
 
 
   PD3d11CopyFlags = ^D3D11_COPY_FLAGS;
-  D3D11_COPY_FLAGS          = (
+  D3D11_COPY_FLAGS = (
     D3D11_COPY_NO_OVERWRITE = $00000001,
-    D3D11_COPY_DISCARD      = $00000002
-  );
+                      D3D11_COPY_DISCARD = $00000002
+    );
 
   PD3d11LogicOp = ^D3D11_LOGIC_OP;
-  D3D11_LOGIC_OP         = (
+  D3D11_LOGIC_OP = (
     // Operation:
     // (s         == PS output, d = RTV contents)
     D3D11_LOGIC_OP_CLEAR = 0,       // 0
@@ -129,10 +130,11 @@ type
     D3D11_LOGIC_OP_AND_INVERTED,    // ~s  d
     D3D11_LOGIC_OP_OR_REVERSE,      // s | ~d
     D3D11_LOGIC_OP_OR_INVERTED      // ~s | d
-  );
+    );
 
 
   PD3D11_RENDER_TARGET_BLEND_DESC1 = ^D3D11_RENDER_TARGET_BLEND_DESC1;
+
   D3D11_RENDER_TARGET_BLEND_DESC1 = record
     BlendEnable: BOOL;
     LogicOpEnable: BOOL;            // LogicOpEnable and BlendEnable can't both be True
@@ -148,30 +150,34 @@ type
 
 
   PD3d11BlendDesc1 = ^D3D11_BLEND_DESC1;
+
   D3D11_BLEND_DESC1 = record
     AlphaToCoverageEnable: BOOL;     // relevant to multisample antialiasing only
     IndependentBlendEnable: BOOL;    // if FALSE, then replicate the first entry in RenderTarget array to other entries
     RenderTarget: array[0..D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT - 1] of D3D11_RENDER_TARGET_BLEND_DESC1;
   end;
 
-// Note, the array size for RenderTarget[] above is D3D11_SIMULTANEOUS_RENDERTARGET_COUNT.
-// IDL processing/generation of this header replaces the define; this comment is merely explaining what happened.
+  // Note, the array size for RenderTarget[] above is D3D11_SIMULTANEOUS_RENDERTARGET_COUNT.
+  // IDL processing/generation of this header replaces the define; this comment is merely explaining what happened.
 
 
   // Interface ID3D11BlendState1
   // ===========================
   //
   PID3D11BlendState1 = ^ID3D11BlendState1;
+
   ID3D11BlendState1 = interface(ID3D11BlendState)
     ['{cc86fabe-da55-401d-85e7-e3c9de2877e9}']
 
     procedure GetDesc1(out pDesc: D3D11_BLEND_DESC1); stdcall;
 
   end;
+
   IID_ID3D11BlendState1 = ID3D11BlendState1;
 
 
   PD3D11_RASTERIZER_DESC1 = ^D3D11_RASTERIZER_DESC1;
+
   D3D11_RASTERIZER_DESC1 = record
     FillMode: D3D11_FILL_MODE;
     CullMode: D3D11_CULL_MODE;
@@ -191,11 +197,13 @@ type
   // ================================
   //
   PID3D11RasterizerState1 = ^ID3D11RasterizerState1;
+
   ID3D11RasterizerState1 = interface(ID3D11RasterizerState)
     ['{1217d7a6-5039-418c-b042-9cbe256afd6e}']
 
     procedure GetDesc1(out pDesc: D3D11_RASTERIZER_DESC1); stdcall;
   end;
+
   IID_ID3D11RasterizerState1 = ID3D11RasterizerState1;
 
 
@@ -219,6 +227,7 @@ type
     ['{5c1e0d8a-7c23-48f9-8c59-a92958ceff11}']
 
   end;
+
   IID_ID3DDeviceContextState = ID3DDeviceContextState;
 
 
@@ -232,6 +241,7 @@ type
   // ==============================
   //
   PID3D11DeviceContext1 = ^ID3D11DeviceContext1;
+
   ID3D11DeviceContext1 = interface(ID3D11DeviceContext)
     ['{bb2c6faa-b5fb-4082-8e6b-388b8cfa90e1}']
 
@@ -242,12 +252,12 @@ type
                                      DstZ: UINT;
                                      pSrcResource: ID3D11Resource;
                                      SrcSubresource: UINT;
-                            {in_opt }pSrcBox: PD3D11_BOX;
+    {in_opt }pSrcBox: PD3D11_BOX;
                                      CopyFlags: UINT); stdcall;
 
     procedure UpdateSubresource1(pDstResource: ID3D11Resource;
                                  DstSubresource: UINT;
-                           {opt} pDstBox: PD3D11_BOX;
+    {opt} pDstBox: PD3D11_BOX;
                                  pSrcData: Pointer;
                                  SrcRowPitch: UINT;
                                  SrcDepthPitch: UINT;
@@ -255,7 +265,7 @@ type
 
     procedure DiscardResource(pResource: ID3D11Resource); stdcall;
 
-    procedure DiscardView (pResourceView: ID3D11View); stdcall;
+    procedure DiscardView(pResourceView: ID3D11View); stdcall;
 
     procedure VSSetConstantBuffers1(StartSlot: UINT;
                                     NumBuffers: UINT;
@@ -330,7 +340,7 @@ type
                                     pNumConstants: UINT); stdcall;
 
     procedure SwapDeviceContextState(pState: ID3DDeviceContextState;
-                                     {optional} out ppPreviousState: ID3DDeviceContextState); stdcall;
+    {optional} out ppPreviousState: ID3DDeviceContextState); stdcall;
 
     procedure ClearView(pView: ID3D11View;
                         Color: FixedColorFLOATArray;
@@ -341,6 +351,7 @@ type
                            pRects: D3D11_RECT;
                            NumRects: UINT); stdcall;
   end;
+
   IID_ID3D11DeviceContext1 = ID3D11DeviceContext1;
 
 
@@ -351,6 +362,7 @@ type
   //////////////////////////////////////////////////////////////////////////////
 
   PD3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK = ^D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK;
+
   D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK = record
     ClearSize: UINT;
     EncryptedSize: UINT;
@@ -358,6 +370,7 @@ type
 
 
   PD3D11_VIDEO_DECODER_BUFFER_DESC1 = ^D3D11_VIDEO_DECODER_BUFFER_DESC1;
+
   D3D11_VIDEO_DECODER_BUFFER_DESC1 = record
     BufferType: D3D11_VIDEO_DECODER_BUFFER_TYPE;
     DataOffset: UINT;
@@ -368,6 +381,7 @@ type
 
 
   PD3D11_VIDEO_DECODER_BEGIN_FRAME_CRYPTO_SESSION = ^D3D11_VIDEO_DECODER_BEGIN_FRAME_CRYPTO_SESSION;
+
   D3D11_VIDEO_DECODER_BEGIN_FRAME_CRYPTO_SESSION = record
     pCryptoSession: ID3D11CryptoSession;
     BlobSize: UINT;
@@ -380,13 +394,13 @@ type
 
 
   PD3D11_VIDEO_DECODER_CAPS = ^D3D11_VIDEO_DECODER_CAPS;
-  D3D11_VIDEO_DECODER_CAPS                       = (
-    D3D11_VIDEO_DECODER_CAPS_DOWNSAMPLE          = $1,
-    D3D11_VIDEO_DECODER_CAPS_NON_REAL_TIME       = $02,
-    D3D11_VIDEO_DECODER_CAPS_DOWNSAMPLE_DYNAMIC  = $04,
-    D3D11_VIDEO_DECODER_CAPS_DOWNSAMPLE_REQUIRED = $08,
-    D3D11_VIDEO_DECODER_CAPS_UNSUPPORTED         = $10
-  );
+  D3D11_VIDEO_DECODER_CAPS = (
+    D3D11_VIDEO_DECODER_CAPS_DOWNSAMPLE = $1,
+                              D3D11_VIDEO_DECODER_CAPS_NON_REAL_TIME = $02,
+                              D3D11_VIDEO_DECODER_CAPS_DOWNSAMPLE_DYNAMIC = $04,
+                              D3D11_VIDEO_DECODER_CAPS_DOWNSAMPLE_REQUIRED = $08,
+                              D3D11_VIDEO_DECODER_CAPS_UNSUPPORTED = $10
+    );
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -396,15 +410,16 @@ type
   //////////////////////////////////////////////////////////////////////////////
 
   PD3D11_VIDEO_PROCESSOR_BEHAVIOR_HINTS = ^D3D11_VIDEO_PROCESSOR_BEHAVIOR_HINTS;
-  D3D11_VIDEO_PROCESSOR_BEHAVIOR_HINTS                                            = (
-    D3D11_VIDEO_PROCESSOR_BEHAVIOR_HINT_MULTIPLANE_OVERLAY_ROTATION               = $01,
-    D3D11_VIDEO_PROCESSOR_BEHAVIOR_HINT_MULTIPLANE_OVERLAY_RESIZE                 = $02,
-    D3D11_VIDEO_PROCESSOR_BEHAVIOR_HINT_MULTIPLANE_OVERLAY_COLOR_SPACE_CONVERSION = $04,
-    D3D11_VIDEO_PROCESSOR_BEHAVIOR_HINT_TRIPLE_BUFFER_OUTPUT                      = $08
-  );
+  D3D11_VIDEO_PROCESSOR_BEHAVIOR_HINTS = (
+    D3D11_VIDEO_PROCESSOR_BEHAVIOR_HINT_MULTIPLANE_OVERLAY_ROTATION = $01,
+                                          D3D11_VIDEO_PROCESSOR_BEHAVIOR_HINT_MULTIPLANE_OVERLAY_RESIZE = $02,
+                                          D3D11_VIDEO_PROCESSOR_BEHAVIOR_HINT_MULTIPLANE_OVERLAY_COLOR_SPACE_CONVERSION = $04,
+                                          D3D11_VIDEO_PROCESSOR_BEHAVIOR_HINT_TRIPLE_BUFFER_OUTPUT = $08
+    );
 
 
   PD3D11_VIDEO_PROCESSOR_STREAM_BEHAVIOR_HINT = ^D3D11_VIDEO_PROCESSOR_STREAM_BEHAVIOR_HINT;
+
   D3D11_VIDEO_PROCESSOR_STREAM_BEHAVIOR_HINT = record
     Enable: BOOL;
     Width: UINT;
@@ -420,14 +435,15 @@ type
   //////////////////////////////////////////////////////////////////////////////
 
   PD3D11_CRYPTO_SESSION_STATUS = ^D3D11_CRYPTO_SESSION_STATUS;
-  D3D11_CRYPTO_SESSION_STATUS                        = (
-    D3D11_CRYPTO_SESSION_STATUS_OK                   = 0,
-    D3D11_CRYPTO_SESSION_STATUS_KEY_LOST             = 1,
-    D3D11_CRYPTO_SESSION_STATUS_KEY_AND_CONTENT_LOST = 2
-  );
+  D3D11_CRYPTO_SESSION_STATUS = (
+    D3D11_CRYPTO_SESSION_STATUS_OK = 0,
+                                 D3D11_CRYPTO_SESSION_STATUS_KEY_LOST = 1,
+                                 D3D11_CRYPTO_SESSION_STATUS_KEY_AND_CONTENT_LOST = 2
+    );
 
 
   PD3D11_KEY_EXCHANGE_HW_PROTECTION_INPUT_DATA = ^D3D11_KEY_EXCHANGE_HW_PROTECTION_INPUT_DATA;
+
   D3D11_KEY_EXCHANGE_HW_PROTECTION_INPUT_DATA = record
     PrivateDataSize: UINT;
     HWProtectionDataSize: UINT;
@@ -436,6 +452,7 @@ type
 
 
   PD3D11_KEY_EXCHANGE_HW_PROTECTION_OUTPUT_DATA = ^D3D11_KEY_EXCHANGE_HW_PROTECTION_OUTPUT_DATA;
+
   D3D11_KEY_EXCHANGE_HW_PROTECTION_OUTPUT_DATA = record
     PrivateDataSize: UINT;
     MaxHWProtectionDataSize: UINT;
@@ -447,6 +464,7 @@ type
 
 
   PD3D11_KEY_EXCHANGE_HW_PROTECTION_DATA = ^D3D11_KEY_EXCHANGE_HW_PROTECTION_DATA;
+
   D3D11_KEY_EXCHANGE_HW_PROTECTION_DATA = record
     HWProtectionFunctionID: UINT;
     pInputData: D3D11_KEY_EXCHANGE_HW_PROTECTION_INPUT_DATA;
@@ -461,6 +479,7 @@ type
   //
   //////////////////////////////////////////////////////////////////////////////
   PD3D11_VIDEO_SAMPLE_DESC = ^D3D11_VIDEO_SAMPLE_DESC;
+
   D3D11_VIDEO_SAMPLE_DESC = record
     Width: UINT;
     Height: UINT;
@@ -479,7 +498,7 @@ type
   // =============================
   //
   ID3D11VideoContext1 = interface(ID3D11VideoContext)
-  ['{A7F026DA-A5F8-4487-A564-15E34357651E}']
+    ['{A7F026DA-A5F8-4487-A564-15E34357651E}']
 
     function SubmitDecoderBuffers1(const pDecoder: ID3D11VideoDecoder;
                                    NumBuffers: UINT;
@@ -490,16 +509,16 @@ type
                                       pPrivatInputData: Pointer;
                                       out pPrivateOutputData: PUINT64): HResult; stdcall;
 
-    function  CheckCryptoSessionStatus(const pCryptoSession: ID3D11CryptoSession;
-                                       out pStatus: D3D11_CRYPTO_SESSION_STATUS): HResult; stdcall;
+    function CheckCryptoSessionStatus(const pCryptoSession: ID3D11CryptoSession;
+                                      out pStatus: D3D11_CRYPTO_SESSION_STATUS): HResult; stdcall;
 
-    function  DecoderEnableDownsampling(const pDecoder: ID3D11VideoDecoder;
-                                        InputColorSpace: DXGI_COLOR_SPACE_TYPE;
-                                        pOutputDesc: D3D11_VIDEO_SAMPLE_DESC;
-                                        ReferenceFrameCount: UINT): HResult; stdcall;
+    function DecoderEnableDownsampling(const pDecoder: ID3D11VideoDecoder;
+                                       InputColorSpace: DXGI_COLOR_SPACE_TYPE;
+                                       pOutputDesc: D3D11_VIDEO_SAMPLE_DESC;
+                                       ReferenceFrameCount: UINT): HResult; stdcall;
 
-    function  DecoderUpdateDownsampling(const pDecoder: ID3D11VideoDecoder;
-                                        pOutputDesc: D3D11_VIDEO_SAMPLE_DESC): HResult; stdcall;
+    function DecoderUpdateDownsampling(const pDecoder: ID3D11VideoDecoder;
+                                       pOutputDesc: D3D11_VIDEO_SAMPLE_DESC): HResult; stdcall;
 
     procedure VideoProcessorSetOutputColorSpace1(const pVideoProcessor: ID3D11VideoProcessor;
                                                  ColorSpace: DXGI_COLOR_SPACE_TYPE); stdcall;
@@ -541,6 +560,7 @@ type
                                             pStreams: D3D11_VIDEO_PROCESSOR_STREAM_BEHAVIOR_HINT;
                                             out pBehaviorHints: UINT): HResult; stdcall;
   end;
+
   IID_ID3D11VideoContext1 = ID3D11VideoContext1;
 
 
@@ -554,7 +574,7 @@ type
   // ============================
   //
   ID3D11VideoDevice1 = interface(ID3D11VideoDevice)
-  ['{29DA1D51-1321-4454-804B-F5FC9F861F0F}']
+    ['{29DA1D51-1321-4454-804B-F5FC9F861F0F}']
 
     function GetCryptoSessionPrivateDataSize(const pCryptoType: TGUID;
                                              const pDecoderProfile: TGUID;
@@ -584,6 +604,7 @@ type
                                                        pFrameRate: DXGI_RATIONAL;
                                                        out pRecommendedOutputDesc: D3D11_VIDEO_SAMPLE_DESC): HResult; stdcall;
   end;
+
   IID_ID3D11VideoDevice1 = ID3D11VideoDevice1;
 
 
@@ -597,7 +618,7 @@ type
   // =========================================
   //
   ID3D11VideoProcessorEnumerator1 = interface(ID3D11VideoProcessorEnumerator)
-  ['{465217F2-5568-43CF-B5B9-F61D54531CA1}']
+    ['{465217F2-5568-43CF-B5B9-F61D54531CA1}']
 
     function CheckVideoProcessorFormatConversion(InputFormat: DXGI_FORMAT;
                                                  InputColorSpace: DXGI_COLOR_SPACE_TYPE;
@@ -606,6 +627,7 @@ type
                                                  pSupported: BOOL): HResult; stdcall;
 
   end;
+
   IID_ID3D11VideoProcessorEnumerator1 = ID3D11VideoProcessorEnumerator1;
 
 
@@ -613,12 +635,12 @@ type
   // =======================
   //
   ID3D11Device1 = interface(ID3D11Device)
-  ['{a04bfb29-08ef-43d6-a49c-a9bdbdcbe686}']
+    ['{a04bfb29-08ef-43d6-a49c-a9bdbdcbe686}']
 
     procedure GetImmediateContext1(ppImmediateContext: PID3D11DeviceContext1); stdcall;
 
     function CreateDeferredContext1(ContextFlags: UINT;  // Reserved parameter; must be 0
-                                    ppDeferredContext: PID3D11DeviceContext1): HResult; stdcall;
+      ppDeferredContext: PID3D11DeviceContext1): HResult; stdcall;
 
     function CreateBlendState1(pBlendStateDesc: D3D11_BLEND_DESC1;
                                ppBlendState: PID3D11BlendState1): HResult; stdcall;
@@ -643,6 +665,7 @@ type
                                       const returnedInterface: REFIID;
                                       ppResource: Pointer): HResult; stdcall;
   end;
+
   IID_ID3D11Device1 = ID3D11Device1;
 
 
@@ -650,16 +673,17 @@ type
   // ===================================
   //
   ID3DUserDefinedAnnotation = interface(IUnknown)
-  ['{b2daad8b-03d4-4dbf-95eb-32ab4b63d0ab}']
+    ['{b2daad8b-03d4-4dbf-95eb-32ab4b63d0ab}']
 
     function BeginEvent(Name: PWideChar): INT; stdcall;
 
-    function EndEvent( ): INT; stdcall;
+    function EndEvent(): INT; stdcall;
 
     procedure SetMarker(Name: PWideChar); stdcall;
 
     function GetStatus(): BOOL; stdcall;
   end;
+
   IID_ID3DUserDefinedAnnotation = ID3DUserDefinedAnnotation;
 
 
@@ -669,6 +693,6 @@ type
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

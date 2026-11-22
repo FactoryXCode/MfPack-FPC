@@ -4,11 +4,12 @@
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   SysUtils,
   FxProxy.IOUtils,
   {MediaFoundationApi}
@@ -20,6 +21,7 @@ procedure RDJUpdateTrackQuality(var ATrack: TRDJTrack);
 
 implementation
 
+
 function RDJCodecFromExt(const AExt: string): string;
 var
   Ext: string;
@@ -28,17 +30,17 @@ begin
 
   Ext := LowerCase(AExt);
 
-  if Ext = '.mp3' then
+  if (Ext = '.mp3') then
     Result := 'MP3'
-  else if Ext = '.flac' then
+  else if (Ext = '.flac') then
     Result := 'FLAC'
-  else if Ext = '.wav' then
+  else if (Ext = '.wav') then
     Result := 'WAV'
   else if (Ext = '.m4a') or (Ext = '.aac') then
     Result := 'AAC'
-  else if Ext = '.ogg' then
+  else if (Ext = '.ogg') then
     Result := 'OGG'
-  else if Ext = '.wma' then
+  else if (Ext = '.wma') then
     Result := 'WMA'
   else if (Ext = '.aif') or (Ext = '.aiff') then
     Result := 'AIFF'
@@ -48,16 +50,18 @@ end;
 
 
 function RDJChannelText(const AChannels: Integer): string;
+
 begin
 
   case AChannels of
     1: Result := 'Mono';
     2: Result := 'Stereo';
-  else
-    if AChannels > 0 then
-      Result := Format('%d ch', [AChannels])
     else
-      Result := '';
+      if (AChannels > 0) then
+        Result := Format('%d ch',
+                         [AChannels])
+      else
+        Result := '';
   end;
 end;
 
@@ -70,15 +74,17 @@ begin
 
   Result := '';
 
-  if ASampleRate <= 0 then
+  if (ASampleRate <= 0) then
     Exit;
 
   KHz := ASampleRate / 1000.0;
 
-  if Frac(KHz) = 0 then
-    Result := Format('%d kHz', [Round(KHz)])
+  if (Frac(KHz) = 0) then
+    Result := Format('%d kHz',
+                     [Round(KHz)])
   else
-    Result := Format('%.1f kHz', [KHz]);
+    Result := Format('%.1f kHz',
+                     [KHz]);
 end;
 
 
@@ -105,13 +111,14 @@ var
   SR: string;
   CH: string;
 
+
   procedure AddPart(const S: string);
   begin
 
-    if Trim(S) = '' then
+    if (Trim(S) = '') then
       Exit;
 
-    if Parts = '' then
+    if (Parts = '') then
       Parts := S
     else
       Parts := Parts + ' / ' + S;
@@ -119,17 +126,17 @@ var
 
 begin
 
-  if Trim(ATrack.FileExt) = '' then
+  if (Trim(ATrack.FileExt) = '') then
     ATrack.FileExt := LowerCase(ExtractFileExt(ATrack.FullPath));
 
-  if Trim(ATrack.Codec) = '' then
+  if (Trim(ATrack.Codec) = '') then
     ATrack.Codec := RDJCodecFromExt(ATrack.FileExt);
 
   if (ATrack.FileSize <= 0) and FileExists(ATrack.FullPath) then
     begin
       try
 
-       // ATrack.FileSize := TFile.GetSize(ATrack.FullPath);
+        // ATrack.FileSize := TFile.GetSize(ATrack.FullPath);
         if not GetFileSize64(ATrack.FullPath, ATrack.FileSize) then
           ATrack.FileSize := 0;
       except
@@ -149,7 +156,7 @@ begin
 
   if (ATrack.BitrateKbps <= 0) and (ATrack.BitRate > 0) then
     begin
-      if ATrack.BitRate > 1000 then
+      if (ATrack.BitRate > 1000) then
         ATrack.BitrateKbps := ATrack.BitRate div 1000
       else
         ATrack.BitrateKbps := ATrack.BitRate;
@@ -164,12 +171,16 @@ begin
   AddPart(ATrack.Codec);
 
   if SameText(ATrack.Codec, 'MP3') or
-     SameText(ATrack.Codec, 'AAC') or
-     SameText(ATrack.Codec, 'OGG') or
-     SameText(ATrack.Codec, 'WMA') then
+    SameText(ATrack.Codec,
+             'AAC') or
+    SameText(ATrack.Codec,
+             'OGG') or
+    SameText(ATrack.Codec,
+             'WMA') then
     begin
-      if ATrack.BitrateKbps > 0 then
-        AddPart(Format('%d kbps', [ATrack.BitrateKbps]));
+      if (ATrack.BitrateKbps > 0) then
+        AddPart(Format('%d kbps',
+                       [ATrack.BitrateKbps]));
     end
   else
     begin
@@ -178,8 +189,9 @@ begin
 
       AddPart(SR);
 
-      if ATrack.BitsPerSample > 0 then
-        AddPart(Format('%d-bit', [ATrack.BitsPerSample]));
+      if (ATrack.BitsPerSample > 0) then
+        AddPart(Format('%d-bit',
+                       [ATrack.BitsPerSample]));
 
       AddPart(CH);
     end;

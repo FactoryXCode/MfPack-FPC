@@ -87,7 +87,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -102,34 +103,55 @@ const
   // Remarks:  For all virtual cameras this property will be set to DEVPROP_TRUE.
   // If this property is missing applications must assume the camera is a non-virtual camera.
   //
-  DEVPKEY_DeviceInterface_IsVirtualCamera                  :   DEVPROPKEY  = (fmtid: (D1: $6EDC630D;
-                                                                                      D2: $C2E3;
-                                                                                      D3: $43B7;
-                                                                                      D4: ($B2, $D1, $20, $52, $5A, $1A, $F1, $20));
-                                                                                      Pid: 3);
+  DEVPKEY_DeviceInterface_IsVirtualCamera: DEVPROPKEY = (fmtid: (D1: $6EDC630D;
+    D2: $C2E3;
+    D3: $43B7;
+    D4: ($B2,
+         $D1,
+         $20,
+         $52,
+         $5A,
+         $1A,
+         $F1,
+         $20));
+    Pid: 3);
   {$EXTERNALSYM DEVPKEY_DeviceInterface_IsVirtualCamera}
 
 
 
-{if NTDDI_VERSION >= NTDDI_WIN10_NI}
+  {if NTDDI_VERSION >= NTDDI_WIN10_NI}
 
   // DEVPROPKEY set on a camera interface property store
   // indicating the camera can enable MS Camera Effects.
   //
   // Type:  DEVPROP_BOOLEAN
   // {6EDC630D-C2E3-43B7-B2D1-20525A1AF120}, 4")
-  DEVPKEY_DeviceInterface_IsWindowsCameraEffectAvailable     :  DEVPROPKEY = (fmtid: (D1: $6EDC630D;
-                                                                                      D2: $C2E3;
-                                                                                      D3: $43B7;
-                                                                                      D4: ($B2, $D1, $20, $52, $5A, $1A, $F1, $20));
-                                                                                      Pid: 4);
+  DEVPKEY_DeviceInterface_IsWindowsCameraEffectAvailable: DEVPROPKEY = (fmtid: (D1: $6EDC630D;
+    D2: $C2E3;
+    D3: $43B7;
+    D4: ($B2,
+         $D1,
+         $20,
+         $52,
+         $5A,
+         $1A,
+         $F1,
+         $20));
+    Pid: 4);
 
   // Device-interface multi-string list of associated physical cameras.
-  DEVPKEY_DeviceInterface_VirtualCameraAssociatedCameras : DEVPROPKEY = (fmtid: (D1: $6EDC630D;
-                                                                                 D2: $C2E3;
-                                                                                 D3: $43B7;
-                                                                                 D4: ($B2, $D1, $20, $52, $5A, $1A, $F1, $20));
-                                                                                 pid: 5);
+  DEVPKEY_DeviceInterface_VirtualCameraAssociatedCameras: DEVPROPKEY = (fmtid: (D1: $6EDC630D;
+    D2: $C2E3;
+    D3: $43B7;
+    D4: ($B2,
+         $D1,
+         $20,
+         $52,
+         $5A,
+         $1A,
+         $F1,
+         $20));
+    pid: 5);
   {$EXTERNALSYM DEVPKEY_DeviceInterface_VirtualCameraAssociatedCameras}
 
   // 28A5531A-57DD-4FD5-AAA7-385ABF57D785
@@ -143,7 +165,7 @@ const
   // property set to True, setting this attribute during camera
   // initialization will result in an MF_E_INVALIDREQUEST
   // failure.
-  MF_DEVSOURCE_ATTRIBUTE_ENABLE_MS_CAMERA_EFFECTS            : TGUID = '{28A5531A-57DD-4FD5-AAA7-385ABF57D785}';
+  MF_DEVSOURCE_ATTRIBUTE_ENABLE_MS_CAMERA_EFFECTS: TGUID = '{28A5531A-57DD-4FD5-AAA7-385ABF57D785}';
 
   // {1BB79E7C-5D83-438C-94D8-E5F0DF6D3279}
   //
@@ -153,7 +175,7 @@ const
   // various associated physical cameras for the virtual camera.
   // This attribute will be set on the IMFActivate's attribute
   // prior to calling IMFActivate::ActivateObject() method.
-  MF_VIRTUALCAMERA_ASSOCIATED_CAMERA_SOURCES                 : TGUID = '{1BB79E7C-5D83-438C-94D8-E5F0DF6D3279}';
+  MF_VIRTUALCAMERA_ASSOCIATED_CAMERA_SOURCES: TGUID = '{1BB79E7C-5D83-438C-94D8-E5F0DF6D3279}';
 
   // {F0273718-4A4D-4AC5-A15D-305EB5E90667}
   //
@@ -165,9 +187,9 @@ const
   // or set to 0, associated physical cameras will not be
   // provided through the
   // MF_VIRTUALCAMERA_ASSOCIATED_CAMERA_SOURCES attribute.
-  MF_VIRTUALCAMERA_PROVIDE_ASSOCIATED_CAMERA_SOURCES         : TGUID = '{F0273718-4A4D-4AC5-A15D-305EB5E90667}';
+  MF_VIRTUALCAMERA_PROVIDE_ASSOCIATED_CAMERA_SOURCES: TGUID = '{F0273718-4A4D-4AC5-A15D-305EB5E90667}';
 
- {end NTDDI_VERSION >= NTDDI_WIN10_NI}
+  {end NTDDI_VERSION >= NTDDI_WIN10_NI}
 
 
   // MF_VIRTUALCAMERA_CONFIGURATION_APP_PACKAGE_FAMILY_NAME
@@ -177,27 +199,27 @@ const
   // DataType:  String
   //
   // The name must be a Package Family Name.
-  MF_VIRTUALCAMERA_CONFIGURATION_APP_PACKAGE_FAMILY_NAME     : TGUID = '{658ABE51-8044-462E-97EA-E676FD72055F}';
+  MF_VIRTUALCAMERA_CONFIGURATION_APP_PACKAGE_FAMILY_NAME: TGUID = '{658ABE51-8044-462E-97EA-E676FD72055F}';
   {$EXTERNALSYM MF_VIRTUALCAMERA_CONFIGURATION_APP_PACKAGE_FAMILY_NAME}
 
   // Virtual Camera operation extended media event type.
   // {E52C4DFF-E46D-4D0B-BC75-DDD4C8723F96}
-  MF_FRAMESERVER_VCAMEVENT_EXTENDED_SOURCE_INITIALIZE        : TGUID = '{E52C4DFF-E46D-4D0B-BC75-DDD4C8723F96}';
+  MF_FRAMESERVER_VCAMEVENT_EXTENDED_SOURCE_INITIALIZE: TGUID = '{E52C4DFF-E46D-4D0B-BC75-DDD4C8723F96}';
   {$EXTERNALSYM MF_FRAMESERVER_VCAMEVENT_EXTENDED_SOURCE_INITIALIZE}
   // {B1EEB989-B456-4F4A-AE40-079C28E24AF8}
-  MF_FRAMESERVER_VCAMEVENT_EXTENDED_SOURCE_START             : TGUID = '{B1EEB989-B456-4F4A-AE40-079C28E24AF8}';
+  MF_FRAMESERVER_VCAMEVENT_EXTENDED_SOURCE_START: TGUID = '{B1EEB989-B456-4F4A-AE40-079C28E24AF8}';
   {$EXTERNALSYM MF_FRAMESERVER_VCAMEVENT_EXTENDED_SOURCE_START}
   // {B7FE7A61-FE91-415E-8608-D37DEDB1A58B}
-  MF_FRAMESERVER_VCAMEVENT_EXTENDED_SOURCE_STOP              : TGUID = '{B7FE7A61-FE91-415E-8608-D37DEDB1A58B}';
+  MF_FRAMESERVER_VCAMEVENT_EXTENDED_SOURCE_STOP: TGUID = '{B7FE7A61-FE91-415E-8608-D37DEDB1A58B}';
   {$EXTERNALSYM MF_FRAMESERVER_VCAMEVENT_EXTENDED_SOURCE_STOP}
   // {A0EBABA7-A422-4E33-8401-B37D2800AA67}
-  MF_FRAMESERVER_VCAMEVENT_EXTENDED_SOURCE_UNINITIALIZE      : TGUID = '{A0EBABA7-A422-4E33-8401-B37D2800AA67}';
+  MF_FRAMESERVER_VCAMEVENT_EXTENDED_SOURCE_UNINITIALIZE: TGUID = '{A0EBABA7-A422-4E33-8401-B37D2800AA67}';
   {$EXTERNALSYM MF_FRAMESERVER_VCAMEVENT_EXTENDED_SOURCE_UNINITIALIZE}
   // {45A81B31-43F8-4E5D-8CE2-22DCE026996D}
-  MF_FRAMESERVER_VCAMEVENT_EXTENDED_PIPELINE_SHUTDOWN        : TGUID = '{45A81B31-43F8-4E5D-8CE2-22DCE026996D}';
+  MF_FRAMESERVER_VCAMEVENT_EXTENDED_PIPELINE_SHUTDOWN: TGUID = '{45A81B31-43F8-4E5D-8CE2-22DCE026996D}';
   {$EXTERNALSYM MF_FRAMESERVER_VCAMEVENT_EXTENDED_PIPELINE_SHUTDOWN}
   // {6E59489C-47D3-4467-83EF-12D34E871665}
-  MF_FRAMESERVER_VCAMEVENT_EXTENDED_CUSTOM_EVENT             : TGUID = '{6E59489C-47D3-4467-83EF-12D34E871665}';
+  MF_FRAMESERVER_VCAMEVENT_EXTENDED_CUSTOM_EVENT: TGUID = '{6E59489C-47D3-4467-83EF-12D34E871665}';
   {$EXTERNALSYM MF_FRAMESERVER_VCAMEVENT_EXTENDED_CUSTOM_EVENT}
 
 
@@ -206,21 +228,21 @@ type
   PMFVirtualCameraType = ^MFVirtualCameraType;
   {$EXTERNALSYM PMFVirtualCameraType}
   MFVirtualCameraType = (MFVirtualCameraType_SoftwareCameraSource = 0
-                        );
+    );
   {$EXTERNALSYM MFVirtualCameraType}
 
   PMFVirtualCameraLifetime = ^MFVirtualCameraLifetime;
   {$EXTERNALSYM PMFVirtualCameraLifetime}
   MFVirtualCameraLifetime = (MFVirtualCameraLifetime_Session = 0,
                              MFVirtualCameraLifetime_System = 1
-                            );
+    );
   {$EXTERNALSYM MFVirtualCameraLifetime}
 
   PMFVirtualCameraAccess = ^MFVirtualCameraAccess;
   {$EXTERNALSYM PMFVirtualCameraAccess}
   MFVirtualCameraAccess = (MFVirtualCameraAccess_CurrentUser = 0,
                            MFVirtualCameraAccess_AllUsers = 1
-                          );
+    );
   {$EXTERNALSYM MFVirtualCameraAccess}
 
 
@@ -232,11 +254,12 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFCameraSyncObject);'}
   {$EXTERNALSYM IMFCameraSyncObject}
   IMFCameraSyncObject = interface(IUnknown)
-  ['{6338B23A-3042-49D2-A3EA-EC0FED815407}']
+    ['{6338B23A-3042-49D2-A3EA-EC0FED815407}']
     function WaitOnSignal(timeOutInMs: DWORD): HResult; stdcall;
 
     procedure Shutdown(); stdcall;
   end;
+
   IID_IMFCameraSyncObject = IMFCameraSyncObject;
   {$EXTERNALSYM IID_IMFCameraSyncObject}
 
@@ -247,7 +270,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFVirtualCamera);'}
   {$EXTERNALSYM IMFVirtualCamera}
   IMFVirtualCamera = interface(IMFAttributes)
-  ['{1C08A864-EF6C-4C75-AF59-5F2D68DA9563}']
+    ['{1C08A864-EF6C-4C75-AF59-5F2D68DA9563}']
     function AddDeviceSourceInfo(DeviceSourceInfo: PWideChar): HResult; stdcall;
 
     function AddProperty(const pKey: DEVPROPKEY;
@@ -394,48 +417,49 @@ type
 
     function Shutdown(): HResult; stdcall;
   end;
+
   IID_IMFVirtualCamera = IMFVirtualCamera;
   {$EXTERNALSYM IID_IMFVirtualCamera}
 
-  // Creates a virtual camera object which can be used by the caller to register, unregister,
-  // or remove the virtual camera from the system.
-  function MFCreateVirtualCamera(_type: MFVirtualCameraType;
-                                 lifetime: MFVirtualCameraLifetime;
-                                 access: MFVirtualCameraAccess;
-                                 friendlyName: PWideChar;
-                                 sourceId: PWideChar;
-                                 const categories: PGUID;
-                                 categoryCount: ULONG;
-                                 out virtualCamera: IMFVirtualCamera): HResult; stdcall;
-   {$EXTERNALSYM MFCreateVirtualCamera}
+// Creates a virtual camera object which can be used by the caller to register, unregister,
+// or remove the virtual camera from the system.
+function MFCreateVirtualCamera(_type: MFVirtualCameraType;
+                               lifetime: MFVirtualCameraLifetime;
+                               access: MFVirtualCameraAccess;
+                               friendlyName: PWideChar;
+                               sourceId: PWideChar;
+                               const categories: PGUID;
+                               categoryCount: ULONG;
+                               out virtualCamera: IMFVirtualCamera): HResult; stdcall;
+{$EXTERNALSYM MFCreateVirtualCamera}
 
-  function MFIsVirtualCameraTypeSupported(_type: MFVirtualCameraType;
+function MFIsVirtualCameraTypeSupported(_type: MFVirtualCameraType;
                                         out supported: BOOL): HResult; stdcall;
-  {$EXTERNALSYM MFIsVirtualCameraTypeSupported}
+{$EXTERNALSYM MFIsVirtualCameraTypeSupported}
 
-  // Compatibility name retained for existing MfPack callers.
-  function IsVirtualCameraTypeSupported(_type: MFVirtualCameraType;
+// Compatibility name retained for existing MfPack callers.
+function IsVirtualCameraTypeSupported(_type: MFVirtualCameraType;
                                       out supported: BOOL): HResult; stdcall;
-  {$EXTERNALSYM IsVirtualCameraTypeSupported}
+{$EXTERNALSYM IsVirtualCameraTypeSupported}
 
 
 {END WINVER >= NTDDI_WIN10_CO}
 
 
 
-  // Additional Prototypes for ALL Interfaces
+// Additional Prototypes for ALL Interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
 
 const
   MfVirtualCameraLib = 'mfsensorgroup.dll';
 
-  function MFCreateVirtualCamera;            external MfVirtualCameraLib name 'MFCreateVirtualCamera' ;
-  function MFIsVirtualCameraTypeSupported;   external MfVirtualCameraLib name 'MFIsVirtualCameraTypeSupported' ;
-  function IsVirtualCameraTypeSupported;     external MfVirtualCameraLib name 'MFIsVirtualCameraTypeSupported' ;
+function MFCreateVirtualCamera; external MfVirtualCameraLib name 'MFCreateVirtualCamera';
+function MFIsVirtualCameraTypeSupported; external MfVirtualCameraLib name 'MFIsVirtualCameraTypeSupported';
+function IsVirtualCameraTypeSupported; external MfVirtualCameraLib name 'MFIsVirtualCameraTypeSupported';
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

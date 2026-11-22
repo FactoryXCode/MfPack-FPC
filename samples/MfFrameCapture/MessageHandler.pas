@@ -67,9 +67,9 @@ interface
 
 uses
   MfCapturePlatform,
-LMessages,
+  LMessages,
   LCLIntf,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   {System}
@@ -77,9 +77,10 @@ LMessages,
 
 type
   TOnHandleMessage = procedure(var AMessage: TLMessage;
-                                            var AHandled: boolean) of object;
+                               var AHandled: boolean) of object;
 
   TMessageHandler = class(TObject)
+
   private
     FWinHandle: HWND;
     FOnHandleMessage: TOnHandleMessage;
@@ -104,46 +105,62 @@ implementation
 { TMessageHandler }
 
 constructor TMessageHandler.Create;
+
 begin
+
   inherited;
   FWinHandle := 0;
   AllocateHandle;
 end;
 
+
 destructor TMessageHandler.Destroy;
+
 begin
+
   RemoveHandle;
   inherited;
 end;
 
+
 procedure TMessageHandler.AllocateHandle;
+
 begin
+
   RemoveHandle;
   FWinHandle := LCLIntf.AllocateHWnd(HandleWindowsMessage);
 end;
 
+
 procedure TMessageHandler.RemoveHandle;
+
 begin
-  if FWinHandle <> 0 then LCLIntf.DeallocateHWnd(FWinHandle);
+
+  if (FWinHandle <> 0) then
+    LCLIntf.DeallocateHWnd(FWinHandle);
   FWinHandle := 0;
 end;
+
 
 procedure TMessageHandler.HandleWindowsMessage(var AMessage: TLMessage);
 var
   bHandled: boolean;
+
 begin
+
   bHandled := False;
 
   if Assigned(FOnHandleMessage) then
-    FOnHandleMessage(AMessage, bHandled);
+    FOnHandleMessage(AMessage,
+                     bHandled);
 
   if bHandled then
     AMessage.Result := 0
   else
     AMessage.Result := DefWindowProcW(FWinHandle,
-                                     AMessage.Msg,
-                                     AMessage.WParam,
-                                     AMessage.LParam);
+                                      AMessage.Msg,
+                                      AMessage.WParam,
+                                      AMessage.LParam);
 end;
 
 end.

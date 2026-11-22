@@ -104,6 +104,7 @@ type
 
 
   TFxAdminResult = class
+
   public
     Action: TFxAdminAction;
     State: DWORD;
@@ -121,6 +122,7 @@ type
 
 
   TFxAdminWorker = class(TThread)
+
   private
     FWindow: HWND;
     FConnection: TFxAdminConnection;
@@ -140,20 +142,21 @@ type
   end;
 
 
-  function ServiceStateText(AState: DWORD): string;
-  function ConfigFileFromCommand(const ACommand: string): string;
-  procedure ValidateConnection(const AConnection: TFxAdminConnection);
+function ServiceStateText(AState: DWORD): string;
+function ConfigFileFromCommand(const ACommand: string): string;
+procedure ValidateConnection(const AConnection: TFxAdminConnection);
 
-  procedure SettingsFromText(const AText, AServerConfigFile: string;
-                             out ASettings: TFxRecordSettings);
+procedure SettingsFromText(const AText,
+                           AServerConfigFile: string;
+                           out ASettings: TFxRecordSettings);
 
-  function SettingsToText(const AOriginalText: string;
-                          const ASettings: TFxRecordSettings): string;
+function SettingsToText(const AOriginalText: string;
+                        const ASettings: TFxRecordSettings): string;
 
-  procedure ValidateSettings(const ASettings: TFxRecordSettings);
+procedure ValidateSettings(const ASettings: TFxRecordSettings);
 
-  function ParseCommandLine(ACommand: PWideChar;
-                            var ACount: Integer): PWideArguments; stdcall;
+function ParseCommandLine(ACommand: PWideChar;
+                          var ACount: Integer): PWideArguments; stdcall;
 
 implementation
 
@@ -166,6 +169,7 @@ uses
 
 const
   Shell32Lib = 'shell32.dll';
+
 
 procedure CheckResult(AResult: Boolean;
                       const AOperation: string);
@@ -184,6 +188,7 @@ end;
 
 
 function ServiceStateText(AState: DWORD): string;
+
 begin
 
   case AState of
@@ -194,8 +199,8 @@ begin
     SERVICE_CONTINUE_PENDING: Result := 'Continuing';
     SERVICE_PAUSE_PENDING: Result := 'Pausing';
     SERVICE_PAUSED: Result := 'Paused';
-  else
-    Result := 'Unknown';
+    else
+      Result := 'Unknown';
   end;
 end;
 
@@ -209,21 +214,25 @@ begin
   Machine := Trim(AConnection.Machine);
 
   if (Machine = '') or
-     (Pos('\', Machine) > 0) or
-     (Pos('/', Machine) > 0) or
-     (Pos(':', Machine) > 0) or
-     (Pos(' ', Machine) > 0) then
+    (Pos('\',
+         Machine) > 0) or
+    (Pos('/',
+         Machine) > 0) or
+    (Pos(':',
+         Machine) > 0) or
+    (Pos(' ',
+         Machine) > 0) then
     raise Exception.Create('Enter a LAN computer name or IPv4 address. Use "." for this computer.');
 
   if (AConnection.ConfigFile = '') then
     raise Exception.Create('Enter the shared FxRecord INI filename.');
 
   if (Machine <> '.') and not StartsText(#92#92 + Machine + #92,
-                                         AConnection.ConfigFile) then
+    AConnection.ConfigFile) then
     raise Exception.Create('The shared INI path must begin with \' + Machine + '\.');
 
   if not SameText(ExtractFileExt(AConnection.ConfigFile),
-                                 '.ini') then
+    '.ini') then
     raise Exception.Create('The shared configuration file must have an .ini extension.');
 end;
 
@@ -240,11 +249,11 @@ begin
                                 Count);
 
   CheckResult((Arguments <> nil),
-               'Parse the registered service command');
+              'Parse the registered service command');
 
   try
     if (Count = 0) or not SameText(ExtractFileName(Arguments^[0]),
-                                                   'FxRecord.exe') then
+      'FxRecord.exe') then
       raise Exception.Create('The FxRecord service does not point to FxRecord.exe.');
 
     Result := ChangeFileExt(Arguments^[0],
@@ -252,7 +261,7 @@ begin
 
     for I := 1 to Count - 1 do
       if SameText(Arguments^[I],
-                  '--config') then
+        '--config') then
         begin
           if (I + 1 >= Count) then
             raise Exception.Create('The service command has no --config filename.');
@@ -299,7 +308,8 @@ var
 begin
 
   // Relative paths belong to the server, never to the admin computer.
-  SetDefaultFxRecordSettings(ASettings, ExtractFileDir(AServerConfigFile));
+  SetDefaultFxRecordSettings(ASettings,
+                             ExtractFileDir(AServerConfigFile));
   Ini := NewTextIni(AText);
 
   try
@@ -307,8 +317,12 @@ begin
                                       'Enabled',
                                       ASettings.Enabled);
 
-    ASettings.SourceMode := Ini.ReadString('Recorder', 'SourceMode', ASettings.SourceMode);
-    ASettings.StreamUrl := Ini.ReadString('Recorder', 'StreamUrl', ASettings.StreamUrl);
+    ASettings.SourceMode := Ini.ReadString('Recorder',
+                                           'SourceMode',
+                                           ASettings.SourceMode);
+    ASettings.StreamUrl := Ini.ReadString('Recorder',
+                                          'StreamUrl',
+                                          ASettings.StreamUrl);
     ASettings.StreamPath := Ini.ReadString('Recorder',
                                            'StreamPath',
                                            ASettings.StreamPath);
@@ -371,10 +385,11 @@ end;
 
 
 procedure ValidateSettings(const ASettings: TFxRecordSettings);
+
 begin
 
   ValidateFxRecordSource(ASettings);
-  if Trim(ASettings.ArchivePath) = '' then
+  if (Trim(ASettings.ArchivePath) = '') then
     raise Exception.Create('The archive folder on the recorder computer is required.');
 
   if (ASettings.FragmentDuration < 1) or (ASettings.FragmentDuration > 1440) then
@@ -390,34 +405,32 @@ begin
     raise Exception.Create('Live timeout must be between 5 and 3600 seconds.');
 
   if (ASettings.CriticalFreeGB < 1) or
-     (ASettings.WarningFreeGB < ASettings.CriticalFreeGB) or (ASettings.WarningFreeGB > 100000) then
+    (ASettings.WarningFreeGB < ASettings.CriticalFreeGB) or (ASettings.WarningFreeGB > 100000) then
     raise Exception.Create('Disk warning must be at least the critical threshold, and both must be positive.');
 
   if SameText(ASettings.OutputProfile,
-              'AVI-H264-MP3') then
+    'AVI-H264-MP3') then
     begin
       if not ((ASettings.Mp3SampleRate = 32000) or
-             (ASettings.Mp3SampleRate = 44100) or
-             (ASettings.Mp3SampleRate = 48000)) or not
-             ((ASettings.Mp3BitRateKbps = 128) or
-             (ASettings.Mp3BitRateKbps = 160) or
-             (ASettings.Mp3BitRateKbps = 192)) then
+        (ASettings.Mp3SampleRate = 44100) or
+        (ASettings.Mp3SampleRate = 48000)) or not
+        ((ASettings.Mp3BitRateKbps = 128) or
+        (ASettings.Mp3BitRateKbps = 160) or
+        (ASettings.Mp3BitRateKbps = 192)) then
         raise Exception.Create('Select a supported MP3 sample rate and bitrate.');
     end
-  else
-    if SameText(ASettings.OutputProfile, 'MP4-H264-AAC') then
-      begin
-        if not ((ASettings.AacSampleRate = 44100) or
-               (ASettings.AacSampleRate = 48000)) or not
-               ((ASettings.AacBitRateKbps = 96) or
-               (ASettings.AacBitRateKbps = 128) or
-               (ASettings.AacBitRateKbps = 160) or
-               (ASettings.AacBitRateKbps = 192)) then
-         raise Exception.Create('Select 44.1/48 kHz AAC at 96, 128, 160 or 192 kbps.');
-      end
-    else
-      if not SameText(ASettings.OutputProfile, 'SourceCopy') then
-        raise Exception.Create('Unsupported recording profile.');
+  else if SameText(ASettings.OutputProfile, 'MP4-H264-AAC') then
+    begin
+      if not ((ASettings.AacSampleRate = 44100) or
+        (ASettings.AacSampleRate = 48000)) or not
+        ((ASettings.AacBitRateKbps = 96) or
+        (ASettings.AacBitRateKbps = 128) or
+        (ASettings.AacBitRateKbps = 160) or
+        (ASettings.AacBitRateKbps = 192)) then
+        raise Exception.Create('Select 44.1/48 kHz AAC at 96, 128, 160 or 192 kbps.');
+    end
+  else if not SameText(ASettings.OutputProfile, 'SourceCopy') then
+    raise Exception.Create('Unsupported recording profile.');
 end;
 
 
@@ -437,8 +450,12 @@ begin
     Ini.WriteBool('Recorder',
                   'Enabled',
                   ASettings.Enabled);
-    Ini.WriteString('Recorder', 'SourceMode', ASettings.SourceMode);
-    Ini.WriteString('Recorder', 'StreamUrl', ASettings.StreamUrl);
+    Ini.WriteString('Recorder',
+                    'SourceMode',
+                    ASettings.SourceMode);
+    Ini.WriteString('Recorder',
+                    'StreamUrl',
+                    ASettings.StreamUrl);
 
     Ini.WriteString('Recorder',
                     'StreamPath',
@@ -522,13 +539,14 @@ begin
   if (Needed = 0) then
     CheckResult(False,
                 'Read the service configuration size');
-  GetMem(Config, Needed);
+  GetMem(Config,
+         Needed);
   try
     CheckResult(QueryServiceConfig(AService,
                                    Config,
                                    Needed,
                                    Needed),
-                                   'Read the service command');
+                'Read the service command');
 
     Result := ConfigFileFromCommand(Config.lpBinaryPathName);
 
@@ -553,7 +571,8 @@ begin
                                    SC_STATUS_PROCESS_INFO,
                                    @Status,
                                    SizeOf(Status),
-                                   Needed), 'Query FxRecord service status');
+                                   Needed),
+              'Query FxRecord service status');
 
   AResult.State := Status.dwCurrentState;
   AResult.ProcessId := Status.dwProcessId;
@@ -589,15 +608,15 @@ begin
                                 [AResult.ExitCode, AResult.SpecificExitCode]);
 
     if (DWORD(GetTickCount - StartTick) >= TimeoutMs) then
-    begin
-      if AAllowPendingStop and (AResult.State = SERVICE_STOP_PENDING) then
       begin
-        AResult.Notice := 'Stop request accepted. FxRecord is still finalizing recordings; status will refresh automatically.';
-        Exit;
+        if AAllowPendingStop and (AResult.State = SERVICE_STOP_PENDING) then
+          begin
+            AResult.Notice := 'Stop request accepted. FxRecord is still finalizing recordings; status will refresh automatically.';
+            Exit;
+          end;
+        raise Exception.CreateFmt('FxRecord is still %s after %d minutes. Refresh its status before another command.',
+                                  [LowerCase(ServiceStateText(AResult.State)), TimeoutMs div 60000]);
       end;
-      raise Exception.CreateFmt('FxRecord is still %s after %d minutes. Refresh its status before another command.',
-                                [LowerCase(ServiceStateText(AResult.State)), TimeoutMs div 60000]);
-    end;
 
     Sleep(250);
   until False;
@@ -630,9 +649,9 @@ begin
 
   Arguments := nil;
   CheckResult(StartServiceW(AService,
-                           0,
-                           Arguments),
-                           'Start FxRecord');
+                            0,
+                            Arguments),
+              'Start FxRecord');
 
   WaitForState(AService,
                SERVICE_RUNNING,
@@ -657,7 +676,7 @@ begin
     CheckResult(ControlService(AService,
                                SERVICE_CONTROL_STOP,
                                Status),
-                               'Stop FxRecord');
+                'Stop FxRecord');
 
   WaitForState(AService,
                SERVICE_STOPPED,
@@ -733,20 +752,19 @@ begin
   SharedFolder := IncludeTrailingPathDelimiter(ExtractFileDir(AConnection.ConfigFile));
 
   if StartsText(BaseFolder,
-                AServerFile) then
+    AServerFile) then
     Result := SharedFolder + Copy(AServerFile,
                                   Length(BaseFolder) + 1,
                                   MaxInt)
-  else
-    if (Length(AServerFile) > 2) and (AServerFile[2] = ':') then
-      Result := #92#92 +
-                AConnection.Machine +
-                #92 +
-                AServerFile[1] +
-                '$' +
-                Copy(AServerFile,
-                     3,
-                     MaxInt)
+  else if (Length(AServerFile) > 2) and (AServerFile[2] = ':') then
+    Result := #92#92 +
+      AConnection.Machine +
+      #92 +
+      AServerFile[1] +
+      '$' +
+      Copy(AServerFile,
+           3,
+           MaxInt)
   else
     Result := AServerFile;
 end;
@@ -764,9 +782,10 @@ begin
   try
     AResult.LogText := ReadSharedText(ChangeFileExt(AConnection.ConfigFile,
                                                     '.log'),
-                                                    True);
+                                      True);
   except
-    on E: Exception do AResult.LogText := 'Service log unavailable: ' + E.Message;
+    on E: Exception do
+      AResult.LogText := 'Service log unavailable: ' + E.Message;
   end;
 
   try
@@ -782,9 +801,10 @@ begin
                                                     StreamPath));
 
     StatusFile := TPath.Combine(ExtractFileDir(ExcludeTrailingPathDelimiter(StreamPath)),
-                               'FxAlert\status.json');
+                                'FxAlert\status.json');
     if SameText(Settings.SourceMode, 'PublicUrl') then
-      StatusFile := TPath.Combine(ExtractFileDir(AConnection.ServerConfigFile), 'FxAlert\status.json');
+      StatusFile := TPath.Combine(ExtractFileDir(AConnection.ServerConfigFile),
+                                  'FxAlert\status.json');
 
 
     AResult.StatusText := ReadSharedText(SharePathForServerFile(AConnection,
@@ -792,7 +812,8 @@ begin
                                          False);
 
   except
-    on E: Exception do AResult.StatusText := 'FxAlert status unavailable: ' + E.Message;
+    on E: Exception do
+      AResult.StatusText := 'FxAlert status unavailable: ' + E.Message;
   end;
 end;
 
@@ -809,23 +830,23 @@ var
 begin
 
   if (ReadSharedText(AConnection.ConfigFile,
-                     False) <> AOriginalText) then
+    False) <> AOriginalText) then
     raise Exception.Create('The server ini-file changed since it was loaded. Reconnect before saving.');
 
   CreateGUID(Id);
   BackupFile := AConnection.ConfigFile +
-                '.' +
-                FormatDateTime('yyyymmdd-hhnnss',
-                               Now) +
-                '-' +
-                GUIDToString(Id) +
-                '.bak';
+    '.' +
+    FormatDateTime('yyyymmdd-hhnnss',
+                   Now) +
+    '-' +
+    GUIDToString(Id) +
+    '.bak';
 
 
   CheckResult(CopyFileW(PChar(AConnection.ConfigFile),
-                       PChar(BackupFile),
-                       True),
-                       'Back up the FxRecord ini-file');
+                        PChar(BackupFile),
+                        True),
+              'Back up the FxRecord ini-file');
 
   TemporaryFile := AConnection.ConfigFile + '.' + GUIDToString(Id) + '.tmp';
 
@@ -836,13 +857,13 @@ begin
 
     // Check again after staging, before replacing the live configuration.
     if (ReadSharedText(AConnection.ConfigFile,
-                       False) <> AOriginalText) then
+      False) <> AOriginalText) then
       raise Exception.Create('The server ini-file changed while saving. The original was preserved.');
 
     CheckResult(MoveFileExW(PChar(TemporaryFile),
-                           PChar(AConnection.ConfigFile),
-                           MOVEFILE_REPLACE_EXISTING or $8),
-                           'Replace the FxRecord ini-file');
+                            PChar(AConnection.ConfigFile),
+                            MOVEFILE_REPLACE_EXISTING or $8),
+                'Replace the FxRecord ini-file');
 
     AResult.ConfigSaved := True;
     AResult.ConfigText := ANewText;
@@ -881,19 +902,19 @@ begin
 
   if (Connection.Machine = '.') then
     Manager := OpenSCManagerW(nil,
-                             nil,
-                             SC_MANAGER_CONNECT)
+                              nil,
+                              SC_MANAGER_CONNECT)
   else
     Manager := OpenSCManagerW(PChar(Connection.Machine),
-                             nil,
-                             SC_MANAGER_CONNECT);
+                              nil,
+                              SC_MANAGER_CONNECT);
 
   CheckResult((Manager <> 0),
               'Connect to Windows Service Control Manager');
   try
     Service := OpenServiceW(Manager,
-                           FX_RECORD_ADMIN_SERVICE,
-                           Access);
+                            FX_RECORD_ADMIN_SERVICE,
+                            Access);
 
     CheckResult((Service <> 0),
                 'Open the FxRecord service');
@@ -902,9 +923,9 @@ begin
       AResult.ServerConfigFile := Connection.ServerConfigFile;
 
       if not SameText(ExtractFileName(Connection.ConfigFile),
-                      ExtractFileName(Connection.ServerConfigFile)) then
+        ExtractFileName(Connection.ServerConfigFile)) then
         raise Exception.Create('The shared INI filename differs from the INI registered for the service: ' +
-                               Connection.ServerConfigFile);
+          Connection.ServerConfigFile);
 
       ReadServiceStatus(Service,
                         AResult);
@@ -921,46 +942,50 @@ begin
 
         aaRestart:
           begin
-            StopRecorder(Service, AResult);
-            StartRecorder(Service, AResult);
+            StopRecorder(Service,
+                         AResult);
+            StartRecorder(Service,
+                          AResult);
           end;
 
-        aaSave, aaApply: begin
-                           SettingsFromText(ANewText,
-                                            Connection.ServerConfigFile,
-                                            Settings);
-                           ValidateSettings(Settings);
+          aaSave, aaApply: begin
+            SettingsFromText(ANewText,
+                             Connection.ServerConfigFile,
+                             Settings);
+            ValidateSettings(Settings);
 
-                           if (ReadSharedText(Connection.ConfigFile,
-                                              False) <> AOriginalText) then
-                             raise Exception.Create('The server INI changed since it was loaded. Reconnect before saving.');
+            if (ReadSharedText(Connection.ConfigFile,
+              False) <> AOriginalText) then
+              raise Exception.Create('The server INI changed since it was loaded. Reconnect before saving.');
 
-                           if not (AResult.State in [SERVICE_RUNNING, SERVICE_STOPPED]) then
-                             raise Exception.Create('Wait until the service is fully running or stopped before saving.');
+            if not (AResult.State in [SERVICE_RUNNING, SERVICE_STOPPED]) then
+              raise Exception.Create('Wait until the service is fully running or stopped before saving.');
 
-                            WasRunning := (AResult.State = SERVICE_RUNNING);
+            WasRunning := (AResult.State = SERVICE_RUNNING);
 
-                           if WasRunning and (AAction = aaSave) then
-                             raise Exception.Create('Stop the service before saving, or use Save & restart.');
+            if WasRunning and (AAction = aaSave) then
+              raise Exception.Create('Stop the service before saving, or use Save & restart.');
 
-                           if WasRunning then StopRecorder(Service,
-                                                           AResult);
-                           try
-                             ReplaceConfig(Connection,
-                                           AOriginalText,
-                                           ANewText,
-                                           AResult);
-                           except
-                             // If saving failed, resume the previous working configuration.
-                             if WasRunning and not AResult.ConfigSaved then
-                               try
-                                 StartRecorder(Service,
-                                               AResult);
-                               except
-                                 on E: Exception do AResult.Notice := 'Could not restart the previous configuration: ' + E.Message;
-                              end;
-                              raise;
-                           end;
+            if WasRunning then
+              StopRecorder(Service,
+                           AResult);
+            try
+              ReplaceConfig(Connection,
+                            AOriginalText,
+                            ANewText,
+                            AResult);
+            except
+              // If saving failed, resume the previous working configuration.
+              if WasRunning and not AResult.ConfigSaved then
+              try
+                StartRecorder(Service,
+                              AResult);
+              except
+                on E: Exception do
+                  AResult.Notice := 'Could not restart the previous configuration: ' + E.Message;
+              end;
+              raise;
+            end;
 
             if WasRunning then
               StartRecorder(Service,
@@ -989,6 +1014,7 @@ constructor TFxAdminWorker.Create(AWindow: HWND;
                                   AAction: TFxAdminAction;
                                   const AOriginalText: string;
                                   const ANewText: string);
+
 begin
 
   inherited Create(True);
@@ -1018,13 +1044,14 @@ begin
                  FNewText,
                  ResultItem);
   except
-    on E: Exception do ResultItem.ErrorText := E.Message;
+    on E: Exception do
+      ResultItem.ErrorText := E.Message;
   end;
 
   if not PostMessage(FWindow,
-                     FX_RECORD_ADMIN_RESULT,
-                     0,
-                     LPARAM(ResultItem)) then
+    FX_RECORD_ADMIN_RESULT,
+    0,
+    LPARAM(ResultItem)) then
     ResultItem.Free;
 end;
 

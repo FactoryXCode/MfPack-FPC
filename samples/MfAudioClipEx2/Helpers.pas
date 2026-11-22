@@ -70,7 +70,7 @@ interface
 
 uses
   MfSmallSamplesPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.ComBaseApi,
@@ -85,22 +85,24 @@ type
 
   // CriticalSection
   TMFCritSec = class
-    private
+
+  private
     { private fields }
-      FCriticalSection: TRTLCriticalSection;
-    public
+    FCriticalSection: TRTLCriticalSection;
+
+  public
     { public methods }
-      constructor Create();
-      destructor Destroy(); override;
-      procedure Lock();
-      procedure Unlock();
-   end;
+    constructor Create();
+    destructor Destroy(); override;
+    procedure Lock();
+    procedure Unlock();
+  end;
 
 
-  // Intitialize COM and MF
-  function InitMF(): HResult;
-  // Close COM and MF
-  function CloseMF(): HResult;
+// Intitialize COM and MF
+function InitMF(): HResult;
+// Close COM and MF
+function CloseMF(): HResult;
 
 
 implementation
@@ -109,22 +111,33 @@ implementation
 // TMFCritSec //////////////////////////////////////////////////////////////////
 
 constructor TMFCritSec.Create();
+
 begin
+
   InitializeCriticalSection(FcriticalSection);
 end;
 
+
 destructor TMFCritSec.Destroy();
+
 begin
+
   DeleteCriticalSection(FcriticalSection);
 end;
 
+
 procedure TMFCritSec.Lock();
+
 begin
+
   EnterCriticalSection(FcriticalSection);
 end;
 
+
 procedure TMFCritSec.Unlock();
+
 begin
+
   LeaveCriticalSection(FcriticalSection);
 end;
 
@@ -143,10 +156,10 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(0,
-                 LPCWSTR('Your computer does not support this Media Foundation API version' +
-                         IntToStr(MF_VERSION) + '.'),
-                 LPCWSTR('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  LPCWSTR('Your computer does not support this Media Foundation API version' +
+        IntToStr(MF_VERSION) + '.'),
+                  LPCWSTR('MFStartup Failure!'),
+                  MB_ICONSTOP);
       Abort();
     end;
   Result := hr;
@@ -154,7 +167,9 @@ end;
 
 
 function CloseMF(): HResult;
+
 begin
+
   // Shutdown MF
   Result := MFShutdown();
 end;

@@ -89,31 +89,32 @@ type
 
   TDynamicsSettings = record
     // Compressor.
-    CompEnabled      : Boolean;
-    CompThresholdDb  : Integer;  // negative
-    CompRatioX10     : Integer;  // e.g. 40 = 4.0
-    CompAttackMs     : Integer;
-    CompReleaseMs    : Integer;
-    CompMakeupDb     : Integer;
-    CompAutoMakeup   : Boolean;
+    CompEnabled: Boolean;
+    CompThresholdDb: Integer;  // negative
+    CompRatioX10: Integer;  // e.g. 40 = 4.0
+    CompAttackMs: Integer;
+    CompReleaseMs: Integer;
+    CompMakeupDb: Integer;
+    CompAutoMakeup: Boolean;
 
     // Limiter.
-    LimEnabled       : Boolean;
-    LimCeilingDb     : Integer;  // negative
-    LimReleaseMs     : Integer;
-    LimLookaheadMs   : Integer;
-    LimKneeDb        : Integer;  // 0 = hard
-    LimDetector      : TLimiterDetector;
-    LimRmsWindowMs   : Integer;
+    LimEnabled: Boolean;
+    LimCeilingDb: Integer;  // negative
+    LimReleaseMs: Integer;
+    LimLookaheadMs: Integer;
+    LimKneeDb: Integer;  // 0 = hard
+    LimDetector: TLimiterDetector;
+    LimRmsWindowMs: Integer;
 
     // True peak (Catmull-Rom interpolation between samples).
-    LimTruePeak      : Boolean;
-    LimOversample    : Integer; // 1,2,4,...
+    LimTruePeak: Boolean;
+    LimOversample: Integer; // 1,2,4,...
 
     class function Defaults: TDynamicsSettings; static;
   end;
 
   TAudioDynamicsDSP = class
+
   private
 
     FSampleRate: Integer;
@@ -179,7 +180,7 @@ type
                          b,
                          c,
                          d: Single;
-                          OS: Integer): Single;
+                         OS: Integer): Single;
 
     function SoftKneeOverDb(const OverDb: Single;
                             const KneeDb: Single): Single; inline;
@@ -197,7 +198,8 @@ type
 
     // Preallocate any scratch buffers needed for realtime processing.
     // Call this once after you know the max frames per WASAPI buffer.
-    procedure PreallocRealtimeBuffers(MaxFrames: Integer; Format: TSampleFormat);
+    procedure PreallocRealtimeBuffers(MaxFrames: Integer;
+                                      Format: TSampleFormat);
 
     // When enabled (default), ProcessInterleaved will never allocate.
     procedure SetRealtimeNoAlloc(Value: Boolean);
@@ -221,9 +223,10 @@ implementation
 uses
   PcmLib;
 
-{ TDynamicsSettings }
+  { TDynamicsSettings }
 
 class function TDynamicsSettings.Defaults(): TDynamicsSettings;
+
 begin
 
   FillChar(Result,
@@ -231,32 +234,33 @@ begin
            0);
 
   // Compressor defaults
-  Result.CompEnabled     := False;
+  Result.CompEnabled := False;
   Result.CompThresholdDb := -18;
-  Result.CompRatioX10    := 40;   // 4:1
-  Result.CompAttackMs    := 10;
-  Result.CompReleaseMs   := 150;
-  Result.CompMakeupDb    := 0;
-  Result.CompAutoMakeup  := True;
+  Result.CompRatioX10 := 40;   // 4:1
+  Result.CompAttackMs := 10;
+  Result.CompReleaseMs := 150;
+  Result.CompMakeupDb := 0;
+  Result.CompAutoMakeup := True;
 
   // Limiter defaults
-  Result.LimEnabled      := True;
-  Result.LimCeilingDb    := -1;
-  Result.LimReleaseMs    := 60;
-  Result.LimLookaheadMs  := 5;
-  Result.LimKneeDb       := 3;
-  Result.LimDetector     := ldPeak;
-  Result.LimRmsWindowMs  := 50;
+  Result.LimEnabled := True;
+  Result.LimCeilingDb := -1;
+  Result.LimReleaseMs := 60;
+  Result.LimLookaheadMs := 5;
+  Result.LimKneeDb := 3;
+  Result.LimDetector := ldPeak;
+  Result.LimRmsWindowMs := 50;
 
   // True peak defaults
-  Result.LimTruePeak     := True;
-  Result.LimOversample   := 4;
+  Result.LimTruePeak := True;
+  Result.LimOversample := 4;
 end;
 
 { TAudioDynamicsDSP }
 
 constructor TAudioDynamicsDSP.Create(aSamplesPerSec: DWord;
                                      aChannels: DWord);
+
 begin
 
   inherited Create();
@@ -277,6 +281,7 @@ end;
 
 
 procedure TAudioDynamicsDSP.SetRealtimeNoAlloc(Value: Boolean);
+
 begin
 
   FNoAllocRealtime := Value;
@@ -284,38 +289,47 @@ end;
 
 
 procedure TAudioDynamicsDSP.EnsureFloatBuf(SamplesNeeded: Integer);
+
 begin
-  if SamplesNeeded <= FDynFloatBufSamples then
+
+  if (SamplesNeeded <= FDynFloatBufSamples) then
     Exit;
 
   if FNoAllocRealtime then
     Exit; // realtime-safe: skip allocation, caller will bypass processing
 
-  ReallocMem(FDynFloatBuf, SamplesNeeded * SizeOf(Single));
+  ReallocMem(FDynFloatBuf,
+             SamplesNeeded * SizeOf(Single));
   FDynFloatBufSamples := SamplesNeeded;
 end;
 
 
-procedure TAudioDynamicsDSP.PreallocRealtimeBuffers(MaxFrames: Integer; Format: TSampleFormat);
+procedure TAudioDynamicsDSP.PreallocRealtimeBuffers(MaxFrames: Integer;
+                                                    Format: TSampleFormat);
 var
   sampleCount: Integer;
+
 begin
+
   if (MaxFrames <= 0) or (FChannels <= 0) then
     Exit;
 
   // Only needed when we may convert PCM ints <-> float.
   if (Format <> sfFloat32) then
-  begin
-    sampleCount := MaxFrames * FChannels;
-    // Temporarily allow allocation while preallocating.
-    // (Prealloc is called from init/config code, not the audio thread.)
-    // We still respect FNoAllocRealtime afterwards during processing.
-    ReallocMem(FDynFloatBuf, sampleCount * SizeOf(Single));
-    FDynFloatBufSamples := sampleCount;
-  end;
+    begin
+      sampleCount := MaxFrames * FChannels;
+      // Temporarily allow allocation while preallocating.
+      // (Prealloc is called from init/config code, not the audio thread.)
+      // We still respect FNoAllocRealtime afterwards during processing.
+      ReallocMem(FDynFloatBuf,
+                 sampleCount * SizeOf(Single));
+      FDynFloatBufSamples := sampleCount;
+    end;
 end;
 
+
 destructor TAudioDynamicsDSP.Destroy();
+
 begin
 
   if Assigned(FDynFloatBuf) then
@@ -332,6 +346,7 @@ end;
 
 procedure TAudioDynamicsDSP.SetFormat(ASampleRate,
                                       AChannels: Integer);
+
 begin
 
   FSampleRate := ASampleRate;
@@ -356,6 +371,7 @@ end;
 
 
 procedure TAudioDynamicsDSP.SetSettings(const S: TDynamicsSettings);
+
 begin
 
   // NOTE: This is expected to be called from the GUI/control thread.
@@ -368,6 +384,7 @@ end;
 
 
 procedure TAudioDynamicsDSP.Reset();
+
 begin
 
   ResetLimiterState();
@@ -412,7 +429,7 @@ begin
   // coeff = exp(-1/(tau*Fs)), tau = ms/1000.
   FCompAtkCoeff := Exp(-1.0 / (0.001 * atkMs * FSampleRate));
   FCompRelCoeff := Exp(-1.0 / (0.001 * relMs * FSampleRate));
-  FLimRelCoeff  := Exp(-1.0 / (0.001 * limRelMs * FSampleRate));
+  FLimRelCoeff := Exp(-1.0 / (0.001 * limRelMs * FSampleRate));
 
   // RMS detector coefficient (attackless windowed IIR).
   rmsMs := Max(5,
@@ -427,17 +444,17 @@ begin
   if (FDelaySamples < 0) then
     FDelaySamples := 0;
 
-  if FDelaySamples > 0 then
+  if (FDelaySamples > 0) then
     SetLength(FDelayBuf,
               FDelaySamples * FChannels)
   else
-    SetLength(FDelayBuf, 0);
+    SetLength(FDelayBuf,
+              0);
 
   if (FDelaySamples = 0) then
     FDelayPos := 0
-  else
-    if (FDelayPos >= FDelaySamples) then
-      FDelayPos := 0;
+  else if (FDelayPos >= FDelaySamples) then
+    FDelayPos := 0;
 end;
 
 
@@ -451,7 +468,7 @@ begin
   FRmsEnv := 0.0;
   FDelayPos := 0;
 
-  if Length(FDelayBuf) > 0 then
+  if (Length(FDelayBuf) > 0) then
     FillChar(FDelayBuf[0],
              Length(FDelayBuf) * SizeOf(Single),
              0);
@@ -471,6 +488,7 @@ end;
 
 
 function TAudioDynamicsDSP.DbToLin(const dB: Single): Single;
+
 begin
 
   Result := Power(10.0,
@@ -479,6 +497,7 @@ end;
 
 
 function TAudioDynamicsDSP.LinToDb(const x: Single): Single;
+
 begin
 
   if (x <= 1e-20) then
@@ -504,9 +523,8 @@ begin
 
   if (OverDb <= -halfK) then
     Result := 0.0
-  else
-    if (OverDb >= halfK) then
-      Result := OverDb
+  else if (OverDb >= halfK) then
+    Result := OverDb
   else
     begin
 
@@ -530,9 +548,9 @@ begin
   t2 := t * t;
   t3 := t2 * t;
   Result := 0.5 * ((2.0 * p1) +
-                   (-p0 + p2) * t +
-                   (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t2 +
-                   (-p0 + 3.0 * p1 - 3.0 * p2 + p3) * t3);
+    (-p0 + p2) * t +
+    (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t2 +
+    (-p0 + 3.0 * p1 - 3.0 * p2 + p3) * t3);
 end;
 
 
@@ -614,8 +632,8 @@ begin
 
   // Normalize to supported factors (if you only support 1/2/4).
   if (os <> 1) and
-     (os <> 2) and
-     (os <> 4) then
+    (os <> 2) and
+    (os <> 4) then
     os := 1;
 
   // REBUILD if changed (both 2->4 and 4->2)
@@ -627,8 +645,8 @@ begin
     end;
 
   UseDelay := FSettings.LimEnabled and
-              (FDelaySamples > 0) and
-              (Length(FDelayBuf) > 0);
+    (FDelaySamples > 0) and
+    (Length(FDelayBuf) > 0);
 
   for i := 0 to Frames - 1 do
     begin
@@ -675,7 +693,8 @@ begin
       else
         begin
           FCompGain := 1.0;
-          InterlockedExchange(FCompGRmDb,0);
+          InterlockedExchange(FCompGRmDb,
+                              0);
           compApplied := 1.0;
         end;
 
@@ -690,7 +709,7 @@ begin
 
           x := pS^ * compApplied;
           y := x;
-          if( y < 0) then
+          if (y < 0) then
             y := -y;
           if (y > peakComp) then
             peakComp := y;
@@ -714,8 +733,8 @@ begin
       // Uses history per channel: FHist0/FHist1/FHist2 + current x
       // ---------------------------------------------------------
       if FSettings.LimEnabled and
-         FSettings.LimTruePeak and
-         (os > 1) then
+        FSettings.LimTruePeak and
+        (os > 1) then
         begin
 
           pS := pFrame;
@@ -756,9 +775,8 @@ begin
 
       if not FSettings.LimEnabled then
         FLimGain := 1.0
-      else
-        if (limTarget < FLimGain) then
-          FLimGain := limTarget
+      else if (limTarget < FLimGain) then
+        FLimGain := limTarget
       else
         FLimGain := FLimRelCoeff * FLimGain + (1.0 - FLimRelCoeff) * limTarget;
 
@@ -849,47 +867,47 @@ begin
 
     sfInt16,
     sfInt24,
-    sfInt32: begin
+      sfInt32: begin
 
-               sampleCount := Frames * FChannels;
-               EnsureFloatBuf(sampleCount);
+        sampleCount := Frames * FChannels;
+        EnsureFloatBuf(sampleCount);
 
-               if (sampleCount > FDynFloatBufSamples) then
-                 Exit;
+        if (sampleCount > FDynFloatBufSamples) then
+          Exit;
 
-case Format of
-                 sfInt16: Int16ToFloat(PByte(Buffer),
-                                       FDynFloatBuf,
-                                       sampleCount);
+        case Format of
+          sfInt16: Int16ToFloat(PByte(Buffer),
+                                FDynFloatBuf,
+                                sampleCount);
 
-                 sfInt24: Int24ToFloat(PByte(Buffer),
-                                       FDynFloatBuf,
-                                       sampleCount);
+          sfInt24: Int24ToFloat(PByte(Buffer),
+                                FDynFloatBuf,
+                                sampleCount);
 
-                 sfInt32: Int32ToFloat(PByte(Buffer),
-                                       FDynFloatBuf,
-                                       sampleCount);
-               end;
+          sfInt32: Int32ToFloat(PByte(Buffer),
+                                FDynFloatBuf,
+                                sampleCount);
+        end;
 
-               ProcessFloat32Interleaved(FDynFloatBuf,
-                                         Frames);
+        ProcessFloat32Interleaved(FDynFloatBuf,
+                                  Frames);
 
-               case Format of
-                 sfInt16: FloatToInt16(FDynFloatBuf,
-                                       PByte(Buffer),
-                                       sampleCount);
+        case Format of
+          sfInt16: FloatToInt16(FDynFloatBuf,
+                                PByte(Buffer),
+                                sampleCount);
 
-                 sfInt24: FloatToInt24(FDynFloatBuf,
-                                       PByte(Buffer),
-                                       sampleCount);
+          sfInt24: FloatToInt24(FDynFloatBuf,
+                                PByte(Buffer),
+                                sampleCount);
 
-                 sfInt32: FloatToInt32(FDynFloatBuf,
-                                       PByte(Buffer),
-                                       sampleCount);
-               end;
-             end;
-  else
-    ; // unknown -> bypass.
+          sfInt32: FloatToInt32(FDynFloatBuf,
+                                PByte(Buffer),
+                                sampleCount);
+        end;
+      end;
+    else
+      ; // unknown -> bypass.
   end;
 end;
 

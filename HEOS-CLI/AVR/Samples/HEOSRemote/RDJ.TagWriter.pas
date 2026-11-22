@@ -64,11 +64,12 @@ unit RDJ.TagWriter;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{Winapi}
+  {Winapi}
   Windows,
   {System}
   SysUtils,
@@ -102,45 +103,49 @@ type
 
 
 function ReadUInt24BE(const P: PByte): Cardinal;
+
 begin
 
   Result := (Cardinal(P[0]) shl 16) or
-            (Cardinal(P[1]) shl 8) or
-             Cardinal(P[2]);
+    (Cardinal(P[1]) shl 8) or
+    Cardinal(P[2]);
 end;
 
 
 function ReadUInt32LE(const P: PByte): Cardinal;
+
 begin
 
   Result := Cardinal(P[0]) or
-            (Cardinal(P[1]) shl 8) or
-            (Cardinal(P[2]) shl 16) or
-            (Cardinal(P[3]) shl 24);
+    (Cardinal(P[1]) shl 8) or
+    (Cardinal(P[2]) shl 16) or
+    (Cardinal(P[3]) shl 24);
 end;
 
 
 function ReadUInt32BE(const P: PByte): Cardinal;
+
 begin
 
   Result := (Cardinal(P[0]) shl 24) or
-            (Cardinal(P[1]) shl 16) or
-            (Cardinal(P[2]) shl 8) or
-             Cardinal(P[3]);
+    (Cardinal(P[1]) shl 16) or
+    (Cardinal(P[2]) shl 8) or
+    Cardinal(P[3]);
 end;
 
 
 function ReadUInt64BE(const P: PByte): UInt64;
+
 begin
 
   Result := (UInt64(P[0]) shl 56) or
-            (UInt64(P[1]) shl 48) or
-            (UInt64(P[2]) shl 40) or
-            (UInt64(P[3]) shl 32) or
-            (UInt64(P[4]) shl 24) or
-            (UInt64(P[5]) shl 16) or
-            (UInt64(P[6]) shl 8) or
-             UInt64(P[7]);
+    (UInt64(P[1]) shl 48) or
+    (UInt64(P[2]) shl 40) or
+    (UInt64(P[3]) shl 32) or
+    (UInt64(P[4]) shl 24) or
+    (UInt64(P[5]) shl 16) or
+    (UInt64(P[6]) shl 8) or
+    UInt64(P[7]);
 end;
 
 
@@ -190,6 +195,7 @@ begin
   AStream.WriteBuffer(B,
                       SizeOf(B));
 end;
+
 
 procedure WriteUInt64BEToStream(const AStream: TStream;
                                 const AValue: UInt64);
@@ -290,6 +296,7 @@ end;
 
 
 function StreamToBytes(const AStream: TMemoryStream): TBytes;
+
 begin
 
   SetLength(Result,
@@ -409,7 +416,8 @@ begin
   Inc(P);
 
   Move(Lang[0],
-       Payload[P], 3);
+       Payload[P],
+       3);
   Inc(P,
       3);
 
@@ -489,17 +497,17 @@ begin
                     'TCOM',
                     ATrack.Composer);
 
-    if ATrack.Year <> 0 then
+    if (ATrack.Year <> 0) then
       AddId3TextFrame(Frames,
                       'TYER',
                       IntToStr(ATrack.Year));
 
-    if ATrack.TrackNumber <> 0 then
+    if (ATrack.TrackNumber <> 0) then
       AddId3TextFrame(Frames,
                       'TRCK',
                       IntToStr(ATrack.TrackNumber));
 
-    if ATrack.DiscNumber <> 0 then
+    if (ATrack.DiscNumber <> 0) then
       AddId3TextFrame(Frames,
                       'TPOS',
                       IntToStr(ATrack.DiscNumber));
@@ -586,20 +594,20 @@ begin
     if (FS.Size < 10) then
       Exit;
 
-    if FS.Read(Hdr,
-               SizeOf(Hdr)) <> SizeOf(Hdr) then
+    if (FS.Read(Hdr,
+      SizeOf(Hdr)) <> SizeOf(Hdr)) then
       Exit;
 
     if not ((Hdr[0] = Ord('I')) and
-           (Hdr[1] = Ord('D')) and
-           (Hdr[2] = Ord('3'))) then
+      (Hdr[1] = Ord('D')) and
+      (Hdr[2] = Ord('3'))) then
       Exit;
 
     Result := 10 +
-              ((Int64(Hdr[6] and $7F) shl 21) or
-               (Int64(Hdr[7] and $7F) shl 14) or
-               (Int64(Hdr[8] and $7F) shl 7) or
-                Int64(Hdr[9] and $7F));
+      ((Int64(Hdr[6] and $7F) shl 21) or
+      (Int64(Hdr[7] and $7F) shl 14) or
+      (Int64(Hdr[8] and $7F) shl 7) or
+      Int64(Hdr[9] and $7F));
   finally
 
     FS.Free;
@@ -624,10 +632,11 @@ begin
       Exit;
 
     FS.Position := FS.Size - 128;
-    FS.ReadBuffer(Hdr, 3);
+    FS.ReadBuffer(Hdr,
+                  3);
     Result := (Hdr[0] = 'T') and
-              (Hdr[1] = 'A') and
-              (Hdr[2] = 'G');
+      (Hdr[1] = 'A') and
+      (Hdr[2] = 'G');
   finally
 
     FS.Free;
@@ -716,11 +725,11 @@ begin
   end;
 
   if not ReplaceFileW(PChar(AFileName),
-                     PChar(TempFileName),
-                     nil,
-                     0,
-                     nil,
-                     nil) then
+    PChar(TempFileName),
+    nil,
+    0,
+    nil,
+    nil) then
     begin
 
       AError := SysErrorMessage(GetLastError);
@@ -735,7 +744,8 @@ end;
 
 procedure AddVorbisPair(const AList: TStrings;
                         const AName,
-                              AValue: string);
+                        AValue: string);
+
 begin
 
   if (Trim(AValue) <> '') then
@@ -796,32 +806,32 @@ begin
                   ATrack.Comment);
 
 
-    if ATrack.Year <> 0 then
+    if (ATrack.Year <> 0) then
       AddVorbisPair(Comments,
                     'DATE',
                     IntToStr(ATrack.Year));
 
-    if ATrack.TrackNumber <> 0 then
+    if (ATrack.TrackNumber <> 0) then
       AddVorbisPair(Comments,
                     'TRACKNUMBER',
                     IntToStr(ATrack.TrackNumber));
 
-    if ATrack.DiscNumber <> 0 then
+    if (ATrack.DiscNumber <> 0) then
       AddVorbisPair(Comments,
                     'DISCNUMBER',
                     IntToStr(ATrack.DiscNumber));
 
-    if ATrack.BPM <> 0 then
-    begin
-      S := StringReplace(FloatToStr(ATrack.BPM),
-                         ',',
-                         '.',
-                         [rfReplaceAll]);
+    if (ATrack.BPM <> 0) then
+      begin
+        S := StringReplace(FloatToStr(ATrack.BPM),
+                           ',',
+                           '.',
+                           [rfReplaceAll]);
 
-      AddVorbisPair(Comments,
-                    'BPM',
-                    S);
-    end;
+        AddVorbisPair(Comments,
+                      'BPM',
+                      S);
+      end;
 
     AddVorbisPair(Comments,
                   'INITIALKEY',
@@ -831,13 +841,14 @@ begin
       begin
 
         S := StringReplace(FormatFloat('0.00',
-                           ATrack.GainDb),
+                                       ATrack.GainDb),
                            ',',
                            '.',
                            [rfReplaceAll]) + ' dB';
 
         AddVorbisPair(Comments,
-                      'REPLAYGAIN_TRACK_GAIN', S);
+                      'REPLAYGAIN_TRACK_GAIN',
+                      S);
       end;
 
     WriteUInt32LEToStream(MS,
@@ -851,7 +862,8 @@ begin
                               Length(U));
 
         if (Length(U) > 0) then
-          MS.WriteBuffer(U[1], Length(U));
+          MS.WriteBuffer(U[1],
+                         Length(U));
       end;
 
     SetLength(Result,
@@ -888,7 +900,8 @@ begin
   Result := False;
   AError := '';
   AAudioOffset := 0;
-  SetLength(ABlocks, 0);
+  SetLength(ABlocks,
+            0);
 
   FS := TFileStream.Create(AFileName,
                            fmOpenRead or fmShareDenyWrite);
@@ -905,9 +918,9 @@ begin
     FS.ReadBuffer(Sig,
                   4);
     if not ((Sig[0] = Ord('f')) and
-           (Sig[1] = Ord('L')) and
-           (Sig[2] = Ord('a')) and
-           (Sig[3] = Ord('C'))) then
+      (Sig[1] = Ord('L')) and
+      (Sig[2] = Ord('a')) and
+      (Sig[3] = Ord('C'))) then
       begin
 
         AError := 'Not a FLAC file.';
@@ -919,12 +932,13 @@ begin
       FS.ReadBuffer(Sig,
                     4);
 
-      LastBlock := (Sig[0] and $80) <> 0;
+      LastBlock := ((Sig[0] and $80) <> 0);
       BlockType := Sig[0] and $7F;
       BlockSize := ReadUInt24BE(@Sig[1]);
 
       BlockIndex := Length(ABlocks);
-      SetLength(ABlocks, BlockIndex + 1);
+      SetLength(ABlocks,
+                BlockIndex + 1);
       ABlocks[BlockIndex].BlockType := BlockType;
       SetLength(ABlocks[BlockIndex].Data,
                 BlockSize);
@@ -968,9 +982,9 @@ begin
   AError := '';
 
   if not ReadFlacBlocks(AFileName,
-                        Blocks,
-                        AudioOffset,
-                        AError) then
+    Blocks,
+    AudioOffset,
+    AError) then
     Exit;
 
   NewVorbis := BuildVorbisCommentBlockData(ATrack);
@@ -1048,7 +1062,7 @@ begin
             Break;
 
           OutputStream.WriteBuffer(Buf,
-                                  ReadCount);
+                                   ReadCount);
           Dec(Remaining,
               ReadCount);
         end;
@@ -1062,11 +1076,11 @@ begin
   end;
 
   if not ReplaceFileW(PChar(AFileName),
-                     PChar(TempFileName),
-                     nil,
-                     0,
-                     nil,
-                     nil) then
+    PChar(TempFileName),
+    nil,
+    0,
+    nil,
+    nil) then
     begin
 
       AError := SysErrorMessage(GetLastError);
@@ -1098,7 +1112,8 @@ begin
     Exit;
 
   AStream.Position := AOffset;
-  AStream.ReadBuffer(Buf8, SizeOf(Buf8));
+  AStream.ReadBuffer(Buf8,
+                     SizeOf(Buf8));
 
   SmallSize := ReadUInt32BE(@Buf8[0]);
   SetString(AInfo.AtomType,
@@ -1120,20 +1135,19 @@ begin
       AInfo.HeaderSize := 16;
       AInfo.AtomSize := LargeSize;
     end
+  else if (SmallSize = 0) then
+    begin
+      AInfo.HeaderSize := 8;
+      AInfo.AtomSize := AStream.Size - AOffset;
+    end
   else
-    if (SmallSize = 0) then
-      begin
-        AInfo.HeaderSize := 8;
-        AInfo.AtomSize := AStream.Size - AOffset;
-      end
-    else
-      begin
-        if (SmallSize < 8) then
-          Exit;
+    begin
+      if (SmallSize < 8) then
+        Exit;
 
-    AInfo.HeaderSize := 8;
-    AInfo.AtomSize := SmallSize;
-  end;
+      AInfo.HeaderSize := 8;
+      AInfo.AtomSize := SmallSize;
+    end;
 
   if ((AOffset + AInfo.AtomSize) > AStream.Size) then
     Exit;
@@ -1161,8 +1175,8 @@ begin
     begin
 
       if not ReadMp4AtomInfo(AStream,
-                             PosAtom,
-                             Cur) then
+        PosAtom,
+        Cur) then
         Exit;
 
       if (Cur.AtomType = AAtomType) then
@@ -1174,7 +1188,8 @@ begin
 
       if (Cur.AtomSize <= 0) then
         Exit;
-      Inc(PosAtom, Cur.AtomSize);
+      Inc(PosAtom,
+          Cur.AtomSize);
     end;
 end;
 
@@ -1182,7 +1197,7 @@ end;
 procedure CopyBytesRange(const AInput: TStream;
                          const AOutput: TStream;
                          const AOffset,
-                               ACount: Int64);
+                         ACount: Int64);
 var
   Buf: array[0..65535] of Byte;
   Remaining: Int64;
@@ -1214,7 +1229,7 @@ begin
                           ReadCount);
       Dec(Remaining,
           ReadCount);
-  end;
+    end;
 end;
 
 
@@ -1349,8 +1364,8 @@ end;
 
 
 function MakeMp4FreeFormAtom(const AMean,
-                                   AName,
-                                   AValue: string): TBytes;
+                             AName,
+                             AValue: string): TBytes;
 var
   MS: TMemoryStream;
   MeanData: TBytes;
@@ -1442,8 +1457,8 @@ begin
 
         Item := MakeMp4ItemAtom(#$A9'gen',
                                 MakeMp4DataAtomText(ATrack.Genre));
-      MS.WriteBuffer(Item[0],
-                     Length(Item));
+        MS.WriteBuffer(Item[0],
+                       Length(Item));
       end;
 
     if (Trim(ATrack.Composer) <> '') then
@@ -1482,7 +1497,7 @@ begin
                        Length(Item));
       end;
 
-    if ATrack.DiscNumber <> 0 then
+    if (ATrack.DiscNumber <> 0) then
       begin
 
         Item := MakeMp4ItemAtom('disk',
@@ -1523,12 +1538,13 @@ begin
 
         S := StringReplace(FormatFloat('0.00',
                                        ATrack.GainDb),
-                                       ',',
-                                       '.',
-                                       [rfReplaceAll]) + ' dB';
+                           ',',
+                           '.',
+                           [rfReplaceAll]) + ' dB';
 
         Item := MakeMp4FreeFormAtom('com.apple.iTunes',
-                                    'REPLAYGAIN_TRACK_GAIN', S);
+                                    'REPLAYGAIN_TRACK_GAIN',
+                                    S);
         MS.WriteBuffer(Item[0],
                        Length(Item));
       end;
@@ -1543,9 +1559,7 @@ end;
 
 function BuildMp4MetaData(const ATrack: TRDJTrack;
                           const AInput: TStream;
-
                           const AMetaAtom: TMP4AtomInfo;
-
                           out AError: string): TBytes;
 
 var
@@ -1561,8 +1575,6 @@ var
 
 
 begin
-
-
 
   Result := nil;
 
@@ -1581,11 +1593,8 @@ begin
     AInput.Position := AMetaAtom.DataOffset;
 
     CopyBytesRange(AInput,
-
                    MetaBody,
-
                    AMetaAtom.DataOffset,
-
                    4);
 
 
@@ -1598,17 +1607,13 @@ begin
 
       begin
 
-
-
         if not ReadMp4AtomInfo(AInput,
 
-                               CurPos,
+          CurPos,
 
-                               Child) then
+          Child) then
 
           begin
-
-
 
             AError := 'Invalid MP4 meta child atom.';
 
@@ -1621,17 +1626,13 @@ begin
         if (Child.AtomType <> 'ilst') then
 
           CopyBytesRange(AInput,
-
                          MetaBody,
-
                          Child.DataOffset - Child.HeaderSize,
-
                          Child.AtomSize);
 
 
 
         Inc(CurPos,
-
             Child.AtomSize);
 
       end;
@@ -1641,9 +1642,7 @@ begin
     IlstData := BuildMp4IlstData(ATrack);
 
     WriteAtomToStream(MetaBody,
-
                       'ilst',
-
                       IlstData);
 
 
@@ -1762,6 +1761,7 @@ begin
   end;
 end;
 
+
 function BuildMp4UdtaAtom(const ATrack: TRDJTrack;
                           const AInput: TStream;
                           const AUdtaAtom: TMP4AtomInfo;
@@ -1789,37 +1789,37 @@ begin
       begin
 
         if not ReadMp4AtomInfo(AInput,
-                               CurPos,
-                               Child) then
+          CurPos,
+          Child) then
           begin
 
             AError := 'Invalid MP4 udta child atom.';
             Exit;
           end;
 
-         if (Child.AtomType = 'meta') then
-           begin
+        if (Child.AtomType = 'meta') then
+          begin
 
-             MetaAtom := BuildMp4MetaAtom(ATrack,
-                                          AInput,
-                                          Child,
-                                          AError);
-             if (AError <> '') then
-               Exit;
+            MetaAtom := BuildMp4MetaAtom(ATrack,
+                                         AInput,
+                                         Child,
+                                         AError);
+            if (AError <> '') then
+              Exit;
 
-             if (Length(MetaAtom) > 0) then
-               MS.WriteBuffer(MetaAtom[0],
-                              Length(MetaAtom));
-             MetaDone := True;
-           end
-         else
-           CopyBytesRange(AInput,
-                          MS,
-                          CurPos,
-                          Child.AtomSize);
+            if (Length(MetaAtom) > 0) then
+              MS.WriteBuffer(MetaAtom[0],
+                             Length(MetaAtom));
+            MetaDone := True;
+          end
+        else
+          CopyBytesRange(AInput,
+                         MS,
+                         CurPos,
+                         Child.AtomSize);
 
-         Inc(CurPos,
-             Child.AtomSize);
+        Inc(CurPos,
+            Child.AtomSize);
       end;
 
     if not MetaDone then
@@ -1866,8 +1866,8 @@ begin
       begin
 
         if not ReadMp4AtomInfo(AInput,
-                               CurPos,
-                               Child) then
+          CurPos,
+          Child) then
           begin
 
             AError := 'Invalid MP4 moov child atom.';
@@ -1914,6 +1914,7 @@ begin
   end;
 end;
 
+
 procedure AdjustChunkOffsetsInBytes(var AData: TBytes;
                                     const ADelta: Int64;
                                     out AError: string);
@@ -1942,8 +1943,8 @@ begin
                    Length(AData));
 
     if not ReadMp4AtomInfo(MS,
-                           0,
-                           MoovInfo) then
+      0,
+      MoovInfo) then
       begin
 
         AError := 'Invalid rebuilt moov atom.';
@@ -1996,40 +1997,41 @@ begin
                                       Offset32);
               end;
           end
-        else
-          if (Child.AtomType = 'co64') and (Child.DataSize >= 8) then
-            begin
+        else if (Child.AtomType = 'co64') and (Child.DataSize >= 8) then
+          begin
 
-              MS.Position := Child.DataOffset + 4;
-              MS.ReadBuffer(EntryCount,
-                            4);
-              EntryCount := ReadUInt32BE(@EntryCount);
+            MS.Position := Child.DataOffset + 4;
+            MS.ReadBuffer(EntryCount,
+                          4);
+            EntryCount := ReadUInt32BE(@EntryCount);
 
-              if (Child.DataSize < (8 + (Int64(EntryCount) * 8))) then
-                begin
+            if (Child.DataSize < (8 + (Int64(EntryCount) * 8))) then
+              begin
 
-                  AError := 'Invalid co64 atom size.';
-                  Exit;
-                end;
-
-              for i := 0 to EntryCount - 1 do
-                begin
-
-                  MS.Position := Child.DataOffset + 8 + (Int64(i) * 8);
-                  MS.ReadBuffer(Offset64,
-                                8);
-                  Offset64 := ReadUInt64BE(@Offset64);
-
-                  if (ADelta < 0) then
-                    Dec(Offset64, UInt64(-ADelta))
-                  else
-                    Inc(Offset64, UInt64(ADelta));
-
-                  MS.Position := Child.DataOffset + 8 + (Int64(i) * 8);
-                  WriteUInt64BEToStream(MS,
-                                        Offset64);
-                end;
+                AError := 'Invalid co64 atom size.';
+                Exit;
               end;
+
+            for i := 0 to EntryCount - 1 do
+              begin
+
+                MS.Position := Child.DataOffset + 8 + (Int64(i) * 8);
+                MS.ReadBuffer(Offset64,
+                              8);
+                Offset64 := ReadUInt64BE(@Offset64);
+
+                if (ADelta < 0) then
+                  Dec(Offset64,
+                      UInt64(-ADelta))
+                else
+                  Inc(Offset64,
+                      UInt64(ADelta));
+
+                MS.Position := Child.DataOffset + 8 + (Int64(i) * 8);
+                WriteUInt64BEToStream(MS,
+                                      Offset64);
+              end;
+          end;
 
         Inc(CurPos,
             Child.AtomSize);
@@ -2088,8 +2090,8 @@ begin
       begin
 
         if not ReadMp4AtomInfo(InputStream,
-                               PosAtom,
-                               Atom) then
+          PosAtom,
+          Atom) then
           begin
             AError := 'Invalid MP4 atom structure.';
             Exit;
@@ -2101,13 +2103,12 @@ begin
             MoovAtom := Atom;
             HaveMoov := True;
           end
-        else
-          if (Atom.AtomType = 'mdat') then
-            begin
+        else if (Atom.AtomType = 'mdat') then
+          begin
 
-              MdatAtom := Atom;
-              HaveMdat := True;
-            end;
+            MdatAtom := Atom;
+            HaveMdat := True;
+          end;
 
         Inc(PosAtom,
             Atom.AtomSize);
@@ -2176,8 +2177,8 @@ begin
         begin
 
           if not ReadMp4AtomInfo(InputStream,
-                                 PosAtom,
-                                 Atom) then
+            PosAtom,
+            Atom) then
             begin
 
               AError := 'Invalid MP4 atom while writing.';
@@ -2188,8 +2189,8 @@ begin
             begin
 
               if (Length(NewMoov) > 0) then
-              OutputStream.WriteBuffer(NewMoov[0],
-                                       Length(NewMoov));
+                OutputStream.WriteBuffer(NewMoov[0],
+                                         Length(NewMoov));
             end
           else
             CopyBytesRange(InputStream,
@@ -2211,11 +2212,11 @@ begin
   end;
 
   if not ReplaceFileW(PChar(AFileName),
-                     PChar(TempFileName),
-                     nil,
-                     0,
-                     nil,
-                     nil) then
+    PChar(TempFileName),
+    nil,
+    0,
+    nil,
+    nil) then
     begin
 
       AError := SysErrorMessage(GetLastError);
@@ -2259,23 +2260,21 @@ begin
     Result := WriteMp3Tags(AFileName,
                            ATrack,
                            AError)
+  else if (Ext = '.flac') then
+    Result := WriteFlacTags(AFileName,
+                            ATrack,
+                            AError)
+  else if (Ext = '.m4a') or
+    (Ext = '.m4b') or
+    (Ext = '.mp4') then
+    Result := WriteMp4Tags(AFileName,
+                           ATrack,
+                           AError)
   else
-    if Ext = '.flac' then
-      Result := WriteFlacTags(AFileName,
-                              ATrack,
-                              AError)
-    else
-      if (Ext = '.m4a') or
-          (Ext = '.m4b') or
-          (Ext = '.mp4') then
-        Result := WriteMp4Tags(AFileName,
-                               ATrack,
-                               AError)
-      else
-        begin
-          AError := 'Tag writing is currently supported for MP3, FLAC and MP4/M4A.';
-          Exit;
-        end;
+    begin
+      AError := 'Tag writing is currently supported for MP3, FLAC and MP4/M4A.';
+      Exit;
+    end;
 end;
 
 end.

@@ -4,21 +4,37 @@ unit MfEncodeAudio.Platform;
 
 interface
 
-uses Types;
+uses
+  Types;
 
 const
   MOD_NOREPEAT = $4000;
 
-function StrCmpLogicalW(Left,Right: PWideChar): Integer; stdcall; external 'shlwapi.dll';
-function RectF(Left,Top,Right,Bottom: Single): TRectF;
+function StrCmpLogicalW(Left,
+                        Right: PWideChar): Integer; stdcall; external 'shlwapi.dll';
+function RectF(Left,
+               Top,
+               Right,
+               Bottom: Single): TRectF;
 
 implementation
 
-uses Windows,SysUtils;
+uses
+  Windows,
+  SysUtils;
 
-function RectF(Left,Top,Right,Bottom: Single): TRectF;
+
+function RectF(Left,
+               Top,
+               Right,
+               Bottom: Single): TRectF;
+
 begin
-  Result.Left := Left;Result.Top := Top;Result.Right := Right;Result.Bottom := Bottom;
+
+  Result.Left := Left;
+  Result.Top := Top;
+  Result.Right := Right;
+  Result.Bottom := Bottom;
 end;
 
 initialization

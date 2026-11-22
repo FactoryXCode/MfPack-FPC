@@ -74,7 +74,7 @@ uses
   LCLIntf,
   LMessages,
   Messages,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ActiveX.ObjBase,
   WinApi.ComBaseApi,
@@ -121,6 +121,7 @@ uses
 
 type
   PGpuCaptureNotification = ^TGpuCaptureNotification;
+
   TGpuCaptureNotification = record
     FrameIndex: Int64;
     Seconds: Double;
@@ -161,17 +162,23 @@ type
                   cmAudioVideo);
 
   TCaptureStreamEngine = class
-    private
+
+  private
     FNotifyWindow: HWND;
     FNotifyClosing: Boolean;
     FMFStarted: Boolean;
     procedure NotifyWindowProc(var Msg: TLMessage);
     procedure DiscardNotifications();
-    procedure QueueProgress(Sender: TObject;FrameIndex: Int64;Seconds: Double);
-    procedure QueueError(Sender: TObject;const Text: string);
+    procedure QueueProgress(Sender: TObject;
+                            FrameIndex: Int64;
+                            Seconds: Double);
+    procedure QueueError(Sender: TObject;
+                         const Text: string);
+
   private
     procedure VideoThreadProc();
-    private
+
+  private
 
     // D3D / DXGI
     FDevice: ID3D11Device;
@@ -204,8 +211,8 @@ type
     FAudioCS: TCriticalSection;
     FQueueCS: TCriticalSection;
     FQueueEvent: TMfGpuEvent;
-    FVideoQueue: TQueue<TQueuedSample>;
-    FAudioQueue: TQueue<TQueuedSample>;
+    FVideoQueue: TQueue < TQueuedSample > ;
+    FAudioQueue: TQueue < TQueuedSample > ;
 
     // Audio capture + gating
     FAudioEnabled: Boolean;
@@ -218,7 +225,7 @@ type
     FAudioPreRollMs: Integer;
 
     // Pre-roll buffer (PCM chunks). Flushed when sound becomes active.
-    FAudioPreRoll: TList<TAudioChunk>;
+    FAudioPreRoll: TList < TAudioChunk > ;
     FAudioAboveMs: Integer;
     FAudioBelowMs: Integer;
     FAudioNextTime100ns: Int64;
@@ -250,7 +257,7 @@ type
 
     // WASAPI
     FWasapiCapture: TWasapiLoopbackCapture;
-    FAudioDeviceId : string;
+    FAudioDeviceId: string;
 
     // Geometry / preview
     FWidth,
@@ -276,10 +283,10 @@ type
     FDisplayOutputIndex: UINT;  // Selected monitor
 
     // Capture mode flags
-    FCaptureMode : TCaptureMode;
-    FRecordVideo : Boolean;
+    FCaptureMode: TCaptureMode;
+    FRecordVideo: Boolean;
 
-    FRecordAudio : Boolean;
+    FRecordAudio: Boolean;
 
     // Events
     FOnProgress: TCaptureProgressEvent;
@@ -297,7 +304,7 @@ type
                             const Sample: IMFSample;
                             const Time100ns: Int64);
     function HasQueuedSamples(): Boolean;
-    function  PopNextSample(out Item: TQueuedSample): Boolean;
+    function PopNextSample(out Item: TQueuedSample): Boolean;
     procedure SinkWriterLoop;
     procedure GenerateSilenceToTime(const TargetTime100ns: Int64);
     procedure ResetAudioGating;
@@ -336,7 +343,7 @@ type
     procedure SetAudioDeviceID(const Value: string);
 
 
-    function EnumerateOutputs(): TArray<TDXGIOutputInfo>;
+    function EnumerateOutputs(): TArray < TDXGIOutputInfo > ;
     function GetSelectedOutputRect(): TRect;
 
     property AudioCodec: TAudioCodec read FAudioCodec write FAudioCodec;
@@ -357,7 +364,7 @@ type
 
 
     property OnProgress: TCaptureProgressEvent read FOnProgress write FOnProgress;
-    property OnError: TCaptureErrorEvent   read FOnError    write FOnError;
+    property OnError: TCaptureErrorEvent read FOnError write FOnError;
   end;
 
 
@@ -375,30 +382,32 @@ var
   hr: HResult;
 
 begin
+
   hr := D3D11CreateDevice(nil,
                           D3D_DRIVER_TYPE_HARDWARE,
                           0,
                           D3D11_CREATE_DEVICE_BGRA_SUPPORT or D3D11_CREATE_DEVICE_DEBUG,  // For the best performance, shut the D3D11 debugger down on your final release! Remove "or D3D11_CREATE_DEVICE_DEBUG"
-                          @FeatureLevels,
+    @FeatureLevels,
                           Length(FeatureLevels),
                           D3D11_SDK_VERSION,
                           @FDevice,
                           nil,  // Feature level the application wil use, can be nil when not needed.
-                          @FContext);
-  if hr = DXGI_ERROR_SDK_COMPONENT_MISSING then
+    @FContext);
+  if (hr = DXGI_ERROR_SDK_COMPONENT_MISSING) then
     begin
       hr := D3D11CreateDevice(nil,
                               D3D_DRIVER_TYPE_HARDWARE,
                               0,
                               D3D11_CREATE_DEVICE_BGRA_SUPPORT,  // For the best performance, shut the D3D11 debugger down on your final release! Remove "or D3D11_CREATE_DEVICE_DEBUG"
-                              @FeatureLevels,
+        @FeatureLevels,
                               Length(FeatureLevels),
                               D3D11_SDK_VERSION,
                               @FDevice,
                               nil,  // Feature level the application wil use, can be nil when not needed.
-                              @FContext);
+        @FContext);
     end;
-  CheckHR(hr, 'D3D11CreateDevice');
+  CheckHR(hr,
+          'D3D11CreateDevice');
 
   FPreview := TPreviewRenderer.Create(FDevice,
                                       FContext);
@@ -424,33 +433,38 @@ begin
 
   hr := FDevice.QueryInterface(IDXGIDevice,
                                dxgiDev);
-  CheckHR(hr, 'QueryInterface(IDXGIDevice)');
+  CheckHR(hr,
+          'QueryInterface(IDXGIDevice)');
 
   hr := dxgiDev.GetAdapter(adapter);
-  CheckHR(hr, 'IDXGIDevice.GetAdapter');
+  CheckHR(hr,
+          'IDXGIDevice.GetAdapter');
 
   // Use currently selected output index
   hr := adapter.EnumOutputs(FDisplayOutputIndex,
                             output);
-  CheckHR(hr, 'IDXGIAdapter.EnumOutputs(FOutputIndex)');
+  CheckHR(hr,
+          'IDXGIAdapter.EnumOutputs(FOutputIndex)');
 
   hr := output.QueryInterface(IDXGIOutput1,
                               output1);
-  CheckHR(hr, 'QueryInterface(IDXGIOutput1)');
+  CheckHR(hr,
+          'QueryInterface(IDXGIOutput1)');
 
-  FDXGIDevice  := dxgiDev;
+  FDXGIDevice := dxgiDev;
   FDXGIOutput1 := output1;
 
   ZeroMemory(@outDesc,
              SizeOf(outDesc));
 
   hr := output.GetDesc(outDesc);
-  CheckHR(hr, 'IDXGIOutput.GetDesc');
+  CheckHR(hr,
+          'IDXGIOutput.GetDesc');
 
-  deskW := outDesc.DesktopCoordinates.Right  - outDesc.DesktopCoordinates.Left;
+  deskW := outDesc.DesktopCoordinates.Right - outDesc.DesktopCoordinates.Left;
   deskH := outDesc.DesktopCoordinates.Bottom - outDesc.DesktopCoordinates.Top;
 
-  FWidth  := deskW;
+  FWidth := deskW;
   FHeight := deskH;
 
   if Assigned(FPreview) then
@@ -463,11 +477,12 @@ begin
                                      FDeskDupl);
   if (hr = DXGI_ERROR_NOT_CURRENTLY_AVAILABLE) then
     raise Exception.Create('Desktop duplication: too many clients are active.');
-  CheckHR(hr, 'IDXGIOutput1.DuplicateOutput');
+  CheckHR(hr,
+          'IDXGIOutput1.DuplicateOutput');
 end;
 
 
-function TCaptureStreamEngine.EnumerateOutputs(): TArray<TDXGIOutputInfo>;
+function TCaptureStreamEngine.EnumerateOutputs(): TArray < TDXGIOutputInfo > ;
 var
   hr: HResult;
   dxgiDev: IDXGIDevice;
@@ -475,7 +490,7 @@ var
   output: IDXGIOutput;
   outDesc: DXGI_OUTPUT_DESC;
   outIdx: UINT;
-  list: TArray<TDXGIOutputInfo>;
+  list: TArray < TDXGIOutputInfo > ;
 
 begin
 
@@ -487,21 +502,24 @@ begin
 
   hr := FDevice.QueryInterface(IDXGIDevice,
                                dxgiDev);
-  CheckHR(hr, 'EnumerateOutputs: QueryInterface(IDXGIDevice)');
+  CheckHR(hr,
+          'EnumerateOutputs: QueryInterface(IDXGIDevice)');
 
   hr := dxgiDev.GetAdapter(adapter);
-  CheckHR(hr, 'EnumerateOutputs: GetAdapter');
+  CheckHR(hr,
+          'EnumerateOutputs: GetAdapter');
 
   outIdx := 0;
 
-  while adapter.EnumOutputs(outIdx,
-                            output) <> DXGI_ERROR_NOT_FOUND do
+  while (adapter.EnumOutputs(outIdx,
+      output) <> DXGI_ERROR_NOT_FOUND) do
     begin
       ZeroMemory(@outDesc,
                  SizeOf(outDesc));
 
       hr := output.GetDesc(outDesc);
-      CheckHR(hr, 'EnumerateOutputs: GetDesc');
+      CheckHR(hr,
+              'EnumerateOutputs: GetDesc');
 
       SetLength(list,
                 Length(list) + 1);
@@ -526,7 +544,7 @@ var
   output: IDXGIOutput;
   desc: DXGI_OUTPUT_DESC;
   idx: UINT;
-  wanted : string;
+  wanted: string;
 
 begin
 
@@ -545,10 +563,12 @@ begin
 
   hr := FDevice.QueryInterface(IDXGIDevice,
                                dxgiDev);
-  CheckHR(hr, 'GetSelectedOutputRect: QI IDXGIDevice');
+  CheckHR(hr,
+          'GetSelectedOutputRect: QI IDXGIDevice');
 
   hr := dxgiDev.GetAdapter(adapter);
-  CheckHR(hr, 'GetSelectedOutputRect: GetAdapter');
+  CheckHR(hr,
+          'GetSelectedOutputRect: GetAdapter');
 
   idx := 0;
 
@@ -558,10 +578,10 @@ begin
       ZeroMemory(@desc,
                  SizeOf(desc));
 
-       hr := output.GetDesc(desc);
+      hr := output.GetDesc(desc);
 
-       if Succeeded(hr) then
-         begin
+      if Succeeded(hr) then
+        begin
 
           if SameText(desc.DeviceName, wanted) or (idx = FDisplayOutputIndex) then
             begin
@@ -573,11 +593,11 @@ begin
               Exit;
             end;
 
-         end;
+        end;
 
-    output := nil;
-    Inc(idx);
-  end;
+      output := nil;
+      Inc(idx);
+    end;
 end;
 
 
@@ -608,7 +628,8 @@ begin
   hr := FDevice.CreateTexture2D(desc,
                                 nil,
                                 @FNV12StagingTexture);
-  CheckHR(hr, 'CreateTexture2D(NV12 staging)');
+  CheckHR(hr,
+          'CreateTexture2D(NV12 staging)');
 end;
 
 
@@ -631,95 +652,114 @@ begin
                                   nil,
                                   nil,
                                   FSinkWriter);
-  CheckHR(hr, 'MFCreateSinkWriterFromURL');
+  CheckHR(hr,
+          'MFCreateSinkWriterFromURL');
 
   // Output type: H.264
   hr := MFCreateMediaType(mediaTypeOut);
-  CheckHR(hr, 'MFCreateMediaType(out)');
+  CheckHR(hr,
+          'MFCreateMediaType(out)');
 
   hr := mediaTypeOut.SetGUID(MF_MT_MAJOR_TYPE,
                              MFMediaType_Video);
-  CheckHR(hr, 'SetGUID(MF_MT_MAJOR_TYPE, Video)');
+  CheckHR(hr,
+          'SetGUID(MF_MT_MAJOR_TYPE, Video)');
 
   hr := mediaTypeOut.SetGUID(MF_MT_SUBTYPE,
                              MFVideoFormat_H264);
-  CheckHR(hr, 'SetGUID(MF_MT_SUBTYPE, H264)');
+  CheckHR(hr,
+          'SetGUID(MF_MT_SUBTYPE, H264)');
 
   hr := mediaTypeOut.SetUINT32(MF_MT_AVG_BITRATE,
                                8000000);
-  CheckHR(hr, 'SetUINT32(MF_MT_AVG_BITRATE)');
+  CheckHR(hr,
+          'SetUINT32(MF_MT_AVG_BITRATE)');
 
   hr := mediaTypeOut.SetUINT32(MF_MT_INTERLACE_MODE,
                                MFVideoInterlace_Progressive);
-  CheckHR(hr, 'SetUINT32(MF_MT_INTERLACE_MODE)');
+  CheckHR(hr,
+          'SetUINT32(MF_MT_INTERLACE_MODE)');
 
   hr := MFSetAttributeSize(mediaTypeOut,
                            MF_MT_FRAME_SIZE,
                            FWidth,
                            FHeight);
-  CheckHR(hr, 'MFSetAttributeSize(FRAME_SIZE out)');
+  CheckHR(hr,
+          'MFSetAttributeSize(FRAME_SIZE out)');
 
   hr := MFSetAttributeRatio(mediaTypeOut,
                             MF_MT_FRAME_RATE,
                             FFrameRate,
                             1);
-  CheckHR(hr, 'MFSetAttributeRatio(FRAME_RATE out)');
+  CheckHR(hr,
+          'MFSetAttributeRatio(FRAME_RATE out)');
 
   hr := MFSetAttributeRatio(mediaTypeOut,
                             MF_MT_PIXEL_ASPECT_RATIO,
                             1,
                             1);
-  CheckHR(hr, 'MFSetAttributeRatio(PAR out)');
+  CheckHR(hr,
+          'MFSetAttributeRatio(PAR out)');
 
   hr := FSinkWriter.AddStream(mediaTypeOut,
                               FVideoStreamIndex);
-  CheckHR(hr, 'AddStream');
+  CheckHR(hr,
+          'AddStream');
 
   // Input type: NV12
   hr := MFCreateMediaType(mediaTypeIn);
-  CheckHR(hr, 'MFCreateMediaType(in)');
+  CheckHR(hr,
+          'MFCreateMediaType(in)');
 
   hr := mediaTypeIn.SetGUID(MF_MT_MAJOR_TYPE,
                             MFMediaType_Video);
-  CheckHR(hr, 'SetGUID(MF_MT_MAJOR_TYPE, Video in)');
+  CheckHR(hr,
+          'SetGUID(MF_MT_MAJOR_TYPE, Video in)');
 
   hr := mediaTypeIn.SetGUID(MF_MT_SUBTYPE,
                             MFVideoFormat_NV12);
-  CheckHR(hr, 'SetGUID(MF_MT_SUBTYPE, NV12)');
+  CheckHR(hr,
+          'SetGUID(MF_MT_SUBTYPE, NV12)');
 
   hr := mediaTypeIn.SetUINT32(MF_MT_INTERLACE_MODE,
                               MFVideoInterlace_Progressive);
-  CheckHR(hr, 'SetUINT32(MF_MT_INTERLACE_MODE in)');
+  CheckHR(hr,
+          'SetUINT32(MF_MT_INTERLACE_MODE in)');
 
   hr := MFSetAttributeSize(mediaTypeIn,
                            MF_MT_FRAME_SIZE,
                            FWidth,
                            FHeight);
-  CheckHR(hr, 'MFSetAttributeSize(FRAME_SIZE in)');
+  CheckHR(hr,
+          'MFSetAttributeSize(FRAME_SIZE in)');
 
   hr := MFSetAttributeRatio(mediaTypeIn,
                             MF_MT_FRAME_RATE,
                             FFrameRate,
                             1);
-  CheckHR(hr, 'MFSetAttributeRatio(FRAME_RATE in)');
+  CheckHR(hr,
+          'MFSetAttributeRatio(FRAME_RATE in)');
 
   hr := MFSetAttributeRatio(mediaTypeIn,
                             MF_MT_PIXEL_ASPECT_RATIO,
                             1,
                             1);
-  CheckHR(hr, 'MFSetAttributeRatio(PAR in)');
+  CheckHR(hr,
+          'MFSetAttributeRatio(PAR in)');
 
   hr := FSinkWriter.SetInputMediaType(FVideoStreamIndex,
                                       mediaTypeIn,
                                       nil);
-  CheckHR(hr, 'SetInputMediaType');
+  CheckHR(hr,
+          'SetInputMediaType');
 
   // Optional audio stream (created upfront; samples may start later)
   if FAudioEnabled and (FCaptureMode = cmAudioVideo) then
     AddAudioStreamToSinkWriter;
 
   hr := FSinkWriter.BeginWriting;
-  CheckHR(hr, 'BeginWriting');
+  CheckHR(hr,
+          'BeginWriting');
 
   // Initialize mux-style writer infrastructure
   FreeAndNil(FQueueCS);
@@ -729,9 +769,12 @@ begin
   FreeAndNil(FAudioPreRoll);
 
   FQueueCS := TCriticalSection.Create;
-  FQueueEvent := TMfGpuEvent.Create(nil, False, False, '');
-  FVideoQueue := TQueue<TQueuedSample>.Create;
-  FAudioQueue := TQueue<TQueuedSample>.Create;
+  FQueueEvent := TMfGpuEvent.Create(nil,
+                                    False,
+                                    False,
+                                    '');
+  FVideoQueue := (TQueue < TQueuedSample > .Create);
+  FAudioQueue := (TQueue < TQueuedSample > .Create);
   FWriterRunning := True;
   FWriterThread := TGpuCaptureWorker.Create(SinkWriterLoop);
   FWriterThread.FreeOnTerminate := False;
@@ -767,34 +810,41 @@ begin
                          CLSCTX_INPROC_SERVER,
                          IID_IMMDeviceEnumerator,
                          enum);
-  CheckHR(hr, 'CoCreateInstance(IMMDeviceEnumerator)');
+  CheckHR(hr,
+          'CoCreateInstance(IMMDeviceEnumerator)');
 
-  if FAudioDeviceId = '' then
-    hr := enum.GetDefaultAudioEndpoint(eRender,eMultimedia,dev)
+  if (FAudioDeviceId = '') then
+    hr := enum.GetDefaultAudioEndpoint(eRender,
+                                       eMultimedia,
+                                       dev)
   else
-    hr := enum.GetDevice(PWideChar(FAudioDeviceId),dev);
-  CheckHR(hr, 'GetDefaultAudioEndpoint');
+    hr := enum.GetDevice(PWideChar(FAudioDeviceId),
+                         dev);
+  CheckHR(hr,
+          'GetDefaultAudioEndpoint');
 
   hr := dev.Activate(IID_IAudioClient,
                      CLSCTX_INPROC_SERVER,
                      nil,
                      Pointer(ac));
-  CheckHR(hr, 'IMMDevice.Activate(IAudioClient)');
+  CheckHR(hr,
+          'IMMDevice.Activate(IAudioClient)');
 
   hr := ac.GetMixFormat(wf);
-  CheckHR(hr, 'IAudioClient.GetMixFormat');
+  CheckHR(hr,
+          'IAudioClient.GetMixFormat');
 
   try
     if (wf = nil) or
-       (wf.nSamplesPerSec = 0) or
-       (wf.nChannels = 0) then
+      (wf.nSamplesPerSec = 0) or
+      (wf.nChannels = 0) then
       raise Exception.Create('Invalid WASAPI mix format');
 
     // Determine source format
     isFloat := (wf.wFormatTag = WAVE_FORMAT_IEEE_FLOAT);
     chMask := 0;
 
-    if wf.wFormatTag = WAVE_FORMAT_EXTENSIBLE then
+    if (wf.wFormatTag = WAVE_FORMAT_EXTENSIBLE) then
       begin
 
         pExt := PWAVEFORMATEXTENSIBLE(wf);
@@ -809,8 +859,7 @@ begin
 
         if (wf.nChannels = 1) then
           chMask := $4
-        else
-          if (wf.nChannels = 2) then
+        else if (wf.nChannels = 2) then
           chMask := $3;
       end;
 
@@ -821,7 +870,7 @@ begin
     FAudioBytesPerFrameOut := Integer(FAudioChannels) * 2; // s16 interleaved
     FAudioBlockAlign := FAudioBytesPerFrameOut;
     FAudioAvgBytesPerSec := FAudioSampleRate * FAudioBlockAlign;
-    
+
     // Output target: for FLAC we keep it equal to PCM; for AAC we use the configured bitrate.
     if (FAudioCodec = acAac) then
       begin
@@ -846,7 +895,8 @@ begin
       FAudioChunkFramesTarget := 256;
 
     // Reset accumulator
-    SetLength(FAudioAccum, 0);
+    SetLength(FAudioAccum,
+              0);
     FAudioAccumOffset := 0;
     FAudioAccumFrames := 0;
 
@@ -871,7 +921,7 @@ begin
 
   // Infer audio format from loopback later; for now we set a safe default.
   // If loopback provides different format, SetInputMediaType will accept as long as MFT can convert.
-  if FAudioSampleRate = 0 then
+  if (FAudioSampleRate = 0) then
     begin
 
       FAudioSampleRate := 48000;
@@ -888,23 +938,29 @@ begin
     end;
 
   hr := MFCreateMediaType(outType);
-  CheckHR(hr, 'MFCreateMediaType(audio out)');
+  CheckHR(hr,
+          'MFCreateMediaType(audio out)');
 
-  hr := outType.SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
-  CheckHR(hr, 'SetGUID(MF_MT_MAJOR_TYPE audio out)');
+  hr := outType.SetGUID(MF_MT_MAJOR_TYPE,
+                        MFMediaType_Audio);
+  CheckHR(hr,
+          'SetGUID(MF_MT_MAJOR_TYPE audio out)');
 
   // Output subtype: FLAC (requires MP4 sample description) or standard AAC.
   if (FAudioCodec = acAac) then
     begin
-      hr := outType.SetGUID(MF_MT_SUBTYPE, MFAudioFormat_AAC);
-      CheckHR(hr, 'SetGUID(MF_MT_SUBTYPE AAC out)');
+      hr := outType.SetGUID(MF_MT_SUBTYPE,
+                            MFAudioFormat_AAC);
+      CheckHR(hr,
+              'SetGUID(MF_MT_SUBTYPE AAC out)');
     end
   else // FLAC
     begin
 
       hr := outType.SetGUID(MF_MT_SUBTYPE,
                             MFAudioFormat_FLAC);
-      CheckHR(hr, 'SetGUID(MF_MT_SUBTYPE FLAC out)');
+      CheckHR(hr,
+              'SetGUID(MF_MT_SUBTYPE FLAC out)');
 
       // For MP4+FLAC, Media Foundation may require MF_MT_MPEG4_SAMPLE_DESCRIPTION (track sample entry).
       // If the caller provided one, attach it; otherwise we try without it.
@@ -913,74 +969,91 @@ begin
           hr := outType.SetBlob(MF_MT_MPEG4_SAMPLE_DESCRIPTION,
                                 @FAudioMp4SampleDescription[0],
                                 Length(FAudioMp4SampleDescription));
-          CheckHR(hr, 'SetBlob(MF_MT_MPEG4_SAMPLE_DESCRIPTION)');
+          CheckHR(hr,
+                  'SetBlob(MF_MT_MPEG4_SAMPLE_DESCRIPTION)');
         end;
     end;
 
   hr := outType.SetUINT32(MF_MT_AUDIO_NUM_CHANNELS,
                           FAudioChannels);
-  CheckHR(hr, 'SetUINT32(NUM_CHANNELS out)');
+  CheckHR(hr,
+          'SetUINT32(NUM_CHANNELS out)');
 
   hr := outType.SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,
                           FAudioSampleRate);
-  CheckHR(hr, 'SetUINT32(SAMPLES_PER_SECOND out)');
+  CheckHR(hr,
+          'SetUINT32(SAMPLES_PER_SECOND out)');
 
   hr := outType.SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
                           FAudioBitsPerSample);
-  CheckHR(hr, 'SetUINT32(BITS_PER_SAMPLE out)');
+  CheckHR(hr,
+          'SetUINT32(BITS_PER_SAMPLE out)');
 
   hr := outType.SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,
                           FAudioBlockAlign);
-  CheckHR(hr, 'SetUINT32(BLOCK_ALIGNMENT out)');
+  CheckHR(hr,
+          'SetUINT32(BLOCK_ALIGNMENT out)');
 
   hr := outType.SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
                           FAudioOutAvgBytesPerSec);
-  CheckHR(hr, 'SetUINT32(AVG_BYTES_PER_SECOND out)');
+  CheckHR(hr,
+          'SetUINT32(AVG_BYTES_PER_SECOND out)');
 
   hr := FSinkWriter.AddStream(outType,
                               FAudioStreamIndex);
-  CheckHR(hr, 'FSinkWriter.AddStream(audio)');
+  CheckHR(hr,
+          'FSinkWriter.AddStream(audio)');
 
   // Input: PCM (what WASAPI typically delivers). If your loopback is float, update this later.
   hr := MFCreateMediaType(inType);
-  CheckHR(hr, 'MFCreateMediaType(audio in)');
+  CheckHR(hr,
+          'MFCreateMediaType(audio in)');
 
   hr := inType.SetGUID(MF_MT_MAJOR_TYPE,
                        MFMediaType_Audio);
-  CheckHR(hr, 'SetGUID(MF_MT_MAJOR_TYPE audio in)');
+  CheckHR(hr,
+          'SetGUID(MF_MT_MAJOR_TYPE audio in)');
 
   hr := inType.SetGUID(MF_MT_SUBTYPE,
                        MFAudioFormat_PCM);
-  CheckHR(hr, 'SetGUID(MF_MT_SUBTYPE PCM in)');
+  CheckHR(hr,
+          'SetGUID(MF_MT_SUBTYPE PCM in)');
 
   hr := inType.SetUINT32(MF_MT_AUDIO_NUM_CHANNELS,
                          FAudioChannels);
-  CheckHR(hr, 'SetUINT32(NUM_CHANNELS in)');
+  CheckHR(hr,
+          'SetUINT32(NUM_CHANNELS in)');
 
   hr := inType.SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,
                          FAudioSampleRate);
-  CheckHR(hr, 'SetUINT32(SAMPLES_PER_SECOND in)');
+  CheckHR(hr,
+          'SetUINT32(SAMPLES_PER_SECOND in)');
 
   hr := inType.SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
                          FAudioBitsPerSample);
-  CheckHR(hr, 'SetUINT32(BITS_PER_SAMPLE in)');
+  CheckHR(hr,
+          'SetUINT32(BITS_PER_SAMPLE in)');
 
   hr := inType.SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,
                          FAudioBlockAlign);
-  CheckHR(hr, 'SetUINT32(BLOCK_ALIGNMENT in)');
+  CheckHR(hr,
+          'SetUINT32(BLOCK_ALIGNMENT in)');
 
   hr := inType.SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
                          FAudioAvgBytesPerSec);
-  CheckHR(hr, 'SetUINT32(AVG_BYTES_PER_SECOND in)');
+  CheckHR(hr,
+          'SetUINT32(AVG_BYTES_PER_SECOND in)');
 
   hr := inType.SetUINT32(MF_MT_AUDIO_CHANNEL_MASK,
                          FAudioChannelMask);
-  CheckHR(hr, 'SetUINT32(CHANNEL_MASK in)');
+  CheckHR(hr,
+          'SetUINT32(CHANNEL_MASK in)');
 
   hr := FSinkWriter.SetInputMediaType(FAudioStreamIndex,
                                       inType,
                                       nil);
-  CheckHR(hr, 'FSinkWriter.SetInputMediaType(audio)');
+  CheckHR(hr,
+          'FSinkWriter.SetInputMediaType(audio)');
 end;
 
 
@@ -1001,32 +1074,40 @@ var
 begin
 
   // NV12 layout: Y (W*H), then UV (W*H/2)
-  frameSizeY  := FWidth * FHeight;
+  frameSizeY := FWidth * FHeight;
   frameSizeUV := FWidth * (FHeight div 2);
 
   hr := MFCreateMemoryBuffer(frameSizeY + frameSizeUV,
                              buffer);
-  CheckHR(hr, 'MFCreateMemoryBuffer');
+  CheckHR(hr,
+          'MFCreateMemoryBuffer');
 
   hr := buffer.Lock(pData,
                     @maxLen,
                     @curLen);
-  CheckHR(hr, 'IMFMediaBuffer.Lock');
+  CheckHR(hr,
+          'IMFMediaBuffer.Lock');
 
   try
-    PackGpuNV12(mappedNV12,FWidth,FHeight,pData);
+    PackGpuNV12(mappedNV12,
+                FWidth,
+                FHeight,
+                pData);
 
     hr := buffer.SetCurrentLength(frameSizeY + frameSizeUV);
-    CheckHR(hr, 'IMFMediaBuffer.SetCurrentLength');
+    CheckHR(hr,
+            'IMFMediaBuffer.SetCurrentLength');
   finally
     buffer.Unlock;
   end;
 
   hr := MFCreateSample(sample);
-  CheckHR(hr, 'MFCreateSample');
+  CheckHR(hr,
+          'MFCreateSample');
 
   hr := sample.AddBuffer(buffer);
-  CheckHR(hr, 'IMFSample.AddBuffer');
+  CheckHR(hr,
+          'IMFSample.AddBuffer');
 
   // timestamps
   QueryPerformanceCounter(qpcNow);
@@ -1036,13 +1117,16 @@ begin
   //                        FPerfFreq);
 
   // MulDiv replacement for Int64 types.
-  sampleTime := GpuCounterTime(qpcNow - FQpcStart,FPerfFreq);
+  sampleTime := GpuCounterTime(qpcNow - FQpcStart,
+                               FPerfFreq);
 
   hr := sample.SetSampleTime(sampleTime);
-  CheckHR(hr, 'IMFSample.SetSampleTime');
+  CheckHR(hr,
+          'IMFSample.SetSampleTime');
 
   hr := sample.SetSampleDuration(FFrameDuration100ns);
-  CheckHR(hr, 'IMFSample.SetSampleDuration');
+  CheckHR(hr,
+          'IMFSample.SetSampleDuration');
 
   // Enqueue for mux-style single-writer thread (prevents SinkWriter stress / buffering issues)
   EnqueueSample(FVideoStreamIndex,
@@ -1070,15 +1154,16 @@ begin
     begin
       QueryPerformanceCounter(t0);
 
-       ZeroMemory(@frameInfo,
-                  SizeOf(frameInfo));
-       hr := FDeskDupl.AcquireNextFrame(16, // Must be between 2 and 16!
-                                        frameInfo,
-                                        desktopRes);
+      ZeroMemory(@frameInfo,
+                 SizeOf(frameInfo));
+      hr := FDeskDupl.AcquireNextFrame(16, // Must be between 2 and 16!
+        frameInfo,
+                                       desktopRes);
 
       if not FVideoRunning then
         begin
-          if hr >= 0 then FDeskDupl.ReleaseFrame();
+          if (hr >= 0) then
+            FDeskDupl.ReleaseFrame();
           Break;
         end;
 
@@ -1093,18 +1178,21 @@ begin
             on E: Exception do
               begin
                 if Assigned(FOnError) then
-                  QueueError(Self, 'Access lost: ' + E.Message);
+                  QueueError(Self,
+                             'Access lost: ' + E.Message);
                 Exit;
               end;
           end;
           Continue;
         end;
 
-      CheckHR(hr, 'AcquireNextFrame');
+      CheckHR(hr,
+              'AcquireNextFrame');
 
       try
-        CheckHR(desktopRes.QueryInterface(ID3D11Texture2D, desktopTex),
-              'QueryInterface(ID3D11Texture2D)');
+        CheckHR(desktopRes.QueryInterface(ID3D11Texture2D,
+                                          desktopTex),
+                'QueryInterface(ID3D11Texture2D)');
 
         // Preview
         if Assigned(FPreview) then
@@ -1119,7 +1207,8 @@ begin
                       D3D11_MAP_WRITE,
                       0,
                       mappedNV12);
-        CheckHR(hr, 'Map(NV12 staging)');
+        CheckHR(hr,
+                'Map(NV12 staging)');
 
         try
 
@@ -1128,7 +1217,8 @@ begin
           SubmitVideoSampleToSinkWriter(mappedNV12);
         finally
 
-          ctx.Unmap(FNV12StagingTexture, 0);
+          ctx.Unmap(FNV12StagingTexture,
+                    0);
         end;
 
         // The mapped bytes are consumed before Unmap above.
@@ -1140,78 +1230,111 @@ begin
 
         if Assigned(FOnProgress) then
           QueueProgress(Self,
-                      FFrameIndex,
-                      FMilliSeconds);
+                        FFrameIndex,
+                        FMilliSeconds);
 
       finally
         FDeskDupl.ReleaseFrame;
       end;
-  end;
+    end;
 end;
 
 
 procedure TCaptureStreamEngine.VideoThreadProc();
+
 begin
+
   try
     VideoLoop();
   except
     on E: Exception do
       if Assigned(FOnError) then
-        QueueError(Self,'VideoLoop error: ' + E.Message);
+        QueueError(Self,
+                   'VideoLoop error: ' + E.Message);
   end;
 end;
 
-procedure TCaptureStreamEngine.QueueProgress(Sender: TObject;FrameIndex: Int64;Seconds: Double);
+
+procedure TCaptureStreamEngine.QueueProgress(Sender: TObject;
+                                             FrameIndex: Int64;
+                                             Seconds: Double);
 var
   Notice: PGpuCaptureNotification;
+
 begin
-  if FNotifyClosing then Exit;
+
+  if FNotifyClosing then
+    Exit;
   New(Notice);
   Notice.FrameIndex := FrameIndex;
   Notice.Seconds := Seconds;
   Notice.IsError := False;
-  if not PostMessage(FNotifyWindow,WM_APP + $510,0,LPARAM(Notice)) then Dispose(Notice);
+  if not PostMessage(FNotifyWindow, WM_APP + $510, 0, LPARAM(Notice)) then
+    Dispose(Notice);
 end;
 
-procedure TCaptureStreamEngine.QueueError(Sender: TObject;const Text: string);
+
+procedure TCaptureStreamEngine.QueueError(Sender: TObject;
+                                          const Text: string);
 var
   Notice: PGpuCaptureNotification;
+
 begin
-  if FNotifyClosing then Exit;
+
+  if FNotifyClosing then
+    Exit;
   New(Notice);
   Notice.ErrorMessage := Text;
   Notice.IsError := True;
-  if not PostMessage(FNotifyWindow,WM_APP + $510,0,LPARAM(Notice)) then Dispose(Notice);
+  if not PostMessage(FNotifyWindow, WM_APP + $510, 0, LPARAM(Notice)) then
+    Dispose(Notice);
 end;
+
 
 procedure TCaptureStreamEngine.NotifyWindowProc(var Msg: TLMessage);
 var
   Notice: PGpuCaptureNotification;
+
 begin
-  if Msg.Msg = WM_APP + $510 then
+
+  if (Msg.Msg = WM_APP + $510) then
     begin
       Notice := PGpuCaptureNotification(Msg.LParam);
       try
         if not FNotifyClosing then
           if Notice.IsError then
             begin
-              if Assigned(FOnError) then FOnError(Self,Notice.ErrorMessage);
+              if Assigned(FOnError) then
+                FOnError(Self,
+                         Notice.ErrorMessage);
             end
           else if Assigned(FOnProgress) then
-            FOnProgress(Self,Notice.FrameIndex,Notice.Seconds);
-      finally Dispose(Notice);end;
+            FOnProgress(Self,
+                        Notice.FrameIndex,
+                        Notice.Seconds);
+      finally
+        Dispose(Notice);
+      end;
       Msg.Result := 0;
     end
-  else Msg.Result := DefWindowProcW(FNotifyWindow,Msg.Msg,Msg.WParam,Msg.LParam);
+  else
+    Msg.Result := DefWindowProcW(FNotifyWindow,
+                                 Msg.Msg,
+                                 Msg.WParam,
+                                 Msg.LParam);
 end;
+
 
 procedure TCaptureStreamEngine.DiscardNotifications();
 var
   Msg: TMsg;
+
 begin
-  while PeekMessageW(Msg,FNotifyWindow,WM_APP + $510,WM_APP + $510,PM_REMOVE) do
+
+  while PeekMessageW(Msg, FNotifyWindow, WM_APP + $510, WM_APP + $510, PM_REMOVE) do
     Dispose(PGpuCaptureNotification(Msg.LParam));
 end;
+
 
 constructor TCaptureStreamEngine.Create(aHwnd: HWND;
                                         aWidth,
@@ -1242,7 +1365,8 @@ begin
 
   hr := MFStartup(MF_VERSION,
                   MFSTARTUP_FULL);
-  CheckHR(hr, 'MFStartup');
+  CheckHR(hr,
+          'MFStartup');
   FMFStarted := True;
 
   QueryPerformanceFrequency(FPerfFreq);
@@ -1289,7 +1413,9 @@ end;
 
 
 destructor TCaptureStreamEngine.Destroy;
+
 begin
+
   FNotifyClosing := True;
 
   // Ensure capture is fully stopped and thread is gone
@@ -1304,7 +1430,8 @@ begin
   FDXGIDevice := nil;
   FNV12StagingTexture := nil;
 
-  if FMFStarted then MFShutdown();
+  if FMFStarted then
+    MFShutdown();
 
   // Safety
   FreeAndNil(FWasapiCapture);
@@ -1316,66 +1443,68 @@ begin
 
   FreeAndNil(FAudioCS);
   DiscardNotifications();
-  if FNotifyWindow <> 0 then LCLIntf.DeallocateHWnd(FNotifyWindow);
+  if (FNotifyWindow <> 0) then
+    LCLIntf.DeallocateHWnd(FNotifyWindow);
   inherited;
 end;
 
 
 procedure TCaptureStreamEngine.StartCapture(const OutputFile: string);
+
 begin
 
   if FRunning then
     Exit;
 
   if (FWidth = 0) or (FHeight = 0) or (FFrameRate = 0) or
-     ((FWidth and 1) <> 0) or ((FHeight and 1) <> 0) then
+    ((FWidth and 1) <> 0) or ((FHeight and 1) <> 0) then
     raise EArgumentException.Create('NV12 dimensions must be positive and even; frame rate must be positive');
   FFrameDuration100ns := 10000000 div FFrameRate;
   DiscardNotifications();
   FRunning := True;
   try
-  SetFrameWidth := FWidth;
-  SetFrameHeight := FHeight;
-  SetFrameRate := FFRameRate;
+    SetFrameWidth := FWidth;
+    SetFrameHeight := FHeight;
+    SetFrameRate := FFRameRate;
 
-  // (Re)initialize everything for the current output.
-  InitDesktopDuplication();
-  CreateNV12Staging();
+    // (Re)initialize everything for the current output.
+    InitDesktopDuplication();
+    CreateNV12Staging();
 
-  FreeAndNil(FConverter); // safety if re-used
-  FConverter := TGpuNV12Converter.Create(FDevice,
-                                         FContext,
-                                         FWidth,
-                                         FHeight);
-  // If audio is enabled, query the loopback mix format BEFORE creating the sink writer.
-  // SinkWriter audio input type must be set before BeginWriting.
-  if FAudioEnabled and (FCaptureMode = cmAudioVideo) then
-    PrepareAudioFormatFromLoopbackMix;
+    FreeAndNil(FConverter); // safety if re-used
+    FConverter := TGpuNV12Converter.Create(FDevice,
+                                           FContext,
+                                           FWidth,
+                                           FHeight);
+    // If audio is enabled, query the loopback mix format BEFORE creating the sink writer.
+    // SinkWriter audio input type must be set before BeginWriting.
+    if FAudioEnabled and (FCaptureMode = cmAudioVideo) then
+      PrepareAudioFormatFromLoopbackMix;
 
-  ResetAudioGating;
-  CreateSinkWriter(OutputFile);
+    ResetAudioGating;
+    CreateSinkWriter(OutputFile);
 
-  QueryPerformanceCounter(FQpcStart);
-  FFrameIndex := 0;
+    QueryPerformanceCounter(FQpcStart);
+    FFrameIndex := 0;
 
-  FRunning := True;
-  FVideoRunning := True;
+    FRunning := True;
+    FVideoRunning := True;
 
-  // Start WASAPI loopback (captures always; we only write samples when audio triggers)
-  if FAudioEnabled and (FCaptureMode = cmAudioVideo) then
-  begin
-    FreeAndNil(FWasapiCapture);
-    FreeAndNil(FAudioPreRoll);
-    FWasapiCapture := TWasapiLoopbackCapture.Create;
-    FWasapiCapture.AudioDeviceId := FAudioDeviceId;
-    FWasapiCapture.OnData := OnWasapiData;
-    FWasapiCapture.Start;
-  end;
+    // Start WASAPI loopback (captures always; we only write samples when audio triggers)
+    if FAudioEnabled and (FCaptureMode = cmAudioVideo) then
+      begin
+        FreeAndNil(FWasapiCapture);
+        FreeAndNil(FAudioPreRoll);
+        FWasapiCapture := TWasapiLoopbackCapture.Create;
+        FWasapiCapture.AudioDeviceId := FAudioDeviceId;
+        FWasapiCapture.OnData := OnWasapiData;
+        FWasapiCapture.Start;
+      end;
 
-  // Dedicated worker thread
-  FVideoThread := TGpuCaptureWorker.Create(VideoThreadProc);
-  FVideoThread.FreeOnTerminate := False;
-  FVideoThread.Start;
+    // Dedicated worker thread
+    FVideoThread := TGpuCaptureWorker.Create(VideoThreadProc);
+    FVideoThread.FreeOnTerminate := False;
+    FVideoThread.Start;
   except
     StopCapture();
     raise;
@@ -1385,6 +1514,7 @@ end;
 
 procedure TCaptureStreamEngine.StartCapture(const OutputFile: string;
                                             aDisplayOutput: TDXGIOutputInfo);
+
 begin
 
   FDisplayOutputIndex := aDisplayOutput.OutputIndex;
@@ -1394,6 +1524,7 @@ end;
 
 
 procedure TCaptureStreamEngine.StopCapture();
+
 begin
 
   if not FRunning then
@@ -1405,8 +1536,9 @@ begin
   if Assigned(FWasapiCapture) then
     begin
       FWasapiCapture.Stop;
-      if FWasapiCapture.LastError <> '' then
-        QueueError(Self,FWasapiCapture.LastError);
+      if (FWasapiCapture.LastError <> '') then
+        QueueError(Self,
+                   FWasapiCapture.LastError);
       FreeAndNil(FWasapiCapture);
       FreeAndNil(FAudioPreRoll);
     end;
@@ -1452,6 +1584,7 @@ end;
 
 procedure TCaptureStreamEngine.EnableLoopbackAudioFlacMp4(const Mp4SampleDescription: TBytes;
                                                           const ChannelMask: Cardinal);
+
 begin
 
   // Must be called before StartCapture. We create the audio stream at CreateSinkWriter.
@@ -1463,21 +1596,22 @@ begin
   FAudioOutAvgBytesPerSec := 0; // use PCM rate unless explicitly set elsewhere
 
   // Sensible defaults (you can tune via properties)
-  if FAudioThresholdOnDb = 0 then
+  if (FAudioThresholdOnDb = 0) then
     FAudioThresholdOnDb := -45.0;
-  if FAudioThresholdOffDb = 0 then
+  if (FAudioThresholdOffDb = 0) then
     FAudioThresholdOffDb := -55.0;
-  if FAudioHoldOnMs = 0 then
+  if (FAudioHoldOnMs = 0) then
     FAudioHoldOnMs := 100;
-  if FAudioHoldOffMs = 0 then
+  if (FAudioHoldOffMs = 0) then
     FAudioHoldOffMs := 300;
-  if FAudioPreRollMs = 0 then
+  if (FAudioPreRollMs = 0) then
     FAudioPreRollMs := 400;
 end;
 
 
 procedure TCaptureStreamEngine.EnableLoopbackAudioAacMp4(const ChannelMask: Cardinal;
                                                          const TargetAvgBytesPerSec: Cardinal);
+
 begin
 
   // Must be called before StartCapture. We create the audio stream at CreateSinkWriter.
@@ -1488,26 +1622,27 @@ begin
   FAudioCodec := acAac;
 
   // Target bitrate (bytes/sec). 20000 ~= 160 kbps.
-  if TargetAvgBytesPerSec <> 0 then
+  if (TargetAvgBytesPerSec <> 0) then
     FAudioOutAvgBytesPerSec := TargetAvgBytesPerSec
   else
     FAudioOutAvgBytesPerSec := 20000;
 
   // Sensible defaults (you can tune via properties)
-  if FAudioThresholdOnDb = 0 then
+  if (FAudioThresholdOnDb = 0) then
     FAudioThresholdOnDb := -45.0;
-  if FAudioThresholdOffDb = 0 then
+  if (FAudioThresholdOffDb = 0) then
     FAudioThresholdOffDb := -55.0;
-  if FAudioHoldOnMs = 0 then
+  if (FAudioHoldOnMs = 0) then
     FAudioHoldOnMs := 150;
-  if FAudioHoldOffMs = 0 then
+  if (FAudioHoldOffMs = 0) then
     FAudioHoldOffMs := 250;
-  if FAudioPreRollMs = 0 then
+  if (FAudioPreRollMs = 0) then
     FAudioPreRollMs := 350;
 end;
 
 
 procedure TCaptureStreamEngine.DisableAudio;
+
 begin
 
   FAudioEnabled := False;
@@ -1518,7 +1653,9 @@ end;
 
 
 procedure TCaptureStreamEngine.SetCaptureMode(AMode: TCaptureMode);
+
 begin
+
   FCaptureMode := AMode;
   FRecordVideo := False;
   FRecordAudio := False;
@@ -1529,26 +1666,27 @@ begin
     FreeAndNil(FWasapiCapture);
 
   case FCaptureMode of
-    cmVideoOnly: begin
+      cmVideoOnly: begin
 
-                   FRecordVideo := True;
-                   FRecordAudio := False;
-                 end;
+        FRecordVideo := True;
+        FRecordAudio := False;
+      end;
 
 
 
-    cmAudioVideo: begin
+      cmAudioVideo: begin
 
-                    FRecordVideo := True;
-                    FRecordAudio := True;
-                    FWasapiCapture := TWasapiLoopbackCapture.Create(FAudioDeviceId);
-                    FWasapiCapture.OnData := OnWasapiData;
-                  end;
+        FRecordVideo := True;
+        FRecordAudio := True;
+        FWasapiCapture := TWasapiLoopbackCapture.Create(FAudioDeviceId);
+        FWasapiCapture.OnData := OnWasapiData;
+      end;
   end; // Case
 end;
 
 
 procedure TCaptureStreamEngine.SetAudioDeviceID(const Value: string);
+
 begin
 
   if (FAudioDeviceId = Value) then
@@ -1562,12 +1700,14 @@ end;
 
 
 procedure TCaptureStreamEngine.ResetAudioGating();
+
 begin
 
   if Assigned(FAudioPreRoll) then
     FAudioPreRoll.Clear;
 
-  SetLength(FAudioAccum, 0);
+  SetLength(FAudioAccum,
+            0);
   FAudioAccumOffset := 0;
   FAudioAccumFrames := 0;
 
@@ -1599,9 +1739,9 @@ begin
 
   try
 
-    if StreamIndex = FVideoStreamIndex then
+    if (StreamIndex = FVideoStreamIndex) then
       FVideoQueue.Enqueue(item)
-    else if StreamIndex = FAudioStreamIndex then
+    else if (StreamIndex = FAudioStreamIndex) then
       FAudioQueue.Enqueue(item)
     else
       FVideoQueue.Enqueue(item); // fallback
@@ -1657,7 +1797,9 @@ end;
 
 
 function TCaptureStreamEngine.HasQueuedSamples(): Boolean;
+
 begin
+
   FQueueCS.Enter();
   try
     Result := (FVideoQueue.Count > 0) or (FAudioQueue.Count > 0);
@@ -1665,6 +1807,7 @@ begin
     FQueueCS.Leave();
   end;
 end;
+
 
 procedure TCaptureStreamEngine.SinkWriterLoop;
 var
@@ -1696,7 +1839,7 @@ begin
         targetTime := -1;
 
         if FAudioEnabled and
-           (FAudioStreamIndex <> FVideoStreamIndex) then
+          (FAudioStreamIndex <> FVideoStreamIndex) then
           begin
 
             FQueueCS.Enter();
@@ -1704,7 +1847,7 @@ begin
             try
 
               if (FAudioQueue.Count = 0) and
-                 (FVideoQueue.Count > 0) then
+                (FVideoQueue.Count > 0) then
                 begin
                   targetTime := FVideoQueue.Peek.Time100ns;
                   needInject := (targetTime >= 0);
@@ -1717,29 +1860,32 @@ begin
               GenerateSilenceToTime(targetTime);
           end;
 
-      while PopNextSample(item) do
-        begin
+        while PopNextSample(item) do
+          begin
 
-          if (FSinkWriter <> nil) then
-            begin
-              hr := FSinkWriter.WriteSample(item.StreamIndex,
-                                            item.Sample);
-              CheckHR(hr, 'FSinkWriter.WriteSample (writer thread)');
-            end;
-        end;
-    end;
+            if (FSinkWriter <> nil) then
+              begin
+                hr := FSinkWriter.WriteSample(item.StreamIndex,
+                                              item.Sample);
+                CheckHR(hr,
+                        'FSinkWriter.WriteSample (writer thread)');
+              end;
+          end;
+      end;
 
     if (FSinkWriter <> nil) then
       begin
 
         hr := FSinkWriter.Finalize;
-        CheckHR(hr, 'FSinkWriter.Finalize');
+        CheckHR(hr,
+                'FSinkWriter.Finalize');
       end;
   except
 
     on E: Exception do
       if Assigned(FOnError) then
-        QueueError(Self, 'SinkWriterLoop error: ' + E.Message);
+        QueueError(Self,
+                   'SinkWriterLoop error: ' + E.Message);
   end;
 end;
 
@@ -1753,68 +1899,70 @@ var
   i, maxChunks: Integer;
 
 begin
+
   FAudioCS.Enter();
   try
 
-  if (not FAudioEnabled) then
-    Exit;
+    if (not FAudioEnabled) then
+      Exit;
 
-  if (FAudioStreamIndex = FVideoStreamIndex) then
-    Exit;
+    if (FAudioStreamIndex = FVideoStreamIndex) then
+      Exit;
 
-  if (FAudioSampleRate = 0) or
-     (FAudioChannels = 0) then
-    Exit;
+    if (FAudioSampleRate = 0) or
+      (FAudioChannels = 0) then
+      Exit;
 
-  if (TargetTime100ns < 0) then
-    Exit;
+    if (TargetTime100ns < 0) then
+      Exit;
 
-  // Ensure output framing parameters.
-  if (FAudioBytesPerFrameOut <= 0) then
-    FAudioBytesPerFrameOut := Integer(FAudioChannels) * 2; // s16 interleaved
+    // Ensure output framing parameters.
+    if (FAudioBytesPerFrameOut <= 0) then
+      FAudioBytesPerFrameOut := Integer(FAudioChannels) * 2; // s16 interleaved
 
-  if (FAudioChunkFramesTarget = 0) then
-    begin
+    if (FAudioChunkFramesTarget = 0) then
+      begin
 
-      // ~40ms chunks
-      FAudioChunkFramesTarget := Cardinal(FAudioSampleRate div 25);
-      if (FAudioChunkFramesTarget < 256) then
-        FAudioChunkFramesTarget := 256;
-    end;
+        // ~40ms chunks
+        FAudioChunkFramesTarget := Cardinal(FAudioSampleRate div 25);
+        if (FAudioChunkFramesTarget < 256) then
+          FAudioChunkFramesTarget := 256;
+      end;
 
-  chunkFrames := FAudioChunkFramesTarget;
-  chunkBytes := Integer(chunkFrames) * FAudioBytesPerFrameOut;
-  dur100nsChunk := (Int64(chunkFrames) * 10000000) div Int64(FAudioSampleRate);
+    chunkFrames := FAudioChunkFramesTarget;
+    chunkBytes := Integer(chunkFrames) * FAudioBytesPerFrameOut;
+    dur100nsChunk := (Int64(chunkFrames) * 10000000) div Int64(FAudioSampleRate);
 
-  if (dur100nsChunk <= 0) then
-  Exit;
+    if (dur100nsChunk <= 0) then
+      Exit;
 
-  // Initialize timeline if we never received an audio callback yet.
-  if (FAudioNextTime100ns < 0) then
-    FAudioNextTime100ns := 0;
+    // Initialize timeline if we never received an audio callback yet.
+    if (FAudioNextTime100ns < 0) then
+      FAudioNextTime100ns := 0;
 
-  // Inject at most a small burst per wake-up (avoid stalling the writer thread).
-  maxChunks := 6;
-  i := 0;
+    // Inject at most a small burst per wake-up (avoid stalling the writer thread).
+    maxChunks := 6;
+    i := 0;
 
-  while (i < maxChunks) and
-        ((FAudioNextTime100ns + dur100nsChunk) <= TargetTime100ns) do
+    while (i < maxChunks) and
+      ((FAudioNextTime100ns + dur100nsChunk) <= TargetTime100ns) do
 
-    begin
+      begin
 
-      SetLength(chunk.Data,
-                chunkBytes);
-      if (chunkBytes > 0) then
-        FillChar(chunk.Data[0],
-                 chunkBytes,
-                 0);
+        SetLength(chunk.Data,
+                  chunkBytes);
+        if (chunkBytes > 0) then
+          FillChar(chunk.Data[0],
+                   chunkBytes,
+                   0);
 
-    chunk.Time100ns := FAudioNextTime100ns;
-    chunk.Duration100ns := dur100nsChunk;
-    Inc(FAudioNextTime100ns, dur100nsChunk);
-    SubmitAudioChunk(chunk);
-    Inc(i);
-  end;
+        chunk.Time100ns := FAudioNextTime100ns;
+        chunk.Duration100ns := dur100nsChunk;
+        Inc(FAudioNextTime100ns,
+            dur100nsChunk);
+        SubmitAudioChunk(chunk);
+        Inc(i);
+      end;
   finally
     FAudioCS.Leave();
   end;
@@ -1834,17 +1982,23 @@ var
 begin
 
   if (Chunk.Data = nil) or
-     (Length(Chunk.Data) = 0) then
+    (Length(Chunk.Data) = 0) then
     Exit;
 
   hr := MFCreateSample(sample);
-  CheckHR(hr, 'MFCreateSample(audio)');
+  CheckHR(hr,
+          'MFCreateSample(audio)');
 
-  hr := MFCreateMemoryBuffer(Length(Chunk.Data), buffer);
-  CheckHR(hr, 'MFCreateMemoryBuffer(audio)');
+  hr := MFCreateMemoryBuffer(Length(Chunk.Data),
+                             buffer);
+  CheckHR(hr,
+          'MFCreateMemoryBuffer(audio)');
 
-  hr := buffer.Lock(pData, @maxLen, @curLen);
-  CheckHR(hr, 'IMFMediaBuffer.Lock(audio)');
+  hr := buffer.Lock(pData,
+                    @maxLen,
+                    @curLen);
+  CheckHR(hr,
+          'IMFMediaBuffer.Lock(audio)');
 
   try
 
@@ -1853,20 +2007,24 @@ begin
          Length(Chunk.Data));
 
     hr := buffer.SetCurrentLength(Length(Chunk.Data));
-    CheckHR(hr, 'IMFMediaBuffer.SetCurrentLength(audio)');
+    CheckHR(hr,
+            'IMFMediaBuffer.SetCurrentLength(audio)');
   finally
 
     buffer.Unlock();
   end;
 
   hr := sample.AddBuffer(buffer);
-  CheckHR(hr, 'IMFSample.AddBuffer(audio)');
+  CheckHR(hr,
+          'IMFSample.AddBuffer(audio)');
 
   hr := sample.SetSampleTime(Chunk.Time100ns);
-  CheckHR(hr, 'IMFSample.SetSampleTime(audio)');
+  CheckHR(hr,
+          'IMFSample.SetSampleTime(audio)');
 
   hr := sample.SetSampleDuration(Chunk.Duration100ns);
-  CheckHR(hr, 'IMFSample.SetSampleDuration(audio)');
+  CheckHR(hr,
+          'IMFSample.SetSampleDuration(audio)');
 
   EnqueueSample(FAudioStreamIndex,
                 sample,
@@ -1875,6 +2033,7 @@ end;
 
 
 function _IsFloatFormat(const wf: PWAVEFORMATEX): Boolean;
+
 begin
 
   Result := False;
@@ -1888,9 +2047,10 @@ begin
   if (wf.wFormatTag = WAVE_FORMAT_EXTENSIBLE) then
     begin
 
-      Result := (wf.cbSize >= SizeOf(WAVEFORMATEXTENSIBLE)-SizeOf(WAVEFORMATEX)) and
-                (wf.wBitsPerSample = 32) and
-                IsEqualGUID(PWAVEFORMATEXTENSIBLE(wf).SubFormat,KSDATAFORMAT_SUBTYPE_IEEE_FLOAT);
+      Result := (wf.cbSize >= SizeOf(WAVEFORMATEXTENSIBLE) - SizeOf(WAVEFORMATEX)) and
+        (wf.wBitsPerSample = 32) and
+        IsEqualGUID(PWAVEFORMATEXTENSIBLE(wf).SubFormat,
+                    KSDATAFORMAT_SUBTYPE_IEEE_FLOAT);
     end;
 end;
 
@@ -1911,12 +2071,13 @@ begin
 
   Result := -120.0;
   if (Buf = nil) or
-     (wf = nil) or
-     (NumFrames = 0) then
+    (wf = nil) or
+    (NumFrames = 0) then
     Exit;
 
   ch := wf.nChannels;
-  if ch <= 0 then ch := 1;
+  if (ch <= 0) then
+    ch := 1;
 
   sumSq := 0.0;
   n := Integer(NumFrames) * ch;
@@ -1926,13 +2087,13 @@ begin
 
       sf := PSingle(Buf);
 
-      for i := 0 to n-1 do
+      for i := 0 to n - 1 do
         begin
           v := sf^;
-          sumSq := sumSq + (v*v);
+          sumSq := sumSq + (v * v);
           Inc(sf);
         end;
-    v := Sqrt(sumSq / n);
+      v := Sqrt(sumSq / n);
     end
   else
     begin
@@ -1943,14 +2104,14 @@ begin
 
       s16 := PSmallInt(Buf);
 
-      for i := 0 to n-1 do
+      for i := 0 to n - 1 do
         begin
           v := s16^ / 32768.0;
-          sumSq := sumSq + (v*v);
+          sumSq := sumSq + (v * v);
           Inc(s16);
         end;
-    v := Sqrt(sumSq / n);
-  end;
+      v := Sqrt(sumSq / n);
+    end;
 
   if (v < 1e-9) then
     Exit(-120.0);
@@ -1988,245 +2149,246 @@ var
   v: Single;
 
 begin
+
   FAudioCS.Enter();
   try
 
-  if not FRunning then
-    Exit;
+    if not FRunning then
+      Exit;
 
-  if (not FAudioEnabled) then
-    Exit;
+    if (not FAudioEnabled) then
+      Exit;
 
-  // If the audio stream was not actually created, don't enqueue anything.
-  // (Prevents accidentally enqueueing "audio" into the video queue.)
-  if (FAudioStreamIndex = FVideoStreamIndex) then
-    Exit;
+    // If the audio stream was not actually created, don't enqueue anything.
+    // (Prevents accidentally enqueueing "audio" into the video queue.)
+    if (FAudioStreamIndex = FVideoStreamIndex) then
+      Exit;
 
-  if (WaveFormat = nil) or
-     (WaveFormat.nSamplesPerSec = 0) or
-     (WaveFormat.nBlockAlign = 0) then
-    Exit;
+    if (WaveFormat = nil) or
+      (WaveFormat.nSamplesPerSec = 0) or
+      (WaveFormat.nBlockAlign = 0) then
+      Exit;
 
-  if (Buffer = nil) or
-     (NumFrames = 0) then
-    Exit;
+    if (Buffer = nil) or
+      (NumFrames = 0) then
+      Exit;
 
-  // Duration in 100-ns units (input buffer)
-  dur100nsIn := (Int64(NumFrames) * 10000000) div Int64(WaveFormat.nSamplesPerSec);
+    // Duration in 100-ns units (input buffer)
+    dur100nsIn := (Int64(NumFrames) * 10000000) div Int64(WaveFormat.nSamplesPerSec);
 
-  if (dur100nsIn <= 0) then
-    Exit;
+    if (dur100nsIn <= 0) then
+      Exit;
 
-  durMs := Integer(dur100nsIn div 10000);
+    durMs := Integer(dur100nsIn div 10000);
 
-  if (durMs <= 0) then
-    durMs := 1;
+    if (durMs <= 0) then
+      durMs := 1;
 
-  // Compute loudness from the *real* loopback buffer (even if we decide to write silence)
-  db := _CalcRmsDb(Buffer,
-                   NumFrames,
-                   WaveFormat);
+    // Compute loudness from the *real* loopback buffer (even if we decide to write silence)
+    db := _CalcRmsDb(Buffer,
+                     NumFrames,
+                     WaveFormat);
 
-  // --- Gate logic with hysteresis + hold times ---
-  if not FAudioActive then
-    begin
-
-       // Track "above" time to arm
-       if (db >= FAudioThresholdOnDb) then
-         Inc(FAudioAboveMs,
-             durMs)
-       else
-         FAudioAboveMs := 0;
-
-       if (FAudioAboveMs >= FAudioHoldOnMs) then
-         begin
-
-           FAudioActive := True;
-           FAudioEverActive := True;
-           FAudioBelowMs := 0;
-         end;
-    end
-  else
-    begin
-
-    // Track "below" time to disarm
-    if (db <= FAudioThresholdOffDb) then
-      Inc(FAudioBelowMs,
-          durMs)
-    else
-      FAudioBelowMs := 0;
-
-    if (FAudioBelowMs >= FAudioHoldOffMs) then
+    // --- Gate logic with hysteresis + hold times ---
+    if not FAudioActive then
       begin
 
-        FAudioActive := False;
-        FAudioAboveMs := 0;
-        // (We keep writing samples, but as silence while inactive)
+        // Track "above" time to arm
+        if (db >= FAudioThresholdOnDb) then
+          Inc(FAudioAboveMs,
+              durMs)
+        else
+          FAudioAboveMs := 0;
+
+        if (FAudioAboveMs >= FAudioHoldOnMs) then
+          begin
+
+            FAudioActive := True;
+            FAudioEverActive := True;
+            FAudioBelowMs := 0;
+          end;
+      end
+    else
+      begin
+
+        // Track "below" time to disarm
+        if (db <= FAudioThresholdOffDb) then
+          Inc(FAudioBelowMs,
+              durMs)
+        else
+          FAudioBelowMs := 0;
+
+        if (FAudioBelowMs >= FAudioHoldOffMs) then
+          begin
+
+            FAudioActive := False;
+            FAudioAboveMs := 0;
+            // (We keep writing samples, but as silence while inactive)
+          end;
       end;
-  end;
 
-  // We chunk audio to reduce WriteSample call rate (important when encoding).
-  // We always enqueue audio samples (silence while inactive) to keep MP4 sinks happy.
+    // We chunk audio to reduce WriteSample call rate (important when encoding).
+    // We always enqueue audio samples (silence while inactive) to keep MP4 sinks happy.
 
-  // Compute 'now' based on the same master QPC start as video
-  QueryPerformanceCounter(qpcNow);
-  //This will ends in Range Check Error!
-  //now100ns := MulDiv(qpcNow - FQpcStart,
-  //                   10000000,
-  //                   FPerfFreq);
+    // Compute 'now' based on the same master QPC start as video
+    QueryPerformanceCounter(qpcNow);
+    //This will ends in Range Check Error!
+    //now100ns := MulDiv(qpcNow - FQpcStart,
+    //                   10000000,
+    //                   FPerfFreq);
 
-  // MulDiv replacement for Int64 types.
-  // Note: In later MfPack versions (>= 3.18), this method will be declared in WinApi.MediaFoundationApi.MfUtils.
-  now100ns := GpuCounterTime(qpcNow - FQpcStart,FPerfFreq);
+    // MulDiv replacement for Int64 types.
+    // Note: In later MfPack versions (>= 3.18), this method will be declared in WinApi.MediaFoundationApi.MfUtils.
+    now100ns := GpuCounterTime(qpcNow - FQpcStart,
+                               FPerfFreq);
 
-  if (FAudioBytesPerFrameOut <= 0) then
-    FAudioBytesPerFrameOut := Integer(WaveFormat.nChannels) * 2;
+    if (FAudioBytesPerFrameOut <= 0) then
+      FAudioBytesPerFrameOut := Integer(WaveFormat.nChannels) * 2;
 
-  if (FAudioChunkFramesTarget = 0) then
-    begin
+    if (FAudioChunkFramesTarget = 0) then
+      begin
 
-      // ~40ms target chunk (reduce WriteSample overhead)
-      FAudioChunkFramesTarget := Cardinal(WaveFormat.nSamplesPerSec div 25);
-      if (FAudioChunkFramesTarget < 256) then
-        FAudioChunkFramesTarget := 256;
-    end;
+        // ~40ms target chunk (reduce WriteSample overhead)
+        FAudioChunkFramesTarget := Cardinal(WaveFormat.nSamplesPerSec div 25);
+        if (FAudioChunkFramesTarget < 256) then
+          FAudioChunkFramesTarget := 256;
+      end;
 
-  // Initialise the audio timeline on first packet (align start to the beginning of this packet)
-  if (FAudioNextTime100ns < 0) then
-    begin
+    // Initialise the audio timeline on first packet (align start to the beginning of this packet)
+    if (FAudioNextTime100ns < 0) then
+      begin
 
-      FAudioNextTime100ns := now100ns - dur100nsIn;
-      if (FAudioNextTime100ns < 0) then
-        FAudioNextTime100ns := 0;
-    end;
+        FAudioNextTime100ns := now100ns - dur100nsIn;
+        if (FAudioNextTime100ns < 0) then
+          FAudioNextTime100ns := 0;
+      end;
 
-  // Decide whether to write real audio or silence for this incoming buffer
-  writeReal := FAudioActive;
+    // Decide whether to write real audio or silence for this incoming buffer
+    writeReal := FAudioActive;
 
-  bytesIn := Integer(NumFrames) * Integer(WaveFormat.nBlockAlign);
-  if (bytesIn <= 0) then
-    Exit;
+    bytesIn := Integer(NumFrames) * Integer(WaveFormat.nBlockAlign);
+    if (bytesIn <= 0) then
+      Exit;
 
-  bytesOut := Integer(NumFrames) * FAudioBytesPerFrameOut;
-  SetLength(tmp,
-            bytesOut);
+    bytesOut := Integer(NumFrames) * FAudioBytesPerFrameOut;
+    SetLength(tmp,
+              bytesOut);
 
-  if not writeReal then
-    begin
+    if not writeReal then
+      begin
 
-      FillChar(tmp[0],
-      bytesOut, 0);
-    end
-  else
-    begin
+        FillChar(tmp[0],
+                 bytesOut,
+                 0);
+      end
+    else
+      begin
 
-      isFloatNow := _IsFloatFormat(WaveFormat) or FAudioSourceIsFloat;
+        isFloatNow := _IsFloatFormat(WaveFormat) or FAudioSourceIsFloat;
 
-      if isFloatNow then
-        begin
+        if isFloatNow then
+          begin
 
-          // Convert interleaved float32 [-1..1] -> interleaved s16
-          srcF := PSingle(Buffer);
-          dstS16 := PSmallInt(@tmp[0]);
-          n := Integer(NumFrames) * Integer(WaveFormat.nChannels);
+            // Convert interleaved float32 [-1..1] -> interleaved s16
+            srcF := PSingle(Buffer);
+            dstS16 := PSmallInt(@tmp[0]);
+            n := Integer(NumFrames) * Integer(WaveFormat.nChannels);
 
-          for i := 0 to n-1 do
-            begin
+            for i := 0 to n - 1 do
+              begin
 
-              v := srcF^;
-              if (v > 1.0) then
-                v := 1.0
-              else
-                if (v < -1.0) then
+                v := srcF^;
+                if (v > 1.0) then
+                  v := 1.0
+                else if (v < -1.0) then
                   v := -1.0;
 
-              dstS16^ := SmallInt(Round(v * 32767.0));
-              Inc(srcF);
-              Inc(dstS16);
-            end;
-        end
-      else
-        if (WaveFormat.wBitsPerSample = 16) and
-           (WaveFormat.nBlockAlign = FAudioBytesPerFrameOut) then
+                dstS16^ := SmallInt(Round(v * 32767.0));
+                Inc(srcF);
+                Inc(dstS16);
+              end;
+          end
+        else if (WaveFormat.wBitsPerSample = 16) and
+          (WaveFormat.nBlockAlign = FAudioBytesPerFrameOut) then
           begin
 
             Move(Buffer^,
                  tmp[0],
                  bytesOut);
           end
-    else
+        else
+          begin
+
+            // Unknown source format; write silence to avoid noise
+            FillChar(tmp[0],
+                     bytesOut,
+                     0);
+          end;
+      end;
+
+    // Append to accumulator
+    oldLen := Length(FAudioAccum);
+    SetLength(FAudioAccum,
+              oldLen + bytesOut);
+    Move(tmp[0],
+         FAudioAccum[oldLen],
+         bytesOut);
+    Inc(FAudioAccumFrames,
+        NumFrames);
+
+    // Emit fixed-size chunks
+    chunkFrames := FAudioChunkFramesTarget;
+    chunkBytes := Integer(chunkFrames) * FAudioBytesPerFrameOut;
+    dur100nsChunk := (Int64(chunkFrames) * 10000000) div Int64(WaveFormat.nSamplesPerSec);
+
+    while (FAudioAccumFrames >= chunkFrames) do
       begin
 
-        // Unknown source format; write silence to avoid noise
-        FillChar(tmp[0],
-                 bytesOut, 0);
-      end;
-    end;
+        // Ensure contiguous data
+        if ((FAudioAccumOffset + chunkBytes) > Length(FAudioAccum)) then
+          begin
 
-  // Append to accumulator
-  oldLen := Length(FAudioAccum);
-  SetLength(FAudioAccum,
-            oldLen + bytesOut);
-  Move(tmp[0],
-       FAudioAccum[oldLen],
-       bytesOut);
-  Inc(FAudioAccumFrames,
-      NumFrames);
+            remainBytes := Length(FAudioAccum) - FAudioAccumOffset;
 
-  // Emit fixed-size chunks
-  chunkFrames := FAudioChunkFramesTarget;
-  chunkBytes := Integer(chunkFrames) * FAudioBytesPerFrameOut;
-  dur100nsChunk := (Int64(chunkFrames) * 10000000) div Int64(WaveFormat.nSamplesPerSec);
+            if (remainBytes > 0) then
+              Move(FAudioAccum[FAudioAccumOffset],
+                   FAudioAccum[0],
+                   remainBytes);
 
-  while (FAudioAccumFrames >= chunkFrames) do
-    begin
+            SetLength(FAudioAccum,
+                      remainBytes);
+            FAudioAccumOffset := 0;
+          end;
 
-      // Ensure contiguous data
-      if (FAudioAccumOffset + chunkBytes) > Length(FAudioAccum) then
-        begin
+        SetLength(chunk.Data,
+                  chunkBytes);
 
-          remainBytes := Length(FAudioAccum) - FAudioAccumOffset;
+        Move(FAudioAccum[FAudioAccumOffset],
+             chunk.Data[0],
+             chunkBytes);
 
-          if (remainBytes > 0) then
-            Move(FAudioAccum[FAudioAccumOffset],
-                             FAudioAccum[0],
-                             remainBytes);
+        Inc(FAudioAccumOffset,
+            chunkBytes);
+        Dec(FAudioAccumFrames,
+            chunkFrames);
 
-          SetLength(FAudioAccum,
-                    remainBytes);
-          FAudioAccumOffset := 0;
-        end;
+        // Periodic compaction to prevent unbounded growth
+        if (FAudioAccumOffset > 65536) and
+          (FAudioAccumOffset < Length(FAudioAccum)) then
+          begin
 
-      SetLength(chunk.Data,
-                chunkBytes);
+            remainBytes := Length(FAudioAccum) - FAudioAccumOffset;
 
-      Move(FAudioAccum[FAudioAccumOffset],
-           chunk.Data[0],
-           chunkBytes);
+            if (remainBytes > 0) then
+              Move(FAudioAccum[FAudioAccumOffset],
+                   FAudioAccum[0],
+                   remainBytes);
 
-      Inc(FAudioAccumOffset,
-          chunkBytes);
-      Dec(FAudioAccumFrames,
-          chunkFrames);
-
-      // Periodic compaction to prevent unbounded growth
-      if (FAudioAccumOffset > 65536) and
-         (FAudioAccumOffset < Length(FAudioAccum)) then
-        begin
-
-          remainBytes := Length(FAudioAccum) - FAudioAccumOffset;
-
-          if (remainBytes > 0) then
-            Move(FAudioAccum[FAudioAccumOffset],
-                 FAudioAccum[0],
-                 remainBytes);
-
-           SetLength(FAudioAccum,
-                     remainBytes);
-           FAudioAccumOffset := 0;
-        end
-      else
-        if (FAudioAccumOffset >= Length(FAudioAccum)) then
+            SetLength(FAudioAccum,
+                      remainBytes);
+            FAudioAccumOffset := 0;
+          end
+        else if (FAudioAccumOffset >= Length(FAudioAccum)) then
           begin
 
             SetLength(FAudioAccum,
@@ -2234,14 +2396,14 @@ begin
             FAudioAccumOffset := 0;
           end;
 
-      // Timestamp + enqueue
-      chunk.Time100ns := FAudioNextTime100ns;
-      chunk.Duration100ns := dur100nsChunk;
+        // Timestamp + enqueue
+        chunk.Time100ns := FAudioNextTime100ns;
+        chunk.Duration100ns := dur100nsChunk;
 
-      Inc(FAudioNextTime100ns,
-          dur100nsChunk);
-      SubmitAudioChunk(chunk);
-    end;
+        Inc(FAudioNextTime100ns,
+            dur100nsChunk);
+        SubmitAudioChunk(chunk);
+      end;
   finally
     FAudioCS.Leave();
   end;

@@ -70,7 +70,7 @@ uses
   LMessages,
   LCLIntf,
   Classes,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ComBaseApi,
   WinApi.WinApiTypes,
@@ -105,6 +105,7 @@ type
   TRenderThread = class;
 
   TAudioSink = class(TObject)
+
   protected
     hmFile: HMMIO;
     pvRenderThread: TRenderThread;
@@ -113,6 +114,7 @@ type
     FNotifyWindow: HWND;
     FClosing: Boolean;
     procedure NotifyWindowProc(var Msg: TLMessage);
+
   private
 
     pvAudioClient: IAudioClient;
@@ -166,8 +168,8 @@ type
     destructor Destroy(); override;
 
     function RecordAudioStream(dataFlow: EDataFlow;  // eRender or eCapture
-                               role: ERole;          // eConsole, eMultimedia or eCommunications
-                               bufferDuration: REFERENCE_TIME;
+      role: ERole;          // eConsole, eMultimedia or eCommunications
+      bufferDuration: REFERENCE_TIME;
                                ppfileName: LPWSTR): HResult;
 
     procedure Stop();
@@ -193,6 +195,7 @@ type
 
   // The thread we render after Start.
   TRenderThread = class(TThread)
+
   protected
 
     procedure Execute; override;
@@ -218,25 +221,33 @@ implementation
 
 // Thread ======================================================================
 procedure TAudioSink.NotifyWindowProc(var Msg: TLMessage);
+
 begin
-  if Msg.Msg = WM_APP + $4D0 then
+
+  if (Msg.Msg = WM_APP + $4D0) then
     begin
       if not FClosing and Assigned(FOnCapturingStart) then
         FOnCapturingStart(Self);
       Msg.Result := 0;
     end
-  else if Msg.Msg = WM_APP + $4D1 then
+  else if (Msg.Msg = WM_APP + $4D1) then
     begin
       if not FClosing and Assigned(FOnCapturingStopped) then
         FOnCapturingStopped(Self);
       Msg.Result := 0;
     end
   else
-    Msg.Result := DefWindowProcW(FNotifyWindow,Msg.Msg,Msg.WParam,Msg.LParam);
+    Msg.Result := DefWindowProcW(FNotifyWindow,
+                                 Msg.Msg,
+                                 Msg.WParam,
+                                 Msg.LParam);
 end;
 
+
 constructor TRenderThread.Create(AEngine: TAudioSink);
+
 begin
+
   inherited Create(True);
   FEngine := AEngine;
   // Set termination when the thread is done.
@@ -246,6 +257,7 @@ end;
 
 
 destructor TRenderThread.Destroy();
+
 begin
 
   inherited;
@@ -256,13 +268,16 @@ procedure TRenderThread.Execute;
 var
   ComResult: HRESULT;
   SavedMask: TFPUExceptionMask;
+
 begin
-  ComResult := CoInitializeEx(nil,COINIT_MULTITHREADED);
+
+  ComResult := CoInitializeEx(nil,
+                              COINIT_MULTITHREADED);
   FSuccess := ComResult;
   if SUCCEEDED(ComResult) then
     begin
       SavedMask := GetExceptionMask();
-      SetExceptionMask([exInvalidOp,exDenormalized,exZeroDivide,exOverflow,exUnderflow,exPrecision]);
+      SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
       try
         FSuccess := FEngine.RenderData();
       finally
@@ -272,12 +287,15 @@ begin
       end;
     end;
   FEngine.pvErrorStatus := FSuccess;
-  TThread.Queue(Self,SetEvent);
+  TThread.Queue(Self,
+                SetEvent);
 end;
 
 
 procedure TRenderThread.SetEvent;
+
 begin
+
   // Called from 'Synchronize'.
   // All code run from "Synchronize()"
   //   runs in the context of the Main VCL UI Thread, NOT from this thread.
@@ -293,14 +311,15 @@ end;
 // Thread control methods ======================================================
 
 procedure TAudioSink.CreatedRenderThread;
+
 begin
 
   TerminateRenderThread();
   pvRenderThread := TRenderThread.Create(Self);
   pvRenderThreadClosedEvent := CreateEventExW(nil,
-                                             nil,
-                                             0,
-                                             EVENT_MODIFY_STATE or SYNCHRONIZE);
+                                              nil,
+                                              0,
+                                              EVENT_MODIFY_STATE or SYNCHRONIZE);
 
   pvStopRec := False;
   pvRenderThread.Start;
@@ -308,8 +327,11 @@ end;
 
 
 procedure TAudioSink.TerminateRenderThread();
+
 begin
-  if Assigned(pvRenderThread) then pvStopRec := True;
+
+  if Assigned(pvRenderThread) then
+    pvStopRec := True;
   if Assigned(pvRenderThread) then
     begin
       pvRenderThread.Terminate();
@@ -317,7 +339,7 @@ begin
       TThread.RemoveQueuedEvents(pvRenderThread);
       FreeAndNil(pvRenderThread);
     end;
-  if pvRenderThreadClosedEvent <> 0 then
+  if (pvRenderThreadClosedEvent <> 0) then
     begin
       CloseHandle(pvRenderThreadClosedEvent);
       pvRenderThreadClosedEvent := 0;
@@ -327,6 +349,7 @@ end;
 // TAudioSink //////////////////////////////////////////////////////////////////
 
 constructor TAudioSink.Create();
+
 begin
 
   inherited Create();
@@ -337,7 +360,9 @@ end;
 
 
 destructor TAudioSink.Destroy();
+
 begin
+
   FClosing := True;
 
   pvAppIsClosing := True;
@@ -346,7 +371,8 @@ begin
   CoTaskMemFree(pvPwfx);
   pvPwfx := nil;
 
-  if FNotifyWindow <> 0 then LCLIntf.DeallocateHWnd(FNotifyWindow);
+  if (FNotifyWindow <> 0) then
+    LCLIntf.DeallocateHWnd(FNotifyWindow);
   inherited Destroy();
 end;
 
@@ -378,10 +404,12 @@ begin
     end;
 
   iBytesToWrite := (NumFrames * pwfx.nBlockAlign);
-  if pData = nil then
+  if (pData = nil) then
     begin
-      SetLength(Silence,iBytesToWrite);
-      if iBytesToWrite > 0 then pData := @Silence[0];
+      SetLength(Silence,
+                iBytesToWrite);
+      if (iBytesToWrite > 0) then
+        pData := @Silence[0];
     end;
   iBytesWritten := mmioWrite(hmFile,
                              PAnsiChar(pData),
@@ -405,8 +433,8 @@ begin
   if (pvBytesWritten > MAX_FILE_SIZE) then
     pvStopRec := True;  // Stop recording and close file.
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -416,6 +444,7 @@ var
   mi: PMMIOINFO;
 
 begin
+
   hr := S_OK;
 
   // The mmioOpen() function is NOT deprecated as documentation says.
@@ -423,13 +452,15 @@ begin
   // Must initialize PMMIOINFO = nil, otherwise mmioOpen wil raise a pointer error.
   mi := nil;
   hmFile := mmioOpen(ppFileName,    // some flags cause mmioOpen write to this buffer
-                     mi,            // but not any that we're using
-                     MMIO_WRITE or MMIO_CREATE);
+    mi,            // but not any that we're using
+    MMIO_WRITE or MMIO_CREATE);
 
   if (hmFile = 0) then
     begin
       hr := E_FAIL;
-      ErrMsg(Format('mmioOpen(%s) failed. wErrorRet = %d',[WideCharToString(ppFileName) , GetLastError()]), hr);
+      ErrMsg(Format('mmioOpen(%s) failed. wErrorRet = %d',
+                    [WideCharToString(ppFileName), GetLastError()]),
+             hr);
     end;
 
   Result := hr;
@@ -450,8 +481,14 @@ begin
 
   // make a RIFF/WAVE chunk
 
-  pckRIFF.ckid := MAKEFOURCC('R', 'I', 'F', 'F');
-  pckRIFF.fccType := MAKEFOURCC('W', 'A', 'V', 'E');
+  pckRIFF.ckid := MAKEFOURCC('R',
+                             'I',
+                             'F',
+                             'F');
+  pckRIFF.fccType := MAKEFOURCC('W',
+                                'A',
+                                'V',
+                                'E');
 
   mResult := mmioCreateChunk(hmFile,
                              @pckRIFF,
@@ -466,7 +503,10 @@ begin
     end;
 
   // make a 'fmt ' chunk (within the RIFF/WAVE chunk)
-  mChunk.ckid := MAKEFOURCC('f', 'm', 't', ' ');
+  mChunk.ckid := MAKEFOURCC('f',
+                            'm',
+                            't',
+                            ' ');
   mResult := mmioCreateChunk(hmFile,
                              @mChunk,
                              0);
@@ -508,7 +548,10 @@ begin
     end;
 
   // make a 'fact' chunk whose data is (DWORD)0
-  mChunk.ckid := MAKEFOURCC('f', 'a', 'c', 't');
+  mChunk.ckid := MAKEFOURCC('f',
+                            'a',
+                            'c',
+                            't');
   mResult := mmioCreateChunk(hmFile,
                              @mChunk,
                              0);
@@ -551,7 +594,10 @@ begin
     end;
 
   // make a 'data' chunk and leave the data pointer there
-  pckData.ckid := MAKEFOURCC('d', 'a', 't', 'a');
+  pckData.ckid := MAKEFOURCC('d',
+                             'a',
+                             't',
+                             'a');
 
   mResult := mmioCreateChunk(hmFile,
                              @pckData,
@@ -600,14 +646,16 @@ begin
       goto done;
     end;
 
-done:
-  Result := mResult;
+  done:
+    Result := mResult;
 end;
 
 
 // Stop, destroy thread.
 procedure TAudioSink.Stop();
+
 begin
+
   // Signal the threadfuntion to stop.
   StopRecording := True;
   // Terminate the thread where the threadfunction is running in.
@@ -628,89 +676,96 @@ var
   packetLength: UINT32;
 
 begin
+
   hr := S_OK;
   packetLength := 0;
 
-try
-  // Each loop fills about half of the shared buffer.
-  while (pvStopRec = False) do
-    begin
+  try
+    // Each loop fills about half of the shared buffer.
+    while (pvStopRec = False) do
+      begin
 
-      // Sleep for half the buffer duration if the size > 0.
-      Sleep(Cardinal(Max(1,pvHnsActualDuration div (2 * REFTIMES_PER_MILLISEC))));
+        // Sleep for half the buffer duration if the size > 0.
+        Sleep(Cardinal(Max(1,
+                           pvHnsActualDuration div (2 * REFTIMES_PER_MILLISEC))));
 
-      hr := pvCaptureClient.GetNextPacketSize(packetLength);
-      if FAILED(hr) then
-        Break;
+        hr := pvCaptureClient.GetNextPacketSize(packetLength);
+        if FAILED(hr) then
+          Break;
 
-      HandleThreadMessages(GetCurrentThread());
+        HandleThreadMessages(GetCurrentThread());
 
-      while (packetLength <> 0) do
-        begin
-          if pvStopRec then
-            Break;
+        while (packetLength <> 0) do
+          begin
+            if pvStopRec then
+              Break;
 
-          // Get the available data in the shared buffer.
-          hr := pvCaptureClient.GetBuffer(pData,
-                                          numFramesAvailable,
-                                          flags,
-                                          nil,
-                                          nil);
-          if FAILED(hr) then
-            Break;
+            // Get the available data in the shared buffer.
+            hr := pvCaptureClient.GetBuffer(pData,
+                                            numFramesAvailable,
+                                            flags,
+                                            nil,
+                                            nil);
+            if FAILED(hr) then
+              Break;
 
-          // Tell CopyData to write silence.
-          // When a sound is detected, the app will act and process data.
-          if ((flags and AUDCLNT_BUFFERFLAGS_SILENT) <> 0) then
-            pData := nil;
+            // Tell CopyData to write silence.
+            // When a sound is detected, the app will act and process data.
+            if ((flags and AUDCLNT_BUFFERFLAGS_SILENT) <> 0) then
+              pData := nil;
 
-         // Store the buffersize.
-         if (pvBufferFrames = 0) and (numFramesAvailable > 0) then
-           pvBufferFrames := numFramesAvailable;
+            // Store the buffersize.
+            if (pvBufferFrames = 0) and (numFramesAvailable > 0) then
+              pvBufferFrames := numFramesAvailable;
 
-          // Copy the available capture data to the audio sink.
-          hr := CopyData(pData,
-                         numFramesAvailable,
-                         pvPwfx);
-          if FAILED(hr) then
-            Break;
+            // Copy the available capture data to the audio sink.
+            hr := CopyData(pData,
+                           numFramesAvailable,
+                           pvPwfx);
+            if FAILED(hr) then
+              Break;
 
-          hr := pvCaptureClient.ReleaseBuffer(numFramesAvailable);
-          if FAILED(hr) then
-            Break;
+            hr := pvCaptureClient.ReleaseBuffer(numFramesAvailable);
+            if FAILED(hr) then
+              Break;
 
-          hr := pvCaptureClient.GetNextPacketSize(packetLength);
-          if FAILED(hr) then
-            Break;
+            hr := pvCaptureClient.GetNextPacketSize(packetLength);
+            if FAILED(hr) then
+              Break;
+          end;
       end;
-    end;
 
     // Wait for last data in buffer to play before stopping.
-    Sleep(Cardinal(Max(1,pvHnsActualDuration div (2 * REFTIMES_PER_MILLISEC))));
+    Sleep(Cardinal(Max(1,
+                       pvHnsActualDuration div (2 * REFTIMES_PER_MILLISEC))));
 
-finally
+  finally
 
-  if SUCCEEDED(hr) then
-    begin
-      hr := pvAudioClient.Stop();  // Stop recording.
+    if SUCCEEDED(hr) then
+      begin
+        hr := pvAudioClient.Stop();  // Stop recording.
         if SUCCEEDED(hr) then
-      hr := FinishWaveFile(pvCkRIFF,
-                           pvCkData);
-      mmioClose(hmFile,
-                0);
-    end
-  else
-    begin
-      mmioClose(hmFile,
-                0);
-      //{void}DeleteFile(ppfileName);
-    end;
+          hr := FinishWaveFile(pvCkRIFF,
+                               pvCkData);
+        mmioClose(hmFile,
+                  0);
+      end
+    else
+      begin
+        mmioClose(hmFile,
+                  0);
+        //{void}DeleteFile(ppfileName);
+      end;
 
-  // Send capturing stopped.
-  if not FClosing then PostMessage(FNotifyWindow,WM_APP + $4D0 + 1,0,0);
-  pData := nil;
-  Result := hr;
-end;
+    // Send capturing stopped.
+    if not FClosing then
+      PostMessage(FNotifyWindow,
+                  WM_APP + $4D0 + 1,
+                  0,
+                  0);
+    pData := nil;
+    Result := hr;
+  end;
 end;
 
 
@@ -721,9 +776,9 @@ end;
 // The function uses this buffer to stream data from the
 // capture device. The main loop runs every 1/2 second.
 //-----------------------------------------------------------
-  function TAudioSink.RecordAudioStream(dataFlow: EDataFlow;  // eRender or eCapture
-                                      role: ERole;          // eConsole, eMultimedia or eCommunications
-                                      bufferDuration: REFERENCE_TIME;
+function TAudioSink.RecordAudioStream(dataFlow: EDataFlow;  // eRender or eCapture
+  role: ERole;          // eConsole, eMultimedia or eCommunications
+  bufferDuration: REFERENCE_TIME;
                                       ppfileName: LPWSTR): HResult;
 var
   hr: HResult;
@@ -739,8 +794,10 @@ label
   done;
 
 begin
+
   Stop();
-  if pvPwfx <> nil then CoTaskMemFree(pvPwfx);
+  if (pvPwfx <> nil) then
+    CoTaskMemFree(pvPwfx);
   pvStopRec := False;
   pvBytesWritten := 0;
   pvBufferFrames := 0;
@@ -763,8 +820,8 @@ begin
 
   // Get the default endpoint. See MMDeviceApi line 278 for explanation.
   hr := pEnumerator.GetDefaultAudioEndpoint(dataFlow, // eRender or eCapture,
-                                            role,     // eMultimedia, eConsole or eCommunications
-                                            pDevice);
+    role,     // eMultimedia, eConsole or eCommunications
+    pDevice);
   if FAILED(hr) then
     goto done;
 
@@ -807,8 +864,8 @@ begin
   hr := pvAudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED,
                                  AUDCLNT_STREAMFLAGS_LOOPBACK,
                                  bufferDuration, // Note: When bufferDuration = 0, the audioclient will automaticly decise the bufferduration.
-                                 0, // Must be zero when using shared mode!
-                                 pvPwfx,
+    0, // Must be zero when using shared mode!
+    pvPwfx,
                                  @GUID_NULL);
   if FAILED(hr) then
     goto done;
@@ -841,7 +898,7 @@ begin
   // Calculate the actual duration of the allocated buffer.
   if (bufferFrameCount > 0) then
     hnsActualDuration := (Int64(REFTIMES_PER_SEC) *
-                          bufferFrameCount div pvPwfx.nSamplesPerSec)
+      bufferFrameCount div pvPwfx.nSamplesPerSec)
   else
     hnsActualDuration := 0;
 
@@ -859,13 +916,17 @@ begin
     goto done;
 
   // Signal the mainform caturing started.
-  if not FClosing then PostMessage(FNotifyWindow,WM_APP + $4D0 + 0,0,0);
+  if not FClosing then
+    PostMessage(FNotifyWindow,
+                WM_APP + $4D0 + 0,
+                0,
+                0);
 
   // Render the audiodata.
   CreatedRenderThread;
 
-done:
-  pvErrorStatus := hr;
+  done:
+    pvErrorStatus := hr;
   Result := hr;
 end;
 

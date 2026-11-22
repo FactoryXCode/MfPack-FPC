@@ -90,6 +90,7 @@ uses
 type
 
   TMfSubtitleCompositor = class(TObject)
+
   private
     FLock: TCriticalSection;
     FTimedText: TMfTimedText;
@@ -125,7 +126,6 @@ type
     function EnsureEmbeddedWindow(MediaTimeMs: Int64): HRESULT;
     function EnsureFullEmbeddedTrack(): HRESULT;
     function BuildSubtitleOverlay(const SubtitleText: string;
-
                                   Width: Integer;
                                   Height: Integer): HRESULT;
 
@@ -178,9 +178,9 @@ type
                                       out SubtitleText: string;
                                       out Track: TSubTitleTrack): Boolean;
     function TryGetVobSubFrameAtTime(MediaTimeMs: Int64;
-                                    out Frame: TMfVobSubFrame;
-                                    out CanvasWidth: Integer;
-                                    out CanvasHeight: Integer): Boolean;
+                                     out Frame: TMfVobSubFrame;
+                                     out CanvasWidth: Integer;
+                                     out CanvasHeight: Integer): Boolean;
 
     function CompositeRgb32(VideoBuffer: Pointer;
                             BufferSize: UINT32;
@@ -207,6 +207,7 @@ const
 
 
 constructor TMfSubtitleCompositor.Create();
+
 begin
 
   inherited Create();
@@ -215,7 +216,8 @@ begin
 
   FTimedText := nil;
   FVobSub := nil;
-  SetLength(FEmbeddedTracks, 0);
+  SetLength(FEmbeddedTracks,
+            0);
   FActiveEmbeddedStreamIndex := -1;
   FActiveSubtitleIsEmbedded := False;
   FTimedTextFileLoaded := False;
@@ -228,6 +230,7 @@ end;
 
 
 destructor TMfSubtitleCompositor.Destroy();
+
 begin
 
   Close();
@@ -239,6 +242,7 @@ end;
 
 
 procedure TMfSubtitleCompositor.ResetOverlayCache();
+
 begin
 
   FOverlayText := '';
@@ -249,7 +253,8 @@ begin
   FOverlayTop := 0;
   FOverlayWidth := 0;
   FOverlayHeight := 0;
-  SetLength(FOverlayPixels, 0);
+  SetLength(FOverlayPixels,
+            0);
   FOverlayValid := False;
 end;
 
@@ -329,16 +334,14 @@ begin
 
   if (fontSize < 10) then
     fontSize := 10
-  else
-    if (fontSize > 21) then
-      fontSize := 21;
+  else if (fontSize > 21) then
+    fontSize := 21;
 
   fontSize := Round(fontSize * FSubtitleFontScale);
-  if fontSize < 10 then
+  if (fontSize < 10) then
     fontSize := 10
-  else
-    if fontSize > 48 then
-      fontSize := 48;
+  else if (fontSize > 48) then
+    fontSize := 48;
 
   marginX := videoWidth div 10;
   marginBottom := videoHeight div 20;
@@ -375,7 +378,8 @@ begin
 
   try
     fontHeight := -MulDiv(fontSize,
-                          GetDeviceCaps(screenDC, LOGPIXELSY),
+                          GetDeviceCaps(screenDC,
+                                        LOGPIXELSY),
                           72);
 
     fontObj := CreateFontW(fontHeight,
@@ -474,7 +478,9 @@ begin
         Exit;
       end;
 
-    FillChar(bmi, SizeOf(bmi), 0);
+    FillChar(bmi,
+             SizeOf(bmi),
+             0);
     bmi.bmiHeader.biSize := SizeOf(TBitmapInfoHeader);
     bmi.bmiHeader.biWidth := regionWidth;
     bmi.bmiHeader.biHeight := -regionHeight;
@@ -503,7 +509,8 @@ begin
                            dib);
     bitmapBytes := regionWidth * regionHeight * 4;
     FillChar(dibBits^,
-             bitmapBytes, 0);
+             bitmapBytes,
+             0);
 
     rcLocal := Rect(rcDraw.Left - regionLeft,
                     rcDraw.Top - regionTop,
@@ -516,7 +523,9 @@ begin
         if (dx <> 0) or (dy <> 0) then
           begin
             rcText := rcLocal;
-            OffsetRect(rcText, dx, dy);
+            OffsetRect(rcText,
+                       dx,
+                       dy);
             DrawTextW(memDC,
                       PWideChar(textValue),
                       Length(textValue),
@@ -529,7 +538,8 @@ begin
               bitmapBytes);
 
     FillChar(FOverlayPixels[0],
-             bitmapBytes, 0);
+             bitmapBytes,
+             0);
 
     pixelCount := regionWidth * regionHeight;
 
@@ -616,25 +626,34 @@ var
   SourceY: Integer;
   SourceOffset: Integer;
   TargetOffset: Integer;
+
 begin
+
   ResetOverlayCache();
   if (ACanvasWidth <= 0) or (ACanvasHeight <= 0) or
-     (AWidth <= 0) or (AHeight <= 0) or
-     (AFrame.Width <= 0) or (AFrame.Height <= 0) or
-     (Length(AFrame.Pixels) < AFrame.Width * AFrame.Height * 4) then
+    (AWidth <= 0) or (AHeight <= 0) or
+    (AFrame.Width <= 0) or (AFrame.Height <= 0) or
+    (Length(AFrame.Pixels) < AFrame.Width * AFrame.Height * 4) then
     Exit(E_INVALIDARG);
 
   FOverlayLeft := Integer((Int64(AFrame.Left) * AWidth) div ACanvasWidth);
   FOverlayTop := Integer((Int64(AFrame.Top) * AHeight) div ACanvasHeight);
   TargetWidth := Integer((Int64(AFrame.Width) * AWidth + ACanvasWidth div 2) div ACanvasWidth);
   TargetHeight := Integer((Int64(AFrame.Height) * AHeight + ACanvasHeight div 2) div ACanvasHeight);
-  if TargetWidth < 1 then TargetWidth := 1;
-  if TargetHeight < 1 then TargetHeight := 1;
-  if FOverlayLeft < 0 then FOverlayLeft := 0;
-  if FOverlayTop < 0 then FOverlayTop := 0;
-  if FOverlayLeft + TargetWidth > AWidth then TargetWidth := AWidth - FOverlayLeft;
-  if FOverlayTop + TargetHeight > AHeight then TargetHeight := AHeight - FOverlayTop;
-  if (TargetWidth <= 0) or (TargetHeight <= 0) then Exit(S_FALSE);
+  if (TargetWidth < 1) then
+    TargetWidth := 1;
+  if (TargetHeight < 1) then
+    TargetHeight := 1;
+  if (FOverlayLeft < 0) then
+    FOverlayLeft := 0;
+  if (FOverlayTop < 0) then
+    FOverlayTop := 0;
+  if (FOverlayLeft + TargetWidth > AWidth) then
+    TargetWidth := AWidth - FOverlayLeft;
+  if (FOverlayTop + TargetHeight > AHeight) then
+    TargetHeight := AHeight - FOverlayTop;
+  if (TargetWidth <= 0) or (TargetHeight <= 0) then
+    Exit(S_FALSE);
 
   FOverlayWidth := TargetWidth;
   FOverlayHeight := TargetHeight;
@@ -642,7 +661,8 @@ begin
   FOverlayFrameHeight := AHeight;
   FOverlayAspectRatio := FSubtitleAspectRatio;
   FOverlayText := '#VOBSUB:' + IntToStr(AFrame.CueIndex);
-  SetLength(FOverlayPixels, TargetWidth * TargetHeight * 4);
+  SetLength(FOverlayPixels,
+            TargetWidth * TargetHeight * 4);
 
   for Y := 0 to TargetHeight - 1 do
     begin
@@ -652,7 +672,9 @@ begin
           SourceX := Integer((Int64(X) * AFrame.Width) div TargetWidth);
           SourceOffset := (SourceY * AFrame.Width + SourceX) * 4;
           TargetOffset := (Y * TargetWidth + X) * 4;
-          Move(AFrame.Pixels[SourceOffset], FOverlayPixels[TargetOffset], 4);
+          Move(AFrame.Pixels[SourceOffset],
+               FOverlayPixels[TargetOffset],
+               4);
         end;
     end;
   FOverlayValid := True;
@@ -684,9 +706,9 @@ begin
     Exit;
 
   if (VideoBuffer = nil) or
-     (Width <> FOverlayFrameWidth) or
-     (Height <> FOverlayFrameHeight) or
-     (Stride = 0) then
+    (Width <> FOverlayFrameWidth) or
+    (Height <> FOverlayFrameHeight) or
+    (Stride = 0) then
     begin
       Result := E_INVALIDARG;
       Exit;
@@ -697,10 +719,10 @@ begin
 
       if (Stride > 0) then
         destinationRow := PByte(NativeInt(VideoBuffer) + NativeInt(FOverlayTop + Y) * NativeInt(Stride) +
-                                NativeInt(FOverlayLeft) * 4)
+          NativeInt(FOverlayLeft) * 4)
       else
         destinationRow := PByte(NativeInt(VideoBuffer) + NativeInt(Height - 1 - (FOverlayTop + Y)) *
-                                  NativeInt(Abs(Stride)) + NativeInt(FOverlayLeft) * 4);
+          NativeInt(Abs(Stride)) + NativeInt(FOverlayLeft) * 4);
 
       sourceOffset := Y * FOverlayWidth * 4;
       sourcePixel := @FOverlayPixels[sourceOffset];
@@ -730,13 +752,15 @@ begin
               destinationPixel^ := Byte(sourceValue + ((destinationValue * inverseAlpha + 127) div 255));
             end;
 
-          Inc(sourcePixel, 4);
+          Inc(sourcePixel,
+              4);
         end;
     end;
 end;
 
 
 procedure TMfSubtitleCompositor.ReleaseTimedText();
+
 begin
 
   if Assigned(FTimedText) then
@@ -747,6 +771,7 @@ end;
 
 
 procedure TMfSubtitleCompositor.Close();
+
 begin
 
   FLock.Acquire();
@@ -790,7 +815,7 @@ begin
     begin
       NewVobSub := TMfVobSubReader.Create();
       hr := NewVobSub.Open(string(MediaFileName));
-      if hr = S_OK then
+      if (hr = S_OK) then
         begin
           FLock.Acquire();
           try
@@ -799,7 +824,7 @@ begin
             FTimedTextFileLoaded := True;
             FActiveSubtitleIsEmbedded := False;
             FActiveEmbeddedStreamIndex := -1;
-            if FPreferredLanguage = '' then
+            if (FPreferredLanguage = '') then
               FPreferredLanguage := FVobSub.Language;
             ResetOverlayCache();
           finally
@@ -820,7 +845,8 @@ begin
 
   if FAILED(hrTracks) then
     OutputDebugStringW(PChar(Format('Embedded subtitle refresh failed hr=%s',
-                                   [IntToHex(DWORD(hrTracks), 8)])));
+                                    [IntToHex(DWORD(hrTracks),
+                                              8)])));
 
   EmbeddedTrack.Reset();
 
@@ -840,15 +866,15 @@ begin
 
       EmbeddedTrack.Reset();
       hr := TMfEmbeddedSubtitleReader.ImportBestTextTrackFromList(
-              MediaFileName,
-              PreferredLanguage,
-              FEmbeddedTracks,
-              NewTimedText,
-              EmbeddedTrack);
-      if hr = S_FALSE then
+        MediaFileName,
+                                                                  PreferredLanguage,
+                                                                  FEmbeddedTracks,
+                                                                  NewTimedText,
+                                                                  EmbeddedTrack);
+      if (hr = S_FALSE) then
         for I := Low(FEmbeddedTracks) to High(FEmbeddedTracks) do
           if FEmbeddedTracks[I].Supported and
-             (FEmbeddedTracks[I].Format = esfVobSub) then
+            (FEmbeddedTracks[I].Format = esfVobSub) then
             begin
               // The selected bitmap track is activated after the file opens.
               hr := S_OK;
@@ -890,6 +916,7 @@ begin
   NewTimedText.Free();
   Result := hr;
 end;
+
 
 function TMfSubtitleCompositor.FindEmbeddedTrack(StreamIndex: DWORD;
                                                  out Track: TMfEmbeddedSubtitleTrackInfo): Boolean;
@@ -933,8 +960,8 @@ begin
 
   IsMatroska := SameText(ExtractFileExt(FMediaFileName),
                          '.mkv') or
-                SameText(ExtractFileExt(FMediaFileName),
-                         '.webm');
+    SameText(ExtractFileExt(FMediaFileName),
+             '.webm');
 
   // The direct EBML metadata pass is both faster and more complete for MKV.
   // In particular, it retains deselected subtitle tracks that some Media
@@ -942,12 +969,11 @@ begin
   if IsMatroska then
     Result := TMfEmbeddedSubtitleReader.EnumerateTracks(FMediaFileName,
                                                         NewTracks)
+  else if Assigned(PresentationDescriptor) then
+    Result := TMfEmbeddedSubtitleReader.EnumeratePresentationTracks(PresentationDescriptor,
+                                                                    NewTracks)
   else
-    if Assigned(PresentationDescriptor) then
-      Result := TMfEmbeddedSubtitleReader.EnumeratePresentationTracks(PresentationDescriptor,
-                                                                      NewTracks)
-    else
-      Result := S_FALSE;
+    Result := S_FALSE;
 
   if (Result = S_FALSE) or FAILED(Result) then
     begin
@@ -978,8 +1004,9 @@ begin
     end;
 
   OutputDebugStringW(PChar(Format('Embedded subtitle refresh hr=%s tracks=%d descriptor=%s',
-                                 [IntToHex(DWORD(Result), 8), Length(NewTracks),
-                                  BoolToStr(Assigned(PresentationDescriptor))])));
+                                  [IntToHex(DWORD(Result),
+                                            8), Length(NewTracks),
+    BoolToStr(Assigned(PresentationDescriptor))])));
 end;
 
 
@@ -1036,6 +1063,7 @@ end;
 
 
 function TMfSubtitleCompositor.HasSubtitleSources(): Boolean;
+
 begin
 
   FLock.Acquire();
@@ -1062,7 +1090,7 @@ var
 begin
 
   if not FindEmbeddedTrack(StreamIndex,
-                           Track) then
+    Track) then
     begin
       Result := MF_E_INVALIDSTREAMNUMBER;
       Exit;
@@ -1080,7 +1108,7 @@ begin
       try
         Result := NewVobSub.OpenEmbedded(FMediaFileName,
                                          Track.StreamIndex);
-        if Result <> S_OK then
+        if (Result <> S_OK) then
           Exit;
         FLock.Acquire();
         try
@@ -1132,7 +1160,7 @@ begin
     OldTimedText := FTimedText;
     FTimedText := NewTimedText;
     ResetEmbeddedWindowState();
-    FEmbeddedWindowed := Track.Source = essMatroska;
+    FEmbeddedWindowed := (Track.Source = essMatroska);
     FPreferredLanguage := FTimedText.PreferredLanguage;
     FTimedTextFileLoaded := True;
     FActiveSubtitleIsEmbedded := True;
@@ -1205,20 +1233,21 @@ begin
     MediaTimeMs := 0;
 
   Track.Reset();
-  SetLength(Cues, 0);
+  SetLength(Cues,
+            0);
 
   FLock.Acquire();
 
   try
     if (not FEmbeddedWindowed) or
-       (not FActiveSubtitleIsEmbedded) or
-       (not FTimedTextFileLoaded) or
-       (not Assigned(FTimedText)) then
+      (not FActiveSubtitleIsEmbedded) or
+      (not FTimedTextFileLoaded) or
+      (not Assigned(FTimedText)) then
       Exit;
 
     if (FEmbeddedWindowStartMs >= 0) and
-       (MediaTimeMs >= FEmbeddedWindowStartMs) and
-       ((MediaTimeMs < FEmbeddedWindowEndMs) or FEmbeddedWindowEndOfTrack) then
+      (MediaTimeMs >= FEmbeddedWindowStartMs) and
+      ((MediaTimeMs < FEmbeddedWindowEndMs) or FEmbeddedWindowEndOfTrack) then
       Exit;
 
     if FEmbeddedWindowLoading then
@@ -1246,12 +1275,12 @@ begin
   WindowEndMs := MediaTimeMs + MF_SUBTITLE_WINDOW_AHEAD_MS;
 
   Result := TMfEmbeddedSubtitleReader.LoadMatroskaTextTrackWindow(
-              MediaFileName,
-              Track,
-              WindowStartMs,
-              WindowEndMs,
-              Cues,
-              EndOfTrack);
+    MediaFileName,
+                                                                  Track,
+                                                                  WindowStartMs,
+                                                                  WindowEndMs,
+                                                                  Cues,
+                                                                  EndOfTrack);
 
   FriendlyName := Track.Name;
   if (FriendlyName = '') then
@@ -1262,7 +1291,7 @@ begin
 
   FLock.Acquire();
   try
-    if Generation <> FEmbeddedWindowGeneration then
+    if (Generation <> FEmbeddedWindowGeneration) then
       begin
         Result := E_ABORT;
         Exit;
@@ -1351,8 +1380,8 @@ begin
   FLock.Acquire();
   try
     if (Generation = FEmbeddedWindowGeneration) and
-       FEmbeddedWindowed and
-       (FActiveEmbeddedStreamIndex = Integer(Track.StreamIndex)) then
+      FEmbeddedWindowed and
+      (FActiveEmbeddedStreamIndex = Integer(Track.StreamIndex)) then
       begin
         OldTimedText := FTimedText;
         FTimedText := NewTimedText;
@@ -1376,6 +1405,7 @@ end;
 function TMfSubtitleCompositor.ExportActiveWebVtt(out AData: TBytes;
                                                   out ALanguageTag: string;
                                                   out AFriendlyLanguageName: string): HRESULT;
+
 begin
 
   SetLength(AData,
@@ -1405,6 +1435,7 @@ end;
 
 
 procedure TMfSubtitleCompositor.ResetEmbeddedWindowState();
+
 begin
 
   Inc(FEmbeddedWindowGeneration);
@@ -1414,6 +1445,7 @@ begin
   FEmbeddedWindowEndMs := -1;
   FEmbeddedWindowEndOfTrack := False;
 end;
+
 
 function TMfSubtitleCompositor.BuildPlainText(const Track: TSubTitleTrack): string;
 var
@@ -1434,6 +1466,7 @@ end;
 
 
 procedure TMfSubtitleCompositor.SetSubtitleAspectRatio(aValue: Single);
+
 begin
 
   if (aValue <= 0.0) then
@@ -1444,12 +1477,13 @@ end;
 
 
 procedure TMfSubtitleCompositor.SetSubtitleFontScale(aValue: Single);
+
 begin
 
-  if aValue <= 0.0 then
+  if (aValue <= 0.0) then
     aValue := 1.0;
 
-  if Abs(FSubtitleFontScale - aValue) > 0.0001 then
+  if (Abs(FSubtitleFontScale - aValue) > 0.0001) then
     begin
       FSubtitleFontScale := aValue;
       ResetOverlayCache();
@@ -1499,16 +1533,19 @@ begin
                  targetTop + targetHeight);
 end;
 
+
 function TMfSubtitleCompositor.TryGetSubtitleTextAtTime(MediaTimeMs: Int64;
-                                                       out SubtitleText: string;
-                                                       out Track: TSubTitleTrack): Boolean;
+                                                        out SubtitleText: string;
+                                                        out Track: TSubTitleTrack): Boolean;
+
 begin
 
   SubtitleText := '';
   Track.Start := 0;
   Track.Stop := 0;
   Track.Duration := 0;
-  SetLength(Track.TrackText, 0);
+  SetLength(Track.TrackText,
+            0);
 
   EnsureEmbeddedWindow(MediaTimeMs);
 
@@ -1519,9 +1556,9 @@ begin
 
   try
     Result := FTimedTextFileLoaded and
-              Assigned(FTimedText) and
-              FTimedText.TryGetTrackAtTime(MediaTimeMs,
-                                           Track);
+      Assigned(FTimedText) and
+      FTimedText.TryGetTrackAtTime(MediaTimeMs,
+                                   Track);
     if Result then
       SubtitleText := BuildPlainText(Track);
   finally
@@ -1532,16 +1569,19 @@ end;
 
 function TMfSubtitleCompositor.TryGetVobSubFrameAtTime(
   MediaTimeMs: Int64;
-  out Frame: TMfVobSubFrame;
-  out CanvasWidth: Integer;
-  out CanvasHeight: Integer): Boolean;
+                                                       out Frame: TMfVobSubFrame;
+                                                       out CanvasWidth: Integer;
+                                                       out CanvasHeight: Integer): Boolean;
+
 begin
+
   Frame.Reset();
   CanvasWidth := 0;
   CanvasHeight := 0;
   FLock.Acquire();
   try
-    Result := Assigned(FVobSub) and FVobSub.TryGetFrame(MediaTimeMs, Frame);
+    Result := Assigned(FVobSub) and FVobSub.TryGetFrame(MediaTimeMs,
+                                                        Frame);
     if Result then
       begin
         CanvasWidth := FVobSub.CanvasWidth;
@@ -1554,11 +1594,11 @@ end;
 
 
 function TMfSubtitleCompositor.CompositeRgb32(VideoBuffer: Pointer;
-                                             BufferSize: UINT32;
-                                             Width: Integer;
-                                             Height: Integer;
-                                             Stride: Integer;
-                                             MediaTimeMs: Int64): HRESULT;
+                                              BufferSize: UINT32;
+                                              Width: Integer;
+                                              Height: Integer;
+                                              Stride: Integer;
+                                              MediaTimeMs: Int64): HRESULT;
 var
   subtitleText: string;
   track: TSubTitleTrack;
@@ -1571,10 +1611,10 @@ begin
   Result := S_OK;
 
   if (VideoBuffer = nil) or
-     (BufferSize = 0) or
-     (Width <= 0) or
-     (Height <= 0) or
-     (Stride = 0) then
+    (BufferSize = 0) or
+    (Width <= 0) or
+    (Height <= 0) or
+    (Stride = 0) then
     begin
 
       Result := E_INVALIDARG;
@@ -1602,25 +1642,29 @@ begin
         Exit;
 
       if (not FOverlayValid) or
-         (FOverlayText <> '#VOBSUB:' + IntToStr(VobFrame.CueIndex)) or
-         (FOverlayFrameWidth <> Width) or
-         (FOverlayFrameHeight <> Height) then
+        (FOverlayText <> '#VOBSUB:' + IntToStr(VobFrame.CueIndex)) or
+        (FOverlayFrameWidth <> Width) or
+        (FOverlayFrameHeight <> Height) then
         begin
           Result := BuildVobSubOverlay(VobFrame,
                                        FVobSub.CanvasWidth,
                                        FVobSub.CanvasHeight,
                                        Width,
                                        Height);
-          if Result <> S_OK then Exit;
+          if (Result <> S_OK) then
+            Exit;
         end;
 
-      Result := BlendCachedOverlay(VideoBuffer, Width, Height, Stride);
+      Result := BlendCachedOverlay(VideoBuffer,
+                                   Width,
+                                   Height,
+                                   Stride);
       Exit;
     end;
 
   if not TryGetSubtitleTextAtTime(MediaTimeMs,
-                                  subtitleText,
-                                  track) then
+    subtitleText,
+    track) then
     Exit;
 
   subtitleText := Trim(subtitleText);
@@ -1628,11 +1672,11 @@ begin
     Exit;
 
   if (not FOverlayValid) or
-     (not SameStr(FOverlayText,
-                  subtitleText)) or
-     (FOverlayFrameWidth <> Width) or
-     (FOverlayFrameHeight <> Height) or
-     (Abs(FOverlayAspectRatio - FSubtitleAspectRatio) > 0.0001) then
+    (not SameStr(FOverlayText,
+                 subtitleText)) or
+    (FOverlayFrameWidth <> Width) or
+    (FOverlayFrameHeight <> Height) or
+    (Abs(FOverlayAspectRatio - FSubtitleAspectRatio) > 0.0001) then
     begin
 
       Result := BuildSubtitleOverlay(subtitleText,

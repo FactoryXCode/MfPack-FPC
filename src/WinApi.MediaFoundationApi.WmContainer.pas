@@ -77,7 +77,7 @@ uses
 
   {WinApi}
   WinApi.WinApiTypes,
-  {ActiveX}  
+  {ActiveX}
   WinApi.ActiveX.PropSys,
   WinApi.ActiveX.PropIdl,
   {MediaFoundationApi}
@@ -89,213 +89,242 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
 
 const
 
-  MFASF_MIN_HEADER_BYTES  = (SizeOf(TGUID) + SizeOf(QWORD));
+  MFASF_MIN_HEADER_BYTES = (SizeOf(TGUID) + SizeOf(QWORD));
   {$EXTERNALSYM MFASF_MIN_HEADER_BYTES}
 
-  MF_PD_ASF_FILEPROPERTIES_FILE_ID               : TGUID = '{3de649b4-d76d-4e66-9ec9-78120fb4c7e3}';
+  MF_PD_ASF_FILEPROPERTIES_FILE_ID: TGUID = '{3de649b4-d76d-4e66-9ec9-78120fb4c7e3}';
   {$EXTERNALSYM MF_PD_ASF_FILEPROPERTIES_FILE_ID}
-  MF_PD_ASF_FILEPROPERTIES_CREATION_TIME         : TGUID = '{3de649b6-d76d-4e66-9ec9-78120fb4c7e3}';
+  MF_PD_ASF_FILEPROPERTIES_CREATION_TIME: TGUID = '{3de649b6-d76d-4e66-9ec9-78120fb4c7e3}';
   {$EXTERNALSYM MF_PD_ASF_FILEPROPERTIES_CREATION_TIME}
-  MF_PD_ASF_FILEPROPERTIES_PACKETS               : TGUID = '{3de649b7-d76d-4e66-9ec9-78120fb4c7e3}';
+  MF_PD_ASF_FILEPROPERTIES_PACKETS: TGUID = '{3de649b7-d76d-4e66-9ec9-78120fb4c7e3}';
   {$EXTERNALSYM MF_PD_ASF_FILEPROPERTIES_PACKETS}
-  MF_PD_ASF_FILEPROPERTIES_PLAY_DURATION         : TGUID = '{3de649b8-d76d-4e66-9ec9-78120fb4c7e3}';
+  MF_PD_ASF_FILEPROPERTIES_PLAY_DURATION: TGUID = '{3de649b8-d76d-4e66-9ec9-78120fb4c7e3}';
   {$EXTERNALSYM MF_PD_ASF_FILEPROPERTIES_PLAY_DURATION}
-  MF_PD_ASF_FILEPROPERTIES_SEND_DURATION         : TGUID = '{3de649b9-d76d-4e66-9ec9-78120fb4c7e3}';
+  MF_PD_ASF_FILEPROPERTIES_SEND_DURATION: TGUID = '{3de649b9-d76d-4e66-9ec9-78120fb4c7e3}';
   {$EXTERNALSYM MF_PD_ASF_FILEPROPERTIES_SEND_DURATION}
-  MF_PD_ASF_FILEPROPERTIES_PREROLL               : TGUID = '{3de649ba-d76d-4e66-9ec9-78120fb4c7e3}';
+  MF_PD_ASF_FILEPROPERTIES_PREROLL: TGUID = '{3de649ba-d76d-4e66-9ec9-78120fb4c7e3}';
   {$EXTERNALSYM MF_PD_ASF_FILEPROPERTIES_PREROLL}
-  MF_PD_ASF_FILEPROPERTIES_FLAGS                 : TGUID = '{3de649bb-d76d-4e66-9ec9-78120fb4c7e3}';
+  MF_PD_ASF_FILEPROPERTIES_FLAGS: TGUID = '{3de649bb-d76d-4e66-9ec9-78120fb4c7e3}';
   {$EXTERNALSYM MF_PD_ASF_FILEPROPERTIES_FLAGS}
-  MF_PD_ASF_FILEPROPERTIES_MIN_PACKET_SIZE       : TGUID = '{3de649bc-d76d-4e66-9ec9-78120fb4c7e3}';
+  MF_PD_ASF_FILEPROPERTIES_MIN_PACKET_SIZE: TGUID = '{3de649bc-d76d-4e66-9ec9-78120fb4c7e3}';
   {$EXTERNALSYM MF_PD_ASF_FILEPROPERTIES_MIN_PACKET_SIZE}
-  MF_PD_ASF_FILEPROPERTIES_MAX_PACKET_SIZE       : TGUID = '{3de649bd-d76d-4e66-9ec9-78120fb4c7e3}';
+  MF_PD_ASF_FILEPROPERTIES_MAX_PACKET_SIZE: TGUID = '{3de649bd-d76d-4e66-9ec9-78120fb4c7e3}';
   {$EXTERNALSYM MF_PD_ASF_FILEPROPERTIES_MAX_PACKET_SIZE}
-  MF_PD_ASF_FILEPROPERTIES_MAX_BITRATE           : TGUID = '{3de649be-d76d-4e66-9ec9-78120fb4c7e3}';
+  MF_PD_ASF_FILEPROPERTIES_MAX_BITRATE: TGUID = '{3de649be-d76d-4e66-9ec9-78120fb4c7e3}';
   {$EXTERNALSYM MF_PD_ASF_FILEPROPERTIES_MAX_BITRATE}
-  MF_PD_ASF_CONTENTENCRYPTION_TYPE               : TGUID = '{8520fe3d-277e-46ea-99e4-e30a86db12be}';
+  MF_PD_ASF_CONTENTENCRYPTION_TYPE: TGUID = '{8520fe3d-277e-46ea-99e4-e30a86db12be}';
   {$EXTERNALSYM MF_PD_ASF_CONTENTENCRYPTION_TYPE}
-  MF_PD_ASF_CONTENTENCRYPTION_KEYID              : TGUID = '{8520fe3e-277e-46ea-99e4-e30a86db12be}';
+  MF_PD_ASF_CONTENTENCRYPTION_KEYID: TGUID = '{8520fe3e-277e-46ea-99e4-e30a86db12be}';
   {$EXTERNALSYM MF_PD_ASF_CONTENTENCRYPTION_KEYID}
-  MF_PD_ASF_CONTENTENCRYPTION_SECRET_DATA        : TGUID = '{8520fe3f-277e-46ea-99e4-e30a86db12be}';
+  MF_PD_ASF_CONTENTENCRYPTION_SECRET_DATA: TGUID = '{8520fe3f-277e-46ea-99e4-e30a86db12be}';
   {$EXTERNALSYM MF_PD_ASF_CONTENTENCRYPTION_SECRET_DATA}
-  MF_PD_ASF_CONTENTENCRYPTION_LICENSE_URL        : TGUID = '{8520fe40-277e-46ea-99e4-e30a86db12be}';
+  MF_PD_ASF_CONTENTENCRYPTION_LICENSE_URL: TGUID = '{8520fe40-277e-46ea-99e4-e30a86db12be}';
   {$EXTERNALSYM MF_PD_ASF_CONTENTENCRYPTION_LICENSE_URL}
-  MF_PD_ASF_CONTENTENCRYPTIONEX_ENCRYPTION_DATA  : TGUID = '{62508be5-ecdf-4924-a359-72bab3397b9d}';
+  MF_PD_ASF_CONTENTENCRYPTIONEX_ENCRYPTION_DATA: TGUID = '{62508be5-ecdf-4924-a359-72bab3397b9d}';
   {$EXTERNALSYM MF_PD_ASF_CONTENTENCRYPTIONEX_ENCRYPTION_DATA}
-  MF_PD_ASF_LANGLIST                             : TGUID = '{f23de43c-9977-460d-a6ec-32937f160f7d}';
+  MF_PD_ASF_LANGLIST: TGUID = '{f23de43c-9977-460d-a6ec-32937f160f7d}';
   {$EXTERNALSYM MF_PD_ASF_LANGLIST}
 
   //#if (WINVER >= _WIN32_WINNT_WIN7)
-  MF_PD_ASF_LANGLIST_LEGACYORDER                 : TGUID = '{f23de43d-9977-460d-a6ec-32937f160f7d}';
+  MF_PD_ASF_LANGLIST_LEGACYORDER: TGUID = '{f23de43d-9977-460d-a6ec-32937f160f7d}';
   {$EXTERNALSYM MF_PD_ASF_LANGLIST_LEGACYORDER}
   //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-  MF_PD_ASF_MARKER                               : TGUID = '{5134330e-83a6-475e-a9d5-4fb875fb2e31}';
+  MF_PD_ASF_MARKER: TGUID = '{5134330e-83a6-475e-a9d5-4fb875fb2e31}';
   {$EXTERNALSYM MF_PD_ASF_MARKER}
-  MF_PD_ASF_SCRIPT                               : TGUID = '{e29cd0d7-d602-4923-a7fe-73fd97ecc650}';
+  MF_PD_ASF_SCRIPT: TGUID = '{e29cd0d7-d602-4923-a7fe-73fd97ecc650}';
   {$EXTERNALSYM MF_PD_ASF_SCRIPT}
-  MF_PD_ASF_CODECLIST                            : TGUID = '{e4bb3509-c18d-4df1-bb99-7a36b3cc4119}';
+  MF_PD_ASF_CODECLIST: TGUID = '{e4bb3509-c18d-4df1-bb99-7a36b3cc4119}';
   {$EXTERNALSYM MF_PD_ASF_CODECLIST}
-  MF_PD_ASF_METADATA_IS_VBR                      : TGUID = '{5fc6947a-ef60-445d-b449-442ecc78b4c1}';
+  MF_PD_ASF_METADATA_IS_VBR: TGUID = '{5fc6947a-ef60-445d-b449-442ecc78b4c1}';
   {$EXTERNALSYM MF_PD_ASF_METADATA_IS_VBR}
-  MF_PD_ASF_METADATA_V8_VBRPEAK                  : TGUID = '{5fc6947b-ef60-445d-b449-442ecc78b4c1}';
+  MF_PD_ASF_METADATA_V8_VBRPEAK: TGUID = '{5fc6947b-ef60-445d-b449-442ecc78b4c1}';
   {$EXTERNALSYM MF_PD_ASF_METADATA_V8_VBRPEAK}
-  MF_PD_ASF_METADATA_V8_BUFFERAVERAGE            : TGUID = '{5fc6947c-ef60-445d-b449-442ecc78b4c1}';
+  MF_PD_ASF_METADATA_V8_BUFFERAVERAGE: TGUID = '{5fc6947c-ef60-445d-b449-442ecc78b4c1}';
   {$EXTERNALSYM MF_PD_ASF_METADATA_V8_BUFFERAVERAGE}
-  MF_PD_ASF_METADATA_LEAKY_BUCKET_PAIRS          : TGUID = '{5fc6947d-ef60-445d-b449-442ecc78b4c1}';
+  MF_PD_ASF_METADATA_LEAKY_BUCKET_PAIRS: TGUID = '{5fc6947d-ef60-445d-b449-442ecc78b4c1}';
   {$EXTERNALSYM MF_PD_ASF_METADATA_LEAKY_BUCKET_PAIRS}
-  MF_PD_ASF_DATA_START_OFFSET                    : TGUID = '{e7d5b3e7-1f29-45d3-8822-3e78fae272ed}';
+  MF_PD_ASF_DATA_START_OFFSET: TGUID = '{e7d5b3e7-1f29-45d3-8822-3e78fae272ed}';
   {$EXTERNALSYM MF_PD_ASF_DATA_START_OFFSET}
-  MF_PD_ASF_DATA_LENGTH                          : TGUID = '{e7d5b3e8-1f29-45d3-8822-3e78fae272ed}';
+  MF_PD_ASF_DATA_LENGTH: TGUID = '{e7d5b3e8-1f29-45d3-8822-3e78fae272ed}';
   {$EXTERNALSYM MF_PD_ASF_DATA_LENGTH}
-  MF_SD_ASF_EXTSTRMPROP_LANGUAGE_ID_INDEX        : TGUID = '{48f8a522-305d-422d-8524-2502dda33680}';
+  MF_SD_ASF_EXTSTRMPROP_LANGUAGE_ID_INDEX: TGUID = '{48f8a522-305d-422d-8524-2502dda33680}';
   {$EXTERNALSYM MF_SD_ASF_EXTSTRMPROP_LANGUAGE_ID_INDEX}
-  MF_SD_ASF_EXTSTRMPROP_AVG_DATA_BITRATE         : TGUID = '{48f8a523-305d-422d-8524-2502dda33680}';
+  MF_SD_ASF_EXTSTRMPROP_AVG_DATA_BITRATE: TGUID = '{48f8a523-305d-422d-8524-2502dda33680}';
   {$EXTERNALSYM MF_SD_ASF_EXTSTRMPROP_AVG_DATA_BITRATE}
-  MF_SD_ASF_EXTSTRMPROP_AVG_BUFFERSIZE           : TGUID = '{48f8a524-305d-422d-8524-2502dda33680}';
+  MF_SD_ASF_EXTSTRMPROP_AVG_BUFFERSIZE: TGUID = '{48f8a524-305d-422d-8524-2502dda33680}';
   {$EXTERNALSYM MF_SD_ASF_EXTSTRMPROP_AVG_BUFFERSIZE}
-  MF_SD_ASF_EXTSTRMPROP_MAX_DATA_BITRATE         : TGUID = '{48f8a525-305d-422d-8524-2502dda33680}';
+  MF_SD_ASF_EXTSTRMPROP_MAX_DATA_BITRATE: TGUID = '{48f8a525-305d-422d-8524-2502dda33680}';
   {$EXTERNALSYM MF_SD_ASF_EXTSTRMPROP_MAX_DATA_BITRATE}
-  MF_SD_ASF_EXTSTRMPROP_MAX_BUFFERSIZE           : TGUID = '{48f8a526-305d-422d-8524-2502dda33680}';
+  MF_SD_ASF_EXTSTRMPROP_MAX_BUFFERSIZE: TGUID = '{48f8a526-305d-422d-8524-2502dda33680}';
   {$EXTERNALSYM MF_SD_ASF_EXTSTRMPROP_MAX_BUFFERSIZE}
-  MF_SD_ASF_STREAMBITRATES_BITRATE               : TGUID = '{a8e182ed-afc8-43d0-b0d1-f65bad9da558}';
+  MF_SD_ASF_STREAMBITRATES_BITRATE: TGUID = '{a8e182ed-afc8-43d0-b0d1-f65bad9da558}';
   {$EXTERNALSYM MF_SD_ASF_STREAMBITRATES_BITRATE}
-  MF_SD_ASF_METADATA_DEVICE_CONFORMANCE_TEMPLATE : TGUID = '{245e929d-c44e-4f7e-bb3c-77d4dfd27f8a}';
+  MF_SD_ASF_METADATA_DEVICE_CONFORMANCE_TEMPLATE: TGUID = '{245e929d-c44e-4f7e-bb3c-77d4dfd27f8a}';
   {$EXTERNALSYM MF_SD_ASF_METADATA_DEVICE_CONFORMANCE_TEMPLATE}
-  MF_PD_ASF_INFO_HAS_AUDIO                       : TGUID = '{80e62295-2296-4a44-b31c-d103c6fed23c}';
+  MF_PD_ASF_INFO_HAS_AUDIO: TGUID = '{80e62295-2296-4a44-b31c-d103c6fed23c}';
   {$EXTERNALSYM MF_PD_ASF_INFO_HAS_AUDIO}
-  MF_PD_ASF_INFO_HAS_VIDEO                       : TGUID = '{80e62296-2296-4a44-b31c-d103c6fed23c}';
+  MF_PD_ASF_INFO_HAS_VIDEO: TGUID = '{80e62296-2296-4a44-b31c-d103c6fed23c}';
   {$EXTERNALSYM MF_PD_ASF_INFO_HAS_VIDEO}
-  MF_PD_ASF_INFO_HAS_NON_AUDIO_VIDEO             : TGUID = '{80e62297-2296-4a44-b31c-d103c6fed23c}';
+  MF_PD_ASF_INFO_HAS_NON_AUDIO_VIDEO: TGUID = '{80e62297-2296-4a44-b31c-d103c6fed23c}';
   {$EXTERNALSYM MF_PD_ASF_INFO_HAS_NON_AUDIO_VIDEO}
 
 
-  MF_ASFPROFILE_MINPACKETSIZE                    : TGUID = '{22587626-47de-4168-87f5-b5aa9b12a8f0}';
+  MF_ASFPROFILE_MINPACKETSIZE: TGUID = '{22587626-47de-4168-87f5-b5aa9b12a8f0}';
   {$EXTERNALSYM MF_ASFPROFILE_MINPACKETSIZE}
-  MF_ASFPROFILE_MAXPACKETSIZE                    : TGUID = '{22587627-47de-4168-87f5-b5aa9b12a8f0}';
+  MF_ASFPROFILE_MAXPACKETSIZE: TGUID = '{22587627-47de-4168-87f5-b5aa9b12a8f0}';
   {$EXTERNALSYM MF_ASFPROFILE_MAXPACKETSIZE}
 
 
-  MF_ASFSTREAMCONFIG_LEAKYBUCKET1                : TGUID = '{c69b5901-ea1a-4c9b-b692-e2a0d29a8add}';
+  MF_ASFSTREAMCONFIG_LEAKYBUCKET1: TGUID = '{c69b5901-ea1a-4c9b-b692-e2a0d29a8add}';
   {$EXTERNALSYM MF_ASFSTREAMCONFIG_LEAKYBUCKET1}
-  MF_ASFSTREAMCONFIG_LEAKYBUCKET2                : TGUID = '{c69b5902-ea1a-4c9b-b692-e2a0d29a8add}';
+  MF_ASFSTREAMCONFIG_LEAKYBUCKET2: TGUID = '{c69b5902-ea1a-4c9b-b692-e2a0d29a8add}';
   {$EXTERNALSYM MF_ASFSTREAMCONFIG_LEAKYBUCKET2}
-  MFASFSampleExtension_SampleDuration            : TGUID = '{c6bd9450-867f-4907-83a3-c77921b733ad}';
+  MFASFSampleExtension_SampleDuration: TGUID = '{c6bd9450-867f-4907-83a3-c77921b733ad}';
   {$EXTERNALSYM MFASFSampleExtension_SampleDuration}
-  MFASFSampleExtension_OutputCleanPoint          : TGUID = '{f72a3c6f-6eb4-4ebc-b192-09ad9759e828}';
+  MFASFSampleExtension_OutputCleanPoint: TGUID = '{f72a3c6f-6eb4-4ebc-b192-09ad9759e828}';
   {$EXTERNALSYM MFASFSampleExtension_OutputCleanPoint}
-  MFASFSampleExtension_SMPTE                     : TGUID = '{399595ec-8667-4e2d-8fdb-98814ce76c1e}';
+  MFASFSampleExtension_SMPTE: TGUID = '{399595ec-8667-4e2d-8fdb-98814ce76c1e}';
   {$EXTERNALSYM MFASFSampleExtension_SMPTE}
-  MFASFSampleExtension_FileName                  : TGUID = '{e165ec0e-19ed-45d7-b4a7-25cbd1e28e9b}';
+  MFASFSampleExtension_FileName: TGUID = '{e165ec0e-19ed-45d7-b4a7-25cbd1e28e9b}';
   {$EXTERNALSYM MFASFSampleExtension_FileName}
-  MFASFSampleExtension_ContentType               : TGUID = '{d590dc20-07bc-436c-9cf7-f3bbfbf1a4dc}';
+  MFASFSampleExtension_ContentType: TGUID = '{d590dc20-07bc-436c-9cf7-f3bbfbf1a4dc}';
   {$EXTERNALSYM MFASFSampleExtension_ContentType}
-  MFASFSampleExtension_PixelAspectRatio          : TGUID = '{1b1ee554-f9ea-4bc8-821a-376b74e4c4b8}';
+  MFASFSampleExtension_PixelAspectRatio: TGUID = '{1b1ee554-f9ea-4bc8-821a-376b74e4c4b8}';
   {$EXTERNALSYM MFASFSampleExtension_PixelAspectRatio}
-  MFASFSampleExtension_Encryption_SampleID       : TGUID = '{6698B84E-0AFA-4330-AEB2-1C0A98D7A44D}';
+  MFASFSampleExtension_Encryption_SampleID: TGUID = '{6698B84E-0AFA-4330-AEB2-1C0A98D7A44D}';
   {$EXTERNALSYM MFASFSampleExtension_Encryption_SampleID}
-  MFASFSampleExtension_Encryption_KeyID          : TGUID = '{76376591-795f-4da1-86ed-9d46eca109a9}';
+  MFASFSampleExtension_Encryption_KeyID: TGUID = '{76376591-795f-4da1-86ed-9d46eca109a9}';
   {$EXTERNALSYM MFASFSampleExtension_Encryption_KeyID}
 
 
-  MFASFMutexType_Language                        : TGUID = '{72178C2B-E45B-11D5-BC2A-00B0D0F3F4AB}';
+  MFASFMutexType_Language: TGUID = '{72178C2B-E45B-11D5-BC2A-00B0D0F3F4AB}';
   {$EXTERNALSYM MFASFMutexType_Language}
-  MFASFMutexType_Bitrate                         : TGUID = '{72178C2C-E45B-11D5-BC2A-00B0D0F3F4AB}';
+  MFASFMutexType_Bitrate: TGUID = '{72178C2C-E45B-11D5-BC2A-00B0D0F3F4AB}';
   {$EXTERNALSYM MFASFMutexType_Bitrate}
-  MFASFMutexType_Presentation                    : TGUID = '{72178C2D-E45B-11D5-BC2A-00B0D0F3F4AB}';
+  MFASFMutexType_Presentation: TGUID = '{72178C2D-E45B-11D5-BC2A-00B0D0F3F4AB}';
   {$EXTERNALSYM MFASFMutexType_Presentation}
-  MFASFMutexType_Unknown                         : TGUID = '{72178C2E-E45B-11D5-BC2A-00B0D0F3F4AB}';
+  MFASFMutexType_Unknown: TGUID = '{72178C2E-E45B-11D5-BC2A-00B0D0F3F4AB}';
   {$EXTERNALSYM MFASFMutexType_Unknown}
 
 
-  MFASFSPLITTER_PACKET_BOUNDARY                  : TGUID = '{fe584a05-e8d6-42e3-b176-f1211705fb6f}';
+  MFASFSPLITTER_PACKET_BOUNDARY: TGUID = '{fe584a05-e8d6-42e3-b176-f1211705fb6f}';
   {$EXTERNALSYM MFASFSPLITTER_PACKET_BOUNDARY}
 
 
   //#if (WINVER >= _WIN32_WINNT_WIN7)
-  MFASFINDEXER_TYPE_TIMECODE                     : TGUID = '{49815231-6bad-44fd-810a-3f60984ec7fd}';
+  MFASFINDEXER_TYPE_TIMECODE: TGUID = '{49815231-6bad-44fd-810a-3f60984ec7fd}';
   {$EXTERNALSYM MFASFINDEXER_TYPE_TIMECODE}
   //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-  MFASFINDEXER_PER_ENTRY_BYTES_DYNAMIC                   = $FFFF;
+  MFASFINDEXER_PER_ENTRY_BYTES_DYNAMIC = $FFFF;
   {$EXTERNALSYM MFASFINDEXER_PER_ENTRY_BYTES_DYNAMIC}
-  MFASFINDEXER_NO_FIXED_INTERVAL                         = MAXDW; // 0xFFFFFFFF
+  MFASFINDEXER_NO_FIXED_INTERVAL = MAXDW; // 0xFFFFFFFF
   {$EXTERNALSYM MFASFINDEXER_NO_FIXED_INTERVAL}
   MFASFINDEXER_READ_FOR_REVERSEPLAYBACK_OUTOFDATASEGMENT = $FFFFFFFFFFFFFFFF;
   {$EXTERNALSYM MFASFINDEXER_READ_FOR_REVERSEPLAYBACK_OUTOFDATASEGMENT}
-  MFASFINDEXER_APPROX_SEEK_TIME_UNKNOWN                  = $FFFFFFFFFFFFFFFF;
+  MFASFINDEXER_APPROX_SEEK_TIME_UNKNOWN = $FFFFFFFFFFFFFFFF;
   {$EXTERNALSYM MFASFINDEXER_APPROX_SEEK_TIME_UNKNOWN}
 
 
-  MFPKEY_ASFMEDIASINK_BASE_SENDTIME          : PROPERTYKEY = (fmtid: (D1: $cddcbc82;
-                                                                      D2: $3411;
-                                                                      D3: $4119;
-                                                                      D4: ($91, $35, $84, $23, $c4, $1b, $39, $57));
-                                                                      pid: 3);
+  MFPKEY_ASFMEDIASINK_BASE_SENDTIME: PROPERTYKEY = (fmtid: (D1: $cddcbc82;
+    D2: $3411;
+    D3: $4119;
+    D4: ($91,
+         $35,
+         $84,
+         $23,
+         $c4,
+         $1b,
+         $39,
+         $57));
+    pid: 3);
   {$EXTERNALSYM MFPKEY_ASFMEDIASINK_BASE_SENDTIME}
 
-  MFPKEY_ASFMEDIASINK_AUTOADJUST_BITRATE     : PROPERTYKEY = (fmtid: (D1: $cddcbc82;
-                                                                      D2: $3411; D3: $4119;
-                                                                      D4: ($91, $35, $84, $23, $c4, $1b, $39, $57));
-                                                                      pid: 4);
+  MFPKEY_ASFMEDIASINK_AUTOADJUST_BITRATE: PROPERTYKEY = (fmtid: (D1: $cddcbc82;
+    D2: $3411; D3: $4119;
+    D4: ($91,
+         $35,
+         $84,
+         $23,
+         $c4,
+         $1b,
+         $39,
+         $57));
+    pid: 4);
   {$EXTERNALSYM MFPKEY_ASFMEDIASINK_AUTOADJUST_BITRATE}
 
-  MFPKEY_ASFMEDIASINK_DRMACTION              : PROPERTYKEY = (fmtid: (D1: $a1db6f6c;
-                                                                      D2: $1d0a;
-                                                                      D3: $4cb6;
-                                                                      D4: ($82, $54, $cb, $36, $be, $ed, $bc, $48));
-                                                                      pid: 5);
+  MFPKEY_ASFMEDIASINK_DRMACTION: PROPERTYKEY = (fmtid: (D1: $a1db6f6c;
+    D2: $1d0a;
+    D3: $4cb6;
+    D4: ($82,
+         $54,
+         $cb,
+         $36,
+         $be,
+         $ed,
+         $bc,
+         $48));
+    pid: 5);
   {$EXTERNALSYM MFPKEY_ASFMEDIASINK_DRMACTION}
 
-  MFPKEY_ASFSTREAMSINK_CORRECTED_LEAKYBUCKET : PROPERTYKEY = (fmtid: (D1: $a2f152fb;
-                                                                      D2: $8ad9;
-                                                                      D3: $0a11;
-                                                                      D4: ($b3, $45, $2c, $e2, $fa, $d8, $72, $3d));
-                                                                      pid: 1);
+  MFPKEY_ASFSTREAMSINK_CORRECTED_LEAKYBUCKET: PROPERTYKEY = (fmtid: (D1: $a2f152fb;
+    D2: $8ad9;
+    D3: $0a11;
+    D4: ($b3,
+         $45,
+         $2c,
+         $e2,
+         $fa,
+         $d8,
+         $72,
+         $3d));
+    pid: 1);
   {$EXTERNALSYM MFPKEY_ASFSTREAMSINK_CORRECTED_LEAKYBUCKET}
 
 
   // Define WMContainer constants
-  MFASF_MAX_STREAM_NUMBER             = 127;
+  MFASF_MAX_STREAM_NUMBER = 127;
   {$EXTERNALSYM MFASF_MAX_STREAM_NUMBER}
-  MFASF_INVALID_STREAM_NUMBER         = (MFASF_MAX_STREAM_NUMBER + 1);
+  MFASF_INVALID_STREAM_NUMBER = (MFASF_MAX_STREAM_NUMBER + 1);
   {$EXTERNALSYM MFASF_INVALID_STREAM_NUMBER}
-  MFASF_PAYLOADEXTENSION_MAX_SIZE     = $FF;
+  MFASF_PAYLOADEXTENSION_MAX_SIZE = $FF;
   {$EXTERNALSYM MFASF_PAYLOADEXTENSION_MAX_SIZE}
-  MFASF_PAYLOADEXTENSION_VARIABLE_SIZE= $FFFF;
+  MFASF_PAYLOADEXTENSION_VARIABLE_SIZE = $FFFF;
   {$EXTERNALSYM MFASF_PAYLOADEXTENSION_VARIABLE_SIZE}
-  MFASF_DEFAULT_BUFFER_WINDOW_MS      = 3000;
+  MFASF_DEFAULT_BUFFER_WINDOW_MS = 3000;
   {$EXTERNALSYM MFASF_DEFAULT_BUFFER_WINDOW_MS}
 
 
 type
   PMFASF_SPLITTERFLAGS = ^MFASF_SPLITTERFLAGS;
-  MFASF_SPLITTERFLAGS      = DWord;
+  MFASF_SPLITTERFLAGS = DWord;
   {$EXTERNALSYM MFASF_SPLITTERFLAGS}
   TMfasfSplitterflags = MFASF_SPLITTERFLAGS;
   {$EXTERNALSYM TMfasfSplitterflags}
 const
   MFASF_SPLITTER_REVERSE = TMfasfSplitterflags($1);
   {$EXTERNALSYM MFASF_SPLITTER_REVERSE}
-  MFASF_SPLITTER_WMDRM   = TMfasfSplitterflags($2);
+  MFASF_SPLITTER_WMDRM = TMfasfSplitterflags($2);
   {$EXTERNALSYM MFASF_SPLITTER_WMDRM}
 
 
 type
   PASF_STATUSFLAGS = ^ASF_STATUSFLAGS;
-  cwASF_STATUSFLAGS                  = DWord;
+  cwASF_STATUSFLAGS = DWord;
   {$EXTERNALSYM cwASF_STATUSFLAGS}
   ASF_STATUSFLAGS = cwASF_STATUSFLAGS;
   {$EXTERNALSYM ASF_STATUSFLAGS}
 const
-  ASF_STATUSFLAGS_INCOMPLETE     = ASF_STATUSFLAGS($1);
+  ASF_STATUSFLAGS_INCOMPLETE = ASF_STATUSFLAGS($1);
   {$EXTERNALSYM ASF_STATUSFLAGS_INCOMPLETE}
   ASF_STATUSFLAGS_NONFATAL_ERROR = ASF_STATUSFLAGS($2);
   {$EXTERNALSYM ASF_STATUSFLAGS_NONFATAL_ERROR}
@@ -315,6 +344,7 @@ const
 type
 
   PASF_MUX_STATISTICS = ^ASF_MUX_STATISTICS;
+
   cwASF_MUX_STATISTICS = record
     cFramesWritten: DWORD;
     cFramesDropped: DWORD;
@@ -331,11 +361,11 @@ type
   MFASF_INDEXER_FLAGS = MFASF_INDEXERFLAGS;
   {$EXTERNALSYM MFASF_INDEXER_FLAGS}
 const
-  MFASF_INDEXER_WRITE_NEW_INDEX          = MFASF_INDEXER_FLAGS($1);
+  MFASF_INDEXER_WRITE_NEW_INDEX = MFASF_INDEXER_FLAGS($1);
   {$EXTERNALSYM MFASF_INDEXER_WRITE_NEW_INDEX}
   MFASF_INDEXER_READ_FOR_REVERSEPLAYBACK = MFASF_INDEXER_FLAGS($2);
   {$EXTERNALSYM MFASF_INDEXER_READ_FOR_REVERSEPLAYBACK}
-  MFASF_INDEXER_WRITE_FOR_LIVEREAD       = MFASF_INDEXER_FLAGS($4);
+  MFASF_INDEXER_WRITE_FOR_LIVEREAD = MFASF_INDEXER_FLAGS($4);
   {$EXTERNALSYM MFASF_INDEXER_WRITE_FOR_LIVEREAD}
 
 
@@ -343,10 +373,10 @@ type
 
   PASF_INDEX_IDENTIFIER = ^ASF_INDEX_IDENTIFIER;
   _ASF_INDEX_IDENTIFIER = record
-    // Preserve SDK DWORD alignment when the Delphi RTL TGUID is packed.
+      // Preserve SDK DWORD alignment when the Delphi RTL TGUID is packed.
     case Integer of
       0: (guidIndexType: TGUID;
-          wStreamNumber: WORD);
+        wStreamNumber: WORD);
       1: (_SdkAlignment: DWORD);
   end;
   {$EXTERNALSYM _ASF_INDEX_IDENTIFIER}
@@ -355,6 +385,7 @@ type
 
 
   PASF_INDEX_DESCRIPTOR = ^ASF_INDEX_DESCRIPTOR;
+
   _ASF_INDEX_DESCRIPTOR = record
     Identifier: ASF_INDEX_IDENTIFIER;
     cPerEntryBytes: WORD;
@@ -367,12 +398,12 @@ type
 
 type
   PMFASF_STREAMSELECTOR_FLAGS = ^MFASF_STREAMSELECTOR_FLAGS;
-  MFASF_STREAMSELECTORFLAGS                  = DWord;
+  MFASF_STREAMSELECTORFLAGS = DWord;
   {$EXTERNALSYM MFASF_STREAMSELECTORFLAGS}
   MFASF_STREAMSELECTOR_FLAGS = MFASF_STREAMSELECTORFLAGS;
   {$EXTERNALSYM MFASF_STREAMSELECTOR_FLAGS}
 const
-  MFASF_STREAMSELECTOR_DISABLE_THINNING    = MFASF_STREAMSELECTOR_FLAGS($1);
+  MFASF_STREAMSELECTOR_DISABLE_THINNING = MFASF_STREAMSELECTOR_FLAGS($1);
   {$EXTERNALSYM MFASF_STREAMSELECTOR_DISABLE_THINNING}
   MFASF_STREAMSELECTOR_USE_AVERAGE_BITRATE = MFASF_STREAMSELECTOR_FLAGS($2);
   {$EXTERNALSYM MFASF_STREAMSELECTOR_USE_AVERAGE_BITRATE}
@@ -385,11 +416,11 @@ type
   ASF_SELECTION_STATUS = cwASF_SELECTION_STATUS;
   {$EXTERNALSYM ASF_SELECTION_STATUS}
 const
-  ASF_STATUS_NOTSELECTED     = ASF_SELECTION_STATUS(0);
+  ASF_STATUS_NOTSELECTED = ASF_SELECTION_STATUS(0);
   {$EXTERNALSYM ASF_STATUS_NOTSELECTED}
   ASF_STATUS_CLEANPOINTSONLY = ASF_SELECTION_STATUS(1);
   {$EXTERNALSYM ASF_STATUS_CLEANPOINTSONLY}
-  ASF_STATUS_ALLDATAUNITS    = ASF_SELECTION_STATUS(2);
+  ASF_STATUS_ALLDATAUNITS = ASF_SELECTION_STATUS(2);
   {$EXTERNALSYM ASF_STATUS_ALLDATAUNITS}
 
   //
@@ -407,13 +438,13 @@ type
   // MFPKEY_ASFMEDIASINK_DRMACTION.
   //
   PMFSINK_WMDRMACTION = ^MFSINK_WMDRMACTION;
-  _MFSINK_WMDRMACTION             = (
-    MFSINK_WMDRMACTION_UNDEFINED  = 0, // Undefined action.
-    MFSINK_WMDRMACTION_ENCODE     = 1, // Encode the content using Windows Media DRM. Use this flag if the source content does not have DRM protection.
-    MFSINK_WMDRMACTION_TRANSCODE  = 2, // Transcode the content using Windows Media DRM. Use this flag if the source content has Windows Media DRM protection and you want to change the encoding parameters but not the DRM protection.
+  _MFSINK_WMDRMACTION = (
+    MFSINK_WMDRMACTION_UNDEFINED = 0, // Undefined action.
+    MFSINK_WMDRMACTION_ENCODE = 1, // Encode the content using Windows Media DRM. Use this flag if the source content does not have DRM protection.
+    MFSINK_WMDRMACTION_TRANSCODE = 2, // Transcode the content using Windows Media DRM. Use this flag if the source content has Windows Media DRM protection and you want to change the encoding parameters but not the DRM protection.
     MFSINK_WMDRMACTION_TRANSCRYPT = 3, // Transcrypt the content. Use this flag if the source content has DRM protection and you want to change the DRM protection; for example, if you want to convert from Windows Media DRM version 1 to Windows Media DRM version 7 or later.
-    MFSINK_WMDRMACTION_LAST       = 3   // Reserved. Do not use.
-  );
+    MFSINK_WMDRMACTION_LAST = 3   // Reserved. Do not use.
+    );
   {$EXTERNALSYM _MFSINK_WMDRMACTION}
   MFSINK_WMDRMACTION = _MFSINK_WMDRMACTION;
   {$EXTERNALSYM MFSINK_WMDRMACTION}
@@ -439,7 +470,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFASFContentInfo);'}
   {$EXTERNALSYM IMFASFContentInfo}
   IMFASFContentInfo = interface(IUnknown)
-  ['{B1DCA5CD-D5DA-4451-8E9E-DB5C59914EAD}']
+    ['{B1DCA5CD-D5DA-4451-8E9E-DB5C59914EAD}']
 
     function GetHeaderSize(pIStartOfContent: IMFMediaBuffer;
                            out cbHeaderSize: QWORD): HResult; stdcall;
@@ -459,6 +490,7 @@ type
     function GetEncodingConfigurationPropertyStore(wStreamNumber: WORD;
                                                    out ppIStore: IPropertyStore): HResult; stdcall;
   end;
+
   IID_IMFASFContentInfo = IMFASFContentInfo;
   {$EXTERNALSYM IID_IMFASFContentInfo}
 
@@ -474,7 +506,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFASFProfile);'}
   {$EXTERNALSYM IMFASFProfile}
   IMFASFProfile = interface(IMFAttributes)
-  ['{D267BF6A-028B-4E0D-903D-43F0EF82D0D4}']
+    ['{D267BF6A-028B-4E0D-903D-43F0EF82D0D4}']
 
     function GetStreamCount(out pcStreams: DWORD): HResult; stdcall;
 
@@ -514,6 +546,7 @@ type
     function Clone(out ppIProfile: IMFASFProfile): HResult; stdcall;
 
   end;
+
   IID_IMFASFProfile = IMFASFProfile;
   {$EXTERNALSYM IID_IMFASFProfile}
 
@@ -527,7 +560,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFASFStreamConfig);'}
   {$EXTERNALSYM IMFASFStreamConfig}
   IMFASFStreamConfig = interface(IMFAttributes)
-  ['{9E8AE8D2-DBBD-4200-9ACA-06E6DF484913}']
+    ['{9E8AE8D2-DBBD-4200-9ACA-06E6DF484913}']
 
     function GetStreamType(out pguidStreamType: TGUID): HResult; stdcall;
 
@@ -557,6 +590,7 @@ type
     function Clone(out ppIStreamConfig: IMFASFStreamConfig): HResult; stdcall;
 
   end;
+
   IID_IMFASFStreamConfig = IMFASFStreamConfig;
   {$EXTERNALSYM IID_IMFASFStreamConfig}
 
@@ -575,7 +609,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFASFMutualExclusion);'}
   {$EXTERNALSYM IMFASFMutualExclusion}
   IMFASFMutualExclusion = interface(IUnknown)
-  ['{12558291-E399-11D5-BC2A-00B0D0F3F4AB}']
+    ['{12558291-E399-11D5-BC2A-00B0D0F3F4AB}']
 
     function GetType(out pguidType: TGUID): HResult; stdcall;
 
@@ -600,6 +634,7 @@ type
     function Clone(out ppIMutex: IMFASFMutualExclusion): HResult; stdcall;
 
   end;
+
   IID_IMFASFMutualExclusion = IMFASFMutualExclusion;
   {$EXTERNALSYM IID_IMFASFMutualExclusion}
 
@@ -618,7 +653,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFASFStreamPrioritization);'}
   {$EXTERNALSYM IMFASFStreamPrioritization}
   IMFASFStreamPrioritization = interface(IUnknown)
-  ['{699BDC27-BBAF-49FF-8E38-9C39C9B5E088}']
+    ['{699BDC27-BBAF-49FF-8E38-9C39C9B5E088}']
 
     function GetStreamCount(out pdwStreamCount: DWORD): HResult; stdcall;
 
@@ -634,6 +669,7 @@ type
     function Clone(out ppIStreamPrioritization: IMFASFStreamPrioritization): HResult; stdcall;
 
   end;
+
   IID_IMFASFStreamPrioritization = IMFASFStreamPrioritization;
   {$EXTERNALSYM IID_IMFASFStreamPrioritization}
 
@@ -647,7 +683,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFASFSplitter);'}
   {$EXTERNALSYM IMFASFSplitter}
   IMFASFSplitter = interface(IUnknown)
-  ['{12558295-E399-11D5-BC2A-00B0D0F3F4AB}']
+    ['{12558295-E399-11D5-BC2A-00B0D0F3F4AB}']
 
     function Initialize(pIContentInfo: IMFASFContentInfo): HResult; stdcall;
 
@@ -674,6 +710,7 @@ type
     function GetLastSendTime(out pdwLastSendTime: DWORD): HResult; stdcall;
 
   end;
+
   IID_IMFASFSplitter = IMFASFSplitter;
   {$EXTERNALSYM IID_IMFASFSplitter}
 
@@ -688,7 +725,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFASFMultiplexer);'}
   {$EXTERNALSYM IMFASFMultiplexer}
   IMFASFMultiplexer = interface(IUnknown)
-  ['{57BDD80A-9B38-4838-B737-C58F670D7D4F}']
+    ['{57BDD80A-9B38-4838-B737-C58F670D7D4F}']
 
     function Initialize(pIContentInfo: IMFASFContentInfo): HResult; stdcall;
 
@@ -713,6 +750,7 @@ type
     function SetSyncTolerance(msSyncTolerance: DWORD): HResult; stdcall;
 
   end;
+
   IID_IMFASFMultiplexer = IMFASFMultiplexer;
   {$EXTERNALSYM IID_IMFASFMultiplexer}
 
@@ -726,7 +764,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFASFIndexer);'}
   {$EXTERNALSYM IMFASFIndexer}
   IMFASFIndexer = interface(IUnknown)
-  ['{53590F48-DC3B-4297-813F-787761AD7B3E}']
+    ['{53590F48-DC3B-4297-813F-787761AD7B3E}']
 
     function SetFlags(dwFlags: DWORD): HResult; stdcall;
 
@@ -767,6 +805,7 @@ type
                                cbOffsetWithinIndex: QWORD): HResult; stdcall;
 
   end;
+
   IID_IMFASFIndexer = IMFASFIndexer;
   {$EXTERNALSYM IID_IMFASFIndexer}
 
@@ -780,7 +819,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFASFStreamSelector);'}
   {$EXTERNALSYM IMFASFStreamSelector}
   IMFASFStreamSelector = interface(IUnknown)
-  ['{D01BAD4A-4FA0-4A60-9349-C27E62DA9D41}']
+    ['{D01BAD4A-4FA0-4A60-9349-C27E62DA9D41}']
 
     function GetStreamCount(out pcStreams: DWORD): HResult; stdcall;
 
@@ -825,6 +864,7 @@ type
     function SetStreamSelectorFlags(dwStreamSelectorFlags: DWORD): HResult; stdcall;
 
   end;
+
   IID_IMFASFStreamSelector = IMFASFStreamSelector;
   {$EXTERNALSYM IID_IMFASFStreamSelector}
 
@@ -836,7 +876,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFDRMNetHelper);'}
   {$EXTERNALSYM IMFDRMNetHelper}
   IMFDRMNetHelper = interface(IUnknown)
-  ['{3D1FF0EA-679A-4190-8D46-7FA69E8C7E15}']
+    ['{3D1FF0EA-679A-4190-8D46-7FA69E8C7E15}']
 
     function ProcessLicenseRequest(pLicenseRequest: PByte;
                                    cbLicenseRequest: DWORD;
@@ -848,75 +888,76 @@ type
                                        out pcbLicenseResponse: DWORD): HResult; stdcall;
 
   end;
+
   IID_IMFDRMNetHelper = IMFDRMNetHelper;
   {$EXTERNALSYM IID_IMFDRMNetHelper}
   //#endif (WINVER >= _WIN32_WINNT_WIN7)
 
 
-  function MFCreateASFContentInfo(out ppIContentInfo: IMFASFContentInfo): HResult; stdcall;
-  {$EXTERNALSYM MFCreateASFContentInfo}
+function MFCreateASFContentInfo(out ppIContentInfo: IMFASFContentInfo): HResult; stdcall;
+{$EXTERNALSYM MFCreateASFContentInfo}
 
-  function MFCreateASFProfile(out ppIProfile: IMFASFProfile): HResult; stdcall;
-  {$EXTERNALSYM MFCreateASFProfile}
+function MFCreateASFProfile(out ppIProfile: IMFASFProfile): HResult; stdcall;
+{$EXTERNALSYM MFCreateASFProfile}
 
-  function MFCreateASFProfileFromPresentationDescriptor(pIPD: IMFPresentationDescriptor;
-                                                          out ppIProfile: IMFASFProfile): HResult; stdcall;
-  {$EXTERNALSYM MFCreateASFProfileFromPresentationDescriptor}
+function MFCreateASFProfileFromPresentationDescriptor(pIPD: IMFPresentationDescriptor;
+                                                      out ppIProfile: IMFASFProfile): HResult; stdcall;
+{$EXTERNALSYM MFCreateASFProfileFromPresentationDescriptor}
 
-  function MFCreatePresentationDescriptorFromASFProfile(pIProfile: IMFASFProfile;
-                                                          out ppIPD: IMFPresentationDescriptor): HResult; stdcall;
-  {$EXTERNALSYM MFCreatePresentationDescriptorFromASFProfile}
+function MFCreatePresentationDescriptorFromASFProfile(pIProfile: IMFASFProfile;
+                                                      out ppIPD: IMFPresentationDescriptor): HResult; stdcall;
+{$EXTERNALSYM MFCreatePresentationDescriptorFromASFProfile}
 
-  function MFCreateASFMultiplexer(out ppIMultiplexer: IMFASFMultiplexer): HResult; stdcall;
-  {$EXTERNALSYM MFCreateASFMultiplexer}
+function MFCreateASFMultiplexer(out ppIMultiplexer: IMFASFMultiplexer): HResult; stdcall;
+{$EXTERNALSYM MFCreateASFMultiplexer}
 
-  function MFCreateASFIndexer(out ppIIndexer: IMFASFIndexer): HResult; stdcall;
-  {$EXTERNALSYM MFCreateASFIndexer}
+function MFCreateASFIndexer(out ppIIndexer: IMFASFIndexer): HResult; stdcall;
+{$EXTERNALSYM MFCreateASFIndexer}
 
-  function MFCreateASFIndexerByteStream(pIContentByteStream: IMFByteStream;
-                                          cbIndexStartOffset: QWORD;
-                                          out pIIndexByteStream: IMFByteStream): HResult; stdcall;
-  {$EXTERNALSYM MFCreateASFIndexerByteStream}
+function MFCreateASFIndexerByteStream(pIContentByteStream: IMFByteStream;
+                                      cbIndexStartOffset: QWORD;
+                                      out pIIndexByteStream: IMFByteStream): HResult; stdcall;
+{$EXTERNALSYM MFCreateASFIndexerByteStream}
 
-  function MFCreateASFStreamSelector(pIASFProfile: IMFASFProfile;
-                                       out ppSelector: IMFASFStreamSelector): HResult; stdcall;
-  {$EXTERNALSYM MFCreateASFStreamSelector}
+function MFCreateASFStreamSelector(pIASFProfile: IMFASFProfile;
+                                   out ppSelector: IMFASFStreamSelector): HResult; stdcall;
+{$EXTERNALSYM MFCreateASFStreamSelector}
 
-  function MFCreateASFMediaSink(pIByteStream: IMFByteStream;
-                                  out ppIMediaSink: IMFMediaSink): HResult; stdcall;
-  {$EXTERNALSYM MFCreateASFMediaSink}
+function MFCreateASFMediaSink(pIByteStream: IMFByteStream;
+                              out ppIMediaSink: IMFMediaSink): HResult; stdcall;
+{$EXTERNALSYM MFCreateASFMediaSink}
 
-  function MFCreateASFMediaSinkActivate(pwszFileName: PWideChar;
-                                          pContentInfo: IMFASFContentInfo;
-                                          out ppIActivate: IMFActivate): HResult; stdcall;
-  {$EXTERNALSYM MFCreateASFMediaSinkActivate}
+function MFCreateASFMediaSinkActivate(pwszFileName: PWideChar;
+                                      pContentInfo: IMFASFContentInfo;
+                                      out ppIActivate: IMFActivate): HResult; stdcall;
+{$EXTERNALSYM MFCreateASFMediaSinkActivate}
 
-  function MFCreateWMVEncoderActivate(pMediaType: IMFMediaType;
-                                        pEncodingConfigurationProperties: IPropertyStore;
-                                        out ppActivate: IMFActivate): HResult; stdcall;
-  {$EXTERNALSYM MFCreateWMVEncoderActivate}
+function MFCreateWMVEncoderActivate(pMediaType: IMFMediaType;
+                                    pEncodingConfigurationProperties: IPropertyStore;
+                                    out ppActivate: IMFActivate): HResult; stdcall;
+{$EXTERNALSYM MFCreateWMVEncoderActivate}
 
-  function MFCreateWMAEncoderActivate(pMediaType: IMFMediaType;
-                                        pEncodingConfigurationProperties: IPropertyStore;
-                                        out ppActivate: IMFActivate): HResult; stdcall;
-  {$EXTERNALSYM MFCreateWMAEncoderActivate}
+function MFCreateWMAEncoderActivate(pMediaType: IMFMediaType;
+                                    pEncodingConfigurationProperties: IPropertyStore;
+                                    out ppActivate: IMFActivate): HResult; stdcall;
+{$EXTERNALSYM MFCreateWMAEncoderActivate}
 
-  function MFCreateASFStreamingMediaSink(pIByteStream: IMFByteStream;
-                                           out ppIMediaSink: IMFMediaSink): HResult; stdcall;
-  {$EXTERNALSYM MFCreateASFStreamingMediaSink}
+function MFCreateASFStreamingMediaSink(pIByteStream: IMFByteStream;
+                                       out ppIMediaSink: IMFMediaSink): HResult; stdcall;
+{$EXTERNALSYM MFCreateASFStreamingMediaSink}
 
-  function MFCreateASFStreamingMediaSinkActivate(pByteStreamActivate: IMFActivate;
-                                                   pContentInfo: IMFASFContentInfo;
-                                                   out ppIActivate: IMFActivate): HResult; stdcall;
-  {$EXTERNALSYM MFCreateASFStreamingMediaSinkActivate}
+function MFCreateASFStreamingMediaSinkActivate(pByteStreamActivate: IMFActivate;
+                                               pContentInfo: IMFASFContentInfo;
+                                               out ppIActivate: IMFActivate): HResult; stdcall;
+{$EXTERNALSYM MFCreateASFStreamingMediaSinkActivate}
 
-  function MFCreateASFSplitter(out ppISplitter: IMFASFSplitter): HResult; stdcall;
-  {$EXTERNALSYM MFCreateASFSplitter}
+function MFCreateASFSplitter(out ppISplitter: IMFASFSplitter): HResult; stdcall;
+{$EXTERNALSYM MFCreateASFSplitter}
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 const
   CLSID_WMDRMSystemID: TGUID = '{8948BB22-11BD-4796-93E3-974D1B575678}';
@@ -927,21 +968,21 @@ implementation
 const
   WmContainerLib = 'Mf.dll';
 
-  function MFCreateASFContentInfo; external WmContainerLib name 'MFCreateASFContentInfo' ;
-  function MFCreateASFProfile; external WmContainerLib name 'MFCreateASFProfile' ;
-  function MFCreateASFProfileFromPresentationDescriptor; external WmContainerLib name 'MFCreateASFProfileFromPresentationDescriptor' ;
-  function MFCreatePresentationDescriptorFromASFProfile; external WmContainerLib name 'MFCreatePresentationDescriptorFromASFProfile' ;
-  function MFCreateASFMultiplexer; external WmContainerLib name 'MFCreateASFMultiplexer' ;
-  function MFCreateASFIndexer; external WmContainerLib name 'MFCreateASFIndexer' ;
-  function MFCreateASFIndexerByteStream; external WmContainerLib name 'MFCreateASFIndexerByteStream' ;
-  function MFCreateASFStreamSelector; external WmContainerLib name 'MFCreateASFStreamSelector' ;
-  function MFCreateASFMediaSink; external WmContainerLib name 'MFCreateASFMediaSink' ;
-  function MFCreateASFMediaSinkActivate; external WmContainerLib name 'MFCreateASFMediaSinkActivate' ;
-  function MFCreateWMVEncoderActivate; external WmContainerLib name 'MFCreateWMVEncoderActivate' ;
-  function MFCreateWMAEncoderActivate; external WmContainerLib name 'MFCreateWMAEncoderActivate' ;
-  function MFCreateASFStreamingMediaSink; external WmContainerLib name 'MFCreateASFStreamingMediaSink' ;
-  function MFCreateASFStreamingMediaSinkActivate; external WmContainerLib name 'MFCreateASFStreamingMediaSinkActivate' ;
-  function MFCreateASFSplitter; external WmContainerLib name 'MFCreateASFSplitter' ;
+function MFCreateASFContentInfo; external WmContainerLib name 'MFCreateASFContentInfo';
+function MFCreateASFProfile; external WmContainerLib name 'MFCreateASFProfile';
+function MFCreateASFProfileFromPresentationDescriptor; external WmContainerLib name 'MFCreateASFProfileFromPresentationDescriptor';
+function MFCreatePresentationDescriptorFromASFProfile; external WmContainerLib name 'MFCreatePresentationDescriptorFromASFProfile';
+function MFCreateASFMultiplexer; external WmContainerLib name 'MFCreateASFMultiplexer';
+function MFCreateASFIndexer; external WmContainerLib name 'MFCreateASFIndexer';
+function MFCreateASFIndexerByteStream; external WmContainerLib name 'MFCreateASFIndexerByteStream';
+function MFCreateASFStreamSelector; external WmContainerLib name 'MFCreateASFStreamSelector';
+function MFCreateASFMediaSink; external WmContainerLib name 'MFCreateASFMediaSink';
+function MFCreateASFMediaSinkActivate; external WmContainerLib name 'MFCreateASFMediaSinkActivate';
+function MFCreateWMVEncoderActivate; external WmContainerLib name 'MFCreateWMVEncoderActivate';
+function MFCreateWMAEncoderActivate; external WmContainerLib name 'MFCreateWMAEncoderActivate';
+function MFCreateASFStreamingMediaSink; external WmContainerLib name 'MFCreateASFStreamingMediaSink';
+function MFCreateASFStreamingMediaSinkActivate; external WmContainerLib name 'MFCreateASFStreamingMediaSinkActivate';
+function MFCreateASFSplitter; external WmContainerLib name 'MFCreateASFSplitter';
 
 //Implement Additional functions here.
 

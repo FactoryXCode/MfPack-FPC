@@ -98,12 +98,15 @@ function ChangeTimerQueueTimer(TimerQueue: THandle;
 
 type
   TThreadedQTimer = class(TQTimer)
+
   private
     FWindow: HWND;
     FDispatchPending: LongInt;
     procedure WindowProc(var Message: TLMessage);
+
   protected
     procedure QueueTimerHandler; override;
+
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -122,13 +125,18 @@ function ChangeTimerQueueTimer; external 'kernel32.dll' name 'ChangeTimerQueueTi
 
 
 procedure Register;
+
 begin
-  RegisterComponents('MfPack Timer Samples',[TThreadedQTimer]);
+
+  RegisterComponents('MfPack Timer Samples',
+                     [TThreadedQTimer]);
 end;
 
 
 constructor TThreadedQTimer.Create(AOwner: TComponent);
+
 begin
+
   inherited Create(AOwner);
   FWindow := LCLIntf.AllocateHWnd(WindowProc);
 end;
@@ -137,12 +145,14 @@ end;
 destructor TThreadedQTimer.Destroy;
 var
   Message: TMsg;
+
 begin
+
   Enabled := False;
-  if FWindow <> 0 then
+  if (FWindow <> 0) then
     begin
-      while Windows.PeekMessage(Message,FWindow,WM_MFPACK_QUEUE_TICK,WM_MFPACK_QUEUE_TICK,PM_REMOVE) do
-        ;
+      while Windows.PeekMessage(Message, FWindow, WM_MFPACK_QUEUE_TICK, WM_MFPACK_QUEUE_TICK, PM_REMOVE) do
+      ;
       LCLIntf.DeallocateHWnd(FWindow);
       FWindow := 0;
     end;
@@ -151,27 +161,36 @@ end;
 
 
 procedure TThreadedQTimer.QueueTimerHandler;
+
 begin
+
   if not Enabled or (FWindow = 0) then
     Exit;
-  if InterlockedExchange(FDispatchPending,1) <> 0 then
+  if (InterlockedExchange(FDispatchPending, 1) <> 0) then
     Exit;
-  if not Windows.PostMessage(FWindow,WM_MFPACK_QUEUE_TICK,0,0) then
-    InterlockedExchange(FDispatchPending,0);
+  if not Windows.PostMessage(FWindow, WM_MFPACK_QUEUE_TICK, 0, 0) then
+    InterlockedExchange(FDispatchPending,
+                        0);
 end;
 
 
 procedure TThreadedQTimer.WindowProc(var Message: TLMessage);
+
 begin
-  if Message.Msg = WM_MFPACK_QUEUE_TICK then
+
+  if (Message.Msg = WM_MFPACK_QUEUE_TICK) then
     begin
-      InterlockedExchange(FDispatchPending,0);
+      InterlockedExchange(FDispatchPending,
+                          0);
       Message.Result := 0;
       if Enabled then
         inherited QueueTimerHandler;
     end
   else
-    Message.Result := Windows.DefWindowProcW(FWindow,Message.Msg,Message.WParam,Message.LParam);
+    Message.Result := Windows.DefWindowProcW(FWindow,
+                                             Message.Msg,
+                                             Message.WParam,
+                                             Message.LParam);
 end;
 
 end.

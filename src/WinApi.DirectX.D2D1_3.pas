@@ -73,7 +73,7 @@ unit WinApi.DirectX.D2D1_3;
 interface
 
 uses
-  
+
   {WinApi}
   Windows,
   WinApi.WIC.WinCodec,
@@ -95,37 +95,40 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 type
   PIDXGISurface = ^IDXGISurface;
 
-// Enums =======================================================================
+  // Enums =======================================================================
 
 type
   // Specifies the appearance of the ink nib (pen tip) as part of an
   // D2D1_INK_STYLE_PROPERTIES structure.
   PD2D1_INK_NIB_SHAPE = ^D2D1_INK_NIB_SHAPE;
   D2D1_INK_NIB_SHAPE = DWord;
+
 const
-  D2D1_INK_NIB_SHAPE_ROUND     = D2D1_INK_NIB_SHAPE(0);
-  D2D1_INK_NIB_SHAPE_SQUARE    = D2D1_INK_NIB_SHAPE(1);
+  D2D1_INK_NIB_SHAPE_ROUND = D2D1_INK_NIB_SHAPE(0);
+  D2D1_INK_NIB_SHAPE_SQUARE = D2D1_INK_NIB_SHAPE(1);
   //D2D1_INK_NIB_SHAPE_FORCE_DWORD = FORCEDWORD;
 
 type
   // Specifies the orientation of an image.
   PD2D1_ORIENTATION = ^D2D1_ORIENTATION;
   D2D1_ORIENTATION = DWord;
+
 const
-  D2D1_ORIENTATION_DEFAULT                             = D2D1_ORIENTATION(1);
-  D2D1_ORIENTATION_FLIP_HORIZONTAL                     = D2D1_ORIENTATION(2);
-  D2D1_ORIENTATION_ROTATE_CLOCKWISE180                 = D2D1_ORIENTATION(3);
+  D2D1_ORIENTATION_DEFAULT = D2D1_ORIENTATION(1);
+  D2D1_ORIENTATION_FLIP_HORIZONTAL = D2D1_ORIENTATION(2);
+  D2D1_ORIENTATION_ROTATE_CLOCKWISE180 = D2D1_ORIENTATION(3);
   D2D1_ORIENTATION_ROTATE_CLOCKWISE180_FLIP_HORIZONTAL = D2D1_ORIENTATION(4);
-  D2D1_ORIENTATION_ROTATE_CLOCKWISE90_FLIP_HORIZONTAL  = D2D1_ORIENTATION(5);
-  D2D1_ORIENTATION_ROTATE_CLOCKWISE270                 = D2D1_ORIENTATION(6);
+  D2D1_ORIENTATION_ROTATE_CLOCKWISE90_FLIP_HORIZONTAL = D2D1_ORIENTATION(5);
+  D2D1_ORIENTATION_ROTATE_CLOCKWISE270 = D2D1_ORIENTATION(6);
   D2D1_ORIENTATION_ROTATE_CLOCKWISE270_FLIP_HORIZONTAL = D2D1_ORIENTATION(7);
-  D2D1_ORIENTATION_ROTATE_CLOCKWISE90                  = D2D1_ORIENTATION(8);
+  D2D1_ORIENTATION_ROTATE_CLOCKWISE90 = D2D1_ORIENTATION(8);
   //D2D1_ORIENTATION_FORCE_DWORD             = FORCEDWORD;
 
 type
@@ -133,9 +136,10 @@ type
   // CreateImageSourceFromWic.
   PD2D1_IMAGE_SOURCE_LOADING_OPTIONS = ^D2D1_IMAGE_SOURCE_LOADING_OPTIONS;
   D2D1_IMAGE_SOURCE_LOADING_OPTIONS = DWord;
+
 const
-  D2D1_IMAGE_SOURCE_LOADING_OPTIONS_NONE            = D2D1_IMAGE_SOURCE_LOADING_OPTIONS(0);
-  D2D1_IMAGE_SOURCE_LOADING_OPTIONS_RELEASE_SOURCE  = D2D1_IMAGE_SOURCE_LOADING_OPTIONS(1);
+  D2D1_IMAGE_SOURCE_LOADING_OPTIONS_NONE = D2D1_IMAGE_SOURCE_LOADING_OPTIONS(0);
+  D2D1_IMAGE_SOURCE_LOADING_OPTIONS_RELEASE_SOURCE = D2D1_IMAGE_SOURCE_LOADING_OPTIONS(1);
   D2D1_IMAGE_SOURCE_LOADING_OPTIONS_CACHE_ON_DEMAND = D2D1_IMAGE_SOURCE_LOADING_OPTIONS(2);
   //D2D1_IMAGE_SOURCE_LOADING_OPTIONS_FORCE_DWORD   = FORCEDWORD;
 
@@ -144,8 +148,9 @@ type
   // CreateImageSourceFromDxgi); if any.
   PD2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS = ^D2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS;
   D2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS = DWord;
+
 const
-  D2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS_NONE                           = D2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS(0);
+  D2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS_NONE = D2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS(0);
   D2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS_LOW_QUALITY_PRIMARY_CONVERSION = D2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS(1);
   //D2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS_FORCE_DWORD          = FORCEDWORD;
 
@@ -153,8 +158,9 @@ type
   // Option flags for transformed image sources.
   PD2D1_TRANSFORMED_IMAGE_SOURCE_OPTIONS = ^D2D1_TRANSFORMED_IMAGE_SOURCE_OPTIONS;
   D2D1_TRANSFORMED_IMAGE_SOURCE_OPTIONS = DWord;
+
 const
-  D2D1_TRANSFORMED_IMAGE_SOURCE_OPTIONS_NONE              = D2D1_TRANSFORMED_IMAGE_SOURCE_OPTIONS(0);
+  D2D1_TRANSFORMED_IMAGE_SOURCE_OPTIONS_NONE = D2D1_TRANSFORMED_IMAGE_SOURCE_OPTIONS(0);
   // Prevents the image source from being automatically scaled (by a ratio of the
   // context DPI divided by 96) while drawn.
   D2D1_TRANSFORMED_IMAGE_SOURCE_OPTIONS_DISABLE_DPI_SCALE = D2D1_TRANSFORMED_IMAGE_SOURCE_OPTIONS(1);
@@ -164,11 +170,12 @@ type
   // Specifies how to render gradient mesh edges.
   PD2D1_PATCH_EDGE_MODE = ^D2D1_PATCH_EDGE_MODE;
   D2D1_PATCH_EDGE_MODE = DWord;
+
 const
   // Render this edge aliased.
-  D2D1_PATCH_EDGE_MODE_ALIASED          = D2D1_PATCH_EDGE_MODE(0);
+  D2D1_PATCH_EDGE_MODE_ALIASED = D2D1_PATCH_EDGE_MODE(0);
   // Render this edge antialiased.
-  D2D1_PATCH_EDGE_MODE_ANTIALIASED      = D2D1_PATCH_EDGE_MODE(1);
+  D2D1_PATCH_EDGE_MODE_ANTIALIASED = D2D1_PATCH_EDGE_MODE(1);
   // Render this edge aliased and inflated out slightly.
   D2D1_PATCH_EDGE_MODE_ALIASED_INFLATED = D2D1_PATCH_EDGE_MODE(2);
   //D2D1_PATCH_EDGE_MODE_FORCE_DWORD    = FORCEDWORD;
@@ -176,9 +183,10 @@ const
 type
   PD2D1_SPRITE_OPTIONS = ^D2D1_SPRITE_OPTIONS;
   D2D1_SPRITE_OPTIONS = DWord;
+
 const
   // Use default sprite rendering behavior.
-  D2D1_SPRITE_OPTIONS_NONE                      = D2D1_SPRITE_OPTIONS(0);
+  D2D1_SPRITE_OPTIONS_NONE = D2D1_SPRITE_OPTIONS(0);
   // Bitmap interpolation will be clamped to the sprite's source rectangle.
   D2D1_SPRITE_OPTIONS_CLAMP_TO_SOURCE_RECTANGLE = D2D1_SPRITE_OPTIONS(1);
   //D2D1_SPRITE_OPTIONS_FORCE_DWORD         = FORCEDWORD;
@@ -187,42 +195,46 @@ type
   // Specifies the pixel snapping policy when rendering color bitmap glyphs.
   PD2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION = ^D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION;
   D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION = DWord;
+
 const
   // Color bitmap glyph positions are snapped to the nearest pixel if the bitmap
   // resolution matches that of the device context.
-  D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION_DEFAULT   = D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION(0);
+  D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION_DEFAULT = D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION(0);
   // Color bitmap glyph positions are not snapped.
-  D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION_DISABLE   = D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION(1);
+  D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION_DISABLE = D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION(1);
   //D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION_FORCE_DWORD = FORCEDWORD;
 
 type
   // This determines what gamma is used for interpolation/blending.
   PD2D1_GAMMA1 = ^D2D1_GAMMA1;
   D2D1_GAMMA1 = DWord;
+
 const
   // Colors are manipulated in 2.2 gamma color space.
-  D2D1_GAMMA1_G22     = D2D1_GAMMA_2_2;
+  D2D1_GAMMA1_G22 = D2D1_GAMMA_2_2;
   // Colors are manipulated in 1.0 gamma color space.
-  D2D1_GAMMA1_G10     = D2D1_GAMMA_1_0;
+  D2D1_GAMMA1_G10 = D2D1_GAMMA_1_0;
   // Colors are manipulated in ST.2084 PQ gamma color space.
-  D2D1_GAMMA1_G2084     = D2D1_GAMMA1(2);
+  D2D1_GAMMA1_G2084 = D2D1_GAMMA1(2);
   //D2D1_GAMMA1_FORCE_DWORD = FORCEDWORD;
 
 type
   // Specifies which way a color profile is defined.
   PD2D1_COLOR_CONTEXT_TYPE = ^D2D1_COLOR_CONTEXT_TYPE;
   D2D1_COLOR_CONTEXT_TYPE = DWord;
+
 const
-  D2D1_COLOR_CONTEXT_TYPE_ICC     = D2D1_COLOR_CONTEXT_TYPE(0);
-  D2D1_COLOR_CONTEXT_TYPE_SIMPLE  = D2D1_COLOR_CONTEXT_TYPE(1);
-  D2D1_COLOR_CONTEXT_TYPE_DXGI    = D2D1_COLOR_CONTEXT_TYPE(2);
+  D2D1_COLOR_CONTEXT_TYPE_ICC = D2D1_COLOR_CONTEXT_TYPE(0);
+  D2D1_COLOR_CONTEXT_TYPE_SIMPLE = D2D1_COLOR_CONTEXT_TYPE(1);
+  D2D1_COLOR_CONTEXT_TYPE_DXGI = D2D1_COLOR_CONTEXT_TYPE(2);
   //D2D1_COLOR_CONTEXT_TYPE_FORCE_DWORD = FORCEDWORD;
 
-// =============================================================================
+  // =============================================================================
 
 type
   // Properties of a transformed image source.
   PD2D1_TRANSFORMED_IMAGE_SOURCE_PROPERTIES = ^D2D1_TRANSFORMED_IMAGE_SOURCE_PROPERTIES;
+
   D2D1_TRANSFORMED_IMAGE_SOURCE_PROPERTIES = record
     // The orientation at which the image source is drawn.
     orientation: D2D1_ORIENTATION;
@@ -240,6 +252,7 @@ type
 
   // Represents a point, radius pair that makes up part of a D2D1_INK_BEZIER_SEGMENT.
   PD2D1_INK_POINT = ^D2D1_INK_POINT;
+
   D2D1_INK_POINT = record
     x: Single;
     y: Single;
@@ -251,6 +264,7 @@ type
   // This structure differs from D2D1_BEZIER_SEGMENT in that it is composed of
   // D2D1_INK_POINT s, which contain a radius in addition to x- and y-coordinates.
   PD2D1_INK_BEZIER_SEGMENT = ^D2D1_INK_BEZIER_SEGMENT;
+
   D2D1_INK_BEZIER_SEGMENT = record
     point1: D2D1_INK_POINT;
     point2: D2D1_INK_POINT;
@@ -261,6 +275,7 @@ type
   // Defines the general pen tip shape and the transform used in an ID2D1InkStyle
   // object.
   PD2D1_INK_STYLE_PROPERTIES = ^D2D1_INK_STYLE_PROPERTIES;
+
   D2D1_INK_STYLE_PROPERTIES = record
     // The general shape of the nib used to draw a given ink object.
     nibShape: D2D1_INK_NIB_SHAPE;
@@ -274,6 +289,7 @@ type
   // the GradientMeshPatch function or the GradientMeshPatchFromCoonsPatch function
   // to create one.
   PD2D1_GRADIENT_MESH_PATCH = ^D2D1_GRADIENT_MESH_PATCH;
+
   D2D1_GRADIENT_MESH_PATCH = record
     // The gradient mesh patch control point at position 00.
     point00: D2D1_POINT_2F;
@@ -328,6 +344,7 @@ type
 
   // Simple description of a color space.
   PD2D1_SIMPLE_COLOR_PROFILE = ^D2D1_SIMPLE_COLOR_PROFILE;
+
   D2D1_SIMPLE_COLOR_PROFILE = record
     // The XY coordinates of the red primary in CIEXYZ space.
     redPrimary: D2D1_POINT_2F;
@@ -352,7 +369,7 @@ type
   // (pen tip) shape and transform.
   //
   ID2D1InkStyle = interface(ID2D1Resource)
-  ['{bae8b344-23fc-4071-8cb5-d05d6f073848}']
+    ['{bae8b344-23fc-4071-8cb5-d05d6f073848}']
     // SDK native virtual methods; inline C++ helpers are excluded.
     procedure SetNibTransform(transform: PD2D1_MATRIX_3X2_F); stdcall; overload;
     procedure GetNibTransform(out transform: D2D1_MATRIX_3X2_F); stdcall; overload;
@@ -361,6 +378,7 @@ type
 
 
   end;
+
   IID_ID2D1InkStyle = ID2D1InkStyle;
 
 
@@ -370,21 +388,32 @@ type
   // series of Bezier segments and widths.
   //
   ID2D1Ink = interface(ID2D1Resource)
-  ['{b499923b-7029-478f-a8b3-432c7c5f5312}']
+    ['{b499923b-7029-478f-a8b3-432c7c5f5312}']
     // SDK native virtual methods; inline C++ helpers are excluded.
     procedure SetStartPoint(startPoint: PD2D1_INK_POINT); stdcall; overload;
     procedure GetStartPoint(out point: D2D1_INK_POINT); stdcall; overload;
-    function AddSegments(segments: PD2D1_INK_BEZIER_SEGMENT; segmentsCount: UINT32): HRESULT; stdcall; overload;
+    function AddSegments(segments: PD2D1_INK_BEZIER_SEGMENT;
+                         segmentsCount: UINT32): HRESULT; stdcall; overload;
     function RemoveSegmentsAtEnd(segmentsCount: UINT32): HRESULT; stdcall; overload;
-    function SetSegments(startSegment: UINT32; segments: PD2D1_INK_BEZIER_SEGMENT; segmentsCount: UINT32): HRESULT; stdcall; overload;
+    function SetSegments(startSegment: UINT32;
+                         segments: PD2D1_INK_BEZIER_SEGMENT;
+                         segmentsCount: UINT32): HRESULT; stdcall; overload;
     function SetSegmentAtEnd(segment: PD2D1_INK_BEZIER_SEGMENT): HRESULT; stdcall; overload;
     function GetSegmentCount(): UINT32; stdcall; overload;
-    function GetSegments(startSegment: UINT32; segments: PD2D1_INK_BEZIER_SEGMENT; segmentsCount: UINT32): HRESULT; stdcall; overload;
-    function StreamAsGeometry(inkStyle: ID2D1InkStyle; worldTransform: PD2D1_MATRIX_3X2_F; flatteningTolerance: Single; geometrySink: ID2D1SimplifiedGeometrySink): HRESULT; stdcall; overload;
-    function GetBounds(inkStyle: ID2D1InkStyle; worldTransform: PD2D1_MATRIX_3X2_F; out bounds: D2D1_RECT_F): HRESULT; stdcall; overload;
+    function GetSegments(startSegment: UINT32;
+                         segments: PD2D1_INK_BEZIER_SEGMENT;
+                         segmentsCount: UINT32): HRESULT; stdcall; overload;
+    function StreamAsGeometry(inkStyle: ID2D1InkStyle;
+                              worldTransform: PD2D1_MATRIX_3X2_F;
+                              flatteningTolerance: Single;
+                              geometrySink: ID2D1SimplifiedGeometrySink): HRESULT; stdcall; overload;
+    function GetBounds(inkStyle: ID2D1InkStyle;
+                       worldTransform: PD2D1_MATRIX_3X2_F;
+                       out bounds: D2D1_RECT_F): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1Ink = ID2D1Ink;
 
 
@@ -395,13 +424,16 @@ type
   // instance of ID2D1GradientMesh.
   //
   ID2D1GradientMesh = interface(ID2D1Resource)
-  ['{f292e401-c050-4cde-83d7-04962d3b23c2}']
+    ['{f292e401-c050-4cde-83d7-04962d3b23c2}']
     // SDK native virtual methods; inline C++ helpers are excluded.
     function GetPatchCount(): UINT32; stdcall; overload;
-    function GetPatches(startIndex: UINT32; patches: PD2D1_GRADIENT_MESH_PATCH; patchesCount: UINT32): HRESULT; stdcall; overload;
+    function GetPatches(startIndex: UINT32;
+                        patches: PD2D1_GRADIENT_MESH_PATCH;
+                        patchesCount: UINT32): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1GradientMesh = ID2D1GradientMesh;
 
 
@@ -410,13 +442,14 @@ type
   // Represents a producer of pixels that can fill an arbitrary 2D plane.
   //
   ID2D1ImageSource = interface(ID2D1Image)
-  ['{c9b664e5-74a1-4378-9ac2-eefc37a3f4d8}']
+    ['{c9b664e5-74a1-4378-9ac2-eefc37a3f4d8}']
     // SDK native virtual methods; inline C++ helpers are excluded.
     function OfferResources(): HRESULT; stdcall; overload;
     function TryReclaimResources(out resourcesDiscarded: BOOL): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1ImageSource = ID2D1ImageSource;
 
 
@@ -425,7 +458,7 @@ type
   // Produces 2D pixel data that has been sourced from WIC.
   //
   ID2D1ImageSourceFromWic = interface(ID2D1ImageSource)
-  ['{77395441-1c8f-4555-8683-f50dab0fe792}']
+    ['{77395441-1c8f-4555-8683-f50dab0fe792}']
     // SDK native virtual methods; inline C++ helpers are excluded.
     function EnsureCached(rectangleToFill: PD2D1_RECT_U): HRESULT; stdcall; overload;
     function TrimCache(rectangleToPreserve: PD2D1_RECT_U): HRESULT; stdcall; overload;
@@ -433,6 +466,7 @@ type
 
 
   end;
+
   IID_ID2D1ImageSourceFromWic = ID2D1ImageSourceFromWic;
 
 
@@ -441,13 +475,14 @@ type
   // Represents an image source which shares resources with an original image source.
   //
   ID2D1TransformedImageSource = interface(ID2D1Image)
-  ['{7f1f79e5-2796-416c-8f55-700f911445e5}']
+    ['{7f1f79e5-2796-416c-8f55-700f911445e5}']
     // SDK native virtual methods; inline C++ helpers are excluded.
     procedure GetSource(out imageSource: ID2D1ImageSource); stdcall; overload;
     procedure GetProperties(out properties: D2D1_TRANSFORMED_IMAGE_SOURCE_PROPERTIES); stdcall; overload;
 
 
   end;
+
   IID_ID2D1TransformedImageSource = ID2D1TransformedImageSource;
 
 
@@ -457,12 +492,13 @@ type
   // effect.
   //
   ID2D1LookupTable3D = interface(ID2D1Resource)
-  ['{53dd9855-a3b0-4d5b-82e1-26e25c5e5797}']
+    ['{53dd9855-a3b0-4d5b-82e1-26e25c5e5797}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    
+
 
 
   end;
+
   IID_ID2D1LookupTable3D = ID2D1LookupTable3D;
 
 
@@ -473,22 +509,46 @@ type
   // rendering, and improved image loading.
   //
   ID2D1DeviceContext2 = interface(ID2D1DeviceContext1)
-  ['{394ea6a3-0c34-4321-950b-6ca20f0be6c7}']
+    ['{394ea6a3-0c34-4321-950b-6ca20f0be6c7}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateInk(startPoint: PD2D1_INK_POINT; out ink: ID2D1Ink): HRESULT; stdcall; overload;
-    function CreateInkStyle(inkStyleProperties: PD2D1_INK_STYLE_PROPERTIES; out inkStyle: ID2D1InkStyle): HRESULT; stdcall; overload;
-    function CreateGradientMesh(patches: PD2D1_GRADIENT_MESH_PATCH; patchesCount: UINT32; out gradientMesh: ID2D1GradientMesh): HRESULT; stdcall; overload;
-    function CreateImageSourceFromWic(wicBitmapSource: IWICBitmapSource; loadingOptions: D2D1_IMAGE_SOURCE_LOADING_OPTIONS; alphaMode: D2D1_ALPHA_MODE; out imageSource: ID2D1ImageSourceFromWic): HRESULT; stdcall; overload;
-    function CreateLookupTable3D(precision: D2D1_BUFFER_PRECISION; extents: PUINT32; data: PByte; dataCount: UINT32; strides: PUINT32; out lookupTable: ID2D1LookupTable3D): HRESULT; stdcall; overload;
-    function CreateImageSourceFromDxgi(surfaces: PIDXGISurface; surfaceCount: UINT32; colorSpace: DXGI_COLOR_SPACE_TYPE; options: D2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS; out imageSource: ID2D1ImageSource): HRESULT; stdcall; overload;
-    function GetGradientMeshWorldBounds(gradientMesh: ID2D1GradientMesh; out pBounds: D2D1_RECT_F): HRESULT; stdcall; overload;
-    procedure DrawInk(ink: ID2D1Ink; brush: ID2D1Brush; inkStyle: ID2D1InkStyle); stdcall; overload;
+    function CreateInk(startPoint: PD2D1_INK_POINT;
+                       out ink: ID2D1Ink): HRESULT; stdcall; overload;
+    function CreateInkStyle(inkStyleProperties: PD2D1_INK_STYLE_PROPERTIES;
+                            out inkStyle: ID2D1InkStyle): HRESULT; stdcall; overload;
+    function CreateGradientMesh(patches: PD2D1_GRADIENT_MESH_PATCH;
+                                patchesCount: UINT32;
+                                out gradientMesh: ID2D1GradientMesh): HRESULT; stdcall; overload;
+    function CreateImageSourceFromWic(wicBitmapSource: IWICBitmapSource;
+                                      loadingOptions: D2D1_IMAGE_SOURCE_LOADING_OPTIONS;
+                                      alphaMode: D2D1_ALPHA_MODE;
+                                      out imageSource: ID2D1ImageSourceFromWic): HRESULT; stdcall; overload;
+    function CreateLookupTable3D(precision: D2D1_BUFFER_PRECISION;
+                                 extents: PUINT32;
+                                 data: PByte;
+                                 dataCount: UINT32;
+                                 strides: PUINT32;
+                                 out lookupTable: ID2D1LookupTable3D): HRESULT; stdcall; overload;
+    function CreateImageSourceFromDxgi(surfaces: PIDXGISurface;
+                                       surfaceCount: UINT32;
+                                       colorSpace: DXGI_COLOR_SPACE_TYPE;
+                                       options: D2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS;
+                                       out imageSource: ID2D1ImageSource): HRESULT; stdcall; overload;
+    function GetGradientMeshWorldBounds(gradientMesh: ID2D1GradientMesh;
+                                        out pBounds: D2D1_RECT_F): HRESULT; stdcall; overload;
+    procedure DrawInk(ink: ID2D1Ink;
+                      brush: ID2D1Brush;
+                      inkStyle: ID2D1InkStyle); stdcall; overload;
     procedure DrawGradientMesh(gradientMesh: ID2D1GradientMesh); stdcall; overload;
-    procedure DrawGdiMetafile(gdiMetafile: ID2D1GdiMetafile; destinationRectangle: PD2D1_RECT_F; sourceRectangle: PD2D1_RECT_F); stdcall; overload;
-    function CreateTransformedImageSource(imageSource: ID2D1ImageSource; properties: PD2D1_TRANSFORMED_IMAGE_SOURCE_PROPERTIES; out transformedImageSource: ID2D1TransformedImageSource): HRESULT; stdcall; overload;
+    procedure DrawGdiMetafile(gdiMetafile: ID2D1GdiMetafile;
+                              destinationRectangle: PD2D1_RECT_F;
+                              sourceRectangle: PD2D1_RECT_F); stdcall; overload;
+    function CreateTransformedImageSource(imageSource: ID2D1ImageSource;
+                                          properties: PD2D1_TRANSFORMED_IMAGE_SOURCE_PROPERTIES;
+                                          out transformedImageSource: ID2D1TransformedImageSource): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1DeviceContext2 = ID2D1DeviceContext2;
 
 
@@ -500,14 +560,16 @@ type
   // objects.
   //
   ID2D1Device2 = interface(ID2D1Device1)
-  ['{a44472e1-8dfb-4e60-8492-6e2861c9ca8b}']
+    ['{a44472e1-8dfb-4e60-8492-6e2861c9ca8b}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS; out deviceContext2: ID2D1DeviceContext2): HRESULT; stdcall; overload;
+    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS;
+                                 out deviceContext2: ID2D1DeviceContext2): HRESULT; stdcall; overload;
     procedure FlushDeviceContexts(bitmap: ID2D1Bitmap); stdcall; overload;
     function GetDxgiDevice(out dxgiDevice: IDXGIDevice): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1Device2 = ID2D1Device2;
 
 
@@ -517,12 +579,14 @@ type
   // ID2D1Device2 objects.
   //
   ID2D1Factory3 = interface(ID2D1Factory2)
-  ['{0869759f-4f00-413f-b03e-2bda45404d0f}']
+    ['{0869759f-4f00-413f-b03e-2bda45404d0f}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateDevice(dxgiDevice: IDXGIDevice; out d2dDevice2: ID2D1Device2): HRESULT; stdcall; overload;
+    function CreateDevice(dxgiDevice: IDXGIDevice;
+                          out d2dDevice2: ID2D1Device2): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1Factory3 = ID2D1Factory3;
 
 
@@ -532,14 +596,19 @@ type
   // interface. It also enables access to ink rendering and gradient mesh rendering.
   //
   ID2D1CommandSink2 = interface(ID2D1CommandSink1)
-  ['{3bab440e-417e-47df-a2e2-bc0be6a00916}']
+    ['{3bab440e-417e-47df-a2e2-bc0be6a00916}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function DrawInk(ink: ID2D1Ink; brush: ID2D1Brush; inkStyle: ID2D1InkStyle): HRESULT; stdcall; overload;
+    function DrawInk(ink: ID2D1Ink;
+                     brush: ID2D1Brush;
+                     inkStyle: ID2D1InkStyle): HRESULT; stdcall; overload;
     function DrawGradientMesh(gradientMesh: ID2D1GradientMesh): HRESULT; stdcall; overload;
-    function DrawGdiMetafile(gdiMetafile: ID2D1GdiMetafile; destinationRectangle: PD2D1_RECT_F; sourceRectangle: PD2D1_RECT_F): HRESULT; stdcall; overload;
+    function DrawGdiMetafile(gdiMetafile: ID2D1GdiMetafile;
+                             destinationRectangle: PD2D1_RECT_F;
+                             sourceRectangle: PD2D1_RECT_F): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1CommandSink2 = ID2D1CommandSink2;
 
 
@@ -548,13 +617,15 @@ type
   // Interface encapsulating a GDI/GDI+ metafile.
   //
   ID2D1GdiMetafile1 = interface(ID2D1GdiMetafile)
-  ['{2e69f9e8-dd3f-4bf9-95ba-c04f49d788df}']
+    ['{2e69f9e8-dd3f-4bf9-95ba-c04f49d788df}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function GetDpi(out dpiX: Single; out dpiY: Single): HRESULT; stdcall; overload;
+    function GetDpi(out dpiX: Single;
+                    out dpiY: Single): HRESULT; stdcall; overload;
     function GetSourceBounds(out bounds: D2D1_RECT_F): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1GdiMetafile1 = ID2D1GdiMetafile1;
 
 
@@ -563,30 +634,57 @@ type
   // User-implementable interface for introspecting on a metafile.
   //
   ID2D1GdiMetafileSink1 = interface(ID2D1GdiMetafileSink)
-  ['{fd0ecb6b-91e6-411e-8655-395e760f91b4}']
+    ['{fd0ecb6b-91e6-411e-8655-395e760f91b4}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function ProcessRecord(recordType: DWORD; recordData: Pointer; recordDataSize: DWORD; flags: UINT32): HRESULT; stdcall; overload;
+    function ProcessRecord(recordType: DWORD;
+                           recordData: Pointer;
+                           recordDataSize: DWORD;
+                           flags: UINT32): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1GdiMetafileSink1 = ID2D1GdiMetafileSink1;
 
 
-// #if NTDDI_VERSION >= NTDDI_WIN10_TH2
+  // #if NTDDI_VERSION >= NTDDI_WIN10_TH2
   // Interface ID2D1SpriteBatch
   // ==========================
   //
   ID2D1SpriteBatch = interface(ID2D1Resource)
-  ['{4dc583bf-3a10-438a-8722-e9765224f1f1}']
+    ['{4dc583bf-3a10-438a-8722-e9765224f1f1}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function AddSprites(spriteCount: UINT32; destinationRectangles: PD2D1_RECT_F; sourceRectangles: PD2D1_RECT_U; colors: PD2D1_COLOR_F; transforms: PD2D1_MATRIX_3X2_F; destinationRectanglesStride: UINT32; sourceRectanglesStride: UINT32; colorsStride: UINT32; transformsStride: UINT32): HRESULT; stdcall; overload;
-    function SetSprites(startIndex: UINT32; spriteCount: UINT32; destinationRectangles: PD2D1_RECT_F; sourceRectangles: PD2D1_RECT_U; colors: PD2D1_COLOR_F; transforms: PD2D1_MATRIX_3X2_F; destinationRectanglesStride: UINT32; sourceRectanglesStride: UINT32; colorsStride: UINT32; transformsStride: UINT32): HRESULT; stdcall; overload;
-    function GetSprites(startIndex: UINT32; spriteCount: UINT32; destinationRectangles: PD2D1_RECT_F; sourceRectangles: PD2D1_RECT_U; colors: PD2D1_COLOR_F; transforms: PD2D1_MATRIX_3X2_F): HRESULT; stdcall; overload;
+    function AddSprites(spriteCount: UINT32;
+                        destinationRectangles: PD2D1_RECT_F;
+                        sourceRectangles: PD2D1_RECT_U;
+                        colors: PD2D1_COLOR_F;
+                        transforms: PD2D1_MATRIX_3X2_F;
+                        destinationRectanglesStride: UINT32;
+                        sourceRectanglesStride: UINT32;
+                        colorsStride: UINT32;
+                        transformsStride: UINT32): HRESULT; stdcall; overload;
+    function SetSprites(startIndex: UINT32;
+                        spriteCount: UINT32;
+                        destinationRectangles: PD2D1_RECT_F;
+                        sourceRectangles: PD2D1_RECT_U;
+                        colors: PD2D1_COLOR_F;
+                        transforms: PD2D1_MATRIX_3X2_F;
+                        destinationRectanglesStride: UINT32;
+                        sourceRectanglesStride: UINT32;
+                        colorsStride: UINT32;
+                        transformsStride: UINT32): HRESULT; stdcall; overload;
+    function GetSprites(startIndex: UINT32;
+                        spriteCount: UINT32;
+                        destinationRectangles: PD2D1_RECT_F;
+                        sourceRectangles: PD2D1_RECT_U;
+                        colors: PD2D1_COLOR_F;
+                        transforms: PD2D1_MATRIX_3X2_F): HRESULT; stdcall; overload;
     function GetSpriteCount(): UINT32; stdcall; overload;
     procedure Clear(); stdcall; overload;
 
 
   end;
+
   IID_ID2D1SpriteBatch = ID2D1SpriteBatch;
 
 
@@ -594,13 +692,19 @@ type
   // =============================
   //
   ID2D1DeviceContext3 = interface(ID2D1DeviceContext2)
-  ['{235a7496-8351-414c-bcd4-6672ab2d8e00}']
+    ['{235a7496-8351-414c-bcd4-6672ab2d8e00}']
     // SDK native virtual methods; inline C++ helpers are excluded.
     function CreateSpriteBatch(out spriteBatch: ID2D1SpriteBatch): HRESULT; stdcall; overload;
-    procedure DrawSpriteBatch(spriteBatch: ID2D1SpriteBatch; startIndex: UINT32; spriteCount: UINT32; bitmap: ID2D1Bitmap; interpolationMode: D2D1_BITMAP_INTERPOLATION_MODE; spriteOptions: D2D1_SPRITE_OPTIONS); stdcall; overload;
+    procedure DrawSpriteBatch(spriteBatch: ID2D1SpriteBatch;
+                              startIndex: UINT32;
+                              spriteCount: UINT32;
+                              bitmap: ID2D1Bitmap;
+                              interpolationMode: D2D1_BITMAP_INTERPOLATION_MODE;
+                              spriteOptions: D2D1_SPRITE_OPTIONS); stdcall; overload;
 
 
   end;
+
   IID_ID2D1DeviceContext3 = ID2D1DeviceContext3;
 
 
@@ -608,11 +712,13 @@ type
   // ======================
   //
   ID2D1Device3 = interface(ID2D1Device2)
-  ['{852f2087-802c-4037-ab60-ff2e7ee6fc01}']
+    ['{852f2087-802c-4037-ab60-ff2e7ee6fc01}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS; out deviceContext3: ID2D1DeviceContext3): HRESULT; stdcall; overload;
+    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS;
+                                 out deviceContext3: ID2D1DeviceContext3): HRESULT; stdcall; overload;
 
   end;
+
   IID_ID2D1Device3 = ID2D1Device3;
 
 
@@ -623,11 +729,13 @@ type
   // ID2D1Device3 objects.
   //
   ID2D1Factory4 = interface(ID2D1Factory3)
-  ['{bd4ec2d2-0662-4bee-ba8e-6f29f032e096}']
+    ['{bd4ec2d2-0662-4bee-ba8e-6f29f032e096}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateDevice(dxgiDevice: IDXGIDevice; out d2dDevice3: ID2D1Device3): HRESULT; stdcall; overload;
+    function CreateDevice(dxgiDevice: IDXGIDevice;
+                          out d2dDevice3: ID2D1Device3): HRESULT; stdcall; overload;
 
   end;
+
   IID_ID2D1Factory4 = ID2D1Factory4;
 
 
@@ -635,17 +743,23 @@ type
   // ===========================
   //
   ID2D1CommandSink3 = interface(ID2D1CommandSink2)
-  ['{18079135-4cf3-4868-bc8e-06067e6d242d}']
+    ['{18079135-4cf3-4868-bc8e-06067e6d242d}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function DrawSpriteBatch(spriteBatch: ID2D1SpriteBatch; startIndex: UINT32; spriteCount: UINT32; bitmap: ID2D1Bitmap; interpolationMode: D2D1_BITMAP_INTERPOLATION_MODE; spriteOptions: D2D1_SPRITE_OPTIONS): HRESULT; stdcall; overload;
+    function DrawSpriteBatch(spriteBatch: ID2D1SpriteBatch;
+                             startIndex: UINT32;
+                             spriteCount: UINT32;
+                             bitmap: ID2D1Bitmap;
+                             interpolationMode: D2D1_BITMAP_INTERPOLATION_MODE;
+                             spriteOptions: D2D1_SPRITE_OPTIONS): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1CommandSink3 = ID2D1CommandSink3;
 
 
-//#endif // #if NTDDI_VERSION >= NTDDI_WIN10_TH2
-//#if NTDDI_VERSION >= NTDDI_WIN10_RS1
+  //#endif // #if NTDDI_VERSION >= NTDDI_WIN10_TH2
+  //#if NTDDI_VERSION >= NTDDI_WIN10_RS1
 
 
   // Interface ID2D1SvgGlyphStyle
@@ -654,17 +768,27 @@ type
   // context-value that are used when rendering SVG glyphs.
   //
   PID2D1SvgGlyphStyle = ^ID2D1SvgGlyphStyle;
+
   ID2D1SvgGlyphStyle = interface(ID2D1Resource)
-  ['{af671749-d241-4db8-8e41-dcc2e5c1a438}']
+    ['{af671749-d241-4db8-8e41-dcc2e5c1a438}']
     // SDK native virtual methods; inline C++ helpers are excluded.
     function SetFill(brush: ID2D1Brush): HRESULT; stdcall; overload;
     procedure GetFill(out brush: ID2D1Brush); stdcall; overload;
-    function SetStroke(brush: ID2D1Brush; strokeWidth: Single; dashes: PSingle; dashesCount: UINT32; dashOffset: Single): HRESULT; stdcall; overload;
+    function SetStroke(brush: ID2D1Brush;
+                       strokeWidth: Single;
+                       dashes: PSingle;
+                       dashesCount: UINT32;
+                       dashOffset: Single): HRESULT; stdcall; overload;
     function GetStrokeDashesCount(): UINT32; stdcall; overload;
-    procedure GetStroke(out brush: ID2D1Brush; out strokeWidth: Single; dashes: PSingle; dashesCount: UINT32; out dashOffset: Single); stdcall; overload;
+    procedure GetStroke(out brush: ID2D1Brush;
+                        out strokeWidth: Single;
+                        dashes: PSingle;
+                        dashesCount: UINT32;
+                        out dashOffset: Single); stdcall; overload;
 
 
   end;
+
   IID_ID2D1SvgGlyphStyle = ID2D1SvgGlyphStyle;
 
 
@@ -672,18 +796,61 @@ type
   // =============================
   //
   ID2D1DeviceContext4 = interface(ID2D1DeviceContext3)
-  ['{8c427831-3d90-4476-b647-c4fae349e4db}']
+    ['{8c427831-3d90-4476-b647-c4fae349e4db}']
     // SDK native virtual methods; inline C++ helpers are excluded.
     function CreateSvgGlyphStyle(out svgGlyphStyle: ID2D1SvgGlyphStyle): HRESULT; stdcall; overload;
-    procedure DrawText(_string: PWideChar; stringLength: UINT32; textFormat: IDWriteTextFormat; layoutRect: PD2D1_RECT_F; defaultFillBrush: ID2D1Brush; svgGlyphStyle: ID2D1SvgGlyphStyle; colorPaletteIndex: UINT32; options: D2D1_DRAW_TEXT_OPTIONS; measuringMode: DWRITE_MEASURING_MODE); stdcall; overload;
-    procedure DrawTextLayout(origin: D2D1_POINT_2F; textLayout: IDWriteTextLayout; defaultFillBrush: ID2D1Brush; svgGlyphStyle: ID2D1SvgGlyphStyle; colorPaletteIndex: UINT32; options: D2D1_DRAW_TEXT_OPTIONS); stdcall; overload;
-    procedure DrawColorBitmapGlyphRun(glyphImageFormat: DWRITE_GLYPH_IMAGE_FORMATS; baselineOrigin: D2D1_POINT_2F; glyphRun: PDWRITE_GLYPH_RUN; measuringMode: DWRITE_MEASURING_MODE; bitmapSnapOption: D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION); stdcall; overload;
-    procedure DrawSvgGlyphRun(baselineOrigin: D2D1_POINT_2F; glyphRun: PDWRITE_GLYPH_RUN; defaultFillBrush: ID2D1Brush; svgGlyphStyle: ID2D1SvgGlyphStyle; colorPaletteIndex: UINT32; measuringMode: DWRITE_MEASURING_MODE); stdcall; overload;
-    function GetColorBitmapGlyphImage(glyphImageFormat: DWRITE_GLYPH_IMAGE_FORMATS; glyphOrigin: D2D1_POINT_2F; fontFace: IDWriteFontFace; fontEmSize: Single; glyphIndex: UINT16; isSideways: BOOL; worldTransform: PD2D1_MATRIX_3X2_F; dpiX: Single; dpiY: Single; out glyphTransform: D2D1_MATRIX_3X2_F; out glyphImage: ID2D1Image): HRESULT; stdcall; overload;
-    function GetSvgGlyphImage(glyphOrigin: D2D1_POINT_2F; fontFace: IDWriteFontFace; fontEmSize: Single; glyphIndex: UINT16; isSideways: BOOL; worldTransform: PD2D1_MATRIX_3X2_F; defaultFillBrush: ID2D1Brush; svgGlyphStyle: ID2D1SvgGlyphStyle; colorPaletteIndex: UINT32; out glyphTransform: D2D1_MATRIX_3X2_F; out glyphImage: ID2D1CommandList): HRESULT; stdcall; overload;
+    procedure DrawText(_string: PWideChar;
+                       stringLength: UINT32;
+                       textFormat: IDWriteTextFormat;
+                       layoutRect: PD2D1_RECT_F;
+                       defaultFillBrush: ID2D1Brush;
+                       svgGlyphStyle: ID2D1SvgGlyphStyle;
+                       colorPaletteIndex: UINT32;
+                       options: D2D1_DRAW_TEXT_OPTIONS;
+                       measuringMode: DWRITE_MEASURING_MODE); stdcall; overload;
+    procedure DrawTextLayout(origin: D2D1_POINT_2F;
+                             textLayout: IDWriteTextLayout;
+                             defaultFillBrush: ID2D1Brush;
+                             svgGlyphStyle: ID2D1SvgGlyphStyle;
+                             colorPaletteIndex: UINT32;
+                             options: D2D1_DRAW_TEXT_OPTIONS); stdcall; overload;
+    procedure DrawColorBitmapGlyphRun(glyphImageFormat: DWRITE_GLYPH_IMAGE_FORMATS;
+                                      baselineOrigin: D2D1_POINT_2F;
+                                      glyphRun: PDWRITE_GLYPH_RUN;
+                                      measuringMode: DWRITE_MEASURING_MODE;
+                                      bitmapSnapOption: D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION); stdcall; overload;
+    procedure DrawSvgGlyphRun(baselineOrigin: D2D1_POINT_2F;
+                              glyphRun: PDWRITE_GLYPH_RUN;
+                              defaultFillBrush: ID2D1Brush;
+                              svgGlyphStyle: ID2D1SvgGlyphStyle;
+                              colorPaletteIndex: UINT32;
+                              measuringMode: DWRITE_MEASURING_MODE); stdcall; overload;
+    function GetColorBitmapGlyphImage(glyphImageFormat: DWRITE_GLYPH_IMAGE_FORMATS;
+                                      glyphOrigin: D2D1_POINT_2F;
+                                      fontFace: IDWriteFontFace;
+                                      fontEmSize: Single;
+                                      glyphIndex: UINT16;
+                                      isSideways: BOOL;
+                                      worldTransform: PD2D1_MATRIX_3X2_F;
+                                      dpiX: Single;
+                                      dpiY: Single;
+                                      out glyphTransform: D2D1_MATRIX_3X2_F;
+                                      out glyphImage: ID2D1Image): HRESULT; stdcall; overload;
+    function GetSvgGlyphImage(glyphOrigin: D2D1_POINT_2F;
+                              fontFace: IDWriteFontFace;
+                              fontEmSize: Single;
+                              glyphIndex: UINT16;
+                              isSideways: BOOL;
+                              worldTransform: PD2D1_MATRIX_3X2_F;
+                              defaultFillBrush: ID2D1Brush;
+                              svgGlyphStyle: ID2D1SvgGlyphStyle;
+                              colorPaletteIndex: UINT32;
+                              out glyphTransform: D2D1_MATRIX_3X2_F;
+                              out glyphImage: ID2D1CommandList): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1DeviceContext4 = ID2D1DeviceContext4;
 
 
@@ -691,14 +858,16 @@ type
   // ======================
   //
   ID2D1Device4 = interface(ID2D1Device3)
-  ['{d7bdb159-5683-4a46-bc9c-72dc720b858b}']
+    ['{d7bdb159-5683-4a46-bc9c-72dc720b858b}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS; out deviceContext4: ID2D1DeviceContext4): HRESULT; stdcall; overload;
+    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS;
+                                 out deviceContext4: ID2D1DeviceContext4): HRESULT; stdcall; overload;
     procedure SetMaximumColorGlyphCacheMemory(maximumInBytes: UINT64); stdcall; overload;
     function GetMaximumColorGlyphCacheMemory(): UINT64; stdcall; overload;
 
 
   end;
+
   IID_ID2D1Device4 = ID2D1Device4;
 
 
@@ -709,28 +878,31 @@ type
   // ID2D1Device4 objects.
   //
   ID2D1Factory5 = interface(ID2D1Factory4)
-  ['{c4349994-838e-4b0f-8cab-44997d9eeacc}']
+    ['{c4349994-838e-4b0f-8cab-44997d9eeacc}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateDevice(dxgiDevice: IDXGIDevice; out d2dDevice4: ID2D1Device4): HRESULT; stdcall; overload;
+    function CreateDevice(dxgiDevice: IDXGIDevice;
+                          out d2dDevice4: ID2D1Device4): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1Factory5 = ID2D1Factory5;
 
 
-//#endif // #if NTDDI_VERSION >= NTDDI_WIN10_RS1
-//#if NTDDI_VERSION >= NTDDI_WIN10_RS2
+  //#endif // #if NTDDI_VERSION >= NTDDI_WIN10_RS1
+  //#if NTDDI_VERSION >= NTDDI_WIN10_RS2
 
   // Interface ID2D1CommandSink4
   // ===========================
   //
   ID2D1CommandSink4 = interface(ID2D1CommandSink3)
-  ['{c78a6519-40d6-4218-b2de-beeeb744bb3e}']
+    ['{c78a6519-40d6-4218-b2de-beeeb744bb3e}']
     // SDK native virtual methods; inline C++ helpers are excluded.
     function SetPrimitiveBlend2(primitiveBlend: D2D1_PRIMITIVE_BLEND): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1CommandSink4 = ID2D1CommandSink4;
 
 
@@ -739,7 +911,7 @@ type
   // Represents a color context to be used with the Color Management Effect.
   //
   ID2D1ColorContext1 = interface(ID2D1ColorContext)
-  ['{1ab42875-c57f-4be9-bd85-9cd78d6f55ee}']
+    ['{1ab42875-c57f-4be9-bd85-9cd78d6f55ee}']
     // SDK native virtual methods; inline C++ helpers are excluded.
     function GetColorContextType(): D2D1_COLOR_CONTEXT_TYPE; stdcall; overload;
     function GetDXGIColorSpace(): DXGI_COLOR_SPACE_TYPE; stdcall; overload;
@@ -747,6 +919,7 @@ type
 
 
   end;
+
   IID_ID2D1ColorContext1 = ID2D1ColorContext1;
 
 
@@ -754,14 +927,19 @@ type
   // =============================
   //
   ID2D1DeviceContext5 = interface(ID2D1DeviceContext4)
-  ['{7836d248-68cc-4df6-b9e8-de991bf62eb7}']
+    ['{7836d248-68cc-4df6-b9e8-de991bf62eb7}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateSvgDocument(inputXmlStream: IStream; viewportSize: D2D1_SIZE_F; out svgDocument: ID2D1SvgDocument): HRESULT; stdcall; overload;
+    function CreateSvgDocument(inputXmlStream: IStream;
+                               viewportSize: D2D1_SIZE_F;
+                               out svgDocument: ID2D1SvgDocument): HRESULT; stdcall; overload;
     procedure DrawSvgDocument(svgDocument: ID2D1SvgDocument); stdcall; overload;
-    function CreateColorContextFromDxgiColorSpace(colorSpace: DXGI_COLOR_SPACE_TYPE; out colorContext: ID2D1ColorContext1): HRESULT; stdcall; overload;
-    function CreateColorContextFromSimpleColorProfile(simpleProfile: PD2D1_SIMPLE_COLOR_PROFILE; out colorContext: ID2D1ColorContext1): HRESULT; stdcall; overload;
+    function CreateColorContextFromDxgiColorSpace(colorSpace: DXGI_COLOR_SPACE_TYPE;
+                                                  out colorContext: ID2D1ColorContext1): HRESULT; stdcall; overload;
+    function CreateColorContextFromSimpleColorProfile(simpleProfile: PD2D1_SIMPLE_COLOR_PROFILE;
+                                                      out colorContext: ID2D1ColorContext1): HRESULT; stdcall; overload;
 
   end;
+
   IID_ID2D1DeviceContext5 = ID2D1DeviceContext5;
 
 
@@ -769,9 +947,10 @@ type
   // ======================
   //
   ID2D1Device5 = interface(ID2D1Device4)
-  ['{d55ba0a4-6405-4694-aef5-08ee1a4358b4}']
+    ['{d55ba0a4-6405-4694-aef5-08ee1a4358b4}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS; out deviceContext5: ID2D1DeviceContext5): HRESULT; stdcall; overload;
+    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS;
+                                 out deviceContext5: ID2D1DeviceContext5): HRESULT; stdcall; overload;
 
   end; // interface ID2D1Device5
 
@@ -779,26 +958,33 @@ type
   // Creates Direct2D resources. This interface also enables the creation of
   // ID2D1Device5 objects.
   ID2D1Factory6 = interface(ID2D1Factory5)
-  ['{f9976f46-f642-44c1-97ca-da32ea2a2635}']
+    ['{f9976f46-f642-44c1-97ca-da32ea2a2635}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateDevice(dxgiDevice: IDXGIDevice; out d2dDevice5: ID2D1Device5): HRESULT; stdcall; overload;
+    function CreateDevice(dxgiDevice: IDXGIDevice;
+                          out d2dDevice5: ID2D1Device5): HRESULT; stdcall; overload;
 
   end;
+
   IID_ID2D1Device5 = ID2D1Device5;
 
 
-//#if NTDDI_VERSION >= NTDDI_WIN10_RS3
+  //#if NTDDI_VERSION >= NTDDI_WIN10_RS3
 
   // Interface ID2D1CommandSink5
   // ===========================
   //
   ID2D1CommandSink5 = interface(ID2D1CommandSink4)
-  ['{7047dd26-b1e7-44a7-959a-8349e2144fa8}']
+    ['{7047dd26-b1e7-44a7-959a-8349e2144fa8}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function BlendImage(image: ID2D1Image; blendMode: D2D1_BLEND_MODE; targetOffset: PD2D1_POINT_2F; imageRectangle: PD2D1_RECT_F; interpolationMode: D2D1_INTERPOLATION_MODE): HRESULT; stdcall; overload;
+    function BlendImage(image: ID2D1Image;
+                        blendMode: D2D1_BLEND_MODE;
+                        targetOffset: PD2D1_POINT_2F;
+                        imageRectangle: PD2D1_RECT_F;
+                        interpolationMode: D2D1_INTERPOLATION_MODE): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1CommandSink5 = ID2D1CommandSink5;
 
 
@@ -806,12 +992,17 @@ type
   // =============================
   //
   ID2D1DeviceContext6 = interface(ID2D1DeviceContext5)
-  ['{985f7e37-4ed0-4a19-98a3-15b0edfde306}']
+    ['{985f7e37-4ed0-4a19-98a3-15b0edfde306}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    procedure BlendImage(image: ID2D1Image; blendMode: D2D1_BLEND_MODE; targetOffset: PD2D1_POINT_2F; imageRectangle: PD2D1_RECT_F; interpolationMode: D2D1_INTERPOLATION_MODE); stdcall; overload;
+    procedure BlendImage(image: ID2D1Image;
+                         blendMode: D2D1_BLEND_MODE;
+                         targetOffset: PD2D1_POINT_2F;
+                         imageRectangle: PD2D1_RECT_F;
+                         interpolationMode: D2D1_INTERPOLATION_MODE); stdcall; overload;
 
 
   end;
+
   IID_ID2D1DeviceContext6 = ID2D1DeviceContext6;
 
 
@@ -819,12 +1010,14 @@ type
   // ======================
   //
   ID2D1Device6 = interface(ID2D1Device5)
-  ['{7bfef914-2d75-4bad-be87-e18ddb077b6d}']
+    ['{7bfef914-2d75-4bad-be87-e18ddb077b6d}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS; out deviceContext6: ID2D1DeviceContext6): HRESULT; stdcall; overload;
+    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS;
+                                 out deviceContext6: ID2D1DeviceContext6): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1Device6 = ID2D1Device6;
 
 
@@ -834,15 +1027,17 @@ type
   // Creates Direct2D resources. This interface also enables the creation of
   //
   ID2D1Factory7 = interface(ID2D1Factory6)
-  ['{bdc2bdd3-b96c-4de6-bdf7-99d4745454de}']
+    ['{bdc2bdd3-b96c-4de6-bdf7-99d4745454de}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateDevice(dxgiDevice: IDXGIDevice; out d2dDevice6: ID2D1Device6): HRESULT; stdcall; overload;
+    function CreateDevice(dxgiDevice: IDXGIDevice;
+                          out d2dDevice6: ID2D1Device6): HRESULT; stdcall; overload;
 
   end;
+
   IID_ID2D1Factory7 = ID2D1Factory7;
 
 
-// May 2024 update  NTDDI_VERSION >= NTDDI_WIN10_CU ////////////////////////////
+  // May 2024 update  NTDDI_VERSION >= NTDDI_WIN10_CU ////////////////////////////
 
 
   DWRITE_PAINT_FEATURE_LEVEL = WinApi.DirectX.DWrite_3.DWRITE_PAINT_FEATURE_LEVEL;
@@ -851,24 +1046,38 @@ type
   /// Get the maximum paint feature level supported by DrawPaintGlyphRun.
   /// </summary>
   ID2D1DeviceContext7 = interface(ID2D1DeviceContext6)
-  ['{ec891cf7-9b69-4851-9def-4e0915771e62}']
+    ['{ec891cf7-9b69-4851-9def-4e0915771e62}']
     // SDK native virtual methods; inline C++ helpers are excluded.
     function GetPaintFeatureLevel(): DWRITE_PAINT_FEATURE_LEVEL; stdcall; overload;
-    procedure DrawPaintGlyphRun(baselineOrigin: D2D1_POINT_2F; glyphRun: PDWRITE_GLYPH_RUN; defaultFillBrush: ID2D1Brush; colorPaletteIndex: UINT32; measuringMode: DWRITE_MEASURING_MODE); stdcall; overload;
-    procedure DrawGlyphRunWithColorSupport(baselineOrigin: D2D1_POINT_2F; glyphRun: PDWRITE_GLYPH_RUN; glyphRunDescription: PDWRITE_GLYPH_RUN_DESCRIPTION; foregroundBrush: ID2D1Brush; svgGlyphStyle: ID2D1SvgGlyphStyle; colorPaletteIndex: UINT32; measuringMode: DWRITE_MEASURING_MODE; bitmapSnapOption: D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION); stdcall; overload;
+    procedure DrawPaintGlyphRun(baselineOrigin: D2D1_POINT_2F;
+                                glyphRun: PDWRITE_GLYPH_RUN;
+                                defaultFillBrush: ID2D1Brush;
+                                colorPaletteIndex: UINT32;
+                                measuringMode: DWRITE_MEASURING_MODE); stdcall; overload;
+    procedure DrawGlyphRunWithColorSupport(baselineOrigin: D2D1_POINT_2F;
+                                           glyphRun: PDWRITE_GLYPH_RUN;
+                                           glyphRunDescription: PDWRITE_GLYPH_RUN_DESCRIPTION;
+                                           foregroundBrush: ID2D1Brush;
+                                           svgGlyphStyle: ID2D1SvgGlyphStyle;
+                                           colorPaletteIndex: UINT32;
+                                           measuringMode: DWRITE_MEASURING_MODE;
+                                           bitmapSnapOption: D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION); stdcall; overload;
 
 
   end;
+
   IID_ID2D1DeviceContext7 = ID2D1DeviceContext7;
 
 
   ID2D1Device7 = interface(ID2D1Device6)
-  ['{f07c8968-dd4e-4ba6-9cbd-eb6d3752dcbb}']
+    ['{f07c8968-dd4e-4ba6-9cbd-eb6d3752dcbb}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS; out deviceContext: ID2D1DeviceContext7): HRESULT; stdcall; overload;
+    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS;
+                                 out deviceContext: ID2D1DeviceContext7): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1Device7 = ID2D1Device7;
 
 
@@ -877,31 +1086,48 @@ type
   /// ID2D1Device7 objects.
   /// </summary>
   ID2D1Factory8 = interface(ID2D1Factory7)
-  ['{677c9311-f36d-4b1f-ae86-86d1223ffd3a}']
+    ['{677c9311-f36d-4b1f-ae86-86d1223ffd3a}']
     // SDK native virtual methods; inline C++ helpers are excluded.
-    function CreateDevice(dxgiDevice: IDXGIDevice; out d2dDevice6: ID2D1Device7): HRESULT; stdcall; overload;
+    function CreateDevice(dxgiDevice: IDXGIDevice;
+                          out d2dDevice6: ID2D1Device7): HRESULT; stdcall; overload;
 
 
   end;
+
   IID_ID2D1Factory8 = ID2D1Factory8;
 
-// End NTDDI_VERSION >= NTDDI_WIN10_CU /////////////////////////////////////////
+  // End NTDDI_VERSION >= NTDDI_WIN10_CU /////////////////////////////////////////
 
-// #if NTDDI_VERSION >= NTDDI_WINTHRESHOLD
+  // #if NTDDI_VERSION >= NTDDI_WINTHRESHOLD
 
-    // Returns the interior points for a gradient mesh patch based on the points defining a Coons patch.
-    // Note
-    //   This function is called by the GradientMeshPatchFromCoonsPatch function and
-    //   is not intended to be used directly.
-    // Minimum supported client	Windows 10
-    procedure D2D1GetGradientMeshInteriorPointsFromCoonsPatch(pPoint0: PD2D1_POINT_2F; pPoint1: PD2D1_POINT_2F; pPoint2: PD2D1_POINT_2F; pPoint3: PD2D1_POINT_2F; pPoint4: PD2D1_POINT_2F; pPoint5: PD2D1_POINT_2F; pPoint6: PD2D1_POINT_2F; pPoint7: PD2D1_POINT_2F; pPoint8: PD2D1_POINT_2F; pPoint9: PD2D1_POINT_2F; pPoint10: PD2D1_POINT_2F; pPoint11: PD2D1_POINT_2F; out pTensorPoint11: D2D1_POINT_2F; out pTensorPoint12: D2D1_POINT_2F; out pTensorPoint21: D2D1_POINT_2F; out pTensorPoint22: D2D1_POINT_2F); stdcall;
+// Returns the interior points for a gradient mesh patch based on the points defining a Coons patch.
+// Note
+//   This function is called by the GradientMeshPatchFromCoonsPatch function and
+//   is not intended to be used directly.
+// Minimum supported client	Windows 10
+procedure D2D1GetGradientMeshInteriorPointsFromCoonsPatch(pPoint0: PD2D1_POINT_2F;
+                                                          pPoint1: PD2D1_POINT_2F;
+                                                          pPoint2: PD2D1_POINT_2F;
+                                                          pPoint3: PD2D1_POINT_2F;
+                                                          pPoint4: PD2D1_POINT_2F;
+                                                          pPoint5: PD2D1_POINT_2F;
+                                                          pPoint6: PD2D1_POINT_2F;
+                                                          pPoint7: PD2D1_POINT_2F;
+                                                          pPoint8: PD2D1_POINT_2F;
+                                                          pPoint9: PD2D1_POINT_2F;
+                                                          pPoint10: PD2D1_POINT_2F;
+                                                          pPoint11: PD2D1_POINT_2F;
+                                                          out pTensorPoint11: D2D1_POINT_2F;
+                                                          out pTensorPoint12: D2D1_POINT_2F;
+                                                          out pTensorPoint21: D2D1_POINT_2F;
+                                                          out pTensorPoint22: D2D1_POINT_2F); stdcall;
 
 //#endif // #if NTDDI_VERSION >= NTDDI_WINTHRESHOLD
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 
 implementation
@@ -910,9 +1136,9 @@ const
   D2D1_3Lib = 'D2d1.dll';
 
 
-procedure D2D1GetGradientMeshInteriorPointsFromCoonsPatch; external D2D1_3Lib name 'D2D1GetGradientMeshInteriorPointsFromCoonsPatch' ;
+procedure D2D1GetGradientMeshInteriorPointsFromCoonsPatch; external D2D1_3Lib name 'D2D1GetGradientMeshInteriorPointsFromCoonsPatch';
 
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

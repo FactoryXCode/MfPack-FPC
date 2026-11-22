@@ -96,11 +96,12 @@ unit RDJ.RdjPro.Compositor;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-Windows,
+  Windows,
   SysUtils,
   Types,
   Graphics;
@@ -117,6 +118,7 @@ type
                         cplaCenter);
 
   TRdjProCompositor = class
+
   private
 
     FWidth: Integer;
@@ -134,13 +136,13 @@ type
 
     procedure EnsureBackBuffer();
     function CalcFitRect(const ASourceW,
-                               ASourceH: Integer): TRect;
+                         ASourceH: Integer): TRect;
     function CalcFillCropRect(const ASourceW,
-                                    ASourceH: Integer): TRect;
+                              ASourceH: Integer): TRect;
     procedure DrawOverlayText(ACanvas: TCanvas);
     function CalcAnchoredRect(const ALayerW,
-                                    ALayerH,
-                                    AMargin: Integer;
+                              ALayerH,
+                              AMargin: Integer;
                               const AAnchor: TRdjProLayerAnchor): TRect;
     procedure DrawVisualizerLayer(ACanvas: TCanvas);
 
@@ -150,7 +152,7 @@ type
     destructor Destroy(); override;
 
     procedure SetSize(const AWidth,
-                            AHeight: Integer);
+                      AHeight: Integer);
 
     procedure Clear();
     procedure ComposeCameraFrame(ACameraFrame: TBitmap);
@@ -183,6 +185,7 @@ implementation
 { TRdjProCompositor }
 
 constructor TRdjProCompositor.Create();
+
 begin
 
   inherited Create();
@@ -207,7 +210,9 @@ begin
   EnsureBackBuffer();
 end;
 
+
 destructor TRdjProCompositor.Destroy();
+
 begin
 
   FVisualizerBitmap.Free();
@@ -216,7 +221,9 @@ begin
   inherited Destroy();
 end;
 
+
 procedure TRdjProCompositor.EnsureBackBuffer();
+
 begin
 
   if (FWidth < 1) then
@@ -226,7 +233,7 @@ begin
     FHeight := 1;
 
   if (FBackBuffer.Width <> FWidth) or
-     (FBackBuffer.Height <> FHeight) then
+    (FBackBuffer.Height <> FHeight) then
     begin
 
       FBackBuffer.PixelFormat := Graphics.pf32bit;
@@ -237,7 +244,8 @@ end;
 
 
 procedure TRdjProCompositor.SetSize(const AWidth,
-                                       AHeight: Integer);
+                                    AHeight: Integer);
+
 begin
 
   FWidth := AWidth;
@@ -247,6 +255,7 @@ end;
 
 
 procedure TRdjProCompositor.Clear();
+
 begin
 
   EnsureBackBuffer();
@@ -259,8 +268,9 @@ begin
                                    FHeight));
 end;
 
+
 function TRdjProCompositor.CalcFitRect(const ASourceW,
-                                          ASourceH: Integer): TRect;
+                                       ASourceH: Integer): TRect;
 var
   ScaleX: Double;
   ScaleY: Double;
@@ -276,7 +286,7 @@ begin
                  0);
 
   if (ASourceW <= 0) or (ASourceH <= 0) or
-     (FWidth <= 0) or (FHeight <= 0) then
+    (FWidth <= 0) or (FHeight <= 0) then
     Exit;
 
   ScaleX := FWidth / ASourceW;
@@ -298,7 +308,7 @@ end;
 
 
 function TRdjProCompositor.CalcFillCropRect(const ASourceW,
-                                               ASourceH: Integer): TRect;
+                                            ASourceH: Integer): TRect;
 var
   ScaleX: Double;
   ScaleY: Double;
@@ -314,7 +324,7 @@ begin
                  0);
 
   if (ASourceW <= 0) or (ASourceH <= 0) or
-     (FWidth <= 0) or (FHeight <= 0) then
+    (FWidth <= 0) or (FHeight <= 0) then
     Exit;
 
   ScaleX := FWidth / ASourceW;
@@ -338,8 +348,8 @@ end;
 
 
 function TRdjProCompositor.CalcAnchoredRect(const ALayerW,
-                                               ALayerH,
-                                               AMargin: Integer;
+                                            ALayerH,
+                                            AMargin: Integer;
                                             const AAnchor: TRdjProLayerAnchor): TRect;
 var
   W: Integer;
@@ -392,12 +402,12 @@ begin
         Result.Left := (FWidth - W) div 2;
         Result.Top := (FHeight - H) div 2;
       end;
-  else
-    begin
+    else
+      begin
 
-      Result.Left := AMargin;
-      Result.Top := AMargin;
-    end;
+        Result.Left := AMargin;
+        Result.Top := AMargin;
+      end;
   end;
 
   Result.Right := Result.Left + W;
@@ -415,7 +425,7 @@ begin
     Exit;
 
   if (FVisualizerBitmap.Width <= 0) or
-     (FVisualizerBitmap.Height <= 0) then
+    (FVisualizerBitmap.Height <= 0) then
     Exit;
 
   R := CalcAnchoredRect(FVisualizerWidth,
@@ -471,8 +481,8 @@ begin
   Clear();
 
   if Assigned(ACameraFrame) and
-     (ACameraFrame.Width > 0) and
-     (ACameraFrame.Height > 0) then
+    (ACameraFrame.Width > 0) and
+    (ACameraFrame.Height > 0) then
     begin
 
       case FLayout of
@@ -483,9 +493,9 @@ begin
         cpslFillCrop:
           DrawR := CalcFillCropRect(ACameraFrame.Width,
                                     ACameraFrame.Height);
-      else
-        DrawR := CalcFitRect(ACameraFrame.Width,
-                             ACameraFrame.Height);
+        else
+          DrawR := CalcFitRect(ACameraFrame.Width,
+                               ACameraFrame.Height);
       end;
 
       FBackBuffer.Canvas.StretchDraw(DrawR,
@@ -498,11 +508,12 @@ end;
 
 
 procedure TRdjProCompositor.SetVisualizerFrame(AFrame: TBitmap);
+
 begin
 
   if not Assigned(AFrame) or
-     (AFrame.Width <= 0) or
-     (AFrame.Height <= 0) then
+    (AFrame.Width <= 0) or
+    (AFrame.Height <= 0) then
     begin
 
       ClearVisualizerFrame();
@@ -515,6 +526,7 @@ end;
 
 
 procedure TRdjProCompositor.ClearVisualizerFrame();
+
 begin
 
   FVisualizerBitmap.SetSize(0,
@@ -524,6 +536,7 @@ end;
 
 
 function TRdjProCompositor.BackBuffer: TBitmap;
+
 begin
 
   EnsureBackBuffer();
@@ -531,4 +544,3 @@ begin
 end;
 
 end.
-

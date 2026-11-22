@@ -71,7 +71,7 @@ interface
 
 uses
   WasApiSample.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ActiveX.ObjBase,
   WinApi.ComBaseApi,
@@ -113,14 +113,15 @@ type
 
   TDeviceState = (dsUninitialized,
                   dsError,
-                  // All states >= Initialized will allow some methods
-                  // to be called successfully on the Audio Client.
-                  dsInitialized, // < from this one..
-                  dsPlay,
+    // All states >= Initialized will allow some methods
+    // to be called successfully on the Audio Client.
+    dsInitialized, // < from this one..
+    dsPlay,
                   dsPause,
                   dsStop); // < ..until here
 
   TWasApiEngine = class(TObject)
+
   private
 
     FRenderThread: TThread;
@@ -188,29 +189,38 @@ implementation
 uses
   System.Services.Avrt;
 
-
 type
   TWasApiRenderThread = class(TThread)
+
   private
     FEngine: TWasApiEngine;
+
   protected
     procedure Execute; override;
+
   public
     constructor Create(Engine: TWasApiEngine);
   end;
 
+
 constructor TWasApiRenderThread.Create(Engine: TWasApiEngine);
+
 begin
+
   inherited Create(True);
   FEngine := Engine;
   FreeOnTerminate := False;
 end;
 
+
 procedure TWasApiRenderThread.Execute;
 var
   Hr: HRESULT;
+
 begin
-  Hr := CoInitializeEx(nil,COINIT_MULTITHREADED);
+
+  Hr := CoInitializeEx(nil,
+                       COINIT_MULTITHREADED);
   if FAILED(Hr) then
     begin
       FEngine.pvErrStatus := Hr;
@@ -219,22 +229,27 @@ begin
     end;
   try
     FEngine.pvMmcssTaskIndex := 0;
-    FEngine.pvMmcssHandle := AvSetMmThreadCharacteristicsW('Playback',@FEngine.pvMmcssTaskIndex);
+    FEngine.pvMmcssHandle := AvSetMmThreadCharacteristicsW('Playback',
+                                                           @FEngine.pvMmcssTaskIndex);
     try
       FEngine.pvErrStatus := FEngine.PlayAudioStream;
-      if FAILED(FEngine.pvErrStatus) then FEngine.pvDeviceState := dsError;
+      if FAILED(FEngine.pvErrStatus) then
+        FEngine.pvDeviceState := dsError;
     except
       FEngine.pvErrStatus := E_UNEXPECTED;
       FEngine.pvDeviceState := dsError;
     end;
   finally
-    if FEngine.pvMmcssHandle <> 0 then AvRevertMmThreadCharacteristics(FEngine.pvMmcssHandle);
+    if (FEngine.pvMmcssHandle <> 0) then
+      AvRevertMmThreadCharacteristics(FEngine.pvMmcssHandle);
     FEngine.pvMmcssHandle := 0;
     CoUninitialize;
   end;
 end;
 
+
 constructor TWasApiEngine.Create();
+
 begin
 
   inherited;
@@ -243,13 +258,16 @@ end;
 
 
 destructor TWasApiEngine.Destroy();
+
 begin
+
   // ..
   inherited;
 end;
 
 
 procedure TWasApiEngine.BeforeDestruction();
+
 begin
 
   SetEvent(pvShutdownEvent);
@@ -258,7 +276,8 @@ begin
       FRenderThread.WaitFor;
       FreeAndNil(FRenderThread);
     end;
-  if pvRenderThreadClosedEvent <> 0 then CloseHandle(pvRenderThreadClosedEvent);
+  if (pvRenderThreadClosedEvent <> 0) then
+    CloseHandle(pvRenderThreadClosedEvent);
   pvRenderThreadClosedEvent := 0;
 
   ResetAudioData(True);
@@ -297,6 +316,7 @@ end;
 
 
 function TWasApiEngine.Initialize(): Boolean;
+
 begin
 
   pvBytes := nil;
@@ -326,6 +346,7 @@ end;
 
 
 procedure TWasApiEngine.ResetAudioData(pFreeSourceStream: Boolean);
+
 begin
 
   if pFreeSourceStream then
@@ -354,6 +375,7 @@ var
   majorType: TGUID;
   subType: TGUID;
 
+
   procedure DecodeSource;
   var
     hres: HResult;
@@ -364,57 +386,56 @@ var
     audioDataLength: DWORD;
   begin
 
+    hres := S_OK;
+    Flags := 0;
 
-  hres := S_OK;
-  Flags := 0;
+    while (hres = S_OK) do
+      begin
+        flags := 0;
+        hres := sourceReader.ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM,
+                                        0,
+                                        nil,
+                                        @flags,
+                                        nil,
+                                        @sample);
 
-  while (hres = S_OK) do
-    begin
-      flags := 0;
-      hres := sourceReader.ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM,
-                                      0,
-                                      nil,
-                                      @flags,
-                                      nil,
-                                      @sample);
+        if ((flags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0) then
+          Break;
 
-      if (flags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0 then
-        Break;
-
-      if (sample = nil) then
-        Continue;
+        if (sample = nil) then
+          Continue;
 
 
-      hres := sample.ConvertToContiguousBuffer(@buffer);
-      if FAILED(hres) then
-        Break;
+        hres := sample.ConvertToContiguousBuffer(@buffer);
+        if FAILED(hres) then
+          Break;
 
-      hres := buffer.Lock(audioData,
-                          nil,
-                          @audioDataLength);
-      if FAILED(hres) then
-        Break;
+        hres := buffer.Lock(audioData,
+                            nil,
+                            @audioDataLength);
+        if FAILED(hres) then
+          Break;
 
-      try
+        try
 
-      ReallocMem(pvBytes,
-                 pvBytesLength + audioDataLength);
+          ReallocMem(pvBytes,
+                     pvBytesLength + audioDataLength);
 
-      Move(audioData^,
-           (pvBytes + pvBytesLength)^,
-           audioDataLength);
+          Move(audioData^,
+               (pvBytes + pvBytesLength)^,
+               audioDataLength);
 
-      Inc(pvBytesLength,
-          audioDataLength);
+          Inc(pvBytesLength,
+              audioDataLength);
 
-      finally
+        finally
 
-        hres := buffer.Unlock();
+          hres := buffer.Unlock();
+        end;
+
+        sample := nil;
       end;
-
-      sample := nil;
-    end;
-  pvErrStatus := hres;
+    pvErrStatus := hres;
 
   end;
 
@@ -423,7 +444,8 @@ var
 begin
 
   Stop;
-  if pvSourceWfx <> nil then CoTaskMemFree(pvSourceWfx);
+  if (pvSourceWfx <> nil) then
+    CoTaskMemFree(pvSourceWfx);
   pvSourceWfx := nil;
   pvAudioStreamVolume := nil;
   pvAudioClock := nil;
@@ -454,7 +476,7 @@ begin
 
   if SUCCEEDED(hr) then
     if not IsEqualGUID(MFMediaType_Audio,
-                       majorType) then
+      majorType) then
       begin
         hr := MF_E_INVALID_FILE_FORMAT;
         Exit(hr);
@@ -462,13 +484,13 @@ begin
 
   if SUCCEEDED(hr) then
     hr := nativeMediaType.GetGUID(MF_MT_SUBTYPE,
-                                subType);
+                                  subType);
 
   if SUCCEEDED(hr) then
     if not (IsEqualGUID(MFAudioFormat_Float,
-                        subType) or
-            IsEqualGUID(MFAudioFormat_PCM,
-                        subType)) then
+      subType) or
+      IsEqualGUID(MFAudioFormat_PCM,
+                  subType)) then
       begin
 
         hr := MFCreateMediaType(partialType);
@@ -480,7 +502,7 @@ begin
         if SUCCEEDED(hr) then
           hr := partialType.SetGUID(MF_MT_SUBTYPE,
                                     MFAudioFormat_PCM {MFAudioFormat_Float});
-        
+
         // Set this type on the source reader.
         // The source reader will load the necessary decoder.
         if SUCCEEDED(hr) then
@@ -532,6 +554,7 @@ var
   {$ENDIF}
 
 begin
+
   ResetAudioData(False);
 
   hnsRequestedDuration := REFTIMES_PER_SEC;
@@ -561,7 +584,7 @@ begin
   hr := pvAudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED,
                                  AUDCLNT_STREAMFLAGS_EVENTCALLBACK or AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY or AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM,
                                  hnsRequestedDuration, // Note: When bufferDuration = 0, the audioclient will automaticly decise the bufferduration.
-                                 0,
+    0,
                                  pvSourceWfx,
                                  nil);
   if FAILED(hr) then
@@ -631,18 +654,25 @@ begin
   if not (pvDeviceState = dsPause) then
     FOffset := 0;
 
-  if pvDeviceState <> dsPause then
+  if (pvDeviceState <> dsPause) then
     begin
-      hr := pvRenderClient.GetBuffer(pvBufferFrameCount,pBufferData);
-      if FAILED(hr) then Exit(hr);
-      hr := LoadData(pvBufferFrameCount,pBufferData,pvFlags);
+      hr := pvRenderClient.GetBuffer(pvBufferFrameCount,
+                                     pBufferData);
+      if FAILED(hr) then
+        Exit(hr);
+      hr := LoadData(pvBufferFrameCount,
+                     pBufferData,
+                     pvFlags);
       if FAILED(hr) then
         begin
-          pvRenderClient.ReleaseBuffer(pvBufferFrameCount,AUDCLNT_BUFFERFLAGS_SILENT);
+          pvRenderClient.ReleaseBuffer(pvBufferFrameCount,
+                                       AUDCLNT_BUFFERFLAGS_SILENT);
           Exit(hr);
         end;
-      hr := pvRenderClient.ReleaseBuffer(pvBufferFrameCount,pvFlags);
-      if FAILED(hr) then Exit(hr);
+      hr := pvRenderClient.ReleaseBuffer(pvBufferFrameCount,
+                                         pvFlags);
+      if FAILED(hr) then
+        Exit(hr);
     end;
 
   hr := pvAudioClock.GetFrequency(u64Frequency);
@@ -654,7 +684,7 @@ begin
   if FAILED(hr) then
     Exit(hr);
 
-  if WaitForSingleObject(pvShutdownEvent,0) = WAIT_OBJECT_0 then
+  if (WaitForSingleObject(pvShutdownEvent, 0) = WAIT_OBJECT_0) then
     pvDeviceState := dsStop
   else
     pvDeviceState := dsPlay;
@@ -669,81 +699,82 @@ begin
 
       case waitResult of
 
-      // Shutdown Event
-      // We're done.
-      WAIT_OBJECT_0 + 0:
-        begin
-          Break;
-        end;
-
-      // Audio Samples Ready Event.
-      WAIT_OBJECT_0 + 1:
-        begin
-
-          // Get available bufferspace.
-          hr := pvAudioClient.GetCurrentPadding(numFramesPadding);
-          if FAILED(hr) then
+        // Shutdown Event
+        // We're done.
+        WAIT_OBJECT_0 + 0:
+          begin
             Break;
+          end;
 
-          if FOffset >= pvBytesLength then
-            begin
-              if numFramesPadding = 0 then
-                begin
-                  pvDeviceState := dsStop;
-                  Break;
-                end;
-              Continue;
-            end;
-          numFramesAvailable := pvBufferFrameCount - numFramesPadding;
-          if numFramesAvailable = 0 then Continue;
+        // Audio Samples Ready Event.
+        WAIT_OBJECT_0 + 1:
+          begin
 
-          // Get available space in shared buffer.
-          hr := pvRenderClient.GetBuffer(numFramesAvailable,
-                                         pBufferData);
-          if FAILED(hr) then
-            Break;
-
-          hr := LoadData(numFramesAvailable,
-                         pBufferData,
-                         flags);
-          if FAILED(hr) then
-            Break;
-
-          hr := pvRenderClient.ReleaseBuffer(numFramesAvailable,
-                                             flags);
-          if FAILED(hr) then
-            Break;
-
-          // If we reach the end of the audio, we will detect silence.
-          if (flags and AUDCLNT_BUFFERFLAGS_SILENT = AUDCLNT_BUFFERFLAGS_SILENT) then
-            begin
-              pvDeviceState := dsStop;
+            // Get available bufferspace.
+            hr := pvAudioClient.GetCurrentPadding(numFramesPadding);
+            if FAILED(hr) then
               Break;
-            end;
 
-          hr :=  pvAudioClock.GetPosition(@u64Position,
-                                          nil);
-          if FAILED(hr) then
-            Break;
+            if (FOffset >= pvBytesLength) then
+              begin
+                if (numFramesPadding = 0) then
+                  begin
+                    pvDeviceState := dsStop;
+                    Break;
+                  end;
+                Continue;
+              end;
+            numFramesAvailable := pvBufferFrameCount - numFramesPadding;
+            if (numFramesAvailable = 0) then
+              Continue;
 
-          PostMessage(hwndCaller,
-                      WM_DATA_PROCESSED_NOTIFY,
-                      WPARAM((u64Position div u64Frequency) * REFTIMES_PER_SEC +
-                             ((u64Position mod u64Frequency) * REFTIMES_PER_SEC) div u64Frequency),
-                      LPARAM(u64Position));
+            // Get available space in shared buffer.
+            hr := pvRenderClient.GetBuffer(numFramesAvailable,
+                                           pBufferData);
+            if FAILED(hr) then
+              Break;
 
-          // When using this code, we don't need the IAudioClock interface to get the amount of samples played.
-          // Global var.
-          //   pvTotalFramesRendered: UINT64;
+            hr := LoadData(numFramesAvailable,
+                           pBufferData,
+                           flags);
+            if FAILED(hr) then
+              Break;
 
-          //Inc(pvTotalFramesRendered,
-          //    numFramesAvailable);
-          //
-          //PostMessage(hwndCaller,
-          //            WM_DATA_PROCESSED_NOTIFY,
-          //            WPARAM((pvTotalFramesRendered div pvSourceWfx.nSamplesPerSec) * REFTIMES_PER_SEC),
-          //            LPARAM(pvTotalFramesRendered));
-        end;
+            hr := pvRenderClient.ReleaseBuffer(numFramesAvailable,
+                                               flags);
+            if FAILED(hr) then
+              Break;
+
+            // If we reach the end of the audio, we will detect silence.
+            if (flags and AUDCLNT_BUFFERFLAGS_SILENT = AUDCLNT_BUFFERFLAGS_SILENT) then
+              begin
+                pvDeviceState := dsStop;
+                Break;
+              end;
+
+            hr := pvAudioClock.GetPosition(@u64Position,
+                                           nil);
+            if FAILED(hr) then
+              Break;
+
+            PostMessage(hwndCaller,
+                        WM_DATA_PROCESSED_NOTIFY,
+                        WPARAM((u64Position div u64Frequency) * REFTIMES_PER_SEC +
+              ((u64Position mod u64Frequency) * REFTIMES_PER_SEC) div u64Frequency),
+                        LPARAM(u64Position));
+
+            // When using this code, we don't need the IAudioClock interface to get the amount of samples played.
+            // Global var.
+            //   pvTotalFramesRendered: UINT64;
+
+            //Inc(pvTotalFramesRendered,
+            //    numFramesAvailable);
+            //
+            //PostMessage(hwndCaller,
+            //            WM_DATA_PROCESSED_NOTIFY,
+            //            WPARAM((pvTotalFramesRendered div pvSourceWfx.nSamplesPerSec) * REFTIMES_PER_SEC),
+            //            LPARAM(pvTotalFramesRendered));
+          end;
       end;
     end;
 
@@ -757,7 +788,7 @@ begin
       if SUCCEEDED(hr) then
         hr := pvAudioClient.Reset;
     end;
-  
+
   SetEvent(pvRenderThreadClosedEvent);
 
   // Send message to caller (main form).
@@ -774,24 +805,39 @@ function TWasApiEngine.LoadData(bufferFrameCount: UINT32;
                                 pData: PByte;
                                 var flags: DWORD): HRESULT;
 var
-  Requested,BytesToCopy: UINT32;
+  Requested, BytesToCopy: UINT32;
+
 begin
-  if (pvSourceWfx = nil) or ((pData = nil) and (bufferFrameCount <> 0)) then Exit(E_POINTER);
-  if bufferFrameCount > High(UINT32) div pvSourceWfx.nBlockAlign then Exit(E_INVALIDARG);
+
+  if (pvSourceWfx = nil) or ((pData = nil) and (bufferFrameCount <> 0)) then
+    Exit(E_POINTER);
+  if (bufferFrameCount > High(UINT32) div pvSourceWfx.nBlockAlign) then
+    Exit(E_INVALIDARG);
   Requested := bufferFrameCount * pvSourceWfx.nBlockAlign;
   BytesToCopy := Requested;
-  if FOffset >= pvBytesLength then BytesToCopy := 0
-  else if BytesToCopy > pvBytesLength - FOffset then BytesToCopy := pvBytesLength - FOffset;
+  if (FOffset >= pvBytesLength) then
+    BytesToCopy := 0
+  else if (BytesToCopy > pvBytesLength - FOffset) then
+    BytesToCopy := pvBytesLength - FOffset;
   flags := 0;
-  if Requested > 0 then FillChar(pData^,Requested,0);
-  if BytesToCopy > 0 then Move((pvBytes + FOffset)^,pData^,BytesToCopy)
-  else flags := AUDCLNT_BUFFERFLAGS_SILENT;
-  Inc(FOffset,BytesToCopy);
+  if (Requested > 0) then
+    FillChar(pData^,
+             Requested,
+             0);
+  if (BytesToCopy > 0) then
+    Move((pvBytes + FOffset)^,
+         pData^,
+         BytesToCopy)
+  else
+    flags := AUDCLNT_BUFFERFLAGS_SILENT;
+  Inc(FOffset,
+      BytesToCopy);
   Result := S_OK;
 end;
 
 
 function TWasApiEngine.SetFormat(pwfx: PWAVEFORMATEX): HRESULT;
+
 begin
 
   if (pwfx.wFormatTag = WAVE_FORMAT_PCM) or (pwfx.wFormatTag = WAVE_FORMAT_EXTENSIBLE) then
@@ -807,11 +853,15 @@ end;
 
 
 function TWasApiEngine.Start(): HResult;
+
 begin
-  if (pvAudioClient = nil) or (pvBytes = nil) or (pvBytesLength = 0) then Exit(E_UNEXPECTED);
+
+  if (pvAudioClient = nil) or (pvBytes = nil) or (pvBytesLength = 0) then
+    Exit(E_UNEXPECTED);
   if Assigned(FRenderThread) then
     begin
-      if not FRenderThread.Finished then Exit(S_FALSE);
+      if not FRenderThread.Finished then
+        Exit(S_FALSE);
       FreeAndNil(FRenderThread);
     end;
   ResetEvent(pvShutdownEvent);
@@ -823,7 +873,9 @@ end;
 
 
 function TWasApiEngine.Stop(): HResult;
+
 begin
+
   pvDeviceState := dsStop;
   SetEvent(pvShutdownEvent);
   if Assigned(FRenderThread) then
@@ -831,7 +883,7 @@ begin
       FRenderThread.WaitFor;
       FreeAndNil(FRenderThread);
     end;
-  if pvAudioClient <> nil then
+  if (pvAudioClient <> nil) then
     begin
       pvAudioClient.Stop;
       pvAudioClient.Reset;
@@ -842,7 +894,9 @@ end;
 
 
 function TWasApiEngine.Pause(): HResult;
+
 begin
+
   pvDeviceState := dsPause;
   SetEvent(pvShutdownEvent);
   if Assigned(FRenderThread) then
@@ -860,6 +914,7 @@ var
   hr: HResult;
 
 begin
+
   //
   if Assigned(pvAudioStreamVolume) then
     begin
@@ -881,9 +936,9 @@ begin
           if (pVolRight < MIN_VOLUME) then
             pVolRight := MIN_VOLUME;
 
-          if pvSoundChannels >= 2 then
+          if (pvSoundChannels >= 2) then
             hr := pvAudioStreamVolume.SetChannelVolume(1,
-                                                     pVolRight);
+                                                       pVolRight);
         end;
     end
   else
@@ -893,4 +948,3 @@ begin
 end;
 
 end.
-

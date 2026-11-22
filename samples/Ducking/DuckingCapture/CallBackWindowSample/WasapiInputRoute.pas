@@ -7,7 +7,7 @@ interface
 
 uses
   MfCapturePlatform,
-Windows,
+  Windows,
   WinApi.WinApiTypes,
   WinApi.ComBaseApi,
   WinApi.WinMM.MMeApi,
@@ -17,6 +17,7 @@ Windows,
 
 type
   CWasapiInputRoute = class
+
   public
     AppWindow: HWND;
     CaptureAudioClient: IAudioClient;
@@ -35,6 +36,7 @@ type
 
 implementation
 
+
 function WasapiRouteThread(Parameter: Pointer): Integer;
 var
   Route: CWasapiInputRoute;
@@ -43,48 +45,63 @@ var
   Flags: AUDCLNT_BUFFERFLAGS;
   CaptureData, RenderData: PByte;
   Hr: HResult;
+
 begin
+
   Result := 0;
   Route := CWasapiInputRoute(Parameter);
   WaitHandles[0] := Route.ShutdownEvent;
   WaitHandles[1] := Route.SamplesReadyEvent;
-  while WaitForMultipleObjects(2, @WaitHandles[0], False, INFINITE) = WAIT_OBJECT_0 + 1 do
-  begin
-    PacketFrames := 0;
-    Hr := Route.CaptureClient.GetNextPacketSize(PacketFrames);
-    while SUCCEEDED(Hr) and (PacketFrames > 0) do
+  while (WaitForMultipleObjects(2, @WaitHandles[0], False, INFINITE) = WAIT_OBJECT_0 + 1) do
     begin
-      Hr := Route.CaptureClient.GetBuffer(CaptureData, Frames, Flags, nil, nil);
-      if FAILED(Hr) then Break;
-      Padding := 0;
-      if SUCCEEDED(Route.RenderAudioClient.GetCurrentPadding(Padding)) then
-      begin
-        FramesToWrite := Frames;
-        if FramesToWrite > Route.RenderBufferFrames - Padding then
-          FramesToWrite := Route.RenderBufferFrames - Padding;
-        if (FramesToWrite > 0) and SUCCEEDED(Route.RenderClient.GetBuffer(FramesToWrite, RenderData)) then
-        begin
-          if (Flags and AUDCLNT_BUFFERFLAGS_SILENT) <> 0 then
-            Route.RenderClient.ReleaseBuffer(FramesToWrite, AUDCLNT_BUFFERFLAGS_SILENT)
-          else
-          begin
-            CopyMemory(RenderData, CaptureData, FramesToWrite * Route.BlockAlign);
-            Route.RenderClient.ReleaseBuffer(FramesToWrite, 0);
-          end;
-        end;
-      end;
-      Route.CaptureClient.ReleaseBuffer(Frames);
       PacketFrames := 0;
       Hr := Route.CaptureClient.GetNextPacketSize(PacketFrames);
+      while SUCCEEDED(Hr) and (PacketFrames > 0) do
+        begin
+          Hr := Route.CaptureClient.GetBuffer(CaptureData,
+                                              Frames,
+                                              Flags,
+                                              nil,
+                                              nil);
+          if FAILED(Hr) then
+            Break;
+          Padding := 0;
+          if SUCCEEDED(Route.RenderAudioClient.GetCurrentPadding(Padding)) then
+            begin
+              FramesToWrite := Frames;
+              if (FramesToWrite > Route.RenderBufferFrames - Padding) then
+                FramesToWrite := Route.RenderBufferFrames - Padding;
+              if (FramesToWrite > 0) and SUCCEEDED(Route.RenderClient.GetBuffer(FramesToWrite, RenderData)) then
+                begin
+                  if ((Flags and AUDCLNT_BUFFERFLAGS_SILENT) <> 0) then
+                    Route.RenderClient.ReleaseBuffer(FramesToWrite,
+                                                     AUDCLNT_BUFFERFLAGS_SILENT)
+                  else
+                    begin
+                      CopyMemory(RenderData,
+                                 CaptureData,
+                                 FramesToWrite * Route.BlockAlign);
+                      Route.RenderClient.ReleaseBuffer(FramesToWrite,
+                                                       0);
+                    end;
+                end;
+            end;
+          Route.CaptureClient.ReleaseBuffer(Frames);
+          PacketFrames := 0;
+          Hr := Route.CaptureClient.GetNextPacketSize(PacketFrames);
+        end;
     end;
-  end;
 end;
 
+
 constructor CWasapiInputRoute.Create(const AAppWindow: HWND);
+
 begin
+
   inherited Create;
   AppWindow := AAppWindow;
 end;
+
 
 function CWasapiInputRoute.Start(const HideFromVolumeMixer: Boolean): Boolean;
 var
@@ -96,69 +113,161 @@ var
   RenderData: PByte;
   ThreadId: TThreadID;
   Hr: HResult;
+
 begin
+
   Result := False;
   MixFormat := nil;
-  Hr := CoCreateInstance(CLSID_MMDeviceEnumerator, nil, CLSCTX_INPROC_SERVER, IID_IMMDeviceEnumerator, Enumerator);
-  if FAILED(Hr) then Exit;
-  Hr := Enumerator.GetDefaultAudioEndpoint(eCapture, eCommunications, CaptureEndpoint);
-  if FAILED(Hr) then Exit;
-  Hr := Enumerator.GetDefaultAudioEndpoint(eRender, eConsole, RenderEndpoint);
-  if FAILED(Hr) then Exit;
-  Hr := CaptureEndpoint.Activate(IID_IAudioClient, CLSCTX_INPROC_SERVER, nil, Pointer(CaptureAudioClient));
-  if FAILED(Hr) then Exit;
-  Hr := RenderEndpoint.Activate(IID_IAudioClient, CLSCTX_INPROC_SERVER, nil, Pointer(RenderAudioClient));
-  if FAILED(Hr) then Exit;
+  Hr := CoCreateInstance(CLSID_MMDeviceEnumerator,
+                         nil,
+                         CLSCTX_INPROC_SERVER,
+                         IID_IMMDeviceEnumerator,
+                         Enumerator);
+  if FAILED(Hr) then
+    Exit;
+  Hr := Enumerator.GetDefaultAudioEndpoint(eCapture,
+                                           eCommunications,
+                                           CaptureEndpoint);
+  if FAILED(Hr) then
+    Exit;
+  Hr := Enumerator.GetDefaultAudioEndpoint(eRender,
+                                           eConsole,
+                                           RenderEndpoint);
+  if FAILED(Hr) then
+    Exit;
+  Hr := CaptureEndpoint.Activate(IID_IAudioClient,
+                                 CLSCTX_INPROC_SERVER,
+                                 nil,
+                                 Pointer(CaptureAudioClient));
+  if FAILED(Hr) then
+    Exit;
+  Hr := RenderEndpoint.Activate(IID_IAudioClient,
+                                CLSCTX_INPROC_SERVER,
+                                nil,
+                                Pointer(RenderAudioClient));
+  if FAILED(Hr) then
+    Exit;
   Hr := CaptureAudioClient.GetMixFormat(MixFormat);
-  if FAILED(Hr) then Exit;
+  if FAILED(Hr) then
+    Exit;
   BlockAlign := MixFormat.nBlockAlign;
   CoCreateGuid(CaptureGuid);
   CoCreateGuid(RenderGuid);
   CaptureFlags := AUDCLNT_STREAMFLAGS_EVENTCALLBACK or AUDCLNT_STREAMFLAGS_NOPERSIST;
   RenderFlags := AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM or AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY or AUDCLNT_STREAMFLAGS_NOPERSIST;
-  if HideFromVolumeMixer then RenderFlags := RenderFlags or AUDCLNT_SESSIONFLAGS_DISPLAY_HIDE;
-  Hr := CaptureAudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED, CaptureFlags, 500000, 0, MixFormat, @CaptureGuid);
+  if HideFromVolumeMixer then
+    RenderFlags := RenderFlags or AUDCLNT_SESSIONFLAGS_DISPLAY_HIDE;
+  Hr := CaptureAudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED,
+                                      CaptureFlags,
+                                      500000,
+                                      0,
+                                      MixFormat,
+                                      @CaptureGuid);
   if SUCCEEDED(Hr) then
-    Hr := RenderAudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED, RenderFlags, 500000, 0, MixFormat, @RenderGuid);
+    Hr := RenderAudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED,
+                                       RenderFlags,
+                                       500000,
+                                       0,
+                                       MixFormat,
+                                       @RenderGuid);
   CoTaskMemFree(MixFormat);
-  if FAILED(Hr) then begin Stop; Exit; end;
-  ShutdownEvent := CreateEventW(nil, False, False, nil);
-  SamplesReadyEvent := CreateEventW(nil, False, False, nil);
-  if (ShutdownEvent = 0) or (SamplesReadyEvent = 0) then begin Stop; Exit; end;
+  if FAILED(Hr) then
+    begin
+      Stop;
+      Exit;
+    end;
+  ShutdownEvent := CreateEventW(nil,
+                                False,
+                                False,
+                                nil);
+  SamplesReadyEvent := CreateEventW(nil,
+                                    False,
+                                    False,
+                                    nil);
+  if (ShutdownEvent = 0) or (SamplesReadyEvent = 0) then
+    begin
+      Stop;
+      Exit;
+    end;
   Hr := CaptureAudioClient.SetEventHandle(SamplesReadyEvent);
-  if SUCCEEDED(Hr) then Hr := CaptureAudioClient.GetService(IID_IAudioCaptureClient, CaptureClient);
-  if SUCCEEDED(Hr) then Hr := RenderAudioClient.GetService(IID_IAudioRenderClient, RenderClient);
-  if SUCCEEDED(Hr) then Hr := RenderAudioClient.GetBufferSize(RenderBufferFrames);
-  if FAILED(Hr) then begin Stop; Exit; end;
-  Hr := RenderClient.GetBuffer(RenderBufferFrames, RenderData);
-  if SUCCEEDED(Hr) then Hr := RenderClient.ReleaseBuffer(RenderBufferFrames, AUDCLNT_BUFFERFLAGS_SILENT);
-  if FAILED(Hr) then begin Stop; Exit; end;
+  if SUCCEEDED(Hr) then
+    Hr := CaptureAudioClient.GetService(IID_IAudioCaptureClient,
+                                        CaptureClient);
+  if SUCCEEDED(Hr) then
+    Hr := RenderAudioClient.GetService(IID_IAudioRenderClient,
+                                       RenderClient);
+  if SUCCEEDED(Hr) then
+    Hr := RenderAudioClient.GetBufferSize(RenderBufferFrames);
+  if FAILED(Hr) then
+    begin
+      Stop;
+      Exit;
+    end;
+  Hr := RenderClient.GetBuffer(RenderBufferFrames,
+                               RenderData);
+  if SUCCEEDED(Hr) then
+    Hr := RenderClient.ReleaseBuffer(RenderBufferFrames,
+                                     AUDCLNT_BUFFERFLAGS_SILENT);
+  if FAILED(Hr) then
+    begin
+      Stop;
+      Exit;
+    end;
   ThreadId := 0;
-  WorkerThread := BeginThread(nil, 0, Addr(WasapiRouteThread), Self, 0, ThreadId);
-  if WorkerThread = 0 then begin Stop; Exit; end;
+  WorkerThread := BeginThread(nil,
+                              0,
+                              Addr(WasapiRouteThread),
+                              Self,
+                              0,
+                              ThreadId);
+  if (WorkerThread = 0) then
+    begin
+      Stop;
+      Exit;
+    end;
   Hr := RenderAudioClient.Start;
-  if SUCCEEDED(Hr) then Hr := CaptureAudioClient.Start;
-  if FAILED(Hr) then begin Stop; Exit; end;
+  if SUCCEEDED(Hr) then
+    Hr := CaptureAudioClient.Start;
+  if FAILED(Hr) then
+    begin
+      Stop;
+      Exit;
+    end;
   Result := True;
 end;
 
+
 procedure CWasapiInputRoute.Stop;
+
 begin
-  if ShutdownEvent <> 0 then SetEvent(ShutdownEvent);
-  if WorkerThread <> 0 then
-  begin
-    WaitForSingleObject(WorkerThread, INFINITE);
-    CloseHandle(WorkerThread);
-    WorkerThread := 0;
-  end;
-  if Assigned(CaptureAudioClient) then CaptureAudioClient.Stop;
-  if Assigned(RenderAudioClient) then RenderAudioClient.Stop;
+
+  if (ShutdownEvent <> 0) then
+    SetEvent(ShutdownEvent);
+  if (WorkerThread <> 0) then
+    begin
+      WaitForSingleObject(WorkerThread,
+                          INFINITE);
+      CloseHandle(WorkerThread);
+      WorkerThread := 0;
+    end;
+  if Assigned(CaptureAudioClient) then
+    CaptureAudioClient.Stop;
+  if Assigned(RenderAudioClient) then
+    RenderAudioClient.Stop;
   CaptureClient := nil;
   RenderClient := nil;
   CaptureAudioClient := nil;
   RenderAudioClient := nil;
-  if SamplesReadyEvent <> 0 then begin CloseHandle(SamplesReadyEvent); SamplesReadyEvent := 0; end;
-  if ShutdownEvent <> 0 then begin CloseHandle(ShutdownEvent); ShutdownEvent := 0; end;
+  if (SamplesReadyEvent <> 0) then
+    begin
+      CloseHandle(SamplesReadyEvent);
+      SamplesReadyEvent := 0;
+    end;
+  if (ShutdownEvent <> 0) then
+    begin
+      CloseHandle(ShutdownEvent);
+      ShutdownEvent := 0;
+    end;
 end;
 
 end.

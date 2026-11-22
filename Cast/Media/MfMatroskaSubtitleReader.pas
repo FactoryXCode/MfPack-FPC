@@ -145,42 +145,42 @@ uses
 
 const
   // EBML / Matroska top-level elements.
-  EBML_ID_EBML                 = UInt64($1A45DFA3);
-  EBML_ID_SEGMENT              = UInt64($18538067);
-  EBML_ID_INFO                 = UInt64($1549A966);
-  EBML_ID_TRACKS               = UInt64($1654AE6B);
-  EBML_ID_CLUSTER              = UInt64($1F43B675);
+  EBML_ID_EBML = UInt64($1A45DFA3);
+  EBML_ID_SEGMENT = UInt64($18538067);
+  EBML_ID_INFO = UInt64($1549A966);
+  EBML_ID_TRACKS = UInt64($1654AE6B);
+  EBML_ID_CLUSTER = UInt64($1F43B675);
 
   // Segment Info.
-  EBML_ID_TIMESTAMP_SCALE      = UInt64($2AD7B1);
+  EBML_ID_TIMESTAMP_SCALE = UInt64($2AD7B1);
 
   // Track elements.
-  EBML_ID_TRACK_ENTRY          = UInt64($AE);
-  EBML_ID_TRACK_NUMBER         = UInt64($D7);
-  EBML_ID_TRACK_TYPE           = UInt64($83);
-  EBML_ID_FLAG_DEFAULT         = UInt64($88);
-  EBML_ID_FLAG_FORCED          = UInt64($55AA);
-  EBML_ID_DEFAULT_DURATION     = UInt64($23E383);
-  EBML_ID_TRACK_TS_SCALE       = UInt64($23314F);
-  EBML_ID_NAME                 = UInt64($536E);
-  EBML_ID_LANGUAGE             = UInt64($22B59C);
-  EBML_ID_LANGUAGE_BCP47       = UInt64($22B59D);
-  EBML_ID_CODEC_ID             = UInt64($86);
-  EBML_ID_CODEC_PRIVATE        = UInt64($63A2);
+  EBML_ID_TRACK_ENTRY = UInt64($AE);
+  EBML_ID_TRACK_NUMBER = UInt64($D7);
+  EBML_ID_TRACK_TYPE = UInt64($83);
+  EBML_ID_FLAG_DEFAULT = UInt64($88);
+  EBML_ID_FLAG_FORCED = UInt64($55AA);
+  EBML_ID_DEFAULT_DURATION = UInt64($23E383);
+  EBML_ID_TRACK_TS_SCALE = UInt64($23314F);
+  EBML_ID_NAME = UInt64($536E);
+  EBML_ID_LANGUAGE = UInt64($22B59C);
+  EBML_ID_LANGUAGE_BCP47 = UInt64($22B59D);
+  EBML_ID_CODEC_ID = UInt64($86);
+  EBML_ID_CODEC_PRIVATE = UInt64($63A2);
 
   // Cluster elements.
-  EBML_ID_CLUSTER_TIMESTAMP    = UInt64($E7);
-  EBML_ID_SIMPLE_BLOCK         = UInt64($A3);
-  EBML_ID_BLOCK_GROUP          = UInt64($A0);
-  EBML_ID_BLOCK                = UInt64($A1);
-  EBML_ID_BLOCK_DURATION       = UInt64($9B);
+  EBML_ID_CLUSTER_TIMESTAMP = UInt64($E7);
+  EBML_ID_SIMPLE_BLOCK = UInt64($A3);
+  EBML_ID_BLOCK_GROUP = UInt64($A0);
+  EBML_ID_BLOCK = UInt64($A1);
+  EBML_ID_BLOCK_DURATION = UInt64($9B);
 
   MATROSKA_TRACK_TYPE_SUBTITLE = UInt64(17);
   MATROSKA_DEFAULT_TS_SCALE_NS = UInt64(1000000);
-  MATROSKA_DEFAULT_CUE_MS      = Int64(2000);
+  MATROSKA_DEFAULT_CUE_MS = Int64(2000);
   MATROSKA_WINDOW_CLUSTER_OVERLAP_MS = Int64(30000);
   MATROSKA_MAX_TEXT_FRAME_SIZE = UInt64(16 * 1024 * 1024);
-  MATROSKA_MAX_STRING_SIZE     = UInt64(1024 * 1024);
+  MATROSKA_MAX_STRING_SIZE = UInt64(1024 * 1024);
 
 type
   TMfMatroskaSubtitleTrackData = record
@@ -207,6 +207,7 @@ type
   end;
 
   TMfMatroskaParser = class(TObject)
+
   private
     FStream: TFileStream;
     FFileSize: Int64;
@@ -343,14 +344,15 @@ end;
 function MatroskaCacheMatches(const FileName: WideString;
                               const FileSize: Int64;
                               const LastWriteTime: TFileTime): Boolean;
+
 begin
 
   Result := GMatroskaSubtitleCache.Valid and
-            SameText(GMatroskaSubtitleCache.FileName,
-                     FileName) and
-            (GMatroskaSubtitleCache.FileSize = FileSize) and
-            (GMatroskaSubtitleCache.LastWriteTime.dwLowDateTime = LastWriteTime.dwLowDateTime) and
-            (GMatroskaSubtitleCache.LastWriteTime.dwHighDateTime = LastWriteTime.dwHighDateTime);
+    SameText(GMatroskaSubtitleCache.FileName,
+             FileName) and
+    (GMatroskaSubtitleCache.FileSize = FileSize) and
+    (GMatroskaSubtitleCache.LastWriteTime.dwLowDateTime = LastWriteTime.dwLowDateTime) and
+    (GMatroskaSubtitleCache.LastWriteTime.dwHighDateTime = LastWriteTime.dwHighDateTime);
 end;
 
 
@@ -370,6 +372,7 @@ end;
 
 
 procedure TMfMatroskaSubtitleTrack.Reset();
+
 begin
 
   TrackNumber := 0;
@@ -388,6 +391,7 @@ end;
 
 constructor TMfMatroskaParser.Create(const FileName: WideString;
                                      const CancelEvent: THandle);
+
 begin
 
   inherited Create();
@@ -400,20 +404,23 @@ begin
   FTruncatedSegment := False;
   FTimestampScaleNs := MATROSKA_DEFAULT_TS_SCALE_NS;
   FCancelEvent := CancelEvent;
-  SetLength(FTracks, 0);
+  SetLength(FTracks,
+            0);
 end;
 
 
 function TMfMatroskaParser.Cancelled(): Boolean;
+
 begin
 
   Result := (FCancelEvent <> 0) and
-            (WaitForSingleObject(FCancelEvent,
-                                 0) = WAIT_OBJECT_0);
+    (WaitForSingleObject(FCancelEvent,
+                         0) = WAIT_OBJECT_0);
 end;
 
 
 destructor TMfMatroskaParser.Destroy();
+
 begin
 
   FreeAndNil(FStream);
@@ -423,12 +430,14 @@ end;
 
 
 function TMfMatroskaParser.ReadByte(out Value: Byte): Boolean;
+
 begin
 
   Value := 0;
   Result := Assigned(FStream) and
-            (FStream.Position < FFileSize) and
-            (FStream.Read(Value, SizeOf(Value)) = SizeOf(Value));
+    (FStream.Position < FFileSize) and
+    (FStream.Read(Value,
+                  SizeOf(Value)) = SizeOf(Value));
 end;
 
 
@@ -482,7 +491,7 @@ begin
     begin
       PayloadBits := 7 * ByteCount;
       MaxValue := (UInt64(1) shl PayloadBits) - 1;
-      UnknownValue := Value = MaxValue;
+      UnknownValue := (Value = MaxValue);
     end;
 
   Result := True;
@@ -507,20 +516,20 @@ begin
   Result := False;
 
   if not Assigned(FStream) or
-     (FStream.Position < 0) or
-     (FStream.Position >= ParentEnd) then
+    (FStream.Position < 0) or
+    (FStream.Position >= ParentEnd) then
     Exit;
 
   if not ReadVInt(Header.ElementId,
-                  IdLength,
-                  False,
-                  DummyUnknown) then
+    IdLength,
+    False,
+    DummyUnknown) then
     Exit;
 
   if not ReadVInt(Header.DataSize,
-                  SizeLength,
-                  True,
-                  Header.UnknownSize) then
+    SizeLength,
+    True,
+    Header.UnknownSize) then
     Exit;
 
   Header.DataStart := FStream.Position;
@@ -532,11 +541,11 @@ begin
       EndPosition := UInt64(Header.DataStart) + Header.DataSize;
 
       if (EndPosition > UInt64(ParentEnd)) or
-         (EndPosition > UInt64(FFileSize)) then
+        (EndPosition > UInt64(FFileSize)) then
         begin
           // Test clips are sometimes cut from a much larger MKV without
           // rewriting the Segment length. Its available prefix is readable.
-          if Header.ElementId <> EBML_ID_SEGMENT then
+          if (Header.ElementId <> EBML_ID_SEGMENT) then
             Exit;
           FTruncatedSegment := True;
           Header.DataEnd := FFileSize;
@@ -545,16 +554,17 @@ begin
         Header.DataEnd := Int64(EndPosition);
     end;
 
-  Result := Header.DataEnd >= Header.DataStart;
+  Result := (Header.DataEnd >= Header.DataStart);
 end;
 
 
 function TMfMatroskaParser.SeekAbsolute(const Position: Int64): Boolean;
+
 begin
 
   Result := Assigned(FStream) and
-            (Position >= 0) and
-            (Position <= FFileSize);
+    (Position >= 0) and
+    (Position <= FFileSize);
 
   if Result then
     FStream.Seek(Position,
@@ -563,6 +573,7 @@ end;
 
 
 function TMfMatroskaParser.SkipTo(const Position: Int64): Boolean;
+
 begin
 
   Result := SeekAbsolute(Position);
@@ -620,8 +631,8 @@ begin
   if (Size <> 4) and (Size <> 8) then
     Exit;
 
-  if FStream.Read(Source[0],
-                  Integer(Size)) <> Integer(Size) then
+  if (FStream.Read(Source[0],
+    Integer(Size)) <> Integer(Size)) then
     Exit;
 
   for I := 0 to Integer(Size) - 1 do
@@ -646,6 +657,7 @@ end;
 
 function TMfMatroskaParser.ReadBytes(const Size: UInt64;
                                      out Data: TBytes): Boolean;
+
 begin
 
   SetLength(Data,
@@ -665,8 +677,8 @@ begin
       Exit;
     end;
 
-  if FStream.Read(Data[0],
-                  Integer(Size)) <> Integer(Size) then
+  if (FStream.Read(Data[0],
+    Integer(Size)) <> Integer(Size)) then
     begin
       SetLength(Data,
                 0);
@@ -694,7 +706,7 @@ begin
     Exit;
 
   if not ReadBytes(Size,
-                   Data) then
+    Data) then
     Exit;
 
   DataLength := Length(Data);
@@ -704,7 +716,7 @@ begin
   SetLength(Data,
             DataLength);
 
-  if DataLength = 0 then
+  if (DataLength = 0) then
     begin
       Result := True;
       Exit;
@@ -719,7 +731,7 @@ begin
                                         DataLength,
                                         nil,
                                         0);
-  if CharacterCount <= 0 then
+  if (CharacterCount <= 0) then
     Exit;
 
   SetLength(Value,
@@ -730,7 +742,7 @@ begin
                                       DataLength,
                                       PWideChar(Value),
                                       CharacterCount);
-  if WrittenCount <> CharacterCount then
+  if (WrittenCount <> CharacterCount) then
     begin
       Value := '';
       Exit;
@@ -753,7 +765,7 @@ begin
   while (FStream.Position < FFileSize) do
     begin
       if not ReadElementHeader(FFileSize,
-                               Header) then
+        Header) then
         Exit;
 
       if (Header.ElementId = EBML_ID_SEGMENT) then
@@ -786,7 +798,7 @@ begin
   while (FStream.Position < EndPos) do
     begin
       if not ReadElementHeader(EndPos,
-                               Header) then
+        Header) then
         begin
           Result := False;
           Exit;
@@ -794,8 +806,8 @@ begin
 
       if (Header.ElementId = EBML_ID_TIMESTAMP_SCALE) then
         if ReadUnsigned(Header.DataSize,
-                        Value) and (Value <> 0) then
-            FTimestampScaleNs := Value;
+          Value) and (Value <> 0) then
+          FTimestampScaleNs := Value;
 
       if not SkipTo(Header.DataEnd) then
         begin
@@ -807,34 +819,33 @@ end;
 
 
 class function TMfMatroskaParser.ClassifyCodecId(const CodecId: string): TMfMatroskaSubtitleFormat;
+
 begin
 
   if SameText(CodecId,
-              'S_TEXT/ASCII') or
-     SameText(CodecId,
-              'S_TEXT/UTF8') then
+    'S_TEXT/ASCII') or
+    SameText(CodecId,
+             'S_TEXT/UTF8') then
     Result := msfSrt
 
+  else if SameText(CodecId,
+    'S_TEXT/SSA') or
+    SameText(CodecId,
+             'S_TEXT/ASS') then
+    Result := msfSsaAss
+  else if SameText(CodecId,
+    'S_VOBSUB') then
+    Result := msfVobSub
+  else if SameText(CodecId,
+    'S_HDMV/PGS') then
+    Result := msfPgs
   else
-    if SameText(CodecId,
-                'S_TEXT/SSA') or
-       SameText(CodecId,
-                'S_TEXT/ASS') then
-      Result := msfSsaAss
-    else
-      if SameText(CodecId,
-                  'S_VOBSUB') then
-        Result := msfVobSub
-      else
-        if SameText(CodecId,
-                    'S_HDMV/PGS') then
-          Result := msfPgs
-        else
-          Result := msfUnknown;
+    Result := msfUnknown;
 end;
 
 
 class function TMfMatroskaParser.NormalizeLanguageCode(const Language: string): string;
+
 begin
 
   Result := TLanguageTags.NormalizeLanguageTag(Language);
@@ -866,7 +877,7 @@ begin
   while (FStream.Position < EndPos) do
     begin
       if not ReadElementHeader(EndPos,
-                               Header) then
+        Header) then
         begin
           Result := False;
           Exit;
@@ -875,65 +886,55 @@ begin
       if (Header.ElementId = EBML_ID_TRACK_NUMBER) then
         begin
           if ReadUnsigned(Header.DataSize,
-                          UnsignedValue) then
+            UnsignedValue) then
             Track.TrackNumber := UnsignedValue;
         end
-      else
-        if (Header.ElementId = EBML_ID_TRACK_TYPE) then
-          begin
-            if ReadUnsigned(Header.DataSize,
-                            UnsignedValue) then
-              TrackType := UnsignedValue;
-          end
-        else
-          if (Header.ElementId = EBML_ID_FLAG_DEFAULT) then
-            begin
-              if ReadUnsigned(Header.DataSize,
-                              UnsignedValue) then
-                Track.DefaultTrack := UnsignedValue <> 0;
-            end
-          else
-            if (Header.ElementId = EBML_ID_FLAG_FORCED) then
-              begin
-                if ReadUnsigned(Header.DataSize,
-                                UnsignedValue) then
-                  Track.ForcedTrack := (UnsignedValue <> 0);
-              end
-            else
-              if (Header.ElementId = EBML_ID_DEFAULT_DURATION) then
-                begin
-                  if ReadUnsigned(Header.DataSize,
-                                  UnsignedValue) then
-                    Track.DefaultDurationNs := UnsignedValue;
-                end
-              else
-                if (Header.ElementId = EBML_ID_TRACK_TS_SCALE) then
-                  begin
-                    if ReadFloat(Header.DataSize,
-                                 FloatValue) and (FloatValue > 0.0) then
-                      Track.TrackTimestampScale := FloatValue;
-                  end
-                else
-                  if (Header.ElementId = EBML_ID_NAME) then
-                    ReadString(Header.DataSize,
-                      Track.Name)
-                  else
-                    if (Header.ElementId = EBML_ID_LANGUAGE) then
-                      ReadString(Header.DataSize,
-                                 Track.Language)
-                    else
-                      if (Header.ElementId = EBML_ID_LANGUAGE_BCP47) then
-                        ReadString(Header.DataSize,
-                                   LanguageBcp47)
-                      else
-                        if (Header.ElementId = EBML_ID_CODEC_ID) then
-                          ReadString(Header.DataSize,
-                                     Track.CodecId)
-                        else
-                          if (Header.ElementId = EBML_ID_CODEC_PRIVATE) and
-                             (Header.DataSize <= MATROSKA_MAX_STRING_SIZE) then
-                            ReadString(Header.DataSize,
-                                       Track.CodecPrivate);
+      else if (Header.ElementId = EBML_ID_TRACK_TYPE) then
+        begin
+          if ReadUnsigned(Header.DataSize,
+            UnsignedValue) then
+            TrackType := UnsignedValue;
+        end
+      else if (Header.ElementId = EBML_ID_FLAG_DEFAULT) then
+        begin
+          if ReadUnsigned(Header.DataSize,
+            UnsignedValue) then
+            Track.DefaultTrack := (UnsignedValue <> 0);
+        end
+      else if (Header.ElementId = EBML_ID_FLAG_FORCED) then
+        begin
+          if ReadUnsigned(Header.DataSize,
+            UnsignedValue) then
+            Track.ForcedTrack := (UnsignedValue <> 0);
+        end
+      else if (Header.ElementId = EBML_ID_DEFAULT_DURATION) then
+        begin
+          if ReadUnsigned(Header.DataSize,
+            UnsignedValue) then
+            Track.DefaultDurationNs := UnsignedValue;
+        end
+      else if (Header.ElementId = EBML_ID_TRACK_TS_SCALE) then
+        begin
+          if ReadFloat(Header.DataSize,
+            FloatValue) and (FloatValue > 0.0) then
+            Track.TrackTimestampScale := FloatValue;
+        end
+      else if (Header.ElementId = EBML_ID_NAME) then
+        ReadString(Header.DataSize,
+                   Track.Name)
+      else if (Header.ElementId = EBML_ID_LANGUAGE) then
+        ReadString(Header.DataSize,
+                   Track.Language)
+      else if (Header.ElementId = EBML_ID_LANGUAGE_BCP47) then
+        ReadString(Header.DataSize,
+                   LanguageBcp47)
+      else if (Header.ElementId = EBML_ID_CODEC_ID) then
+        ReadString(Header.DataSize,
+                   Track.CodecId)
+      else if (Header.ElementId = EBML_ID_CODEC_PRIVATE) and
+        (Header.DataSize <= MATROSKA_MAX_STRING_SIZE) then
+        ReadString(Header.DataSize,
+                   Track.CodecPrivate);
 
       if not SkipTo(Header.DataEnd) then
         begin
@@ -953,8 +954,8 @@ begin
 
   Track.Format := ClassifyCodecId(Track.CodecId);
   Track.Supported := (Track.Format in [msfSrt, msfSsaAss]) or
-                     ((Track.Format = msfVobSub) and
-                      (Track.CodecPrivate <> ''));
+    ((Track.Format = msfVobSub) and
+    (Track.CodecPrivate <> ''));
   IsSubtitle := (TrackType = MATROSKA_TRACK_TYPE_SUBTITLE);
 end;
 
@@ -977,7 +978,7 @@ begin
     begin
 
       if not ReadElementHeader(EndPos,
-                               Header) then
+        Header) then
         begin
           Result := False;
           Exit;
@@ -987,9 +988,9 @@ begin
         begin
 
           if not ParseTrackEntry(Header.DataStart,
-                                 Header.DataEnd,
-                                 Track,
-                                 IsSubtitle) then
+            Header.DataEnd,
+            Track,
+            IsSubtitle) then
             begin
               Result := False;
               Exit;
@@ -997,12 +998,14 @@ begin
 
           OutputDebugStringW(PChar(Format(
             'Direct MKV track entry=%d subtitle=%s codec=%s lang=%s name=%s supported=%s',
-            [Track.TrackNumber,
-             BoolToStr(IsSubtitle, True),
-             Track.CodecId,
-             Track.Language,
-             Track.Name,
-             BoolToStr(Track.Supported, True)])));
+                                          [Track.TrackNumber,
+            BoolToStr(IsSubtitle,
+                      True),
+            Track.CodecId,
+            Track.Language,
+            Track.Name,
+            BoolToStr(Track.Supported,
+                      True)])));
 
           if (IsSubtitle and (Track.TrackNumber <> 0)) then
             begin
@@ -1062,7 +1065,7 @@ begin
         end;
 
       if not ReadElementHeader(FSegmentEnd,
-                               Header) then
+        Header) then
         begin
           Result := False;
           Exit;
@@ -1072,7 +1075,7 @@ begin
         begin
 
           if not ParseInfo(Header.DataStart,
-                           Header.DataEnd) then
+            Header.DataEnd) then
             begin
               Result := False;
               Exit;
@@ -1080,30 +1083,28 @@ begin
 
           InfoFound := True;
         end
-      else
-        if (Header.ElementId = EBML_ID_TRACKS) then
-          begin
+      else if (Header.ElementId = EBML_ID_TRACKS) then
+        begin
 
-            if not ParseTracks(Header.DataStart,
-                               Header.DataEnd) then
-              begin
-                Result := False;
-                Exit;
-              end;
-
-            TracksFound := True;
-          end
-        else
-          if (Header.ElementId = EBML_ID_CLUSTER) and TracksFound then
+          if not ParseTracks(Header.DataStart,
+            Header.DataEnd) then
             begin
-              // Matroska metadata belongs before the media clusters in normal
-              // files. Once the Tracks element is known, do not walk every
-              // cluster merely to enumerate subtitle tracks. If Segment Info
-              // was omitted, retain the standard one-millisecond timestamp
-              // scale.
-              Result := True;
+              Result := False;
               Exit;
             end;
+
+          TracksFound := True;
+        end
+      else if (Header.ElementId = EBML_ID_CLUSTER) and TracksFound then
+        begin
+          // Matroska metadata belongs before the media clusters in normal
+          // files. Once the Tracks element is known, do not walk every
+          // cluster merely to enumerate subtitle tracks. If Segment Info
+          // was omitted, retain the standard one-millisecond timestamp
+          // scale.
+          Result := True;
+          Exit;
+        end;
 
       if not SkipTo(Header.DataEnd) then
         begin
@@ -1121,6 +1122,7 @@ begin
   Result := True;
 end;
 
+
 function TMfMatroskaParser.FindClusterTimestamp(const StartPos: Int64;
                                                 const EndPos: Int64;
                                                 out Timestamp: UInt64): Boolean;
@@ -1137,7 +1139,7 @@ begin
   while (FStream.Position < EndPos) do
     begin
       if not ReadElementHeader(EndPos,
-                               Header) then
+        Header) then
         begin
           Result := False;
           Exit;
@@ -1288,8 +1290,8 @@ begin
                 Integer(Remaining));
 
       if (Remaining > 0) and
-         (FStream.Read(Frames[0][0],
-                       Integer(Remaining)) <> Integer(Remaining)) then
+        (FStream.Read(Frames[0][0],
+                      Integer(Remaining)) <> Integer(Remaining)) then
         Exit;
 
       Result := True;
@@ -1318,10 +1320,12 @@ begin
               if not ReadByte(B) then
                 Exit;
 
-              Inc(FrameSize, B);
+              Inc(FrameSize,
+                  B);
             until (B <> $FF);
             FrameSizes[I] := FrameSize;
-            Inc(TotalKnown, FrameSize);
+            Inc(TotalKnown,
+                FrameSize);
           end;
       end;
 
@@ -1341,9 +1345,9 @@ begin
     3: // EBML lacing
       begin
         if not ReadVInt(SizeValue,
-                        SizeLength,
-                        True,
-                        UnknownValue) or UnknownValue then
+          SizeLength,
+          True,
+          UnknownValue) or UnknownValue then
           Exit;
 
         FrameSizes[0] := Int64(SizeValue);
@@ -1353,9 +1357,9 @@ begin
           begin
 
             if not ReadVInt(SizeValue,
-                            SizeLength,
-                            True,
-                            UnknownValue) or UnknownValue then
+              SizeLength,
+              True,
+              UnknownValue) or UnknownValue then
               Exit;
 
             Bias := (UInt64(1) shl ((7 * SizeLength) - 1)) - 1;
@@ -1369,8 +1373,8 @@ begin
                 FrameSizes[I]);
           end;
       end;
-  else
-    Exit;
+    else
+      Exit;
   end;
 
   if (LacingMode <> 2) then
@@ -1385,20 +1389,22 @@ begin
   for I := 0 to FrameCount - 1 do
     begin
       if (FrameSizes[I] < 0) or
-         (UInt64(FrameSizes[I]) > MATROSKA_MAX_TEXT_FRAME_SIZE) then
+        (UInt64(FrameSizes[I]) > MATROSKA_MAX_TEXT_FRAME_SIZE) then
         Exit;
 
       SetLength(Frames[I],
                 Integer(FrameSizes[I]));
 
       if (FrameSizes[I] > 0) and
-         (FStream.Read(Frames[I][0], Integer(FrameSizes[I])) <>
-          Integer(FrameSizes[I])) then
+        (FStream.Read(Frames[I][0],
+                      Integer(FrameSizes[I])) <>
+        Integer(FrameSizes[I])) then
         Exit;
     end;
 
-  Result := FStream.Position = DataEnd;
+  Result := (FStream.Position = DataEnd);
 end;
+
 
 function TMfMatroskaParser.FindTrackDataIndex(const TrackNumber: UInt64;
                                               const TrackData: TMfMatroskaSubtitleTrackDataArray): Integer;
@@ -1411,7 +1417,7 @@ begin
 
   for I := Low(TrackData) to High(TrackData) do
     if TrackData[I].Track.Supported and
-       (TrackData[I].Track.TrackNumber = TrackNumber) then
+      (TrackData[I].Track.TrackNumber = TrackNumber) then
       begin
         Result := I;
         Exit;
@@ -1466,14 +1472,12 @@ begin
     Exit;
 
   if not ReadVInt(BlockTrackNumber,
-                  TrackNumberLength,
-                  True,
-                  UnknownValue) or UnknownValue then
+    TrackNumberLength,
+    True,
+    UnknownValue) or UnknownValue then
     Exit;
 
-  if not ReadByte(TimecodeHigh) or
-     not ReadByte(TimecodeLow) or
-     not ReadByte(Flags) then
+  if not ReadByte(TimecodeHigh) or not ReadByte(TimecodeLow) or not ReadByte(Flags) then
     Exit;
 
   TrackIndex := FindTrackDataIndex(BlockTrackNumber,
@@ -1494,9 +1498,9 @@ begin
 
   LacingMode := (Flags and $06) shr 1;
   if not ReadLacedFrames(DataEnd,
-                         LacingMode,
-                         FrameStorage,
-                         FrameCount) then
+    LacingMode,
+    FrameStorage,
+    FrameCount) then
     Exit;
 
   StartMs := TicksToMs(Int64(ClusterTimestamp) + RelativeTimecode,
@@ -1510,9 +1514,8 @@ begin
   if HasBlockDuration and (FrameCount > 0) then
     PerFrameDurationMs := DurationTicksToMs(BlockDurationTicks,
                                             Track.TrackTimestampScale) div FrameCount
-  else
-    if (DefaultDurationMs > 0) then
-      PerFrameDurationMs := DefaultDurationMs;
+  else if (DefaultDurationMs > 0) then
+    PerFrameDurationMs := DefaultDurationMs;
 
   for I := 0 to FrameCount - 1 do
     begin
@@ -1524,9 +1527,9 @@ begin
       if (PerFrameDurationMs > 0) then
         StopMs := StartMs + PerFrameDurationMs;
 
-      if Track.Format = msfVobSub then
+      if (Track.Format = msfVobSub) then
         begin
-          if Length(FrameStorage[I]) > 0 then
+          if (Length(FrameStorage[I]) > 0) then
             begin
               SetLength(TrackData[TrackIndex].Cues,
                         Length(TrackData[TrackIndex].Cues) + 1);
@@ -1587,7 +1590,7 @@ begin
         end;
 
       if not ReadElementHeader(EndPos,
-                               Header) then
+        Header) then
         begin
           Result := False;
           Exit;
@@ -1599,13 +1602,12 @@ begin
           BlockSize := Header.DataSize;
           HasBlock := True;
         end
-      else
-        if (Header.ElementId = EBML_ID_BLOCK_DURATION) then
-          begin
-            if ReadUnsigned(Header.DataSize,
-                            BlockDurationTicks) then
-              HasBlockDuration := True;
-          end;
+      else if (Header.ElementId = EBML_ID_BLOCK_DURATION) then
+        begin
+          if ReadUnsigned(Header.DataSize,
+            BlockDurationTicks) then
+            HasBlockDuration := True;
+        end;
 
       if not SkipTo(Header.DataEnd) then
         begin
@@ -1649,7 +1651,7 @@ begin
         end;
 
       if not ReadElementHeader(EndPos,
-                               Header) then
+        Header) then
         begin
           Result := False;
           Exit;
@@ -1658,29 +1660,28 @@ begin
       if (Header.ElementId = EBML_ID_SIMPLE_BLOCK) then
         begin
           if not ParseBlockAll(Header.DataStart,
-                               Header.DataSize,
-                               ClusterTimestamp,
-                               0,
-                               False,
-                               TrackData) then
+            Header.DataSize,
+            ClusterTimestamp,
+            0,
+            False,
+            TrackData) then
             begin
 
               Result := False;
               Exit;
             end;
         end
-      else
-        if (Header.ElementId = EBML_ID_BLOCK_GROUP) then
-          begin
-            if not ParseBlockGroupAll(Header.DataStart,
-                                      Header.DataEnd,
-                                      ClusterTimestamp,
-                                      TrackData) then
-              begin
-                Result := False;
-                Exit;
-              end;
-          end;
+      else if (Header.ElementId = EBML_ID_BLOCK_GROUP) then
+        begin
+          if not ParseBlockGroupAll(Header.DataStart,
+            Header.DataEnd,
+            ClusterTimestamp,
+            TrackData) then
+            begin
+              Result := False;
+              Exit;
+            end;
+        end;
 
       if not SkipTo(Header.DataEnd) then
         begin
@@ -1690,6 +1691,7 @@ begin
         end;
     end;
 end;
+
 
 procedure TMfMatroskaParser.QuickSortCues(var Cues: TMfMatroskaSubtitleCueArray;
                                           L: Integer;
@@ -1859,7 +1861,7 @@ begin
         end;
 
       if not ReadElementHeader(FSegmentEnd,
-                               Header) then
+        Header) then
         begin
           if FTruncatedSegment then
             Break;
@@ -1870,12 +1872,11 @@ begin
       if (Header.ElementId = EBML_ID_CLUSTER) then
         begin
           if not FindClusterTimestamp(Header.DataStart,
-                                      Header.DataEnd,
-                                      ClusterTimestamp) or
-             not ParseClusterAll(Header.DataStart,
-                                 Header.DataEnd,
-                                 ClusterTimestamp,
-                                 TrackData) then
+            Header.DataEnd,
+            ClusterTimestamp) or not ParseClusterAll(Header.DataStart,
+                                                     Header.DataEnd,
+                                                     ClusterTimestamp,
+                                                     TrackData) then
             begin
               if FTruncatedSegment and not Cancelled() then
                 Break;
@@ -1929,7 +1930,8 @@ var
 begin
 
   Track.Reset();
-  SetLength(Cues, 0);
+  SetLength(Cues,
+            0);
   EndOfTrack := False;
 
   if (EndMs <= StartMs) or not ParseMetadata() then
@@ -1939,13 +1941,15 @@ begin
     end;
 
   TrackIndex := -1;
-  SetLength(TrackData, Length(FTracks));
+  SetLength(TrackData,
+            Length(FTracks));
 
   for I := Low(FTracks) to High(FTracks) do
     begin
       TrackData[I].Track := FTracks[I];
-      SetLength(TrackData[I].Cues, 0);
-      if FTracks[I].TrackNumber = TrackNumber then
+      SetLength(TrackData[I].Cues,
+                0);
+      if (FTracks[I].TrackNumber = TrackNumber) then
         begin
           TrackIndex := I;
           Track := FTracks[I];
@@ -1987,13 +1991,14 @@ begin
       if (Header.ElementId = EBML_ID_CLUSTER) then
         begin
           if not FindClusterTimestamp(Header.DataStart, Header.DataEnd,
-                                      ClusterTimestamp) then
+            ClusterTimestamp) then
             begin
               Result := E_FAIL;
               Exit;
             end;
 
-          ClusterTimeMs := TicksToMs(ClusterTimestamp, 1.0);
+          ClusterTimeMs := TicksToMs(ClusterTimestamp,
+                                     1.0);
 
           if (ClusterTimeMs >= EndMs) then
             Break;
@@ -2003,7 +2008,7 @@ begin
           // relative to the cluster and a long cue may cross the boundary.
           if (ClusterTimeMs + MATROSKA_WINDOW_CLUSTER_OVERLAP_MS >= StartMs) then
             if not ParseClusterAll(Header.DataStart, Header.DataEnd,
-                                   ClusterTimestamp, TrackData) then
+              ClusterTimestamp, TrackData) then
               begin
                 if Cancelled() then
                   Result := E_ABORT
@@ -2020,14 +2025,15 @@ begin
         end;
     end;
 
-  EndOfTrack := FStream.Position >= FSegmentEnd;
+  EndOfTrack := (FStream.Position >= FSegmentEnd);
   SortAndNormalizeCues(TrackData[TrackIndex].Cues);
-  SetLength(Filtered, Length(TrackData[TrackIndex].Cues));
+  SetLength(Filtered,
+            Length(TrackData[TrackIndex].Cues));
   Count := 0;
 
   for I := Low(TrackData[TrackIndex].Cues) to High(TrackData[TrackIndex].Cues) do
     if (TrackData[TrackIndex].Cues[I].StopMs > StartMs) and
-       (TrackData[TrackIndex].Cues[I].StartMs < EndMs) then
+      (TrackData[TrackIndex].Cues[I].StartMs < EndMs) then
       begin
         Filtered[Count] := TrackData[TrackIndex].Cues[I];
         Inc(Count);
@@ -2042,6 +2048,7 @@ begin
   else
     Result := S_FALSE;
 end;
+
 
 class function TMfMatroskaSubtitleReader.EnumerateTracks(const FileName: WideString;
                                                          out Tracks: TMfMatroskaSubtitleTrackArray): HRESULT;
@@ -2063,22 +2070,21 @@ begin
     end;
 
   if GetMatroskaFileIdentity(FileName,
-                             FileSize,
-                             LastWriteTime) then
+    FileSize,
+    LastWriteTime) then
     begin
       GMatroskaSubtitleCacheLock.Acquire();
 
       try
         if MatroskaCacheMatches(FileName,
-                                FileSize,
-                                LastWriteTime) then
+          FileSize,
+          LastWriteTime) then
           begin
 
             SetLength(Tracks,
                       Length(GMatroskaSubtitleCache.TrackData));
 
-            for I := Low(GMatroskaSubtitleCache.TrackData) to
-                     High(GMatroskaSubtitleCache.TrackData) do
+            for I := Low(GMatroskaSubtitleCache.TrackData) to High(GMatroskaSubtitleCache.TrackData) do
               Tracks[I] := GMatroskaSubtitleCache.TrackData[I].Track;
 
             if (Length(Tracks) = 0) then
@@ -2106,6 +2112,7 @@ begin
     Parser.Free();
   end;
 end;
+
 
 class function TMfMatroskaSubtitleReader.ReadTrack(const FileName: WideString;
                                                    const TrackNumber: UInt64;
@@ -2135,8 +2142,8 @@ begin
     end;
 
   if not GetMatroskaFileIdentity(FileName,
-                                 FileSize,
-                                 LastWriteTime) then
+    FileSize,
+    LastWriteTime) then
     begin
 
       Result := E_FAIL;
@@ -2148,11 +2155,10 @@ begin
   GMatroskaSubtitleCacheLock.Acquire();
   try
     if MatroskaCacheMatches(FileName,
-                            FileSize,
-                            LastWriteTime) then
+      FileSize,
+      LastWriteTime) then
       begin
-        for I := Low(GMatroskaSubtitleCache.TrackData) to
-                 High(GMatroskaSubtitleCache.TrackData) do
+        for I := Low(GMatroskaSubtitleCache.TrackData) to High(GMatroskaSubtitleCache.TrackData) do
           if (GMatroskaSubtitleCache.TrackData[I].Track.TrackNumber = TrackNumber) then
             begin
               Track := GMatroskaSubtitleCache.TrackData[I].Track;
@@ -2170,11 +2176,10 @@ begin
     begin
       if not Track.Supported then
         Result := HRESULT(MF_E_INVALIDMEDIATYPE)
+      else if (Length(Cues) = 0) then
+        Result := S_FALSE
       else
-        if (Length(Cues) = 0) then
-          Result := S_FALSE
-        else
-          Result := S_OK;
+        Result := S_OK;
       Exit;
     end;
 
@@ -2246,7 +2251,8 @@ var
 begin
 
   Track.Reset();
-  SetLength(Cues, 0);
+  SetLength(Cues,
+            0);
   EndOfTrack := False;
 
   if (FileName = '') or (TrackNumber = 0) or (EndMs <= StartMs) then
@@ -2259,9 +2265,14 @@ begin
 
   try
     try
-      Parser := TMfMatroskaParser.Create(FileName, CancelEvent);
-      Result := Parser.ReadSubtitleTrackWindow(TrackNumber, StartMs, EndMs,
-                                               Track, Cues, EndOfTrack);
+      Parser := TMfMatroskaParser.Create(FileName,
+                                         CancelEvent);
+      Result := Parser.ReadSubtitleTrackWindow(TrackNumber,
+                                               StartMs,
+                                               EndMs,
+                                               Track,
+                                               Cues,
+                                               EndOfTrack);
     except
       on E: Exception do
         Result := E_FAIL;

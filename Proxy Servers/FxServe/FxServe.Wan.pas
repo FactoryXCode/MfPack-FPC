@@ -87,6 +87,7 @@ type
   TFxServeWanServer = class;
 
   TFxServeWanAcceptThread = class(TThread)
+
   private
     FServer: TFxServeWanServer;
 
@@ -99,6 +100,7 @@ type
   end;
 
   TFxServeWanRequestThread = class(TThread)
+
   private
     FServer: TFxServeWanServer;
     FRequestId: UInt64;
@@ -124,6 +126,7 @@ type
   end;
 
   TFxServeWanServer = class
+
   private
     FConfig: TFxServeConfig;
     FLogger: TFxServeLogger;
@@ -142,8 +145,10 @@ type
     procedure AcceptRequests();
 
     procedure HandleRequest(ARequestId: UInt64;
-                            const AMethod, ATarget,
-                            AHeaders, APeerAddress: string;
+                            const AMethod,
+                            ATarget,
+                            AHeaders,
+                            APeerAddress: string;
                             ASecure: Boolean);
 
     procedure RequestStarted();
@@ -160,6 +165,7 @@ type
                         const ABody: string;
                         const AExtraHeaderName: string = '';
                         const AExtraHeaderValue: string = ''): Boolean;
+
   public
 
     constructor Create(AConfig: TFxServeConfig;
@@ -235,36 +241,40 @@ const
                                                   'Translate',
                                                   'User-Agent');
 
+
 function RequestPeerAddress(ARequest: PHttpRequest): string;
 var
   Address4: PSockAddrIn;
   Address6: PFxSockAddrIn6;
   I: Integer;
   GroupValue: Word;
+
 begin
+
   Result := '';
   if (ARequest = nil) or (ARequest^.Address.pRemoteAddress = nil) then
     Exit;
 
-  if ARequest^.Address.pRemoteAddress^.sa_family = AF_INET then
+  if (ARequest^.Address.pRemoteAddress^.sa_family = AF_INET) then
     begin
       Address4 := PSockAddrIn(ARequest^.Address.pRemoteAddress);
       Result := string(AnsiString(inet_ntoa(Address4^.sin_addr)));
       Exit;
     end;
 
-  if ARequest^.Address.pRemoteAddress^.sa_family = FX_AF_INET6 then
+  if (ARequest^.Address.pRemoteAddress^.sa_family = FX_AF_INET6) then
     begin
       Address6 := PFxSockAddrIn6(ARequest^.Address.pRemoteAddress);
       for I := 0 to 7 do
         begin
-          if I > 0 then
+          if (I > 0) then
             Result := Result + ':';
           GroupValue := (Word(Address6^.sin6_addr[I * 2]) shl 8) or
-                        Word(Address6^.sin6_addr[I * 2 + 1]);
-          Result := Result + LowerCase(IntToHex(GroupValue, 1));
+            Word(Address6^.sin6_addr[I * 2 + 1]);
+          Result := Result + LowerCase(IntToHex(GroupValue,
+                                                1));
         end;
-      if Address6^.sin6_scope_id <> 0 then
+      if (Address6^.sin6_scope_id <> 0) then
         Result := Result + '%' + IntToStr(Address6^.sin6_scope_id);
     end;
 end;
@@ -273,16 +283,22 @@ end;
 function RequestPath(const ATarget: string): string;
 var
   QueryPos: Integer;
+
 begin
-  QueryPos := Pos('?', ATarget);
-  if QueryPos > 0 then
-    Result := Copy(ATarget, 1, QueryPos - 1)
+
+  QueryPos := Pos('?',
+                  ATarget);
+  if (QueryPos > 0) then
+    Result := Copy(ATarget,
+                   1,
+                   QueryPos - 1)
   else
     Result := ATarget;
 end;
 
 
 function HttpApiErrorText(AError: Cardinal): string;
+
 begin
 
   Result := Format('%s (%d)',
@@ -296,6 +312,7 @@ var
   Value: AnsiString;
 
 begin
+
   if (APointer = nil) or (ALength = 0) then
     Exit('');
 
@@ -309,6 +326,7 @@ end;
 
 function WideField(APointer: PWideChar;
                    ALengthInBytes: Word): string;
+
 begin
 
   if (APointer = nil) or (ALengthInBytes = 0) then
@@ -321,15 +339,16 @@ end;
 
 
 function RequestVerbName(ARequest: PHttpRequest): string;
+
 begin
 
   case ARequest^.Verb of
     HttpVerbOPTIONS: Result := 'OPTIONS';
-    HttpVerbGET:     Result := 'GET';
-    HttpVerbHEAD:    Result := 'HEAD';
-  else
-    Result := UpperCase(AnsiField(ARequest^.pUnknownVerb,
-                                  ARequest^.UnknownVerbLength));
+    HttpVerbGET: Result := 'GET';
+    HttpVerbHEAD: Result := 'HEAD';
+    else
+      Result := UpperCase(AnsiField(ARequest^.pUnknownVerb,
+                                    ARequest^.UnknownVerbLength));
   end;
 end;
 
@@ -346,7 +365,7 @@ begin
 
   for I := 0 to HttpHeaderRequestMaximum - 1 do
     begin
-     ValueText := AnsiField(ARequest^.Headers.KnownHeaders[I].pRawValue,
+      ValueText := AnsiField(ARequest^.Headers.KnownHeaders[I].pRawValue,
                              ARequest^.Headers.KnownHeaders[I].RawValueLength);
 
       if (ValueText <> '') then
@@ -356,12 +375,12 @@ begin
   for I := 0 to ARequest^.Headers.UnknownHeaderCount - 1 do
     begin
       NameText := AnsiField(PHttpUnknownHeaderArray(ARequest^.Headers.pUnknownHeaders)^[I].pName,
-                                                    PHttpUnknownHeaderArray(ARequest^.Headers.pUnknownHeaders)^[I].NameLength);
+                            PHttpUnknownHeaderArray(ARequest^.Headers.pUnknownHeaders)^[I].NameLength);
 
-    ValueText := AnsiField(PHttpUnknownHeaderArray(ARequest^.Headers.pUnknownHeaders)^[I].pRawValue,
-                                                   PHttpUnknownHeaderArray(ARequest^.Headers.pUnknownHeaders)^[I].RawValueLength);
-    if (NameText <> '') then
-      Result := Result + NameText + ': ' + ValueText + #13#10;
+      ValueText := AnsiField(PHttpUnknownHeaderArray(ARequest^.Headers.pUnknownHeaders)^[I].pRawValue,
+                             PHttpUnknownHeaderArray(ARequest^.Headers.pUnknownHeaders)^[I].RawValueLength);
+      if (NameText <> '') then
+        Result := Result + NameText + ': ' + ValueText + #13#10;
     end;
 end;
 
@@ -386,12 +405,13 @@ begin
 
     for I := 0 to Lines.Count - 1 do
       begin
-        P := Pos(':', Lines[I]);
+        P := Pos(':',
+                 Lines[I]);
 
         if (P > 0) and SameText(Trim(Copy(Lines[I],
-                                          1,
-                                          P - 1)),
-                                AName) then
+          1,
+          P - 1)),
+          AName) then
           Exit(Trim(Copy(Lines[I],
                          P + 1,
                          MaxInt)));
@@ -422,7 +442,8 @@ begin
     end
   else
     begin
-      P := Pos(':', Result);
+      P := Pos(':',
+               Result);
       if (P > 0) then
         Result := Copy(Result,
                        1,
@@ -448,63 +469,56 @@ begin
   Total := 0;
 
   while (Total < ASize) do
-  begin
-    Sent := send(ASocket,
-                 Data[Total],
-                 ASize - Total,
-                 0);
+    begin
+      Sent := send(ASocket,
+                   Data[Total],
+                   ASize - Total,
+                   0);
 
-    if (Sent <= 0) then
-      Exit;
+      if (Sent <= 0) then
+        Exit;
 
-    Inc(Total,
-        Sent);
-  end;
+      Inc(Total,
+          Sent);
+    end;
 
   Result := True;
 end;
 
 
 function ResponseKnownHeaderIndex(const AName: string): Integer;
+
 begin
 
   if SameText(AName,
-              'Cache-Control') then
+    'Cache-Control') then
     Result := HttpHeaderCacheControl
+  else if SameText(AName,
+    'Content-Length') then
+    Result := HttpHeaderContentLength
+  else if SameText(AName,
+    'Content-Type') then
+    Result := HttpHeaderContentType
+  else if SameText(AName,
+    'Content-Range') then
+    Result := HttpHeaderContentRange
+  else if SameText(AName,
+    'Last-Modified') then
+    Result := HttpHeaderLastModified
+  else if SameText(AName,
+    'Accept-Ranges') then
+    Result := HttpHeaderAcceptRanges
+  else if SameText(AName,
+    'ETag') then
+    Result := HttpHeaderEtag
+  else if SameText(AName,
+    'Location') then
+    Result := HttpHeaderLocation
+  else if SameText(AName,
+    'Server') then
+    Result := HttpHeaderServer
   else
-    if SameText(AName,
-                'Content-Length') then
-      Result := HttpHeaderContentLength
-    else
-      if SameText(AName,
-                  'Content-Type') then
-        Result := HttpHeaderContentType
-      else
-        if SameText(AName,
-                    'Content-Range') then
-          Result := HttpHeaderContentRange
-        else
-          if SameText(AName,
-                      'Last-Modified') then
-            Result := HttpHeaderLastModified
-          else
-            if SameText(AName,
-                        'Accept-Ranges') then
-              Result := HttpHeaderAcceptRanges
-            else
-              if SameText(AName,
-                          'ETag') then
-                Result := HttpHeaderEtag
-              else
-                if SameText(AName,
-                            'Location') then
-                  Result := HttpHeaderLocation
-                else
-                  if SameText(AName,
-                              'Server') then
-                    Result := HttpHeaderServer
-                  else
-                    Result := -1;
+    Result := -1;
 end;
 
 
@@ -534,10 +548,10 @@ begin
     P2 := Length(ALine) - P1 + 1;
 
   if not TryStrToInt(Copy(ALine,
-                          P1 + 1,
-                          P2 - 1),
-                     Code) or
-     (Code < 100) or (Code > 999) then
+    P1 + 1,
+    P2 - 1),
+    Code) or
+    (Code < 100) or (Code > 999) then
     Exit;
 
   AStatus := Code;
@@ -592,7 +606,7 @@ begin
                                       0,
                                       nil,
                                       nil);
-  Result := Error = NO_ERROR;
+  Result := (Error = NO_ERROR);
 end;
 
 
@@ -616,11 +630,12 @@ begin
                                       0,
                                       nil,
                                       nil);
-  Result := Error = NO_ERROR;
+  Result := (Error = NO_ERROR);
 end;
 
 
 constructor TFxServeWanAcceptThread.Create(AServer: TFxServeWanServer);
+
 begin
 
   inherited Create(True);
@@ -631,6 +646,7 @@ end;
 
 
 procedure TFxServeWanAcceptThread.Execute();
+
 begin
 
   FServer.AcceptRequests();
@@ -638,12 +654,13 @@ end;
 
 
 constructor TFxServeWanRequestThread.Create(AServer: TFxServeWanServer;
-                                             ARequestId: UInt64;
-                                             const AMethod: string;
-                                             const ATarget: string;
-                                             const AHeaders: string;
-                                             const APeerAddress: string;
-                                             const ASecure: Boolean);
+                                            ARequestId: UInt64;
+                                            const AMethod: string;
+                                            const ATarget: string;
+                                            const AHeaders: string;
+                                            const APeerAddress: string;
+                                            const ASecure: Boolean);
+
 begin
 
   inherited Create(True);
@@ -660,6 +677,7 @@ end;
 
 
 procedure TFxServeWanRequestThread.Execute();
+
 begin
 
   try
@@ -678,6 +696,7 @@ end;
 constructor TFxServeWanServer.Create(AConfig: TFxServeConfig;
                                      ALogger: TFxServeLogger;
                                      const AChallengeSource: IFxServeAcmeChallengeSource);
+
 begin
 
   inherited Create;
@@ -688,9 +707,9 @@ begin
   if FConfig.ProtectionEnabled then
     FProtection := TFxServeRequestProtection.Create(
       FConfig.ProtectionRequestsPerMinute,
-      FConfig.ProtectionBurst,
-      FConfig.ProtectionMaxConcurrentPerAddress,
-      FConfig.ProtectionBlockSeconds);
+                                                    FConfig.ProtectionBurst,
+                                                    FConfig.ProtectionMaxConcurrentPerAddress,
+                                                    FConfig.ProtectionBlockSeconds);
   FRequestQueue := 0;
   FIdleEvent := TEvent.Create(nil,
                               True,
@@ -700,6 +719,7 @@ end;
 
 
 destructor TFxServeWanServer.Destroy;
+
 begin
 
   Stop();
@@ -711,6 +731,7 @@ end;
 
 
 procedure TFxServeWanServer.RequestStarted();
+
 begin
 
   FIdleEvent.ResetEvent();
@@ -719,6 +740,7 @@ end;
 
 
 procedure TFxServeWanServer.RequestFinished();
+
 begin
 
   if (InterlockedDecrement(FActiveRequests) = 0) then
@@ -738,7 +760,7 @@ begin
     Exit;
 
   if (WSAStartup($0202,
-                WsaData) <> 0) then
+    WsaData) <> 0) then
     raise Exception.Create('WAN front end could not initialize Winsock.');
 
   FWSAStarted := True;
@@ -780,7 +802,8 @@ begin
 
     if FConfig.WanHttpsEnabled then
       begin
-        FHttpsPrefix := Format('https://+:%d/', [FConfig.WanHttpsPort]);
+        FHttpsPrefix := Format('https://+:%d/',
+                               [FConfig.WanHttpsPort]);
 
         Error := HttpAddUrl(FRequestQueue,
                             PWideChar(FHttpsPrefix),
@@ -804,15 +827,18 @@ end;
 
 
 procedure TFxServeWanServer.Stop();
+
 begin
 
   FRunning := False;
 
   if (FRequestQueue <> 0) and (FHttpPrefix <> '') then
-    HttpRemoveUrl(FRequestQueue, PWideChar(FHttpPrefix));
+    HttpRemoveUrl(FRequestQueue,
+                  PWideChar(FHttpPrefix));
 
   if (FRequestQueue <> 0) and (FHttpsPrefix <> '') then
-    HttpRemoveUrl(FRequestQueue, PWideChar(FHttpsPrefix));
+    HttpRemoveUrl(FRequestQueue,
+                  PWideChar(FHttpsPrefix));
 
   if (FRequestQueue <> 0) then
     begin
@@ -868,93 +894,94 @@ begin
 
   while FRunning do
     begin
-    FillChar(Buffer[0],
-              Length(Buffer), 0);
-    BytesReturned := 0;
+      FillChar(Buffer[0],
+               Length(Buffer),
+               0);
+      BytesReturned := 0;
 
-    Error := HttpReceiveHttpRequest(FRequestQueue,
-                                    RequestId,
-                                    0,
-                                    PHttpRequest(@Buffer[0]),
-                                    Length(Buffer),
-                                    @BytesReturned,
-                                    nil);
+      Error := HttpReceiveHttpRequest(FRequestQueue,
+                                      RequestId,
+                                      0,
+                                      PHttpRequest(@Buffer[0]),
+                                      Length(Buffer),
+                                      @BytesReturned,
+                                      nil);
 
-    if (Error = ERROR_MORE_DATA) and (BytesReturned > Cardinal(Length(Buffer))) then
-      begin
-        Request := PHttpRequest(@Buffer[0]);
-        RequestId := Request^.RequestId;
+      if (Error = ERROR_MORE_DATA) and (BytesReturned > Cardinal(Length(Buffer))) then
+        begin
+          Request := PHttpRequest(@Buffer[0]);
+          RequestId := Request^.RequestId;
 
-        SetLength(Buffer,
-                  BytesReturned);
-        Continue;
-      end;
+          SetLength(Buffer,
+                    BytesReturned);
+          Continue;
+        end;
 
-    RequestId := HTTP_NULL_ID;
+      RequestId := HTTP_NULL_ID;
 
-    if (Error <> NO_ERROR) then
-      begin
-        if FRunning then
-          FLogger.Error('HTTP.sys receive failed: ' + HttpApiErrorText(Error));
+      if (Error <> NO_ERROR) then
+        begin
+          if FRunning then
+            FLogger.Error('HTTP.sys receive failed: ' + HttpApiErrorText(Error));
 
-        Break;
-      end;
+          Break;
+        end;
 
-    Request := PHttpRequest(@Buffer[0]);
-    MethodName := RequestVerbName(Request);
-    Target := AnsiField(Request^.pRawUrl,
-                        Request^.RawUrlLength);
+      Request := PHttpRequest(@Buffer[0]);
+      MethodName := RequestVerbName(Request);
+      Target := AnsiField(Request^.pRawUrl,
+                          Request^.RawUrlLength);
 
-    if (Target = '') then
-      Target := WideField(Request^.CookedUrl.pAbsPath,
-                          Request^.CookedUrl.AbsPathLength) + WideField(Request^.CookedUrl.pQueryString,
-                                                                        Request^.CookedUrl.QueryStringLength);
-    Headers := CopyRequestHeaders(Request);
-    PeerAddress := RequestPeerAddress(Request);
-    Secure := (Request^.pSslInfo <> nil);
+      if (Target = '') then
+        Target := WideField(Request^.CookedUrl.pAbsPath,
+                            Request^.CookedUrl.AbsPathLength) + WideField(Request^.CookedUrl.pQueryString,
+                                                                          Request^.CookedUrl.QueryStringLength);
+      Headers := CopyRequestHeaders(Request);
+      PeerAddress := RequestPeerAddress(Request);
+      Secure := (Request^.pSslInfo <> nil);
 
-    if InterlockedCompareExchange(FActiveRequests,
-                                  0,
-                                  0) >= FConfig.MaxConnections then
-      begin
-        FLogger.Info(Format('WAN global request limit reached peer=%s',
-                            [PeerAddress]));
-        SendSimple(Request^.RequestId,
-                   503,
-                   'Service Unavailable',
-                   'Too many active requests.',
-                   'Retry-After',
-                   '1');
-        SetLength(Buffer,
-                  WAN_HEADER_BUFFER_SIZE);
-        Continue;
-      end;
+      if (InterlockedCompareExchange(FActiveRequests,
+        0,
+        0) >= FConfig.MaxConnections) then
+        begin
+          FLogger.Info(Format('WAN global request limit reached peer=%s',
+                              [PeerAddress]));
+          SendSimple(Request^.RequestId,
+                     503,
+                     'Service Unavailable',
+                     'Too many active requests.',
+                     'Retry-After',
+                     '1');
+          SetLength(Buffer,
+                    WAN_HEADER_BUFFER_SIZE);
+          Continue;
+        end;
 
-    RequestStarted();
+      RequestStarted();
 
-    try
-      Worker := TFxServeWanRequestThread.Create(Self,
-                                                Request^.RequestId,
-                                                 MethodName,
-                                                 Target,
-                                                 Headers,
-                                                 PeerAddress,
-                                                 Secure);
       try
-        Worker.Start();
+        Worker := TFxServeWanRequestThread.Create(Self,
+                                                  Request^.RequestId,
+                                                  MethodName,
+                                                  Target,
+                                                  Headers,
+                                                  PeerAddress,
+                                                  Secure);
+        try
+          Worker.Start();
+        except
+          Worker.Free;
+          raise;
+        end;
+
       except
-        Worker.Free;
+        RequestFinished();
         raise;
       end;
 
-    except
-      RequestFinished();
-      raise;
+      SetLength(Buffer,
+                WAN_HEADER_BUFFER_SIZE);
     end;
-
-    SetLength(Buffer,
-              WAN_HEADER_BUFFER_SIZE);
-  end;
 end;
 
 
@@ -976,19 +1003,20 @@ var
 begin
 
   HostName := HostWithoutPort(HeaderValue(AHeaders,
-                              'Host'));
+                                          'Host'));
 
   FLogger.Info(Format('WAN %s %s peer=%s host=%s secure=%s',
                       [AMethod, ATarget, APeerAddress, HostName,
-                       BoolToStr(ASecure, True)]));
+    BoolToStr(ASecure,
+              True)]));
 
-  if (AMethod = 'GET') and
-     not ASecure and
-     ((FConfig.WanHostName = '') or
-      SameText(HostName, FConfig.WanHostName)) and
-     Assigned(FChallengeSource) and
-     FChallengeSource.TryGetAcmeChallenge(ATarget,
-                                          ChallengeResponse) then
+  if (AMethod = 'GET') and not ASecure and
+    ((FConfig.WanHostName = '') or
+    SameText(HostName,
+             FConfig.WanHostName)) and
+    Assigned(FChallengeSource) and
+    FChallengeSource.TryGetAcmeChallenge(ATarget,
+                                         ChallengeResponse) then
     begin
       SendSimple(ARequestId,
                  200,
@@ -1002,10 +1030,10 @@ begin
   if Assigned(FProtection) then
     begin
       ProtectionResult := FProtection.TryBeginRequest(APeerAddress,
-                                                       RetryAfterSeconds);
-      if ProtectionResult <> prAllowed then
+                                                      RetryAfterSeconds);
+      if (ProtectionResult <> prAllowed) then
         begin
-          if ProtectionResult = prRateLimited then
+          if (ProtectionResult = prRateLimited) then
             ProtectionReason := 'rate'
           else
             ProtectionReason := 'concurrency';
@@ -1023,9 +1051,8 @@ begin
     end;
 
   try
-    if (FConfig.WanHostName <> '') and
-       not SameText(HostName,
-                    FConfig.WanHostName) then
+    if (FConfig.WanHostName <> '') and not SameText(HostName,
+      FConfig.WanHostName) then
       begin
         SendSimple(ARequestId,
                    404,
@@ -1035,8 +1062,8 @@ begin
       end;
 
     if (AMethod <> 'GET') and
-       (AMethod <> 'HEAD') and
-       (AMethod <> 'OPTIONS') then
+      (AMethod <> 'HEAD') and
+      (AMethod <> 'OPTIONS') then
       begin
         SendSimple(ARequestId,
                    405,
@@ -1047,36 +1074,37 @@ begin
 
     Path := RequestPath(ATarget);
     if SameText(Path, '/WebCam/live.json') then
-      TouchWebCamViewer(ATarget, APeerAddress);
+      TouchWebCamViewer(ATarget,
+                        APeerAddress);
 
-  // ACME HTTP-01 validators always enter on plain HTTP port 80. Everything
-  // except an active in-memory challenge is redirected normally.
+    // ACME HTTP-01 validators always enter on plain HTTP port 80. Everything
+    // except an active in-memory challenge is redirected normally.
     if not ASecure and
-       FConfig.WanRedirectHttp and
-       FConfig.WanHttpsEnabled and
-       (Pos('/.well-known/acme-challenge/',
-            LowerCase(ATarget)) <> 1) then
+      FConfig.WanRedirectHttp and
+      FConfig.WanHttpsEnabled and
+      (Pos('/.well-known/acme-challenge/',
+           LowerCase(ATarget)) <> 1) then
       begin
         Location := 'https://' + FConfig.WanHostName;
 
-      if (FConfig.WanHttpsPort <> 443) then
-        Location := Location + ':' + IntToStr(FConfig.WanHttpsPort);
+        if (FConfig.WanHttpsPort <> 443) then
+          Location := Location + ':' + IntToStr(FConfig.WanHttpsPort);
 
-      Location := Location + ATarget;
+        Location := Location + ATarget;
 
-      SendSimple(ARequestId,
-                 308,
-                 'Permanent Redirect',
-                 '',
-                 'Location',
-                 Location);
+        SendSimple(ARequestId,
+                   308,
+                   'Permanent Redirect',
+                   '',
+                   'Location',
+                   Location);
         Exit;
       end;
 
     if not ProxyToLan(ARequestId,
-                      AMethod,
-                      ATarget,
-                      AHeaders) then
+      AMethod,
+      ATarget,
+      AHeaders) then
       SendSimple(ARequestId,
                  502,
                  'Bad Gateway',
@@ -1187,7 +1215,7 @@ begin
                                 0,
                                 nil,
                                 nil);
-  Result := Error = NO_ERROR;
+  Result := (Error = NO_ERROR);
 end;
 
 
@@ -1239,20 +1267,24 @@ var
   StartedTick: Cardinal;
   LogTarget: string;
 
+
   procedure LogUpstreamFailure;
   var
     QueryPos: Integer;
   begin
     // Queries can contain stream access tokens. Log only the route.
     LogTarget := ATarget;
-    QueryPos := Pos('?', LogTarget);
-    if QueryPos > 0 then
-      SetLength(LogTarget, QueryPos - 1);
+    QueryPos := Pos('?',
+                    LogTarget);
+    if (QueryPos > 0) then
+      SetLength(LogTarget,
+                QueryPos - 1);
     FLogger.Error(Format(
       'WAN upstream failure method=%s path=%s upstream=127.0.0.1:%d stage=%s socketError=%d elapsedMs=%d headerBytes=%d',
-      [AMethod, LogTarget, FConfig.Port, FailureStage, FailureCode,
-       Cardinal(GetTickCount - StartedTick), Length(ResponseData)]));
+                         [AMethod, LogTarget, FConfig.Port, FailureStage, FailureCode,
+      Cardinal(GetTickCount - StartedTick), Length(ResponseData)]));
   end;
+
 
   procedure AddForwardHeader(const AName: string);
   var
@@ -1264,6 +1296,7 @@ var
     if (V <> '') then
       RequestText := RequestText + UTF8String(AName + ': ' + V + #13#10);
   end;
+
 
   function SendBodyPart(const AData: RawByteString;
                         AFinal: Boolean): Boolean;
@@ -1307,25 +1340,25 @@ begin
                SO_SNDTIMEO,
                PAnsiChar(@Timeout),
                SizeOf(Timeout));
-               FillChar(Address,
-                        SizeOf(Address),
-                        0);
+    FillChar(Address,
+             SizeOf(Address),
+             0);
     Address.sin_family := AF_INET;
     Address.sin_port := htons(FConfig.Port);
     Address.sin_addr.S_addr := inet_addr('127.0.0.1');
 
     FailureStage := 'connect';
     if (connect(Upstream,
-               Address,
-               SizeOf(Address)) = SOCKET_ERROR) then
+      Address,
+      SizeOf(Address)) = SOCKET_ERROR) then
       begin
         FailureCode := WSAGetLastError;
         Exit;
       end;
 
     RequestText := UTF8String(AMethod + ' ' + ATarget +
-                              ' HTTP/1.1'#13#10 +
-                              'Host: 127.0.0.1:' + IntToStr(FConfig.Port) + #13#10);
+      ' HTTP/1.1'#13#10 +
+      'Host: 127.0.0.1:' + IntToStr(FConfig.Port) + #13#10);
 
     AddForwardHeader('Accept');
     AddForwardHeader('Accept-Encoding');
@@ -1344,8 +1377,8 @@ begin
     RequestText := RequestText + 'Connection: close'#13#10#13#10;
     FailureStage := 'send-request';
     if not SendSocketAll(Upstream,
-                         RequestText[1],
-                         Length(RequestText)) then
+      RequestText[1],
+      Length(RequestText)) then
       begin
         FailureCode := WSAGetLastError;
         Exit;
@@ -1362,7 +1395,7 @@ begin
 
       if (Count <= 0) then
         begin
-          if Count = SOCKET_ERROR then
+          if (Count = SOCKET_ERROR) then
             FailureCode := WSAGetLastError
           else
             FailureStage := 'header-connection-closed';
@@ -1375,7 +1408,8 @@ begin
            ResponseData[Length(ResponseData) - Count + 1],
            Count);
 
-      HeaderEnd := Pos(#13#10#13#10, string(ResponseData));
+      HeaderEnd := Pos(#13#10#13#10,
+                       string(ResponseData));
     until (HeaderEnd > 0) or (Length(ResponseData) >= WAN_MAX_UPSTREAM_HEADER);
 
     FailureStage := 'header-too-large';
@@ -1396,8 +1430,8 @@ begin
 
       FailureStage := 'invalid-status-line';
       if (Lines.Count = 0) or not ParseStatusLine(Lines[0],
-                                                  Status,
-                                                  Reason) then
+        Status,
+        Reason) then
         Exit;
 
       ContentLength := -1;
@@ -1419,20 +1453,20 @@ begin
                                  MaxInt));
 
           if SameText(NameText,
-                      'Connection') or SameText(NameText,
-                                                'Keep-Alive') then
+            'Connection') or SameText(NameText,
+                                      'Keep-Alive') then
             Continue;
 
           if SameText(NameText,
-                      'Transfer-Encoding') then
+            'Transfer-Encoding') then
             begin
-              TransferChunked := Pos('chunked',
-                                     LowerCase(ValueText)) > 0;
+              TransferChunked := (Pos('chunked',
+                                      LowerCase(ValueText)) > 0);
               Continue;
             end;
 
           if SameText(NameText,
-                      'Content-Length') then
+            'Content-Length') then
             TryStrToInt64(ValueText,
                           ContentLength);
 
@@ -1462,21 +1496,21 @@ begin
       UnknownCount := 0;
 
       for I := 0 to Names.Count - 1 do
-      begin
-        HeaderNames[I] := UTF8String(Names[I]);
-        HeaderValues[I] := UTF8String(Values[I]);
-        KnownIndex := ResponseKnownHeaderIndex(Names[I]);
+        begin
+          HeaderNames[I] := UTF8String(Names[I]);
+          HeaderValues[I] := UTF8String(Values[I]);
+          KnownIndex := ResponseKnownHeaderIndex(Names[I]);
 
-        if (KnownIndex >= 0) then
-          begin
-            Response.Headers.KnownHeaders[KnownIndex].RawValueLength := Length(HeaderValues[I]);
+          if (KnownIndex >= 0) then
+            begin
+              Response.Headers.KnownHeaders[KnownIndex].RawValueLength := Length(HeaderValues[I]);
 
-            if (HeaderValues[I] <> '') then
-              Response.Headers.KnownHeaders[KnownIndex].pRawValue := @HeaderValues[I][1];
-          end
-        else
-          Inc(UnknownCount);
-      end;
+              if (HeaderValues[I] <> '') then
+                Response.Headers.KnownHeaders[KnownIndex].pRawValue := @HeaderValues[I][1];
+            end
+          else
+            Inc(UnknownCount);
+        end;
 
       SetLength(UnknownHeaders,
                 UnknownCount);
@@ -1499,7 +1533,7 @@ begin
               UnknownHeaders[UnknownCount].pRawValue := @HeaderValues[I][1];
 
             Inc(UnknownCount);
-        end;
+          end;
 
       Response.Headers.UnknownHeaderCount := UnknownCount;
 
@@ -1508,11 +1542,11 @@ begin
 
       HasBody := not SameText(AMethod,
                               'HEAD') and
-                (Status <> 204) and
-                (Status <> 304) and
-                ((ContentLength <> 0) or TransferChunked);
+        (Status <> 204) and
+        (Status <> 304) and
+        ((ContentLength <> 0) or TransferChunked);
 
-      CloseDelimited := ContentLength < 0;
+      CloseDelimited := (ContentLength < 0);
 
       // Continuous AAC has no Content-Length. Keep the response open while
       // sending its body and disconnect only on the final entity-body call.
@@ -1577,7 +1611,7 @@ begin
 
           if (BodyData <> '') then
             if not SendBodyPart(BodyData,
-                                Remaining = 0) then
+              Remaining = 0) then
               Exit(True);
 
           while (Remaining > 0) do
@@ -1601,7 +1635,7 @@ begin
                   Count);
 
               if not SendBodyPart(Part,
-                                  Remaining = 0) then
+                Remaining = 0) then
                 Break;
             end;
         end
@@ -1609,30 +1643,30 @@ begin
         begin
           if (BodyData <> '') then
             if not SendBodyPart(BodyData,
-                                False) then
+              False) then
               Exit(True);
 
-            repeat
-              Count := recv(Upstream,
-                            Buffer,
-                            SizeOf(Buffer),
-                            0);
+          repeat
+            Count := recv(Upstream,
+                          Buffer,
+                          SizeOf(Buffer),
+                          0);
 
-              if (Count > 0) then
-                begin
-                  SetString(Part,
-                            PAnsiChar(@Buffer[0]),
-                            Count);
+            if (Count > 0) then
+              begin
+                SetString(Part,
+                          PAnsiChar(@Buffer[0]),
+                          Count);
 
-                  if not SendBodyPart(Part,
-                                      False) then
-                    Break;
-                end;
-            until (Count <= 0);
+                if not SendBodyPart(Part,
+                  False) then
+                  Break;
+              end;
+          until (Count <= 0);
 
-        FinishUnknownLengthResponse(FRequestQueue,
-                                    ARequestId);
-      end;
+          FinishUnknownLengthResponse(FRequestQueue,
+                                      ARequestId);
+        end;
 
       Result := True;
 
@@ -1643,7 +1677,8 @@ begin
     end;
 
   finally
-    shutdown(Upstream, 2);
+    shutdown(Upstream,
+             2);
     closesocket(Upstream);
     if not Result then
       LogUpstreamFailure;

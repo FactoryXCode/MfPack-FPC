@@ -67,7 +67,7 @@ interface
 
 uses
   FxProxy.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   JwaWinSvc,
   {System}
@@ -77,9 +77,9 @@ const
   FX_SERVE_SERVICE_NAME = 'FxServe';
   FX_SERVE_DISPLAY_NAME = 'FactoryX FxServe';
 
-  procedure RunFxServeService(const AConfigFileName: string);
-  procedure InstallFxServeService(const AConfigFileName: string);
-  procedure UninstallFxServeService();
+procedure RunFxServeService(const AConfigFileName: string);
+procedure InstallFxServeService(const AConfigFileName: string);
+procedure UninstallFxServeService();
 
 
 implementation
@@ -95,9 +95,11 @@ var
   GStopEvent: THandle;
   GCheckPoint: DWORD;
 
+
 procedure ReportServiceStatus(ACurrentState: DWORD;
                               AWin32ExitCode: DWORD;
                               AWaitHint: DWORD);
+
 begin
 
   GStatus.dwCurrentState := ACurrentState;
@@ -126,20 +128,21 @@ end;
 
 
 procedure ServiceControlHandler(AControl: DWORD); stdcall;
+
 begin
 
   case AControl of
     SERVICE_CONTROL_STOP,
-    SERVICE_CONTROL_SHUTDOWN: begin
-                                if (GStatus.dwCurrentState = SERVICE_RUNNING) then
-                                  begin
-                                    ReportServiceStatus(SERVICE_STOP_PENDING,
-                                                        NO_ERROR,
-                                                        15000);
-                                    if (GStopEvent <> 0) then
-                                      SetEvent(GStopEvent);
-                                  end;
-                              end;
+      SERVICE_CONTROL_SHUTDOWN: begin
+        if (GStatus.dwCurrentState = SERVICE_RUNNING) then
+          begin
+            ReportServiceStatus(SERVICE_STOP_PENDING,
+                                NO_ERROR,
+                                15000);
+            if (GStopEvent <> 0) then
+              SetEvent(GStopEvent);
+          end;
+      end;
 
     SERVICE_CONTROL_INTERROGATE: SetServiceStatus(GStatusHandle,
                                                   GStatus);
@@ -156,19 +159,19 @@ var
 begin
 
   FillChar(GStatus,
-          SizeOf(GStatus),
-          0);
+           SizeOf(GStatus),
+           0);
 
   GStatus.dwServiceType := SERVICE_WIN32_OWN_PROCESS;
   GStatusHandle := RegisterServiceCtrlHandlerW(FX_SERVE_SERVICE_NAME,
-                                              @ServiceControlHandler);
+                                               @ServiceControlHandler);
   if (GStatusHandle = 0) then
     Exit;
 
   GStopEvent := CreateEventW(nil,
-                            True,
-                            False,
-                            nil);
+                             True,
+                             False,
+                             nil);
   if (GStopEvent = 0) then
     begin
       ReportServiceStatus(SERVICE_STOPPED,
@@ -192,8 +195,8 @@ begin
                           NO_ERROR,
                           0);
 
-      while WaitForSingleObject(GStopEvent,
-                                500) = WAIT_TIMEOUT do
+      while (WaitForSingleObject(GStopEvent,
+          500) = WAIT_TIMEOUT) do
         Host.CheckForConfigurationChanges();
 
       ReportServiceStatus(SERVICE_STOP_PENDING,
@@ -203,11 +206,11 @@ begin
 
     except
       on E: Exception do
-      begin
-        OutputDebugStringW(PChar('FxServe service error: ' + E.Message));
-        ExitCode := ERROR_SERVICE_SPECIFIC_ERROR;
-        GStatus.dwServiceSpecificExitCode := 1;
-      end;
+        begin
+          OutputDebugStringW(PChar('FxServe service error: ' + E.Message));
+          ExitCode := ERROR_SERVICE_SPECIFIC_ERROR;
+          GStatus.dwServiceSpecificExitCode := 1;
+        end;
     end;
 
   finally
@@ -243,6 +246,7 @@ end;
 
 
 function ServiceBinaryCommand(const AConfigFileName: string): string;
+
 begin
 
   Result := '"' + ExpandFileName(FxParamStr(0)) + '" --service --config "' + ExpandFileName(AConfigFileName) + '"';
@@ -262,8 +266,8 @@ begin
                               [ExpandFileName(AConfigFileName)]);
 
   Manager := OpenSCManagerW(nil,
-                           nil,
-                           SC_MANAGER_CREATE_SERVICE);
+                            nil,
+                            SC_MANAGER_CREATE_SERVICE);
 
   if (Manager = 0) then
     RaiseLastOSError();
@@ -272,18 +276,18 @@ begin
     CommandLine := ServiceBinaryCommand(AConfigFileName);
 
     Service := CreateServiceW(Manager,
-                             FX_SERVE_SERVICE_NAME,
-                             FX_SERVE_DISPLAY_NAME,
-                             SERVICE_ALL_ACCESS,
-                             SERVICE_WIN32_OWN_PROCESS,
-                             SERVICE_AUTO_START,
-                             SERVICE_ERROR_NORMAL,
-                             PChar(CommandLine),
-                             nil,
-                             nil,
-                             nil,
-                             nil,
-                             nil);
+                              FX_SERVE_SERVICE_NAME,
+                              FX_SERVE_DISPLAY_NAME,
+                              SERVICE_ALL_ACCESS,
+                              SERVICE_WIN32_OWN_PROCESS,
+                              SERVICE_AUTO_START,
+                              SERVICE_ERROR_NORMAL,
+                              PChar(CommandLine),
+                              nil,
+                              nil,
+                              nil,
+                              nil,
+                              nil);
     if (Service = 0) then
       RaiseLastOSError;
 
@@ -310,28 +314,28 @@ var
 begin
 
   Manager := OpenSCManagerW(nil,
-                           nil,
-                           SC_MANAGER_CONNECT);
+                            nil,
+                            SC_MANAGER_CONNECT);
   if (Manager = 0) then
     RaiseLastOSError();
 
   try
     Service := OpenServiceW(Manager,
-                           FX_SERVE_SERVICE_NAME,
-                           SERVICE_ALL_ACCESS);
+                            FX_SERVE_SERVICE_NAME,
+                            SERVICE_ALL_ACCESS);
     if (Service = 0) then
       RaiseLastOSError();
 
     try
       if QueryServiceStatus(Service,
-                            Status) and
-         (Status.dwCurrentState <> SERVICE_STOPPED) then
-      begin
-        ControlService(Service,
-                       SERVICE_CONTROL_STOP,
-                       Status);
-        Sleep(500);
-      end;
+        Status) and
+        (Status.dwCurrentState <> SERVICE_STOPPED) then
+        begin
+          ControlService(Service,
+                         SERVICE_CONTROL_STOP,
+                         Status);
+          Sleep(500);
+        end;
 
       if not DeleteService(Service) then
         RaiseLastOSError();

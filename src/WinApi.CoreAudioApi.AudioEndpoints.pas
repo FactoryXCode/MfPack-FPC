@@ -74,14 +74,13 @@ unit WinApi.CoreAudioApi.AudioEndpoints;
 interface
 
 uses
-  
   Windows;
 
   {$PACKENUM 4}
 
 
 const
-  ENDPOINT_FORMAT_RESET_MIX_ONLY      = $00000001 ;
+  ENDPOINT_FORMAT_RESET_MIX_ONLY = $00000001;
 
   // ----------------------------------------------------------------------
   // IAudioEndpointFormatControl
@@ -103,7 +102,7 @@ type
   //  Resets the format to the default setting provided by the device manufacturer.
   //
   IAudioEndpointFormatControl = interface(IUnknown)
-  ['{784CFD40-9F89-456E-A1A6-873B006A664E}']
+    ['{784CFD40-9F89-456E-A1A6-873B006A664E}']
     function ResetToDefault({in} ResetFlags: DWORD): HResult; stdcall;
     // Parameters:
     //
@@ -118,6 +117,7 @@ type
     //      S_OK if successful
     //      <other error>
   end;
+
   IID_IAudioEndpointFormatControl = IAudioEndpointFormatControl;
 
 
@@ -127,6 +127,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

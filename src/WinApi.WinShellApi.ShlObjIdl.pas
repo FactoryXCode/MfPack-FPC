@@ -97,7 +97,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$PACKRECORDS C} // Win64
+  {$PACKRECORDS C}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -129,121 +130,133 @@ type
   //
 
 
-// Enums =======================================================================
+  // Enums =======================================================================
 
 type
   _SV3CVW3_FLAGS = type DWORD;
   SV3CVW3_FLAGS = _SV3CVW3_FLAGS;
+
 const
-  SV3CVW3_DEFAULT          = _SV3CVW3_FLAGS($0000);
-  SV3CVW3_NONINTERACTIVE   = _SV3CVW3_FLAGS($0001);
-  SV3CVW3_FORCEVIEWMODE    = _SV3CVW3_FLAGS($0002);
+  SV3CVW3_DEFAULT = _SV3CVW3_FLAGS($0000);
+  SV3CVW3_NONINTERACTIVE = _SV3CVW3_FLAGS($0001);
+  SV3CVW3_FORCEVIEWMODE = _SV3CVW3_FLAGS($0002);
   SV3CVW3_FORCEFOLDERFLAGS = _SV3CVW3_FLAGS($0004);
 
 type
   PCDBE_ACTIONS = ^_CDBE_ACTIONS;
   _CDBE_ACTIONS = type DWORD;
   CDBE_ACTIONS = _CDBE_ACTIONS;
+
 const
   CDBE_TYPE_MUSIC = CDBE_ACTIONS($00000001);
-  CDBE_TYPE_DATA  = CDBE_ACTIONS($00000002);
-  CDBE_TYPE_ALL   = CDBE_ACTIONS($FFFFFFFF);
+  CDBE_TYPE_DATA = CDBE_ACTIONS($00000002);
+  CDBE_TYPE_ALL = CDBE_ACTIONS($FFFFFFFF);
 
 type
   tagCDBURNINGEXTENSIONRET = type DWORD;
+
 const
-  CDBE_RET_DEFAULT            = tagCDBURNINGEXTENSIONRET(0);
-  CDBE_RET_DONTRUNOTHEREXTS   = tagCDBURNINGEXTENSIONRET($0001);
-  CDBE_RET_STOPWIZARD         = tagCDBURNINGEXTENSIONRET($0002);
+  CDBE_RET_DEFAULT = tagCDBURNINGEXTENSIONRET(0);
+  CDBE_RET_DONTRUNOTHEREXTS = tagCDBURNINGEXTENSIONRET($0001);
+  CDBE_RET_STOPWIZARD = tagCDBURNINGEXTENSIONRET($0002);
 
 type
   NSTCEHITTEST = type DWORD;
+
 const
-  NSTCEHT_NOWHERE          = NSTCEHITTEST($0001);
-  NSTCEHT_ONITEMICON       = NSTCEHITTEST($0002);
-  NSTCEHT_ONITEMLABEL      = NSTCEHITTEST($0004);
-  NSTCEHT_ONITEMINDENT     = NSTCEHITTEST($0008);
-  NSTCEHT_ONITEMBUTTON     = NSTCEHITTEST($0010);
-  NSTCEHT_ONITEMRIGHT      = NSTCEHITTEST($0020);
-  NSTCEHT_ONITEMSTATEICON  = NSTCEHITTEST($0040);
-  NSTCEHT_ONITEM           = NSTCEHITTEST($0046);
-  NSTCEHT_ONITEMTABBUTTON  = NSTCEHITTEST($1000);
+  NSTCEHT_NOWHERE = NSTCEHITTEST($0001);
+  NSTCEHT_ONITEMICON = NSTCEHITTEST($0002);
+  NSTCEHT_ONITEMLABEL = NSTCEHITTEST($0004);
+  NSTCEHT_ONITEMINDENT = NSTCEHITTEST($0008);
+  NSTCEHT_ONITEMBUTTON = NSTCEHITTEST($0010);
+  NSTCEHT_ONITEMRIGHT = NSTCEHITTEST($0020);
+  NSTCEHT_ONITEMSTATEICON = NSTCEHITTEST($0040);
+  NSTCEHT_ONITEM = NSTCEHITTEST($0046);
+  NSTCEHT_ONITEMTABBUTTON = NSTCEHITTEST($1000);
 
 type
   NSTCECLICKTYPE = type DWORD;
+
 const
-  NSTCECT_LBUTTON   = NSTCECLICKTYPE($0001);
-  NSTCECT_MBUTTON   = NSTCECLICKTYPE($0002);
-  NSTCECT_RBUTTON   = NSTCECLICKTYPE($0003);
-  NSTCECT_BUTTON    = NSTCECLICKTYPE($0003);
-  NSTCECT_DBLCLICK  = NSTCECLICKTYPE($0004);
+  NSTCECT_LBUTTON = NSTCECLICKTYPE($0001);
+  NSTCECT_MBUTTON = NSTCECLICKTYPE($0002);
+  NSTCECT_RBUTTON = NSTCECLICKTYPE($0003);
+  NSTCECT_BUTTON = NSTCECLICKTYPE($0003);
+  NSTCECT_DBLCLICK = NSTCECLICKTYPE($0004);
 
 type
   FOLDERVIEWOPTIONS = type Integer;
+
 const
-  FVO_DEFAULT          = FOLDERVIEWOPTIONS($0000);
-  FVO_VISTALAYOUT      = FOLDERVIEWOPTIONS($0001);
-  FVO_CUSTOMPOSITION   = FOLDERVIEWOPTIONS($0002);
-  FVO_CUSTOMORDERING   = FOLDERVIEWOPTIONS($0004);
+  FVO_DEFAULT = FOLDERVIEWOPTIONS($0000);
+  FVO_VISTALAYOUT = FOLDERVIEWOPTIONS($0001);
+  FVO_CUSTOMPOSITION = FOLDERVIEWOPTIONS($0002);
+  FVO_CUSTOMORDERING = FOLDERVIEWOPTIONS($0004);
   FVO_SUPPORTHYPERLINKS = FOLDERVIEWOPTIONS($0008);
-  FVO_NOANIMATIONS     = FOLDERVIEWOPTIONS($0010);
-  FVO_NOSCROLLTIPS     = FOLDERVIEWOPTIONS($0020);
+  FVO_NOANIMATIONS = FOLDERVIEWOPTIONS($0010);
+  FVO_NOSCROLLTIPS = FOLDERVIEWOPTIONS($0020);
 
 type
   SYNC_ENGINE_STATE_FLAGS = type Integer;
+
 const
-  SESF_NONE                           = SYNC_ENGINE_STATE_FLAGS($0000);
-  SESF_SERVICE_QUOTA_NEARING_LIMIT    = SYNC_ENGINE_STATE_FLAGS($0001);
-  SESF_SERVICE_QUOTA_EXCEEDED_LIMIT   = SYNC_ENGINE_STATE_FLAGS($0002);
-  SESF_AUTHENTICATION_ERROR           = SYNC_ENGINE_STATE_FLAGS($0004);
-  SESF_PAUSED_DUE_TO_METERED_NETWORK  = SYNC_ENGINE_STATE_FLAGS($0008);
-  SESF_PAUSED_DUE_TO_DISK_SPACE_FULL  = SYNC_ENGINE_STATE_FLAGS($0010);
-  SESF_PAUSED_DUE_TO_CLIENT_POLICY    = SYNC_ENGINE_STATE_FLAGS($0020);
-  SESF_PAUSED_DUE_TO_SERVICE_POLICY   = SYNC_ENGINE_STATE_FLAGS($0040);
-  SESF_SERVICE_UNAVAILABLE            = SYNC_ENGINE_STATE_FLAGS($0080);
-  SESF_PAUSED_DUE_TO_USER_REQUEST     = SYNC_ENGINE_STATE_FLAGS($0100);
-  SESF_ALL_FLAGS                      = SYNC_ENGINE_STATE_FLAGS($01FF);
+  SESF_NONE = SYNC_ENGINE_STATE_FLAGS($0000);
+  SESF_SERVICE_QUOTA_NEARING_LIMIT = SYNC_ENGINE_STATE_FLAGS($0001);
+  SESF_SERVICE_QUOTA_EXCEEDED_LIMIT = SYNC_ENGINE_STATE_FLAGS($0002);
+  SESF_AUTHENTICATION_ERROR = SYNC_ENGINE_STATE_FLAGS($0004);
+  SESF_PAUSED_DUE_TO_METERED_NETWORK = SYNC_ENGINE_STATE_FLAGS($0008);
+  SESF_PAUSED_DUE_TO_DISK_SPACE_FULL = SYNC_ENGINE_STATE_FLAGS($0010);
+  SESF_PAUSED_DUE_TO_CLIENT_POLICY = SYNC_ENGINE_STATE_FLAGS($0020);
+  SESF_PAUSED_DUE_TO_SERVICE_POLICY = SYNC_ENGINE_STATE_FLAGS($0040);
+  SESF_SERVICE_UNAVAILABLE = SYNC_ENGINE_STATE_FLAGS($0080);
+  SESF_PAUSED_DUE_TO_USER_REQUEST = SYNC_ENGINE_STATE_FLAGS($0100);
+  SESF_ALL_FLAGS = SYNC_ENGINE_STATE_FLAGS($01FF);
 
 type
   VPWATERMARKFLAGS = type Integer;
+
 const
-  VPWF_DEFAULT    = VPWATERMARKFLAGS($0000);
+  VPWF_DEFAULT = VPWATERMARKFLAGS($0000);
   VPWF_ALPHABLEND = VPWATERMARKFLAGS($0001);
 
 type
   VPCOLORFLAGS = type Integer;
+
 const
-  VPCF_TEXT           = VPCOLORFLAGS(1);
-  VPCF_BACKGROUND     = VPCOLORFLAGS(2);
-  VPCF_SORTCOLUMN     = VPCOLORFLAGS(3);
-  VPCF_SUBTEXT        = VPCOLORFLAGS(4);
+  VPCF_TEXT = VPCOLORFLAGS(1);
+  VPCF_BACKGROUND = VPCOLORFLAGS(2);
+  VPCF_SORTCOLUMN = VPCOLORFLAGS(3);
+  VPCF_SUBTEXT = VPCOLORFLAGS(4);
   VPCF_TEXTBACKGROUND = VPCOLORFLAGS(5);
 
 type
   DSH_FLAGS = type Integer;
+
 const
   DSH_ALLOWDROPDESCRIPTIONTEXT = DSH_FLAGS($0001);
 
 type
   NSTCSTYLE2 = type Integer;
+
 const
-  NSTCS2_DEFAULT                = NSTCSTYLE2($0000);
+  NSTCS2_DEFAULT = NSTCSTYLE2($0000);
   NSTCS2_INTERRUPTNOTIFICATIONS = NSTCSTYLE2($0001);
-  NSTCS2_SHOWNULLSPACEMENU      = NSTCSTYLE2($0002);
-  NSTCS2_DISPLAYPADDING         = NSTCSTYLE2($0004);
-  NSTCS2_DISPLAYPINNEDONLY      = NSTCSTYLE2($0008);
-  NTSCS2_NOSINGLETONAUTOEXPAND  = NSTCSTYLE2($0010);
+  NSTCS2_SHOWNULLSPACEMENU = NSTCSTYLE2($0002);
+  NSTCS2_DISPLAYPADDING = NSTCSTYLE2($0004);
+  NSTCS2_DISPLAYPINNEDONLY = NSTCSTYLE2($0008);
+  NTSCS2_NOSINGLETONAUTOEXPAND = NSTCSTYLE2($0010);
   NTSCS2_NEVERINSERTNONENUMERATED = NSTCSTYLE2($0020);
 
 type
   UNDOCK_REASON = type Integer;
+
 const
-  UR_RESOLUTION_CHANGE  = UNDOCK_REASON(0);
+  UR_RESOLUTION_CHANGE = UNDOCK_REASON(0);
   UR_MONITOR_DISCONNECT = UNDOCK_REASON(1);
 
 
 
-// Interfaces =====
+  // Interfaces =====
 
 type
 
@@ -257,6 +270,7 @@ type
 
     function SetCodePage(uiCodePage: UINT): HRESULT; stdcall;
   end;
+
   IID_IQueryCodePage = IQueryCodePage;
 
 
@@ -273,10 +287,11 @@ type
 
     function GetFolderViewOptions(out pfvoFlags: FOLDERVIEWOPTIONS): HRESULT; stdcall;
   end;
+
   IID_IFolderViewOptions = IFolderViewOptions;
 
 
-// #if (NTDDI_VERSION >= NTDDI_VISTA)
+  // #if (NTDDI_VERSION >= NTDDI_VISTA)
 
   // Interface IShellView3
   // =====================
@@ -284,7 +299,7 @@ type
   IShellView3 = interface(IShellView2)
     ['{EC39FA88-F8AF-41C5-8421-38BED28F4673}']
 
-     // [v1_enum] enum _SV3CVW3_FLAGS
+    // [v1_enum] enum _SV3CVW3_FLAGS
     // typedef DWORD SV3CVW3_FLAGS;
     function CreateViewWindow3(psbOwner: IShellBrowser;
                                psvPrev: IShellView;
@@ -296,10 +311,11 @@ type
                                prcView: PRECT;
                                out phwndView: HWND): HRESULT; stdcall;
   end;
-  IID_IShellView3 = IShellView3;
-// #endif  // NTDDI_VISTA
 
-// #if (NTDDI_VERSION >= NTDDI_WIN7)
+  IID_IShellView3 = IShellView3;
+  // #endif  // NTDDI_VISTA
+
+  // #if (NTDDI_VERSION >= NTDDI_WIN7)
 
 
   // Interface IShellView3
@@ -314,10 +330,11 @@ type
 
     function GetText(out ppsz: LPWSTR): HRESULT; stdcall;
   end;
+
   IID_ISearchBoxInfo = ISearchBoxInfo;
 
-// #endif // (NTDDI_VERSION >= NTDDI_WIN7)
-// #if (_WIN32_IE >= _WIN32_IE_IE70)
+  // #endif // (NTDDI_VERSION >= NTDDI_WIN7)
+  // #if (_WIN32_IE >= _WIN32_IE_IE70)
 
   // Interface IVisualProperties
   // ===========================
@@ -326,21 +343,26 @@ type
     ['{E693CF68-D967-4112-8763-99172AEE5E5A}']
     // typedef [v1_enum] enum VPWATERMARKFLAGS
     // cpp_quote("DEFINE_ENUM_FLAG_OPERATORS(VPWATERMARKFLAGS)")
-    function SetWatermark(hbmp: HBITMAP; vpwf: VPWATERMARKFLAGS): HRESULT; stdcall;
+    function SetWatermark(hbmp: HBITMAP;
+                          vpwf: VPWATERMARKFLAGS): HRESULT; stdcall;
     // typedef [v1_enum] enum VPCOLORFLAGS
-    function SetColor(vpcf: VPCOLORFLAGS; cr: COLORREF): HRESULT; stdcall;
-    function GetColor(vpcf: VPCOLORFLAGS; out pcr: COLORREF): HRESULT; stdcall;
+    function SetColor(vpcf: VPCOLORFLAGS;
+                      cr: COLORREF): HRESULT; stdcall;
+    function GetColor(vpcf: VPCOLORFLAGS;
+                      out pcr: COLORREF): HRESULT; stdcall;
     function SetItemHeight(cyItemInPixels: Integer): HRESULT; stdcall;
     function GetItemHeight(out cyItemInPixels: Integer): HRESULT; stdcall;
     function SetFont(plf: PLOGFONTW;
                      bRedraw: BOOL): HRESULT; stdcall;
     function GetFont(out plf: LOGFONTW): HRESULT; stdcall;
-    function SetTheme(pszSubAppName: LPCWSTR; pszSubIdList: LPCWSTR): HRESULT; stdcall;
+    function SetTheme(pszSubAppName: LPCWSTR;
+                      pszSubIdList: LPCWSTR): HRESULT; stdcall;
   end;
+
   IID_IVisualProperties = IVisualProperties;
 
-// #endif  // _WIN32_IE_IE70
-// #if (_WIN32_IE >= _WIN32_IE_IE70)
+  // #endif  // _WIN32_IE_IE70
+  // #if (_WIN32_IE >= _WIN32_IE_IE70)
 
   // Interface ICommDlgBrowser3
   // ==========================
@@ -356,9 +378,10 @@ type
 
     function OnPreViewCreated(ppshv: IShellView): HRESULT; stdcall;
   end;
+
   IID_ICommDlgBrowser3 = ICommDlgBrowser3;
 
-// #endif  // (_WIN32_IE >= _WIN32_IE_IE70)
+  // #endif  // (_WIN32_IE >= _WIN32_IE_IE70)
 
   // Interface IUserAccountChangeCallback
   // ====================================
@@ -368,6 +391,7 @@ type
 
     function OnPictureChange(pszUserName: LPCWSTR): HRESULT; stdcall;
   end;
+
   IID_IUserAccountChangeCallback = IUserAccountChangeCallback;
 
 
@@ -394,6 +418,7 @@ type
     function CancelIo(): HRESULT; stdcall;
 
   end;
+
   IID_IStreamAsync = IStreamAsync;
 
 
@@ -405,11 +430,12 @@ type
 
     function GetSectorSize(out pcbSectorSize: ULONG): HRESULT; stdcall;
   end;
+
   IID_IStreamUnbufferedInfo = IStreamUnbufferedInfo;
 
 
-// #if (NTDDI_VERSION >= NTDDI_WIN2K)
-// #if (NTDDI_VERSION >= NTDDI_VISTA)
+  // #if (NTDDI_VERSION >= NTDDI_WIN2K)
+  // #if (NTDDI_VERSION >= NTDDI_VISTA)
 
 
   // Interface IStreamUnbufferedInfo
@@ -420,10 +446,11 @@ type
 
     function SetFlags(dwFlags: DWORD): HRESULT; stdcall;
   end;
+
   IID_IDragSourceHelper2 = IDragSourceHelper2;
 
-// #endif  // NTDDI_VISTA
-// #endif  // NTDDI_WIN2K
+  // #endif  // NTDDI_VISTA
+  // #endif  // NTDDI_WIN2K
 
   // Interface IHWEventHandler
   // =========================
@@ -443,6 +470,7 @@ type
                                     pszContentTypeHandler: LPCWSTR;
                                     pdataobject: IDataObject): HRESULT; stdcall;
   end;
+
   IID_IHWEventHandler = IHWEventHandler;
 
 
@@ -457,6 +485,7 @@ type
                                  pszEventType: LPCWSTR;
                                  hwndOwner: HWND): HRESULT; stdcall;
   end;
+
   IID_IHWEventHandler2 = IHWEventHandler2;
 
 
@@ -471,6 +500,7 @@ type
                            pszLabel: LPCWSTR;
                            dwSerialNumber: DWORD): HRESULT; stdcall;
   end;
+
   IID_IQueryCancelAutoPlay = IQueryCancelAutoPlay;
 
 
@@ -503,10 +533,11 @@ type
                             dwContentType: DWORD;
                             out ppszAction: LPWSTR): HRESULT; stdcall;
   end;
+
   IID_IDynamicHWHandler = IDynamicHWHandler;
 
-// #endif  // NTDDI_VISTA
-//cpp_quote("#endif  // NTDDI_WINXP")
+  // #endif  // NTDDI_VISTA
+  //cpp_quote("#endif  // NTDDI_WINXP")
 
   // Interface IUserNotificationCallback
   // ===================================
@@ -520,6 +551,7 @@ type
     function OnLeftClick(pt: PPOINT): HRESULT; stdcall;
     function OnContextMenu(pt: PPOINT): HRESULT; stdcall;
   end;
+
   IID_IUserNotificationCallback = IUserNotificationCallback;
 
 
@@ -546,6 +578,7 @@ type
 
     function PlaySound(pszSoundName: LPCWSTR): HRESULT; stdcall;
   end;
+
   IID_IUserNotification2 = IUserNotification2;
 
 
@@ -580,9 +613,10 @@ type
 
     function GetCompositionState(out pfCompositionEnabled: BOOL): HRESULT; stdcall;
   end;
+
   IID_IDeskBand2 = IDeskBand2;
 
-// #endif  // NTDDI_VISTA
+  // #endif  // NTDDI_VISTA
 
   // Interface IStartMenuPinnedList
   // ==============================
@@ -595,6 +629,7 @@ type
     //  if pitem is pinned, the pitem fail to be removed from pinned list, return error HRESULT
     function RemoveFromList(pitem: IShellItem): HRESULT; stdcall;
   end;
+
   IID_IStartMenuPinnedList = IStartMenuPinnedList;
 
 
@@ -611,6 +646,7 @@ type
 
     function HasRecordableDrive(out pfHasRecorder: BOOL): HRESULT; stdcall;
   end;
+
   IID_ICDBurn = ICDBurn;
 
 
@@ -635,6 +671,7 @@ type
 
     function GetCancelledPage(out phpage: HPROPSHEETPAGE): HRESULT; stdcall;
   end;
+
   IID_IWizardSite = IWizardSite;
 
   // Interface IWizardExtension
@@ -645,10 +682,13 @@ type
   // Wizard Extension
   IWizardExtension = interface(IUnknown)
     ['{C02EA696-86CC-491E-9B23-74394A0444A8}']
-    function AddPages(out aPages: HPROPSHEETPAGE; cPages: UINT; out pnPagesAdded: UINT): HRESULT; stdcall;
+    function AddPages(out aPages: HPROPSHEETPAGE;
+                      cPages: UINT;
+                      out pnPagesAdded: UINT): HRESULT; stdcall;
     function GetFirstPage(out phpage: HPROPSHEETPAGE): HRESULT; stdcall;
     function GetLastPage(out phpage: HPROPSHEETPAGE): HRESULT; stdcall;
   end;
+
   IID_IWizardExtension = IWizardExtension;
 
 
@@ -664,6 +704,7 @@ type
 
     function SetErrorURL(pszErrorURL: LPCWSTR): HRESULT; stdcall;
   end;
+
   IID_IWebWizardExtension = IWebWizardExtension;
 
   // Interface IPublishingWizard
@@ -680,9 +721,10 @@ type
     function GetTransferManifest(out phrFromTransfer: HRESULT;
                                  out pdocManifest: IXMLDOMDocument): HRESULT; stdcall;
   end;
+
   IID_IPublishingWizard = IPublishingWizard;
 
-// #if (NTDDI_VERSION >= NTDDI_WINXP) || (_WIN32_IE >= _WIN32_IE_IE70)
+  // #if (NTDDI_VERSION >= NTDDI_WINXP) || (_WIN32_IE >= _WIN32_IE_IE70)
 
   // Interface IFolderViewHost
   // =========================
@@ -696,10 +738,11 @@ type
                         pdo: IDataObject;
                         prc: PRECT): HRESULT; stdcall;
   end;
+
   IID_IFolderViewHost = IFolderViewHost;
 
 
-// #if (_WIN32_IE >= _WIN32_IE_IE70)
+  // #if (_WIN32_IE >= _WIN32_IE_IE70)
 
   // Interface IFolderViewHost
   // =========================
@@ -709,12 +752,13 @@ type
 
     function SetAccessibleName(pszName: LPCWSTR): HRESULT; stdcall;
   end;
+
   IID_IAccessibleObject = IAccessibleObject;
 
 
-// #endif  // (_WIN32_IE >= _WIN32_IE_IE70)
-// New for Vista, but used by downlevel code
-//cpp_quote("#if (NTDDI_VERSION >= NTDDI_VISTA)")
+  // #endif  // (_WIN32_IE >= _WIN32_IE_IE70)
+  // New for Vista, but used by downlevel code
+  //cpp_quote("#if (NTDDI_VERSION >= NTDDI_VISTA)")
 
   // Interface IResultsFolder
   // ========================
@@ -734,13 +778,14 @@ type
 
     function RemoveAll: HRESULT; stdcall;
   end;
+
   IID_IResultsFolder = IResultsFolder;
 
 
-//cpp_quote("#endif  // NTDDI_VISTA")
-// #if (_WIN32_IE >= _WIN32_IE_IE70)
-// #endif  // (_WIN32_IE >= _WIN32_IE_IE70)
-// #endif  // NTDDI_WINXP || (_WIN32_IE >= _WIN32_IE_IE70)
+  //cpp_quote("#endif  // NTDDI_VISTA")
+  // #if (_WIN32_IE >= _WIN32_IE_IE70)
+  // #endif  // (_WIN32_IE >= _WIN32_IE_IE70)
+  // #endif  // NTDDI_WINXP || (_WIN32_IE >= _WIN32_IE_IE70)
 
 
   // Interface IAutoCompleteDropDown
@@ -754,10 +799,11 @@ type
 
     function ResetEnumerator(): HRESULT; stdcall;
   end;
+
   IID_IAutoCompleteDropDown = IAutoCompleteDropDown;
 
 
-// #if (NTDDI_VERSION >= NTDDI_WINXP)
+  // #if (NTDDI_VERSION >= NTDDI_WINXP)
 
 
   // The cd burning wizard extension sets return codes through a property bag
@@ -773,11 +819,12 @@ type
 
     function GetSupportedActionTypes(out pdwActions: CDBE_ACTIONS): HRESULT; stdcall;
   end;
+
   IID_ICDBurnExt = ICDBurnExt;
 
-// #endif  // NTDDI_WINXP
-// New for XP, but used by downlevel code
-//cpp_quote("#if (NTDDI_VERSION >= NTDDI_WINXP)")
+  // #endif  // NTDDI_WINXP
+  // New for XP, but used by downlevel code
+  //cpp_quote("#if (NTDDI_VERSION >= NTDDI_WINXP)")
 
   // Interface IEnumReadyCallback
   // ============================
@@ -787,6 +834,7 @@ type
 
     function EnumReady(): HRESULT; stdcall;
   end;
+
   IID_IEnumReadyCallback = IEnumReadyCallback;
 
 
@@ -802,6 +850,7 @@ type
                                           dwEnumFlags: DWORD;
                                           out ppEnumIDList: IEnumIDList): HRESULT; stdcall;
   end;
+
   IID_IEnumerableView = IEnumerableView;
 
 
@@ -813,10 +862,11 @@ type
 
     function InsertItem(pidl: PCUIDLIST_RELATIVE): HRESULT; stdcall;
   end;
+
   IID_IInsertItem = IInsertItem;
 
 
-// #if (NTDDI_VERSION >= NTDDI_WINXP)
+  // #if (NTDDI_VERSION >= NTDDI_WINXP)
 
   // Interface IFolderBandPriv
   // =========================
@@ -832,6 +882,7 @@ type
 
     function SetNoText(fNoText: BOOL): HRESULT; stdcall;
   end;
+
   IID_IFolderBandPriv = IFolderBandPriv;
 
 
@@ -851,13 +902,14 @@ type
                              pstg: IStorage;
                              out ppstrmOut: IStream): HRESULT; stdcall;
   end;
+
   IID_IImageRecompress = IImageRecompress;
 
 
 
-// #endif  // NTDDI_WINXP
-// #endif  // NTDDI_WINXP) || (_WIN32_IE >= _WIN32_IE_IE70)
-// #if (NTDDI_VERSION >= NTDDI_VISTA)
+  // #endif  // NTDDI_WINXP
+  // #endif  // NTDDI_WINXP) || (_WIN32_IE >= _WIN32_IE_IE70)
+  // #if (NTDDI_VERSION >= NTDDI_VISTA)
 
 
   // Interface IFileDialogControlEvents
@@ -890,6 +942,7 @@ type
     function OnControlActivating(pfdc: IFileDialogCustomize;
                                  dwIDCtl: DWORD): HRESULT; stdcall;
   end;
+
   IID_IFileDialogControlEvents = IFileDialogControlEvents;
 
 
@@ -907,6 +960,7 @@ type
     // this part of the namespace.
     function SetNavigationRoot(psi: IShellItem): HRESULT; stdcall;
   end;
+
   IID_IFileDialog2 = IFileDialog2;
 
   // Interface IApplicationAssociationRegistrationUI
@@ -916,10 +970,11 @@ type
     ['{1F76A169-F994-40AC-8FC8-0959E8874710}']
     function LaunchAdvancedAssociationUI(pszAppRegistryName: LPCWSTR): HRESULT; stdcall;
   end;
+
   IID_IApplicationAssociationRegistrationUI = IApplicationAssociationRegistrationUI;
 
 
-// #endif  // NTDDI_VISTA
+  // #endif  // NTDDI_VISTA
 
   // Interface IShellRunDll
   // ======================
@@ -928,6 +983,7 @@ type
     ['{FCE4BDE0-4B68-4B80-8E9C-7426315A7388}']
     function Run(pszArgs: LPCWSTR): HRESULT; stdcall;
   end;
+
   IID_IShellRunDll = IShellRunDll;
 
 
@@ -941,10 +997,11 @@ type
                                    fOkToBeSlow: BOOL;
                                    out pfAvailable: BOOL): HRESULT; stdcall;
   end;
+
   IID_IPreviousVersionsInfo = IPreviousVersionsInfo;
 
 
-// #if (NTDDI_VERSION >= NTDDI_VISTA)
+  // #if (NTDDI_VERSION >= NTDDI_VISTA)
 
   // Interface IUseToBrowseItem
   // ==========================
@@ -952,6 +1009,7 @@ type
   IUseToBrowseItem = interface(IRelatedItem)
     ['{05EDDA5C-98A3-4717-8ADB-C5E7DA991EB1}']
   end;
+
   IID_IUseToBrowseItem = IUseToBrowseItem;
 
 
@@ -962,13 +1020,13 @@ type
   //  "recyle bin root" - where (and if) recycle bin is supported
   //  "machine root" - for "open containing machine"
 
-// #endif  // NTDDI_VISTA
+  // #endif  // NTDDI_VISTA
 
   // SID_SCommandBarState: {B99EAA5C-3850-4400-BC33-2CE534048BF8}
   // DEFINE_GUID(SID_SCommandBarState, 0xB99EAA5C, 0x3850, 0x4400, 0xBC, 0x33, 0x2C, 0xE5, 0x34, 0x04, 0x8B, 0xF8);
   // New for Vista, but used by downlevel code
 
-//cpp_quote("#if (NTDDI_VERSION >= NTDDI_VISTA)")
+  //cpp_quote("#if (NTDDI_VERSION >= NTDDI_VISTA)")
 
   // Interface INameSpaceTreeControl2
   // ================================
@@ -990,6 +1048,7 @@ type
     function GetControlStyle2(nstcsMask: NSTCSTYLE2;
                               out pnstcsStyle: NSTCSTYLE2): HRESULT; stdcall;
   end;
+
   IID_INameSpaceTreeControl2 = INameSpaceTreeControl2;
 
 
@@ -1038,9 +1097,11 @@ type
 
     function OnBeforeItemDelete(psi: IShellItem): HRESULT; stdcall;
 
-    function OnItemAdded(psi: IShellItem; fIsRoot: BOOL): HRESULT; stdcall;
+    function OnItemAdded(psi: IShellItem;
+                         fIsRoot: BOOL): HRESULT; stdcall;
 
-    function OnItemDeleted(psi: IShellItem; fIsRoot: BOOL): HRESULT; stdcall;
+    function OnItemDeleted(psi: IShellItem;
+                           fIsRoot: BOOL): HRESULT; stdcall;
 
     function OnBeforeContextMenu(psi: IShellItem;
                                  const riid: REFIID;
@@ -1058,6 +1119,7 @@ type
                                    out piDefaultIcon: Integer;
                                    out piOpenIcon: Integer): HRESULT; stdcall;
   end;
+
   IID_INameSpaceTreeControlEvents = INameSpaceTreeControlEvents;
 
 
@@ -1096,6 +1158,7 @@ type
 
     function OnDragLeave(psiOver: IShellItem): HRESULT; stdcall;
   end;
+
   IID_INameSpaceTreeControlDropHandler = INameSpaceTreeControlDropHandler;
 
 
@@ -1113,6 +1176,7 @@ type
     function OnGetAccessibilityRole(psi: IShellItem;
                                     out pvarRole: OleVariant): HRESULT; stdcall;
   end;
+
   IID_INameSpaceTreeAccessible = INameSpaceTreeAccessible;
 
 
@@ -1120,6 +1184,7 @@ type
   // =========================================
   //
   PNSTCCUSTOMDRAW = ^NSTCCUSTOMDRAW;
+
   NSTCCUSTOMDRAW = record
     psi: Pointer; // Borrowed IShellItem*; this record does not own a reference.
     uItemState: UINT;
@@ -1148,10 +1213,11 @@ type
                            prc: PRect;
                            pnstccdItem: PNSTCCUSTOMDRAW): HRESULT; stdcall;
   end;
+
   IID_INameSpaceTreeControlCustomDraw = INameSpaceTreeControlCustomDraw;
 
-//cpp_quote("#endif  // NTDDI_VISTA")
-// #if (NTDDI_VERSION >= NTDDI_VISTA)
+  //cpp_quote("#endif  // NTDDI_VISTA")
+  // #if (NTDDI_VERSION >= NTDDI_VISTA)
 
 
   // Interface ITrayDeskBand
@@ -1168,6 +1234,7 @@ type
 
     function DeskBandRegistrationChanged(): HRESULT; stdcall;
   end;
+
   IID_ITrayDeskBand = ITrayDeskBand;
 
 
@@ -1188,9 +1255,10 @@ type
 
     function DestroyBand(const rclsidBand: REFCLSID): HRESULT; stdcall;
   end;
+
   IID_IBandHost = IBandHost;
 
-// #endif  // NTDDI_VISTA
+  // #endif  // NTDDI_VISTA
 
   // Interface IComputerInfoChangeNotify
   // ===================================
@@ -1200,10 +1268,11 @@ type
 
     function ComputerInfoChanged(): HRESULT; stdcall;
   end;
+
   IID_IComputerInfoChangeNotify = IComputerInfoChangeNotify;
 
-// #if (NTDDI_VERSION >= NTDDI_WIN7)
-// #endif // NTDDI_WIN7
+  // #if (NTDDI_VERSION >= NTDDI_WIN7)
+  // #endif // NTDDI_WIN7
 
   // Interface IDesktopGadget
   // ========================
@@ -1213,10 +1282,11 @@ type
 
     function RunGadget(gadgetPath: LPCWSTR): HRESULT; stdcall;
   end;
+
   IID_IDesktopGadget = IDesktopGadget;
 
-// #if (NTDDI_VERSION >= NTDDI_WINTHRESHOLD)
-// #endif // NTDDI_WINTHRESHOLD
+  // #if (NTDDI_VERSION >= NTDDI_WINTHRESHOLD)
+  // #endif // NTDDI_WINTHRESHOLD
 
   //
   //  NOTE - this typelib is never registered anywhere
@@ -1321,6 +1391,7 @@ type
 
     function Undocked(undockReason: UNDOCK_REASON): HRESULT; stdcall;
   end;
+
   IID_IAccessibilityDockingServiceCallback = IAccessibilityDockingServiceCallback;
 
 
@@ -1348,11 +1419,12 @@ type
     // This undocks the passed in window
     function UndockWindow(hwnd: HWND): HRESULT; stdcall;
   end;
+
   IID_IAccessibilityDockingService = IAccessibilityDockingService;
 
 
-// #endif // NTDDI_WIN8
-// #if (NTDDI_VERSION >= NTDDI_WIN10_RS4)
+  // #endif // NTDDI_WIN8
+  // #if (NTDDI_VERSION >= NTDDI_WIN10_RS4)
 
   // Interface IAccessibilityDockingService
   // ======================================
@@ -1374,10 +1446,11 @@ type
                        subscriptionId: LPCWSTR;
                        out contentId: LPWSTR): HRESULT; stdcall;
   end;
+
   IID_IStorageProviderBanners = IStorageProviderBanners;
 
 
-// #endif // NTDDI_WIN10_RS4
+  // #endif // NTDDI_WIN10_RS4
 
   // Interface IStorageProviderCopyHook
   // ==================================
@@ -1394,6 +1467,7 @@ type
                           destAttribs: DWORD;
                           out result: UINT): HRESULT; stdcall;
   end;
+
   IID_IStorageProviderCopyHook = IStorageProviderCopyHook;
 
 
@@ -1403,6 +1477,6 @@ type
 
 implementation
 
-  // Implement additional prototypes here.
+// Implement additional prototypes here.
 
 end.

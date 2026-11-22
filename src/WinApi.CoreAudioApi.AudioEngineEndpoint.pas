@@ -80,7 +80,7 @@ unit WinApi.CoreAudioApi.AudioEngineEndpoint;
 interface
 
 uses
- 
+
   {WinApi}
   Windows,
   WinApi.WinApiTypes,
@@ -95,7 +95,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -103,52 +104,80 @@ uses
 const
 
   // GUID_DEVINTERFACE_AUDIOENDPOINTPLUGIN: The PnP interface for audio endpoint plugin
-  DEVINTERFACE_AUDIOENDPOINTPLUGIN      : TGUID = '{9F2F7B66-65AC-4FA6-8AE4-123C78B89313}';
+  DEVINTERFACE_AUDIOENDPOINTPLUGIN: TGUID = '{9F2F7B66-65AC-4FA6-8AE4-123C78B89313}';
 
   // DEVPKEY_AudioEndpointPlugin_FactoryCLSID: Specifies the CLSID of the audio endpoint plugin factory
   // vartype = VT_CLSID
-  DEVPKEY_AudioEndpointPlugin_FactoryCLSID   : PROPERTYKEY = (fmtid: (D1: $12d83bd7;
-                                                                      D2: $cf12;
-                                                                      D3: $46be;
-                                                                      D4: ($85, $40, $81, $27, $10, $d3, $2, $1c));
-                                                                      pid: 1);
+  DEVPKEY_AudioEndpointPlugin_FactoryCLSID: PROPERTYKEY = (fmtid: (D1: $12d83bd7;
+    D2: $cf12;
+    D3: $46be;
+    D4: ($85,
+         $40,
+         $81,
+         $27,
+         $10,
+         $d3,
+         $2,
+         $1c));
+    pid: 1);
 
   // DEVPKEY_AudioEndpointPlugin_DataFlow: Specifies type of data flow. 0 = render, 1 = capture.
   // vartype = VT_UI4
-  DEVPKEY_AudioEndpointPlugin_DataFlow       : PROPERTYKEY = (fmtid: (D1: $12d83bd7;
-                                                                      D2: $cf12;
-                                                                      D3: $46be;
-                                                                      D4: ($85, $40, $81, $27, $10, $d3, $2, $1c));
-                                                                      pid: 2);
+  DEVPKEY_AudioEndpointPlugin_DataFlow: PROPERTYKEY = (fmtid: (D1: $12d83bd7;
+    D2: $cf12;
+    D3: $46be;
+    D4: ($85,
+         $40,
+         $81,
+         $27,
+         $10,
+         $d3,
+         $2,
+         $1c));
+    pid: 2);
 
   // DEVPKEY_AudioEndpointPlugin_PnPInterface: Specifies name of PnP Interface for audio endpoint plugin.
   // vartype = VT_LPWSTR
-  DEVPKEY_AudioEndpointPlugin_PnPInterface   : PROPERTYKEY = (fmtid: (D1: $12d83bd7;
-                                                                      D2: $cf12;
-                                                                      D3: $46be;
-                                                                      D4: ($85, $40, $81, $27, $10, $d3, $2, $1c));
-                                                                      pid: 3);
+  DEVPKEY_AudioEndpointPlugin_PnPInterface: PROPERTYKEY = (fmtid: (D1: $12d83bd7;
+    D2: $cf12;
+    D3: $46be;
+    D4: ($85,
+         $40,
+         $81,
+         $27,
+         $10,
+         $d3,
+         $2,
+         $1c));
+    pid: 3);
 
   // DEVPKEY_AudioEndpointPlugin2_FactoryCLSID: Specifies the CLSID of the audio endpoint plugin factory
   // vartype = VT_CLSID
-  DEVPKEY_AudioEndpointPlugin2_FactoryCLSID  : PROPERTYKEY = (fmtid: (D1: $12d83bd7;
-                                                                      D2: $cf12;
-                                                                      D3: $46be;
-                                                                      D4: ($85, $40, $81, $27, $10, $d3, $2, $1c));
-                                                                      Pid: 4);
+  DEVPKEY_AudioEndpointPlugin2_FactoryCLSID: PROPERTYKEY = (fmtid: (D1: $12d83bd7;
+    D2: $cf12;
+    D3: $46be;
+    D4: ($85,
+         $40,
+         $81,
+         $27,
+         $10,
+         $d3,
+         $2,
+         $1c));
+    Pid: 4);
 
 
 type
   // Endpoint pin type
   PEndpointConnectorType = ^EndpointConnectorType;
   EndpointConnectorType = (
-    eHostProcessConnector     = 0,
-    eOffloadConnector         = (eHostProcessConnector + 1),
-    eLoopbackConnector        = (eOffloadConnector + 1),
-    eKeywordDetectorConnector = (eLoopbackConnector + 1),
-    eLoopbackConnectorPostVolume = (eKeywordDetectorConnector + 1),
-    eConnectorCount           = (eLoopbackConnectorPostVolume + 1)
-  );
+    eHostProcessConnector = 0,
+                           eOffloadConnector = (eHostProcessConnector + 1),
+                           eLoopbackConnector = (eOffloadConnector + 1),
+                           eKeywordDetectorConnector = (eLoopbackConnector + 1),
+                           eLoopbackConnectorPostVolume = (eKeywordDetectorConnector + 1),
+                           eConnectorCount = (eLoopbackConnectorPostVolume + 1)
+    );
 
 
   // AUDIO_ENDPOINT_SHARED_CREATE_PARAMS
@@ -179,21 +208,21 @@ type
   // Description:
   // Each AE_CURRENT_POSITION structure has a flag associated with it.
   // The flag for each structure may be either invalid, valid, or discontinuous...
-    AE_POSITION_FLAGS      = (
+  AE_POSITION_FLAGS = (
     // POSITION_INVALID means that the position is invalid
     // and should not be used.
-    POSITION_INVALID       = 0,
+    POSITION_INVALID = 0,
     // Position is valid. However there has been
     // a disruption such as a glitch or state transition.
     // This position is not correlated with the previous one.
     POSITION_DISCONTINUOUS = 1,
     // Position is valid. The previous packet
     // and this packet aligns perfectly on the timeline.
-    POSITION_CONTINUOUS    = 2,
+    POSITION_CONTINUOUS = 2,
     // The QPC value associated with this position is not accurate
     // within 300 Microseconds.
-    POSITION_QPC_ERROR     = 4
-  );
+    POSITION_QPC_ERROR = 4
+    );
   AePositionFlags = AE_POSITION_FLAGS;
 
 
@@ -202,6 +231,7 @@ type
   // Description:
   // Structure used to report the current frame position from the device to the clients.
   PAeCurrentPosition = ^AeCurrentPosition;
+
   AE_CURRENT_POSITION = record
     // Device position in frames.
     u64DevicePosition: UINT64;
@@ -276,7 +306,7 @@ type
 
 type
 
-//======================= INTERFACES ===========================================
+  //======================= INTERFACES ===========================================
 
 
   // Interface IAudioEndpoint
@@ -285,7 +315,7 @@ type
   // This interface is implemented by an audio endpoint.
   //
   IAudioEndpoint = interface(IUnknown)
-  ['{30A99515-1527-4451-AF9F-00C5F0234DAF}']
+    ['{30A99515-1527-4451-AF9F-00C5F0234DAF}']
     function GetFrameFormat(out ppFormat: PWAVEFORMATEX): HResult; stdcall;
     // Description:
     //  Returns the format of the endpoint.
@@ -377,7 +407,7 @@ type
   // and write positions.
   //
   IAudioEndpointRT = interface(IUnknown)
-  ['{DFD2005F-A6E5-4d39-A265-939ADA9FBB4D}']
+    ['{DFD2005F-A6E5-4d39-A265-939ADA9FBB4D}']
     procedure GetCurrentPadding(out pPadding: HNSTIME;
                                 out pAeCurrentPosition: AeCurrentPosition); stdcall;
     // Description:
@@ -468,7 +498,7 @@ type
   // each processing pass.
   //
   IAudioInputEndpointRT = interface(IUnknown)
-  ['{8026AB61-92B2-43c1-A1DF-5C37EBD08D82}']
+    ['{8026AB61-92B2-43c1-A1DF-5C37EBD08D82}']
     procedure GetInputDataPointer(pConnectionProperty: PAPO_CONNECTION_PROPERTY;
                                   pAeTimeStamp: PAeCurrentPosition = Nil); stdcall;
     // Description:
@@ -582,7 +612,7 @@ type
   // for each processing pass.
   //
   IAudioOutputEndpointRT = interface(IUnknown)
-  ['{8FA906E4-C31C-4e31-932E-19A66385E9AA}']
+    ['{8FA906E4-C31C-4e31-932E-19A66385E9AA}']
     function GetOutputDataPointer(u32FrameCount: UINT32;
                                   pAeTimeStamp: PAeCurrentPosition): UINT_PTR; stdcall;
     // Description:
@@ -682,7 +712,7 @@ type
   // This interface is used to initialize a Device Endpoint.
   //
   IAudioDeviceEndpoint = interface(IUnknown)
-  ['{D4952F5A-A0B2-4cc4-8B82-9358488DD8AC}']
+    ['{D4952F5A-A0B2-4cc4-8B82-9358488DD8AC}']
     function SetBuffer(MaxPeriod: HNSTIME;
                        u32LatencyCoefficient: UINT32): HResult; stdcall;
     // Description:
@@ -766,16 +796,16 @@ type
   // This interface is used to allow per stream offloaded control of volume.
   //
   IAudioEndpointOffloadStreamVolume = interface(IUnknown)
-  ['{64F1DD49-71CA-4281-8672-3A9EDDD1D0B6}']
+    ['{64F1DD49-71CA-4281-8672-3A9EDDD1D0B6}']
     function GetVolumeChannelCount(out pu32ChannelCount: UINT32): HResult; stdcall;
 
     function SetChannelVolumes(u32ChannelCount: UINT32;
                                pf32Volumes: PFloat32;
                                u32CurveType: AUDIO_CURVE_TYPE;   // Used to be in KsMedia.h, since win 8 it's re-defined in AudioAPOTypes.h  (Tony)
-                               pCurveDuration: PHNSTIME): HResult; stdcall;
+      pCurveDuration: PHNSTIME): HResult; stdcall;
 
     function GetChannelVolumes(u32ChannelCount: UINT32;
-                               {out} pf32Volumes: PFloat32): HResult; stdcall;
+    {out} pf32Volumes: PFloat32): HResult; stdcall;
 
   end;
   // IAudioEndpointOffloadStreamVolume
@@ -787,7 +817,7 @@ type
   // This interface is used to allow per stream offloaded control of mute.
   //
   IAudioEndpointOffloadStreamMute = interface(IUnknown)
-  ['{DFE21355-5EC2-40E0-8D6B-710AC3C00249}']
+    ['{DFE21355-5EC2-40E0-8D6B-710AC3C00249}']
 
     function SetMute(bMuted: Boolean): HResult; stdcall;
 
@@ -802,12 +832,12 @@ type
   // ==========================================
   // This interface is used to allow per stream offloaded control of metering.
   IAudioEndpointOffloadStreamMeter = interface(IUnknown)
-  ['{E1546DCE-9DD1-418B-9AB2-348CED161C86}']
+    ['{E1546DCE-9DD1-418B-9AB2-348CED161C86}']
 
     function GetMeterChannelCount(out pu32ChannelCount: UINT32): HResult; stdcall;
 
     function GetMeteringData(u32ChannelCount: UINT32;
-                             {out} pf32PeakValues: PFloat32): HResult; stdcall;
+    {out} pf32PeakValues: PFloat32): HResult; stdcall;
 
   end;
   // IAudioEndpointOffloadStreamMeter
@@ -823,7 +853,7 @@ type
   // it reaches the end of a buffer.
   //
   IAudioEndpointLastBufferControl = interface(IUnknown)
-  ['{F8520DD3-8F9D-4437-9861-62F584C33DD6}']
+    ['{F8520DD3-8F9D-4437-9861-62F584C33DD6}']
 
     function IsLastBufferControlSupported(): BOOL; stdcall;
 
@@ -840,7 +870,7 @@ type
   // This interface is used to query and enable/disable Lfx on each stream.
   //
   IAudioLfxControl = interface(IUnknown)
-  ['{076A6922-D802-4F83-BAF6-409D9CA11BFE}']
+    ['{076A6922-D802-4F83-BAF6-409D9CA11BFE}']
 
     function SetLocalEffectsState(bEnabled: BOOL): HResult; stdcall;
 
@@ -858,7 +888,7 @@ type
   // exposed on an endpoint.
   //
   IHardwareAudioEngineBase = interface(IUnknown)
-  ['{EDDCE3E4-F3C1-453a-B461-223563CBD886}']
+    ['{EDDCE3E4-F3C1-453a-B461-223563CBD886}']
     function GetAvailableOffloadConnectorCount(_pwstrDeviceId: PWideChar;
                                                _uConnectorId: UINT32;
                                                out _pAvailableConnectorInstanceCount: UINT32): HResult; stdcall;
@@ -887,7 +917,7 @@ type
   // This interface is used to control an endpoint.
   //
   IAudioEndpointControl = interface(IUnknown)
-  ['{C684B72A-6DF4-4774-BDF9-76B77509B653}']
+    ['{C684B72A-6DF4-4774-BDF9-76B77509B653}']
     function Start(): HResult; stdcall;
     // Description:
     // Starts an endpoint immediately
@@ -935,6 +965,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

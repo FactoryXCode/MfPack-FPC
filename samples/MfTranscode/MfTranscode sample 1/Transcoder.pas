@@ -68,7 +68,7 @@ interface
 
 uses
   MfCaptureSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -93,6 +93,7 @@ const
 type
 
   TTranscoder = class(TObject)
+
   private
     rcHandle: HWnd;         // Handle of the windows that receives the messages.
     pCont: TStreamContentsArray;  // Array with all audio and video information from the source file.
@@ -131,16 +132,19 @@ implementation
 //  CTranscoder constructor
 //-------------------------------------------------------------------
 constructor TTranscoder.Create(clHandle: HWnd);
+
 begin
+
   inherited Create();
 
   // Check if the current MF version match user's
   if FAILED(MFStartup(MF_VERSION, 0)) then
     begin
       MessageBoxW(0,
-                 LPCWSTR(format('Your computer does not support this Media Foundation API version %d.',[MF_VERSION])),
-                 LPCWSTR('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  LPCWSTR(format('Your computer does not support this Media Foundation API version %d.',
+                                 [MF_VERSION])),
+                  LPCWSTR('MFStartup Failure!'),
+                  MB_ICONSTOP);
       Abort();
     end;
   rcHandle := clHandle;
@@ -150,7 +154,9 @@ end;
 //  CTranscoder destructor
 //-------------------------------------------------------------------
 destructor TTranscoder.Destroy();
+
 begin
+
   // Shutdown the mediasource and session to release all their objects.
   Shutdown();
   // Shutdown Media Foundation
@@ -163,7 +169,8 @@ begin
   SafeRelease(m_pSession);
   SafeRelease(m_pAttributes);
 
-  SetLength(pCont, 0);
+  SetLength(pCont,
+            0);
   pCont := Nil;
 
   inherited Destroy;
@@ -218,8 +225,8 @@ begin
     hr := m_pSource.CreatePresentationDescriptor(pPresentationDescriptor);
   if SUCCEEDED(hr) then
     hr := GetStreamContents(pPresentationDescriptor,
-                    m_pSource,
-                    pCont);
+                            m_pSource,
+                            pCont);
 
   Result := hr;
 end;
@@ -262,7 +269,7 @@ begin
     begin
       hr := pAvailableTypes.GetElementCount(dwMTCount);
 
-      if dwMTCount = 0 then
+      if (dwMTCount = 0) then
         begin
           hr := E_UNEXPECTED;
         end;
@@ -317,6 +324,7 @@ var
   uiRate: UInt32;
 
 begin
+
   {$IFDEF DEBUG}
   assert(m_pProfile <> nil);
   {$ENDIF}
@@ -334,7 +342,8 @@ begin
   // Configure the video stream
 
   // Create a new attribute store.
-  hr := MFCreateAttributes(pVideoAttrs, 5);
+  hr := MFCreateAttributes(pVideoAttrs,
+                           5);
 
   // Set the encoder to be Windows Media video encoder, so that the appropriate MFTs are added to the topology.
   if SUCCEEDED(hr) then
@@ -395,12 +404,14 @@ var
   pContainerAttrs: IMFAttributes;
 
 begin
+
   {$IFDEF DEBUG}
   assert(m_pProfile <> Nil);
   {$ENDIF}
 
   // Set container attributes
-  hr := MFCreateAttributes(pContainerAttrs, 2);
+  hr := MFCreateAttributes(pContainerAttrs,
+                           2);
 
   // Set the output container to be ASF type
   if SUCCEEDED(hr) then
@@ -450,7 +461,7 @@ begin
   hr := MFCreateTranscodeTopology(m_pSource,
                                   sURL,
                                   m_pProfile,
-                                  m_pTopology );
+                                  m_pTopology);
 
   // Set the topology on the media session.
   if SUCCEEDED(hr) then
@@ -479,7 +490,7 @@ end;
 //  getting media session events.
 //-------------------------------------------------------------------
 
-  function TTranscoder.Transcode(): HResult;
+function TTranscoder.Transcode(): HResult;
 var
   hr: HResult;
   hrStatus: HResult;  // Event status
@@ -529,7 +540,7 @@ begin
       HandleMessages(GetCurrentThread());
 
       if FAILED(hr) then
-        if hr = MF_E_NO_EVENTS_AVAILABLE then
+        if (hr = MF_E_NO_EVENTS_AVAILABLE) then
           begin
             // continue will skip the rest of this loop, so we have to get the progress update before
             // the eventype will be handled.
@@ -553,38 +564,44 @@ begin
 
       if FAILED(hrStatus) then
         begin
-          SetWindowTextW(rcHandle, LPCWSTR(Format('Failed. %d error condition triggered this event.', [hrStatus])));
+          SetWindowTextW(rcHandle,
+                         LPCWSTR(Format('Failed. %d error condition triggered this event.',
+                                        [hrStatus])));
           hr := hrStatus;
           break;
         end;
 
       case meType of
-        MESessionTopologySet: begin
-                                hr := Start();
-                                if SUCCEEDED(hr) then
-                                  begin
-                                   // We use SetWindowText to display messages in the mainform's caption
-                                   SetWindowTextW(rcHandle, LPCWSTR('Ready for rendering.'));
-                                  end;
-                              end;
+          MESessionTopologySet: begin
+            hr := Start();
+            if SUCCEEDED(hr) then
+              begin
+                // We use SetWindowText to display messages in the mainform's caption
+                SetWindowTextW(rcHandle,
+                               LPCWSTR('Ready for rendering.'));
+              end;
+          end;
 
-        MESessionStarted: begin
-                            startUpdateProcessing := True;
-                            SetWindowTextW(rcHandle, LPCWSTR('Rendering is in progress...'));
-                           end;
+          MESessionStarted: begin
+            startUpdateProcessing := True;
+            SetWindowTextW(rcHandle,
+                           LPCWSTR('Rendering is in progress...'));
+          end;
 
-        MESessionEnded: begin
-                          startUpdateProcessing := False;
-                          hr := m_pSession.Close();
-                          if SUCCEEDED(hr) then
-                            begin
-                              SetWindowTextW(rcHandle, LPCWSTR('Finished rendering.'));
-                            end;
-                        end;
+          MESessionEnded: begin
+            startUpdateProcessing := False;
+            hr := m_pSession.Close();
+            if SUCCEEDED(hr) then
+              begin
+                SetWindowTextW(rcHandle,
+                               LPCWSTR('Finished rendering.'));
+              end;
+          end;
 
-        MESessionClosed: begin
-                           SetWindowTextW(rcHandle, LPCWSTR('Output file has been succesfully created.'));
-                         end;
+          MESessionClosed: begin
+            SetWindowTextW(rcHandle,
+                           LPCWSTR('Output file has been succesfully created.'));
+          end;
       end;
 
       if FAILED(hr) then
@@ -595,7 +612,7 @@ begin
 
   // Shutdown() has been called. This code happens when the Transcode process is aborted when running.
   // ie: The user closed the application or aborted the operation while Transcoding is in progress.
-  if hr = MF_E_SHUTDOWN then
+  if (hr = MF_E_SHUTDOWN) then
     hr := E_ABORT;
 
   Result := hr;
@@ -603,7 +620,9 @@ end;
 
 
 function TTranscoder.Stop(): Boolean;
+
 begin
+
   Shutdown();
   Result := True;
 end;
@@ -623,6 +642,7 @@ var
   pClock: IMFClock;
 
 begin
+
   {$IFDEF DEBUG}
   assert(m_pSession <> nil);
   {$ENDIF}
@@ -638,7 +658,8 @@ begin
   // For this we need the clock
   if Succeeded(hr) then
     begin
-      hr := pPD.GetUINT64(MF_PD_DURATION, UINT64(m_Duration));
+      hr := pPD.GetUINT64(MF_PD_DURATION,
+                          UINT64(m_Duration));
       // Get the presentation clock
       if SUCCEEDED(hr) then
         hr := m_pSession.GetClock(pClock);
@@ -646,16 +667,19 @@ begin
         hr := pClock.QueryInterface(IID_IMFPresentationClock,
                                     m_pClock);
       if Failed(hr) then
-        SetWindowTextW(rcHandle, LPCWSTR('Could not find a presentation clock!'));
+        SetWindowTextW(rcHandle,
+                       LPCWSTR('Could not find a presentation clock!'));
 
-     end;
+    end;
 
   PropVariantInit(varStart);
 
-  hr := m_pSession.Start(GUID_NULL, varStart);
+  hr := m_pSession.Start(GUID_NULL,
+                         varStart);
 
   if FAILED(hr) then
-    SetWindowTextW(rcHandle, LPCWSTR('Failed to start the session...'));
+    SetWindowTextW(rcHandle,
+                   LPCWSTR('Failed to start the session...'));
 
   Result := hr;
 end;
@@ -672,13 +696,14 @@ var
   hr: HResult;
 
 begin
+
   hr := S_OK;
 
   // Shut down the media source
   if Assigned(m_pSource) then
     begin
       hr := m_pSource.Stop;
-      if hr <> MF_E_SHUTDOWN then
+      if (hr <> MF_E_SHUTDOWN) then
         hr := m_pSource.Shutdown();
     end;
 
@@ -690,18 +715,19 @@ begin
           hr := m_pSession.Stop();
           if Succeeded(hr) then
             hr := m_pSession.Close;
-          if hr <> MF_E_SHUTDOWN then
+          if (hr <> MF_E_SHUTDOWN) then
             hr := m_pSession.Shutdown();
         end;
     end;
 
-  if hr <> S_OK then
+  if (hr <> S_OK) then
     // On this, nothing special is going on, just continue with no error, unless otherwise.
     // Set the result as aborted.
-    if hr = MF_E_SHUTDOWN then
+    if (hr = MF_E_SHUTDOWN) then
       hr := E_ABORT
     else
-      SetWindowTextW(rcHandle, LPCWSTR('Failed to close the session...'));
+      SetWindowTextW(rcHandle,
+                     LPCWSTR('Failed to close the session...'));
 
   Result := hr;
 end;
@@ -710,11 +736,13 @@ end;
 function TTranscoder.GetMediaFromContArray(const mitype: TMediaTypes): Integer;
 var
   i: Integer;
+
 begin
+
   Result := -1;
   if Assigned(pCont) then
-    if Length(pCont) > 0 then
-      for i := 0 to Length(pCont)-1 do
+    if (Length(pCont) > 0) then
+      for i := 0 to Length(pCont) - 1 do
         if (pCont[i].idStreamMediaType = mitype) then
           begin
             Result := I;

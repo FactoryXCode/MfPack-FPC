@@ -72,7 +72,7 @@ unit System.Services.AtlThunk;
 
 {$I MfPack.Fpc.inc}
 
-  {$HPPEMIT '#include "atlthunk.h"'}
+{$HPPEMIT '#include "atlthunk.h"'}
 
 interface
 
@@ -87,7 +87,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 type
@@ -98,29 +99,29 @@ type
   {$NODEFINE AtlThunkData_t}
 
 
-  // Allocates space in memory for an ATL thunk.
-  function AtlThunk_AllocateData(): PAtlThunkData_t; stdcall;
-  {$EXTERNALSYM AtlThunk_AllocateData}
+// Allocates space in memory for an ATL thunk.
+function AtlThunk_AllocateData(): PAtlThunkData_t; stdcall;
+{$EXTERNALSYM AtlThunk_AllocateData}
 
-  // Initializes an ATL thunk.
-  procedure AtlThunk_InitData(Thunk: PAtlThunkData_t;
-                              Proc: Pointer;
-                              FirstParameter: SIZE_T); stdcall;
-  {$EXTERNALSYM AtlThunk_InitData}
+// Initializes an ATL thunk.
+procedure AtlThunk_InitData(Thunk: PAtlThunkData_t;
+                            Proc: Pointer;
+                            FirstParameter: SIZE_T); stdcall;
+{$EXTERNALSYM AtlThunk_InitData}
 
-  // Returns an executable function corresponding to the AtlThunkData_t parameter.
-  function AtlThunk_DataToCode(unnamedParam1: PAtlThunkData_t): Pointer; stdcall;
-  {$EXTERNALSYM AtlThunk_DataToCode}
+// Returns an executable function corresponding to the AtlThunkData_t parameter.
+function AtlThunk_DataToCode(unnamedParam1: PAtlThunkData_t): Pointer; stdcall;
+{$EXTERNALSYM AtlThunk_DataToCode}
 
-  // Frees memory associated with an ATL thunk.
-  procedure AtlThunk_FreeData(Thunk: PAtlThunkData_t); stdcall;
-  {$EXTERNALSYM AtlThunk_FreeData}
-
-
-  // Additional Prototypes for ALL interfaces
+// Frees memory associated with an ATL thunk.
+procedure AtlThunk_FreeData(Thunk: PAtlThunkData_t); stdcall;
+{$EXTERNALSYM AtlThunk_FreeData}
 
 
-  // End of Additional Prototypes
+// Additional Prototypes for ALL interfaces
+
+
+// End of Additional Prototypes
 
 
 implementation
@@ -130,12 +131,12 @@ const
 
 
 
-  function AtlThunk_AllocateData; external AtlthunkLib name 'AtlThunk_AllocateData';
-  procedure AtlThunk_InitData; external AtlthunkLib name 'AtlThunk_InitData';
-  function AtlThunk_DataToCode; external AtlthunkLib name 'AtlThunk_DataToCode';
-  procedure AtlThunk_FreeData; external AtlthunkLib name 'AtlThunk_FreeData';
+function AtlThunk_AllocateData; external AtlthunkLib name 'AtlThunk_AllocateData';
+procedure AtlThunk_InitData; external AtlthunkLib name 'AtlThunk_InitData';
+function AtlThunk_DataToCode; external AtlthunkLib name 'AtlThunk_DataToCode';
+procedure AtlThunk_FreeData; external AtlthunkLib name 'AtlThunk_FreeData';
 
 
-   // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

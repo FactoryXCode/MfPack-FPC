@@ -64,15 +64,16 @@ unit RDJ_Common;
 
 interface
 
-  // Uncomment this when needed!
-  //{$DEFINE SAVE_DEBUG_REPORT}
+// Uncomment this when needed!
+//{$DEFINE SAVE_DEBUG_REPORT}
 
-uses FxProxy.Dialogs,
-Rdj.Platform,
-LMessages,
+uses
+  FxProxy.Dialogs,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   DwmApi,
@@ -103,25 +104,25 @@ const
   WM_USERINFO = WM_USER + 1;
 
   DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
-  DWMWA_BORDER_COLOR            = 34;
-  DWMWA_CAPTION_COLOR           = 35;
-  DWMWA_TEXT_COLOR              = 36;
+  DWMWA_BORDER_COLOR = 34;
+  DWMWA_CAPTION_COLOR = 35;
+  DWMWA_TEXT_COLOR = 36;
 
 const
 
-  IDTIMEOUT      = 'Unable to set the capture device.';
+  IDTIMEOUT = 'Unable to set the capture device.';
   ERR_INITIALIZE = 'Unable to initialize the capture engine.';
-  ERR_PREVIEW    = 'An error occurred during preview.';
-  ERR_RECORD     = 'An error occurred during recording.';
-  ERR_CAPTURE    = 'An error occurred during capture.';
-  ERR_PHOTO      = 'Unable to capture still photo.';
+  ERR_PREVIEW = 'An error occurred during preview.';
+  ERR_RECORD = 'An error occurred during recording.';
+  ERR_CAPTURE = 'An error occurred during capture.';
+  ERR_PHOTO = 'Unable to capture still photo.';
   ERR_OUTPUT_MEDIATYPE_SET = 'Unable to set the CaptureEngine MediaType output.';
-  ERR_SET_DEVICE   = 'Selecting a device failed.';
+  ERR_SET_DEVICE = 'Selecting a device failed.';
   ERR_STOP_PREVIEW = 'Stopping preview failed.';
 
   // Custom hresult constants.
-  E_VIDEO_NOT_PRESENT   = HRESULT($A2000001);
-  E_AUDIO_NOT_PRESENT   = HRESULT($A2000002);
+  E_VIDEO_NOT_PRESENT = HRESULT($A2000001);
+  E_AUDIO_NOT_PRESENT = HRESULT($A2000002);
   E_DEVICE_NOT_SELECTED = HRESULT($A2000003);
   E_PREVIEW_NOT_RUNNING = HRESULT($A2000004);
   E_VIDEOPROCESSOR_NOT_IMPLEMENTED = HRESULT($A2000005);
@@ -133,8 +134,9 @@ type
     Count: UINT32;
     SelectedDevice: Integer;
     SelectedFormat: Integer;
-    public
-      procedure Reset();
+
+  public
+    procedure Reset();
   end;
 
   TFrameDataEvent = procedure(AMemoryStream: TMemoryStream) of object;
@@ -147,6 +149,7 @@ type
   // CompilerVersion < Delphi 10 Seattle
 
   TMfpBitmap = class(TBitmap)
+
   public
 
     constructor Create(); overload; override;
@@ -158,76 +161,77 @@ type
 
   end;
 
-  procedure SaveImage(const pBitmap: TMfpBitmap;
-                      const pPath: string;
-                      pType: TImageType);
+procedure SaveImage(const pBitmap: TMfpBitmap;
+                    const pPath: string;
+                    pType: TImageType);
 
-  // See also WinApi.MediaFoundationApi.MfUtils/HnsTimeToStr
-  function TranslateHnsTimeToStr(hns: MFTIME;
-                                 ShowMilliSeconds: Boolean = True;
-                                 DelimiterFormat: string = ':'): string; inline;
+// See also WinApi.MediaFoundationApi.MfUtils/HnsTimeToStr
+function TranslateHnsTimeToStr(hns: MFTIME;
+                               ShowMilliSeconds: Boolean = True;
+                               DelimiterFormat: string = ':'): string; inline;
 
 
-  function CloneVideoMediaType(pSrcMediaType: IMFMediaType;
-                               const guidSubType: REFGUID;
-                               out ppNewMediaType: IMFMediaType): HResult;
+function CloneVideoMediaType(pSrcMediaType: IMFMediaType;
+                             const guidSubType: REFGUID;
+                             out ppNewMediaType: IMFMediaType): HResult;
 
-  function CopyAttribute(pSrc: IMFAttributes;
-                         pDest: IMFAttributes;
-                         const key: TGUID): HResult; inline;
+function CopyAttribute(pSrc: IMFAttributes;
+                       pDest: IMFAttributes;
+                       const key: TGUID): HResult; inline;
 
-  function GetActivationObjects(out ppActivate: PIMFActivate;
-                                out pCount: UINT32): HResult;
+function GetActivationObjects(out ppActivate: PIMFActivate;
+                              out pCount: UINT32): HResult;
 
 type
 
-  TMsgOptions  = (optIDE,        // Show info in the IDE Messages
-                  optShowMsg);   // Return info in a messagebox
+  TMsgOptions = (optIDE,        // Show info in the IDE Messages
+    optShowMsg);   // Return info in a messagebox
 
   TLockedMdiChildForm = class(TForm)
+
   private
 
     procedure WMSysCommand(var Msg: TLMSysCommand); message WM_SYSCOMMAND;
     procedure WMNCLButtonDown(var Msg: TLMessage); message WM_NCLBUTTONDOWN;
   end;
 
-  // Simple error handler that reports by default in the IDE Messages screen or
-  // shows a messagedialog at runtime.
-  procedure InfoMsg(Options: TMsgOptions;
-                    pErrMsg: string;
-                    pHr: HResult;
-                    hwObj: HWND = 0);
+// Simple error handler that reports by default in the IDE Messages screen or
+// shows a messagedialog at runtime.
+procedure InfoMsg(Options: TMsgOptions;
+                  pErrMsg: string;
+                  pHr: HResult;
+                  hwObj: HWND = 0);
 
-  procedure HandleThreadMessages(AThread: THandle;
-                                 AWait: Cardinal = INFINITE);
+procedure HandleThreadMessages(AThread: THandle;
+                               AWait: Cardinal = INFINITE);
 
-  function EventWait(EventObj: TEvent;
-                     Period: Integer = 100): HResult;
+function EventWait(EventObj: TEvent;
+                   Period: Integer = 100): HResult;
 
-  // Delphi MulDiv replacement for Int64 types.
-  function _MulDiv64(const aNumber: Int64;
-                     const aNumerator: Int64;
-                     const aDenominator: Int64): Int64; inline;
+// Delphi MulDiv replacement for Int64 types.
+function _MulDiv64(const aNumber: Int64;
+                   const aNumerator: Int64;
+                   const aDenominator: Int64): Int64; inline;
 
-  function ClampInt(const AValue: Integer;
-                    const AMin: Integer;
-                    const AMax: Integer): Integer; inline;
+function ClampInt(const AValue: Integer;
+                  const AMin: Integer;
+                  const AMax: Integer): Integer; inline;
 
-  function ClampDouble(const AValue: Double;
-                       const AMin: Double;
-                       const AMax: Double): Double; inline;
+function ClampDouble(const AValue: Double;
+                     const AMin: Double;
+                     const AMax: Double): Double; inline;
 
-  // (DWM) Dark Windows Mode API utils.
-  procedure ApplyDarkWindowFrame(const AWnd: HWND);
-  procedure RefreshDarkWindowFrame(const AWnd: HWND);
+// (DWM) Dark Windows Mode API utils.
+procedure ApplyDarkWindowFrame(const AWnd: HWND);
+procedure RefreshDarkWindowFrame(const AWnd: HWND);
 
-  // Lightweight OpenFile dialog.
-  function BrowseFile(const AOwner: HWND;
-                      const AFilter: PWideChar;
-                      const AReturnDirOnly: Boolean;
-                      out APath: UnicodeString): Boolean;
+// Lightweight OpenFile dialog.
+function BrowseFile(const AOwner: HWND;
+                    const AFilter: PWideChar;
+                    const AReturnDirOnly: Boolean;
+                    out APath: UnicodeString): Boolean;
 
-  procedure FreeComboObjects(ACombo: TComboBox);
+procedure FreeComboObjects(ACombo: TComboBox);
 
 
 implementation
@@ -236,6 +240,7 @@ implementation
 // Childform locking -----------------------------------------------------------
 
 procedure TLockedMdiChildForm.WMSysCommand(var Msg: TLMSysCommand);
+
 begin
 
   if ((Msg.CmdType and $FFF0) = SC_MOVE) then
@@ -246,6 +251,7 @@ end;
 
 
 procedure TLockedMdiChildForm.WMNCLButtonDown(var Msg: TLMessage);
+
 begin
 
   if (Msg.WParam = HTCAPTION) then
@@ -260,12 +266,12 @@ procedure InfoMsg(Options: TMsgOptions;
                   pErrMsg: string;
                   pHr: HResult;
                   hwObj: HWND = 0);
-begin
 
+begin
 
   if (Options = optIDE) then
     OutputDebugStringW(StrToPWideChar(Format('%s (hr = %d)',
-                                            [pErrMsg, pHr])));
+                                             [pErrMsg, pHr])));
 
   if (Options = optShowMsg) then
     ShowMessage(format('%s (hr = %d)',
@@ -273,10 +279,10 @@ begin
 
   if (hwObj > 0) then
     SendMessageW(hwObj,
-                WM_USERINFO,
-                WPARAM(Pointer(format('%s (hr = %d)',
-                                      [pErrMsg, pHr]))),
-                LPARAM(0));
+                 WM_USERINFO,
+                 WPARAM(Pointer(format('%s (hr = %d)',
+                                       [pErrMsg, pHr]))),
+                 LPARAM(0));
 end;
 
 
@@ -288,18 +294,18 @@ var
 begin
 
   while (MsgWaitForMultipleObjects(1,
-                                   AThread,
-                                   False,
-                                   AWait,
-                                   QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
+      AThread,
+      False,
+      AWait,
+      QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
     begin
       PeekMessageW(oMsg,
-                  0,
-                  0,
-                  0,
-                  PM_REMOVE);
+                   0,
+                   0,
+                   0,
+                   PM_REMOVE);
 
-      if oMsg.Message = WM_QUIT then
+      if (oMsg.Message = WM_QUIT) then
         Exit;
 
       TranslateMessage(oMsg);
@@ -336,8 +342,9 @@ end;
 // If working with Int64, use this method, instead of MulDiv.
 // Note: In later MfPack versions (> version 3.18), this method will be declared in WinApi.MediaFoundationApi.MfUtils.
 function _MulDiv64(const aNumber,
-                         aNumerator,
-                         aDenominator: Int64): Int64; inline;
+                   aNumerator,
+                   aDenominator: Int64): Int64; inline;
+
 begin
 
   if (aDenominator <= 0) then
@@ -345,13 +352,14 @@ begin
 
   // Avoid Int64 overflow: (QpcDelta * 10_000_000) div PerfFreq
   Result := (aNumber div aDenominator) * aNumerator +
-            (aNumber mod aDenominator) * aNumerator div aDenominator;
+    (aNumber mod aDenominator) * aNumerator div aDenominator;
 end;
 
 
 function ClampInt(const AValue,
                   AMin,
                   AMax: Integer): Integer; inline;
+
 begin
 
   if (AValue < AMin) then
@@ -366,15 +374,15 @@ end;
 function ClampDouble(const AValue: Double;
                      const AMin: Double;
                      const AMax: Double): Double; inline;
+
 begin
 
   if (AValue < AMin) then
     Result := AMin
+  else if (AValue > AMax) then
+    Result := AMax
   else
-    if (AValue > AMax) then
-      Result := AMax
-    else
-      Result := AValue;
+    Result := AValue;
 end;
 
 
@@ -390,14 +398,15 @@ begin
   Info.dwOSVersionInfoSize := SizeOf(Info);
 
   Result := GetVersionExW(Info) and
-            ((Info.dwMajorVersion > 10) or
-             ((Info.dwMajorVersion = 10) and (Info.dwBuildNumber >= 22000)));
+    ((Info.dwMajorVersion > 10) or
+    ((Info.dwMajorVersion = 10) and (Info.dwBuildNumber >= 22000)));
 end;
 
 
 procedure ApplyBoolDwmAttr(const AWnd: HWND;
                            const AAttr: DWORD;
                            const AValue: BOOL);
+
 begin
 
   if (AWnd = 0) then
@@ -413,6 +422,7 @@ end;
 procedure ApplyColorDwmAttr(const AWnd: HWND;
                             const AAttr: DWORD;
                             const AColorRef: COLORREF);
+
 begin
 
   if (AWnd = 0) then
@@ -426,6 +436,7 @@ end;
 
 
 procedure RefreshDarkWindowFrame(const AWnd: HWND);
+
 begin
 
   if (AWnd = 0) then
@@ -438,17 +449,17 @@ begin
                0,
                0,
                SWP_NOMOVE or
-               SWP_NOSIZE or
-               SWP_NOZORDER or
-               SWP_NOACTIVATE or
-               SWP_FRAMECHANGED);
+    SWP_NOSIZE or
+    SWP_NOZORDER or
+    SWP_NOACTIVATE or
+    SWP_FRAMECHANGED);
 
   RedrawWindow(AWnd,
                nil,
                0,
                RDW_INVALIDATE or
-               RDW_FRAME or
-               RDW_UPDATENOW);
+    RDW_FRAME or
+    RDW_UPDATENOW);
 end;
 
 
@@ -515,12 +526,21 @@ const
   ALL_FILTER: PWideChar = 'All Files'#0'*.*'#0#0;
 
 begin
+
   APath := '';
 
-  if AReturnDirOnly then begin Result:=FxSelectDirectory('Select directory','',APath);Exit;end;
+  if AReturnDirOnly then
+    begin
+      Result := FxSelectDirectory('Select directory',
+                                  '',
+                                  APath);
+      Exit;
+    end;
 
-  ZeroMemory(@Ofn, SizeOf(Ofn));
-  ZeroMemory(@FileBuf, SizeOf(FileBuf));
+  ZeroMemory(@Ofn,
+             SizeOf(Ofn));
+  ZeroMemory(@FileBuf,
+             SizeOf(FileBuf));
 
   Ofn.lStructSize := SizeOf(Ofn);
   Ofn.hwndOwner := AOwner;
@@ -534,8 +554,8 @@ begin
   Ofn.nMaxFile := Length(FileBuf);
   Ofn.lpstrTitle := 'Open file';
   Ofn.Flags := OFN_FILEMUSTEXIST or
-               OFN_PATHMUSTEXIST or
-               OFN_HIDEREADONLY;
+    OFN_PATHMUSTEXIST or
+    OFN_HIDEREADONLY;
 
   Result := GetOpenFileNameW(Pointer(@Ofn));
 
@@ -566,8 +586,9 @@ var
   i: Integer;
 
 begin
-{$POINTERMATH ON}
-  for i := 0 to count -1 do
+
+  {$POINTERMATH ON}
+  for i := 0 to count - 1 do
     SafeRelease(ppDevices[i]);
   CoTaskMemFree(ppDevices);
 
@@ -579,13 +600,16 @@ end;
 // TMfpBitmap ==================================================================
 
 constructor TMfpBitmap.Create();
+
 begin
+
   inherited;
 
 end;
 
 
 destructor TMfpBitmap.Destroy();
+
 begin
 
   inherited;
@@ -603,9 +627,9 @@ begin
 
   try
     Result := (Stream.Size - Stream.Position = 0) or
-              (Stream.Read(oBitmapFileHeader,
-                           SizeOf(oBitmapFileHeader)) = SizeOf(oBitmapFileHeader)) and
-              (oBitmapFileHeader.bfType = $4D42 {BM = 19778});
+      (Stream.Read(oBitmapFileHeader,
+                   SizeOf(oBitmapFileHeader)) = SizeOf(oBitmapFileHeader)) and
+      (oBitmapFileHeader.bfType = $4D42 {BM = 19778});
   finally
     Stream.Position := iPosition;
   end;
@@ -622,32 +646,32 @@ var
 begin
 
   case pType of
-    itBitmap : begin
-                 pBitmap.SaveToFile(pPath);
-               end;
-      
-    itPNG : begin
-              pPng := TPortableNetworkGraphic.Create;
-              pPng.Assign(pBitmap);
-              pBitmap.SaveToFile(pPath);
+      itBitmap: begin
+        pBitmap.SaveToFile(pPath);
+      end;
 
-              if Assigned(pPng) then
-                pPng.Free;
-            end;
-      
-    itJPG : begin
-              pJpg := TJPEGImage.Create;
-              // Adjust performance, compression etc.
-              pJpg.ProgressiveEncoding := True;
-              //pJpg.CompressionQuality := 30;
-              pJpg.Compress;
-              pJpg.Assign(pBitmap);
-              pjpg.SaveToFile(pPath);
+      itPNG: begin
+        pPng := TPortableNetworkGraphic.Create;
+        pPng.Assign(pBitmap);
+        pBitmap.SaveToFile(pPath);
 
-              if Assigned(pJpg) then
-                pJpg.Free();
-            end;
-      
+        if Assigned(pPng) then
+          pPng.Free;
+      end;
+
+      itJPG: begin
+        pJpg := TJPEGImage.Create;
+        // Adjust performance, compression etc.
+        pJpg.ProgressiveEncoding := True;
+        //pJpg.CompressionQuality := 30;
+        pJpg.Compress;
+        pJpg.Assign(pBitmap);
+        pjpg.SaveToFile(pPath);
+
+        if Assigned(pJpg) then
+          pJpg.Free();
+      end;
+
   end;
 end;
 
@@ -664,38 +688,40 @@ var
 
 begin
 
-try
-  hours := hns div MFTIME(36000000000);
-  hns := hns mod MFTIME(36000000000);
+  try
+    hours := hns div MFTIME(36000000000);
+    hns := hns mod MFTIME(36000000000);
 
-  mins := hns div 600000000;
-  hns := hns mod 600000000;
+    mins := hns div 600000000;
+    hns := hns mod 600000000;
 
-  secs := hns div 10000000;
-  hns := hns mod 10000000;
+    secs := hns div 10000000;
+    hns := hns mod 10000000;
 
-  millisec := hns div 10000;
+    millisec := hns div 10000;
 
 
-  if ShowMilliSeconds then
-    Result := Format('%2.2d%s%2.2d%s%2.2d,%3.3d', [hours,
-                                                   DelimiterFormat,
-                                                   mins,
-                                                   DelimiterFormat,
-                                                   secs,
-                                                   DelimiterFormat,
-                                                   millisec])
-  else
-    Result := Format('%2.2d%s%2.2d%s%2.2d', [hours,
-                                             DelimiterFormat,
-                                             mins,
-                                             DelimiterFormat,
-                                             secs]);
+    if ShowMilliSeconds then
+      Result := Format('%2.2d%s%2.2d%s%2.2d,%3.3d',
+                       [hours,
+        DelimiterFormat,
+        mins,
+        DelimiterFormat,
+        secs,
+        DelimiterFormat,
+        millisec])
+    else
+      Result := Format('%2.2d%s%2.2d%s%2.2d',
+                       [hours,
+        DelimiterFormat,
+        mins,
+        DelimiterFormat,
+        secs]);
 
-except
-  on exception do
-    Result:= '00:00:00,000';
-end;
+  except
+    on exception do
+      Result := '00:00:00,000';
+  end;
 end;
 
 
@@ -751,8 +777,8 @@ begin
 
   ppNewMediaType := pNewMediaType;
 
-done:
-  SafeRelease(pNewMediaType);
+  done:
+    SafeRelease(pNewMediaType);
   Result := hr;
 end;
 
@@ -768,7 +794,8 @@ begin
 
   PropVariantInit(pVar);
 
-  hr := pSrc.GetItem(key,@pVar);
+  hr := pSrc.GetItem(key,
+                     @pVar);
 
   if SUCCEEDED(hr) then
     begin

@@ -1,4 +1,4 @@
- // FactoryX
+// FactoryX
 //
 // Copyright: © FactoryX. All rights reserved.
 //
@@ -53,7 +53,7 @@ interface
 
 uses
   MfEncodeAudio.Platform,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -88,14 +88,14 @@ uses
   MfPeakMeter;  // Don't forget to add the Mfpeakmeter location in your project settings searchpath.
 
 const
-  AUDIO_FILE_FILTER  = 'Waveform Audio File Format|*.wav|' +                // 1
-                       'MPEG Audio Layer III|*.mp3|' +                      // 2
-                       'Dolby AC-3 audio|*.ac3|' +                          // 3
-                       'Free Lossless Audio Codec|*.flac|' +                // 4
-                       'Advanced Audio Coding (AAC)|*.aac|' +               // 5
-                       'MPEG-4 Audio|*.m4a|' +                              // 6
-                       'Windows Media Audio|*.wma|' +                       // 7
-                       'All Files|*.*|';                                    // 8
+  AUDIO_FILE_FILTER = 'Waveform Audio File Format|*.wav|' +                // 1
+    'MPEG Audio Layer III|*.mp3|' +                      // 2
+    'Dolby AC-3 audio|*.ac3|' +                          // 3
+    'Free Lossless Audio Codec|*.flac|' +                // 4
+    'Advanced Audio Coding (AAC)|*.aac|' +               // 5
+    'MPEG-4 Audio|*.m4a|' +                              // 6
+    'Windows Media Audio|*.wma|' +                       // 7
+    'All Files|*.*|';                                    // 8
 
 type
   TfrmMain = class(TForm)
@@ -147,20 +147,33 @@ type
     pmRight: TMfPeakMeter;
 
     procedure Open1Click(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure FormDestroy(Sender: TObject);
     procedure butPlayPauseClick(Sender: TObject);
     procedure butStopClick(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure trbVolumeLChange(Sender: TObject);
     procedure trbVolumeRChange(Sender: TObject);
-    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyUp(Sender: TObject;
+                        var Key: Word;
+                        Shift: TShiftState);
     procedure trbPitchChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure StatusBarMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure pbProgressMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure StatusBarMouseMove(Sender: TObject;
+                                 Shift: TShiftState;
+                                 X,
+                                 Y: Integer);
+    procedure pbProgressMouseUp(Sender: TObject;
+                                Button: TMouseButton;
+                                Shift: TShiftState;
+                                X,
+                                Y: Integer);
     procedure CheckBox1Click(Sender: TObject);
-    procedure pbProgressMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure pbProgressMouseMove(Sender: TObject;
+                                  Shift: TShiftState;
+                                  X,
+                                  Y: Integer);
     procedure ckbReverbMainCloseUp(Sender: TObject);
     procedure ckbReverbSourceCloseUp(Sender: TObject);
     procedure butReplayClick(Sender: TObject);
@@ -257,8 +270,8 @@ begin
 
   for i := 0 to Length(fXaudio2Engine.ReverbParameters) - 1 do
     begin
-       ckbReverbMain.Items.Append(fXaudio2Engine.ReverbParameters[i].i3dl2Name);
-       ckbReverbSource.Items.Append(fXaudio2Engine.ReverbParameters[i].i3dl2Name);
+      ckbReverbMain.Items.Append(fXaudio2Engine.ReverbParameters[i].i3dl2Name);
+      ckbReverbSource.Items.Append(fXaudio2Engine.ReverbParameters[i].i3dl2Name);
     end;
 
   ckbReverbMain.ItemIndex := 0;
@@ -266,14 +279,18 @@ begin
 end;
 
 
-procedure TfrmMain.FormCloseQuery(Sender: TObject;var CanClose: Boolean);
+procedure TfrmMain.FormCloseQuery(Sender: TObject;
+                                  var CanClose: Boolean);
+
 begin
+
   CanClose := True;
 end;
 
-procedure TfrmMain.FormDestroy(Sender: TObject);
-begin
 
+procedure TfrmMain.FormDestroy(Sender: TObject);
+
+begin
 
   try
     if Assigned(fXaudio2Engine) then
@@ -299,11 +316,11 @@ begin
     // never block close!
   end;
 
-
 end;
 
 
 procedure TfrmMain.Exit1Click(Sender: TObject);
+
 begin
 
   Close();
@@ -311,6 +328,7 @@ end;
 
 
 function TfrmMain.GetAudioFile(): string;
+
 begin
 
   Result := '';
@@ -344,7 +362,8 @@ begin
     mftAudioDuration := 0;
 
   lblDuration.Caption := Format('Duration: %s',
-                                [HnsTimeToStr(mftAudioDuration, False)]);
+                                [HnsTimeToStr(mftAudioDuration,
+                                              False)]);
 
   // Progress bar now uses seconds (avoid missing SamplesPerSec)
   pbProgress.Min := 0;
@@ -373,6 +392,7 @@ end;
 
 
 procedure TfrmMain.butPlayPauseClick(Sender: TObject);
+
 begin
 
   if not Assigned(fXaudio2Engine) then
@@ -418,10 +438,11 @@ begin
   hr := fXaudio2Engine.GotoNewPosition(0);
 
   if FAILED(hr) then
-  begin
-    stxtStatus.Caption := Format('Replay failed (GotoNewPosition). hr=%d', [hr]);
-    Exit;
-  end;
+    begin
+      stxtStatus.Caption := Format('Replay failed (GotoNewPosition). hr=%d',
+                                   [hr]);
+      Exit;
+    end;
 
   pbProgress.Position := 0;
   butPlayPause.Tag := 0;
@@ -437,6 +458,7 @@ end;
 
 
 procedure TfrmMain.butStopClick(Sender: TObject);
+
 begin
 
   if Assigned(fXaudio2Engine) then
@@ -501,33 +523,35 @@ begin
 end;
 
 
-procedure TfrmMain.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TfrmMain.FormKeyUp(Sender: TObject;
+                             var Key: Word;
+                             Shift: TShiftState);
 var
   iPos: Integer;
 
 begin
 
   if (Shift = [ssShift]) and (Key = VK_ESCAPE) then
-  begin
+    begin
 
-    trbVolumeL.Position := 0;
-    trbVolumeR.Position := 0;
-    Key := 0;
-    Exit;
-  end;
+      trbVolumeL.Position := 0;
+      trbVolumeR.Position := 0;
+      Key := 0;
+      Exit;
+    end;
 
   if (Shift = [ssShift]) and (Key = VK_SPACE) then
-  begin
+    begin
 
-    trbPitch.Position := 1000;
-    Key := 0;
-    Exit;
-  end;
+      trbPitch.Position := 1000;
+      Key := 0;
+      Exit;
+    end;
 
   case Key of
     VK_SPACE: butPlayPauseClick(nil);
-    VK_END:   butStopClick(nil);
-    VK_F12:   Open1Click(nil);
+    VK_END: butStopClick(nil);
+    VK_F12: Open1Click(nil);
     VK_F8:
       begin
 
@@ -540,6 +564,7 @@ end;
 
 
 procedure TfrmMain.SetVolumeChannels();
+
 begin
 
   if not Assigned(fXaudio2Engine) then
@@ -552,10 +577,10 @@ begin
   // Stereo
   // Channel 0 = LEFT, Channel 1 = RIGHT
   if (fXaudio2Engine.SoundChannels = 2) then
-  begin
-    fXaudio2Engine.VolumeChannels[0] := (Abs(trbVolumeR.Position) * 0.01); // LEFT comes from R slider (swapped)
-    fXaudio2Engine.VolumeChannels[1] := (Abs(trbVolumeL.Position) * 0.01); // RIGHT comes from L slider (swapped)
-  end;
+    begin
+      fXaudio2Engine.VolumeChannels[0] := (Abs(trbVolumeR.Position) * 0.01); // LEFT comes from R slider (swapped)
+      fXaudio2Engine.VolumeChannels[1] := (Abs(trbVolumeL.Position) * 0.01); // RIGHT comes from L slider (swapped)
+    end;
 
   fXaudio2Engine.SetVolumes(fXaudio2Engine.VolumeChannels);
 end;
@@ -579,7 +604,8 @@ begin
                   MIN_VOLUME,
                   MAX_VOLUME);
 
-  lblLeftVolume.Caption := Format('%d', [Trunc(vol)]) + '%';
+  lblLeftVolume.Caption := Format('%d',
+                                  [Trunc(vol)]) + '%';
 end;
 
 
@@ -600,7 +626,8 @@ begin
                   MIN_VOLUME,
                   MAX_VOLUME);
 
-  lblRightVolume.Caption := Format('%d', [Trunc(vol)]) + '%';
+  lblRightVolume.Caption := Format('%d',
+                                   [Trunc(vol)]) + '%';
 end;
 
 
@@ -615,21 +642,27 @@ begin
     Exit;
 
   freq := MapRange((trbPitch.Position + 10) * 0.1,
-                    trbPitch.Max * 0.1,
-                    trbPitch.Min * 0.1,
-                    MIN_PITCH,
-                    MAX_PITCH);
+                   trbPitch.Max * 0.1,
+                   trbPitch.Min * 0.1,
+                   MIN_PITCH,
+                   MAX_PITCH);
 
   fXaudio2Engine.SetPitch(freq);
 
   if (trbPitch.Position > 0) then
-    lblPitch.Caption := Format('-%d', [Abs(trbPitch.Position)])
+    lblPitch.Caption := Format('-%d',
+                               [Abs(trbPitch.Position)])
   else
-    lblPitch.Caption := Format('%d', [Abs(trbPitch.Position)]);
+    lblPitch.Caption := Format('%d',
+                               [Abs(trbPitch.Position)]);
 end;
 
 
-procedure TfrmMain.StatusBarMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+procedure TfrmMain.StatusBarMouseMove(Sender: TObject;
+                                      Shift: TShiftState;
+                                      X,
+                                      Y: Integer);
+
 begin
 
   if FileExists(fAudioFileFullPath) then
@@ -641,7 +674,10 @@ begin
 end;
 
 
-procedure TfrmMain.pbProgressMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+procedure TfrmMain.pbProgressMouseMove(Sender: TObject;
+                                       Shift: TShiftState;
+                                       X,
+                                       Y: Integer);
 var
   secPos: Integer;
   hnsPos: Int64;
@@ -656,18 +692,25 @@ begin
 
       secPos := Trunc((X / pbProgress.Width) * pbProgress.Max);
       pbProgress.ShowHint := True;
-      pbProgress.Hint := Format('Position: %d s', [secPos]);
+      pbProgress.Hint := Format('Position: %d s',
+                                [secPos]);
 
-      lblBarPositionInSamples.Caption := Format('Position: %d s', [secPos]);
+      lblBarPositionInSamples.Caption := Format('Position: %d s',
+                                                [secPos]);
 
       hnsPos := Int64(secPos) * 10000000;
-      lblBarPositionInSTime.Caption := Format('Position: %s', [HnsTimeToStr(hnsPos, False)]);
+      lblBarPositionInSTime.Caption := Format('Position: %s',
+                                              [HnsTimeToStr(hnsPos,
+                                                            False)]);
     end;
 end;
 
 
-procedure TfrmMain.pbProgressMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TfrmMain.pbProgressMouseUp(Sender: TObject;
+                                     Button: TMouseButton;
+                                     Shift: TShiftState;
+                                     X,
+                                     Y: Integer);
 
 var
   hr: HResult;
@@ -687,9 +730,8 @@ begin
 
   if (X <= 0) then
     samplePos := 0
-  else
-    if (X >= pbProgress.Width) then
-      samplePos := pbProgress.Max
+  else if (X >= pbProgress.Width) then
+    samplePos := pbProgress.Max
   else
     samplePos := Trunc((X / pbProgress.Width) * pbProgress.Max); // samples
 
@@ -704,12 +746,15 @@ begin
   if SUCCEEDED(hr) then
     pbProgress.Position := Integer(samplePos)
   else
-    stxtStatus.Caption := Format('GotoNewPosition failed. (hr=%d)', [hr]);
+    stxtStatus.Caption := Format('GotoNewPosition failed. (hr=%d)',
+                                 [hr]);
 end;
 
 
 function TfrmMain.GetStatus(): string;
+
 begin
+
   if not Assigned(fXaudio2Engine) then
     Exit('No engine');
 
@@ -722,13 +767,14 @@ begin
     rsInitializing: Result := 'Initializing';
     rsInitialized: Result := 'Initialized';
     rsDestroying: Result := 'Destroying';
-  else
-    Result := 'Unknown render status';
+    else
+      Result := 'Unknown render status';
   end;
 end;
 
 
 procedure TfrmMain.HandleOnStreamEndEvent(Sender: TObject);
+
 begin
 
   pnlControls.Enabled := False;
@@ -746,12 +792,14 @@ begin
   butStop.Enabled := False;
   butReplay.Enabled := True;
 
-  sTxtStatusBar.Caption := Format('Loaded file: %s.', [fAudioFileName]);
+  sTxtStatusBar.Caption := Format('Loaded file: %s.',
+                                  [fAudioFileName]);
   stxtStatus.Caption := GetStatus;
 end;
 
 
 procedure TfrmMain.HandleOnAudioReadyEvent(Sender: TObject);
+
 begin
 
   pnlControls.Enabled := True;
@@ -764,7 +812,8 @@ begin
   pmLeft.Enabled := True;
   pmRight.Enabled := True;
 
-  sTxtStatusBar.Caption := Format('Loaded file: %s', [fAudioFileName]);
+  sTxtStatusBar.Caption := Format('Loaded file: %s',
+                                  [fAudioFileName]);
   stxtStatus.Caption := GetStatus();
 
   pbProgress.Max := (mftAudioDuration div 10000000) * fXaudio2Engine.SamplesPerSec;
@@ -773,6 +822,7 @@ end;
 
 
 procedure TfrmMain.HandleOnAudioStoppedEvent(Sender: TObject);
+
 begin
 
   pnlControls.Enabled := False;
@@ -783,7 +833,8 @@ begin
   butStop.Enabled := False;
   butReplay.Enabled := True;
 
-  sTxtStatusBar.Caption := Format('Loaded file: %s.', [fAudioFileName]);
+  sTxtStatusBar.Caption := Format('Loaded file: %s.',
+                                  [fAudioFileName]);
   stxtStatus.Caption := GetStatus;
 
   lblPlayed.Caption := 'Played: 00:00:00';
@@ -820,7 +871,8 @@ begin
   butStop.Enabled := True;
   butReplay.Enabled := True;
 
-  sTxtStatusBar.Caption := Format('Loaded file: %s.', [fAudioFileName]);
+  sTxtStatusBar.Caption := Format('Loaded file: %s.',
+                                  [fAudioFileName]);
   stxtStatus.Caption := GetStatus;
 
   // Ensure volume is applied at start
@@ -831,11 +883,14 @@ begin
   absSamples := d.Position + d.SamplesProcessed;
 
   // Samples label
-  lblProcessed.Caption := Format('Samples: %d', [absSamples]);
+  lblProcessed.Caption := Format('Samples: %d',
+                                 [absSamples]);
 
   // Played time
-  sPlayed := HnsTimeToStr(d.TimePlayed, False);
-  lblPlayed.Caption := Format('Played: %s', [sPlayed]);
+  sPlayed := HnsTimeToStr(d.TimePlayed,
+                          False);
+  lblPlayed.Caption := Format('Played: %s',
+                              [sPlayed]);
 
   // Progress bar expects samples (your original design)
   if (pbProgress.Max > 0) then
@@ -844,28 +899,35 @@ end;
 
 
 procedure TfrmMain.HandleOnAudioPauzedEvent(Sender: TObject);
+
 begin
 
   butPlayPause.Caption := 'Play';
   butPlayPause.Tag := 0;
-  sTxtStatusBar.Caption := Format('Loaded file: %s.', [fAudioFileName]);
+  sTxtStatusBar.Caption := Format('Loaded file: %s.',
+                                  [fAudioFileName]);
   stxtStatus.Caption := GetStatus;
 end;
 
 
 procedure TfrmMain.HandleOnVoiceProcessingPassStartEvent(Sender: TObject);
+
 begin
+
   // Stub.
 end;
 
 
 procedure TfrmMain.HandleOnVoiceProcessingPassEndEvent(Sender: TObject);
+
 begin
+
   // Stub.
 end;
 
 
 procedure TfrmMain.HandleOnBufferStartEvent(Sender: TObject);
+
 begin
 
   pmLeft.Enabled := True;
@@ -878,12 +940,14 @@ begin
   butStop.Enabled := True;
   butReplay.Enabled := True;
 
-  sTxtStatusBar.Caption := Format('Loaded file: %s', [fAudioFileName]);
+  sTxtStatusBar.Caption := Format('Loaded file: %s',
+                                  [fAudioFileName]);
   stxtStatus.Caption := GetStatus;
 end;
 
 
 procedure TfrmMain.HandleOnBufferEndEvent(Sender: TObject);
+
 begin
 
   sTxtStatusBar.Caption := 'End of playbuffer reached.';
@@ -894,13 +958,13 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_LITE)) then
+    MFSTARTUP_LITE)) then
     begin
       MessageBoxW(0,
-                 lpcwstr('Your computer does not support this Media Foundation API version ' +
-                         IntToStr(MF_VERSION) + '.'),
-                 lpcwstr('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  lpcwstr('Your computer does not support this Media Foundation API version ' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
     end;
 
 finalization
@@ -908,4 +972,3 @@ finalization
   MFShutdown();
 
 end.
-

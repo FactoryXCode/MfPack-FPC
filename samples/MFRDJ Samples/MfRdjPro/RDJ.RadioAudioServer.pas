@@ -65,11 +65,12 @@ unit RDJ.RadioAudioServer;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinSock,
   {System}
@@ -81,11 +82,12 @@ LMessages,
 type
 
   TRdjRadioClient = class
+
   public
 
     Socket: TSocket;
     Header: AnsiString;
-    Data: TQueue<TBytes>;
+    Data: TQueue < TBytes > ;
     Pending: TBytes;
     Offset: Integer;
     Queued: Integer;
@@ -100,6 +102,7 @@ type
   end;
 
   TRdjRadioAudioServer = class(TThread)
+
   private
 
     FListener: TSocket;
@@ -107,7 +110,7 @@ type
     FAddress: string;
     FPort: Word;
     FLock: SyncObjs.TCriticalSection;
-    FClients: TObjectList<TRdjRadioClient>;
+    FClients: TObjectList < TRdjRadioClient > ;
     FRequests: Integer;
     FLastError: string;
 
@@ -119,7 +122,8 @@ type
     procedure WriteClient(Client: TRdjRadioClient);
 
     procedure Respond(Client: TRdjRadioClient;
-                      const Status, Extra: string);
+                      const Status,
+                      Extra: string);
 
   protected
 
@@ -141,7 +145,7 @@ type
     property Initialized: Boolean read FInitialized;
   end;
 
-  function GetTickCount64(): UInt64; stdcall;
+function GetTickCount64(): UInt64; stdcall;
 
 
 implementation
@@ -163,18 +167,20 @@ const
 
 
 constructor TRdjRadioClient.Create(ASocket: TSocket);
+
 begin
 
   inherited Create();
 
   Socket := ASocket;
-  Data := TQueue<TBytes>.Create;
+  Data := (TQueue < TBytes > .Create);
   Started := GetTickCount64();
   Progress := Started;
 end;
 
 
 destructor TRdjRadioClient.Destroy();
+
 begin
 
   if (Socket <> INVALID_SOCKET) then
@@ -186,7 +192,9 @@ begin
 end;
 
 
-function TRdjRadioAudioServer.CheckSocket(Code: Integer; const Operation: string): Boolean;
+function TRdjRadioAudioServer.CheckSocket(Code: Integer;
+                                          const Operation: string): Boolean;
+
 begin
 
   Result := (Code <> SOCKET_ERROR);
@@ -213,7 +221,7 @@ begin
   FreeOnTerminate := False;
   FListener := INVALID_SOCKET;
   FLock := SyncObjs.TCriticalSection.Create;
-  FClients := TObjectList<TRdjRadioClient>.Create(True);
+  FClients := (TObjectList < TRdjRadioClient > .Create(True));
   FAddress := Address;
   FPort := Port;
 
@@ -230,18 +238,17 @@ begin
 
   if (FListener = INVALID_SOCKET) then
     if not CheckSocket(SOCKET_ERROR,
-                       'Create radio listener') then
+      'Create radio listener') then
       Exit;
 
   // Do not silently share a fixed radio port with another process.
   Exclusive := 1;
 
   if not CheckSocket(setsockopt(FListener,
-                                SOL_SOCKET,
-                                -5,
-                                PAnsiChar(@Exclusive),
-                                SizeOf(Exclusive)),
-                     'Reserve radio port') then
+    SOL_SOCKET, -5,
+    PAnsiChar(@Exclusive),
+    SizeOf(Exclusive)),
+    'Reserve radio port') then
     Exit;
 
   FillChar(Addr,
@@ -254,32 +261,32 @@ begin
   Addr.sin_port := htons(Port);
 
   if not CheckSocket(bind(FListener,
-                          Addr,
-                          SizeOf(Addr)),
-                     'Bind radio listener') then
+    Addr,
+    SizeOf(Addr)),
+    'Bind radio listener') then
     Exit;
 
   Size := SizeOf(Addr);
 
   if not CheckSocket(getsockname(FListener,
-                                 Addr,
-                                 Size),
-                     'Read radio port') then
+    Addr,
+    Size),
+    'Read radio port') then
     Exit;
 
   FPort := ntohs(Addr.sin_port);
 
   if not CheckSocket(listen(FListener,
-                            RadioMaximumClients),
-                     'Listen for radio clients') then
+    RadioMaximumClients),
+    'Listen for radio clients') then
     Exit;
 
   Mode := 1;
 
   if not CheckSocket(ioctlsocket(FListener,
-                                 LongInt(FIONBIO),
-                                 Mode),
-                     'Set radio listener nonblocking') then
+    LongInt(FIONBIO),
+    Mode),
+    'Set radio listener nonblocking') then
     Exit;
 
   FInitialized := True;
@@ -287,6 +294,7 @@ end;
 
 
 destructor TRdjRadioAudioServer.Destroy();
+
 begin
 
   Terminate;
@@ -322,6 +330,7 @@ end;
 
 
 function TRdjRadioAudioServer.Requests(): Integer;
+
 begin
 
   Result := InterlockedCompareExchange(FRequests,
@@ -351,6 +360,7 @@ end;
 
 
 function TRdjRadioAudioServer.LastError(): string;
+
 begin
 
   FLock.Acquire;
@@ -426,8 +436,8 @@ begin
   Mode := 1;
 
   if (ioctlsocket(Socket,
-                  LongInt(FIONBIO),
-                  Mode) = SOCKET_ERROR) then
+    LongInt(FIONBIO),
+    Mode) = SOCKET_ERROR) then
     begin
       closesocket(Socket);
       Exit;
@@ -438,13 +448,15 @@ end;
 
 
 procedure TRdjRadioAudioServer.Respond(Client: TRdjRadioClient;
-                                        const Status, Extra: string);
+                                       const Status,
+                                       Extra: string);
+
 begin
 
   Client.Pending := TEncoding.ASCII.GetBytes('HTTP/1.1 ' +
-                                             Status + #13#10 +
-                                             'Connection: close' + #13#10 +
-                                             Extra + #13#10);
+    Status + #13#10 +
+    'Connection: close' + #13#10 +
+    Extra + #13#10);
 
   Client.Queued := Length(Client.Pending);
   Client.Offset := 0;
@@ -467,7 +479,7 @@ begin
   Count := recv(Client.Socket,
                 Buffer,
                 SizeOf(Buffer),
-                       0);
+                0);
 
   if (Count = SOCKET_ERROR) then
     begin
@@ -491,12 +503,14 @@ begin
 
   if (Length(Client.Header) > 8192) then
     begin
-      Respond(Client, '431 Request Header Fields Too Large', 'Content-Length: 0' + #13#10);
+      Respond(Client,
+              '431 Request Header Fields Too Large',
+              'Content-Length: 0' + #13#10);
       Exit;
     end;
 
   if (Pos(AnsiString(#13#10#13#10),
-          Client.Header) = 0) then
+    Client.Header) = 0) then
     Exit;
 
   First := string(Copy(Client.Header,
@@ -539,13 +553,17 @@ begin
 
   if (Method <> 'GET') and (Method <> 'HEAD') then
     begin
-      Respond(Client, '405 Method Not Allowed', 'Allow: GET, HEAD' + #13#10 + 'Content-Length: 0' + #13#10);
+      Respond(Client,
+              '405 Method Not Allowed',
+              'Allow: GET, HEAD' + #13#10 + 'Content-Length: 0' + #13#10);
       Exit;
     end;
 
   if (Path <> RadioPath) then
     begin
-      Respond(Client, '404 Not Found', 'Content-Length: 0' + #13#10);
+      Respond(Client,
+              '404 Not Found',
+              'Content-Length: 0' + #13#10);
       Exit;
     end;
 
@@ -554,12 +572,12 @@ begin
   Respond(Client,
           '200 OK',
           'Content-Type: audio/aac' + #13#10 +
-          'Cache-Control: no-store' + #13#10 +
-          'Accept-Ranges: none' + #13#10 +
-          'icy-name: FactoryX Radio' + #13#10 +
-          'icy-br: 192' + #13#10);
+    'Cache-Control: no-store' + #13#10 +
+    'Accept-Ranges: none' + #13#10 +
+    'icy-name: FactoryX Radio' + #13#10 +
+    'icy-br: 192' + #13#10);
 
-  Client.Streaming := Method = 'GET';
+  Client.Streaming := (Method = 'GET');
   Client.Closing := not Client.Streaming;
   Client.Header := '';
 end;
@@ -586,10 +604,10 @@ begin
     end;
 
   Count := WinSock.send(Client.Socket,
-                               Client.Pending[Client.Offset],
-                               Min(16384,
-                                   Length(Client.Pending) - Client.Offset),
-                               0);
+                        Client.Pending[Client.Offset],
+                        Min(16384,
+                            Length(Client.Pending) - Client.Offset),
+                        0);
 
   if (Count = SOCKET_ERROR) then
     begin
@@ -606,7 +624,7 @@ begin
     end;
 
   Inc(Client.Offset,
-    Count);
+      Count);
 
   Dec(Client.Queued,
       Count);
@@ -694,7 +712,7 @@ end;
 
 {$WARN SYMBOL_PLATFORM OFF}
 
-function GetTickCount64; external Kernel32Lib name 'GetTickCount64' ;
+function GetTickCount64; external Kernel32Lib name 'GetTickCount64';
 
 {$WARN SYMBOL_PLATFORM ON}
 

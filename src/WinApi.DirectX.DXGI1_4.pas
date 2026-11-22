@@ -87,11 +87,12 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
-// Enums =======================================================================
+  // Enums =======================================================================
 
 type
   //+---------------------------------------------------------------------------
@@ -101,8 +102,9 @@ type
   //----------------------------------------------------------------------------
   PDXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG = ^DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG;
   DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG = DWord;
+
 const
-  DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT         = DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG($00000001);
+  DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT = DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG($00000001);
   DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_OVERLAY_PRESENT = DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG($00000002);
 
 type
@@ -113,17 +115,19 @@ type
   //------------------------------------------------------------------------------
   PDXGI_OVERLAY_COLOR_SPACE_SUPPORT_FLAG = ^DXGI_OVERLAY_COLOR_SPACE_SUPPORT_FLAG;
   DXGI_OVERLAY_COLOR_SPACE_SUPPORT_FLAG = DWord;
+
 const
   DXGI_OVERLAY_COLOR_SPACE_SUPPORT_FLAG_PRESENT = DXGI_OVERLAY_COLOR_SPACE_SUPPORT_FLAG($00000001);
 
 type
   PDXGI_MEMORY_SEGMENT_GROUP = ^DXGI_MEMORY_SEGMENT_GROUP;
   DXGI_MEMORY_SEGMENT_GROUP = DWord;
+
 const
-  DXGI_MEMORY_SEGMENT_GROUP_LOCAL     = DXGI_MEMORY_SEGMENT_GROUP(0);
+  DXGI_MEMORY_SEGMENT_GROUP_LOCAL = DXGI_MEMORY_SEGMENT_GROUP(0);
   DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL = DXGI_MEMORY_SEGMENT_GROUP(1);
 
-// =============================================================================
+  // =============================================================================
 
 type
 
@@ -131,7 +135,7 @@ type
   // =========================
   //
   IDXGISwapChain3 = interface(IDXGISwapChain2)
-  ['{94d99bdb-f1f8-4ab0-b236-7da0170edab1}']
+    ['{94d99bdb-f1f8-4ab0-b236-7da0170edab1}']
 
     function GetCurrentBackBufferIndex(): UINT; stdcall;
 
@@ -149,6 +153,7 @@ type
                             const ppPresentQueue: IUnknown): HResult; stdcall;
 
   end;
+
   IID_IDXGISwapChain3 = IDXGISwapChain3;
 
 
@@ -156,7 +161,7 @@ type
   // ======================
   //
   IDXGIOutput4 = interface(IDXGIOutput3)
-  ['{dc7dca35-2196-414d-9F53-617884032a60}']
+    ['{dc7dca35-2196-414d-9F53-617884032a60}']
 
     function CheckOverlayColorSpaceSupport(Format: DXGI_FORMAT;
                                            ColorSpace: DXGI_COLOR_SPACE_TYPE;
@@ -164,6 +169,7 @@ type
                                            out pFlags: UINT): HResult; stdcall;
 
   end;
+
   IID_IDXGIOutput4 = IDXGIOutput4;
 
 
@@ -171,21 +177,23 @@ type
   // =======================
   //
   IDXGIFactory4 = interface(IDXGIFactory3)
-  ['{1bc6ea02-ef36-464f-bf0c-21ca39e5168a}']
+    ['{1bc6ea02-ef36-464f-bf0c-21ca39e5168a}']
 
     function EnumAdapterByLuid(AdapterLuid: LUID;
                                riid: Tguid;
-                               {out} ppvAdapter: Pointer): HResult; stdcall;
+    {out} ppvAdapter: Pointer): HResult; stdcall;
     // note: ppvAdapter The address of an IDXGIAdapter interface pointer to the adapter. This parameter must not be Nil.
 
     function EnumWarpAdapter(riid: TGuid;
-                             {out} ppvAdapter: Pointer): HResult; stdcall;
+    {out} ppvAdapter: Pointer): HResult; stdcall;
     // note: ppvAdapter The address of an IDXGIAdapter interface pointer to the adapter. This parameter must not be Nil.
   end;
+
   IID_IDXGIFactory4 = IDXGIFactory4;
 
 
   PDXGI_QUERY_VIDEO_MEMORY_INFO = ^DXGI_QUERY_VIDEO_MEMORY_INFO;
+
   DXGI_QUERY_VIDEO_MEMORY_INFO = record
     Budget: UINT64;
     CurrentUsage: UINT64;
@@ -198,7 +206,7 @@ type
   // =======================
   //
   IDXGIAdapter3 = interface(IDXGIAdapter2)
-  ['{645967A4-1392-4310-A798-8053CE3E93FD}']
+    ['{645967A4-1392-4310-A798-8053CE3E93FD}']
 
     function RegisterHardwareContentProtectionTeardownStatusEvent(hEvent: THandle;
                                                                   out pdwCookie: DWORD): HResult; stdcall;
@@ -219,6 +227,7 @@ type
     procedure UnregisterVideoMemoryBudgetChangeNotification(dwCookie: DWORD); stdcall;
 
   end;
+
   IID_IDXGIAdapter3 = IDXGIAdapter3;
 
 
@@ -228,6 +237,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

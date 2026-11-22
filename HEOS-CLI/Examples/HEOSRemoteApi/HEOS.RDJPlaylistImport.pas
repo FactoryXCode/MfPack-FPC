@@ -65,12 +65,13 @@ unit HEOS.RDJPlaylistImport;
 
 interface
 
-uses Rdj.Platform,
-Rdj.SQLite,
-LMessages,
+uses
+  Rdj.Platform,
+  Rdj.SQLite,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   SysUtils,
   Generics.Collections,
   {Application}
@@ -80,9 +81,10 @@ LMessages,
 type
 
   THEOSRDJPlaylistImport = class
+
   public
 
-    class function GetPlaylists(const ADatabaseFile: string): TList<TRDJPlaylistInfo>;
+    class function GetPlaylists(const ADatabaseFile: string): TList < TRDJPlaylistInfo > ;
     class function ImportPlaylist(ADestination: TRDJPlaylistDb;
                                   const ADatabaseFile: string;
                                   const APlaylistID: Integer;
@@ -95,12 +97,12 @@ implementation
 
 uses
 
-  {FireDAC}  {Application}
+  {FireDAC}{Application}
   RDJ.TrackLibrary,
   RDJ.PlaylistManager;
 
 
-class function THEOSRDJPlaylistImport.GetPlaylists(const ADatabaseFile: string): TList<TRDJPlaylistInfo>;
+class function THEOSRDJPlaylistImport.GetPlaylists(const ADatabaseFile: string): TList < TRDJPlaylistInfo > ;
 var
   Db: TRDJPlaylistDb;
   LibraryRef: TRDJTrackLibrary;
@@ -117,7 +119,7 @@ begin
     Db.OpenReadOnly(ADatabaseFile);
     LibraryRef := TRDJTrackLibrary.Create(Db);
     Manager := TRDJPlaylistManager.Create(Db,
-                                         LibraryRef);
+                                          LibraryRef);
     Result := Manager.GetAllPlaylists();
   finally
 
@@ -137,7 +139,7 @@ var
   SourceDb: TRDJPlaylistDb;
   SourceLibrary: TRDJTrackLibrary;
   DestinationManager: TRDJPlaylistManager;
-  Names: TList<TRDJPlaylistInfo>;
+  Names: TList < TRDJPlaylistInfo > ;
   Playlist: TRDJPlaylist;
   Q: TFDQuery;
   Info: TRDJPlaylistInfo;
@@ -160,7 +162,7 @@ begin
     raise Exception.Create('The HEOS playlist database is not open.');
 
   if SameFileName(ExpandFileName(ADatabaseFile),
-                  ExpandFileName(ADestination.DbFileName)) then
+    ExpandFileName(ADestination.DbFileName)) then
     raise Exception.Create('Select the RDJ Pro database, not the current HEOS database.');
 
   SourceDb := TRDJPlaylistDb.Create;
@@ -189,8 +191,8 @@ begin
     Playlist.Info := Info;
     Q.Close;
     Q.SQL.Text := 'SELECT TrackID, CueInMs, CueOutMs, UserNote ' +
-                  'FROM PlaylistItems WHERE PlaylistID = :ID ' +
-                  'ORDER BY SortOrder, PlaylistItemID';
+      'FROM PlaylistItems WHERE PlaylistID = :ID ' +
+      'ORDER BY SortOrder, PlaylistItemID';
     Q.ParamByName('ID').AsInteger := APlaylistID;
     Q.Open;
 
@@ -202,7 +204,7 @@ begin
         Entry.TrackID := Q.FieldByName('TrackID').AsInteger;
 
         if not SourceLibrary.FindTrackByID(Entry.TrackID,
-                                           Track) then
+          Track) then
           raise Exception.Create('A playlist item refers to a missing RDJ Pro database track.');
 
         if (Trim(Track.FullPath) = '') then
@@ -242,7 +244,7 @@ begin
 
         for i := 0 to Names.Count - 1 do
           if SameText(Names[i].Name,
-                       NewName) then
+            NewName) then
             begin
 
               NameUsed := True;
@@ -254,12 +256,12 @@ begin
 
             Inc(Suffix);
             NewName := Format('%s (%d)',
-                               [BaseName, Suffix]);
+                              [BaseName, Suffix]);
           end;
       until not NameUsed;
 
       Result := ADestination.CreatePlaylist(NewName,
-                                              Playlist.Info.Notes);
+                                            Playlist.Info.Notes);
 
       for i := 0 to Playlist.Count - 1 do
         begin
@@ -272,11 +274,11 @@ begin
             TrackID := ADestination.AddOrUpdateTrack(Entry.Track);
 
           ADestination.AddPlaylistItem(Result,
-                                         TrackID,
-                                         i + 1,
-                                         Entry.CueInMs,
-                                         Entry.CueOutMs,
-                                         Entry.UserNote);
+                                       TrackID,
+                                       i + 1,
+                                       Entry.CueInMs,
+                                       Entry.CueOutMs,
+                                       Entry.UserNote);
 
           if Entry.Track.IsMissing then
             Inc(AMissingCount);

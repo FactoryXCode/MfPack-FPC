@@ -93,7 +93,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -102,98 +103,101 @@ uses
 const
 
   // Interface IMFSourceReader
-  MF_SOURCE_READER_ASYNC_CALLBACK                       : TGUID = '{1e3dbeac-bb43-4c35-b507-cd644464c965}';
-  MF_SOURCE_READER_D3D_MANAGER                          : TGUID = '{ec822da2-e1e9-4b29-a0d8-563c719f5269}';
-  MF_SOURCE_READER_DISABLE_DXVA                         : TGUID = '{aa456cfd-3943-4a1e-a77d-1838c0ea2e35}';
-  MF_SOURCE_READER_MEDIASOURCE_CONFIG                   : TGUID = '{9085abeb-0354-48f9-abb5-200df838c68e}';
-  MF_SOURCE_READER_MEDIASOURCE_CHARACTERISTICS          : TGUID = '{6d23f5c8-c5d7-4a9b-9971-5d11f8bca880}';
-  MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING              : TGUID = '{fb394f3d-ccf1-42ee-bbb3-f9b845d5681d}';
-//#if (WINVER >= _WIN32_WINNT_WIN8)
-  MF_SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING     : TGUID = '{0f81da2c-b537-4672-a8b2-a681b17307a3}';
-  MF_SOURCE_READER_DISABLE_CAMERA_PLUGINS               : TGUID = '{9d3365dd-058f-4cfb-9f97-b314cc99c8ad}';
-//#endif (WINVER >= _WIN32_WINNT_WIN8)
-  MF_SOURCE_READER_DISCONNECT_MEDIASOURCE_ON_SHUTDOWN   : TGUID = '{56b67165-219e-456d-a22e-2d3004c7fe56}';
-  MF_SOURCE_READER_ENABLE_TRANSCODE_ONLY_TRANSFORMS     : TGUID = '{dfd4f008-b5fd-4e78-ae44-62a1e67bbe27}';
-  MF_SOURCE_READER_D3D11_BIND_FLAGS                     : TGUID = '{33f3197b-f73a-4e14-8d85-0e4c4368788d}';
+  MF_SOURCE_READER_ASYNC_CALLBACK: TGUID = '{1e3dbeac-bb43-4c35-b507-cd644464c965}';
+  MF_SOURCE_READER_D3D_MANAGER: TGUID = '{ec822da2-e1e9-4b29-a0d8-563c719f5269}';
+  MF_SOURCE_READER_DISABLE_DXVA: TGUID = '{aa456cfd-3943-4a1e-a77d-1838c0ea2e35}';
+  MF_SOURCE_READER_MEDIASOURCE_CONFIG: TGUID = '{9085abeb-0354-48f9-abb5-200df838c68e}';
+  MF_SOURCE_READER_MEDIASOURCE_CHARACTERISTICS: TGUID = '{6d23f5c8-c5d7-4a9b-9971-5d11f8bca880}';
+  MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING: TGUID = '{fb394f3d-ccf1-42ee-bbb3-f9b845d5681d}';
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
+  MF_SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING: TGUID = '{0f81da2c-b537-4672-a8b2-a681b17307a3}';
+  MF_SOURCE_READER_DISABLE_CAMERA_PLUGINS: TGUID = '{9d3365dd-058f-4cfb-9f97-b314cc99c8ad}';
+  //#endif (WINVER >= _WIN32_WINNT_WIN8)
+  MF_SOURCE_READER_DISCONNECT_MEDIASOURCE_ON_SHUTDOWN: TGUID = '{56b67165-219e-456d-a22e-2d3004c7fe56}';
+  MF_SOURCE_READER_ENABLE_TRANSCODE_ONLY_TRANSFORMS: TGUID = '{dfd4f008-b5fd-4e78-ae44-62a1e67bbe27}';
+  MF_SOURCE_READER_D3D11_BIND_FLAGS: TGUID = '{33f3197b-f73a-4e14-8d85-0e4c4368788d}';
 
 
-{$Z4}    // Interface IMFSourceReader
+  {$Z4}
+  // Interface IMFSourceReader
 
-  MF_SOURCE_READER_INVALID_STREAM_INDEX  = MAXDW; // $ffffffff;
-  MF_SOURCE_READER_ALL_STREAMS           = DWORD($fffffffe);
-  MF_SOURCE_READER_ANY_STREAM            = DWORD($fffffffe);
-  MF_SOURCE_READER_FIRST_AUDIO_STREAM    = DWORD($fffffffd);
-  MF_SOURCE_READER_FIRST_VIDEO_STREAM    = DWORD($fffffffc);
-  MF_SOURCE_READER_MEDIASOURCE           = MAXDW; // $ffffffff;
+  MF_SOURCE_READER_INVALID_STREAM_INDEX = MAXDW; // $ffffffff;
+  MF_SOURCE_READER_ALL_STREAMS = DWORD($fffffffe);
+  MF_SOURCE_READER_ANY_STREAM = DWORD($fffffffe);
+  MF_SOURCE_READER_FIRST_AUDIO_STREAM = DWORD($fffffffd);
+  MF_SOURCE_READER_FIRST_VIDEO_STREAM = DWORD($fffffffc);
+  MF_SOURCE_READER_MEDIASOURCE = MAXDW; // $ffffffff;
 
-//#if (WINVER >= _WIN32_WINNT_WIN8)
-   MF_SOURCE_READER_CURRENT_TYPE_INDEX	 = MAXDW; // 0xffffffff
-//#endif // (WINVER >= _WIN32_WINNT_WIN8)
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
+  MF_SOURCE_READER_CURRENT_TYPE_INDEX = MAXDW; // 0xffffffff
+  //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
   // Interface IMFSinkWriter
-  CLSID_MFSinkWriter                                    : TGUID = '{a3bbfb17-8273-4e52-9e0e-9739dc887990}';
+  CLSID_MFSinkWriter: TGUID = '{a3bbfb17-8273-4e52-9e0e-9739dc887990}';
 
-  MF_SINK_WRITER_ASYNC_CALLBACK                         : TGUID = '{48cb183e-7b0b-46f4-822e-5e1d2dda4354}';
-  MF_SINK_WRITER_DISABLE_THROTTLING                     : TGUID = '{08b845d8-2b74-4afe-9d53-be16d2d5ae4f}';
+  MF_SINK_WRITER_ASYNC_CALLBACK: TGUID = '{48cb183e-7b0b-46f4-822e-5e1d2dda4354}';
+  MF_SINK_WRITER_DISABLE_THROTTLING: TGUID = '{08b845d8-2b74-4afe-9d53-be16d2d5ae4f}';
 
-  MF_SINK_WRITER_INVALID_STREAM_INDEX  = MAXDW; // 0xffffffff
-  MF_SINK_WRITER_ALL_STREAMS           = DWord($fffffffe);
-  MF_SINK_WRITER_MEDIASINK             = MAXDW; // 0xffffffff
+  MF_SINK_WRITER_INVALID_STREAM_INDEX = MAXDW; // 0xffffffff
+  MF_SINK_WRITER_ALL_STREAMS = DWord($fffffffe);
+  MF_SINK_WRITER_MEDIASINK = MAXDW; // 0xffffffff
 
   // Interface IMFSourceReader
-  MF_READWRITE_DISABLE_CONVERTERS                       : TGUID = '{98d5b065-1374-4847-8d5d-31520fee7156}';  // UINT(BOOL)
-  MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS               : TGUID = '{a634a91c-822b-41b9-a494-4de4643612b0}';  // UINT(BOOL)
+  MF_READWRITE_DISABLE_CONVERTERS: TGUID = '{98d5b065-1374-4847-8d5d-31520fee7156}';  // UINT(BOOL)
+  MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS: TGUID = '{a634a91c-822b-41b9-a494-4de4643612b0}';  // UINT(BOOL)
   { 10.0.28000.0  }
-  MF_READWRITE_USE_ONLY_HARDWARE_TRANSFORMS             : TGUID = '{f9074427-bf8b-4f69-bbaf-524969056fb6}';  // UINT(BOOL)
+  MF_READWRITE_USE_ONLY_HARDWARE_TRANSFORMS: TGUID = '{f9074427-bf8b-4f69-bbaf-524969056fb6}';  // UINT(BOOL)
 
-// #if (WINVER >= _WIN32_WINNT_WIN8)
-  MF_READWRITE_MMCSS_CLASS                              : TGUID = '{39384300-d0eb-40b1-87a0-3318871b5a53}';
-  MF_READWRITE_MMCSS_PRIORITY                           : TGUID = '{43ad19ce-f33f-4ba9-a580-e4cd12f2d144}';
-  MF_READWRITE_MMCSS_CLASS_AUDIO                        : TGUID = '{430847da-0890-4b0e-938c-054332c547e1}';
-  MF_READWRITE_MMCSS_PRIORITY_AUDIO                     : TGUID = '{273db885-2de2-4db2-a6a7-fdb66fb40b61}';
-  MF_READWRITE_D3D_OPTIONAL                             : TGUID = '{216479d9-3071-42ca-bb6c-4c22102e1d18}';
-  MF_MEDIASINK_AUTOFINALIZE_SUPPORTED                   : TGUID = '{48c131be-135a-41cb-8290-03652509c999}';
-  MF_MEDIASINK_ENABLE_AUTOFINALIZE                      : TGUID = '{34014265-cb7e-4cde-ac7c-effd3b3c2530}';
-  MF_READWRITE_ENABLE_AUTOFINALIZE                      : TGUID = '{dd7ca129-8cd1-4dc5-9dde-ce168675de61}';
-//#endif // (WINVER >= _WIN32_WINNT_WIN8)
+  // #if (WINVER >= _WIN32_WINNT_WIN8)
+  MF_READWRITE_MMCSS_CLASS: TGUID = '{39384300-d0eb-40b1-87a0-3318871b5a53}';
+  MF_READWRITE_MMCSS_PRIORITY: TGUID = '{43ad19ce-f33f-4ba9-a580-e4cd12f2d144}';
+  MF_READWRITE_MMCSS_CLASS_AUDIO: TGUID = '{430847da-0890-4b0e-938c-054332c547e1}';
+  MF_READWRITE_MMCSS_PRIORITY_AUDIO: TGUID = '{273db885-2de2-4db2-a6a7-fdb66fb40b61}';
+  MF_READWRITE_D3D_OPTIONAL: TGUID = '{216479d9-3071-42ca-bb6c-4c22102e1d18}';
+  MF_MEDIASINK_AUTOFINALIZE_SUPPORTED: TGUID = '{48c131be-135a-41cb-8290-03652509c999}';
+  MF_MEDIASINK_ENABLE_AUTOFINALIZE: TGUID = '{34014265-cb7e-4cde-ac7c-effd3b3c2530}';
+  MF_READWRITE_ENABLE_AUTOFINALIZE: TGUID = '{dd7ca129-8cd1-4dc5-9dde-ce168675de61}';
+  //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
 
 type
   PMF_SOURCE_READER_FLAG = ^MF_SOURCE_READER_FLAG;
   MF_SOURCE_READER_FLAG = DWord;
+
 const
   // Specifies that an error has occurred while processing sample
   // requests.  If this is set, then no other calls should be made
   // on the source reader besides shutting it down.
-  MF_SOURCE_READERF_ERROR                   = MF_SOURCE_READER_FLAG($00000001);
+  MF_SOURCE_READERF_ERROR = MF_SOURCE_READER_FLAG($00000001);
 
   // Specifies that the stream has ended.
-  MF_SOURCE_READERF_ENDOFSTREAM             = MF_SOURCE_READER_FLAG($00000002);
+  MF_SOURCE_READERF_ENDOFSTREAM = MF_SOURCE_READER_FLAG($00000002);
 
   // Specifies that one or more new streams have been created.
   // The application can modify stream selection and configure
   // output media types for the new streams.
-  MF_SOURCE_READERF_NEWSTREAM               = MF_SOURCE_READER_FLAG($00000004);
+  MF_SOURCE_READERF_NEWSTREAM = MF_SOURCE_READER_FLAG($00000004);
 
   // Specifies that the native media type for the stream has changed.
-  MF_SOURCE_READERF_NATIVEMEDIATYPECHANGED  = MF_SOURCE_READER_FLAG($00000010);
+  MF_SOURCE_READERF_NATIVEMEDIATYPECHANGED = MF_SOURCE_READER_FLAG($00000010);
 
   // Specifies that the current media type for the stream has changed.
   MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED = MF_SOURCE_READER_FLAG($00000020);
 
   // Specifies that there is a gap in the stream.
-  MF_SOURCE_READERF_STREAMTICK              = MF_SOURCE_READER_FLAG($00000100);
+  MF_SOURCE_READERF_STREAMTICK = MF_SOURCE_READER_FLAG($00000100);
 
   // Indicates that all transforms inserted by the application have been
   // removed for a particular stream. This could be due to a dynamic format
   // change from a source or decoder that prevents custom transforms from
   // being used because they cannot handle the new media type.
-  MF_SOURCE_READERF_ALLEFFECTSREMOVED       = MF_SOURCE_READER_FLAG($00000200);
+  MF_SOURCE_READERF_ALLEFFECTSREMOVED = MF_SOURCE_READER_FLAG($00000200);
 
 type
-  PMF_SOURCE_READER_CONTROL_FLAG  = ^cwMF_SOURCE_READER_CONTROL_FLAG;
+  PMF_SOURCE_READER_CONTROL_FLAG = ^cwMF_SOURCE_READER_CONTROL_FLAG;
   cwMF_SOURCE_READER_CONTROL_FLAG = DWord;
-  MF_SOURCE_READER_CONTROL_FLAG   = cwMF_SOURCE_READER_CONTROL_FLAG;
+  MF_SOURCE_READER_CONTROL_FLAG = cwMF_SOURCE_READER_CONTROL_FLAG;
+
 const
   // Retrieve any pending samples, but do not request any more samples from the media source.
   // To get all of the pending samples, call ReadSample with this flag until the method returns a nil media sample pointer.
@@ -203,11 +207,12 @@ const
 
 type
 
-{$IFDEF WIN32}
+  {$IFDEF WIN32}
 {$ALIGN 8}
-{$ENDIF}
-  
+  {$ENDIF}
+
   PMF_SINK_WRITER_STATISTICS = ^MF_SINK_WRITER_STATISTICS;
+
   _MF_SINK_WRITER_STATISTICS = record
     cb: DWORD;
     llLastTimestampReceived: LONGLONG;
@@ -227,15 +232,15 @@ type
     dwAverageSampleRateProcessed: DWORD;
   end;
   MF_SINK_WRITER_STATISTICS = _MF_SINK_WRITER_STATISTICS;
-  
-{$IFDEF WIN32}
+
+  {$IFDEF WIN32}
 {$ALIGN 1}
-{$ENDIF}  
+  {$ENDIF}
 
 const
 
-  CLSID_MFReadWriteClassFactory : TGUID = '{48e2ed0f-98c2-4a37-bed5-166312ddd83f}';
-  CLSID_MFSourceReader          : TGUID = '{1777133c-0881-411b-a577-ad545f0714c4}';
+  CLSID_MFReadWriteClassFactory: TGUID = '{48e2ed0f-98c2-4a37-bed5-166312ddd83f}';
+  CLSID_MFSourceReader: TGUID = '{1777133c-0881-411b-a577-ad545f0714c4}';
 
 type
 
@@ -261,7 +266,7 @@ type
           Supplement for Windows Vista is installed.
   }
   IMFReadWriteClassFactory = interface(IUnknown)
-  ['{E7FE2E12-661C-40DA-92F9-4F002AB67627}']
+    ['{E7FE2E12-661C-40DA-92F9-4F002AB67627}']
 
     function CreateInstanceFromURL(const clsid: REFCLSID;
                                    pwszURL: LPCWSTR;
@@ -276,6 +281,7 @@ type
                                       out ppvObject: Pointer {LPVOID}): HResult; stdcall;
 
   end;
+
   IID_IMFReadWriteClassFactory = IMFReadWriteClassFactory;
 
 
@@ -298,8 +304,9 @@ type
   //
   //
   PIMFSourceReader = ^IMFSourceReader;
+
   IMFSourceReader = interface(IUnknown)
-  ['{70ae66f2-c809-4e4f-8915-bdcb406b7993}']
+    ['{70ae66f2-c809-4e4f-8915-bdcb406b7993}']
 
     function GetStreamSelection(const dwStreamIndex: DWORD;
                                 out pfSelected: BOOL): HResult; stdcall;
@@ -312,24 +319,24 @@ type
     // https://docs.microsoft.com/en-us/windows/win32/medfound/supported-media-formats-in-media-foundation
     function GetNativeMediaType(const dwStreamIndex: DWORD;
                                 dwMediaTypeIndex: DWORD;
-                                {out} ppMediaType: PIMFMediaType): HResult; stdcall;
+    {out} ppMediaType: PIMFMediaType): HResult; stdcall;
 
     function GetCurrentMediaType(const dwStreamIndex: DWORD;
-                                 {out} ppMediaType: PIMFMediaType): HResult; stdcall;
+    {out} ppMediaType: PIMFMediaType): HResult; stdcall;
 
     function SetCurrentMediaType(dwStreamIndex: DWORD;
-                      {Reserved} pdwReserved: PDWORD;
+    {Reserved} pdwReserved: PDWORD;
                                  pMediaType: IMFMediaType): HResult; stdcall;
 
     function SetCurrentPosition(const guidTimeFormat: TGUID;
                                 const varPosition: PROPVARIANT): HResult; stdcall;
 
     function ReadSample(const dwStreamIndex: DWORD;   // The stream to pull data from.
-                        dwControlFlags: DWORD;  // A bitwise OR of zero or more flags from the MF_SOURCE_READER_CONTROL_FLAG enumeration.
-        {out, optional} pdwActualStreamIndex: PDWORD;  // Receives the zero-based index of the stream.
-        {out, optional} pdwStreamFlags: PDWORD;        // Receives a bitwise OR of zero or more flags from the MF_SOURCE_READER_FLAG enumeration.
-        {out, optional} pllTimestamp: PLONGLONG;       // Receives the time stamp of the sample, or the time of the stream event indicated in pdwStreamFlags. The time is given in 100-nanosecond units.
-        {out, optional} ppSample: PIMFSample): HResult; stdcall;
+      dwControlFlags: DWORD;  // A bitwise OR of zero or more flags from the MF_SOURCE_READER_CONTROL_FLAG enumeration.
+    {out, optional} pdwActualStreamIndex: PDWORD;  // Receives the zero-based index of the stream.
+    {out, optional} pdwStreamFlags: PDWORD;        // Receives a bitwise OR of zero or more flags from the MF_SOURCE_READER_FLAG enumeration.
+    {out, optional} pllTimestamp: PLONGLONG;       // Receives the time stamp of the sample, or the time of the stream event indicated in pdwStreamFlags. The time is given in 100-nanosecond units.
+    {out, optional} ppSample: PIMFSample): HResult; stdcall;
 
     // function ReadSample: Remarks
     // ============================
@@ -381,6 +388,7 @@ type
                                       out pvarAttribute: PROPVARIANT): HResult; stdcall;
 
   end;
+
   IID_IMFSourceReader = IMFSourceReader;
 
 
@@ -391,8 +399,9 @@ type
   // To get a pointer to this interface, call QueryInterface on the Source Reader.
   //
   PIMFSourceReaderEx = ^IMFSourceReaderEx;
+
   IMFSourceReaderEx = interface(IMFSourceReader)
-  ['{7b981cf0-560e-4116-9875-b099895f23d7}']
+    ['{7b981cf0-560e-4116-9875-b099895f23d7}']
 
     function SetNativeMediaType(const dwStreamIndex: DWORD;
                                 pMediaType: IMFMediaType;
@@ -409,6 +418,7 @@ type
                                    out ppTransform: IMFTransform): HResult; stdcall;
 
   end;
+
   IID_IMFSourceReaderEx = IMFSourceReaderEx;
 
 
@@ -421,18 +431,19 @@ type
   // reader instance.
   //
   PIMFSourceReaderCallback = ^IMFSourceReaderCallback;
+
   IMFSourceReaderCallback = interface(IUnknown)
-  ['{deec8d99-fa1d-4d82-84c2-2c8969944867}']
+    ['{deec8d99-fa1d-4d82-84c2-2c8969944867}']
 
     function OnReadSample(hrStatus: HRESULT;     // Specifies the error code if an error occurred while processing the sample request.
-                          dwStreamIndex: DWORD;  // Specifies the stream index for the sample.
-                          dwStreamFlags: DWORD;  // Specifies the accumulated flags for the stream.
-                          llTimestamp: HNSTIME;  // Contains the presentation time of the sample.
-                                                 // If MF_SOURCE_READERF_STREAM_TICK is set for the stream flags,
-                                                 // then this contains the timestamp for the stream tick.
-                          pSample: IMFSample): HResult; stdcall; // Contains the next sample for the stream. It is possible for
-                                                                 // this parameter to be Nil, so the application should
-                                                                 // explicitly check for Nil before dereferencing the sample.
+      dwStreamIndex: DWORD;  // Specifies the stream index for the sample.
+      dwStreamFlags: DWORD;  // Specifies the accumulated flags for the stream.
+      llTimestamp: HNSTIME;  // Contains the presentation time of the sample.
+    // If MF_SOURCE_READERF_STREAM_TICK is set for the stream flags,
+    // then this contains the timestamp for the stream tick.
+      pSample: IMFSample): HResult; stdcall; // Contains the next sample for the stream. It is possible for
+    // this parameter to be Nil, so the application should
+    // explicitly check for Nil before dereferencing the sample.
 
     function OnFlush(dwStreamIndex: DWORD): HResult; stdcall;
 
@@ -440,10 +451,11 @@ type
                      pEvent: IMFMediaEvent): HResult; stdcall;
 
   end;
+
   IID_IMFSourceReaderCallback = IMFSourceReaderCallback;
 
 
-//#if (_WIN32_WINNT >= _WIN32_WINNT_WINTHRESHOLD)
+  //#if (_WIN32_WINNT >= _WIN32_WINNT_WINTHRESHOLD)
 
   // Interface IMFSourceReaderCallback2
   // ==================================
@@ -453,8 +465,9 @@ type
   // when an MFT in the chain raises an error event.
   //
   PIMFSourceReaderCallback2 = ^IMFSourceReaderCallback2;
+
   IMFSourceReaderCallback2 = interface(IMFSourceReaderCallback)
-  ['{CF839FE6-8C2A-4DD2-B6EA-C22D6961AF05}']
+    ['{CF839FE6-8C2A-4DD2-B6EA-C22D6961AF05}']
 
     // Callback function that is triggered when the transform chain in the SourceReader is built or
     // modified.
@@ -466,6 +479,7 @@ type
                            hrStatus: HResult): HResult; stdcall;
 
   end;
+
   IID_IMFSourceReaderCallback2 = IMFSourceReaderCallback2;
 
 
@@ -483,8 +497,9 @@ type
   //        Supplement for Windows Vista is installed.
   //
   PIMFSinkWriter = ^IMFSinkWriter;
+
   IMFSinkWriter = interface(IUnknown)
-  ['{3137f1cd-fe5e-4805-a5d8-fb477448cb3d}']
+    ['{3137f1cd-fe5e-4805-a5d8-fb477448cb3d}']
 
     function AddStream(pTargetMediaType: IMFMediaType;
                        out pdwStreamIndex: DWord): HResult; stdcall;
@@ -518,6 +533,7 @@ type
     function GetStatistics(const dwStreamIndex: DWord;
                            out pStats: MF_SINK_WRITER_STATISTICS): HResult; stdcall;
   end;
+
   IID_IMFSinkWriter = IMFSinkWriter;
 
 
@@ -525,8 +541,9 @@ type
   // =========================
   //
   PIMFSinkWriterEx = ^IMFSinkWriterEx;
+
   IMFSinkWriterEx = interface(IMFSinkWriter)
-  ['{588d72ab-5Bc1-496a-8714-b70617141b25}']
+    ['{588d72ab-5Bc1-496a-8714-b70617141b25}']
 
     function GetTransformForStream(dwStreamIndex: DWORD;
                                    dwTransformIndex: DWORD;
@@ -534,6 +551,7 @@ type
                                    out ppTransform: IMFTransform): HResult; stdcall;
 
   end;
+
   IID_IMFSinkWriterEx = IMFSinkWriterEx;
 
 
@@ -541,8 +559,9 @@ type
   // ====================================
   //
   PIMFSinkWriterEncoderConfig = ^IMFSinkWriterEncoderConfig;
+
   IMFSinkWriterEncoderConfig = interface(IUnknown)
-  ['{17C3779E-3CDE-4EDE-8C60-3899F5F53AD6}']
+    ['{17C3779E-3CDE-4EDE-8C60-3899F5F53AD6}']
 
     function SetTargetMediaType(dwStreamIndex: DWORD;
                                 var pTargetMediaType: IMFMediaType;
@@ -552,6 +571,7 @@ type
                                      var pEncodingParameters: IMFAttributes): HResult; stdcall;
 
   end;
+
   IID_IMFSinkWriterEncoderConfig = IMFSinkWriterEncoderConfig;
 
 
@@ -562,8 +582,9 @@ type
   // Implement this interface if you use the IMFSinkWriter interface and want to receive asynchronous notifications.
   //
   PIMFSinkWriterCallback = ^IMFSinkWriterCallback;
+
   IMFSinkWriterCallback = interface(IUnknown)
-  ['{666f76de-33d2-41b9-a458-29ed0a972c58}']
+    ['{666f76de-33d2-41b9-a458-29ed0a972c58}']
 
     function OnFinalize(hrStatus: HRESULT): HResult; stdcall;
 
@@ -571,6 +592,7 @@ type
                       pvContext: Pointer): HResult; stdcall;
 
   end;
+
   IID_IMFSinkWriterCallback = IMFSinkWriterCallback;
 
 
@@ -578,8 +600,9 @@ type
   // ================================
   //
   PIMFSinkWriterCallback2 = ^IMFSinkWriterCallback2;
+
   IMFSinkWriterCallback2 = interface(IMFSinkWriterCallback)
-  ['{2456BD58-C067-4513-84FE-8D0C88FFDC61}']
+    ['{2456BD58-C067-4513-84FE-8D0C88FFDC61}']
 
     function OnTransformChange(): HResult; stdcall;
 
@@ -587,6 +610,7 @@ type
                            hrStatus: HResult): HResult; stdcall;
 
   end;
+
   IID_IMFSinkWriterCallback2 = IMFSinkWriterCallback2;
 
 
@@ -594,51 +618,53 @@ type
   // ==========================
   //
 
-  function MFCreateSourceReaderFromURL(const pwszURL: LPCWSTR;
-                                       pAttributes: IMFAttributes;
-                                       out ppSourceReader: IMFSourceReader): HResult; stdcall;
-
-  function MFCreateSourceReaderFromByteStream(pByteStream: IMFByteStream;
-                                              pAttributes: IMFAttributes;
-                                              out ppSourceReader: IMFSourceReader): HResult; stdcall;
-
-  function MFCreateSourceReaderFromMediaSource(pMediaSource: IMFMediaSource;
-                                               pAttributes: IMFAttributes;
-                                               out ppSourceReader: IMFSourceReader): HResult; stdcall;
-
-  function MFCreateSinkWriterFromURL(const pwszOutputURL: LPCWSTR;
-                                     pByteStream: IMFByteStream;
+function MFCreateSourceReaderFromURL(const pwszURL: LPCWSTR;
                                      pAttributes: IMFAttributes;
-                                     out ppSinkWriter: IMFSinkWriter): HResult; stdcall;
+                                     out ppSourceReader: IMFSourceReader): HResult; stdcall;
 
-  function MFCreateSinkWriterFromMediaSink(pMediaSink: IMFMediaSink;
-                                           pAttributes: IMFAttributes;
-                                           out ppSinkWriter: IMFSinkWriter): HResult; stdcall;
+function MFCreateSourceReaderFromByteStream(pByteStream: IMFByteStream;
+                                            pAttributes: IMFAttributes;
+                                            out ppSourceReader: IMFSourceReader): HResult; stdcall;
+
+function MFCreateSourceReaderFromMediaSource(pMediaSource: IMFMediaSource;
+                                             pAttributes: IMFAttributes;
+                                             out ppSourceReader: IMFSourceReader): HResult; stdcall;
+
+function MFCreateSinkWriterFromURL(const pwszOutputURL: LPCWSTR;
+                                   pByteStream: IMFByteStream;
+                                   pAttributes: IMFAttributes;
+                                   out ppSinkWriter: IMFSinkWriter): HResult; stdcall;
+
+function MFCreateSinkWriterFromMediaSink(pMediaSink: IMFMediaSink;
+                                         pAttributes: IMFAttributes;
+                                         out ppSinkWriter: IMFSinkWriter): HResult; stdcall;
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  function InitializeStatistics(): MF_SINK_WRITER_STATISTICS;
+function InitializeStatistics(): MF_SINK_WRITER_STATISTICS;
 
-  // end of Additional Prototypes
+// end of Additional Prototypes
 
 implementation
 
 const
   MfReadWriteLib = 'mfreadwrite.dll';
 
-  function MFCreateSourceReaderFromURL;         external MfReadWriteLib name 'MFCreateSourceReaderFromURL' ;
-  function MFCreateSourceReaderFromByteStream;  external MfReadWriteLib name 'MFCreateSourceReaderFromByteStream' ;
-  function MFCreateSourceReaderFromMediaSource; external MfReadWriteLib name 'MFCreateSourceReaderFromMediaSource' ;
-  function MFCreateSinkWriterFromURL;           external MfReadWriteLib name 'MFCreateSinkWriterFromURL' ;
-  function MFCreateSinkWriterFromMediaSink;     external MfReadWriteLib name 'MFCreateSinkWriterFromMediaSink' ;
+function MFCreateSourceReaderFromURL; external MfReadWriteLib name 'MFCreateSourceReaderFromURL';
+function MFCreateSourceReaderFromByteStream; external MfReadWriteLib name 'MFCreateSourceReaderFromByteStream';
+function MFCreateSourceReaderFromMediaSource; external MfReadWriteLib name 'MFCreateSourceReaderFromMediaSource';
+function MFCreateSinkWriterFromURL; external MfReadWriteLib name 'MFCreateSinkWriterFromURL';
+function MFCreateSinkWriterFromMediaSink; external MfReadWriteLib name 'MFCreateSinkWriterFromMediaSink';
 
 // Implement Additional Prototypes here.
 
 // Helpers
 
 function InitializeStatistics(): MF_SINK_WRITER_STATISTICS;
+
 begin
+
   ZeroMemory(@Result,
              SizeOf(Result));
   Result.cb := SizeOf(Result);

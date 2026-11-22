@@ -69,7 +69,7 @@ unit MfPlayerClass;
 {$POINTERMATH ON}
 {$PACKENUM 1}
 
-  {$TYPEINFO ON}
+{$TYPEINFO ON}
 
 interface
 
@@ -105,7 +105,8 @@ uses
   {Application}
   UniThreadTimer;
 
-  {$HINTS OFF}    // Disable Hint H2077, HResult return values are implemented for debug purposes.
+  {$HINTS OFF}
+  // Disable Hint H2077, HResult return values are implemented for debug purposes.
 
 const
   WM_APP_PLAYER_EVENT = WM_APP + 1;
@@ -119,21 +120,21 @@ type
   TRequest = (reqNone = 0,
               reqStop,
               reqStart,           // start after Pause or stopped
-              reqPause,
+    reqPause,
               reqSeek,
               reqClose);
 
   TPlayerState = (Closed = 0,    // No session.
-                  Ready,         // Session was created, ready to open a file.
-                  OpenPending,   // Session is opening a file.
-                  Starting,      // Session initializing Start
-                  Started,       // Session is playing a file.
-                  Pausing,       // Session initializing pause.
-                  Paused,        // Session is paused.
-                  Stopping,      // Session initializing Stop.
-                  Stopped,       // Session is stopped (ready to play).
-                  Closing,       // Application has closed the session, but is waiting for MESessionClosed.
-                  Seeking);      // Session seeks
+    Ready,         // Session was created, ready to open a file.
+    OpenPending,   // Session is opening a file.
+    Starting,      // Session initializing Start
+    Started,       // Session is playing a file.
+    Pausing,       // Session initializing pause.
+    Paused,        // Session is paused.
+    Stopping,      // Session initializing Stop.
+    Stopped,       // Session is stopped (ready to play).
+    Closing,       // Application has closed the session, but is waiting for MESessionClosed.
+    Seeking);      // Session seeks
 
   TController = record
     Request: TRequest;          // Request an action
@@ -162,7 +163,9 @@ type
   // We always free and nil TInterfacedPersistent when closing the app or otherwise.
   // for this you call FInterfacedPersistent := Free and  FInterfacedPersistent := nil or
   // use FreeAndNil(FInterfacedPersistent);
-  TMfPlayer = class(TInterfacedPersistent, IMFAsyncCallback)
+  TMfPlayer = class(TInterfacedPersistent,
+                    IMFAsyncCallback)
+
   private
     FEventWindow: HWND;
     FEventClosing: Boolean;
@@ -170,21 +173,22 @@ type
     procedure MediaEventWindowProc(var Msg: TLMessage);
     procedure DiscardMediaEvents();
     function DispatchMediaEvent(pEvent: IMFMediaEvent): HRESULT;
+
   private
 
-  {private fields}
+    {private fields}
     // Internal objects
-    stRedrawStatus:      TRedrawStatus;
+    stRedrawStatus: TRedrawStatus;
 
-    m_dWaitResult:       DWORD;
-    m_iTimerInterval:    cardinal;          // Timer interval
-    m_bPending:          BOOL;              // Is a request pending?
-    FFileName:           UnicodeString;         // filename incl path
-    m_dCaps:             DWord;             // MFSESSIONCAP_* (MfApi) = Session caps.
-    FTimer:              TUniThreadedTimer; // timer
-    mfpControl:          TController;       // Contains requests, state etc.
+    m_dWaitResult: DWORD;
+    m_iTimerInterval: cardinal;          // Timer interval
+    m_bPending: BOOL;              // Is a request pending?
+    FFileName: UnicodeString;         // filename incl path
+    m_dCaps: DWord;             // MFSESSIONCAP_* (MfApi) = Session caps.
+    FTimer: TUniThreadedTimer; // timer
+    mfpControl: TController;       // Contains requests, state etc.
 
-  {private methods}
+    {private methods}
     //--------------------------------------------------------------------------
     // IMFAsyncCallback methods
     // ========================
@@ -209,8 +213,8 @@ type
     procedure SetVideoScreen(val: HWND);
     function GetVideoScreen(): HWND;
 
-   // procedure SetFullScreen(val: LongBool); deprecated 'This API is not supported and is unavailable since Redstone 5. ';
-   // function IsFullScreen(): LongBool;
+    // procedure SetFullScreen(val: LongBool); deprecated 'This API is not supported and is unavailable since Redstone 5. ';
+    // function IsFullScreen(): LongBool;
 
     function UpdatePendingCommands(req: TRequest): HRESULT;
 
@@ -228,24 +232,24 @@ type
     function GetState(): TPlayerState;
 
   protected
-  {protected fields}
+    {protected fields}
 
-    FhCloseEvent:        THandle;         // Event to wait on while closing.
+    FhCloseEvent: THandle;         // Event to wait on while closing.
     // interfaces
-    m_pSession:          IMFMediaSession;           // Media Session
-    m_pSource:           IMFMediaSource;            // Media Source
-    m_pVideoDisplay:     IMFVideoDisplayControl;    // Video control
-    m_pClock:            IMFPresentationClock;      // Presentation Clock
-    m_pRate:             IMFRateControl;            // Rate control
-    m_pRateSupport:      IMFRateSupport;            // Rate support
+    m_pSession: IMFMediaSession;           // Media Session
+    m_pSource: IMFMediaSource;            // Media Source
+    m_pVideoDisplay: IMFVideoDisplayControl;    // Video control
+    m_pClock: IMFPresentationClock;      // Presentation Clock
+    m_pRate: IMFRateControl;            // Rate control
+    m_pRateSupport: IMFRateSupport;            // Rate support
 
-    m_hwndEvent:         HWND;           // App window to receive events.
-    m_hwndVideo:         HWND;           // Video window.
-    m_hwndSub:           HWND;           // control that receives the subtitles or other info
-    m_hwnd_MainForm:     HWND;           // Handle of the mainform
+    m_hwndEvent: HWND;           // App window to receive events.
+    m_hwndVideo: HWND;           // Video window.
+    m_hwndSub: HWND;           // control that receives the subtitles or other info
+    m_hwnd_MainForm: HWND;           // Handle of the mainform
 
 
-  {protected methods}
+    {protected methods}
 
     // Initialize the player
     function Initialize(): HRESULT;
@@ -265,7 +269,8 @@ type
     // Handler for MEEndOfPresentation event
     function OnPresentationEnded(pEvent: IMFMediaEvent): HRESULT;
     // Override to handle additional session events.
-    function OnSessionEvent(pEvent: IMFMediaEvent; meType: DWord): HRESULT;
+    function OnSessionEvent(pEvent: IMFMediaEvent;
+                            meType: DWord): HRESULT;
     // Handler for MENewPresentation event.
     // This event is sent if the media source has a new presentation, which
     // requires a new topology.
@@ -276,9 +281,9 @@ type
     function OnSessionStop(pEvent: IMFMediaEvent): HRESULT;   // request Stop event
 
   public
-  {public fields}
+    {public fields}
 
-  {public methods}
+    {public methods}
 
     // Constructor, destructor
     // These are not protected methodes in Delphi.
@@ -301,7 +306,7 @@ type
     // Use this funtion to kill the MfPlayer.
     function ShutDown(): HRESULT;
     // Event handler
-    function HandleEvent(pEventPtr: UINT_PTR ): HRESULT;
+    function HandleEvent(pEventPtr: UINT_PTR): HRESULT;
 
     // Video functionality
     function Repaint: HRESULT;
@@ -352,7 +357,9 @@ implementation
 
 function TMfPlayer.GetParameters(out pdwFlags: DWord;
                                  out pdwQueue: DWord): HRESULT;
+
 begin
+
   Result := E_NOTIMPL;
 end;
 
@@ -362,35 +369,45 @@ var
   Session: IMFMediaSession;
   Event: IMFMediaEvent;
   EventType: MediaEventType;
+
 begin
+
   Session := m_pSession;
-  if Session = nil then Exit(MF_E_SHUTDOWN);
-  Result := Session.EndGetEvent(pAsyncResult,Event);
-  if FAILED(Result) then Exit;
+  if (Session = nil) then
+    Exit(MF_E_SHUTDOWN);
+  Result := Session.EndGetEvent(pAsyncResult,
+                                Event);
+  if FAILED(Result) then
+    Exit;
   Result := Event.GetType(EventType);
-  if FAILED(Result) then Exit;
-  if EventType = MESessionClosed then
+  if FAILED(Result) then
+    Exit;
+  if (EventType = MESessionClosed) then
     begin
       SetEvent(FhCloseEvent);
       Exit(S_OK);
     end;
   // Retain each posted event until the UI thread consumes or discards it.
   Event._AddRef();
-  if not PostMessage(FEventWindow,WM_APP + $4C0,0,LPARAM(Pointer(Event))) then
+  if not PostMessage(FEventWindow, WM_APP + $4C0, 0, LPARAM(Pointer(Event))) then
     Event._Release();
-  Result := Session.BeginGetEvent(Self as IMFAsyncCallback,nil);
+  Result := Session.BeginGetEvent(Self as IMFAsyncCallback,
+                                  nil);
 end;
+
 
 procedure TMfPlayer.MediaEventWindowProc(var Msg: TLMessage);
 var
   Event: IMFMediaEvent;
   SavedMask: TFPUExceptionMask;
+
 begin
-  if Msg.Msg = WM_APP + $4C0 then
+
+  if (Msg.Msg = WM_APP + $4C0) then
     begin
       Pointer(Event) := Pointer(Msg.LParam);
       SavedMask := GetExceptionMask();
-      SetExceptionMask([exInvalidOp,exDenormalized,exZeroDivide,exOverflow,exUnderflow,exPrecision]);
+      SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
       try
         if not FEventClosing then
           FLastEventError := DispatchMediaEvent(Event);
@@ -401,23 +418,32 @@ begin
       Msg.Result := 0;
     end
   else
-    Msg.Result := DefWindowProcW(FEventWindow,Msg.Msg,Msg.WParam,Msg.LParam);
+    Msg.Result := DefWindowProcW(FEventWindow,
+                                 Msg.Msg,
+                                 Msg.WParam,
+                                 Msg.LParam);
 end;
+
 
 procedure TMfPlayer.DiscardMediaEvents();
 var
   Msg: TMsg;
   Event: IMFMediaEvent;
+
 begin
-  while PeekMessage(Msg,FEventWindow,WM_APP + $4C0,WM_APP + $4C0,PM_REMOVE) do
+
+  while PeekMessage(Msg, FEventWindow, WM_APP + $4C0, WM_APP + $4C0, PM_REMOVE) do
     begin
       Pointer(Event) := Pointer(Msg.LParam);
       Event := nil;
     end;
 end;
 
+
 function TMfPlayer.DispatchMediaEvent(pEvent: IMFMediaEvent): HRESULT;
+
 begin
+
   Result := HandleEvent(UINT_PTR(Pointer(pEvent)));
 end;
 
@@ -426,7 +452,9 @@ end;
 
 // Reset to initial values
 procedure TMfPlayer.ResetController;
+
 begin
+
   with mfpControl do
     begin
       State := Closed;           // No session.
@@ -446,7 +474,9 @@ end;
 
 
 function TMfPlayer.Clear(): HRESULT;
+
 begin
+
   Result := S_OK;
 
   if Assigned(FTimer) then
@@ -460,29 +490,29 @@ begin
   FFileName := '';
   stRedrawStatus := rdStarted;
 
-try
-  // Release the interfaces
-  // Stop the session
-  if Assigned(m_pSession) then
-    begin
-      m_pSession.Close();
-      // Always shut down a session and clear the topologies to release MfAsyncCallback,
-      // before releasing the session!
-      m_pSession.Shutdown();
-      m_pSession.ClearTopologies();
-      SafeRelease(m_pSession);
-    end;
-  SafeRelease(m_pSource);
-  SafeRelease(m_pVideoDisplay);
-  SafeRelease(m_pClock);
-  SafeRelease(m_pRate);
-  SafeRelease(m_pRateSupport);
-  FreeAndNil(FTimer);
+  try
+    // Release the interfaces
+    // Stop the session
+    if Assigned(m_pSession) then
+      begin
+        m_pSession.Close();
+        // Always shut down a session and clear the topologies to release MfAsyncCallback,
+        // before releasing the session!
+        m_pSession.Shutdown();
+        m_pSession.ClearTopologies();
+        SafeRelease(m_pSession);
+      end;
+    SafeRelease(m_pSource);
+    SafeRelease(m_pVideoDisplay);
+    SafeRelease(m_pClock);
+    SafeRelease(m_pRate);
+    SafeRelease(m_pRateSupport);
+    FreeAndNil(FTimer);
 
-except
-  //
-  Result := E_FAIL;
-end;
+  except
+    //
+    Result := E_FAIL;
+  end;
 end;
 
 
@@ -495,6 +525,7 @@ label
   Done;
 
 begin
+
   FEventClosing := True;
   // The IMFMediaSession.Close method is asynchronous, but the
   // MfPlayer.CloseSession method waits on the MESessionClosed event.
@@ -517,18 +548,19 @@ begin
 
       if (SUCCEEDED(hr)) then
         begin
-try
-          // Wait for the close operation to complete
-          dwWaitResult := WaitForSingleObject(THandle(FhCloseEvent), 2000);
+          try
+            // Wait for the close operation to complete
+            dwWaitResult := WaitForSingleObject(THandle(FhCloseEvent),
+                                                2000);
 
-          if (dwWaitResult <> STATUS_WAIT_0) {Wait abandoned} then
-            m_dWaitResult := dwWaitResult;
+            if (dwWaitResult <> STATUS_WAIT_0) {Wait abandoned} then
+              m_dWaitResult := dwWaitResult;
 
-except
-  // Do nothing
-end;
+          except
+            // Do nothing
+          end;
         end;
-end;
+    end;
 
   // Complete shutdown operations.
   if (SUCCEEDED(hr)) then
@@ -550,14 +582,16 @@ end;
 
   mfpControl.State := Closed;
 
-done:
-  DiscardMediaEvents();
+  done:
+    DiscardMediaEvents();
   Result := hr;
 end;
 
 
 procedure TMfPlayer.SetTimerInterval(val: cardinal);
+
 begin
+
   if (val < 1) or (val > 1000000000) then
     val := 1; //reset to default
   FTimer.Period := val;
@@ -572,16 +606,17 @@ var
   hr: HRESULT;
 
 begin
+
   inherited Create();
   FEventWindow := LCLIntf.AllocateHWnd(MediaEventWindowProc);
 
   if FAILED(MFStartup(MF_VERSION, 0)) then
     begin
       MessageBoxW(0,
-                 lpcwstr('Your computer does not support this Media Foundation API version' +
-                       IntToStr(MF_VERSION) + '.'),
-                 lpcwstr('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  lpcwstr('Your computer does not support this Media Foundation API version' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
       Abort;
     end;
 
@@ -598,10 +633,10 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(0,
-                 PWideChar('An error occured while initializing MESessionClosed'),
-                 PWideChar('Error!'),
-                 MB_ICONEXCLAMATION);
-     end;
+                  PWideChar('An error occured while initializing MESessionClosed'),
+                  PWideChar('Error!'),
+                  MB_ICONEXCLAMATION);
+    end;
 
   // Create a threaded timer
   FTimer := TUniThreadedTimer.Create(Nil);
@@ -612,7 +647,9 @@ end;
 
 // BeforeDestruction, from here all reference counting should be checked
 procedure TMfPlayer.BeforeDestruction();
+
 begin
+
   ShutDown();
   Clear();
   inherited BeforeDestruction();
@@ -621,11 +658,14 @@ end;
 
 // The destructor
 destructor TMfPlayer.Destroy();
+
 begin
+
   // Shutdown the Media Foundation platform
   MFShutdown();
   DiscardMediaEvents();
-  if FEventWindow <> 0 then LCLIntf.DeallocateHWnd(FEventWindow);
+  if (FEventWindow <> 0) then
+    LCLIntf.DeallocateHWnd(FEventWindow);
   FEventWindow := 0;
   inherited Destroy();
 end;
@@ -635,9 +675,11 @@ end;
 
 // Release all resources held by this object.
 function TMfPlayer.ShutDown(): HRESULT;
+
 begin
+
   Result := CloseSession();
-  if FhCloseEvent <> 0 then
+  if (FhCloseEvent <> 0) then
     begin
       CloseHandle(FhCloseEvent);
       FhCloseEvent := 0;
@@ -653,6 +695,7 @@ label
   Done;
 
 begin
+
   FEventClosing := False;
   FLastEventError := S_OK;
   // Close the old session, if any.
@@ -662,17 +705,18 @@ begin
   if (FAILED(hr)) then
     goto done;
 
-  if FhCloseEvent = 0 then
+  if (FhCloseEvent = 0) then
     begin
       hr := Initialize();
-      if FAILED(hr) then goto Done;
+      if FAILED(hr) then
+        goto Done;
     end;
 
   assert(mfpControl.State = Closed);
 
   // Create the media session.
   hr := MFCreateMediaSession(Nil,
-                            m_pSession);
+                             m_pSession);
   if (FAILED(hr)) then
     goto done;
 
@@ -684,8 +728,8 @@ begin
   if (FAILED(hr)) then
     goto done;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 // Take a snapshot
@@ -696,27 +740,38 @@ var
   bmi: BITMAPINFOHEADER;
   Info: Windows.BITMAPINFO;
   timestamp: MFTIME;
-  
+
 begin
-  if (bit = nil) or (m_pVideoDisplay = nil) then Exit(E_POINTER);
-  ZeroMemory(@bmi,SizeOf(bmi));
+
+  if (bit = nil) or (m_pVideoDisplay = nil) then
+    Exit(E_POINTER);
+  ZeroMemory(@bmi,
+             SizeOf(bmi));
   bmi.biSize := SizeOf(bmi);
   buffer := nil;
-  Result := m_pVideoDisplay.GetCurrentImage(bmi,buffer,bufSize,timestamp);
-  if FAILED(Result) then Exit;
+  Result := m_pVideoDisplay.GetCurrentImage(bmi,
+                                            buffer,
+                                            bufSize,
+                                            timestamp);
+  if FAILED(Result) then
+    Exit;
   try
     // BI_RGB images may legitimately leave biSizeImage at zero.
     if (buffer = nil) or (bmi.biWidth <= 0) or (bmi.biHeight = 0) or
-       (bmi.biHeight = Low(Integer)) or (bmi.biBitCount <> 32) or
-       (UInt64(bmi.biWidth) * UInt64(Abs(bmi.biHeight)) * 4 > UInt64(bufSize)) then
+      (bmi.biHeight = Low(Integer)) or (bmi.biBitCount <> 32) or
+      (UInt64(bmi.biWidth) * UInt64(Abs(bmi.biHeight)) * 4 > UInt64(bufSize)) then
       Exit(E_UNEXPECTED);
 
     bit.PixelFormat := Graphics.pf32bit;
-    bit.SetSize(bmi.biWidth,Abs(bmi.biHeight));
-    ZeroMemory(@Info,SizeOf(Info));
-    Move(bmi,Info.bmiHeader,SizeOf(bmi));
+    bit.SetSize(bmi.biWidth,
+                Abs(bmi.biHeight));
+    ZeroMemory(@Info,
+               SizeOf(Info));
+    Move(bmi,
+         Info.bmiHeader,
+         SizeOf(bmi));
     // GDI interprets the signed DIB height consistently for VCL and LCL.
-    if SetDIBits(0,bit.Handle,0,Abs(bmi.biHeight),buffer,Info,DIB_RGB_COLORS) = 0 then
+    if (SetDIBits(0, bit.Handle, 0, Abs(bmi.biHeight), buffer, Info, DIB_RGB_COLORS) = 0) then
       Exit(E_FAIL);
     bit.Modified := True;
     Result := S_OK;
@@ -734,32 +789,36 @@ var
   mdur: MFTIME;
 
 begin
+
   hr := S_OK;
 
-try
-  if Assigned(m_pSource) then
-    begin
-      dur := 0;
-      hr := m_pSource.CreatePresentationDescriptor(pPD);
+  try
+    if Assigned(m_pSource) then
+      begin
+        dur := 0;
+        hr := m_pSource.CreatePresentationDescriptor(pPD);
 
-      if (SUCCEEDED(hr)) then
-        begin
-          hr := pPD.GetUINT64(MF_PD_DURATION, UINT64(mdur));
-          dur := mdur;
-          mfpControl.uiDuration := dur;
-        end;
-    end
-  else
-    hr := E_POINTER;
+        if (SUCCEEDED(hr)) then
+          begin
+            hr := pPD.GetUINT64(MF_PD_DURATION,
+                                UINT64(mdur));
+            dur := mdur;
+            mfpControl.uiDuration := dur;
+          end;
+      end
+    else
+      hr := E_POINTER;
 
-finally
-  Result := hr;
-end;
+  finally
+    Result := hr;
+  end;
 end;
 
 
 function TMfPlayer.GetState(): TPlayerState;
+
 begin
+
   Result := mfpControl.State;
 end;
 
@@ -774,50 +833,55 @@ var
   i: integer;
 
 begin
-try
 
-  hr := (m_pSession as IMFGetService).GetService(MR_STREAM_VOLUME_SERVICE,
-                                                 IID_IMFAudioStreamVolume,
-                                                 Pointer(pVol));
+  try
 
-  if SUCCEEDED(hr) then
-    begin
-      hr := pVol.GetChannelCount(nChannels);
-      // If balanced volume is needed, use an array f channels
-      // to set each channel on desired volume.
-      hr := pVol.GetChannelVolume(0,
-                                  mfpControl.Volume);
+    hr := (m_pSession as IMFGetService).GetService(MR_STREAM_VOLUME_SERVICE,
+                                                   IID_IMFAudioStreamVolume,
+                                                   Pointer(pVol));
 
-
-      SetLength(aCurrVolume, nChannels);
-      // this function returns a Float array.
-      hr := pVol.GetAllVolumes(nChannels,
-                               @aCurrVolume[0]);
+    if SUCCEEDED(hr) then
+      begin
+        hr := pVol.GetChannelCount(nChannels);
+        // If balanced volume is needed, use an array f channels
+        // to set each channel on desired volume.
+        hr := pVol.GetChannelVolume(0,
+                                    mfpControl.Volume);
 
 
-      // Find the highest soundlevel (because each channel can have a different level)
-      mv := aCurrVolume[0];
-      for i := 1 to nChannels -1 do
-        begin
-          if (aCurrVolume[i] >= mv) then
-            begin
-              mfpControl.Volume := aCurrVolume[i];
-              mv := aCurrVolume[i];
-            end;
-        end;
-    end;
+        SetLength(aCurrVolume,
+                  nChannels);
+        // this function returns a Float array.
+        hr := pVol.GetAllVolumes(nChannels,
+                                 @aCurrVolume[0]);
 
-  if FAILED(hr) then
-    mfpControl.Volume := 0.0;
 
-finally
-  Result := mfpControl.Volume;
+        // Find the highest soundlevel (because each channel can have a different level)
+        mv := aCurrVolume[0];
+        for i := 1 to nChannels - 1 do
+          begin
+            if (aCurrVolume[i] >= mv) then
+              begin
+                mfpControl.Volume := aCurrVolume[i];
+                mv := aCurrVolume[i];
+              end;
+          end;
+      end;
+
+    if FAILED(hr) then
+      mfpControl.Volume := 0.0;
+
+  finally
+    Result := mfpControl.Volume;
+  end;
 end;
-end;
 
 
-function GetParameters(out pdwFlags: DWord; out pdwQueue: DWord): HResult;
+function GetParameters(out pdwFlags: DWord;
+                       out pdwQueue: DWord): HResult;
+
 begin
+
   Result := E_NOTIMPL;
 end;
 
@@ -827,6 +891,7 @@ var
   h: THandle;
 
 begin
+
   Result := S_OK;
   if (FhCloseEvent <> 0) then
     begin
@@ -835,9 +900,9 @@ begin
     end;
 
   h := CreateEventW(Nil,
-                   False,
-                   False,
-                   Nil);
+                    False,
+                    False,
+                    Nil);
 
   FhCloseEvent := THandle(h);
 
@@ -860,6 +925,7 @@ label
   Done;
 
 begin
+
   hrStatus := S_OK;
   meType := MEUnknown;
   pEvent := IMFMediaEvent(pEventPtr);
@@ -888,49 +954,52 @@ begin
 
   case meType of
     // In this order when opening
-    MESessionTopologySet            : {OnSessionTopologySet;} hr := S_OK;
+    MESessionTopologySet: {OnSessionTopologySet;} hr := S_OK;
 
     // Raised by the Media Session when a new presentation starts.
     // This event indicates when the presentation will start and the offset between the presentation time and the source time.
-    MESessionNotifyPresentationTime : hr := S_OK;  //
+    MESessionNotifyPresentationTime: hr := S_OK;  //
 
-    MESessionCapabilitiesChanged    : // The session capabilities changed. Get the updated capabilities.
-                                      mfpControl.dwSessionCaps := MFGetAttributeUINT32(pEvent,
-                                                                                      MF_EVENT_SESSIONCAPS,
-                                                                                      mfpControl.dwSessionCaps);
-    MESessionTopologyStatus         : hr := OnTopologyStatus(pEvent);
+    MESessionCapabilitiesChanged: // The session capabilities changed. Get the updated capabilities.
+      mfpControl.dwSessionCaps := MFGetAttributeUINT32(pEvent,
+                                                       MF_EVENT_SESSIONCAPS,
+                                                       mfpControl.dwSessionCaps);
+    MESessionTopologyStatus: hr := OnTopologyStatus(pEvent);
     // end
 
-    MEEndOfPresentation    : hr := S_OK;
-    MENewPresentation      : hr := OnNewPresentation(pEvent);
-    MESessionStopped       : hr := OnSessionStop(pEvent);
-    MESessionStarted       : hr := OnSessionStart(pEvent);
-    MESessionPaused        : hr := OnSessionPause(pEvent);
-    MESessionClosed        : hr := S_OK;
-    MESessionEnded         : hr := OnPresentationEnded(pEvent);
+    MEEndOfPresentation: hr := S_OK;
+    MENewPresentation: hr := OnNewPresentation(pEvent);
+    MESessionStopped: hr := OnSessionStop(pEvent);
+    MESessionStarted: hr := OnSessionStart(pEvent);
+    MESessionPaused: hr := OnSessionPause(pEvent);
+    MESessionClosed: hr := S_OK;
+    MESessionEnded: hr := OnPresentationEnded(pEvent);
 
-    MESessionRateChanged   : // If the rate change succeeded, we've already got the rate
-                             // cached. If it failed, try to get the actual rate.
-                             if FAILED(hrStatus) then
-                               begin
-                                 PropVariantInit(_pvar);
-                                 hr := pEvent.GetValue(_pvar);
-                                 if (SUCCEEDED(hr) And (_pvar.vt = VT_R4) ) then
-                                   mfpControl.fRate := _pvar.fltVal;
-                               end;
+    MESessionRateChanged: // If the rate change succeeded, we've already got the rate
+      // cached. If it failed, try to get the actual rate.
+      if FAILED(hrStatus) then
+        begin
+          PropVariantInit(_pvar);
+          hr := pEvent.GetValue(_pvar);
+          if (SUCCEEDED(hr) And (_pvar.vt = VT_R4)) then
+            mfpControl.fRate := _pvar.fltVal;
+        end;
 
-  else
-    hr := OnSessionEvent(pEvent, meType);
+    else
+      hr := OnSessionEvent(pEvent,
+                           meType);
   end;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
 function TMfPlayer.HasVideo: boolean;
+
 begin
-  Result := m_pVideoDisplay <> nil;
+
+  Result := (m_pVideoDisplay <> nil);
 end;
 
 
@@ -940,7 +1009,9 @@ var
   hr: HRESULT;
 
 begin
-  hr := pEvent.GetUINT32(MF_EVENT_TOPOLOGY_STATUS, UINT32(status));
+
+  hr := pEvent.GetUINT32(MF_EVENT_TOPOLOGY_STATUS,
+                         UINT32(status));
   if SUCCEEDED(hr) then
     if (status = MF_TOPOSTATUS_READY) then
       hr := OnTopologyReady(pEvent);  // Send msg we are ready
@@ -948,58 +1019,60 @@ begin
 end;
 
 // Handler for MESessionTopologyReady event - starts video playback.
-function TMfPlayer.OnTopologyReady(pEvent: IMFMediaEvent):  HRESULT;
+function TMfPlayer.OnTopologyReady(pEvent: IMFMediaEvent): HRESULT;
 var
   hr: HRESULT;
   Queued: TRequest;
 
 begin
+
   // release any previous instance of the m_pVideoDisplay interface
   SafeRelease(m_pVideoDisplay);
   hr := S_OK;
 
-try
-try
-  // Ask the session for the IMFVideoDisplayControl interface. This interface is
-  // implemented by the EVR (Enhanced Video Renderer) and is exposed by the media
-  // session as a service. The session will query the topology for the right
-  // component and return this EVR interface. The interface will be used to tell the
-  // video to repaint whenever the hosting window receives a WM_PAINT window message.
-  // This call is expected to fail if the media file does not have a video stream.
-  MFGetService(m_pSession,
-               MR_VIDEO_RENDER_SERVICE,
-               IID_IMFVideoDisplayControl,
-               Pointer(m_pVideoDisplay));
-  if (FAILED(hr)) then
-    Abort; //silent exception
+  try
+    try
+      // Ask the session for the IMFVideoDisplayControl interface. This interface is
+      // implemented by the EVR (Enhanced Video Renderer) and is exposed by the media
+      // session as a service. The session will query the topology for the right
+      // component and return this EVR interface. The interface will be used to tell the
+      // video to repaint whenever the hosting window receives a WM_PAINT window message.
+      // This call is expected to fail if the media file does not have a video stream.
+      MFGetService(m_pSession,
+                   MR_VIDEO_RENDER_SERVICE,
+                   IID_IMFVideoDisplayControl,
+                   Pointer(m_pVideoDisplay));
+      if (FAILED(hr)) then
+        Abort; //silent exception
 
-  if Assigned(m_pVideoDisplay) then
-    begin
-      // Set the target window (or control), at this point this is not really
-      // nescesarry, because the previous -MfGetService- did that allready.
-      m_pVideoDisplay.SetVideoWindow(m_hwndVideo);
-      // Adjust aspect ratio
-      ResizeVideo(nil);
+      if Assigned(m_pVideoDisplay) then
+        begin
+          // Set the target window (or control), at this point this is not really
+          // nescesarry, because the previous -MfGetService- did that allready.
+          m_pVideoDisplay.SetVideoWindow(m_hwndVideo);
+          // Adjust aspect ratio
+          ResizeVideo(nil);
+        end;
+
+      // since the topology is ready, you might start playback.
+      //
+      // You can also implement an option for the user, starting playback directly after
+      // a mediastream is loaded.
+      //hr := Play();
+
+
+    except
+      // Do nothing
     end;
-
-  // since the topology is ready, you might start playback.
-  //
-  // You can also implement an option for the user, starting playback directly after
-  // a mediastream is loaded.
-  //hr := Play();
-
-
-except
-  // Do nothing
-end;
-finally
-  Queued := mfpControl.Request;
-  mfpControl.Request := reqNone;
-  m_bPending := False;
-  mfpControl.State := Stopped;
-  if Queued = reqStart then hr := Start();
-  Result := hr;
-end;
+  finally
+    Queued := mfpControl.Request;
+    mfpControl.Request := reqNone;
+    m_bPending := False;
+    mfpControl.State := Stopped;
+    if (Queued = reqStart) then
+      hr := Start();
+    Result := hr;
+  end;
 end;
 
 // Handler for MENewPresentation event.
@@ -1016,49 +1089,59 @@ label
   done;
 
 begin
+
   dwSourceStreams := 0;
 
   // Get the presentation descriptor from the event.
-  hr := GetEventObject(pEvent, pPD);
-    if (FAILED(hr)) then
-      goto done;
+  hr := GetEventObject(pEvent,
+                       pPD);
+  if (FAILED(hr)) then
+    goto done;
   // Create a partial topology.
   hr := CreatePlaybackTopology(m_pSource,
-                              pPD,
-                              m_hwndVideo,
-                              pTopology,
-                              dwSourceStreams);
-    if (FAILED(hr)) then
-      goto done;
+                               pPD,
+                               m_hwndVideo,
+                               pTopology,
+                               dwSourceStreams);
+  if (FAILED(hr)) then
+    goto done;
   // Set the topology on the media session.
   hr := m_pSession.SetTopology(MFSESSION_SETTOPOLOGY_IMMEDIATE,
-                              pTopology);
+                               pTopology);
 
   mfpControl.State := OpenPending;
 
-done:
-  Result := hr;  //S_OK
+  done:
+    Result := hr;  //S_OK
 end;
 
 
 function TMfPlayer.OnSessionPause(pEvent: IMFMediaEvent): HRESULT;
+
 begin
+
   mfpControl.State := Paused;
   Result := UpdatePendingCommands(reqPause);
 end;
 
 
 function TMfPlayer.OnPresentationEnded(pEvent: IMFMediaEvent): HRESULT;
+
 begin
+
   mfpControl.State := Stopped;
   mfpControl.Request := reqNone;
-  if Assigned(FTimer) then FTimer.Enabled := False;
+  if Assigned(FTimer) then
+    FTimer.Enabled := False;
   Result := S_OK;
 end;
 
 
-function TMfPlayer.OnSessionEvent(pEvent: IMFMediaEvent; meType: DWord): HRESULT;
+function TMfPlayer.OnSessionEvent(pEvent: IMFMediaEvent;
+                                  meType: DWord): HRESULT;
+
 begin
+
   //this more or less a dummy
   //but feel free to add your own sessionevent handlers here
   Result := S_OK;
@@ -1066,7 +1149,9 @@ end;
 
 
 function TMfPlayer.OnSessionStart(pEvent: IMFMediaEvent): HRESULT;
+
 begin
+
   mfpControl.State := Started;
   UpdatePendingCommands(reqStart);
   Result := S_OK;
@@ -1074,7 +1159,9 @@ end;
 
 
 function TMfPlayer.OnSessionStop(pEvent: IMFMediaEvent): HRESULT;
+
 begin
+
   mfpControl.State := Stopped;
   UpdatePendingCommands(reqStop);
   Result := S_OK;
@@ -1106,108 +1193,109 @@ begin
   hr := S_OK;
   dwSourceStreams := 0;
 
-try
+  try
 
-  FFilename := sURL;
+    FFilename := sURL;
 
-  // Create the media session.
-  hr := CreateSession();
-  if (FAILED(hr)) then
-    goto done;
+    // Create the media session.
+    hr := CreateSession();
+    if (FAILED(hr)) then
+      goto done;
 
-  //  Create a media object from a URL or stream.
-  hr := CreateObjectFromUrl(sURL,
-                            m_pSource);
-  if (FAILED(hr)) then
-    goto done;
+    //  Create a media object from a URL or stream.
+    hr := CreateObjectFromUrl(sURL,
+                              m_pSource);
+    if (FAILED(hr)) then
+      goto done;
 
-  // Create a new topology.
-  hr := MFCreateTopology(pTopology);
-  if (FAILED(hr)) then
-    goto done;
+    // Create a new topology.
+    hr := MFCreateTopology(pTopology);
+    if (FAILED(hr)) then
+      goto done;
 
-  // Create the presentation descriptor for the media source
-  hr := m_pSource.CreatePresentationDescriptor(pSourcePD);
-  if (FAILED(hr)) then
-    goto done;
+    // Create the presentation descriptor for the media source
+    hr := m_pSource.CreatePresentationDescriptor(pSourcePD);
+    if (FAILED(hr)) then
+      goto done;
 
-  // obtain capabilities of the current session
-  hr := m_pSession.GetSessionCapabilities(m_dCaps);
-  if FAILED(hr) then
-    m_dCaps := MFSESSIONCAP_START;
+    // obtain capabilities of the current session
+    hr := m_pSession.GetSessionCapabilities(m_dCaps);
+    if FAILED(hr) then
+      m_dCaps := MFSESSIONCAP_START;
 
-  // Create the presentation clock (optional)
-  //hr := MFCreatePresentationClock(m_pClock);
-  //if FAILED(hr) then
-  //  m_pClock := Nil
-  //else
-  //  begin
-  //    hr := m_pClock.AddClockStateSink(m_pStateSink);
-  //
-  //    hr := m_pClock.GetTimeSource(m_pTimeSource);
-  //    OleCheck(hr);
-  //    if FAILED(hr) then
-  //      m_pClock := Nil;  // no clock
-  //  end;
+    // Create the presentation clock (optional)
+    //hr := MFCreatePresentationClock(m_pClock);
+    //if FAILED(hr) then
+    //  m_pClock := Nil
+    //else
+    //  begin
+    //    hr := m_pClock.AddClockStateSink(m_pStateSink);
+    //
+    //    hr := m_pClock.GetTimeSource(m_pTimeSource);
+    //    OleCheck(hr);
+    //    if FAILED(hr) then
+    //      m_pClock := Nil;  // no clock
+    //  end;
 
-  // Get the presentation clock (optional)
-  hr := m_pSession.GetClock(pClock);
+    // Get the presentation clock (optional)
+    hr := m_pSession.GetClock(pClock);
     if (SUCCEEDED(hr)) then
       begin
-        hr := pClock.QueryInterface(IID_IMFPresentationClock, m_pClock);
-          if FAILED(hr) then
-            m_pClock := Nil;
+        hr := pClock.QueryInterface(IID_IMFPresentationClock,
+                                    m_pClock);
+        if FAILED(hr) then
+          m_pClock := Nil;
       end;
 
 
-  //make your choice: Partial or full topology
+    //make your choice: Partial or full topology
 
-  // Create a partial topology, com branches, source nodes and sink nodes.
-  // playback topologies are always partial
-  hr := CreatePlaybackTopology(m_pSource,
-                               pSourcePD,
-                               m_hwndVideo,
-                               pTopology,
-                               dwSourceStreams);
-  if (FAILED(hr)) then
-    goto done;
+    // Create a partial topology, com branches, source nodes and sink nodes.
+    // playback topologies are always partial
+    hr := CreatePlaybackTopology(m_pSource,
+                                 pSourcePD,
+                                 m_hwndVideo,
+                                 pTopology,
+                                 dwSourceStreams);
+    if (FAILED(hr)) then
+      goto done;
 
-  // Set the topology on the media session.
-  hr := m_pSession.SetTopology(MFSESSION_SETTOPOLOGY_IMMEDIATE,
-                              pTopology);
-  if (FAILED(hr)) then
-    goto done;
+    // Set the topology on the media session.
+    hr := m_pSession.SetTopology(MFSESSION_SETTOPOLOGY_IMMEDIATE,
+                                 pTopology);
+    if (FAILED(hr)) then
+      goto done;
 
-  // If SetTopology succeeds, the media session will queue an
-  // MESessionTopologySet event.
+    // If SetTopology succeeds, the media session will queue an
+    // MESessionTopologySet event.
 
-  // Get the duration from the presentation descriptor (optional)
-  pSourcePD.GetUINT64(MF_PD_DURATION,
-                      UINT64(itime));
-  mfpControl.uiDuration := itime;
+    // Get the duration from the presentation descriptor (optional)
+    pSourcePD.GetUINT64(MF_PD_DURATION,
+                        UINT64(itime));
+    mfpControl.uiDuration := itime;
 
-  // Set state to "open pending"
-  mfpControl.State := OpenPending;
-  m_bPending := True;
+    // Set state to "open pending"
+    mfpControl.State := OpenPending;
+    m_bPending := True;
 
-done:
+    done:
 
-  Result := hr;
+      Result := hr;
 
-  if (FAILED(hr)) then
-    begin
-      Clear();
-      Abort; // throw silent exception
-    end;
+    if (FAILED(hr)) then
+      begin
+        Clear();
+        Abort; // throw silent exception
+      end;
 
-except
-  pwInt := PWideChar(InttoStr(hr));
-  Result := hr;
-  MessageBoxW(0,
-             PWideChar('An error has been returned. (hr: ' + pwInt + ')'),
-             PWideChar(''),
-             MB_ICONERROR);
-end;
+  except
+    pwInt := PWideChar(InttoStr(hr));
+    Result := hr;
+    MessageBoxW(0,
+                PWideChar('An error has been returned. (hr: ' + pwInt + ')'),
+                PWideChar(''),
+                MB_ICONERROR);
+  end;
 end;
 
 // Pause
@@ -1216,6 +1304,7 @@ var
   hr: HRESULT;
 
 begin
+
   hr := S_OK;
   if (m_pSession = nil) or (m_pSource = nil) then
     begin
@@ -1247,62 +1336,66 @@ var
   varStart: PROPVARIANT;
 
 begin
-   hr := S_OK;
 
-try
-  // Use assertions in debug modus only!
-  Assert(m_pSession <> Nil);
+  hr := S_OK;
 
-  if m_bPending then
-    begin
-      mfpControl.Request := reqStart;
-      mfpControl.State := Starting;
-      Exit(S_OK);
-    end
-  else
-    begin
-      PropVariantInit(varStart);
-      varStart.vt := VT_EMPTY;
+  try
+    // Use assertions in debug modus only!
+    Assert(m_pSession <> Nil);
 
-      hr := m_pSession.Start(GUID_NULL, varStart);
+    if m_bPending then
+      begin
+        mfpControl.Request := reqStart;
+        mfpControl.State := Starting;
+        Exit(S_OK);
+      end
+    else
+      begin
+        PropVariantInit(varStart);
+        varStart.vt := VT_EMPTY;
 
-      // The Start method can also specify a starting position relative to the start
-      // of the file; see the API reference topic for more information.
+        hr := m_pSession.Start(GUID_NULL,
+                               varStart);
 
-      m_bPending := True;
-      {void} PropVariantClear(varStart);
-    end;
+        // The Start method can also specify a starting position relative to the start
+        // of the file; see the API reference topic for more information.
 
-  if (SUCCEEDED(hr)) then
-    begin
-      // Note: Start is an asynchronous operation. However, we
-      // can treat our state as being already started. If Start
-      // fails later, we'll get an MESessionStarted event with
-      // an error code, and we will update our state then.
+        m_bPending := True;
+        {void} PropVariantClear(varStart);
+      end;
 
-      // Start the presentation clock
-      // 1 sec = 10.000.000 nanosec
-      // MF is using 100 ns chunks = 1.000.000 of a second
-      // The Media Session starts its presentation clock after resolving the topology.
+    if (SUCCEEDED(hr)) then
+      begin
+        // Note: Start is an asynchronous operation. However, we
+        // can treat our state as being already started. If Start
+        // fails later, we'll get an MESessionStarted event with
+        // an error code, and we will update our state then.
 
-      mfpControl.Request := reqNone;
-      mfpControl.State := Starting;
-      mfpControl.uiResumingPlayTime := 0;
-      FTimer.Enabled := true;
+        // Start the presentation clock
+        // 1 sec = 10.000.000 nanosec
+        // MF is using 100 ns chunks = 1.000.000 of a second
+        // The Media Session starts its presentation clock after resolving the topology.
 
-      // Get initial volume
-      GetVolume();
-    end;
+        mfpControl.Request := reqNone;
+        mfpControl.State := Starting;
+        mfpControl.uiResumingPlayTime := 0;
+        FTimer.Enabled := true;
 
-finally
-  Result := hr;
-end;
+        // Get initial volume
+        GetVolume();
+      end;
+
+  finally
+    Result := hr;
+  end;
 end;
 
 // Repaint the video window.
 // Call this method on WM_PAINT from the form where the video is playing on.
 function TMfPlayer.Repaint(): HRESULT;
+
 begin
+
   if Assigned(m_pVideoDisplay) then
     begin
       Result := m_pVideoDisplay.RepaintVideo();
@@ -1321,6 +1414,7 @@ var
   hr: HResult;  //debug purpose
 
 begin
+
   hr := E_NOINTERFACE;
   rcpdest := Nil;
   rpcSrc := dRect;
@@ -1333,7 +1427,8 @@ begin
       // If dRect is empty; use the GetClientRect function
       if (rpcSrc = Nil) then
         begin
-          Windows.GetClientRect(m_hwndVideo, rc);
+          Windows.GetClientRect(m_hwndVideo,
+                                rc);
           rcpdest := @rc;
         end
       else
@@ -1358,19 +1453,24 @@ end;
 
 
 procedure TMfPlayer.SetRedraw();
+
 begin
 
   //Stop flickering of controls and subtitle when resizing.
   if (stRedrawStatus = rdStarted) then
     begin
-      SendMessage(m_hwnd_MainForm, WM_SETREDRAW, WPARAM(False), 0);
+      SendMessage(m_hwnd_MainForm,
+                  WM_SETREDRAW,
+                  WPARAM(False),
+                  0);
       stRedrawStatus := rdStopped;
     end
   else
     begin
       SendMessage(m_hwnd_MainForm,
                   WM_SETREDRAW,
-                  WPARAM(True), 0);
+                  WPARAM(True),
+                  0);
 
       RedrawWindow(m_hwnd_MainForm,
                    Nil,
@@ -1383,17 +1483,18 @@ end;
 
 
 procedure TMfPlayer.SendPlayerRequest(req: TRequest);
+
 begin
 
   mfpControl.Request := req;
 
   case req of
-    reqNone:           mfpControl.State := Closed;
-    reqStop:           mfpControl.State := Stopping;
-    reqStart:          mfpControl.State := Starting;
-    reqPause:          mfpControl.State := Pausing;
-    reqSeek:           mfpControl.State := Seeking;
-    reqClose:          mfpControl.State := Closing;
+    reqNone: mfpControl.State := Closed;
+    reqStop: mfpControl.State := Stopping;
+    reqStart: mfpControl.State := Starting;
+    reqPause: mfpControl.State := Pausing;
+    reqSeek: mfpControl.State := Seeking;
+    reqClose: mfpControl.State := Closing;
   end;
 
   {
@@ -1420,6 +1521,7 @@ var
   hr: HRESULT;
 
 begin
+
   hr := S_OK;
 
   if (m_bPending) then
@@ -1445,6 +1547,7 @@ var
   hr: HRESULT;
 
 begin
+
   hr := E_FAIL;
 
   if (m_pSession = nil) then
@@ -1453,55 +1556,61 @@ begin
       Exit;
     end;
 
-try
+  try
 
-  PropVariantInit(varStart);
-  varStart.vt := VT_I8;
+    PropVariantInit(varStart);
+    varStart.vt := VT_I8;
 
-  //test
-  //varStart.hVal.QuadPart := 5654567865;  //this works
-  varStart.hVal.QuadPart := tPos;
+    //test
+    //varStart.hVal.QuadPart := 5654567865;  //this works
+    varStart.hVal.QuadPart := tPos;
 
 
-  hr := m_pSession.Start(GUID_NULL,
-                        varStart);
+    hr := m_pSession.Start(GUID_NULL,
+                           varStart);
 
-  // The Start method can also specify a starting position relative to the start
-  // of the file; see the API reference topic for more information.
+    // The Start method can also specify a starting position relative to the start
+    // of the file; see the API reference topic for more information.
 
-  if (SUCCEEDED(hr)) then
-    begin
-      // Store the pending state
-      mfpControl.StartPosition := tPos;
-      mfpControl.Request := reqNone;
-      mfpControl.State := Started;
-      m_bPending := true;
-      UpdateCaption;
-    end;
+    if (SUCCEEDED(hr)) then
+      begin
+        // Store the pending state
+        mfpControl.StartPosition := tPos;
+        mfpControl.Request := reqNone;
+        mfpControl.State := Started;
+        m_bPending := true;
+        UpdateCaption;
+      end;
 
-finally
-  PropVariantClear(varStart);
-  Result := hr;
-end;
+  finally
+    PropVariantClear(varStart);
+    Result := hr;
+  end;
 end;
 
 
 procedure TMfPlayer.GotoNewPosition(val: MFTIME);
+
 begin
-  if val >= 0 then
+
+  if (val >= 0) then
     mfpControl.StartPosition := val;
 end;
 
 
 procedure TMfPlayer.SetVideoScreen(val: HWND);
+
 begin
+
   if Assigned(m_pVideoDisplay) then
     m_pVideoDisplay.SetVideoWindow(val);
 end;
 
 
 function TMfPlayer.GetVideoScreen(): HWND;
+
 begin
+
   if Assigned(m_pVideoDisplay) then
     m_pVideoDisplay.GetVideoWindow(Result);
 end;
@@ -1526,6 +1635,7 @@ var
   hr: HRESULT;
 
 begin
+
   hr := S_OK;
 
   if (m_pClock = Nil) then
@@ -1570,14 +1680,14 @@ begin
   fVolume := Value;
 
   // Set boundaries to prevent overflow
-  if fVolume > 1.0 then
+  if (fVolume > 1.0) then
     fVolume := 1.0;
-  if fVolume < 0.0 then
+  if (fVolume < 0.0) then
     fVolume := 0.0;
 
   hr := (m_pSession as IMFGetService).GetService(MR_STREAM_VOLUME_SERVICE,
-                                                IID_IMFAudioStreamVolume,
-                                                Pointer(pVol));
+                                                 IID_IMFAudioStreamVolume,
+                                                 Pointer(pVol));
   // We could also implement stereo or balanced output.
   // but that is a nice goal for using your own creativity.
   if SUCCEEDED(hr) then
@@ -1587,11 +1697,12 @@ begin
   if SUCCEEDED(hr) then
     begin
       for i := 0 to nChannels - 1 do
-        hr := pVol.SetChannelVolume(i, fVolume);
+        hr := pVol.SetChannelVolume(i,
+                                    fVolume);
       // Only 1 channel is selected; to do both you could use an array of channels
       // by using the GetAllVolumes function, see example below.
       hr := pVol.GetChannelVolume(0,
-                                 mfpControl.Volume);
+                                  mfpControl.Volume);
 
       // or like this
       //
@@ -1617,7 +1728,9 @@ end;
 
 
 function TMfPlayer.Stop(): HRESULT;
+
 begin
+
   Result := E_FAIL;
 
   if Assigned(m_pSession) then
@@ -1646,7 +1759,9 @@ end;
 // A Timer for some extra duties, like showing progress when playing if
 // the source has no time information ()
 procedure TMfPlayer.TimerTimer(sender: TObject);
+
 begin
+
   if (Self.GetState() = Started) then
     begin
       GetPosition(mfpControl.CurrentPosition);
@@ -1657,61 +1772,69 @@ begin
                   WParam(1),
                   LParam(0));
     end;
- UpdateCaption();
+  UpdateCaption();
 end;
 
 
 // Called after an operation completes.
 // This method executes any cached requests.
 procedure TMfPlayer.UpdateCaption;
+
 begin
 
   case Self.GetState() of
     OpenPending: MfPlayerSetWindowText(m_hwndVideo,
-                               'Loaded: ' +
-                               ExtractFileName(FFileName));
+                                       'Loaded: ' +
+        ExtractFileName(FFileName));
 
-    Ready:       MfPlayerSetWindowText(m_hwndVideo,
-                               'Session is ready.');
+    Ready: MfPlayerSetWindowText(m_hwndVideo,
+                                 'Session is ready.');
 
-    Closing:     MfPlayerSetWindowText(m_hwndEvent,
-                               'Closing session...');
-    Started:       begin
-                      MfPlayerSetWindowText(m_hwndEvent,
-                                    'Playing: ' +
-                                    ExtractFileName(FFileName) +
-                                    '   Duration: ' +
-                                    HnsTimeToStr(mfpControl.uiResumingPlayTime, false) +
+    Closing: MfPlayerSetWindowText(m_hwndEvent,
+                                   'Closing session...');
+      Started: begin
+        MfPlayerSetWindowText(m_hwndEvent,
+                              'Playing: ' +
+          ExtractFileName(FFileName) +
+          '   Duration: ' +
+          HnsTimeToStr(mfpControl.uiResumingPlayTime,
+                       false) +
 
-                                    ' / ' + HnsTimeToStr(mfpControl.CurrentPosition, true));
+          ' / ' + HnsTimeToStr(mfpControl.CurrentPosition,
+                               true));
 
-                      MfPlayerSetWindowText(m_hwndSub,
-                                    'Write your own subtitel here');
-                    end;
-    Paused:       MfPlayerSetWindowText(m_hwndEvent,
-                                'Paused.');
+        MfPlayerSetWindowText(m_hwndSub,
+                              'Write your own subtitel here');
+      end;
+    Paused: MfPlayerSetWindowText(m_hwndEvent,
+                                  'Paused.');
 
-    Stopped:      MfPlayerSetWindowText(m_hwndEvent,
-                                'Stopped.');
+    Stopped: MfPlayerSetWindowText(m_hwndEvent,
+                                   'Stopped.');
 
-    Closed:       MfPlayerSetWindowText(m_hwndEvent,
-                                'Session closed.');
+    Closed: MfPlayerSetWindowText(m_hwndEvent,
+                                  'Session closed.');
 
-    Seeking:      MfPlayerSetWindowText(m_hwndEvent,
-                                'Starting at position ' + HnsTimeToStr(mfpControl.StartPosition, false));
-   end;
+    Seeking: MfPlayerSetWindowText(m_hwndEvent,
+                                   'Starting at position ' + HnsTimeToStr(mfpControl.StartPosition,
+                                                                          false));
+  end;
 end;
 
 
 // some string conversions
 function TMfPlayer.GetFileName(): string;
+
 begin
+
   Result := FFileName;
 end;
 
 
 procedure TMfPlayer.SetFileName(val: string);
+
 begin
+
   FFileName := val;
 end;
 
@@ -1721,19 +1844,21 @@ end;
 function TMfPlayer.UpdatePendingCommands(req: TRequest): HRESULT;
 var
   Pending: TRequest;
+
 begin
+
   Pending := mfpControl.Request;
   m_bPending := False;
   mfpControl.Request := reqNone;
   Result := S_OK;
   // The completed command is distinct from a request queued while it ran.
-  if Pending <> req then
+  if (Pending <> req) then
     case Pending of
       reqStart: Result := Start();
       reqPause: Result := Pause();
       reqStop: Result := Stop();
       reqSeek: Result := SetPositionInternal(mfpControl.StartPosition);
-      
+
     end;
   UpdateCaption();
 end;

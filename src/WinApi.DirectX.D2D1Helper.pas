@@ -95,6 +95,7 @@ type
   // TAlphaColor is ARGB. These types do not require or emulate a GUI framework.
   TColor = type LongInt;
   TAlphaColor = type UInt32;
+
   TAlphaColorF = record
     R, G, B, A: Single;
   end;
@@ -107,172 +108,174 @@ type
   // SDK RGB color names are distinct from Windows BGR TColor values.
   D2D1_KNOWN_COLOR = type UInt32;
 
-  function IdentityMatrix(): D2D1_MATRIX_3X2_F; inline;
+function IdentityMatrix(): D2D1_MATRIX_3X2_F; inline;
 
 type
-    //
-    // The default trait type for objects in D2D is Single.
-    //
-    PTypeTraits = ^TypeTraits;
-    TypeTraits = record
-      Point: D2D1_POINT_2F;
-      Size: D2D1_SIZE_F;
-      Rect: D2D1_RECT_F;
-    end;
-
-
-    PTypeTraitsUINT32 = ^TypeTraitsUINT32;
-    TypeTraitsUINT32 = record
-      Point: D2D1_POINT_2U;
-      Size: D2D1_SIZE_U;
-      Rect: D2D1_RECT_U;
-    end;
-
-    function FloatMax(): FLOAT; inline;
-
-
-    //
-    // Construction helpers
-    //
-
-    // D2D1_POINT_2F
-    function Point2F(x: FLOAT = 0.0;
-                     y: FLOAT = 0.0): D2D1_POINT_2F; inline;
-
-    // D2D1_POINT_2U
-    function Point2U(x: UINT32 = 0;
-                     y: UINT32 = 0): D2D1_POINT_2U; inline;
-
-    // D2D1_SIZE_F
-    function SizeF(Width: FLOAT = 0.0;
-                   Height: FLOAT = 0.0): D2D1_SIZE_F; inline;
-
-    // D2D1_SIZE_U
-    function SizeU(Width: UINT32 = 0;
-                   Height: UINT32 = 0): D2D1_SIZE_U; inline;
-
-    function Identity(): D2D1_MATRIX_3X2_F;
-
-
-type
-
-    D2D1_RECT_F = D2D_RECT_F;
-
-    function RectF(left: FLOAT = 0.0;
-                   top: FLOAT = 0.0;
-                   right: FLOAT = 0.0;
-                   bottom: FLOAT = 0.0): D2D1_RECT_F; inline;
-
-    function RectU(left: UINT32 = 0;
-                   top: UINT32 = 0;
-                   right: UINT32 = 0;
-                   bottom: UINT32 = 0): D2D1_RECT_U; inline;
-
-    function InfiniteRect(): D2D1_RECT_F;
-
-    function ArcSegment(point: D2D1_POINT_2F;
-                        size: D2D1_SIZE_F;
-                        rotationAngle: FLOAT;
-                        sweepDirection: D2D1_SWEEP_DIRECTION;
-                        arcSize: D2D1_ARC_SIZE): D2D1_ARC_SEGMENT; inline;
-
-    function BezierSegment(point1: D2D1_POINT_2F;
-                           point2: D2D1_POINT_2F;
-                           point3: D2D1_POINT_2F): D2D1_BEZIER_SEGMENT; inline;
-
-    function Ellipse(center: D2D1_POINT_2F;
-                     radiusX: FLOAT;
-                     radiusY: FLOAT): D2D1_ELLIPSE; inline;
-
-    function RoundedRect(rect: D2D1_RECT_F;
-                         radiusX: FLOAT;
-                         radiusY: FLOAT): D2D1_ROUNDED_RECT; inline;
-
-    // Required record arguments are copied as supplied by the caller.
-    function BrushProperties(transform: D2D1_MATRIX_3X2_F{ = IdentityMatrix()};
-                             opacity: FLOAT = 1.0): D2D1_BRUSH_PROPERTIES; inline;
-
-    function GradientStop(position: FLOAT;
-                          color: D2D1_COLOR_F): D2D1_GRADIENT_STOP; inline;
-
-    function QuadraticBezierSegment(point1: D2D1_POINT_2F;
-                                    point2: D2D1_POINT_2F): D2D1_QUADRATIC_BEZIER_SEGMENT; inline;
-
-    function StrokeStyleProperties(startCap: D2D1_CAP_STYLE = D2D1_CAP_STYLE_FLAT;
-                                   endCap: D2D1_CAP_STYLE = D2D1_CAP_STYLE_FLAT;
-                                   dashCap: D2D1_CAP_STYLE = D2D1_CAP_STYLE_FLAT;
-                                   lineJoin: D2D1_LINE_JOIN = D2D1_LINE_JOIN_MITER;
-                                   miterLimit: FLOAT = 10.0;
-                                   dashStyle: D2D1_DASH_STYLE = D2D1_DASH_STYLE_SOLID;
-                                   dashOffset: FLOAT = 0.0): D2D1_STROKE_STYLE_PROPERTIES; inline;
-
-    function BitmapBrushProperties(extendModeX: D2D1_EXTEND_MODE = D2D1_EXTEND_MODE_CLAMP;
-                                   extendModeY: D2D1_EXTEND_MODE = D2D1_EXTEND_MODE_CLAMP;
-                                   interpolationMode: D2D1_BITMAP_INTERPOLATION_MODE = D2D1_BITMAP_INTERPOLATION_MODE_LINEAR): D2D1_BITMAP_BRUSH_PROPERTIES; inline;
-
-    function LinearGradientBrushProperties(startPoint: D2D1_POINT_2F;
-                                           endPoint: D2D1_POINT_2F): D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES; inline;
-
-    function RadialGradientBrushProperties(center: D2D1_POINT_2F;
-                                           gradientOriginOffset: D2D1_POINT_2F;
-                                           radiusX: FLOAT;
-                                           radiusY: FLOAT): D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES; inline;
-
-    //
-    // PixelFormat
-    //
-    // Delphi Note: To prevent confusion about the function PixelFormat() and recordfield PixelFormat,
-    //              We changed the names of all recordfields to _pixelformat
-    function PixelFormat(dxgiFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                         alphaMode: D2D1_ALPHA_MODE = D2D1_ALPHA_MODE_UNKNOWN): D2D1_PIXEL_FORMAT; inline;
-
-    //
-    // Bitmaps
-    //
-
-    // Required record arguments are copied as supplied by the caller.
-    function BitmapProperties(_pixelFormat: D2D1_PIXEL_FORMAT{ = PixelFormat()};
-                              dpiX: FLOAT = 96.0;
-                              dpiY: FLOAT = 96.0): D2D1_BITMAP_PROPERTIES; inline;
-
-
-    //
-    // Render Targets
-    //
-    // Required record arguments are copied as supplied by the caller.
-    function RenderTargetProperties(_pixelFormat: D2D1_PIXEL_FORMAT{ = PixelFormat()};
-                                    _type: D2D1_RENDER_TARGET_TYPE = D2D1_RENDER_TARGET_TYPE_DEFAULT;
-                                    dpiX: FLOAT = 0.0;
-                                    dpiY: FLOAT = 0.0;
-                                    usage: D2D1_RENDER_TARGET_USAGE = D2D1_RENDER_TARGET_USAGE_NONE;
-                                    minLevel: D2D1_FEATURE_LEVEL = D2D1_FEATURE_LEVEL_DEFAULT): D2D1_RENDER_TARGET_PROPERTIES; inline;
-
-
-    function HwndRenderTargetProperties(_hwnd: HWND;
-                                        pixelSize: D2D1_SIZE_U {= Size(UINT32(0), UINT32(0))};
-                                        presentOptions: D2D1_PRESENT_OPTIONS = D2D1_PRESENT_OPTIONS_NONE): D2D1_HWND_RENDER_TARGET_PROPERTIES; inline;
-
-
-    function LayerParameters(contentBounds: D2D1_RECT_F{ = InfiniteRect()}; // Delphi Note: You have to set the default value for D2D1_RECT_F before calling this function.
-                             maskTransform: D2D1_MATRIX_3X2_F{ = IdentityMatrix()};
-                             geometricMask: ID2D1Geometry = Nil;
-                             maskAntialiasMode: D2D1_ANTIALIAS_MODE = D2D1_ANTIALIAS_MODE_PER_PRIMITIVE;
-                             opacity: FLOAT = 1.0;
-                             opacityBrush: ID2D1Brush = Nil;
-                             layerOptions: D2D1_LAYER_OPTIONS = D2D1_LAYER_OPTIONS_NONE): D2D1_LAYER_PARAMETERS; inline;
-
-
-    function DrawingStateDescription(transform: D2D1_MATRIX_3X2_F{ = IdentityMatrix()};
-                                     antialiasMode: D2D1_ANTIALIAS_MODE = D2D1_ANTIALIAS_MODE_PER_PRIMITIVE;
-                                     textAntialiasMode: D2D1_TEXT_ANTIALIAS_MODE = D2D1_TEXT_ANTIALIAS_MODE_DEFAULT;
-                                     tag1: D2D1_TAG = 0;
-                                     tag2: D2D1_TAG = 0): D2D1_DRAWING_STATE_DESCRIPTION; inline;
-
-
-
   //
-  // SDK RRGGBB constants use a distinct type to select RGB overloads.
-  // Windows BGR TColor inputs use separate conversion overloads.
+  // The default trait type for objects in D2D is Single.
+  //
+  PTypeTraits = ^TypeTraits;
+
+  TypeTraits = record
+    Point: D2D1_POINT_2F;
+    Size: D2D1_SIZE_F;
+    Rect: D2D1_RECT_F;
+  end;
+
+
+  PTypeTraitsUINT32 = ^TypeTraitsUINT32;
+
+  TypeTraitsUINT32 = record
+    Point: D2D1_POINT_2U;
+    Size: D2D1_SIZE_U;
+    Rect: D2D1_RECT_U;
+  end;
+
+function FloatMax(): FLOAT; inline;
+
+
+//
+// Construction helpers
+//
+
+// D2D1_POINT_2F
+function Point2F(x: FLOAT = 0.0;
+                 y: FLOAT = 0.0): D2D1_POINT_2F; inline;
+
+// D2D1_POINT_2U
+function Point2U(x: UINT32 = 0;
+                 y: UINT32 = 0): D2D1_POINT_2U; inline;
+
+// D2D1_SIZE_F
+function SizeF(Width: FLOAT = 0.0;
+               Height: FLOAT = 0.0): D2D1_SIZE_F; inline;
+
+// D2D1_SIZE_U
+function SizeU(Width: UINT32 = 0;
+               Height: UINT32 = 0): D2D1_SIZE_U; inline;
+
+function Identity(): D2D1_MATRIX_3X2_F;
+
+
+type
+
+  D2D1_RECT_F = D2D_RECT_F;
+
+function RectF(left: FLOAT = 0.0;
+               top: FLOAT = 0.0;
+               right: FLOAT = 0.0;
+               bottom: FLOAT = 0.0): D2D1_RECT_F; inline;
+
+function RectU(left: UINT32 = 0;
+               top: UINT32 = 0;
+               right: UINT32 = 0;
+               bottom: UINT32 = 0): D2D1_RECT_U; inline;
+
+function InfiniteRect(): D2D1_RECT_F;
+
+function ArcSegment(point: D2D1_POINT_2F;
+                    size: D2D1_SIZE_F;
+                    rotationAngle: FLOAT;
+                    sweepDirection: D2D1_SWEEP_DIRECTION;
+                    arcSize: D2D1_ARC_SIZE): D2D1_ARC_SEGMENT; inline;
+
+function BezierSegment(point1: D2D1_POINT_2F;
+                       point2: D2D1_POINT_2F;
+                       point3: D2D1_POINT_2F): D2D1_BEZIER_SEGMENT; inline;
+
+function Ellipse(center: D2D1_POINT_2F;
+                 radiusX: FLOAT;
+                 radiusY: FLOAT): D2D1_ELLIPSE; inline;
+
+function RoundedRect(rect: D2D1_RECT_F;
+                     radiusX: FLOAT;
+                     radiusY: FLOAT): D2D1_ROUNDED_RECT; inline;
+
+// Required record arguments are copied as supplied by the caller.
+function BrushProperties(transform: D2D1_MATRIX_3X2_F{ = IdentityMatrix()};
+                         opacity: FLOAT = 1.0): D2D1_BRUSH_PROPERTIES; inline;
+
+function GradientStop(position: FLOAT;
+                      color: D2D1_COLOR_F): D2D1_GRADIENT_STOP; inline;
+
+function QuadraticBezierSegment(point1: D2D1_POINT_2F;
+                                point2: D2D1_POINT_2F): D2D1_QUADRATIC_BEZIER_SEGMENT; inline;
+
+function StrokeStyleProperties(startCap: D2D1_CAP_STYLE = D2D1_CAP_STYLE_FLAT;
+                               endCap: D2D1_CAP_STYLE = D2D1_CAP_STYLE_FLAT;
+                               dashCap: D2D1_CAP_STYLE = D2D1_CAP_STYLE_FLAT;
+                               lineJoin: D2D1_LINE_JOIN = D2D1_LINE_JOIN_MITER;
+                               miterLimit: FLOAT = 10.0;
+                               dashStyle: D2D1_DASH_STYLE = D2D1_DASH_STYLE_SOLID;
+                               dashOffset: FLOAT = 0.0): D2D1_STROKE_STYLE_PROPERTIES; inline;
+
+function BitmapBrushProperties(extendModeX: D2D1_EXTEND_MODE = D2D1_EXTEND_MODE_CLAMP;
+                               extendModeY: D2D1_EXTEND_MODE = D2D1_EXTEND_MODE_CLAMP;
+                               interpolationMode: D2D1_BITMAP_INTERPOLATION_MODE = D2D1_BITMAP_INTERPOLATION_MODE_LINEAR): D2D1_BITMAP_BRUSH_PROPERTIES; inline;
+
+function LinearGradientBrushProperties(startPoint: D2D1_POINT_2F;
+                                       endPoint: D2D1_POINT_2F): D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES; inline;
+
+function RadialGradientBrushProperties(center: D2D1_POINT_2F;
+                                       gradientOriginOffset: D2D1_POINT_2F;
+                                       radiusX: FLOAT;
+                                       radiusY: FLOAT): D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES; inline;
+
+//
+// PixelFormat
+//
+// Delphi Note: To prevent confusion about the function PixelFormat() and recordfield PixelFormat,
+//              We changed the names of all recordfields to _pixelformat
+function PixelFormat(dxgiFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                     alphaMode: D2D1_ALPHA_MODE = D2D1_ALPHA_MODE_UNKNOWN): D2D1_PIXEL_FORMAT; inline;
+
+//
+// Bitmaps
+//
+
+// Required record arguments are copied as supplied by the caller.
+function BitmapProperties(_pixelFormat: D2D1_PIXEL_FORMAT{ = PixelFormat()};
+                          dpiX: FLOAT = 96.0;
+                          dpiY: FLOAT = 96.0): D2D1_BITMAP_PROPERTIES; inline;
+
+
+//
+// Render Targets
+//
+// Required record arguments are copied as supplied by the caller.
+function RenderTargetProperties(_pixelFormat: D2D1_PIXEL_FORMAT{ = PixelFormat()};
+                                _type: D2D1_RENDER_TARGET_TYPE = D2D1_RENDER_TARGET_TYPE_DEFAULT;
+                                dpiX: FLOAT = 0.0;
+                                dpiY: FLOAT = 0.0;
+                                usage: D2D1_RENDER_TARGET_USAGE = D2D1_RENDER_TARGET_USAGE_NONE;
+                                minLevel: D2D1_FEATURE_LEVEL = D2D1_FEATURE_LEVEL_DEFAULT): D2D1_RENDER_TARGET_PROPERTIES; inline;
+
+
+function HwndRenderTargetProperties(_hwnd: HWND;
+                                    pixelSize: D2D1_SIZE_U {= Size(UINT32(0), UINT32(0))};
+                                    presentOptions: D2D1_PRESENT_OPTIONS = D2D1_PRESENT_OPTIONS_NONE): D2D1_HWND_RENDER_TARGET_PROPERTIES; inline;
+
+
+function LayerParameters(contentBounds: D2D1_RECT_F{ = InfiniteRect()}; // Delphi Note: You have to set the default value for D2D1_RECT_F before calling this function.
+  maskTransform: D2D1_MATRIX_3X2_F{ = IdentityMatrix()};
+                         geometricMask: ID2D1Geometry = Nil;
+                         maskAntialiasMode: D2D1_ANTIALIAS_MODE = D2D1_ANTIALIAS_MODE_PER_PRIMITIVE;
+                         opacity: FLOAT = 1.0;
+                         opacityBrush: ID2D1Brush = Nil;
+                         layerOptions: D2D1_LAYER_OPTIONS = D2D1_LAYER_OPTIONS_NONE): D2D1_LAYER_PARAMETERS; inline;
+
+
+function DrawingStateDescription(transform: D2D1_MATRIX_3X2_F{ = IdentityMatrix()};
+                                 antialiasMode: D2D1_ANTIALIAS_MODE = D2D1_ANTIALIAS_MODE_PER_PRIMITIVE;
+                                 textAntialiasMode: D2D1_TEXT_ANTIALIAS_MODE = D2D1_TEXT_ANTIALIAS_MODE_DEFAULT;
+                                 tag1: D2D1_TAG = 0;
+                                 tag2: D2D1_TAG = 0): D2D1_DRAWING_STATE_DESCRIPTION; inline;
+
+
+
+//
+// SDK RRGGBB constants use a distinct type to select RGB overloads.
+// Windows BGR TColor inputs use separate conversion overloads.
 
 const
 
@@ -421,18 +424,20 @@ const
 
 type
 
-    // Record helpers were introduced in Delphi XE3.
-    // To keep the code usable for earlier versions, we added the helper methods here and
-    // a separate record helper in D2D1Helper.pas for later versions
+  // Record helpers were introduced in Delphi XE3.
+  // To keep the code usable for earlier versions, we added the helper methods here and
+  // a separate record helper in D2D1Helper.pas for later versions
 
-{$IFDEF FPC} // FPC 3.2.2 supports record helpers
-{$DEFINE MFPACK_COLOR_HELPER}
-{$ELSE}
+  {$IFDEF FPC}
+  // FPC 3.2.2 supports record helpers
+  {$DEFINE MFPACK_COLOR_HELPER}
+  {$ELSE}
 {$IF CompilerVersion > 23}
 {$DEFINE MFPACK_COLOR_HELPER}
 {$ENDIF}
-{$ENDIF}
-{$IFDEF MFPACK_COLOR_HELPER}  // > XE2
+  {$ENDIF}
+  {$IFDEF MFPACK_COLOR_HELPER}
+  // > XE2
 
   // ColorF => D2D1_COLOR_F , see DXGIType.pas > D2D1_COLOR_F > Helpers
 
@@ -444,19 +449,15 @@ type
     //
 
     class function Create(const knownColor: D2D1_KNOWN_COLOR;
-                  const alpha: FLOAT = 1.0): D2D1_COLOR_F; overload; static; inline;
-
+                          const alpha: FLOAT = 1.0): D2D1_COLOR_F; overload; static; inline;
     class function Create(const knownColor: TColor;
-                  const alpha: FLOAT = 1.0): D2D1_COLOR_F; overload; static; inline;
-
+                          const alpha: FLOAT = 1.0): D2D1_COLOR_F; overload; static; inline;
     class function Create(const C: TAlphaColor): D2D1_COLOR_F; overload; static;
-
     class function Create(const C: TAlphaColorF): D2D1_COLOR_F; overload; static;
-
     class function Create(const red: FLOAT;
-                  const green: FLOAT;
-                  const blue: FLOAT;
-                  const alpha: FLOAT = 1.0): D2D1_COLOR_F; overload; static; inline;
+                          const green: FLOAT;
+                          const blue: FLOAT;
+                          const alpha: FLOAT = 1.0): D2D1_COLOR_F; overload; static; inline;
 
     function Init(const rgb: UINT32;
                   const alpha: FLOAT = 1.0): D2D1_COLOR_F; overload;
@@ -471,21 +472,19 @@ type
                   const green: FLOAT;
                   const blue: FLOAT;
                   const alpha: FLOAT = 1.0): D2D1_COLOR_F; overload;
-
     class function Implicit(const val: DWORD): D2D1_COLOR_F; overload; static;
-
     class function Implicit(const val: D2D1_COLOR_F): DWORD; overload; static;
-
     class function Equal(const left: D2D1_COLOR_F;
                          const right: D2D1_COLOR_F): Boolean; static;
   end;
 
-{$ENDIF}
+  {$ENDIF}
 
 
   // D2D1_MATRIX_3X2_F
   Matrix3x2FHelper = record helper for D2D1_MATRIX_3X2_F
-    public
+
+  public
     //
     // Creates an initialized matrix
     //
@@ -567,113 +566,117 @@ type
 
   // Additional Prototypes
 
-  function D2D1PointF(const x: FLOAT;
-                      const y: FLOAT) : D2D1_POINT_2F;
+function D2D1PointF(const x: FLOAT;
+                    const y: FLOAT): D2D1_POINT_2F;
 
 
 
-  function D2D1SizeF(const width: FLOAT;
-                     const height: FLOAT) : D2D1_SIZE_F;
+function D2D1SizeF(const width: FLOAT;
+                   const height: FLOAT): D2D1_SIZE_F;
 
-  function D2D1SizeU(const Width: UINT32;
-                     const Height: UINT32) : D2D1_SIZE_U;
+function D2D1SizeU(const Width: UINT32;
+                   const Height: UINT32): D2D1_SIZE_U;
 
-  function D2D1RectF(const left: FLOAT;
-                     const top: FLOAT;
-                     const right: FLOAT;
-                     const bottom: FLOAT): D2D1_RECT_F;
+function D2D1RectF(const left: FLOAT;
+                   const top: FLOAT;
+                   const right: FLOAT;
+                   const bottom: FLOAT): D2D1_RECT_F;
 
-  procedure D2D1RectFDefault(var crRect: D2D1_RECT_F); inline;
+procedure D2D1RectFDefault(var crRect: D2D1_RECT_F); inline;
 
-  function D2D1ArcSegment(const Point: D2D1_POINT_2F;
-                          const Size: D2D1_SIZE_F;
-                          RotationAngle: FLOAT;
-                          const sweepDirection: D2D1_SWEEP_DIRECTION;
-                          const ArcSize: D2D1_ARC_SIZE): D2D1_ARC_SEGMENT;
-
-
-
-  function D2D1ColorF(const r: FLOAT;
-                      const g: FLOAT;
-                      const b: FLOAT;
-                      const a: FLOAT): D2D1_COLOR_F;  overload;
-
-  function D2D1ColorF(color: D2D1_KNOWN_COLOR; const alpha: FLOAT = 1.0): D2D1_COLOR_F; overload;
-
-  // See also: D2D1colorhelperF
-  function D2D1ColorF(color: TColor; const alpha: FLOAT = 1.0): D2D1_COLOR_F; overload;
-
-  function D2D1BezierSegment(const a: D2D1_POINT_2F;
-                             const b: D2D1_POINT_2F;
-                             const c: D2D1_POINT_2F) : D2D1_BEZIER_SEGMENT;
-
-  function D2D1GradientStop(const Position: FLOAT;
-                            const Color: D2D1_COLOR_F): D2D1_GRADIENT_STOP;
-
-  function D2D1QuadraticBezierSegment(const a: D2D1_POINT_2F;
-                                      const b: D2D1_POINT_2F) : D2D1_QUADRATIC_BEZIER_SEGMENT;
-
-  function D2D1StrokeStyleProperties(StartCap: D2D1_CAP_STYLE;
-                                     EndCap: D2D1_CAP_STYLE;
-                                     DashCap: D2D1_CAP_STYLE;
-                                     LineJoin: D2D1_LINE_JOIN;
-                                     MiterLimit: FLOAT;
-                                     DashStyle: D2D1_DASH_STYLE;
-                                     DashOffset: FLOAT): D2D1_STROKE_STYLE_PROPERTIES;
-
-  function D2D1Ellipse(center: D2D1_POINT_2F;
-                       const rx: FLOAT;
-                       const ry: FLOAT): D2D1_ELLIPSE;
-
-  function D2D1RoundedRect(const Rect: D2D1_RECT_F;
-                           RadiusX: FLOAT;
-                           RadiusY: FLOAT): D2D1_ROUNDED_RECT;
-
-  function D2D1LinearGradientBrushProperties(const StartPoint: D2D1_POINT_2F;
-                                             const EndPoint: D2D1_POINT_2F): D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES;
-
-  function D2D1RadialGradientBrushProperties(const Center: D2D1_POINT_2F;
-                                             const GradientOriginOffset: D2D1_POINT_2F;
-                                             RadiusX: FLOAT;
-                                             RadiusY: FLOAT): D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES;
-
-  function D2D1PixelFormat(const DxgiFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                           AlphaMode: D2D1_ALPHA_MODE = D2D1_ALPHA_MODE_UNKNOWN): D2D1_PIXEL_FORMAT;
-
-  function D2D1RenderTargetProperties(_Type: D2D1_RENDER_TARGET_TYPE = D2D1_RENDER_TARGET_TYPE_DEFAULT): D2D1_RENDER_TARGET_PROPERTIES; overload;
+function D2D1ArcSegment(const Point: D2D1_POINT_2F;
+                        const Size: D2D1_SIZE_F;
+                        RotationAngle: FLOAT;
+                        const sweepDirection: D2D1_SWEEP_DIRECTION;
+                        const ArcSize: D2D1_ARC_SIZE): D2D1_ARC_SEGMENT;
 
 
-  function D2D1RenderTargetProperties(_Type: D2D1_RENDER_TARGET_TYPE;
-                                      const _PixelFormat: D2D1_PIXEL_FORMAT;
-                                      DpiX: FLOAT = 0;
-                                      DpiY: FLOAT = 0;
-                                      Usage: D2D1_RENDER_TARGET_USAGE = D2D1_RENDER_TARGET_USAGE_NONE;
-                                      MinLevel: D2D1_FEATURE_LEVEL = D2D1_FEATURE_LEVEL_DEFAULT): D2D1_RENDER_TARGET_PROPERTIES; overload;
 
-  function D2D1HwndRenderTargetProperties(_hwnd: HWND): D2D1_HWND_RENDER_TARGET_PROPERTIES; overload;
+function D2D1ColorF(const r: FLOAT;
+                    const g: FLOAT;
+                    const b: FLOAT;
+                    const a: FLOAT): D2D1_COLOR_F; overload;
 
-  function D2D1HwndRenderTargetProperties(_hwnd: HWND;
-                                          _PixelSize: D2D1_SIZE_U;
-                                          PresentOptions: D2D1_PRESENT_OPTIONS = D2D1_PRESENT_OPTIONS_NONE): D2D1_HWND_RENDER_TARGET_PROPERTIES; overload;
+function D2D1ColorF(color: D2D1_KNOWN_COLOR;
+                    const alpha: FLOAT = 1.0): D2D1_COLOR_F; overload;
 
-  function D2D1BitmapProperties(): D2D1_BITMAP_PROPERTIES; overload;
+// See also: D2D1colorhelperF
+function D2D1ColorF(color: TColor;
+                    const alpha: FLOAT = 1.0): D2D1_COLOR_F; overload;
 
-  function D2D1BitmapProperties(_PixleFormat: D2D1_PIXEL_FORMAT;
-                                DpiX: FLOAT = 96.0;
-                                DpiY: FLOAT = 96.0): D2D1_BITMAP_PROPERTIES; overload;
+function D2D1BezierSegment(const a: D2D1_POINT_2F;
+                           const b: D2D1_POINT_2F;
+                           const c: D2D1_POINT_2F): D2D1_BEZIER_SEGMENT;
 
-  // End of Additional Prototypes
+function D2D1GradientStop(const Position: FLOAT;
+                          const Color: D2D1_COLOR_F): D2D1_GRADIENT_STOP;
+
+function D2D1QuadraticBezierSegment(const a: D2D1_POINT_2F;
+                                    const b: D2D1_POINT_2F): D2D1_QUADRATIC_BEZIER_SEGMENT;
+
+function D2D1StrokeStyleProperties(StartCap: D2D1_CAP_STYLE;
+                                   EndCap: D2D1_CAP_STYLE;
+                                   DashCap: D2D1_CAP_STYLE;
+                                   LineJoin: D2D1_LINE_JOIN;
+                                   MiterLimit: FLOAT;
+                                   DashStyle: D2D1_DASH_STYLE;
+                                   DashOffset: FLOAT): D2D1_STROKE_STYLE_PROPERTIES;
+
+function D2D1Ellipse(center: D2D1_POINT_2F;
+                     const rx: FLOAT;
+                     const ry: FLOAT): D2D1_ELLIPSE;
+
+function D2D1RoundedRect(const Rect: D2D1_RECT_F;
+                         RadiusX: FLOAT;
+                         RadiusY: FLOAT): D2D1_ROUNDED_RECT;
+
+function D2D1LinearGradientBrushProperties(const StartPoint: D2D1_POINT_2F;
+                                           const EndPoint: D2D1_POINT_2F): D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES;
+
+function D2D1RadialGradientBrushProperties(const Center: D2D1_POINT_2F;
+                                           const GradientOriginOffset: D2D1_POINT_2F;
+                                           RadiusX: FLOAT;
+                                           RadiusY: FLOAT): D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES;
+
+function D2D1PixelFormat(const DxgiFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                         AlphaMode: D2D1_ALPHA_MODE = D2D1_ALPHA_MODE_UNKNOWN): D2D1_PIXEL_FORMAT;
+
+function D2D1RenderTargetProperties(_Type: D2D1_RENDER_TARGET_TYPE = D2D1_RENDER_TARGET_TYPE_DEFAULT): D2D1_RENDER_TARGET_PROPERTIES; overload;
+
+
+function D2D1RenderTargetProperties(_Type: D2D1_RENDER_TARGET_TYPE;
+                                    const _PixelFormat: D2D1_PIXEL_FORMAT;
+                                    DpiX: FLOAT = 0;
+                                    DpiY: FLOAT = 0;
+                                    Usage: D2D1_RENDER_TARGET_USAGE = D2D1_RENDER_TARGET_USAGE_NONE;
+                                    MinLevel: D2D1_FEATURE_LEVEL = D2D1_FEATURE_LEVEL_DEFAULT): D2D1_RENDER_TARGET_PROPERTIES; overload;
+
+function D2D1HwndRenderTargetProperties(_hwnd: HWND): D2D1_HWND_RENDER_TARGET_PROPERTIES; overload;
+
+function D2D1HwndRenderTargetProperties(_hwnd: HWND;
+                                        _PixelSize: D2D1_SIZE_U;
+                                        PresentOptions: D2D1_PRESENT_OPTIONS = D2D1_PRESENT_OPTIONS_NONE): D2D1_HWND_RENDER_TARGET_PROPERTIES; overload;
+
+function D2D1BitmapProperties(): D2D1_BITMAP_PROPERTIES; overload;
+
+function D2D1BitmapProperties(_PixleFormat: D2D1_PIXEL_FORMAT;
+                              DpiX: FLOAT = 96.0;
+                              DpiY: FLOAT = 96.0): D2D1_BITMAP_PROPERTIES; overload;
+
+// End of Additional Prototypes
 
 
 implementation
 
 
 function FloatMax(): FLOAT;
+
 begin
+
   {$IFDEF FLT_MAX}
     Result := FLT_MAX;
   {$ELSE}
-    Result := 3.402823466e+38;
+  Result := 3.402823466e+38;
   {$ENDIF}
 end;
 
@@ -681,7 +684,9 @@ end;
 // D2D1_POINT_2F
 function Point2F(x: FLOAT = 0.0;
                  y: FLOAT = 0.0): D2D1_POINT_2F;
+
 begin
+
   Result.x := x;
   Result.y := y;
 end;
@@ -690,7 +695,9 @@ end;
 // D2D1_POINT_2U
 function Point2U(x: UINT32 = 0;
                  y: UINT32 = 0): D2D1_POINT_2U;
+
 begin
+
   Result.x := x;
   Result.y := y;
 end;
@@ -698,7 +705,9 @@ end;
 // D2D1_SIZE_F
 function SizeF(Width: FLOAT = 0.0;
                Height: FLOAT = 0.0): D2D1_SIZE_F;
+
 begin
+
   Result.Width := Width;
   Result.Height := Height;
 end;
@@ -706,14 +715,18 @@ end;
 // D2D1_SIZE_U
 function SizeU(Width: UINT32 = 0;
                Height: UINT32 = 0): D2D1_SIZE_U;
+
 begin
+
   Result.Width := Width;
   Result.Height := Height;
 end;
 
 
 function Identity(): D2D1_MATRIX_3X2_F;
+
 begin
+
   with Result do
     begin
       _11 := 1.0;
@@ -731,7 +744,9 @@ function RectF(left: FLOAT = 0.0;
                top: FLOAT = 0.0;
                right: FLOAT = 0.0;
                bottom: FLOAT = 0.0): D2D1_RECT_F;
+
 begin
+
   Result.left := left;
   Result.top := top;
   Result.right := right;
@@ -743,7 +758,9 @@ function RectU(left: UINT32 = 0;
                top: UINT32 = 0;
                right: UINT32 = 0;
                bottom: UINT32 = 0): D2D1_RECT_U;
+
 begin
+
   Result.left := left;
   Result.top := top;
   Result.right := right;
@@ -754,7 +771,9 @@ end;
 function InfiniteRect(): D2D1_RECT_F;
 var
   rectf: D2D1_RECT_F;
+
 begin
+
   with rectf do
     begin
       left := -FloatMax();
@@ -771,7 +790,9 @@ function ArcSegment(point: D2D1_POINT_2F;
                     rotationAngle: FLOAT;
                     sweepDirection: D2D1_SWEEP_DIRECTION;
                     arcSize: D2D1_ARC_SIZE): D2D1_ARC_SEGMENT;
+
 begin
+
   Result.point := point;
   Result.size := size;
   Result.rotationAngle := rotationAngle;
@@ -783,7 +804,9 @@ end;
 function BezierSegment(point1: D2D1_POINT_2F;
                        point2: D2D1_POINT_2F;
                        point3: D2D1_POINT_2F): D2D1_BEZIER_SEGMENT;
+
 begin
+
   Result.point1 := point1;
   Result.point2 := point2;
   Result.point3 := point3;
@@ -793,7 +816,9 @@ end;
 function Ellipse(center: D2D1_POINT_2F;
                  radiusX: FLOAT;
                  radiusY: FLOAT): D2D1_ELLIPSE;
+
 begin
+
   Result.point := center;
   Result.radiusX := radiusX;
   Result.radiusY := radiusY;
@@ -803,7 +828,9 @@ end;
 function RoundedRect(rect: D2D1_RECT_F;
                      radiusX: FLOAT;
                      radiusY: FLOAT): D2D1_ROUNDED_RECT;
+
 begin
+
   Result.rect := rect;
   Result.radiusX := radiusX;
   Result.radiusY := radiusY;
@@ -812,14 +839,19 @@ end;
 
 function BrushProperties(transform: D2D1_MATRIX_3X2_F{ = IdentityMatrix()};
                          opacity: FLOAT = 1.0): D2D1_BRUSH_PROPERTIES;
+
 begin
-  Result.opacity := opacity; Result.transform := transform;
+
+  Result.opacity := opacity;
+  Result.transform := transform;
 end;
 
 
 function GradientStop(position: FLOAT;
                       color: D2D1_COLOR_F): D2D1_GRADIENT_STOP;
+
 begin
+
   Result.position := position;
   Result.color := color;
 end;
@@ -827,7 +859,9 @@ end;
 
 function QuadraticBezierSegment(point1: D2D1_POINT_2F;
                                 point2: D2D1_POINT_2F): D2D1_QUADRATIC_BEZIER_SEGMENT;
+
 begin
+
   Result.point1 := point1;
   Result.point2 := point2;
 end;
@@ -840,7 +874,9 @@ function StrokeStyleProperties(startCap: D2D1_CAP_STYLE = D2D1_CAP_STYLE_FLAT;
                                miterLimit: FLOAT = 10.0;
                                dashStyle: D2D1_DASH_STYLE = D2D1_DASH_STYLE_SOLID;
                                dashOffset: FLOAT = 0.0): D2D1_STROKE_STYLE_PROPERTIES;
+
 begin
+
   Result.startCap := startCap;
   Result.endCap := endCap;
   Result.dashCap := dashCap;
@@ -854,7 +890,9 @@ end;
 function BitmapBrushProperties(extendModeX: D2D1_EXTEND_MODE = D2D1_EXTEND_MODE_CLAMP;
                                extendModeY: D2D1_EXTEND_MODE = D2D1_EXTEND_MODE_CLAMP;
                                interpolationMode: D2D1_BITMAP_INTERPOLATION_MODE = D2D1_BITMAP_INTERPOLATION_MODE_LINEAR): D2D1_BITMAP_BRUSH_PROPERTIES;
+
 begin
+
   Result.extendModeX := extendModeX;
   Result.extendModeY := extendModeY;
   Result.interpolationMode := interpolationMode;
@@ -863,17 +901,21 @@ end;
 
 function LinearGradientBrushProperties(startPoint: D2D1_POINT_2F;
                                        endPoint: D2D1_POINT_2F): D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES;
+
 begin
+
   Result.startPoint := startPoint;
   Result.endPoint := endPoint;
 end;
 
 
 function RadialGradientBrushProperties(center: D2D1_POINT_2F;
-                                           gradientOriginOffset: D2D1_POINT_2F;
-                                           radiusX: FLOAT;
-                                           radiusY: FLOAT): D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES;
+                                       gradientOriginOffset: D2D1_POINT_2F;
+                                       radiusX: FLOAT;
+                                       radiusY: FLOAT): D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES;
+
 begin
+
   Result.center := center;
   Result.gradientOriginOffset := gradientOriginOffset;
   Result.radiusX := radiusX;
@@ -883,7 +925,9 @@ end;
 
 function PixelFormat(dxgiFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
                      alphaMode: D2D1_ALPHA_MODE = D2D1_ALPHA_MODE_UNKNOWN): D2D1_PIXEL_FORMAT;
+
 begin
+
   Result.format := dxgiFormat;
   Result.alphaMode := alphaMode;
 end;
@@ -892,8 +936,12 @@ end;
 function BitmapProperties(_pixelFormat: D2D1_PIXEL_FORMAT;
                           dpiX: FLOAT = 96.0;
                           dpiY: FLOAT = 96.0): D2D1_BITMAP_PROPERTIES;
+
 begin
-  Result._pixelFormat := _pixelFormat; Result.dpiX := dpiX; Result.dpiY := dpiY;
+
+  Result._pixelFormat := _pixelFormat;
+  Result.dpiX := dpiX;
+  Result.dpiY := dpiY;
 end;
 
 
@@ -903,17 +951,29 @@ function RenderTargetProperties(_pixelFormat: D2D1_PIXEL_FORMAT;
                                 dpiY: FLOAT = 0.0;
                                 usage: D2D1_RENDER_TARGET_USAGE = D2D1_RENDER_TARGET_USAGE_NONE;
                                 minLevel: D2D1_FEATURE_LEVEL = D2D1_FEATURE_LEVEL_DEFAULT): D2D1_RENDER_TARGET_PROPERTIES;
+
 begin
-  Result._type := _type; Result._pixelFormat := _pixelFormat; Result.dpiX := dpiX; Result.dpiY := dpiY; Result.usage := usage; Result.minLevel := minLevel;
+
+  Result._type := _type;
+  Result._pixelFormat := _pixelFormat;
+  Result.dpiX := dpiX;
+  Result.dpiY := dpiY;
+  Result.usage := usage;
+  Result.minLevel := minLevel;
 end;
 
 
 function HwndRenderTargetProperties(_hwnd: HWND;
                                     pixelSize: D2D1_SIZE_U;
                                     presentOptions: D2D1_PRESENT_OPTIONS = D2D1_PRESENT_OPTIONS_NONE): D2D1_HWND_RENDER_TARGET_PROPERTIES; inline;
+
 begin
-  Result._hwnd := _hwnd; Result._pixelSize := pixelSize; Result.presentOptions := presentOptions;
+
+  Result._hwnd := _hwnd;
+  Result._pixelSize := pixelSize;
+  Result.presentOptions := presentOptions;
 end;
+
 
 function LayerParameters(contentBounds: D2D1_RECT_F;
                          maskTransform: D2D1_MATRIX_3X2_F;
@@ -922,8 +982,16 @@ function LayerParameters(contentBounds: D2D1_RECT_F;
                          opacity: FLOAT = 1.0;
                          opacityBrush: ID2D1Brush = Nil;
                          layerOptions: D2D1_LAYER_OPTIONS = D2D1_LAYER_OPTIONS_NONE): D2D1_LAYER_PARAMETERS; inline;
+
 begin
-  Result.contentBounds := contentBounds; Result.geometricMask := geometricMask; Result.maskAntialiasMode := maskAntialiasMode; Result.maskTransform := maskTransform; Result.opacity := opacity; Result.opacityBrush := opacityBrush; Result.layerOptions := layerOptions;
+
+  Result.contentBounds := contentBounds;
+  Result.geometricMask := geometricMask;
+  Result.maskAntialiasMode := maskAntialiasMode;
+  Result.maskTransform := maskTransform;
+  Result.opacity := opacity;
+  Result.opacityBrush := opacityBrush;
+  Result.layerOptions := layerOptions;
 end;
 
 
@@ -932,8 +1000,14 @@ function DrawingStateDescription(transform: D2D1_MATRIX_3X2_F;
                                  textAntialiasMode: D2D1_TEXT_ANTIALIAS_MODE = D2D1_TEXT_ANTIALIAS_MODE_DEFAULT;
                                  tag1: D2D1_TAG = 0;
                                  tag2: D2D1_TAG = 0): D2D1_DRAWING_STATE_DESCRIPTION; inline;
+
 begin
-  Result.transform := transform; Result.antialiasMode := antialiasMode; Result.textAntialiasMode := textAntialiasMode; Result.tag1 := tag1; Result.tag2 := tag2;
+
+  Result.transform := transform;
+  Result.antialiasMode := antialiasMode;
+  Result.textAntialiasMode := textAntialiasMode;
+  Result.tag1 := tag1;
+  Result.tag2 := tag2;
 end;
 
 
@@ -944,19 +1018,29 @@ end;
 //
 
 class function D2D1ColorFHelper.Create(const knownColor: D2D1_KNOWN_COLOR;
-                  const alpha: FLOAT): D2D1_COLOR_F;
+                                       const alpha: FLOAT): D2D1_COLOR_F;
+
 begin
-  Result := Result.Init(UINT32(knownColor), alpha);
+
+  Result := Result.Init(UINT32(knownColor),
+                        alpha);
 end;
+
 
 class function D2D1ColorFHelper.Create(const knownColor: TColor;
-                  const alpha: FLOAT = 1.0): D2D1_COLOR_F;
+                                       const alpha: FLOAT = 1.0): D2D1_COLOR_F;
+
 begin
-    result:=result.Init(knownColor, alpha);
+
+  result := result.Init(knownColor,
+                        alpha);
 end;
 
+
 class function D2D1ColorFHelper.Create(const C: TAlphaColor): D2D1_COLOR_F;
+
 begin
+
   with Result do
     begin
       A := Byte((C shr 24) and $FF) / 255.0;
@@ -966,8 +1050,11 @@ begin
     end;
 end;
 
+
 class function D2D1ColorFHelper.Create(const C: TAlphaColorF): D2D1_COLOR_F;
+
 begin
+
   with Result do
     begin
       r := C.R;
@@ -979,10 +1066,12 @@ end;
 
 
 class function D2D1ColorFHelper.Create(const red: FLOAT;
-                  const green: FLOAT;
-                  const blue: FLOAT;
-                  const alpha: FLOAT = 1.0): D2D1_COLOR_F;
+                                       const green: FLOAT;
+                                       const blue: FLOAT;
+                                       const alpha: FLOAT = 1.0): D2D1_COLOR_F;
+
 begin
+
   with Result do
     begin
       r := red;
@@ -992,12 +1081,13 @@ begin
     end;
 end;
 
+
 function D2D1ColorFHelper.Init(const rgb: UINT32;
                                const alpha: FLOAT = 1.0): D2D1_COLOR_F;
 const
-  sc_redShift   = 16;
+  sc_redShift = 16;
   sc_greenShift = 8;
-  sc_blueShift  = 0;
+  sc_blueShift = 0;
 
   sc_redMask = $ff shl sc_redShift;
   sc_greenMask = $ff shl sc_greenShift;
@@ -1005,6 +1095,7 @@ const
 
 
 begin
+
   with Result do
     begin
       r := ((rgb AND sc_redMask) shr sc_redShift) / 255.0;
@@ -1017,20 +1108,27 @@ end;
 
 function D2D1ColorFHelper.Init(const knownColor: D2D1_KNOWN_COLOR;
                                const alpha: FLOAT): D2D1_COLOR_F;
+
 begin
-  Result := Init(UINT32(knownColor), alpha);
+
+  Result := Init(UINT32(knownColor),
+                 alpha);
 end;
+
 
 function D2D1ColorFHelper.Init(const knownColor: TColor;
                                const alpha: FLOAT = 1.0): D2D1_COLOR_F;
 var
   Bgr: DWORD;
+
 begin
-  if LongInt(knownColor) < 0 then
+
+  if (LongInt(knownColor) < 0) then
     Bgr := GetSysColor(DWORD(knownColor) and $FF)
   else
     Bgr := DWORD(knownColor);
-  Result := Init(UINT32(((Bgr and $FF) shl 16) or (Bgr and $FF00) or ((Bgr shr 16) and $FF)), alpha);
+  Result := Init(UINT32(((Bgr and $FF) shl 16) or (Bgr and $FF00) or ((Bgr shr 16) and $FF)),
+                 alpha);
 end;
 
 
@@ -1038,7 +1136,9 @@ function D2D1ColorFHelper.Init(const red: FLOAT;
                                const green: FLOAT;
                                const blue: FLOAT;
                                const alpha: FLOAT = 1.0): D2D1_COLOR_F;
+
 begin
+
   with Result do
     begin
       r := red;
@@ -1051,25 +1151,28 @@ end;
 
 class function D2D1ColorFHelper.Equal(const left: D2D1_COLOR_F;
                                       const right: D2D1_COLOR_F): Boolean;
+
 begin
-  Result:= (left.r = right.r) and
-           (left.g = right.g) and
-           (left.b = right.b) and
-           (left.a = right.a);
+
+  Result := (left.r = right.r) and
+    (left.g = right.g) and
+    (left.b = right.b) and
+    (left.a = right.a);
 end;
 
 
 class function D2D1ColorFHelper.Implicit(const val: DWORD): D2D1_COLOR_F;
 const
-  fval = 1/255; // 0,0039215686274509803921568627451?
+  fval = 1 / 255; // 0,0039215686274509803921568627451?
 
 begin
+
   with Result do
     begin
-      r:= fval * Byte(val shr 16);
-      g:= fval * Byte(val shr 8);
-      b:= fval * Byte(val{shr 0, which is a noop});
-      a:= fval * Byte(val shr 24);
+      r := fval * Byte(val shr 16);
+      g := fval * Byte(val shr 8);
+      b := fval * Byte(val{shr 0, which is a noop});
+      a := fval * Byte(val shr 24);
     end;
 end;
 
@@ -1082,37 +1185,38 @@ var
   al: DWord;
 
 begin
+
   if (val.r > 1.0) then
-    rd:= 255
+    rd := 255
   else if (val.r < 0) then
-    rd:= 0
+    rd := 0
   else
-    rd:= DWord(Trunc((val.r * 255.0) + 0.5));
+    rd := DWord(Trunc((val.r * 255.0) + 0.5));
 
   if (val.g > 1.0) then
-    gr:= 255
+    gr := 255
   else if (val.g < 0) then
-    gr:= 0
+    gr := 0
   else
-    gr:= DWORD(Trunc((val.g * 255.0) + 0.5));
+    gr := DWORD(Trunc((val.g * 255.0) + 0.5));
 
   if (val.b > 1.0) then
-    bl:= 255
+    bl := 255
   else if (val.b < 0) then
-    bl:= 0
+    bl := 0
   else
-    bl:= DWORD(Trunc((val.b * 255.0) + 0.5));
+    bl := DWORD(Trunc((val.b * 255.0) + 0.5));
 
   if (val.a > 1.0) then
-    al:= 255
+    al := 255
   else if (val.a < 0) then
-    al:= 0
+    al := 0
   else
-    al:= DWORD(Trunc((val.a * 255.0) + 0.5));
+    al := DWORD(Trunc((val.a * 255.0) + 0.5));
 
   Result := (al shl 24) or
-            (rd shl 16) or
-            (gr shl 8) or bl;
+    (rd shl 16) or
+    (gr shl 8) or bl;
 end;
 
 //
@@ -1124,7 +1228,9 @@ class function Matrix3x2FHelper.Init(const m11: FLOAT;
                                      const m22: FLOAT;
                                      const dx: FLOAT;
                                      const dy: FLOAT): D2D1_MATRIX_3X2_F;
+
 begin
+
   with Result do
     begin
       _11 := m11;
@@ -1133,13 +1239,15 @@ begin
       _22 := m22;
       _31 := dx;
       _32 := dy;
-   end;
+    end;
 end;
 
 
 // Quasi constructors
 class function Matrix3x2FHelper.Identity(): D2D1_MATRIX_3X2_F;
+
 begin
+
   with Result do
     begin
       _11 := 1.0;
@@ -1153,7 +1261,9 @@ end;
 
 
 class function Matrix3x2FHelper.Translation(const size: D2D1_SIZE_F): D2D1_MATRIX_3X2_F;
+
 begin
+
   with Result do
     begin
       _11 := 1.0;
@@ -1168,7 +1278,9 @@ end;
 
 class function Matrix3x2FHelper.Translation(const x: FLOAT;
                                             const y: FLOAT): D2D1_MATRIX_3X2_F;
+
 begin
+
   Result := Translation(SizeF(x,
                               y));
 end;
@@ -1176,20 +1288,20 @@ end;
 
 class function Matrix3x2FHelper.Scale(const size: D2D1_SIZE_F;
                                       const center: D2D1_POINT_2F): D2D1_MATRIX_3X2_F;
-//var
-//  ct: D2D1_POINT_2F;
+  //var
+  //  ct: D2D1_POINT_2F;
 
 begin
 
-//kxMaxx unclear, why we need this?
-//  // Check if a record has a default value or not.
-//  ct := Point2F();  //kxMaxx: ct needs an init; error at 64bit because of random values
-//  if CompareMem(@ct,
-//                @center,
-//                SizeOf(ct)) = True then
-//    ct := Point2F()
-//  else
-//    ct := center;
+  //kxMaxx unclear, why we need this?
+  //  // Check if a record has a default value or not.
+  //  ct := Point2F();  //kxMaxx: ct needs an init; error at 64bit because of random values
+  //  if CompareMem(@ct,
+  //                @center,
+  //                SizeOf(ct)) = True then
+  //    ct := Point2F()
+  //  else
+  //    ct := center;
 
   with Result do
     begin
@@ -1197,9 +1309,9 @@ begin
       _12 := 0.0;
       _21 := 0.0;
       _22 := size.height;
-//      _31 := ct.x - size.width * ct.x;
+      //      _31 := ct.x - size.width * ct.x;
       _31 := center.x - size.width * center.x;
-//      _32 := ct.y - size.height * ct.y;
+      //      _32 := ct.y - size.height * ct.y;
       _32 := center.y - size.height * center.y;
     end;
 
@@ -1209,8 +1321,12 @@ end;
 class function Matrix3x2FHelper.Scale(const x: FLOAT;
                                       const y: FLOAT;
                                       const center: D2D1_POINT_2F): D2D1_MATRIX_3X2_F;
+
 begin
-  Result := D2D1_MATRIX_3X2_F.Scale(SizeF(x,y), center);
+
+  Result := D2D1_MATRIX_3X2_F.Scale(SizeF(x,
+                                          y),
+                                    center);
 end;
 
 
@@ -1220,6 +1336,7 @@ var
   rotation: D2D1_MATRIX_3X2_F;
 
 begin
+
   D2D1MakeRotateMatrix(angle,
                        center,
                        rotation);
@@ -1234,6 +1351,7 @@ var
   skew: D2D1_MATRIX_3X2_F;
 
 begin
+
   D2D1MakeSkewMatrix(angleX,
                      angleY,
                      center,
@@ -1243,49 +1361,63 @@ end;
 
 
 class function Matrix3x2FHelper.ReinterpretBaseType(const pMatrix: PD2D1_MATRIX_3X2_F): D2D1_MATRIX_3X2_F;
+
 begin
+
   Result := pMatrix^;
 end;
 
 
 class function Matrix3x2FHelper.ReinterpretBaseType(var pMatrix: D2D1_MATRIX_3X2_F): PD2D1_MATRIX_3X2_F;
+
 begin
+
   Result := @pMatrix;
 end;
 
 
 function Matrix3x2FHelper.Determinant(): FLOAT;
+
 begin
+
   Result := (_11 * _22) - (_12 * _21);
 end;
 
 
 function Matrix3x2FHelper.IsInvertible(): Boolean;
+
 begin
+
   Result := D2D1IsMatrixInvertible(Self);
 end;
 
 
 function Matrix3x2FHelper.Invert(): Boolean;
+
 begin
+
   Result := D2D1InvertMatrix(Self);
 end;
 
 
 function Matrix3x2FHelper.IsIdentity(): Boolean;
+
 begin
+
   Result := (_11 = 1.0) and
-            (_12 = 0.0) and
-            (_21 = 0.0) and
-            (_22 = 1.0) and
-            (_31 = 0.0) and
-            (_32 = 0.0);
+    (_12 = 0.0) and
+    (_21 = 0.0) and
+    (_22 = 1.0) and
+    (_31 = 0.0) and
+    (_32 = 0.0);
 end;
 
 
 function Matrix3x2FHelper.SetProduct(const a: D2D1_MATRIX_3X2_F;
                                      const b: D2D1_MATRIX_3X2_F): D2D1_MATRIX_3X2_F;
+
 begin
+
   with Result do
     begin
       _11 := (a._11 * b._11) + (a._12 * b._21);
@@ -1300,14 +1432,18 @@ end;
 
 
 function Matrix3x2FHelper.SetProduct(const matrix: D2D1_MATRIX_3X2_F): D2D1_MATRIX_3X2_F;
+
 begin
+
   Result := SetProduct(Self,
                        matrix);
 end;
 
 
 function Matrix3x2FHelper.TransformPoint(const point: D2D1_POINT_2F): D2D1_POINT_2F;
+
 begin
+
   Result.x := (point.x * _11) + (point.y * _21) + _31;
   Result.y := (point.x * _12) + (point.y * _22) + _32;
 end;
@@ -1315,13 +1451,17 @@ end;
 
 function Matrix3x2FHelper.Equal(const size1: D2D1_SIZE_U;
                                 const size2: D2D1_SIZE_U): Boolean;
+
 begin
+
   Result := (size1.width = size2.width) AND (size1.height = size2.height);
 end;
 
 
 function IdentityMatrix(): D2D1_MATRIX_3X2_F;
+
 begin
+
   // Result := D2D1_MATRIX_3X2_F.Identity(); // [dcc32 Error] : E2076 This form of method call only allowed for class methods or constructor
   // So, we made a hardcopy
   with Result do
@@ -1340,24 +1480,30 @@ end;
 
 
 function D2D1PointF(const x: FLOAT;
-                    const y: FLOAT) : D2D1_POINT_2F;
+                    const y: FLOAT): D2D1_POINT_2F;
+
 begin
+
   result.x := x;
   result.y := y;
 end;
 
 
 function D2D1SizeF(const width: FLOAT;
-                   const height: FLOAT) : D2D1_SIZE_F;
+                   const height: FLOAT): D2D1_SIZE_F;
+
 begin
+
   result.width := width;
   result.height := height;
 end;
 
 
 function D2D1SizeU(const Width: UINT32;
-                   const Height: UINT32) : D2D1_SIZE_U;
+                   const Height: UINT32): D2D1_SIZE_U;
+
 begin
+
   result.width := width;
   result.height := height;
 end;
@@ -1367,7 +1513,9 @@ function D2D1RectF(const left: FLOAT;
                    const top: FLOAT;
                    const right: FLOAT;
                    const bottom: FLOAT): D2D1_RECT_F;
+
 begin
+
   Result.left := left;
   Result.top := top;
   Result.right := right;
@@ -1376,10 +1524,12 @@ end;
 
 
 procedure D2D1RectFDefault(var crRect: D2D1_RECT_F);
+
 begin
-  crRect.left   := 0.0;
-  crRect.top    := 0.0;
-  crRect.right  := 0.0;
+
+  crRect.left := 0.0;
+  crRect.top := 0.0;
+  crRect.right := 0.0;
   crRect.bottom := 0.0;
 end;
 
@@ -1389,7 +1539,9 @@ function D2D1ArcSegment(const Point: D2D1_POINT_2F;
                         RotationAngle: FLOAT;
                         const sweepDirection: D2D1_SWEEP_DIRECTION;
                         const ArcSize: D2D1_ARC_SIZE): D2D1_ARC_SEGMENT;
+
 begin
+
   Result.point := Point;
   Result.size := Size;
   Result.rotationAngle := RotationAngle;
@@ -1401,8 +1553,10 @@ end;
 function D2D1ColorF(const r: FLOAT;
                     const g: FLOAT;
                     const b: FLOAT;
-                    const a: FLOAT) : D2D1_COLOR_F; overload;
+                    const a: FLOAT): D2D1_COLOR_F; overload;
+
 begin
+
   Result.r := r;
   Result.g := g;
   Result.b := b;
@@ -1410,21 +1564,32 @@ begin
 end;
 
 
-function D2D1ColorF(color: TColor; const alpha: FLOAT): D2D1_COLOR_F; overload;
+function D2D1ColorF(color: TColor;
+                    const alpha: FLOAT): D2D1_COLOR_F; overload;
+
 begin
-  Result := Result.Init(color, alpha);
+
+  Result := Result.Init(color,
+                        alpha);
 end;
 
-function D2D1ColorF(color: D2D1_KNOWN_COLOR; const alpha: FLOAT): D2D1_COLOR_F; overload;
+
+function D2D1ColorF(color: D2D1_KNOWN_COLOR;
+                    const alpha: FLOAT): D2D1_COLOR_F; overload;
+
 begin
-  Result := Result.Init(UINT32(color), alpha);
+
+  Result := Result.Init(UINT32(color),
+                        alpha);
 end;
 
 
 function D2D1BezierSegment(const a: D2D1_POINT_2F;
                            const b: D2D1_POINT_2F;
-                           const c: D2D1_POINT_2F) : D2D1_BEZIER_SEGMENT;
+                           const c: D2D1_POINT_2F): D2D1_BEZIER_SEGMENT;
+
 begin
+
   Result.point1 := a;
   Result.point2 := b;
   Result.point3 := c;
@@ -1433,15 +1598,19 @@ end;
 
 function D2D1GradientStop(const Position: FLOAT;
                           const Color: D2D1_COLOR_F): D2D1_GRADIENT_STOP;
+
 begin
+
   Result.position := Position;
   Result.color := Color;
 end;
 
 
 function D2D1QuadraticBezierSegment(const a: D2D1_POINT_2F;
-                                    const b: D2D1_POINT_2F) : D2D1_QUADRATIC_BEZIER_SEGMENT;
+                                    const b: D2D1_POINT_2F): D2D1_QUADRATIC_BEZIER_SEGMENT;
+
 begin
+
   Result.point1 := a;
   Result.point2 := b;
 end;
@@ -1456,12 +1625,13 @@ function D2D1StrokeStyleProperties(StartCap: D2D1_CAP_STYLE;
                                    DashOffset: FLOAT): D2D1_STROKE_STYLE_PROPERTIES;
 
 begin
-  Result.startCap   := StartCap;
-  Result.endCap     := EndCap;
-  Result.dashCap    := DashCap;
-  Result.lineJoin   := LineJoin;
+
+  Result.startCap := StartCap;
+  Result.endCap := EndCap;
+  Result.dashCap := DashCap;
+  Result.lineJoin := LineJoin;
   Result.miterLimit := MiterLimit;
-  Result.dashStyle  := DashStyle;
+  Result.dashStyle := DashStyle;
   Result.dashOffset := DashOffset;
 end;
 
@@ -1469,7 +1639,9 @@ end;
 function D2D1Ellipse(center: D2D1_POINT_2F;
                      const rx: FLOAT;
                      const ry: FLOAT): D2D1_ELLIPSE;
+
 begin
+
   Result.point := center;
   Result.radiusX := rx;
   Result.radiusY := ry;
@@ -1479,42 +1651,55 @@ end;
 function D2D1RoundedRect(const Rect: D2D1_RECT_F;
                          RadiusX: FLOAT;
                          RadiusY: FLOAT): D2D1_ROUNDED_RECT;
+
 begin
+
   Result.rect := Rect;
   Result.radiusX := RadiusX;
   Result.radiusY := RadiusY;
 end;
 
+
 function D2D1LinearGradientBrushProperties(const StartPoint: D2D1_POINT_2F;
                                            const EndPoint: D2D1_POINT_2F): D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES;
+
 begin
+
   Result.startPoint := StartPoint;
   Result.endPoint := EndPoint;
 end;
+
 
 function D2D1RadialGradientBrushProperties(const Center: D2D1_POINT_2F;
                                            const GradientOriginOffset: D2D1_POINT_2F;
                                            RadiusX: FLOAT;
                                            RadiusY: FLOAT): D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES;
+
 begin
+
   Result.center := Center;
   Result.gradientOriginOffset := GradientOriginOffset;
-  Result.radiusX :=  RadiusX;
+  Result.radiusX := RadiusX;
   Result.radiusY := RadiusY;
 end;
 
 
 function D2D1PixelFormat(const DxgiFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
                          AlphaMode: D2D1_ALPHA_MODE = D2D1_ALPHA_MODE_UNKNOWN): D2D1_PIXEL_FORMAT;
+
 begin
+
   Result.format := DxgiFormat;
   Result.alphaMode := AlphaMode;
 end;
 
 
 function D2D1RenderTargetProperties(_Type: D2D1_RENDER_TARGET_TYPE = D2D1_RENDER_TARGET_TYPE_DEFAULT): D2D1_RENDER_TARGET_PROPERTIES; overload;
+
 begin
-  Result := D2D1RenderTargetProperties(_Type, D2D1PixelFormat());
+
+  Result := D2D1RenderTargetProperties(_Type,
+                                       D2D1PixelFormat());
 end;
 
 
@@ -1524,7 +1709,9 @@ function D2D1RenderTargetProperties(_Type: D2D1_RENDER_TARGET_TYPE;
                                     DpiY: FLOAT = 0;
                                     Usage: D2D1_RENDER_TARGET_USAGE = D2D1_RENDER_TARGET_USAGE_NONE;
                                     MinLevel: D2D1_FEATURE_LEVEL = D2D1_FEATURE_LEVEL_DEFAULT): D2D1_RENDER_TARGET_PROPERTIES;
+
 begin
+
   Result._type := _Type;
   Result._pixelFormat := _PixelFormat;
   Result.dpiX := DpiX;
@@ -1536,15 +1723,21 @@ end;
 
 
 function D2D1HwndRenderTargetProperties(_hwnd: HWND): D2D1_HWND_RENDER_TARGET_PROPERTIES; overload;
+
 begin
-  Result := D2D1HwndRenderTargetProperties(_hwnd, D2D1SizeU(0,0));
+
+  Result := D2D1HwndRenderTargetProperties(_hwnd,
+                                           D2D1SizeU(0,
+                                                     0));
 end;
 
 
 function D2D1HwndRenderTargetProperties(_Hwnd: HWND;
                                         _PixelSize: D2D1_SIZE_U;
                                         PresentOptions: D2D1_PRESENT_OPTIONS = D2D1_PRESENT_OPTIONS_NONE): D2D1_HWND_RENDER_TARGET_PROPERTIES; overload;
+
 begin
+
   Result._hwnd := _Hwnd;
   Result._pixelSize := _PixelSize;
   Result.presentOptions := PresentOptions;
@@ -1552,7 +1745,9 @@ end;
 
 
 function D2D1BitmapProperties(): D2D1_BITMAP_PROPERTIES; overload;
+
 begin
+
   Result := D2D1BitmapProperties(D2D1PixelFormat());
 end;
 
@@ -1560,7 +1755,9 @@ end;
 function D2D1BitmapProperties(_PixleFormat: D2D1_PIXEL_FORMAT;
                               DpiX: FLOAT = 96.0;
                               DpiY: FLOAT = 96.0): D2D1_BITMAP_PROPERTIES; overload;
+
 begin
+
   Result._pixelFormat := _PixleFormat;
   Result.dpiX := DpiX;
   Result.dpiY := DpiY;

@@ -64,11 +64,12 @@ unit RDJ.InternalMixer;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinApiTypes,
   {System}
@@ -88,6 +89,7 @@ type
                                            out Flags: DWORD): HRESULT of object;
 
   TRDJMixerChannel = class
+
   private
 
     FDeckEngineObj: TObject;
@@ -99,7 +101,7 @@ type
     FVolR: Single;
     FCueVolL: Single;
     FCueVolR: Single;
-    FWorkBuf: TArray<Single>;
+    FWorkBuf: TArray < Single > ;
     FWorkBufFrames: Integer;
 
   public
@@ -115,15 +117,16 @@ type
     property VolR: Single read FVolR write FVolR;
     property CueVolL: Single read FCueVolL write FCueVolL;
     property CueVolR: Single read FCueVolR write FCueVolR;
-    property WorkBuf: TArray<Single> read FWorkBuf write FWorkBuf;
+    property WorkBuf: TArray < Single > read FWorkBuf write FWorkBuf;
     property WorkBufFrames: Integer read FWorkBufFrames write FWorkBufFrames;
   end;
 
   TRDJInternalMixer = class
+
   private
 
-    FChannels: TObjectList<TRDJMixerChannel>;
-    FChannelSnapshot: TArray<TRDJMixerChannel>;
+    FChannels: TObjectList < TRDJMixerChannel > ;
+    FChannelSnapshot: TArray < TRDJMixerChannel > ;
     FMasterRack: TMfWasApiEffectsRack;
     FSampleRate: Integer;
     FChannelCount: Integer;
@@ -151,6 +154,7 @@ type
     function PullChannelPcm(AChannel: TRDJMixerChannel;
                             const Frames: Integer;
                             out AFlags: DWORD): HRESULT;
+
   public
 
     constructor Create();
@@ -174,7 +178,7 @@ type
     property MasterRack: TMfWasApiEffectsRack read FMasterRack write FMasterRack;
     property SampleRate: Integer read FSampleRate;
     property ChannelCount: Integer read FChannelCount;
-    property Channels: TObjectList<TRDJMixerChannel> read FChannels;
+    property Channels: TObjectList < TRDJMixerChannel > read FChannels;
     property SmallWorkBufHits: Integer read FSmallWorkBufHits;
     property PullErrors: Integer read FPullErrors;
     property ShuttingDown: Boolean read FShuttingDown;
@@ -185,6 +189,7 @@ implementation
 { TRDJMixerChannel }
 
 constructor TRDJMixerChannel.Create();
+
 begin
 
   inherited Create;
@@ -204,10 +209,12 @@ end;
 { TRDJInternalMixer }
 
 constructor TRDJInternalMixer.Create;
+
 begin
+
   inherited Create;
 
-  FChannels := TObjectList<TRDJMixerChannel>.Create(True);
+  FChannels := (TObjectList < TRDJMixerChannel > .Create(True));
 
   FSampleRate := 0;
   FChannelCount := 2;
@@ -219,6 +226,7 @@ end;
 
 
 destructor TRDJInternalMixer.Destroy();
+
 begin
 
   FDestroying := True;
@@ -233,6 +241,7 @@ end;
 
 
 procedure TRDJInternalMixer.BeginShutdown();
+
 begin
 
   FShuttingDown := True;
@@ -242,6 +251,7 @@ end;
 
 
 function TRDJInternalMixer.AddChannel(): TRDJMixerChannel;
+
 begin
 
   if FShuttingDown or FDestroying then
@@ -256,7 +266,7 @@ end;
 procedure TRDJInternalMixer.RebuildChannelSnapshot();
 var
   i: Integer;
-  NewSnapshot: TArray<TRDJMixerChannel>;
+  NewSnapshot: TArray < TRDJMixerChannel > ;
 
 begin
 
@@ -275,7 +285,7 @@ end;
 function TRDJInternalMixer.FindChannelByDeckEngine(const ADeckEngine: TObject): TRDJMixerChannel;
 var
   i: Integer;
-  Snapshot: TArray<TRDJMixerChannel>;
+  Snapshot: TArray < TRDJMixerChannel > ;
   Ch: TRDJMixerChannel;
 
 begin
@@ -300,14 +310,14 @@ end;
 procedure TRDJInternalMixer.PrepareWorkBuffers(const Frames: Integer);
 var
   i: Integer;
-  Snapshot: TArray<TRDJMixerChannel>;
+  Snapshot: TArray < TRDJMixerChannel > ;
   Ch: TRDJMixerChannel;
 
 begin
 
   if (Frames <= 0) or
-     FShuttingDown or
-     FDestroying then
+    FShuttingDown or
+    FDestroying then
     Exit;
 
   Snapshot := FChannelSnapshot;
@@ -329,11 +339,12 @@ end;
 
 
 procedure TRDJInternalMixer.RemoveChannel(AChannel: TRDJMixerChannel);
+
 begin
 
   if (AChannel = nil) or
-     FShuttingDown or
-     FDestroying then
+    FShuttingDown or
+    FDestroying then
     Exit;
 
   FChannels.Remove(AChannel);
@@ -342,18 +353,21 @@ end;
 
 
 procedure TRDJInternalMixer.ClearChannels;
+
 begin
 
   if FDestroying then
     Exit;
 
   FChannels.Clear();
-  SetLength(FChannelSnapshot, 0);
+  SetLength(FChannelSnapshot,
+            0);
 end;
 
 
 procedure TRDJInternalMixer.SetFormat(const ASampleRate,
                                       AChannelCount: Integer);
+
 begin
 
   FSampleRate := ASampleRate;
@@ -363,6 +377,7 @@ end;
 
 procedure TRDJInternalMixer.ClearFloatBuffer(const pData: PSingle;
                                              const SampleCount: Integer);
+
 begin
 
   if (pData <> nil) and (SampleCount > 0) then
@@ -408,8 +423,8 @@ var
 begin
 
   if (InBuf = nil) or
-     (OutBuf = nil) or
-     (Frames <= 0) then
+    (OutBuf = nil) or
+    (Frames <= 0) then
     Exit;
 
   if ((GainL = 0) and (GainR = 0)) then
@@ -435,6 +450,7 @@ end;
 function TRDJInternalMixer.PullChannelPcm(AChannel: TRDJMixerChannel;
                                           const Frames: Integer;
                                           out AFlags: DWORD): HRESULT;
+
 begin
 
   Result := S_FALSE;
@@ -453,7 +469,7 @@ begin
   EnsureWorkBuffer(AChannel,
                    Frames);
 
-  if Length(AChannel.WorkBuf) < (Frames * 2) then
+  if (Length(AChannel.WorkBuf) < (Frames * 2)) then
     begin
 
       Inc(FSmallWorkBufHits);
@@ -476,7 +492,7 @@ function TRDJInternalMixer.MixBlock(const Frames: Integer;
                                     const OutCue: PSingle): HRESULT;
 var
   i: Integer;
-  Snapshot: TArray<TRDJMixerChannel>;
+  Snapshot: TArray < TRDJMixerChannel > ;
   Ch: TRDJMixerChannel;
   Flags: DWORD;
   hr: HRESULT;
@@ -493,8 +509,8 @@ begin
   Result := S_OK;
 
   if (Frames <= 0) or
-     (OutMaster = nil) or
-     (OutCue = nil) then
+    (OutMaster = nil) or
+    (OutCue = nil) then
     Exit(E_INVALIDARG);
 
   if (FChannelCount <> 2) then
@@ -530,8 +546,7 @@ begin
       CueVolL := Ch.CueVolL;
       CueVolR := Ch.CueVolR;
 
-      if not Enabled or
-         not Assigned(Ch.OnReadOutputPcmFloat32) then
+      if not Enabled or not Assigned(Ch.OnReadOutputPcmFloat32) then
         Continue;
 
       hr := PullChannelPcm(Ch,
@@ -544,7 +559,7 @@ begin
           Continue;
         end;
 
-      if Length(Ch.WorkBuf) < (Frames * 2) then
+      if (Length(Ch.WorkBuf) < (Frames * 2)) then
         Continue;
 
       if ((Flags and AUDCLNT_BUFFERFLAGS_SILENT) = 0) then

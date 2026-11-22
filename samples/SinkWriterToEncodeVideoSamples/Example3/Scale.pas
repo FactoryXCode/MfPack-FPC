@@ -81,7 +81,7 @@ interface
 
 uses
   MfEncodeAudio.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   {VCL}
   Graphics,
@@ -93,133 +93,141 @@ uses
   {Application}
   Common;
 
-{$IFOPT O-}
+  {$IFOPT O-}
 {$DEFINE O_MINUS}
 {$O+}
-{$ENDIF}
-{$IFOPT Q+}
+  {$ENDIF}
+  {$IFOPT Q+}
 {$DEFINE Q_PLUS}
 {$Q-}
-{$ENDIF}
+  {$ENDIF}
 
 type
 
   TFloatRect = TRectF;
 
-  /// <summary> Resampling of complete bitmaps with various options. Uses the ZoomResample.. functions internally </summary>
-  /// <param name="NewWidth"> Width of target bitmap. Target will be resized. </param>
-  /// <param name="NewHeight"> Height of target bitmap. Target will be resized. </param>
-  /// <param name="Source"> Source bitmap, will be set to Graphics.pf32bit. Works best if Source.Alphaformat=afIgnored. </param>
-  /// <param name="Target"> Target bitmap, will be set to Graphics.pf32bit. Alphaformat will be = Source.Alphaformat. </param>
-  /// <param name="Filter"> Resampling kernel: cfBox, cfBilinear, cfBicubic, cfLanczos </param>
-  /// <param name="Radius"> Range of pixels to contribute to the result. Value 0 takes the default radius for the filter. </param>
-  /// <param name="Parallel"> If true the resampling work is divided into parallel threads. </param>
-  /// <param name="AlphaCombineMode"> Options for alpha: amIndependent, amPreMultiply, amIgnore, amTransparentColor </param>
-  /// <param name="ThreadPool"> Pointer to the TResamplingThreadpool to be used, nil uses a default thread pool. </param>
-  procedure Resample(NewWidth: Integer;
-                     NewHeight: Integer;
-                     const Source: TBitmap;
-                     const Target: TBitmap;
-                     Filter: TFilter;
-                     Radius: Single;
-                     Parallel: Boolean;
-                     AlphaCombineMode: TAlphaCombineMode;
-                     ThreadPool: PResamplingThreadPool = nil);
+/// <summary> Resampling of complete bitmaps with various options. Uses the ZoomResample.. functions internally </summary>
+/// <param name="NewWidth"> Width of target bitmap. Target will be resized. </param>
+/// <param name="NewHeight"> Height of target bitmap. Target will be resized. </param>
+/// <param name="Source"> Source bitmap, will be set to Graphics.pf32bit. Works best if Source.Alphaformat=afIgnored. </param>
+/// <param name="Target"> Target bitmap, will be set to Graphics.pf32bit. Alphaformat will be = Source.Alphaformat. </param>
+/// <param name="Filter"> Resampling kernel: cfBox, cfBilinear, cfBicubic, cfLanczos </param>
+/// <param name="Radius"> Range of pixels to contribute to the result. Value 0 takes the default radius for the filter. </param>
+/// <param name="Parallel"> If true the resampling work is divided into parallel threads. </param>
+/// <param name="AlphaCombineMode"> Options for alpha: amIndependent, amPreMultiply, amIgnore, amTransparentColor </param>
+/// <param name="ThreadPool"> Pointer to the TResamplingThreadpool to be used, nil uses a default thread pool. </param>
+procedure Resample(NewWidth: Integer;
+                   NewHeight: Integer;
+                   const Source: TBitmap;
+                   const Target: TBitmap;
+                   Filter: TFilter;
+                   Radius: Single;
+                   Parallel: Boolean;
+                   AlphaCombineMode: TAlphaCombineMode;
+                   ThreadPool: PResamplingThreadPool = nil);
 
-  /// <summary> Resamples a rectangle of the Source to the Target. Does not use threading. </summary>
-  /// <param name="NewWidth"> Width of target bitmap. Target will be resized. </param>
-  /// <param name="NewHeight"> Height of target bitmap. Target will be resized. </param>
-  /// <param name="Source"> Source bitmap, will be set to Graphics.pf32bit. Works best if Source.Alphaformat=afIgnored. </param>
-  /// <param name="Target"> Target bitmap, will be set to Graphics.pf32bit. Alphaformat will be = Source.Alphaformat. </param>
-  /// <param name="SourceRect"> Rectangle in Source to be resampled, has floating point boundaries for smooth zooms. </param>
-  /// <param name="Filter"> Resampling kernel: cfBox, cfBilinear, cfBicubic, cfLanczos </param>
-  /// <param name="Radius"> Range of pixels to contribute to the result. Value 0 takes the default radius for the filter. </param>
-  /// <param name="AlphaCombineMode"> Options for alpha: amIndependent, amPreMultiply, amIgnore, amTransparentColor </param>
-  procedure ZoomResample(NewWidth: Integer;
-                         NewHeight: Integer;
-                         const Source,
-                         Target: TBitmap;
-                         SourceRect: TFloatRect;
-                         Filter: TFilter;
-                         Radius: Single;
-                         AlphaCombineMode: TAlphaCombineMode);
+/// <summary> Resamples a rectangle of the Source to the Target. Does not use threading. </summary>
+/// <param name="NewWidth"> Width of target bitmap. Target will be resized. </param>
+/// <param name="NewHeight"> Height of target bitmap. Target will be resized. </param>
+/// <param name="Source"> Source bitmap, will be set to Graphics.pf32bit. Works best if Source.Alphaformat=afIgnored. </param>
+/// <param name="Target"> Target bitmap, will be set to Graphics.pf32bit. Alphaformat will be = Source.Alphaformat. </param>
+/// <param name="SourceRect"> Rectangle in Source to be resampled, has floating point boundaries for smooth zooms. </param>
+/// <param name="Filter"> Resampling kernel: cfBox, cfBilinear, cfBicubic, cfLanczos </param>
+/// <param name="Radius"> Range of pixels to contribute to the result. Value 0 takes the default radius for the filter. </param>
+/// <param name="AlphaCombineMode"> Options for alpha: amIndependent, amPreMultiply, amIgnore, amTransparentColor </param>
+procedure ZoomResample(NewWidth: Integer;
+                       NewHeight: Integer;
+                       const Source,
+                       Target: TBitmap;
+                       SourceRect: TFloatRect;
+                       Filter: TFilter;
+                       Radius: Single;
+                       AlphaCombineMode: TAlphaCombineMode);
 
-  // The following routine is now threadsafe, if each concurrent thread uses a different thread pool
+// The following routine is now threadsafe, if each concurrent thread uses a different thread pool
 
-  /// <summary> Resamples a rectangle of the Source to the Target using parallel threads. </summary>
-  /// <param name="NewWidth"> Width of target bitmap. Target will be resized. </param>
-  /// <param name="NewHeight"> Height of target bitmap. Target will be resized. </param>
-  /// <param name="Source"> Source bitmap, will be set to Graphics.pf32bit. Works best if Source.Alphaformat=afIgnored. </param>
-  /// <param name="Target"> Target bitmap, will be set to Graphics.pf32bit. Alphaformat will be = Source.Alphaformat. </param>
-  /// <param name="SourceRect"> Rectangle in Source to be resampled, has floating point boundaries for smooth zooms. </param>
-  /// <param name="Filter"> Resampling kernel: cfBox, cfBilinear, cfBicubic, cfLanczos </param>
-  /// <param name="Radius"> Range of pixels to contribute to the result. Value 0 takes the default radius for the filter. </param>
-  /// <param name="AlphaCombineMode"> Options for alpha: amIndependent, amPreMultiply, amIgnore, amTransparentColor </param>
-  /// <param name="ThreadPool"> Pointer to the TResamplingThreadpool to be used, nil uses a default thread pool</param>
-  procedure ZoomResampleParallelThreads(NewWidth: Integer;
-                                        NewHeight: Integer;
-                                        const Source: TBitmap;
-                                        const Target: TBitmap;
-                                        SourceRect: TFloatRect;
-                                        Filter: TFilter;
-                                        Radius: Single;
-                                        AlphaCombineMode: TAlphaCombineMode;
-                                        ThreadPool: PResamplingThreadPool = nil);
-
-  // The following procedure allows you to compare performance of TResamplingThreads to
-  // the built-in TTask-threading.
-  // Timings with TTask tend to be erratic. Sometimes it takes a very long time,
-  // I think this happens whenever the system deems it necessary to re-initialize
-  // the threading-framework.
-
-  /// <summary> Resamples a rectangle of the Source to the Target using parallel worker jobs. Is threadsafe. </summary>
-  /// <param name="NewWidth"> Width of target bitmap. Target will be resized. </param>
-  /// <param name="NewHeight"> Height of target bitmap. Target will be resized. </param>
-  /// <param name="Source"> Source bitmap, will be set to Graphics.pf32bit. Works best if Source.Alphaformat=afIgnored. </param>
-  /// <param name="Target"> Target bitmap, will be set to Graphics.pf32bit. Alphaformat will be = Source.Alphaformat. </param>
-  /// <param name="SourceRect"> Rectangle in Source to be resampled, has floating point boundaries for smooth zooms. </param>
-  /// <param name="Filter"> Resampling kernel: cfBox, cfBilinear, cfBicubic, cfLanczos </param>
-  /// <param name="Radius"> Range of pixels to contribute to the result. Value 0 takes the default radius for the filter. </param>
-  /// <param name="AlphaCombineMode"> Options for alpha: amIndependent, amPreMultiply, amIgnore, amTransparentColor </param>
-  procedure ZoomResampleParallelTasks(NewWidth: Integer;
+/// <summary> Resamples a rectangle of the Source to the Target using parallel threads. </summary>
+/// <param name="NewWidth"> Width of target bitmap. Target will be resized. </param>
+/// <param name="NewHeight"> Height of target bitmap. Target will be resized. </param>
+/// <param name="Source"> Source bitmap, will be set to Graphics.pf32bit. Works best if Source.Alphaformat=afIgnored. </param>
+/// <param name="Target"> Target bitmap, will be set to Graphics.pf32bit. Alphaformat will be = Source.Alphaformat. </param>
+/// <param name="SourceRect"> Rectangle in Source to be resampled, has floating point boundaries for smooth zooms. </param>
+/// <param name="Filter"> Resampling kernel: cfBox, cfBilinear, cfBicubic, cfLanczos </param>
+/// <param name="Radius"> Range of pixels to contribute to the result. Value 0 takes the default radius for the filter. </param>
+/// <param name="AlphaCombineMode"> Options for alpha: amIndependent, amPreMultiply, amIgnore, amTransparentColor </param>
+/// <param name="ThreadPool"> Pointer to the TResamplingThreadpool to be used, nil uses a default thread pool</param>
+procedure ZoomResampleParallelThreads(NewWidth: Integer;
                                       NewHeight: Integer;
                                       const Source: TBitmap;
                                       const Target: TBitmap;
                                       SourceRect: TFloatRect;
                                       Filter: TFilter;
                                       Radius: Single;
-                                      AlphaCombineMode: TAlphaCombineMode);
+                                      AlphaCombineMode: TAlphaCombineMode;
+                                      ThreadPool: PResamplingThreadPool = nil);
 
-  function FloatRect(Aleft: Double;
-                     ATop: Double;
-                     ARight: Double;
-                     ABottom: Double): TFloatRect; overload; inline;
+// The following procedure allows you to compare performance of TResamplingThreads to
+// the built-in TTask-threading.
+// Timings with TTask tend to be erratic. Sometimes it takes a very long time,
+// I think this happens whenever the system deems it necessary to re-initialize
+// the threading-framework.
+
+/// <summary> Resamples a rectangle of the Source to the Target using parallel worker jobs. Is threadsafe. </summary>
+/// <param name="NewWidth"> Width of target bitmap. Target will be resized. </param>
+/// <param name="NewHeight"> Height of target bitmap. Target will be resized. </param>
+/// <param name="Source"> Source bitmap, will be set to Graphics.pf32bit. Works best if Source.Alphaformat=afIgnored. </param>
+/// <param name="Target"> Target bitmap, will be set to Graphics.pf32bit. Alphaformat will be = Source.Alphaformat. </param>
+/// <param name="SourceRect"> Rectangle in Source to be resampled, has floating point boundaries for smooth zooms. </param>
+/// <param name="Filter"> Resampling kernel: cfBox, cfBilinear, cfBicubic, cfLanczos </param>
+/// <param name="Radius"> Range of pixels to contribute to the result. Value 0 takes the default radius for the filter. </param>
+/// <param name="AlphaCombineMode"> Options for alpha: amIndependent, amPreMultiply, amIgnore, amTransparentColor </param>
+procedure ZoomResampleParallelTasks(NewWidth: Integer;
+                                    NewHeight: Integer;
+                                    const Source: TBitmap;
+                                    const Target: TBitmap;
+                                    SourceRect: TFloatRect;
+                                    Filter: TFilter;
+                                    Radius: Single;
+                                    AlphaCombineMode: TAlphaCombineMode);
+
+function FloatRect(Aleft: Double;
+                   ATop: Double;
+                   ARight: Double;
+                   ABottom: Double): TFloatRect; overload; inline;
 
 
-  function FloatRect(ARect: TRect): TFloatRect; overload; inline;
+function FloatRect(ARect: TRect): TFloatRect; overload; inline;
 
 
-  function GetResamplingTask(RTS: TResamplingThreadSetup;
-                             Index: Integer;
-                             AlphaCombineMode: TAlphaCombineMode): IResamplingJob;
+function GetResamplingTask(RTS: TResamplingThreadSetup;
+                           Index: Integer;
+                           AlphaCombineMode: TAlphaCombineMode): IResamplingJob;
 
-  function TransColorToAlpha(const bm: TBitmap): TColor;
+function TransColorToAlpha(const bm: TBitmap): TColor;
 
 
 implementation
 
+
 function BitmapRowPitch(const Bitmap: TBitmap): Integer;
+
 begin
-  if Bitmap.Height > 1 then
+
+  if (Bitmap.Height > 1) then
     Result := NativeInt(Bitmap.ScanLine[1]) - NativeInt(Bitmap.ScanLine[0])
   else
     Result := Bitmap.Width * 4;
 end;
 
-procedure ValidateBitmapSize(NewWidth,NewHeight: Integer;const Source: TBitmap);
+
+procedure ValidateBitmapSize(NewWidth,
+                             NewHeight: Integer;
+                             const Source: TBitmap);
+
 begin
+
   if (NewWidth <= 0) or (NewHeight <= 0) or (Source = nil) or
-     (Source.Width <= 0) or (Source.Height <= 0) then
+    (Source.Width <= 0) or (Source.Height <= 0) then
     raise EArgumentException.Create('Resampling dimensions must be positive');
 end;
 
@@ -228,7 +236,9 @@ function FloatRect(Aleft: Double;
                    ATop: Double;
                    ARight: Double;
                    ABottom: Double): TFloatRect; overload; inline;
+
 begin
+
   Result.Left := Aleft;
   Result.Top := ATop;
   Result.Right := ARight;
@@ -237,34 +247,46 @@ end;
 
 
 function FloatRect(ARect: TRect): TFloatRect; overload; inline;
+
 begin
+
   Result := TRectF(ARect);
 end;
 
 type
-  TResamplingJob = class(TInterfacedObject,IResamplingJob)
+  TResamplingJob = class(TInterfacedObject,
+                         IResamplingJob)
     RTS: TResamplingThreadSetup;
     Index: Integer;
     AlphaCombineMode: TAlphaCombineMode;
     procedure Execute();
   end;
 
+
 procedure TResamplingJob.Execute();
 var
   Y: Integer;
   CacheStart: PBGRAInt;
+
 begin
+
   CacheStart := @RTS.CacheMatrix[Index][0];
   for Y := RTS.ymin[Index] to RTS.ymax[Index] do
-    ProcessRow(Y,CacheStart,RTS,AlphaCombineMode);
+    ProcessRow(Y,
+               CacheStart,
+               RTS,
+               AlphaCombineMode);
 end;
+
 
 function GetResamplingTask(RTS: TResamplingThreadSetup;
                            Index: Integer;
                            AlphaCombineMode: TAlphaCombineMode): IResamplingJob;
 var
   Job: TResamplingJob;
+
 begin
+
   Job := TResamplingJob.Create();
   Job.RTS := RTS;
   Job.Index := Index;
@@ -283,15 +305,17 @@ var
   x: Integer;
   y: Integer;
 
+
   function SameColor(p1: PRGBTriple;
                      p2: PRGBTriple): Boolean;
-    begin
-      Result := (p1.rgbtBlue = p2.rgbtBlue) and
-                (p1.rgbtGreen = p2.rgbtGreen) and
-                (p1.rgbtRed = p2.rgbtRed);
-    end;
+  begin
+    Result := (p1.rgbtBlue = p2.rgbtBlue) and
+      (p1.rgbtGreen = p2.rgbtGreen) and
+      (p1.rgbtRed = p2.rgbtRed);
+  end;
 
 begin
+
   // GetTransparentColor uses bm.Canvas.
   bm.Canvas.Lock;
   Result := bm.TransparentColor;
@@ -314,9 +338,9 @@ begin
             pix.rgbReserved := 255;
           Inc(pix);
         end;
-    Dec(row,
-        bps);
-  end;
+      Dec(row,
+          bps);
+    end;
 end;
 
 
@@ -332,6 +356,7 @@ var
   c: TColor;
 
 begin
+
   c := ColorToRGB(TransColor);
   pixColor.rgbtBlue := GetBValue(c);
   pixColor.rgbtGreen := GetGValue(c);
@@ -344,7 +369,7 @@ begin
       pix := PRGBQuad(row);
       for x := 1 to bm.Width do
         begin
-          if pix.rgbReserved = 0 then
+          if (pix.rgbReserved = 0) then
             PRGBTriple(pix)^ := pixColor
           else
             pix.rgbReserved := 0;
@@ -359,15 +384,20 @@ end;
 
 procedure InitTransparency(const Source: TBitmap;
                            var TransColor: TColor);
+
 begin
+
   TransColor := TransColorToAlpha(Source);
 end;
 
 
 procedure TransferTransparency(const Target: TBitmap;
                                TransColor: TColor);
+
 begin
-  AlphaToTransparentColor(Target, TransColor);
+
+  AlphaToTransparentColor(Target,
+                          TransColor);
   Target.Canvas.Lock;
   Target.TransparentMode := TTransParentMode.tmFixed;
   Target.TransparentColor := TransColor;
@@ -394,7 +424,10 @@ var
   DoSetAlphaFormat: Boolean;
 
 begin
-  ValidateBitmapSize(NewWidth,NewHeight,Source);
+
+  ValidateBitmapSize(NewWidth,
+                     NewHeight,
+                     Source);
   if (Radius = 0) then
     Radius := DefaultRadius[Filter];
   if (ThreadPool = nil) or (ThreadPool = @_DefaultThreadPool) then
@@ -403,7 +436,7 @@ begin
       TP := @_DefaultThreadPool;
       if not TP.Initialized then
         TP.Initialize(Min(_MaxThreadCount,
-                      TThread.ProcessorCount),
+                          TThread.ProcessorCount),
                       tpHigher);
     end
   else
@@ -428,36 +461,37 @@ begin
   Target.BeginUpdate();
   try
 
-  Tbps := BitmapRowPitch(Target);
-  Sbps := BitmapRowPitch(Source);
+    Tbps := BitmapRowPitch(Target);
+    Sbps := BitmapRowPitch(Source);
 
-  RTS.PrepareResamplingThreads(NewWidth,
-                               NewHeight,
-                               Source.Width,
-                               Source.Height,
-                               Radius,
-                               Filter,
-                               SourceRect,
-                               AlphaCombineMode,
-                               TP.ThreadCount,
-                               Sbps,
-                               Tbps,
-                               Source.Scanline[0],
-                               Target.Scanline[0]);
+    RTS.PrepareResamplingThreads(NewWidth,
+                                 NewHeight,
+                                 Source.Width,
+                                 Source.Height,
+                                 Radius,
+                                 Filter,
+                                 SourceRect,
+                                 AlphaCombineMode,
+                                 TP.ThreadCount,
+                                 Sbps,
+                                 Tbps,
+                                 Source.Scanline[0],
+                                 Target.Scanline[0]);
 
-  for Index := 0 to RTS.ThreadCount - 1 do
-    TP.ResamplingThreads[Index].RunAnonProc(GetResamplingTask(RTS,
-                                                              Index,
-                                                              AlphaCombineMode));
+    for Index := 0 to RTS.ThreadCount - 1 do
+      TP.ResamplingThreads[Index].RunAnonProc(GetResamplingTask(RTS,
+                                                                Index,
+                                                                AlphaCombineMode));
 
-  for Index := 0 to RTS.ThreadCount - 1 do
-    TP.ResamplingThreads[Index].WaitForJob();
+    for Index := 0 to RTS.ThreadCount - 1 do
+      TP.ResamplingThreads[Index].WaitForJob();
 
-  if (AlphaCombineMode = amTransparentColor) then
-    TransferTransparency(Target, TransColor)
-  else if DoSetAlphaFormat then
-    begin
-    end;
+    if (AlphaCombineMode = amTransparentColor) then
+      TransferTransparency(Target,
+                           TransColor)
+    else if DoSetAlphaFormat then
+      begin
+      end;
   finally
     Target.EndUpdate();
     Source.EndUpdate();
@@ -484,7 +518,10 @@ var
   Tbps: Integer;
 
 begin
-  ValidateBitmapSize(NewWidth,NewHeight,Source);
+
+  ValidateBitmapSize(NewWidth,
+                     NewHeight,
+                     Source);
   if (Radius = 0) then
     Radius := DefaultRadius[Filter];
 
@@ -503,43 +540,47 @@ begin
   Target.BeginUpdate();
   try
 
-  MaxTasks := Max(Min(64,
-                      TThread.ProcessorCount),
-                      2);
+    MaxTasks := Max(Min(64,
+                        TThread.ProcessorCount),
+                    2);
 
-  Tbps := BitmapRowPitch(Target);
-  Sbps := BitmapRowPitch(Source);
+    Tbps := BitmapRowPitch(Target);
+    Sbps := BitmapRowPitch(Source);
 
-  RTS.PrepareResamplingThreads(NewWidth,
-                               NewHeight,
-                               Source.Width,
-                               Source.Height,
-                               Radius, Filter,
-                               SourceRect,
-                               AlphaCombineMode,
-                               MaxTasks,
-                               Sbps,
-                               Tbps,
-                               Source.Scanline[0],
-                               Target.Scanline[0]);
+    RTS.PrepareResamplingThreads(NewWidth,
+                                 NewHeight,
+                                 Source.Width,
+                                 Source.Height,
+                                 Radius,
+                                 Filter,
+                                 SourceRect,
+                                 AlphaCombineMode,
+                                 MaxTasks,
+                                 Sbps,
+                                 Tbps,
+                                 Source.Scanline[0],
+                                 Target.Scanline[0]);
 
-  TaskPool := Default(TResamplingThreadPool);
-  TaskPool.Initialize(RTS.ThreadCount,tpNormal);
-  try
-    for Index := 0 to RTS.ThreadCount - 1 do
-      TaskPool.ResamplingThreads[Index].RunAnonProc(GetResamplingTask(RTS,Index,AlphaCombineMode));
-    for Index := 0 to RTS.ThreadCount - 1 do
-      TaskPool.ResamplingThreads[Index].WaitForJob();
-  finally
-    TaskPool.Finalize();
-  end;
-
-  if (AlphaCombineMode = amTransparentColor) then
-    TransferTransparency(Target,
-                         TransColor)
-  else if DoSetAlphaFormat then
-    begin
+    TaskPool := Default(TResamplingThreadPool);
+    TaskPool.Initialize(RTS.ThreadCount,
+                        tpNormal);
+    try
+      for Index := 0 to RTS.ThreadCount - 1 do
+        TaskPool.ResamplingThreads[Index].RunAnonProc(GetResamplingTask(RTS,
+                                                                        Index,
+                                                                        AlphaCombineMode));
+      for Index := 0 to RTS.ThreadCount - 1 do
+        TaskPool.ResamplingThreads[Index].WaitForJob();
+    finally
+      TaskPool.Finalize();
     end;
+
+    if (AlphaCombineMode = amTransparentColor) then
+      TransferTransparency(Target,
+                           TransColor)
+    else if DoSetAlphaFormat then
+      begin
+      end;
   finally
     Target.EndUpdate();
     Source.EndUpdate();
@@ -570,7 +611,10 @@ var
   RTS: TResamplingThreadSetup;
 
 begin
-  ValidateBitmapSize(NewWidth,NewHeight,Source);
+
+  ValidateBitmapSize(NewWidth,
+                     NewHeight,
+                     Source);
   if (Radius = 0) then
     Radius := DefaultRadius[Filter];
 
@@ -581,7 +625,7 @@ begin
 
   if (AlphaCombineMode = amTransparentColor) then
     InitTransparency(Source,
-                    TransColor);
+                     TransColor);
 
   Target.SetSize(NewWidth,
                  NewHeight);
@@ -589,44 +633,44 @@ begin
   Target.BeginUpdate();
   try
 
-  OldWidth := Source.Width;
-  OldHeight := Source.Height;
+    OldWidth := Source.Width;
+    OldHeight := Source.Height;
 
-  Tbps := BitmapRowPitch(Target);
-  Sbps := BitmapRowPitch(Source);
+    Tbps := BitmapRowPitch(Target);
+    Sbps := BitmapRowPitch(Source);
 
-  rStart := Source.Scanline[0];
-  rTStart := Target.Scanline[0];
+    rStart := Source.Scanline[0];
+    rTStart := Target.Scanline[0];
 
-  RTS.PrepareResamplingThreads(NewWidth,
-                               NewHeight,
-                               OldWidth,
-                               OldHeight,
-                               Radius,
-                               Filter,
-                               SourceRect,
-                               AlphaCombineMode,
-                               1,
-                               Sbps,
-                               Tbps,
-                               rStart,
-                               rTStart);
+    RTS.PrepareResamplingThreads(NewWidth,
+                                 NewHeight,
+                                 OldWidth,
+                                 OldHeight,
+                                 Radius,
+                                 Filter,
+                                 SourceRect,
+                                 AlphaCombineMode,
+                                 1,
+                                 Sbps,
+                                 Tbps,
+                                 rStart,
+                                 rTStart);
 
-  CacheStart:= @RTS.CacheMatrix[0][0];
+    CacheStart := @RTS.CacheMatrix[0][0];
 
-  // Compute colors for each target row at y.
-  for y := 0 to NewHeight - 1 do
-    ProcessRow(y,
-               CacheStart,
-               RTS,
-               AlphaCombineMode);
+    // Compute colors for each target row at y.
+    for y := 0 to NewHeight - 1 do
+      ProcessRow(y,
+                 CacheStart,
+                 RTS,
+                 AlphaCombineMode);
 
-  if (AlphaCombineMode = amTransparentColor) then
-    TransferTransparency(Target,
-                         TransColor)
-  else if DoSetAlphaFormat then
-    begin
-    end;
+    if (AlphaCombineMode = amTransparentColor) then
+      TransferTransparency(Target,
+                           TransColor)
+    else if DoSetAlphaFormat then
+      begin
+      end;
   finally
     Target.EndUpdate();
     Source.EndUpdate();
@@ -647,6 +691,7 @@ var
   r: TFloatRect;
 
 begin
+
   r := FloatRect(0,
                  0,
                  Source.Width,
@@ -682,13 +727,13 @@ initialization
 
 finalization
 
-{$IFDEF O_MINUS}
+  {$IFDEF O_MINUS}
 {$O-}
 {$UNDEF O_MINUS}
-{$ENDIF}
-{$IFDEF Q_PLUS}
+  {$ENDIF}
+  {$IFDEF Q_PLUS}
 {$Q+}
 {$UNDEF Q_PLUS}
-{$ENDIF}
+  {$ENDIF}
 
 end.

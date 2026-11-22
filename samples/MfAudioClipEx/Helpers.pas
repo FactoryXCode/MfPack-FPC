@@ -70,7 +70,7 @@ interface
 
 uses
   MfSmallSamplesPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.ComBaseApi,
@@ -85,28 +85,31 @@ type
 
   // CriticalSection
   TMFCritSec = class
-    private
+
+  private
     { private fields }
-      FCriticalSection: TRTLCriticalSection;
-    public
+    FCriticalSection: TRTLCriticalSection;
+
+  public
     { public methods }
-      constructor Create();
-      destructor Destroy(); override;
-      procedure Lock();
-      procedure Unlock();
-   end;
+    constructor Create();
+    destructor Destroy(); override;
+    procedure Lock();
+    procedure Unlock();
+  end;
 
 
-  // Intitialize COM and MF
-  function InitMF(): HResult;
-  // Close COM and MF
-  function CloseMF(): HResult;
+// Intitialize COM and MF
+function InitMF(): HResult;
+// Close COM and MF
+function CloseMF(): HResult;
 
-  // If you don't want to use Forms Application.processMessages(), this is the alternative.
-  // Use function GetCurrentThread() from unit Windows.pas to assign it's value to hThread.
-  // Example: HandleMessages(GetCurrentThread(), value in milliseconds); or HandleMessages(GetCurrentThread());
-  // or Assign your own thread handle to it.
-  procedure HandleMessages(hThread: THandle; cWait: Cardinal = INFINITE);
+// If you don't want to use Forms Application.processMessages(), this is the alternative.
+// Use function GetCurrentThread() from unit Windows.pas to assign it's value to hThread.
+// Example: HandleMessages(GetCurrentThread(), value in milliseconds); or HandleMessages(GetCurrentThread());
+// or Assign your own thread handle to it.
+procedure HandleMessages(hThread: THandle;
+                         cWait: Cardinal = INFINITE);
 
 
 implementation
@@ -115,22 +118,33 @@ implementation
 // TMFCritSec //////////////////////////////////////////////////////////////////
 
 constructor TMFCritSec.Create();
+
 begin
+
   InitializeCriticalSection(FcriticalSection);
 end;
 
+
 destructor TMFCritSec.Destroy();
+
 begin
+
   DeleteCriticalSection(FcriticalSection);
 end;
 
+
 procedure TMFCritSec.Lock();
+
 begin
+
   EnterCriticalSection(FcriticalSection);
 end;
 
+
 procedure TMFCritSec.Unlock();
+
 begin
+
   LeaveCriticalSection(FcriticalSection);
 end;
 
@@ -149,10 +163,10 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(0,
-                 LPCWSTR('Your computer does not support this Media Foundation API version' +
-                         IntToStr(MF_VERSION) + '.'),
-                 LPCWSTR('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  LPCWSTR('Your computer does not support this Media Foundation API version' +
+        IntToStr(MF_VERSION) + '.'),
+                  LPCWSTR('MFStartup Failure!'),
+                  MB_ICONSTOP);
       Abort();
     end;
   Result := hr;
@@ -160,30 +174,34 @@ end;
 
 
 function CloseMF(): HResult;
+
 begin
+
   // Shutdown MF
   Result := MFShutdown();
 end;
 
 
-procedure HandleMessages(hThread: THandle; cWait: Cardinal = INFINITE);
+procedure HandleMessages(hThread: THandle;
+                         cWait: Cardinal = INFINITE);
 var
   Msg: TMsg;
+
 begin
 
   while (MsgWaitForMultipleObjects(1,
-                                   hThread,
-                                   False,
-                                   cWait,
-                                   QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
+      hThread,
+      False,
+      cWait,
+      QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
     begin
       PeekMessageW(Msg,
-                  0,
-                  0,
-                  0,
-                  PM_REMOVE);
+                   0,
+                   0,
+                   0,
+                   PM_REMOVE);
 
-      if Msg.Message = WM_QUIT then
+      if (Msg.Message = WM_QUIT) then
         Exit;
 
       TranslateMessage(Msg);

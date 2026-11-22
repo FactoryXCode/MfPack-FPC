@@ -64,12 +64,13 @@ unit frmMainMDI;
 
 interface
 
-uses Rdj.Dispatch,
-Rdj.Platform,
-LMessages,
+uses
+  Rdj.Dispatch,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinApiTypes,
   Messages,
@@ -155,7 +156,9 @@ type
   // DEBUG: See OnCloseQuery section. Best recommondation is using MadExcept to make things easier to find thread bugs.
   // TCustomFormAccess = class(TCustomForm);
 
-  TAudioEndpointNotificationClient = class(TInterfacedObject, IMMNotificationClient)
+  TAudioEndpointNotificationClient = class(TInterfacedObject,
+                                           IMMNotificationClient)
+
   private
 
     FWnd: HWND;
@@ -210,7 +213,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure FormResize(Sender: TObject);
     procedure tmrClockTimer(Sender: TObject);
     procedure btnExitClick(Sender: TObject);
@@ -218,8 +222,11 @@ type
     procedure btnSetupClick(Sender: TObject);
     procedure btnPlaylistClick(Sender: TObject);
     procedure btnMinimizeClick(Sender: TObject);
-    procedure pnlCaptionMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure pnlCaptionMouseDown(Sender: TObject;
+                                  Button: TMouseButton;
+                                  Shift: TShiftState;
+                                  X,
+                                  Y: Integer);
     procedure btnEffectsClick(Sender: TObject);
     procedure btnClearMemoClick(Sender: TObject);
     procedure btnFooterPnlClick(Sender: TObject);
@@ -230,7 +237,7 @@ type
 
   private
     FUiDispatch: TRdjDispatcher;
-    procedure ApplyRecovery(Event:TRdjEvent);
+    procedure ApplyRecovery(Event: TRdjEvent);
 
   private
 
@@ -257,8 +264,8 @@ type
     FCueOut: TMfWasApiRenderOutputEngine;
 
     FCueBufferLock: TRTLCriticalSection;
-    FCueMixQueue: TArray<Single>;
-    FCueWorkBuf: TArray<Single>;
+    FCueMixQueue: TArray < Single > ;
+    FCueWorkBuf: TArray < Single > ;
     FCueQueueFramesCapacity: Integer;
     FCueQueueReadFrame: Integer;
     FCueQueueWriteFrame: Integer;
@@ -425,7 +432,7 @@ type
                            pwfx: PWAVEFORMATEX;
                            out Flags: DWORD): HRESULT;
 
-   public
+  public
 
     FChannelDecks: array of TfrmChannelDeck;
 
@@ -454,28 +461,21 @@ type
     function CanGoOnAir(): Boolean;
     procedure RefreshMainButtonStates();
     procedure SetMediaServerButtonChecked(const AChecked: Boolean);
-    procedure SetHeosMasterGains(ALeft: Single; ARight: Single);
+    procedure SetHeosMasterGains(ALeft: Single;
+                                 ARight: Single);
 
     property BackgroundAudio: TRdjBackgroundAudio read FBackgroundAudio;
 
     property Caption;
 
-    property Setup: TRDJSetup
-      read FSetup;
-    property InternalMixer: TRDJInternalMixer
-      read FInternalMixer;
-    property RecorderTapPoint: string
-      read GetRecorderTapPoint;
-    property Master: TMasterDeckFrm
-      read FMasterDeck;
-    property jsonUpdate: TRDJRadioStatusJson
-      read FRDJRadioStatusJson;
-    property DjName: string
-      read FDjName;
-    property ShowName: string
-      read FShowName;
-    property CoverJpg: string
-      read FCoverFileName;
+    property Setup: TRDJSetup read FSetup;
+    property InternalMixer: TRDJInternalMixer read FInternalMixer;
+    property RecorderTapPoint: string read GetRecorderTapPoint;
+    property Master: TMasterDeckFrm read FMasterDeck;
+    property jsonUpdate: TRDJRadioStatusJson read FRDJRadioStatusJson;
+    property DjName: string read FDjName;
+    property ShowName: string read FShowName;
+    property CoverJpg: string read FCoverFileName;
   end;
 
 var
@@ -507,9 +507,10 @@ const
   RDJ_BROADCAST_IDENTITY_ACTIVITY_TITLE = 'ActivityTitle';
   RDJ_BROADCAST_IDENTITY_COVER_FILE = 'CoverFileName';
 
-// TAudioEndpointNotificationClient --------------------------------------------
+  // TAudioEndpointNotificationClient --------------------------------------------
 
 constructor TAudioEndpointNotificationClient.Create(const AWnd: HWND);
+
 begin
 
   inherited Create;
@@ -521,69 +522,75 @@ end;
 function TAudioEndpointNotificationClient.OnDefaultDeviceChanged(flow: EDataFlow;
                                                                  role: ERole;
                                                                  pwstrDefaultDeviceId: LPCWSTR): HResult;
+
 begin
 
   if (FWnd <> 0) then
     PostMessageW(FWnd,
-                WM_RDJ_ENDPOINTS_CHANGED,
-                0,
-                0);
+                 WM_RDJ_ENDPOINTS_CHANGED,
+                 0,
+                 0);
   Result := S_OK;
 end;
 
 
 function TAudioEndpointNotificationClient.OnDeviceAdded(pwstrDeviceId: LPCWSTR): HResult;
+
 begin
 
   if (FWnd <> 0) then
     PostMessageW(FWnd,
-                WM_RDJ_ENDPOINTS_CHANGED,
-                0,
-                0);
+                 WM_RDJ_ENDPOINTS_CHANGED,
+                 0,
+                 0);
   Result := S_OK;
 end;
 
 
 function TAudioEndpointNotificationClient.OnDeviceRemoved(pwstrDeviceId: LPCWSTR): HResult;
+
 begin
 
   if (FWnd <> 0) then
     PostMessageW(FWnd,
-                WM_RDJ_ENDPOINTS_CHANGED,
-                0,
-                0);
+                 WM_RDJ_ENDPOINTS_CHANGED,
+                 0,
+                 0);
   Result := S_OK;
 end;
 
 
 function TAudioEndpointNotificationClient.OnDeviceStateChanged(pwstrDeviceId: LPCWSTR;
                                                                dwNewState: DWORD): HResult;
+
 begin
 
   if (FWnd <> 0) then
     PostMessageW(FWnd,
-                WM_RDJ_ENDPOINTS_CHANGED,
-                0,
-                0);
+                 WM_RDJ_ENDPOINTS_CHANGED,
+                 0,
+                 0);
   Result := S_OK;
 end;
 
 
 function TAudioEndpointNotificationClient.OnPropertyValueChanged(pwstrDeviceId: LPCWSTR;
                                                                  const key: PROPERTYKEY): HResult;
+
 begin
 
   if (FWnd <> 0) then
     PostMessageW(FWnd,
-                WM_RDJ_ENDPOINTS_CHANGED,
-                0,
-                0);
+                 WM_RDJ_ENDPOINTS_CHANGED,
+                 0,
+                 0);
   Result := S_OK;
 end;
 
 // Endpoint & Deviceloss -------------------------------------------------------
 
 procedure TMainMDIFrm.SetupEndpointNotifications();
+
 begin
 
   if Assigned(FEndpointEnumerator) then
@@ -596,6 +603,7 @@ end;
 
 
 procedure TMainMDIFrm.TeardownEndpointNotifications();
+
 begin
 
   if Assigned(FEndpointEnumerator) and Assigned(FEndpointNotifyClient) then
@@ -643,7 +651,7 @@ begin
   RefreshEndpointAvailability();
 
   if (OldMasterAvailable <> FMasterEndpointAvailable) or
-     (OldPFLAvailable <> FPFLEndpointAvailable) then
+    (OldPFLAvailable <> FPFLEndpointAvailable) then
     HardRestartAudioGraph();
 end;
 
@@ -666,13 +674,13 @@ begin
       EventName := 'PBT_APMRESUMESUSPEND';
     RDJ_PBT_APMRESUMEAUTOMATIC:
       EventName := 'PBT_APMRESUMEAUTOMATIC';
-  else
-    EventName := 'PBT_' + IntToStr(EventCode);
+    else
+      EventName := 'PBT_' + IntToStr(EventCode);
   end;
 
   OutputDebugStringW(PChar(Format('RDJ Pro power event: %s (%d)',
-                                 [EventName,
-                                  EventCode])));
+                                  [EventName,
+    EventCode])));
 
   case EventCode of
     RDJ_PBT_APMRESUMECRITICAL,
@@ -690,6 +698,7 @@ end;
 
 
 function TMainMDIFrm.IsEndpointUsable(const ADeviceId: string): Boolean;
+
 begin
 
   Result := EndpointIdExists(ADeviceId);
@@ -697,6 +706,7 @@ end;
 
 
 function TMainMDIFrm.ResolveMasterEndpointAvailable(): Boolean;
+
 begin
 
   if (Trim(FSetup.MasterDeviceId) = '') then
@@ -707,6 +717,7 @@ end;
 
 
 function TMainMDIFrm.ResolvePFLEndpointAvailable(): Boolean;
+
 begin
 
   if not FSetup.PFLEnabled then
@@ -720,6 +731,7 @@ end;
 
 
 procedure TMainMDIFrm.RefreshEndpointAvailability();
+
 begin
 
   FMasterEndpointAvailable := ResolveMasterEndpointAvailable();
@@ -749,7 +761,9 @@ begin
 end;
 }
 
-procedure TMainMDIFrm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TMainMDIFrm.FormCloseQuery(Sender: TObject;
+                                     var CanClose: Boolean);
+
 begin
 
   RDJLog('Shutdown',
@@ -760,7 +774,7 @@ begin
 
   RDJLog('Shutdown',
          'Disabling main timer and restoring lid policy.');
-  tmrClock.Enabled:= False;
+  tmrClock.Enabled := False;
   if Assigned(FUiRefreshTimer) then
     FUiRefreshTimer.Enabled := False;
   RestoreLidClosePolicyOverride();
@@ -809,21 +823,21 @@ var
 begin
 
   NewState := ES_CONTINUOUS or
-              ES_SYSTEM_REQUIRED or
-              ES_AWAYMODE_REQUIRED;
+    ES_SYSTEM_REQUIRED or
+    ES_AWAYMODE_REQUIRED;
 
   PrevState := SetThreadExecutionState(NewState);
   if (PrevState <> 0) then
     begin
       OutputDebugStringW(PChar(Format(
         'RDJ Pro power request active: state=$%.8x previous=$%.8x',
-        [Cardinal(NewState),
-         Cardinal(PrevState)])));
+                                      [Cardinal(NewState),
+        Cardinal(PrevState)])));
       Exit;
     end;
 
   NewState := ES_CONTINUOUS or
-              ES_SYSTEM_REQUIRED;
+    ES_SYSTEM_REQUIRED;
 
   PrevState := SetThreadExecutionState(NewState);
   if (PrevState = 0) then
@@ -831,8 +845,8 @@ begin
   else
     OutputDebugStringW(PChar(Format(
       'RDJ Pro power request active without away mode: state=$%.8x previous=$%.8x',
-      [Cardinal(NewState),
-       Cardinal(PrevState)])));
+                                    [Cardinal(NewState),
+      Cardinal(PrevState)])));
 end;
 
 
@@ -857,7 +871,7 @@ begin
   if (Hr <> ERROR_SUCCESS) or (Scheme = nil) then
     begin
       OutputDebugStringW(PChar(Format('RDJ Pro lid close override failed: PowerGetActiveScheme error=%d',
-                                     [Hr])));
+                                      [Hr])));
       WarnLidCloseOverrideFailedOnce(Format('PowerGetActiveScheme failed: %d',
                                             [Hr]));
       Exit;
@@ -872,7 +886,7 @@ begin
     begin
       LocalFree(HLOCAL(Scheme));
       OutputDebugStringW(PChar(Format('RDJ Pro lid close override failed: PowerReadACValueIndex error=%d',
-                                     [Hr])));
+                                      [Hr])));
       WarnLidCloseOverrideFailedOnce(Format('PowerReadACValueIndex failed: %d',
                                             [Hr]));
       Exit;
@@ -887,7 +901,7 @@ begin
     begin
       LocalFree(HLOCAL(Scheme));
       OutputDebugStringW(PChar(Format('RDJ Pro lid close override failed: PowerReadDCValueIndex error=%d',
-                                     [hr])));
+                                      [hr])));
       WarnLidCloseOverrideFailedOnce(Format('PowerReadDCValueIndex failed: %d',
                                             [hr]));
       Exit;
@@ -902,7 +916,7 @@ begin
     begin
       LocalFree(HLOCAL(Scheme));
       OutputDebugStringW(PChar(Format('RDJ Pro lid close override failed: PowerWriteACValueIndex error=%d',
-                                     [Hr])));
+                                      [Hr])));
       WarnLidCloseOverrideFailedOnce(Format('PowerWriteACValueIndex failed: %d',
                                             [Hr]));
       Exit;
@@ -917,7 +931,7 @@ begin
     begin
       LocalFree(HLOCAL(Scheme));
       OutputDebugStringW(PChar(Format('RDJ Pro lid close override failed: PowerWriteDCValueIndex error=%d',
-                                     [Hr])));
+                                      [Hr])));
       WarnLidCloseOverrideFailedOnce(Format('PowerWriteDCValueIndex failed: %d',
                                             [Hr]));
       Exit;
@@ -929,7 +943,7 @@ begin
     begin
       LocalFree(HLOCAL(Scheme));
       OutputDebugStringW(PChar(Format('RDJ Pro lid close override failed: PowerSetActiveScheme error=%d',
-                                     [Hr])));
+                                      [Hr])));
       WarnLidCloseOverrideFailedOnce(Format('PowerSetActiveScheme failed: %d',
                                             [Hr]));
       Exit;
@@ -941,11 +955,12 @@ begin
   FLidPolicyOverrideActive := True;
 
   OutputDebugStringW(PChar(Format('RDJ Pro lid close override active: originalAC=%d originalDC=%d newAction=%d',
-                                 [AcValue, DcValue, RDJ_POWER_ACTION_DO_NOTHING])));
+                                  [AcValue, DcValue, RDJ_POWER_ACTION_DO_NOTHING])));
 end;
 
 
 procedure TMainMDIFrm.WarnLidCloseOverrideFailedOnce(const AReason: string);
+
 begin
 
   if FLidPolicyWarningShown then
@@ -954,9 +969,9 @@ begin
   FLidPolicyWarningShown := True;
 
   MessageDlg('RDJ Pro could not override the Windows lid-close power setting.' + sLineBreak +
-             'If the laptop lid is closed, Windows may still sleep, hibernate, or shut down.' + sLineBreak +
-             sLineBreak +
-             AReason,
+    'If the laptop lid is closed, Windows may still sleep, hibernate, or shut down.' + sLineBreak +
+    sLineBreak +
+    AReason,
              mtWarning,
              [mbOK],
              0);
@@ -997,11 +1012,11 @@ begin
 
   OutputDebugStringW(PChar(Format(
     'RDJ Pro lid close override restore: ac=%d dc=%d apply=%d originalAC=%d originalDC=%d',
-    [HrAc,
-     HrDc,
-     HrApply,
-     FOriginalLidActionAc,
-     FOriginalLidActionDc])));
+                                  [HrAc,
+    HrDc,
+    HrApply,
+    FOriginalLidActionAc,
+    FOriginalLidActionDc])));
 
   LocalFree(HLOCAL(FPowerPolicyScheme));
   FPowerPolicyScheme := nil;
@@ -1010,6 +1025,7 @@ end;
 
 
 procedure TMainMDIFrm.AttachAudioOutputHandlers(const AOutput: TMfWasApiRenderOutputEngine);
+
 begin
 
   if Assigned(AOutput) then
@@ -1018,24 +1034,25 @@ end;
 
 
 procedure TMainMDIFrm.AudioRenderError(Sender: TObject;
-                                      const Hr: HRESULT;
-                                      const Msg: string);
+                                       const Hr: HRESULT;
+                                       const Msg: string);
+
 begin
 
   OutputDebugStringW(PChar(Format(
     'RDJ Pro audio render error: hr=0x%.8x msg=%s',
-    [Cardinal(Hr),
-     Msg])));
+                                  [Cardinal(Hr),
+    Msg])));
 
   QueueAudioGraphRecovery(Format('render error hr=0x%.8x %s',
                                  [Cardinal(Hr),
-                                  Msg]),
+    Msg]),
                           1500);
 end;
 
 
 procedure TMainMDIFrm.QueueAudioGraphRecovery(const AReason: string;
-                                             const ADelayMs: Cardinal);
+                                              const ADelayMs: Cardinal);
 var
   Reason: string;
 
@@ -1048,12 +1065,19 @@ begin
   if (Reason = '') then
     Reason := 'audio graph recovery requested';
 
-  if InterlockedCompareExchange(FAudioGraphRecoveryQueued,
-                                  1,
-                                  0) <> 0 then
+  if (InterlockedCompareExchange(FAudioGraphRecoveryQueued,
+    1,
+    0) <> 0) then
     Exit;
 
-  FUiDispatch.Post(ApplyRecovery,0,ADelayMs,0,0,0,0,Reason);
+  FUiDispatch.Post(ApplyRecovery,
+                   0,
+                   ADelayMs,
+                   0,
+                   0,
+                   0,
+                   0,
+                   Reason);
 end;
 
 
@@ -1068,12 +1092,12 @@ begin
     Exit;
 
   if FAppClosing or
-     (not FUiInitialized) then
+    (not FUiInitialized) then
     Exit;
 
   NowTick := GetTickCount64();
   if (FAudioGraphRecoveryDueTick = 0) or
-     (NowTick < FAudioGraphRecoveryDueTick) then
+    (NowTick < FAudioGraphRecoveryDueTick) then
     Exit;
 
   Reason := FAudioGraphRecoveryReason;
@@ -1091,7 +1115,7 @@ begin
     FAudioGraphRecoveryReason := '';
     FAudioGraphRecoveryDueTick := 0;
     InterlockedExchange(FAudioGraphRecoveryQueued,
-                          0);
+                        0);
   except
 
     on E: Exception do
@@ -1099,15 +1123,17 @@ begin
 
         FAudioGraphRecoveryDueTick := NowTick + 5000;
         OutputDebugStringW(PChar('RDJ Pro audio graph recovery failed, retrying: ' +
-                                E.ClassName + ': ' + E.Message));
+          E.ClassName + ': ' + E.Message));
       end;
   end;
 end;
 
 
 procedure TMainMDIFrm.FormCreate(Sender: TObject);
+
 begin
- FUiDispatch:=TRdjDispatcher.Create;
+
+  FUiDispatch := TRdjDispatcher.Create;
   InitializeCriticalSection(FCueBufferLock);
 
   RDJLog('Lifecycle',
@@ -1121,7 +1147,8 @@ begin
   FUiRefreshTimer.OnTimer := tmrClockTimer;
 
   FHeosOutput := TRdjHeosOutput.Create();
-  FBackgroundAudio := TRdjBackgroundAudio.Create(ChangeFileExt(UnicodeString(Application.ExeName), '.ini'));
+  FBackgroundAudio := TRdjBackgroundAudio.Create(ChangeFileExt(UnicodeString(Application.ExeName),
+                                                               '.ini'));
   FAudioGraphRecoveryQueued := 0;
   FAudioGraphRecoveryDueTick := 0;
   FAudioGraphRecoveryReason := '';
@@ -1233,7 +1260,7 @@ begin
   DeleteCriticalSection(FCueBufferLock);
   RDJLog('Shutdown',
          'Main form destruction: complete.');
- FreeAndNil(FUiDispatch);
+  FreeAndNil(FUiDispatch);
 end;
 
 
@@ -1242,6 +1269,7 @@ end;
 // - Optional fullscreen toggle (F11)
 // - Horizontal scrollbar to scroll a virtual strip of MDI child decks.
 procedure TMainMDIFrm.ConstructEngine();
+
 begin
 
   KeyPreview := True;
@@ -1289,6 +1317,7 @@ end;
 
 
 procedure TMainMDIFrm.FormResize(Sender: TObject);
+
 begin
 
   if FAppClosing then
@@ -1335,15 +1364,15 @@ begin
   MissingFolders := '';
 
   if FileExists(FSetupFileName) and
-     SetupFoldersExist(MissingFolders) then
+    SetupFoldersExist(MissingFolders) then
     ApplySetupOnce()
   else
     begin
       if (MissingFolders <> '') then
         MessageDlg('One or more folders stored in the setup file are no longer available:' +
-                   sLineBreak + sLineBreak +
-                   MissingFolders + sLineBreak +
-                   'Please select valid folders in Setup.',
+          sLineBreak + sLineBreak +
+          MissingFolders + sLineBreak +
+          'Please select valid folders in Setup.',
                    mtWarning,
                    [mbOK],
                    0);
@@ -1365,7 +1394,7 @@ begin
       ClearAudioEndpointSetup();
 
       MessageDlg('The stored master audio endpoint is no longer valid or cannot be opened.' + sLineBreak +
-                 'The audio endpoint settings have been reset. Please select valid devices in Setup.',
+        'The audio endpoint settings have been reset. Please select valid devices in Setup.',
                  mtWarning,
                  [mbOK],
                  0);
@@ -1392,7 +1421,7 @@ begin
 
           if FSetup.PFLEnabled and (Trim(FSetup.PFLDeviceId) <> '') then
             MessageDlg('The stored cue/PFL audio endpoint is currently unavailable or cannot be opened.' + sLineBreak +
-                       'Cue stays disabled for this run, but the stored cue device setting is preserved.',
+              'Cue stays disabled for this run, but the stored cue device setting is preserved.',
                        mtWarning,
                        [mbOK],
                        0);
@@ -1400,8 +1429,8 @@ begin
     end;
 
   if Assigned(FCueOut) and
-     (FMasterOut.BufferFrameCount > 0) and
-     (FCueOut.BufferFrameCount > 0) then
+    (FMasterOut.BufferFrameCount > 0) and
+    (FCueOut.BufferFrameCount > 0) then
     InitCueQueue(Max(Integer(FMasterOut.BufferFrameCount),
                      Integer(FCueOut.BufferFrameCount)))
   else
@@ -1449,15 +1478,16 @@ function TMainMDIFrm.SetupFoldersExist(out AMissingFolders: string): Boolean;
 var
   Missing: TStringList;
 
+
   procedure CheckFolder(const ASettingName,
-                              AFolderName: string);
+                        AFolderName: string);
   var
     FolderName: string;
 
   begin
 
     FolderName := Trim(AFolderName);
-    if FolderName = '' then
+    if (FolderName = '') then
       Exit;
 
     try
@@ -1474,13 +1504,13 @@ var
 
 
   procedure CheckFileFolder(const ASettingName,
-                                  AFileName: string);
+                            AFileName: string);
   var
     FolderName: string;
 
   begin
 
-    if Trim(AFileName) = '' then
+    if (Trim(AFileName) = '') then
       Exit;
 
     FolderName := ExtractFileDir(Trim(AFileName));
@@ -1513,7 +1543,7 @@ begin
                 FSetup.CaddyVideoPath);
 
     AMissingFolders := Missing.Text;
-    Result := Missing.Count = 0;
+    Result := (Missing.Count = 0);
 
   finally
 
@@ -1523,6 +1553,7 @@ end;
 
 
 procedure TMainMDIFrm.OpenSetupGUI();
+
 begin
 
   if TfrmSetup.Execute(FSetup) then
@@ -1541,14 +1572,16 @@ end;
 
 // Media Server
 function TMainMDIFrm.IsMediaServerBroadcasting(): Boolean;
+
 begin
 
   Result := Assigned(FMediaServer) and
-            FMediaServer.IsBroadcasting();
+    FMediaServer.IsBroadcasting();
 end;
 
 
 procedure TMainMDIFrm.SetMediaServerButtonChecked(const AChecked: Boolean);
+
 begin
 
   chkMediaServer.Checked := AChecked;
@@ -1561,6 +1594,7 @@ procedure TMainMDIFrm.RefreshMainButtonStates();
 var
   MediaServerShown: Boolean;
   Broadcasting: Boolean;
+
 begin
 
   Broadcasting := IsMediaServerBroadcasting();
@@ -1569,14 +1603,15 @@ begin
     btnSetup.Checked := False;
 
   MediaServerShown := Assigned(FMediaServer) and
-                      FMediaServer.Visible and
-                      (FMediaServer.WindowState <> wsMinimized);
+    FMediaServer.Visible and
+    (FMediaServer.WindowState <> wsMinimized);
   SetMediaServerButtonChecked(MediaServerShown);
   chkHeosRemote.Checked := Assigned(FHeosForm) and FHeosForm.Visible;
 end;
 
 
 procedure TMainMDIFrm.OpenMediaServerGUI();
+
 begin
 
   if not assigned(FMediaServer) then
@@ -1593,8 +1628,11 @@ end;
 
 
 // Drag form
-procedure TMainMDIFrm.pnlCaptionMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TMainMDIFrm.pnlCaptionMouseDown(Sender: TObject;
+                                          Button: TMouseButton;
+                                          Shift: TShiftState;
+                                          X,
+                                          Y: Integer);
 const
   SC_DRAGMOVE = $F012;
 
@@ -1630,6 +1668,7 @@ end;
 
 // FX factory.
 function TMainMDIFrm.CreateFxByKind(const AFxKind: TRDJFxKind): TMfWasApiFxComponentBase;
+
 begin
 
   case AFxKind of
@@ -1638,8 +1677,8 @@ begin
 
     fxkCompressorLimiter:
       Result := TMfCompressorLimiterEffect.Create(nil);
-  else
-    Result := nil;
+    else
+      Result := nil;
   end;
 end;
 
@@ -1652,8 +1691,7 @@ var
 
 begin
 
-  if (AEffect = nil) or
-     not Assigned(FMasterFXRack) then
+  if (AEffect = nil) or not Assigned(FMasterFXRack) then
     Exit;
 
   i := Length(FMasterFxObjects);
@@ -1732,11 +1770,12 @@ end;
 procedure TMainMDIFrm.ProcessMasterFx(const pData: PSingle;
                                       const Frames: Integer;
                                       const ASampleRate: Integer);
+
 begin
 
   if (pData = nil) or
-     (Frames <= 0) or
-     (ASampleRate <= 0) then
+    (Frames <= 0) or
+    (ASampleRate <= 0) then
     Exit;
 
   if Assigned(FMasterFXRack) then
@@ -1762,9 +1801,9 @@ begin
     Exit;
 
   if ((Length(Result) >= 2) and (Result[2] = ':')) or
-     (Copy(Result,
-           1,
-           2) = '\\') then
+    (Copy(Result,
+          1,
+          2) = '\\') then
     Exit;
 
   BaseDir := Trim(FSetup.CaddyDir);
@@ -1805,12 +1844,12 @@ begin
 
       if (FListenerScan.ElapsedMs >= 100) then
         RDJLog('UI refresh',
-                 Format('Listener scan took %d ms on its background worker.',
-                          [FListenerScan.ElapsedMs]));
+               Format('Listener scan took %d ms on its background worker.',
+                      [FListenerScan.ElapsedMs]));
 
       if (FListenerScan.ErrorText <> '') then
         RDJLog('Listener scan',
-                 FListenerScan.ErrorText);
+               FListenerScan.ErrorText);
 
       FreeAndNil(FListenerScan);
 
@@ -1821,18 +1860,18 @@ begin
 
           if AForceJsonUpdate and (NewCount <> OldCount) then
             WriteNowPlayingStatus(FDjName,
-                                    FShowName,
-                                    FNowPlayingArtist,
-                                    FNowPlayingTitle,
-                                    BuildCoverJsonUrl(True),
-                                    FCaddyListenerCount);
+                                  FShowName,
+                                  FNowPlayingArtist,
+                                  FNowPlayingTitle,
+                                  BuildCoverJsonUrl(True),
+                                  FCaddyListenerCount);
         end;
     end;
 
   NowTick := GetTickCount64();
 
   if (FLastCaddyListenerRefreshTick <> 0) and
-     (NowTick - FLastCaddyListenerRefreshTick < RDJ_CADDY_LISTENER_REFRESH_MS) then
+    (NowTick - FLastCaddyListenerRefreshTick < RDJ_CADDY_LISTENER_REFRESH_MS) then
     Exit;
 
   FLastCaddyListenerRefreshTick := NowTick;
@@ -1846,6 +1885,7 @@ end;
 
 
 function EncodeBroadcastIdentityText(const AValue: string): string;
+
 begin
 
   Result := StringReplace(AValue,
@@ -1875,11 +1915,11 @@ begin
 
   Result := '';
   i := 1;
-  while i <= Length(AValue) do
+  while (i <= Length(AValue)) do
     begin
 
       if (AValue[i] = '\') and
-         (i < Length(AValue)) then
+        (i < Length(AValue)) then
         begin
           Inc(i);
 
@@ -1888,8 +1928,8 @@ begin
               Result := Result + sLineBreak;
             '\':
               Result := Result + '\';
-          else
-            Result := Result + '\' + AValue[i];
+            else
+              Result := Result + '\' + AValue[i];
           end;
         end
       else
@@ -1911,14 +1951,14 @@ begin
   FShowName := Trim(mmoShow.Text);
 
   if (Trim(FSetupFileName) = '') or
-     (not FileExists(FSetupFileName)) then
+    (not FileExists(FSetupFileName)) then
     Exit;
 
   IniFile := TIniFile.Create(FSetupFileName);
   try
 
     if IniFile.ValueExists(RDJ_BROADCAST_IDENTITY_SECTION,
-                           RDJ_BROADCAST_IDENTITY_DJ_NAME) then
+      RDJ_BROADCAST_IDENTITY_DJ_NAME) then
       begin
         Value := IniFile.ReadString(RDJ_BROADCAST_IDENTITY_SECTION,
                                     RDJ_BROADCAST_IDENTITY_DJ_NAME,
@@ -1928,7 +1968,7 @@ begin
       end;
 
     if IniFile.ValueExists(RDJ_BROADCAST_IDENTITY_SECTION,
-                           RDJ_BROADCAST_IDENTITY_SHOW_NAME) then
+      RDJ_BROADCAST_IDENTITY_SHOW_NAME) then
       begin
         Value := IniFile.ReadString(RDJ_BROADCAST_IDENTITY_SECTION,
                                     RDJ_BROADCAST_IDENTITY_SHOW_NAME,
@@ -1938,7 +1978,7 @@ begin
       end;
 
     if IniFile.ValueExists(RDJ_BROADCAST_IDENTITY_SECTION,
-                           RDJ_BROADCAST_IDENTITY_EVENT_TITLE) then
+      RDJ_BROADCAST_IDENTITY_EVENT_TITLE) then
       begin
         Value := IniFile.ReadString(RDJ_BROADCAST_IDENTITY_SECTION,
                                     RDJ_BROADCAST_IDENTITY_EVENT_TITLE,
@@ -1947,7 +1987,7 @@ begin
       end;
 
     if IniFile.ValueExists(RDJ_BROADCAST_IDENTITY_SECTION,
-                           RDJ_BROADCAST_IDENTITY_ACTIVITY_TITLE) then
+      RDJ_BROADCAST_IDENTITY_ACTIVITY_TITLE) then
       begin
         Value := IniFile.ReadString(RDJ_BROADCAST_IDENTITY_SECTION,
                                     RDJ_BROADCAST_IDENTITY_ACTIVITY_TITLE,
@@ -1971,7 +2011,7 @@ begin
                 begin
 
                   OutputDebugStringW(PChar('RDJ Pro could not load stored show logo: ' +
-                                          E.ClassName + ': ' + E.Message));
+                    E.ClassName + ': ' + E.Message));
                   FCoverFileName := '';
                 end;
             end;
@@ -1992,7 +2032,7 @@ var
 
 begin
 
-  if Trim(FSetupFileName) = '' then
+  if (Trim(FSetupFileName) = '') then
     Exit;
 
   FDjName := Trim(mmoDjName.Text);
@@ -2010,11 +2050,11 @@ begin
     IniFile.WriteString(RDJ_BROADCAST_IDENTITY_SECTION,
                         RDJ_BROADCAST_IDENTITY_EVENT_TITLE,
                         EncodeBroadcastIdentityText(
-                          NormalizeNowPlayingMemoText(mmoEventTitle)));
+      NormalizeNowPlayingMemoText(mmoEventTitle)));
     IniFile.WriteString(RDJ_BROADCAST_IDENTITY_SECTION,
                         RDJ_BROADCAST_IDENTITY_ACTIVITY_TITLE,
                         EncodeBroadcastIdentityText(
-                          NormalizeNowPlayingMemoText(mmoActivityTitle)));
+      NormalizeNowPlayingMemoText(mmoActivityTitle)));
     IniFile.WriteString(RDJ_BROADCAST_IDENTITY_SECTION,
                         RDJ_BROADCAST_IDENTITY_COVER_FILE,
                         Trim(FCoverFileName));
@@ -2023,6 +2063,8 @@ begin
     IniFile.Free;
   end;
 end;
+
+
 function TMainMDIFrm.BuildCoverJsonUrl(const APreferCurrent: Boolean): string;
 var
   BaseUrl: string;
@@ -2031,6 +2073,7 @@ var
   ArtworkRelPath: string;
   FilePart: string;
   QPos: Integer;
+
 
   function NormalizeUrlDirectory(const APath: string): string;
   begin
@@ -2041,7 +2084,7 @@ var
                             [rfReplaceAll]);
 
     while (Result <> '') and
-          (Result[Length(Result)] = '/') do
+      (Result[Length(Result)] = '/') do
       Delete(Result,
              Length(Result),
              1);
@@ -2049,6 +2092,7 @@ var
     if (Result <> '') then
       Result := Result + '/';
   end;
+
 
   function LastUrlDirectoryName(const APath: string): string;
   var
@@ -2058,7 +2102,7 @@ var
   begin
 
     PathValue := NormalizeUrlDirectory(APath);
-    if PathValue = '' then
+    if (PathValue = '') then
       Exit('');
 
     Delete(PathValue,
@@ -2067,7 +2111,7 @@ var
 
     DelimiterPos := LastDelimiter('/',
                                   PathValue);
-    if DelimiterPos > 0 then
+    if (DelimiterPos > 0) then
       Result := Copy(PathValue,
                      DelimiterPos + 1,
                      MaxInt)
@@ -2082,7 +2126,7 @@ begin
   if (BaseUrl = '') then
     begin
       if APreferCurrent and
-         FileExists(IncludeTrailingPathDelimiter(Setup.CaddyArtworkPath) + COVER_IMAGE_FILE_NAME) then
+        FileExists(IncludeTrailingPathDelimiter(Setup.CaddyArtworkPath) + COVER_IMAGE_FILE_NAME) then
         BaseUrl := COVER_IMAGE_FILE_NAME
       else
         BaseUrl := COVER_DEFAULT_IMAGE_FILE_NAME;
@@ -2091,25 +2135,24 @@ begin
   // Keep the URL browser-safe. Never write local or UNC file paths to JSON.
   BaseUrl := StringReplace(BaseUrl,
                            '\',
-                            '/',
-                            [rfReplaceAll]);
+                           '/',
+                           [rfReplaceAll]);
 
   CaddyPath := NormalizeUrlDirectory(Setup.CaddyDir);
   ArtworkPath := NormalizeUrlDirectory(Setup.CaddyArtworkPath);
 
   ArtworkRelPath := '';
   if (CaddyPath <> '') and
-     (ArtworkPath <> '') and
-     SameText(Copy(ArtworkPath,
-                   1,
-                   Length(CaddyPath)),
-                   CaddyPath) then
-     ArtworkRelPath := Copy(ArtworkPath,
-                            Length(CaddyPath) + 1,
-                            MaxInt)
-  else
-    if (ArtworkPath <> '') then
-      ArtworkRelPath := LastUrlDirectoryName(ArtworkPath);
+    (ArtworkPath <> '') and
+    SameText(Copy(ArtworkPath,
+                  1,
+                  Length(CaddyPath)),
+             CaddyPath) then
+    ArtworkRelPath := Copy(ArtworkPath,
+                           Length(CaddyPath) + 1,
+                           MaxInt)
+  else if (ArtworkPath <> '') then
+    ArtworkRelPath := LastUrlDirectoryName(ArtworkPath);
 
   ArtworkRelPath := StringReplace(ArtworkRelPath,
                                   '\',
@@ -2118,26 +2161,28 @@ begin
   ArtworkRelPath := Trim(ArtworkRelPath);
 
   if (ArtworkRelPath <> '') and
-     (ArtworkRelPath[Length(ArtworkRelPath)] <> '/') then
+    (ArtworkRelPath[Length(ArtworkRelPath)] <> '/') then
     ArtworkRelPath := ArtworkRelPath + '/';
 
   FilePart := ExtractFileName(BaseUrl);
 
   if SameText(FilePart, COVER_IMAGE_FILE_NAME) or
-     (Pos(COVER_IMAGE_FILE_NAME + '?', LowerCase(BaseUrl)) > 0) then
+    (Pos(COVER_IMAGE_FILE_NAME + '?',
+         LowerCase(BaseUrl)) > 0) then
     BaseUrl := ArtworkRelPath + COVER_IMAGE_FILE_NAME
+  else if SameText(FilePart, COVER_DEFAULT_IMAGE_FILE_NAME) or
+    (Pos(COVER_DEFAULT_IMAGE_FILE_NAME + '?',
+         LowerCase(BaseUrl)) > 0) then
+    BaseUrl := ArtworkRelPath + COVER_DEFAULT_IMAGE_FILE_NAME
   else
-    if SameText(FilePart, COVER_DEFAULT_IMAGE_FILE_NAME) or
-       (Pos(COVER_DEFAULT_IMAGE_FILE_NAME + '?', LowerCase(BaseUrl)) > 0) then
-      BaseUrl := ArtworkRelPath + COVER_DEFAULT_IMAGE_FILE_NAME
-    else
-      begin
-        QPos := Pos('?', BaseUrl);
-        if (QPos > 0) then
-          BaseUrl := Copy(BaseUrl,
-                          1,
-                          QPos - 1);
-      end;
+    begin
+      QPos := Pos('?',
+                  BaseUrl);
+      if (QPos > 0) then
+        BaseUrl := Copy(BaseUrl,
+                        1,
+                        QPos - 1);
+    end;
 
   Result := BaseUrl {+ '?ts=' + IntToStr(GetTickCount)};  // Do not add tickcount, that will be done in TRDJRadioStatusJson.WriteRadioStatusJson
 end;
@@ -2149,25 +2194,25 @@ var
   ActiveCover: UnicodeString;
   PublicCover: UnicodeString;
 
+
   procedure CopyCoverFile(const ASource,
-                                ADestination: UnicodeString);
+                          ADestination: UnicodeString);
   begin
 
     if SameText(ExpandFileName(ASource),
-                ExpandFileName(ADestination)) then
+      ExpandFileName(ADestination)) then
       Exit;
 
     if not CopyFileW(PChar(ASource),
-                    PChar(ADestination),
-                    False) then
+      PChar(ADestination),
+      False) then
       RaiseLastOSError;
   end;
 
 begin
 
   SourceCover := Trim(FCoverFileName);
-  if (SourceCover = '') or
-     not FileExists(SourceCover) then
+  if (SourceCover = '') or not FileExists(SourceCover) then
     Exit;
 
   if not DirectoryExists(Setup.CaddyArtworkPath) then
@@ -2184,7 +2229,7 @@ begin
 
       PublicCover := IncludeTrailingPathDelimiter(Setup.CaddyDir) + COVER_IMAGE_FILE_NAME;
       if not SameText(ExpandFileName(ActiveCover),
-                      ExpandFileName(PublicCover)) then
+        ExpandFileName(PublicCover)) then
         CopyCoverFile(SourceCover,
                       PublicCover);
     end;
@@ -2217,7 +2262,7 @@ begin
 
   JsonDirectory := ExtractFileDir(JsonFile);
   if (JsonDirectory <> '') and
-     (not DirectoryExists(JsonDirectory)) then
+    (not DirectoryExists(JsonDirectory)) then
     Exit;
 
   ListenerCount := AListeners;
@@ -2246,12 +2291,13 @@ begin
 
     on E: Exception do
       OutputDebugStringW(PChar('RDJ Pro could not write now-playing status: ' +
-                              E.ClassName + ': ' + E.Message));
+        E.ClassName + ': ' + E.Message));
   end;
 end;
 
 
 function TMainMDIFrm.NormalizeNowPlayingMemoText(AMemo: TMemo): string;
+
 begin
 
   Result := '';
@@ -2260,13 +2306,14 @@ begin
 
   Result := Trim(AMemo.Text);
   if SameText(Result,
-              'none') then
+    'none') then
     Result := '';
 end;
 
 
 procedure TMainMDIFrm.ApplyLoopbackNowPlayingFallback(var AArtist: string;
-                                                       var ATitle: string);
+                                                      var ATitle: string);
+
 begin
 
   AArtist := Trim(AArtist);
@@ -2312,7 +2359,7 @@ begin
                         BuildCoverJsonUrl(True),
                         FCaddyListenerCount,
                         (FNowPlayingArtist = '') and
-                        (FNowPlayingTitle = ''));
+    (FNowPlayingTitle = ''));
 end;
 
 
@@ -2353,8 +2400,7 @@ begin
                                   Title);
 
   if (Artist = '') and
-     (Title = '') and
-     not HasActiveLoopbackDeck() then
+    (Title = '') and not HasActiveLoopbackDeck() then
     Exit;
 
   FDjName := Trim(mmoDjName.Text);
@@ -2362,8 +2408,8 @@ begin
   FNowPlayingArtist := Artist;
   FNowPlayingTitle := Title;
   FNowPlayingFromChannelDeck := not HasActiveLoopbackDeck() and
-                                ((Trim(AArtist) <> '') or
-                                 (Trim(ATitle) <> ''));
+    ((Trim(AArtist) <> '') or
+    (Trim(ATitle) <> ''));
 
   WriteNowPlayingStatus(FDjName,
                         FShowName,
@@ -2372,9 +2418,10 @@ begin
                         BuildCoverJsonUrl(True),
                         FCaddyListenerCount,
                         HasActiveLoopbackDeck() and
-                        (FNowPlayingArtist = '') and
-                        (FNowPlayingTitle = ''));
+    (FNowPlayingArtist = '') and
+    (FNowPlayingTitle = ''));
 end;
+
 
 function TMainMDIFrm.CanGoOnAir(): Boolean;
 var
@@ -2386,29 +2433,29 @@ begin
   Result := True;
 
   try
-  Json := FRDJRadioStatusJson.LoadNowPlayingJson(FSetup.CaddyNowPlayingJsonFile);
+    Json := FRDJRadioStatusJson.LoadNowPlayingJson(FSetup.CaddyNowPlayingJsonFile);
 
-  try
+    try
 
-    if Assigned(Json) then
-      begin
-        CurrentDj := '';
+      if Assigned(Json) then
+        begin
+          CurrentDj := '';
 
-        if (Json.GetValue('onAirLock') <> nil) then
-          CurrentDj := Json.GetValue('onAirLock').Value;
+          if (Json.GetValue('onAirLock') <> nil) then
+            CurrentDj := Json.GetValue('onAirLock').Value;
 
-        if (CurrentDj <> '') and
-           (not SameText(CurrentDj,
-                         Trim(mmoDjName.Text))) then
-          begin
-            Result := False;
-            ShowMessage('On Air is currently locked by ' + CurrentDj);
-          end;
-      end;
-  finally
+          if (CurrentDj <> '') and
+            (not SameText(CurrentDj,
+                          Trim(mmoDjName.Text))) then
+            begin
+              Result := False;
+              ShowMessage('On Air is currently locked by ' + CurrentDj);
+            end;
+        end;
+    finally
 
-    Json.Free;
-  end;
+      Json.Free;
+    end;
 
   except
 
@@ -2418,6 +2465,7 @@ end;
 
 
 procedure TMainMDIFrm.chkHeosRemoteClick(Sender: TObject);
+
 begin
 
   if chkHeosRemote.Checked then
@@ -2433,31 +2481,36 @@ begin
       FHeosForm.WindowState := wsNormal;
       FHeosForm.BringToFront;
     end
-  else
-    if Assigned(FHeosForm) then
-      FHeosForm.Hide;
+  else if Assigned(FHeosForm) then
+    FHeosForm.Hide;
 end;
 
 
 procedure TMainMDIFrm.HeosVisibilityChanged(Sender: TObject);
+
 begin
 
   chkHeosRemote.Checked := Assigned(FHeosForm) and FHeosForm.Visible;
 end;
 
 
-procedure TMainMDIFrm.SetHeosMasterGains(ALeft: Single; ARight: Single);
+procedure TMainMDIFrm.SetHeosMasterGains(ALeft: Single;
+                                         ARight: Single);
+
 begin
 
   if Assigned(FHeosOutput) then
-    FHeosOutput.SetMasterGains(ALeft, ARight);
+    FHeosOutput.SetMasterGains(ALeft,
+                               ARight);
 
   if Assigned(FBackgroundAudio) then
-    FBackgroundAudio.SetMasterGains(ALeft, ARight);
+    FBackgroundAudio.SetMasterGains(ALeft,
+                                    ARight);
 end;
 
 
 procedure TMainMDIFrm.chkMediaServerClick(Sender: TObject);
+
 begin
 
   if chkMediaServer.Checked then
@@ -2493,7 +2546,7 @@ var
 
 begin
 
-  if not Assigned(DlgLWFileBrowserEx)  then
+  if not Assigned(DlgLWFileBrowserEx) then
     DlgLWFileBrowserEx := TLWFileBrowserExDlg.Create(Self);
 
   DlgLWFileBrowserEx.FileFilter := fbxGraphics;
@@ -2534,7 +2587,7 @@ begin
     FCueQueueWriteFrame := 0;
     FCueQueueValidFrames := 0;
 
-    if Length(FCueMixQueue) > 0 then
+    if (Length(FCueMixQueue) > 0) then
       FillChar(FCueMixQueue[0],
                Length(FCueMixQueue) * SizeOf(Single),
                0);
@@ -2545,7 +2598,8 @@ begin
 end;
 
 
-procedure TMainMDIFrm.PushCueFrames(const Src: PSingle; const Frames: Integer);
+procedure TMainMDIFrm.PushCueFrames(const Src: PSingle;
+                                    const Frames: Integer);
 var
   i: Integer;
   WriteFrame: Integer;
@@ -2555,8 +2609,8 @@ var
 begin
 
   if (Src = nil) or
-     (Frames <= 0) or
-     (FCueQueueFramesCapacity <= 0) then
+    (Frames <= 0) or
+    (FCueQueueFramesCapacity <= 0) then
     Exit;
 
   EnterCriticalSection(FCueBufferLock);
@@ -2572,7 +2626,7 @@ begin
           begin
 
             Inc(FCueQueueReadFrame);
-            if FCueQueueReadFrame >= FCueQueueFramesCapacity then
+            if (FCueQueueReadFrame >= FCueQueueFramesCapacity) then
               FCueQueueReadFrame := 0;
             Dec(FCueQueueValidFrames);
           end;
@@ -2584,7 +2638,7 @@ begin
         FCueMixQueue[DstIndex + 1] := PSingle(NativeUInt(Src) + NativeUInt((SrcIndex + 1) * SizeOf(Single)))^;
 
         Inc(WriteFrame);
-        if WriteFrame >= FCueQueueFramesCapacity then
+        if (WriteFrame >= FCueQueueFramesCapacity) then
           WriteFrame := 0;
 
         Inc(FCueQueueValidFrames);
@@ -2597,7 +2651,8 @@ begin
 end;
 
 
-function TMainMDIFrm.PopCueFrames(const Dst: PSingle; const Frames: Integer): Integer;
+function TMainMDIFrm.PopCueFrames(const Dst: PSingle;
+                                  const Frames: Integer): Integer;
 var
   i: Integer;
   ReadFrame: Integer;
@@ -2616,7 +2671,8 @@ begin
   try
     ReadFrame := FCueQueueReadFrame;
 
-    Result := Min(Frames, FCueQueueValidFrames);
+    Result := Min(Frames,
+                  FCueQueueValidFrames);
     for i := 0 to Result - 1 do
       begin
 
@@ -2627,12 +2683,13 @@ begin
         PSingle(NativeUInt(Dst) + NativeUInt((DstIndex + 1) * SizeOf(Single)))^ := FCueMixQueue[SrcIndex + 1];
 
         Inc(ReadFrame);
-        if ReadFrame >= FCueQueueFramesCapacity then
+        if (ReadFrame >= FCueQueueFramesCapacity) then
           ReadFrame := 0;
       end;
 
     FCueQueueReadFrame := ReadFrame;
-    Dec(FCueQueueValidFrames, Result);
+    Dec(FCueQueueValidFrames,
+        Result);
   finally
 
     LeaveCriticalSection(FCueBufferLock);
@@ -2641,6 +2698,7 @@ end;
 
 
 function TMainMDIFrm.BuildRenderWaveFormat(out AWfx: TWAVEFORMATEX): HRESULT;
+
 begin
 
   ZeroMemory(@AWfx,
@@ -2686,13 +2744,14 @@ end;
 
 
 function TMainMDIFrm.ResetInvalidEndpointAssignments(): Boolean;
+
 begin
 
   Result := False;
 
   // Master can safely fall back to default endpoint.
   if (Trim(FSetup.MasterDeviceId) <> '') and
-     (not EndpointIdExists(FSetup.MasterDeviceId)) then
+    (not EndpointIdExists(FSetup.MasterDeviceId)) then
     begin
 
       FSetup.MasterDeviceId := '';
@@ -2701,7 +2760,7 @@ begin
 
   // Microphone input can safely fall back to default capture endpoint.
   if (Trim(FSetup.MicDeviceId) <> '') and
-     (not EndpointIdExists(FSetup.MicDeviceId)) then
+    (not EndpointIdExists(FSetup.MicDeviceId)) then
     begin
 
       FSetup.MicDeviceId := '';
@@ -2720,6 +2779,7 @@ end;
 
 
 procedure TMainMDIFrm.ClearAudioEndpointSetup();
+
 begin
 
   FSetup.MasterDeviceId := '';
@@ -2767,7 +2827,7 @@ begin
 
           FCueUnavailableWarned := True;
           MessageDlg('The stored cue/PFL audio endpoint is currently unavailable.' + sLineBreak +
-                     'Cue will stay disabled for this run until the endpoint becomes available again.',
+            'Cue will stay disabled for this run until the endpoint becomes available again.',
                      mtWarning,
                      [mbOK],
                      0);
@@ -2777,6 +2837,7 @@ end;
 
 
 procedure TMainMDIFrm.ApplySetupOnce();
+
 begin
 
   // Freeze setup globally so decks can read it and it cannot change at runtime.
@@ -2814,18 +2875,19 @@ end;
 
 
 procedure TMainMDIFrm.btnMaxNormalClick(Sender: TObject);
+
 begin
 
   if (WindowState = wsMaximized) then
     WindowState := wsNormal
-  else
-    if (WindowState = wsNormal) then
-      WindowState := wsMaximized;
+  else if (WindowState = wsNormal) then
+    WindowState := wsMaximized;
   Invalidate;
 end;
 
 
 procedure TMainMDIFrm.btnMinimizeClick(Sender: TObject);
+
 begin
 
   WindowState := wsMinimized;
@@ -2833,6 +2895,7 @@ end;
 
 
 procedure TMainMDIFrm.btnPlaylistClick(Sender: TObject);
+
 begin
 
   if (FPlayListEditor = nil) then
@@ -2846,9 +2909,10 @@ end;
 
 
 procedure TMainMDIFrm.btnSetDjNameAndShowTitleClick(Sender: TObject);
+
 begin
 
-  if not Assigned (FRDJRadioStatusJson) then
+  if not Assigned(FRDJRadioStatusJson) then
     Exit;
 
   PublishSelectedCover();
@@ -2856,8 +2920,7 @@ begin
   FDjName := Trim(mmoDjName.Text);
   FShowName := Trim(mmoShow.Text);
 
-  if HasActiveLoopbackDeck() and
-     not FNowPlayingFromChannelDeck then
+  if HasActiveLoopbackDeck() and not FNowPlayingFromChannelDeck then
     begin
 
       FNowPlayingArtist := '';
@@ -2874,13 +2937,14 @@ begin
                         BuildCoverJsonUrl(True),
                         FCaddyListenerCount,
                         (FNowPlayingArtist = '') and
-                        (FNowPlayingTitle = ''));
+    (FNowPlayingTitle = ''));
 
   SaveBroadcastIdentityToIni();
 end;
 
 
 procedure TMainMDIFrm.btnSetupClick(Sender: TObject);
+
 begin
 
   RefreshMainButtonStates();
@@ -2893,10 +2957,10 @@ end;
 
 
 procedure TMainMDIFrm.btnEffectsClick(Sender: TObject);
+
 begin
 
-  if not Assigned(FfrmMasterFxRack) or
-     not Assigned(FMasterDeck) then
+  if not Assigned(FfrmMasterFxRack) or not Assigned(FMasterDeck) then
     Exit;
 
   if (FfrmMasterFxRack.WindowState = wsMinimized) then
@@ -2909,11 +2973,10 @@ end;
 
 
 procedure TMainMDIFrm.AlignMasterDeckWithFxRack();
+
 begin
 
-  if FAppClosing or
-     not Assigned(FfrmMasterFxRack) or
-     not Assigned(FMasterDeck) then
+  if FAppClosing or not Assigned(FfrmMasterFxRack) or not Assigned(FMasterDeck) then
     Exit;
 
   if (FfrmMasterFxRack.WindowState = wsMinimized) then
@@ -2924,6 +2987,7 @@ end;
 
 
 procedure TMainMDIFrm.btnExitClick(Sender: TObject);
+
 begin
 
   Close();
@@ -2931,6 +2995,7 @@ end;
 
 
 procedure TMainMDIFrm.btnFooterPnlClick(Sender: TObject);
+
 begin
 
   pnlFooter.Visible := btnFooterPnl.Checked;
@@ -2938,6 +3003,7 @@ end;
 
 
 procedure TMainMDIFrm.RecreateAudioOutputs();
+
 begin
 
   FreeAndNil(FCueOut);
@@ -2950,6 +3016,7 @@ end;
 
 
 procedure TMainMDIFrm.ResetAudioRuntimeState();
+
 begin
 
   SetLength(FCueWorkBuf,
@@ -2965,6 +3032,7 @@ var
   hr: HRESULT;
   wfx: TWAVEFORMATEX;
   Frames: Integer;
+
 begin
 
   try
@@ -3074,7 +3142,7 @@ begin
   SetLength(FChannelDecks,
             0);
 
-   // Loopback decks
+  // Loopback decks
   for i := 0 to Length(FLoopbackDecks) - 1 do
     begin
       if (FLoopbackDecks[i] <> nil) then
@@ -3139,7 +3207,8 @@ begin
       FMicrophoneDeck.Top := y;
       FMicrophoneDeck.Left := x;
 
-      Inc(x, deckW);
+      Inc(x,
+          deckW);
     end;
 
   // Normal channel decks
@@ -3154,7 +3223,8 @@ begin
       FChannelDecks[i].Top := y;
       FChannelDecks[i].Left := x;
 
-      Inc(x, deckW);
+      Inc(x,
+          deckW);
     end;
 
   // Loopback decks
@@ -3169,7 +3239,8 @@ begin
       FLoopbackDecks[i].Top := y;
       FLoopbackDecks[i].Left := x;
 
-      Inc(x, deckW);
+      Inc(x,
+          deckW);
     end;
 
   // FX rack
@@ -3181,7 +3252,8 @@ begin
       FfrmMasterFxRack.Top := y;
       FfrmMasterFxRack.Left := x;
 
-      Inc(x, deckW);
+      Inc(x,
+          deckW);
     end;
 
   // Master deck
@@ -3211,6 +3283,7 @@ end;
 
 
 procedure TMainMDIFrm.tmrClockTimer(Sender: TObject);
+
 begin
 
   if FAppClosing or not FUiInitialized then
@@ -3223,6 +3296,7 @@ end;
 
 
 procedure TMainMDIFrm.CreateMasterForm();
+
 begin
 
   if (FMasterDeck <> nil) then
@@ -3232,21 +3306,22 @@ begin
     FMasterDeck := TMasterDeckFrm.Create(Self);
   except
     on E: EReadError do
-    begin
-      FMasterDeck := nil;
-      OutputDebugStringW(PChar('RDJ Pro could not load the Master Deck form: ' + E.Message));
-      MessageDlg('The Master Deck form could not be loaded.' + sLineBreak + sLineBreak + E.Message,
-                 mtError,
-                 [mbOK],
-                 0);
-      Exit;
-    end;
+      begin
+        FMasterDeck := nil;
+        OutputDebugStringW(PChar('RDJ Pro could not load the Master Deck form: ' + E.Message));
+        MessageDlg('The Master Deck form could not be loaded.' + sLineBreak + sLineBreak + E.Message,
+                   mtError,
+                   [mbOK],
+                   0);
+        Exit;
+      end;
   end;
   FMasterDeck.Show;
 end;
 
 
 procedure TMainMDIFrm.CreateMicrophoneForm();
+
 begin
 
   if (FMicrophoneDeck <> nil) then
@@ -3293,7 +3368,7 @@ begin
 
   for I := 0 to High(FLoopbackDecks) do
     if Assigned(FLoopbackDecks[I]) and
-       FLoopbackDecks[I].IsCapturing() then
+      FLoopbackDecks[I].IsCapturing() then
       Exit(True);
 end;
 
@@ -3324,35 +3399,36 @@ end;
 
 
 function TMainMDIFrm.GetRecorderTapPoint(): string;
+
 begin
 
   if (FSetup.AudioRecorderRecordPreFx) then
     Result := Format('Mixer audio Pre-FX, ID = %d',
                      [0])
-  else
-    if (FSetup.AudioRecorderRecordPostFx) then
-      Result := Format('Mixer audio Post-FX, ID = %d',
-                       [1])
-    else
-      if (FSetup.AudioRecorderRecordPostFx) and (FSetup.AudioRecorderRecordPreFx) then
-        Result := Format('Mixer audio Pre-FX (id = ) and Post-FX (ID = %d)',
-                         [0, 1])
+  else if (FSetup.AudioRecorderRecordPostFx) then
+    Result := Format('Mixer audio Post-FX, ID = %d',
+                     [1])
+  else if (FSetup.AudioRecorderRecordPostFx) and (FSetup.AudioRecorderRecordPreFx) then
+    Result := Format('Mixer audio Pre-FX (id = ) and Post-FX (ID = %d)',
+                     [0, 1])
 end;
 
 
 function TMainMDIFrm.IsRecordingPreFx(): Boolean;
+
 begin
 
   Result := Assigned(FInternalMixRecorderPreFx) and
-            FInternalMixRecorderPreFx.Recording;
+    FInternalMixRecorderPreFx.Recording;
 end;
 
 
 function TMainMDIFrm.IsRecordingPostFx(): Boolean;
+
 begin
 
   Result := Assigned(FInternalMixRecorderPostFx) and
-            FInternalMixRecorderPostFx.Recording;
+    FInternalMixRecorderPostFx.Recording;
 end;
 
 
@@ -3366,7 +3442,8 @@ var
 begin
 
   DirName := ExtractFilePath(ABaseFileName);
-  BaseNoExt := ChangeFileExt(ExtractFileName(ABaseFileName), '');
+  BaseNoExt := ChangeFileExt(ExtractFileName(ABaseFileName),
+                             '');
   Ext := ExtractFileExt(ABaseFileName);
   Result := DirName + BaseNoExt + ASuffix + Ext;
 end;
@@ -3397,8 +3474,8 @@ begin
   Flags := 0;
 
   if (pData = nil) or
-     (ByteCount = 0) or
-     (pwfx = nil) then
+    (ByteCount = 0) or
+    (pwfx = nil) then
     Exit(E_INVALIDARG);
 
   if (pwfx.nBlockAlign = 0) then
@@ -3412,7 +3489,7 @@ begin
 
   EnsureCueWorkBuf(Frames);
 
-  if Length(FCueWorkBuf) < (Frames * 2) then
+  if (Length(FCueWorkBuf) < (Frames * 2)) then
     Exit(E_OUTOFMEMORY);
 
   Result := FInternalMixer.MixBlock(Frames,
@@ -3446,10 +3523,14 @@ begin
 
   // Copy the Masterdeck mix to the bounded HEOS queue; encoding is off-thread.
   if Assigned(FHeosOutput) then
-    FHeosOutput.PushFloat32(OutBuffer, Frames, pwfx.nSamplesPerSec);
+    FHeosOutput.PushFloat32(OutBuffer,
+                            Frames,
+                            pwfx.nSamplesPerSec);
 
   if Assigned(FBackgroundAudio) then
-    FBackgroundAudio.PushFloat32(OutBuffer, Frames, pwfx.nSamplesPerSec);
+    FBackgroundAudio.PushFloat32(OutBuffer,
+                                 Frames,
+                                 pwfx.nSamplesPerSec);
 
   // POST-FX tap for recorder.
   if IsRecordingPostFx() then
@@ -3465,6 +3546,7 @@ end;
 
 
 procedure TMainMDIFrm.btnClearMemoClick(Sender: TObject);
+
 begin
 
   mmoTextNotes.Clear;
@@ -3557,7 +3639,7 @@ begin
                                              '_pre');
 
       if FInternalMixRecorderPreFx.Start(FileNamePre,
-                                         Wfx) then
+        Wfx) then
         Started := True;
     end;
 
@@ -3570,7 +3652,7 @@ begin
                                               '_post');
 
       if FInternalMixRecorderPostFx.Start(FileNamePost,
-                                          Wfx) then
+        Wfx) then
         Started := True;
     end;
 
@@ -3582,6 +3664,7 @@ end;
 
 
 procedure TMainMDIFrm.StopInternalMixerRecording();
+
 begin
 
   if Assigned(FInternalMixRecorderPreFx) then
@@ -3593,14 +3676,16 @@ end;
 
 
 function TMainMDIFrm.IsInternalMixerRecording(): Boolean;
+
 begin
 
   Result := IsRecordingPreFx() or
-            IsRecordingPostFx();
+    IsRecordingPostFx();
 end;
 
 
 procedure TMainMDIFrm.SetAudioRecorderRecordPreFx(const AValue: Boolean);
+
 begin
 
   FSetup.AudioRecorderRecordPreFx := AValue;
@@ -3610,6 +3695,7 @@ end;
 
 
 procedure TMainMDIFrm.SetAudioRecorderRecordPostFx(const AValue: Boolean);
+
 begin
 
   FSetup.AudioRecorderRecordPostFx := AValue;
@@ -3619,6 +3705,7 @@ end;
 
 
 function TMainMDIFrm.GetChannelDeck(const AIndex: Integer): TfrmChannelDeck;
+
 begin
 
   Result := nil;
@@ -3631,6 +3718,7 @@ end;
 
 
 function TMainMDIFrm.GetChannelDeckCount(): Integer;
+
 begin
 
   Result := Length(FChannelDecks);
@@ -3638,15 +3726,15 @@ end;
 
 
 procedure TMainMDIFrm.SetAudioRecorderTapPoint(const AValue: Integer);
+
 begin
 
   if (AValue < 0) then
     FSetup.AudioRecorderTapPoint := 0
+  else if (AValue > 1) then
+    FSetup.AudioRecorderTapPoint := 1
   else
-    if (AValue > 1) then
-      FSetup.AudioRecorderTapPoint := 1
-    else
-      FSetup.AudioRecorderTapPoint := AValue;
+    FSetup.AudioRecorderTapPoint := AValue;
 
   SaveSetupToIni(FSetupFileName,
                  FSetup);
@@ -3657,28 +3745,31 @@ end;
 // initialization and finalization =============================================
 
 
-procedure TMainMDIFrm.ApplyRecovery(Event:TRdjEvent);
+procedure TMainMDIFrm.ApplyRecovery(Event: TRdjEvent);
+
 begin
- if FAppClosing then Exit;
- FAudioGraphRecoveryReason:=Event.Text;
- FAudioGraphRecoveryDueTick:=GetTickCount64()+UInt64(Event.I0);
+
+  if FAppClosing then
+    Exit;
+  FAudioGraphRecoveryReason := Event.Text;
+  FAudioGraphRecoveryDueTick := GetTickCount64() + UInt64(Event.I0);
 end;
+
 initialization
 
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_LITE)) then
-      begin
-        MessageBoxW(0,
-                   lpcwstr('Your computer does not support this Media Foundation API version.' +
-                           IntToStr(MF_VERSION) + '.'),
-                   lpcwstr('MFStartup Failure!'),
-                           MB_ICONSTOP);
-      end;
+    MFSTARTUP_LITE)) then
+    begin
+      MessageBoxW(0,
+                  lpcwstr('Your computer does not support this Media Foundation API version.' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
+    end;
 
 finalization
 
   MFShutdown();
-
 
 end.

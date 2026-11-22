@@ -85,6 +85,7 @@ type
 
   // ------------------------ Settings record ----------------------------------
   PDynamicsSettings = ^TDynamicsSettings;
+
   TDynamicsSettings = packed record
     // Compressor
     CompEnabled: Boolean;
@@ -108,7 +109,7 @@ type
 
   // Control interface
   IMfCompressorLimiterControl = interface(IInterface)
-  ['{B0B56E3A-20DE-4F8A-B223-6D5C54B7B514}']
+    ['{B0B56E3A-20DE-4F8A-B223-6D5C54B7B514}']
 
     procedure EnableFX(const AEnabled: Boolean); stdcall;
 
@@ -126,7 +127,7 @@ type
 
   // Inspection interface.
   IMfCompressorLimiterInspect = interface(IInterface)
-  ['{59F0BB8A-7A32-4F10-9E0F-0C0D7A7F8E2A}']
+    ['{59F0BB8A-7A32-4F10-9E0F-0C0D7A7F8E2A}']
 
     function GetCompressorGRdB(): Single; stdcall; // Negative (gain reduction).
 
@@ -139,6 +140,7 @@ type
   // NOTE: This is intentionally written so we can replace it later with our
   // Sample-4 TAudioDynamicsDSP implementation with minimal changes.
   TAudioDynamicsDSP = class
+
   private
 
     FSR: Integer;
@@ -170,6 +172,7 @@ type
                             ThresholdDb,
                             Ratio,
                             KneeDb: Single): Single;
+
   public
 
     Settings: TDynamicsSettings;
@@ -193,6 +196,7 @@ type
                                   IMFTransform,
                                   IMfCompressorLimiterControl,
                                   IMfCompressorLimiterInspect)
+
   private
 
     FEnabledInt: Integer;
@@ -250,6 +254,7 @@ type
                                   Frames,
                                   Channels,
                                   SampleRate: Integer); override;
+
   public
 
     constructor Create();
@@ -275,6 +280,7 @@ implementation
 { TAudioDynamicsDSP }
 
 constructor TAudioDynamicsDSP.Create();
+
 begin
 
   inherited Create;
@@ -305,6 +311,7 @@ end;
 
 
 procedure TAudioDynamicsDSP.ResetState();
+
 begin
 
   FCompGain := 1.0;
@@ -317,7 +324,9 @@ begin
 end;
 
 
-procedure TAudioDynamicsDSP.ConfigureFormat(const SampleRate, Channels: Integer);
+procedure TAudioDynamicsDSP.ConfigureFormat(const SampleRate,
+                                            Channels: Integer);
+
 begin
 
   FSR := SampleRate;
@@ -328,6 +337,7 @@ end;
 
 
 function TAudioDynamicsDSP.DbToLin(const dB: Single): Single;
+
 begin
 
   Result := Power(10.0,
@@ -336,6 +346,7 @@ end;
 
 
 function TAudioDynamicsDSP.LinToDb(const x: Single): Single;
+
 begin
 
   Result := 20.0 * Log10(Max(x,
@@ -382,6 +393,7 @@ end;
 
 
 function TMfCompressorLimiterMFT.DbToLin(const dB: Single): Single;
+
 begin
 
   Result := Power(10.0,
@@ -393,6 +405,8 @@ function TMfCompressorLimiterMFT.EstimateTruePeakOS(const x: PSingle;
                                                     Frames,
                                                     Channels,
                                                     OS: Integer): Single;
+
+
   function ReadS(const Idx: Integer): Single;
   begin
 
@@ -419,14 +433,14 @@ begin
   Result := 0.0;
 
   if (x = nil) or
-     (Frames <= 0) or
-     (Channels <= 0) then
+    (Frames <= 0) or
+    (Channels <= 0) then
     Exit;
 
   case OS of
     2, 4, 8: ;
-  else
-    OS := 4;
+    else
+      OS := 4;
   end;
 
 
@@ -454,7 +468,7 @@ begin
           else
             idx0 := idx1 - Channels;
 
-          if (n + 2) < Frames then
+          if ((n + 2) < Frames) then
             idx3 := idx2 + Channels
           else
             idx3 := idx2;
@@ -522,7 +536,7 @@ begin
 
   // Convert per-sample smoothing to per-block (Frames samples)
   Result := (Power(aPerSample,
-                         Frames));
+                   Frames));
 end;
 
 
@@ -542,8 +556,8 @@ var
 begin
 
   if (x = nil) or
-     (Frames <= 0) or
-     (Channels <= 0) then
+    (Frames <= 0) or
+    (Channels <= 0) then
     Exit;
 
   // Estimate true-peak with Catmull-Rom oversampling
@@ -558,11 +572,10 @@ begin
 
   if (tpPeak <= 1e-20) then
     gTgt := 1.0
+  else if (tpPeak <= ceiling) then
+    gTgt := 1.0
   else
-    if (tpPeak <= ceiling) then
-      gTgt := 1.0
-    else
-      gTgt := ceiling / tpPeak;
+    gTgt := ceiling / tpPeak;
 
   // Attack when we need MORE reduction (gain goes down).
   // Release when we can relax (gain goes up).
@@ -623,8 +636,8 @@ begin
       if (InDb <= ThresholdDb) then
         Exit(InDb);
 
-     Exit(ThresholdDb + (InDb - ThresholdDb) / Ratio);
-  end;
+      Exit(ThresholdDb + (InDb - ThresholdDb) / Ratio);
+    end;
 
   k2 := KneeDb * 0.5;
   if (InDb <= ThresholdDb - k2) then
@@ -636,7 +649,7 @@ begin
   // in knee region
   x := InDb - (ThresholdDb - k2); // 0..Knee
   // quadratic interpolation between no-compress and full ratio
-  y := InDb + ( (1.0 / Ratio - 1.0) * x * x ) / (2.0 * KneeDb);
+  y := InDb + ((1.0 / Ratio - 1.0) * x * x) / (2.0 * KneeDb);
   Result := y;
 end;
 
@@ -646,6 +659,7 @@ procedure TAudioDynamicsDSP.ProcessFloat32(p: PSingle;
                                            Channels: Integer);
 const
   DENORM: Single = 1e-20;
+
 
   function SamplePtr(const Idx: Integer): PSingle;
   begin
@@ -694,7 +708,7 @@ begin
                            Settings.CompAttackMs));
 
   relC := SmoothCoefMs(Max(1.0,
-                       Settings.CompReleaseMs));
+                           Settings.CompReleaseMs));
 
   ceilingLin := DbToLin(Settings.LimCeilingDb);
   lookFrames := FDelayFrames;
@@ -703,7 +717,7 @@ begin
   if Settings.CompAutoMakeup and Settings.CompEnabled then
     makeup := DbToLin(Max(0.0,
                           -(Settings.CompThresholdDb) * (1.0 - 1.0 / Max(1.0,
-                          Settings.CompRatio)) * 0.5))
+                                                                         Settings.CompRatio)) * 0.5))
   else
     makeup := DbToLin(Settings.CompMakeupDb);
 
@@ -783,36 +797,38 @@ begin
                 end;
             end;
 
-      // Smooth comp gain a bit (avoid zipper)
-      FCompGain := 0.98 * FCompGain + 0.02 * compGain;
+          // Smooth comp gain a bit (avoid zipper)
+          FCompGain := 0.98 * FCompGain + 0.02 * compGain;
 
-      // Apply compressor + makeup to delayed sample (y)
-      y := y * FCompGain * makeup;
+          // Apply compressor + makeup to delayed sample (y)
+          y := y * FCompGain * makeup;
 
-      // Limiter (simple peak clamp with release smoothing)
-      limGain := 1.0;
-      if Settings.LimEnabled then
-        begin
+          // Limiter (simple peak clamp with release smoothing)
+          limGain := 1.0;
+          if Settings.LimEnabled then
+            begin
 
-          absx := Abs(y);
-          if (absx > ceilingLin) then
-            limGain := ceilingLin / absx
-          else
-            limGain := 1.0;
+              absx := Abs(y);
+              if (absx > ceilingLin) then
+                limGain := ceilingLin / absx
+              else
+                limGain := 1.0;
+            end;
+
+          // release smoothing for limiter gain
+          FLimGain := 0.995 * FLimGain + 0.005 * limGain;
+
+          // meters
+          FCompGRdB := LinToDb(Max(1e-10,
+                                   FCompGain));
+          FLimGRdB := LinToDb(Max(1e-10,
+                                  FLimGain));
+
+          SamplePtr(n)^ := (y * FLimGain) - DENORM;
         end;
 
-      // release smoothing for limiter gain
-      FLimGain := 0.995 * FLimGain + 0.005 * limGain;
-
-      // meters
-      FCompGRdB := LinToDb(Max(1e-10, FCompGain));
-      FLimGRdB := LinToDb(Max(1e-10, FLimGain));
-
-      SamplePtr(n)^ := (y * FLimGain) - DENORM;
+      Exit;
     end;
-
-    Exit;
-  end;
 
   // Multi-channel
   for n := 0 to Frames - 1 do
@@ -879,9 +895,9 @@ begin
               SamplePtr(delayedIdx)^ := y; // Temporarily store delayed signal in-place.
             end;
 
-        Inc(FDelayPos);
-        if (FDelayPos >= lookFrames) then
-          FDelayPos := 0;
+          Inc(FDelayPos);
+          if (FDelayPos >= lookFrames) then
+            FDelayPos := 0;
         end;
 
       // Apply comp+makeup to current frame (delayed or original).
@@ -895,7 +911,8 @@ begin
 
           level := 0.0;
           for ch := 0 to Channels - 1 do
-            level := Max(level, Abs(SamplePtr(idx + ch)^));
+            level := Max(level,
+                         Abs(SamplePtr(idx + ch)^));
           if (level > ceilingLin) then
             limGain := ceilingLin / level
           else
@@ -914,13 +931,15 @@ begin
       for ch := 0 to Channels - 1 do
         SamplePtr(idx + ch)^ := (SamplePtr(idx + ch)^ * FLimGain) - DENORM;
 
-      Inc(idx, Channels);
+      Inc(idx,
+          Channels);
     end;
 end;
 
 
 
 function TAudioDynamicsDSP.GetCompGRdB: Single;
+
 begin
 
   // Gain itself is <=1, so dB is <=0
@@ -929,6 +948,7 @@ end;
 
 
 function TAudioDynamicsDSP.GetLimGRdB: Single;
+
 begin
 
   Result := FLimGRdB;
@@ -964,7 +984,9 @@ begin
   SetTruePeakOversample(4);
 
   // Initialize settings cleanly
-  FillChar(S, SizeOf(S), 0);
+  FillChar(S,
+           SizeOf(S),
+           0);
   FDsp.Settings := FDsp.Settings; // keep its defaults
   FLastSampleRate := 0;
   FLastChannels := 0;
@@ -987,6 +1009,7 @@ end;
 
 
 destructor TMfCompressorLimiterMFT.Destroy();
+
 begin
 
   FreeAndNil(FDsp);
@@ -1008,17 +1031,17 @@ var
 begin
 
   if (pData = nil) or
-     (Frames <= 0) or
-     (Channels <= 0) then
+    (Frames <= 0) or
+    (Channels <= 0) then
     Exit;
 
   EnabledFx := (InterlockedCompareExchange(FEnabledInt,
-                                          0,
-                                          0) <> 0);
+                                           0,
+                                           0) <> 0);
 
   EnabledTP := (InterlockedCompareExchange(FTruePeakEnabledInt,
-                                          0,
-                                          0) <> 0);
+                                           0,
+                                           0) <> 0);
 
   // True bypass: touch nothing.
   if (not EnabledFx) and (not EnabledTP) then
@@ -1064,6 +1087,7 @@ end;
 
 
 procedure TMfCompressorLimiterMFT.EnableFX(const AEnabled: Boolean);
+
 begin
 
   if AEnabled then
@@ -1141,13 +1165,14 @@ begin
   if (FLastSampleRate > 0) and (FLastChannels > 0) then
     begin
 
-      if Abs(PNew^.LimLookaheadMs - FLastLookaheadMs) > 0.01 then
+      if (Abs(PNew^.LimLookaheadMs - FLastLookaheadMs) > 0.01) then
         begin
 
           FLastLookaheadMs := PNew^.LimLookaheadMs;
-          FDsp.ConfigureFormat(FLastSampleRate, FLastChannels);
+          FDsp.ConfigureFormat(FLastSampleRate,
+                               FLastChannels);
         end;
-  end;
+    end;
 end;
 
 
@@ -1171,6 +1196,7 @@ end;
 
 
 procedure TMfCompressorLimiterMFT.EnableTruePeakGuard(const AEnabled: Boolean);
+
 begin
 
   if AEnabled then
@@ -1183,6 +1209,7 @@ end;
 
 
 procedure TMfCompressorLimiterMFT.SetTruePeakCeilingDbTP(const DbTP: Single);
+
 begin
 
   // Keep it sane; your requirement is -1.0 dBTP default
@@ -1193,19 +1220,21 @@ end;
 
 
 procedure TMfCompressorLimiterMFT.SetTruePeakOversample(const Factor: Integer);
+
 begin
 
   case Factor of
     2,
     4,
     8: FTruePeakOS := Factor;
-  else
-    FTruePeakOS := 4;
+    else
+      FTruePeakOS := 4;
   end;
 end;
 
 
 function TMfCompressorLimiterMFT.GetCompressorGRdB: Single;
+
 begin
 
   Result := FDsp.GetCompGRdB;
@@ -1213,10 +1242,10 @@ end;
 
 
 function TMfCompressorLimiterMFT.GetLimiterGRdB: Single;
+
 begin
 
   Result := FDsp.GetLimGRdB;
 end;
 
 end.
-

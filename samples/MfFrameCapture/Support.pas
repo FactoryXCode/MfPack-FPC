@@ -67,7 +67,7 @@ interface
 
 uses
   MfCapturePlatform,
-{WinApi}
+  {WinApi}
   Messages,
   Windows,
   WinApi.MfPack.PsApi,
@@ -76,11 +76,11 @@ uses
   {VLC}
   Graphics;
 
-  function ToSize(AKilobytes: int64): string;
-  function ProcessMemoryUsage: int64;
-  function TimeSpanToDisplay(ATime: TTimeSpan;
-                             AIncludeMilliseconds: Boolean = False): string;
-  function DevicePixelPerInch: Integer;
+function ToSize(AKilobytes: int64): string;
+function ProcessMemoryUsage: int64;
+function TimeSpanToDisplay(ATime: TTimeSpan;
+                           AIncludeMilliseconds: Boolean = False): string;
+function DevicePixelPerInch: Integer;
 
 type
 
@@ -96,13 +96,14 @@ type
                           ATimeStamp: TTimeSpan) of object;
 
   TLogEvent = procedure(const AMessage: string;
-                                     ALogType: TLogType) of object;
+                        ALogType: TLogType) of object;
 
   TLogTypeHelper = record helper for TLogType
     function AsDisplay: string;
   end;
 
   TVideoFormatInfo = record
+
   public
     iVideoWidth: Integer;
     iVideoHeight: Integer;
@@ -116,8 +117,10 @@ type
   // CriticalSection
 
   TMFCritSec = class
+
   private
     FCriticalSection: TRTLCriticalSection;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -125,9 +128,9 @@ type
     procedure Unlock;
   end;
 
-  procedure HandleThreadMessages(AThread: THandle;
-                                 AWait: Cardinal = 0);
-  function IsURL(const APath: string): Boolean;
+procedure HandleThreadMessages(AThread: THandle;
+                               AWait: Cardinal = 0);
+function IsURL(const APath: string): Boolean;
 
 const
   cTab = #9;
@@ -137,17 +140,20 @@ implementation
 uses
   SysUtils;
 
+
 function DevicePixelPerInch: Integer;
 var
   oCompatibleDC: HDC;
   oDC: HDC;
 
 begin
+
   oDC := GetDC(0);
   try
     oCompatibleDC := CreateCompatibleDC(oDC);
     try
-      SetMapMode(oCompatibleDC, MM_TEXT);
+      SetMapMode(oCompatibleDC,
+                 MM_TEXT);
       Result := GetDeviceCaps(oCompatibleDC,
                               LOGPIXELSX);
     finally
@@ -159,14 +165,18 @@ begin
   end;
 end;
 
+
 function ProcessMemoryUsage: int64;
 var
   oCounters: PROCESS_MEMORY_COUNTERS;
 
 begin
+
   Result := 0;
   try
-    FillChar(oCounters, SizeOf(oCounters), 0);
+    FillChar(oCounters,
+             SizeOf(oCounters),
+             0);
     oCounters.cb := SizeOf(PROCESS_MEMORY_COUNTERS);
     GetProcessMemoryInfo(GetCurrentProcess,
                          @oCounters,
@@ -177,63 +187,90 @@ begin
   end;
 end;
 
+
 function ToSize(AKilobytes: int64): string;
 const
   MB: int64 = 1024;
   GB: int64 = 1048576;
   TB: int64 = 1073741823;
-  ABBREVIATED_SIZES: array [0 .. 3] of string = ('KB', 'MB', 'GB', 'TB');
+  ABBREVIATED_SIZES: array [0 .. 3] of string = ('KB',
+                                                 'MB',
+                                                 'GB',
+                                                 'TB');
 
 begin
-  if AKilobytes <= MB then
-    Result := Format('%d ', [AKilobytes]) + ABBREVIATED_SIZES[0]
-  else if AKilobytes <= GB then
-    Result := Format('%f ', [AKilobytes / MB]) + ABBREVIATED_SIZES[1]
-  else if AKilobytes <= TB then
-    Result := Format('%f ', [AKilobytes / GB]) + ABBREVIATED_SIZES[2]
+
+  if (AKilobytes <= MB) then
+    Result := Format('%d ',
+                     [AKilobytes]) + ABBREVIATED_SIZES[0]
+  else if (AKilobytes <= GB) then
+    Result := Format('%f ',
+                     [AKilobytes / MB]) + ABBREVIATED_SIZES[1]
+  else if (AKilobytes <= TB) then
+    Result := Format('%f ',
+                     [AKilobytes / GB]) + ABBREVIATED_SIZES[2]
   else
-    Result := Format('%f ', [AKilobytes / TB]) + ABBREVIATED_SIZES[3];
+    Result := Format('%f ',
+                     [AKilobytes / TB]) + ABBREVIATED_SIZES[3];
 end;
 
 
-function TimeSpanToDisplay(ATime: TTimeSpan; AIncludeMilliseconds: Boolean = False): string;
+function TimeSpanToDisplay(ATime: TTimeSpan;
+                           AIncludeMilliseconds: Boolean = False): string;
+
 begin
+
   if AIncludeMilliseconds then
-    Result := Format('%.2d:%.2d:%.2d:%.2d', [ATime.Hours, ATime.Minutes, ATime.Seconds, ATime.Milliseconds])
+    Result := Format('%.2d:%.2d:%.2d:%.2d',
+                     [ATime.Hours, ATime.Minutes, ATime.Seconds, ATime.Milliseconds])
   else
-    Result := Format('%.2d:%.2d:%.2d', [ATime.Hours, ATime.Minutes, ATime.Seconds]);
+    Result := Format('%.2d:%.2d:%.2d',
+                     [ATime.Hours, ATime.Minutes, ATime.Seconds]);
 end;
 
 
 function IsURL(const APath: string): Boolean;
+
 begin
-  Result := (Pos('https://',APath)=1) or (Pos('http://',APath)=1) or (Pos('www.',APath)=1)
+
+  Result := (Pos('https://',
+                 APath) = 1) or (Pos('http://',
+                                     APath) = 1) or (Pos('www.',
+                                                                     APath) = 1)
 end;
 
 
 { TMFCritSec }
 
 constructor TMFCritSec.Create;
+
 begin
+
   InitializeCriticalSection(FCriticalSection);
 end;
 
 
 destructor TMFCritSec.Destroy;
+
 begin
+
   DeleteCriticalSection(FCriticalSection);
   inherited;
 end;
 
 
 procedure TMFCritSec.Lock;
+
 begin
+
   EnterCriticalSection(FCriticalSection);
 end;
 
 
 procedure TMFCritSec.Unlock;
+
 begin
+
   LeaveCriticalSection(FCriticalSection);
 end;
 
@@ -246,18 +283,18 @@ var
 begin
 
   while (MsgWaitForMultipleObjects(1,
-                                   AThread,
-                                   False,
-                                   AWait,
-                                   QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
+      AThread,
+      False,
+      AWait,
+      QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
     begin
       PeekMessageW(oMsg,
-                  0,
-                  0,
-                  0,
-                  PM_REMOVE);
+                   0,
+                   0,
+                   0,
+                   PM_REMOVE);
 
-      if oMsg.Message = WM_QUIT then
+      if (oMsg.Message = WM_QUIT) then
         Exit;
 
       TranslateMessage(oMsg);
@@ -268,7 +305,9 @@ end;
 
 { TLogTypeHelper }
 function TLogTypeHelper.AsDisplay: string;
+
 begin
+
   case Self of
     ltInfo:
       Result := 'Info';
@@ -283,7 +322,9 @@ end;
 
 { TVideoFormatInfo }
 procedure TVideoFormatInfo.Reset;
+
 begin
+
   iVideoWidth := 0;
   iVideoHeight := 0;
   iBufferWidth := 0;

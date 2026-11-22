@@ -64,11 +64,12 @@ unit RDJ.TrackQuality;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   SysUtils,
   FxProxy.IOUtils,
   {MediaFoundationApi}
@@ -76,10 +77,11 @@ LMessages,
   {Application}
   RDJ.PlaylistTypes;
 
-  procedure RDJUpdateTrackQuality(var ATrack: TRDJTrack);
+procedure RDJUpdateTrackQuality(var ATrack: TRDJTrack);
 
 
 implementation
+
 
 function RDJCodecFromExt(const AExt: string): string;
 var
@@ -91,40 +93,36 @@ begin
 
   if (Ext = '.mp3') then
     Result := 'MP3'
+  else if (Ext = '.flac') then
+    Result := 'FLAC'
+  else if (Ext = '.wav') then
+    Result := 'WAV'
+  else if (Ext = '.m4a') or (Ext = '.aac') then
+    Result := 'AAC'
+  else if (Ext = '.ogg') then
+    Result := 'OGG'
+  else if (Ext = '.wma') then
+    Result := 'WMA'
+  else if (Ext = '.aif') or (Ext = '.aiff') then
+    Result := 'AIFF'
   else
-    if (Ext = '.flac') then
-      Result := 'FLAC'
-    else
-      if (Ext = '.wav') then
-        Result := 'WAV'
-      else
-        if (Ext = '.m4a') or (Ext = '.aac') then
-          Result := 'AAC'
-        else
-          if (Ext = '.ogg') then
-            Result := 'OGG'
-          else
-            if (Ext = '.wma') then
-              Result := 'WMA'
-            else
-              if (Ext = '.aif') or (Ext = '.aiff') then
-                Result := 'AIFF'
-              else
-                Result := 'Audio';
+    Result := 'Audio';
 end;
 
 
 function RDJChannelText(const AChannels: Integer): string;
+
 begin
 
   case AChannels of
     1: Result := 'Mono';
     2: Result := 'Stereo';
-  else
-    if (AChannels > 0) then
-      Result := Format('%d ch', [AChannels])
     else
-      Result := '';
+      if (AChannels > 0) then
+        Result := Format('%d ch',
+                         [AChannels])
+      else
+        Result := '';
   end;
 end;
 
@@ -174,17 +172,18 @@ var
   SR: string;
   CH: string;
 
+
   procedure AddPart(const S: string);
-    begin
+  begin
 
-      if (Trim(S) = '') then
-        Exit;
+    if (Trim(S) = '') then
+      Exit;
 
-      if (Parts = '') then
-        Parts := S
-      else
-        Parts := Parts + ' / ' + S;
-    end;
+    if (Parts = '') then
+      Parts := S
+    else
+      Parts := Parts + ' / ' + S;
+  end;
 
 begin
 
@@ -198,9 +197,9 @@ begin
     begin
       try
 
-       // ATrack.FileSize := TFile.GetSize(ATrack.FullPath);
+        // ATrack.FileSize := TFile.GetSize(ATrack.FullPath);
         if not GetFileSize64(ATrack.FullPath,
-                             ATrack.FileSize) then
+          ATrack.FileSize) then
           ATrack.FileSize := 0;
       except
 
@@ -234,12 +233,16 @@ begin
   AddPart(ATrack.Codec);
 
   if SameText(ATrack.Codec, 'MP3') or
-     SameText(ATrack.Codec, 'AAC') or
-     SameText(ATrack.Codec, 'OGG') or
-     SameText(ATrack.Codec, 'WMA') then
+    SameText(ATrack.Codec,
+             'AAC') or
+    SameText(ATrack.Codec,
+             'OGG') or
+    SameText(ATrack.Codec,
+             'WMA') then
     begin
       if (ATrack.BitrateKbps > 0) then
-        AddPart(Format('%d kbps', [ATrack.BitrateKbps]));
+        AddPart(Format('%d kbps',
+                       [ATrack.BitrateKbps]));
     end
   else
     begin
@@ -250,7 +253,7 @@ begin
 
       if (ATrack.BitsPerSample > 0) then
         AddPart(Format('%d-bit',
-                [ATrack.BitsPerSample]));
+                       [ATrack.BitsPerSample]));
 
       AddPart(CH);
     end;

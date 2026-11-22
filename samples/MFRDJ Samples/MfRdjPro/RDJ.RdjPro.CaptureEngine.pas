@@ -70,11 +70,12 @@ unit RDJ.RdjPro.CaptureEngine;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -107,75 +108,77 @@ LMessages,
   {$TYPEINFO ON}
 
 type
-    TSnapShotOptions = (ssoFile,
-                        ssoCallBack,
-                        ssoStream);
+  TSnapShotOptions = (ssoFile,
+                      ssoCallBack,
+                      ssoStream);
 
-    TSourceReaderVideoSampleEvent = procedure(Sender: TObject;
-                                              ASample: IMFSample;
-                                              const SampleTime: LONGLONG) of object;
+  TSourceReaderVideoSampleEvent = procedure(Sender: TObject;
+                                            ASample: IMFSample;
+                                            const SampleTime: LONGLONG) of object;
 
-    // Capture engine states
-    TCeState = (Closing = 0,     // Application has closed the session, but is waiting for MESessionClosed.
-                Closed,          // No session.
-                Ready,           // Session was created, ready to open a file.
-                OpenPending,     // Session is opening a file.
-                Starting,        // Session initializing Start
-                Started,         // Session is playing a file.
-                Stopping,        // Session initializing Stop.
-                Stopped,         // Session is stopped (ready to play).
-                TopologyReady,   // Session topology has been set.
-                CaptureStarting, // Session initializing capturing
-                CaptureStarted,  // Session is capturing
-                CaptureStopping, // Session initializing stop capturing
-                CaptureStopped   // Session is capturing
-               );
+  // Capture engine states
+  TCeState = (Closing = 0,     // Application has closed the session, but is waiting for MESessionClosed.
+    Closed,          // No session.
+    Ready,           // Session was created, ready to open a file.
+    OpenPending,     // Session is opening a file.
+    Starting,        // Session initializing Start
+    Started,         // Session is playing a file.
+    Stopping,        // Session initializing Stop.
+    Stopped,         // Session is stopped (ready to play).
+    TopologyReady,   // Session topology has been set.
+    CaptureStarting, // Session initializing capturing
+    CaptureStarted,  // Session is capturing
+    CaptureStopping, // Session initializing stop capturing
+    CaptureStopped   // Session is capturing
+    );
 
-    TRequest = (reqNone = 0,
-                reqStartRecording,
-                reqStopRecording);
+  TRequest = (reqNone = 0,
+              reqStartRecording,
+              reqStopRecording);
 
-    TRedrawStatus = (rdStarted,
-                     rdStopped);
+  TRedrawStatus = (rdStarted,
+                   rdStopped);
 
-    // Camera and video control values.
-    TCVPropRecord = record
-      prMin: LONG;
-      prMax: LONG;
-      prDelta: LONG;
-      prDefault: LONG;
-      prflags: LONG;
+  // Camera and video control values.
+  TCVPropRecord = record
+    prMin: LONG;
+    prMax: LONG;
+    prDelta: LONG;
+    prDefault: LONG;
+    prflags: LONG;
 
-      // Alternative for flags is using the flags defined in WinApi.KsMedia.pas
-      // KSPROPERTY_CAMERACONTROL_FLAGS_AUTO
-      // KSPROPERTY_CAMERACONTROL_FLAGS_MANUAL
-      // >= Win 8
-      // KSPROPERTY_CAMERACONTROL_FLAGS_ASYNCHRONOUS
-      // END >= Win 8
-      // KSPROPERTY_CAMERACONTROL_FLAGS_ABSOLUTE
-      // KSPROPERTY_CAMERACONTROL_FLAGS_RELATIVE
+    // Alternative for flags is using the flags defined in WinApi.KsMedia.pas
+    // KSPROPERTY_CAMERACONTROL_FLAGS_AUTO
+    // KSPROPERTY_CAMERACONTROL_FLAGS_MANUAL
+    // >= Win 8
+    // KSPROPERTY_CAMERACONTROL_FLAGS_ASYNCHRONOUS
+    // END >= Win 8
+    // KSPROPERTY_CAMERACONTROL_FLAGS_ABSOLUTE
+    // KSPROPERTY_CAMERACONTROL_FLAGS_RELATIVE
 
-      IsSupported: Boolean;
-      public
-      procedure Initialize();
-    end;
+    IsSupported: Boolean;
 
-    // Camera controls.
-    TCameraProps = record
-      CameraCtl_Pan: TCVPropRecord;
-      CameraCtl_Tilt: TCVPropRecord;
-      CameraCtl_Roll: TCVPropRecord;
-      CameraCtl_Zoom: TCVPropRecord;
-      CameraCtl_Exposure: TCVPropRecord;
-      CameraCtl_Iris: TCVPropRecord;
-      CameraCtl_Focus: TCVPropRecord;
-      IsSupported: Boolean;
-      public
-      procedure Initialize();
-    end;
+  public
+    procedure Initialize();
+  end;
 
-    // Video controls.
-    TVideoProps = record
+  // Camera controls.
+  TCameraProps = record
+    CameraCtl_Pan: TCVPropRecord;
+    CameraCtl_Tilt: TCVPropRecord;
+    CameraCtl_Roll: TCVPropRecord;
+    CameraCtl_Zoom: TCVPropRecord;
+    CameraCtl_Exposure: TCVPropRecord;
+    CameraCtl_Iris: TCVPropRecord;
+    CameraCtl_Focus: TCVPropRecord;
+    IsSupported: Boolean;
+
+  public
+    procedure Initialize();
+  end;
+
+  // Video controls.
+  TVideoProps = record
     VideoCtl_Brightness: TCVPropRecord;
     VideoCtl_Contrast: TCVPropRecord;
     VideoCtl_Hue: TCVPropRecord;
@@ -187,48 +190,52 @@ type
     VideoCtl_BacklightCompensation: TCVPropRecord;
     VideoCtl_Gain: TCVPropRecord;
     IsSupported: Boolean;
-    public
+
+  public
     procedure Initialize();
-    end;
+  end;
 
-    // Setter properties.
-    TCameraPropSet = record
-     cpCameraControlProperty: LONG; // CameraControlProperty.
-     cpValue: LONG;
-     cpFlags: LONG;
-    end;
+  // Setter properties.
+  TCameraPropSet = record
+    cpCameraControlProperty: LONG; // CameraControlProperty.
+    cpValue: LONG;
+    cpFlags: LONG;
+  end;
 
-    TVideoPropSet = record
-     cpVideoProcAmpProperty: LONG; // VideoProcAmpProperty.
-     cpValue: LONG;
-     cpFlags: LONG;
-    end;
+  TVideoPropSet = record
+    cpVideoProcAmpProperty: LONG; // VideoProcAmpProperty.
+    cpValue: LONG;
+    cpFlags: LONG;
+  end;
 
 type
 
-  TRdjProCaptureManager = class(TInterfacedPersistent, IMFAsyncCallback, IMFSourceReaderCallback)
+  TRdjProCaptureManager = class(TInterfacedPersistent,
+                                IMFAsyncCallback,
+                                IMFSourceReaderCallback)
+
   private
 
-    stRedrawStatus     : TRedrawStatus;
-    m_bHasVideo        : LongBool;
+    stRedrawStatus: TRedrawStatus;
+    m_bHasVideo: LongBool;
 
-    m_pwszSymbolicLink : PWideChar;
-    m_cchSymbolicLink  : UINT32;
-    m_pwszDeviceName   : PWideChar;
-    m_cchDeviceName    : UINT32;
+    m_pwszSymbolicLink: PWideChar;
+    m_cchSymbolicLink: UINT32;
+    m_pwszDeviceName: PWideChar;
+    m_cchDeviceName: UINT32;
 
-    m_State            : TCeState;
-    m_Request          : TRequest;
-    m_bPending         : LongBool;
+    m_State: TCeState;
+    m_Request: TRequest;
+    m_bPending: LongBool;
 
-    dwSessionCaps      : DWord;                     // MFSESSIONCAP_* (MfApi) = Session caps.
-    hCloseEvent        : THandle;                   // Event to wait on while closing.
-    m_dWaitResult      : DWord;                     // Wait, used by function
+    dwSessionCaps: DWord;                     // MFSESSIONCAP_* (MfApi) = Session caps.
+    hCloseEvent: THandle;                   // Event to wait on while closing.
+    m_dWaitResult: DWord;                     // Wait, used by function
 
     // Handles.
-    m_hwndEvent:         HWND;                      // App window handle to receive events.
-    m_hwndVideo:         HWND;                      // Stored handle of videosurface.
-    m_hwnd_MainForm:     HWND;                      // Handle to the main form.
+    m_hwndEvent: HWND;                      // App window handle to receive events.
+    m_hwndVideo: HWND;                      // Stored handle of videosurface.
+    m_hwnd_MainForm: HWND;                      // Handle to the main form.
 
     // Colorkey needed to draw transparent on the videosurface.
     FBGColor: COLORREF;
@@ -259,11 +266,11 @@ type
     dsVideoControl: IAMVideoProcAmp;
     dsCameraControl: IAMCameraControl;
     // ============================================
-    m_pSession:          IMFMediaSession;           // Media Session.
-    m_pSource:           IMFMediaSource;            // Media Source.
-    m_pVideoDisplay:     IMFVideoDisplayControl;    // Video control.
-    m_pActivate:         IMFActivate;               // The device Activate interface.
-    p_hdevnotify:        HDEVNOTIFY;                // Devicenotify pointer.
+    m_pSession: IMFMediaSession;           // Media Session.
+    m_pSource: IMFMediaSource;            // Media Source.
+    m_pVideoDisplay: IMFVideoDisplayControl;    // Video control.
+    m_pActivate: IMFActivate;               // The device Activate interface.
+    p_hdevnotify: HDEVNOTIFY;                // Devicenotify pointer.
     {$endregion}
 
     function CloneVideoMediaType(const pSourceType: IMFMediaType;
@@ -298,7 +305,7 @@ type
     {$region 'Media event and session handlers'}
     //==========================================================================
     // Event handler
-    function HandleEvent(pEventPtr: UINT_PTR ): HRESULT;
+    function HandleEvent(pEventPtr: UINT_PTR): HRESULT;
     //
     // Handler for MESessionTopologyStatus event
     function OnTopologyStatus(pEvent: IMFMediaEvent): HRESULT;
@@ -309,7 +316,8 @@ type
     // Handler for MESessionTopologySet event
     function OnTopologyReady(pEvent: IMFMediaEvent): HRESULT; virtual;
     // Override to handle additional session events.
-    function OnSessionEvent(pEvent: IMFMediaEvent; meType: DWord): HRESULT;
+    function OnSessionEvent(pEvent: IMFMediaEvent;
+                            meType: DWord): HRESULT;
     // Handler for MENewPresentation event.
     // This event is sent if the media source has a new presentation, which
     // requires a new topology.
@@ -349,7 +357,7 @@ type
     procedure SetRotation(AValue: Integer);
     function SetStreamRotation(const ASource: IMFMediaSource;
                                AStreamIndex: Integer;
-                               ARotation: Integer) : HRESULT;
+                               ARotation: Integer): HRESULT;
 
     // Get the video Normalized Rectangle
     function GetVideoRectangle(): TRECT;
@@ -458,12 +466,12 @@ type
 var
   FDevicePropertiesArray: TDevicePropertiesArray;
 
-  procedure ShowErrorMessage(hwnd: HWND;
-                             fmt: LPCWSTR;
-                             hrErr: HRESULT);
+procedure ShowErrorMessage(hwnd: HWND;
+                           fmt: LPCWSTR;
+                           hrErr: HRESULT);
 
-  function CaptureDeviceGetActivate(const ASymbolicLink: PWideChar;
-                                    out AActivate: IMFActivate): HRESULT;
+function CaptureDeviceGetActivate(const ASymbolicLink: PWideChar;
+                                  out AActivate: IMFActivate): HRESULT;
 
 
 implementation
@@ -478,19 +486,28 @@ const
   RDJ_DEFAULT_CAMERA_FPS_NUM = 30;
   RDJ_DEFAULT_CAMERA_FPS_DEN = 1;
 
+
 function RDJMakeUINT64(const HighPart: DWORD;
                        const LowPart: DWORD): UINT64;
+
 begin
+
   Result := (UINT64(HighPart) shl 32) or UINT64(LowPart);
 end;
 
+
 function RDJHighDWORD(const Value: UINT64): DWORD;
+
 begin
+
   Result := DWORD(Value shr 32);
 end;
 
+
 function RDJLowDWORD(const Value: UINT64): DWORD;
+
 begin
+
   Result := DWORD(Value and $FFFFFFFF);
 end;
 
@@ -525,8 +542,8 @@ begin
   if FAILED(hr) then
     goto done;
 
-done:
-  Result:= hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -565,7 +582,7 @@ begin
   if FAILED(hr) then
     goto Done;
 
-  hr:= m_pSession.Close();
+  hr := m_pSession.Close();
   if FAILED(hr) then
     goto Done;
 
@@ -595,8 +612,8 @@ begin
   SafeRelease(m_pSource);
   SafeRelease(m_pActivate);
 
-done:
-  State := Closed;
+  done:
+    State := Closed;
   Result := hr;
 end;
 
@@ -608,7 +625,7 @@ var
 
 begin
 
-  hr:= S_OK;
+  hr := S_OK;
 
   // The application must call Shutdown because the media session holds a
   // reference count on the capture engine object. (This happens when capture engine calls
@@ -622,28 +639,28 @@ begin
   // Also, calling Shutdown twice is harmless.
   //       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-try
+  try
 
-  if SUCCEEDED(StopRecording()) then
-    hr := CloseSession();  // Close the session
+    if SUCCEEDED(StopRecording()) then
+      hr := CloseSession();  // Close the session
 
-  if (hCloseEvent <> 0) then
-    begin
-      if CloseHandle(THandle(hCloseEvent)) then
-        begin
-          hCloseEvent := 0;
-          hr := S_OK;
-        end
-      else
-        hr := E_FAIL;
-    end;
+    if (hCloseEvent <> 0) then
+      begin
+        if CloseHandle(THandle(hCloseEvent)) then
+          begin
+            hCloseEvent := 0;
+            hr := S_OK;
+          end
+        else
+          hr := E_FAIL;
+      end;
 
-  Result := hr;
+    Result := hr;
 
-except
-  // Do nothing
-  Result := hr;
-end;
+  except
+    // Do nothing
+    Result := hr;
+  end;
 end;
 
 
@@ -660,9 +677,9 @@ begin
     end;
 
   h := CreateEventW(nil,
-                   False,
-                   False,
-                   nil);
+                    False,
+                    False,
+                    nil);
 
   hCloseEvent := h;
 
@@ -677,6 +694,7 @@ end;
 
 // Resets all vars and releases all interfaces
 procedure TRdjProCaptureManager.Clear();
+
 begin
 
   ShutdownVideoSampleReader();
@@ -697,7 +715,7 @@ begin
   m_bHasVideo := False;
   m_cchSymbolicLink := 0;
   m_cchDeviceName := 0;
-  m_State := Closed ;
+  m_State := Closed;
   m_Request := reqNone;
   dwSessionCaps := 0;
   m_dWaitResult := 0;
@@ -710,7 +728,7 @@ end;
 //            The caller must release the pointer.
 //-------------------------------------------------------------------
 constructor TRdjProCaptureManager.Create(hVideo: HWND;
-                                    hMainForm: HWND);
+                                         hMainForm: HWND);
 var
   hr: HRESULT;
 
@@ -737,32 +755,32 @@ begin
   FVideoSampleStopping := False;
   FVideoSampleHardFlushing := False;
   FVideoSampleFlushEvent := CreateEventW(nil,
-                                        True,
-                                        False,
-                                        nil);
+                                         True,
+                                         False,
+                                         nil);
 
   hr := Initialize();
 
   if FAILED(hr) then
     begin
       MessageBoxW(0,
-                 PWideChar('An error occured while trying to initialize.'),
-                 PWideChar('Error!'),
-                 MB_ICONEXCLAMATION);
-     end;
+                  PWideChar('An error occured while trying to initialize.'),
+                  PWideChar('Error!'),
+                  MB_ICONEXCLAMATION);
+    end;
 end;
 
 
 class function TRdjProCaptureManager.CreateInstance(hVideo: HWND;
-                                               hMainForm: HWND;
-                                               out ppCaptureEngine: TRdjProCaptureManager): HRESULT;
+                                                    hMainForm: HWND;
+                                                    out ppCaptureEngine: TRdjProCaptureManager): HRESULT;
 var
   pCaptureEngine: TRdjProCaptureManager;
 
 begin
 
   pCaptureEngine := TRdjProCaptureManager.Create(hVideo,
-                                            hMainForm);
+                                                 hMainForm);
 
   if not Assigned(pCaptureEngine) then
     begin
@@ -779,6 +797,7 @@ end;
 
 //
 procedure TRdjProCaptureManager.BeforeDestruction();
+
 begin
 
   Clear();
@@ -787,7 +806,7 @@ begin
   UnregisterForDeviceNotification(p_hdevnotify);
   p_hdevnotify := 0;
 
-  if FVideoSampleFlushEvent <> 0 then
+  if (FVideoSampleFlushEvent <> 0) then
     begin
       CloseHandle(FVideoSampleFlushEvent);
       FVideoSampleFlushEvent := 0;
@@ -799,7 +818,9 @@ end;
 
 // The destructor.
 destructor TRdjProCaptureManager.Destroy;
+
 begin
+
   inherited Destroy;
 end;
 
@@ -814,7 +835,7 @@ var
 
 begin
 
-  hr:= S_OK;
+  hr := S_OK;
 
   if not Assigned(m_pSession) then
     begin
@@ -822,49 +843,49 @@ begin
       Exit;
     end;
 
-try
+  try
 
-  if m_bPending then
-    begin
-      Request := reqStartRecording;
-      State := Starting;
-    end
-  else
-    begin
-      PropVariantInit(varStart);
-      varStart.vt := Word(VT_EMPTY);  // Slow when returning from pause!
-      hr := m_pSession.Start(GUID_NULL,
-                             varStart);
-      m_bPending := True;
-      hr := PropVariantClear(varStart);
-    end;
+    if m_bPending then
+      begin
+        Request := reqStartRecording;
+        State := Starting;
+      end
+    else
+      begin
+        PropVariantInit(varStart);
+        varStart.vt := Word(VT_EMPTY);  // Slow when returning from pause!
+        hr := m_pSession.Start(GUID_NULL,
+                               varStart);
+        m_bPending := True;
+        hr := PropVariantClear(varStart);
+      end;
 
-  if SUCCEEDED(hr) then
-    begin
-      // Note: StartRecording is an asynchronous operation. However, we
-      // can treat our state as being already started. If Start
-      // fails later, we'll get an MESessionStarted event with
-      // an error code, and we will update our state then.
+    if SUCCEEDED(hr) then
+      begin
+        // Note: StartRecording is an asynchronous operation. However, we
+        // can treat our state as being already started. If Start
+        // fails later, we'll get an MESessionStarted event with
+        // an error code, and we will update our state then.
 
-      Request := reqNone;
-      State := Started;
+        Request := reqNone;
+        State := Started;
 
-      // check if there is video present
-      if (HasVideo = True) then
-        begin
-          hr := (m_pSession as IMFGetService).GetService(MR_VIDEO_MIXER_SERVICE,
-                                                         IID_IMFVideoProcessor,
-                                                         Pointer(FVideoProcessor));
-          if SUCCEEDED(hr) then
-            hr := FVideoProcessor.GetBackgroundColor(FBGColor);
-        end
-      else
-        hr:= E_VIDEOPROCESSOR_NOT_IMPLEMENTED;  // E_VIDEOPROCESSOR_NOT_IMPLEMENTED is a custom hresult.
-    end;
+        // check if there is video present
+        if (HasVideo = True) then
+          begin
+            hr := (m_pSession as IMFGetService).GetService(MR_VIDEO_MIXER_SERVICE,
+                                                           IID_IMFVideoProcessor,
+                                                           Pointer(FVideoProcessor));
+            if SUCCEEDED(hr) then
+              hr := FVideoProcessor.GetBackgroundColor(FBGColor);
+          end
+        else
+          hr := E_VIDEOPROCESSOR_NOT_IMPLEMENTED;  // E_VIDEOPROCESSOR_NOT_IMPLEMENTED is a custom hresult.
+      end;
 
-finally
-  Result:= hr;
-end;
+  finally
+    Result := hr;
+  end;
 end;
 
 
@@ -931,7 +952,7 @@ begin
     end;
 
   // Get the event type.
-  hr:= pEvent.GetType(meType);
+  hr := pEvent.GetType(meType);
   if FAILED(hr) then
     goto done;
 
@@ -950,32 +971,33 @@ begin
   //===============
   case meType of
     // In this order when opening.
-    MESessionTopologiesCleared      : hr := OnSessionTopologiesCleared(pEvent);
-    MESessionTopologySet            : hr := OnSessionTopologySet(pEvent);
+    MESessionTopologiesCleared: hr := OnSessionTopologiesCleared(pEvent);
+    MESessionTopologySet: hr := OnSessionTopologySet(pEvent);
     // Raised by the Media Session when a new presentation starts.
     // This event indicates when the presentation will start and the
     // offset between the presentation time and the source time.
-    MESessionNotifyPresentationTime : hr := S_OK;
-     // The session capabilities changed. Get the updated capabilities.
-    MESessionCapabilitiesChanged    : dwSessionCaps := MFGetAttributeUINT32(pEvent,
-                                                                            MF_EVENT_SESSIONCAPS,
-                                                                            dwSessionCaps);
+    MESessionNotifyPresentationTime: hr := S_OK;
+    // The session capabilities changed. Get the updated capabilities.
+    MESessionCapabilitiesChanged: dwSessionCaps := MFGetAttributeUINT32(pEvent,
+                                                                        MF_EVENT_SESSIONCAPS,
+                                                                        dwSessionCaps);
 
-    MESessionTopologyStatus: hr:= OnTopologyStatus(pEvent);
+    MESessionTopologyStatus: hr := OnTopologyStatus(pEvent);
 
     // From here the event sequences are mandatory.
-    MENewPresentation      : hr := OnNewPresentation(pEvent);
-    MESessionStopped       : hr := OnSessionStop(pEvent);
-    MESessionStarted       : hr := OnSessionStart(pEvent);
-    MESessionClosed        : hr := S_OK;
-    MESessionEnded         : hr := S_OK;
+    MENewPresentation: hr := OnNewPresentation(pEvent);
+    MESessionStopped: hr := OnSessionStop(pEvent);
+    MESessionStarted: hr := OnSessionStart(pEvent);
+    MESessionClosed: hr := S_OK;
+    MESessionEnded: hr := S_OK;
 
-  else  // Undefined event, handle this by OnSessionEvent handler.
-    hr := OnSessionEvent(pEvent, DWord(meType));
+    else  // Undefined event, handle this by OnSessionEvent handler.
+      hr := OnSessionEvent(pEvent,
+                           DWord(meType));
   end;
 
-done:
-  Result:= hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -988,6 +1010,7 @@ var
   hr: HRESULT;
 
 begin
+
   hr := pEvent.GetUINT32(MF_EVENT_TOPOLOGY_STATUS,
                          UINT32(Status));
   case Status of
@@ -1008,13 +1031,14 @@ var
   hr: HRESULT;
 
 begin
+
   hr := pEvent.GetUINT32(MF_EVENT_TOPOLOGY_STATUS,
                          UINT32(status));
   case status of
     MF_TOPOSTATUS_READY: OnTopologyReady(pEvent);
-    MF_TOPOSTATUS_ENDED: {} ;
-    MF_TOPOSTATUS_INVALID: {} ;
-    MF_TOPOSTATUS_STARTED_SOURCE: {} ;
+    MF_TOPOSTATUS_ENDED: {};
+    MF_TOPOSTATUS_INVALID: {};
+    MF_TOPOSTATUS_STARTED_SOURCE: {};
     else
       hr := E_UNEXPECTED; // possible error  -1072875802 ($C00D36E6) The requested attribute was not found.
   end;                    // this error can be ignored, because probably the topology is not completely set at this point.
@@ -1073,9 +1097,9 @@ begin
   if Assigned(m_pVideoDisplay) then
     ResizeVideo(nil);
 
-// Since the topology is ready, you might start capturing, do calculations etc.
-//
-////////////////////////////////////////////////////////////////////////////////
+  // Since the topology is ready, you might start capturing, do calculations etc.
+  //
+  ////////////////////////////////////////////////////////////////////////////////
 
   // Obtain capabilities of the current session
   if SUCCEEDED(hr) then
@@ -1084,7 +1108,7 @@ begin
   if FAILED(hr) then
     dwSessionCaps := MFSESSIONCAP_START;
 
-  m_bPending:= True;
+  m_bPending := True;
   // START RECORDING
   // You can also implement an option for the user, starting playback directly after
   // a mediastream is loaded.
@@ -1093,14 +1117,16 @@ begin
 
   State := TopologyReady;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 
 end;
 
 
 // Override to handle additional session events.
-function TRdjProCaptureManager.OnSessionEvent(pEvent: IMFMediaEvent; meType: DWord): HRESULT;
+function TRdjProCaptureManager.OnSessionEvent(pEvent: IMFMediaEvent;
+                                              meType: DWord): HRESULT;
+
 begin
 
   // This is more or less a dummy for now
@@ -1129,8 +1155,8 @@ begin
   // Get the presentation descriptor from the event.
   hr := GetEventObject(pEvent,
                        pPD);
-    if FAILED(hr) then
-      goto done;
+  if FAILED(hr) then
+    goto done;
 
   // Create a partial topology.
   hr := CreatePlaybackTopology(m_pSource,
@@ -1138,8 +1164,8 @@ begin
                                m_hwndVideo,
                                pTopology,
                                dwSourceStreams);
-    if FAILED(hr) then
-      goto done;
+  if FAILED(hr) then
+    goto done;
 
   // Set the topology on the media session.
   hr := m_pSession.SetTopology(MFSESSION_SETTOPOLOGY_IMMEDIATE,
@@ -1147,8 +1173,8 @@ begin
 
   State := OpenPending;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -1157,6 +1183,7 @@ end;
 //
 // Request for Start event.
 function TRdjProCaptureManager.OnSessionStart(pEvent: IMFMediaEvent): HRESULT;
+
 begin
 
   UpdatePendingCommands(reqStartRecording);
@@ -1165,6 +1192,7 @@ end;
 
 // Request for Stop event.
 function TRdjProCaptureManager.OnSessionStop(pEvent: IMFMediaEvent): HRESULT;
+
 begin
 
   UpdatePendingCommands(reqStopRecording);
@@ -1176,38 +1204,39 @@ end;
 // This method executes any cached requests.
 function TRdjProCaptureManager.UpdatePendingCommands(req: TRequest): HRESULT;
 var
-  hr : HRESULT;
+  hr: HRESULT;
 
 begin
+
   hr := S_OK;
 
-try
+  try
 
-  if (m_bPending) and (Request = req) then
-    begin
-      m_bPending := False;
-      // The current pending command has completed.
+    if (m_bPending) and (Request = req) then
+      begin
+        m_bPending := False;
+        // The current pending command has completed.
 
-      // Now look for seek requests.
-      if not m_bPending then
-        case req of
-          reqNone: ; // Nothing to do.
-          reqStartRecording: begin
-                               if SUCCEEDED(StartRecording()) then
-                                 State := Started;
-                             end;
-          reqStopRecording:  begin
-                               if SUCCEEDED(StopRecording()) then
-                                 State := Stopped;
-                             end;
-        end;
-      // Request is done
-      Request := reqNone;
-    end;
+        // Now look for seek requests.
+        if not m_bPending then
+          case req of
+            reqNone: ; // Nothing to do.
+              reqStartRecording: begin
+                if SUCCEEDED(StartRecording()) then
+                  State := Started;
+              end;
+              reqStopRecording: begin
+                if SUCCEEDED(StopRecording()) then
+                  State := Stopped;
+              end;
+          end;
+        // Request is done
+        Request := reqNone;
+      end;
 
-finally
-  Result := hr;
-end;
+  finally
+    Result := hr;
+  end;
 end;
 
 
@@ -1256,17 +1285,17 @@ begin
     end;
 
 
-    // For most events, post the event as a private window message to the
-    // application. This lets the application process the event on its main
-    // thread.
+  // For most events, post the event as a private window message to the
+  // application. This lets the application process the event on its main
+  // thread.
 
-    // However, if a call to IMFMediaSession.Close is pending, it means the
-    // application is waiting on the m_hCloseEvent event handle. (Blocking
-    // call.) In that case, we simply discard the event.
+  // However, if a call to IMFMediaSession.Close is pending, it means the
+  // application is waiting on the m_hCloseEvent event handle. (Blocking
+  // call.) In that case, we simply discard the event.
 
-    // When IMFMediaSession.Close is called, MESessionClosed is NOT
-    // necessarily the next event that we will receive. We may receive any
-    // number of other events before receiving MESessionClosed.
+  // When IMFMediaSession.Close is called, MESessionClosed is NOT
+  // necessarily the next event that we will receive. We may receive any
+  // number of other events before receiving MESessionClosed.
 
 
   if (State <> Closing) then
@@ -1275,13 +1304,14 @@ begin
       HandleEvent(UINT_PTR(pEvent));
     end;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
 function TRdjProCaptureManager.GetParameters(out pdwFlags: DWord;
-                                        out pdwQueue: DWord): HResult;
+                                             out pdwQueue: DWord): HResult;
+
 begin
 
   Result := E_NOTIMPL;
@@ -1389,7 +1419,7 @@ begin
   if SUCCEEDED(hr) then
     begin
       if not RegisterForDeviceNotification(m_hwnd_MainForm,
-                                           p_hdevnotify) then
+        p_hdevnotify) then
         hr := GetLastError();
     end;
 
@@ -1428,99 +1458,100 @@ label
   done;
 
 begin
+
   hr := S_OK;
   dwSourceStreams := 0;
 
-try
+  try
 
-  // After the session is prepared (function SetDevice)
-  // We need to build the topology and set it on the session,
-  // ========================================================
-  // 1. Create the topology.
-  // 2. Create the presentation descriptor.
-  // 3. Create the (partial) source topology.
-  // 4. Set the topology on the media session.
-  // 5. Start request [asynchronous - does not happen in this method, but in OnTopologySet].
-  //
+    // After the session is prepared (function SetDevice)
+    // We need to build the topology and set it on the session,
+    // ========================================================
+    // 1. Create the topology.
+    // 2. Create the presentation descriptor.
+    // 3. Create the (partial) source topology.
+    // 4. Set the topology on the media session.
+    // 5. Start request [asynchronous - does not happen in this method, but in OnTopologySet].
+    //
 
-  // Create a new topology.
-  hr := MFCreateTopology(pTopology);
-  if FAILED(hr) then
-    goto done;
+    // Create a new topology.
+    hr := MFCreateTopology(pTopology);
+    if FAILED(hr) then
+      goto done;
 
-  // Create the presentation descriptor for the media source
-  hr := m_pSource.CreatePresentationDescriptor(pSourcePD);
-  if FAILED(hr) then
-    goto done;
+    // Create the presentation descriptor for the media source
+    hr := m_pSource.CreatePresentationDescriptor(pSourcePD);
+    if FAILED(hr) then
+      goto done;
 
-  //Clear all of the presentations that are queued for playback in the Media Session.
-  hr := m_pSession.ClearTopologies();
+    //Clear all of the presentations that are queued for playback in the Media Session.
+    hr := m_pSession.ClearTopologies();
 
-  // Create a partial source topology, com branches, source nodes and sink nodes.
-  // playback topologies are always partial
-  hr := CreatePlaybackTopology(m_pSource,
-                               pSourcePD,
-                               m_hwndVideo,
-                               pTopology,
-                               dwSourceStreams);
+    // Create a partial source topology, com branches, source nodes and sink nodes.
+    // playback topologies are always partial
+    hr := CreatePlaybackTopology(m_pSource,
+                                 pSourcePD,
+                                 m_hwndVideo,
+                                 pTopology,
+                                 dwSourceStreams);
 
-  if FAILED(hr) then
-    goto done;
+    if FAILED(hr) then
+      goto done;
 
-  // Set the topology on the media session.
-  hr := m_pSession.SetTopology(MFSESSION_SETTOPOLOGY_IMMEDIATE,
-                               pTopology);
-  if FAILED(hr) then
-    goto done;
+    // Set the topology on the media session.
+    hr := m_pSession.SetTopology(MFSESSION_SETTOPOLOGY_IMMEDIATE,
+                                 pTopology);
+    if FAILED(hr) then
+      goto done;
 
-  // If SetTopology succeeds, the media session will queue an
-  // MESessionTopologySet event.
-  // This event is evaluated and fired in the OnTopologyStatus method
-  // When the method completes, MFPlay will call OnMediaPlayerEvent
-  // with the MFP_EVENT_TYPE_MEDIAITEM_CREATED event.
+    // If SetTopology succeeds, the media session will queue an
+    // MESessionTopologySet event.
+    // This event is evaluated and fired in the OnTopologyStatus method
+    // When the method completes, MFPlay will call OnMediaPlayerEvent
+    // with the MFP_EVENT_TYPE_MEDIAITEM_CREATED event.
 
-  // Obtain capabilities of the current session.
-  hr := m_pSession.GetSessionCapabilities(dwSessionCaps);
-  if FAILED(hr) then
-    dwSessionCaps := $0001;
+    // Obtain capabilities of the current session.
+    hr := m_pSession.GetSessionCapabilities(dwSessionCaps);
+    if FAILED(hr) then
+      dwSessionCaps := $0001;
 
-  hr := SetStreamRotation(m_pSource,
-                          0,
-                          FRotation);
+    hr := SetStreamRotation(m_pSource,
+                            0,
+                            FRotation);
 
-  if SUCCEEDED(hr) then
-    begin
-      //
-      hr := GetSymbolicLink(m_pActivate,
-                            m_pwszSymbolicLink,
-                            m_cchSymbolicLink,
-                            MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK);
+    if SUCCEEDED(hr) then
+      begin
+        //
+        hr := GetSymbolicLink(m_pActivate,
+                              m_pwszSymbolicLink,
+                              m_cchSymbolicLink,
+                              MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK);
+        if FAILED(hr) then
+          goto done;
+
+        hr := GetDeviceName(m_pActivate,
+                            m_pwszDeviceName,
+                            m_cchDeviceName);
+        if FAILED(hr) then
+          goto done;
+
+        // Set state to "open pending"
+        State := OpenPending;
+        // Send a request to start capturing (this is fired in OnTopologyReady).
+        Request := reqStartRecording;
+      end;
+
+    done:
+
       if FAILED(hr) then
-        goto done;
+        begin
+          Clear();
+          Abort; // throw exception
+        end;
 
-      hr := GetDeviceName(m_pActivate,
-                          m_pwszDeviceName,
-                          m_cchDeviceName);
-      if FAILED(hr) then
-        goto done;
-
-      // Set state to "open pending"
-      State := OpenPending;
-      // Send a request to start capturing (this is fired in OnTopologyReady).
-      Request := reqStartRecording;
-    end;
-
-done:
-
-  if FAILED(hr) then
-    begin
-      Clear();
-      Abort; // throw exception
-    end;
-
-finally
-  Result := hr;
-end;
+  finally
+    Result := hr;
+  end;
 
 end;
 
@@ -1539,7 +1570,7 @@ end;
 //  2. Compare the dbcc_name member of this structure to the symbolic link of the device.
 //-------------------------------------------------------------------
 function TRdjProCaptureManager.CheckCaptureDeviceLost(var pHdr: PDEV_BROADCAST_HDR;
-                                                 var pbDeviceLost: Boolean): HRESULT;
+                                                      var pbDeviceLost: Boolean): HRESULT;
 var
   hr: HRESULT;
   pDi: PDEV_BROADCAST_DEVICEINTERFACE;
@@ -1580,15 +1611,15 @@ begin
   if Assigned(m_pwszSymbolicLink) then
     begin
       // Perform a lowercase comparison of strings.
-      if AnsiCompareText(pSymbolicLink, pDeviceName) = 0 then
+      if (AnsiCompareText(pSymbolicLink, pDeviceName) = 0) then
         begin
           pbDeviceLost := True;
           hr := ERROR_DEVICE_REMOVED;
         end;
     end;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -1597,6 +1628,7 @@ end;
 // Repaint the video window.
 // Call this method on WM_PAINT from the form where the video is playing on.
 function TRdjProCaptureManager.UpdateVideo(): HRESULT;
+
 begin
 
   if Assigned(m_pVideoDisplay) then
@@ -1628,13 +1660,16 @@ begin
       // If dRect is empty; use the GetClientRect function.
       if (dRect = Nil) then
         begin
-          Windows.GetClientRect(m_hwndVideo, rc);
-          CopyTRectToLPRect(rc, rcpdest);
+          Windows.GetClientRect(m_hwndVideo,
+                                rc);
+          CopyTRectToLPRect(rc,
+                            rcpdest);
         end
       else
         rcpDest := dRect;
 
-      hr := m_pVideoDisplay.SetVideoPosition(Nil, rcpdest);
+      hr := m_pVideoDisplay.SetVideoPosition(Nil,
+                                             rcpdest);
 
       if SUCCEEDED(hr) then
         // Set aspect ratio in conjunction with SetVideoPosition.
@@ -1649,20 +1684,24 @@ end;
 
 // Reduces flickering
 procedure TRdjProCaptureManager.SetRedraw();
+
 begin
 
   // Reduce flickering of controls when resizing.
   if (stRedrawStatus = rdStarted) then
     begin
-      SendMessageW(m_hwnd_MainForm, WM_SETREDRAW, WPARAM(False), 0);
+      SendMessageW(m_hwnd_MainForm,
+                   WM_SETREDRAW,
+                   WPARAM(False),
+                   0);
       stRedrawStatus := rdStopped;
     end
   else
     begin
       SendMessageW(m_hwnd_MainForm,
-                  WM_SETREDRAW,
-                  WPARAM(True),
-                  0);
+                   WM_SETREDRAW,
+                   WPARAM(True),
+                   0);
 
       RedrawWindow(m_hwnd_MainForm,
                    Nil,
@@ -1676,13 +1715,16 @@ end;
 
 // private
 function TRdjProCaptureManager.HasVideo(): BOOL;
+
 begin
-   Result := (m_pVideoDisplay <> nil);
+
+  Result := (m_pVideoDisplay <> nil);
 end;
 
 
 // public
 function TRdjProCaptureManager.VideoDetected(): Boolean;
+
 begin
 
   m_bHasVideo := HasVideo();
@@ -1813,7 +1855,7 @@ begin
 
   // Control the 'video'.
   hr := m_pSource.QueryInterface(IID_IAMVideoProcAmp,
-                                   dsVideoControl);
+                                 dsVideoControl);
 
   if SUCCEEDED(hr) then
     begin
@@ -1834,17 +1876,17 @@ begin
       else if (hr <> S_OK) then
         goto done;
 
-        // Contrast.
-        hr := dsVideoControl.GetRange(LONG(VideoProcAmp_Contrast),
-                                      FVideoProps.VideoCtl_Contrast.prMin,
-                                      FVideoProps.VideoCtl_Contrast.prMax,
-                                      FVideoProps.VideoCtl_Contrast.prDelta,
-                                      FVideoProps.VideoCtl_Contrast.prDefault,
-                                      FVideoProps.VideoCtl_Contrast.prFlags);
+      // Contrast.
+      hr := dsVideoControl.GetRange(LONG(VideoProcAmp_Contrast),
+                                    FVideoProps.VideoCtl_Contrast.prMin,
+                                    FVideoProps.VideoCtl_Contrast.prMax,
+                                    FVideoProps.VideoCtl_Contrast.prDelta,
+                                    FVideoProps.VideoCtl_Contrast.prDefault,
+                                    FVideoProps.VideoCtl_Contrast.prFlags);
       if (hr = E_PROP_ID_UNSUPPORTED) then
-          FVideoProps.VideoCtl_Contrast.IsSupported := False
+        FVideoProps.VideoCtl_Contrast.IsSupported := False
       else if (hr <> S_OK) then
-          goto done;
+        goto done;
 
       // Hue.
       hr := dsVideoControl.GetRange(LONG(VideoProcAmp_Hue),
@@ -1948,16 +1990,16 @@ begin
       FVideoProps.IsSupported := False;
     end;
 
-done:
+  done:
 
-  // If no support, just ignore this exept for other errors.
-  if (hr = E_PROP_ID_UNSUPPORTED) or (hr = E_NOINTERFACE) then
-    hr := S_OK
-  else if FAILED(hr) then
-    // Let user know an error has been occured.
-    ShowErrorMessage(m_hwnd_MainForm,
-                     'An error occured in function TRdjProCaptureManager.GetCameraSettings',
-                     hr);
+    // If no support, just ignore this exept for other errors.
+    if (hr = E_PROP_ID_UNSUPPORTED) or (hr = E_NOINTERFACE) then
+      hr := S_OK
+    else if FAILED(hr) then
+      // Let user know an error has been occured.
+      ShowErrorMessage(m_hwnd_MainForm,
+                       'An error occured in function TRdjProCaptureManager.GetCameraSettings',
+                       hr);
 
   Result := hr;
 end;
@@ -1965,6 +2007,7 @@ end;
 
 // private
 procedure TRdjProCaptureManager.SetRotation(AValue: Integer);
+
 begin
 
   if (AValue <> FRotation) then
@@ -1977,8 +2020,8 @@ end;
 
 
 function TRdjProCaptureManager.SetStreamRotation(const ASource: IMFMediaSource;
-                                            AStreamIndex: Integer;
-                                            ARotation: Integer): HRESULT;
+                                                 AStreamIndex: Integer;
+                                                 ARotation: Integer): HRESULT;
 var
   hr: HRESULT;
   pPD: IMFPresentationDescriptor;
@@ -2012,6 +2055,7 @@ end;
 
 // Sets the desired clipping window/control.
 procedure TRdjProCaptureManager.SetVideoScreen(val: HWND);
+
 begin
 
   if Assigned(m_pVideoDisplay) then
@@ -2020,6 +2064,7 @@ end;
 
 
 function TRdjProCaptureManager.GetVideoScreen(): HWND;
+
 begin
 
   if Assigned(m_pVideoDisplay) then
@@ -2035,8 +2080,10 @@ var
 begin
 
   // we don't need the normalized rect.
-  m_pVideoDisplay.GetVideoPosition(nrc, rc);
-  CopyTRectToTRect(rc, Result);
+  m_pVideoDisplay.GetVideoPosition(nrc,
+                                   rc);
+  CopyTRectToTRect(rc,
+                   Result);
 end;
 
 
@@ -2067,8 +2114,8 @@ begin
     Exit(E_POINTER);
 
   hr := dsVideoControl.Set_(LONG(pProps.cpVideoProcAmpProperty),
-                             pProps.cpValue,
-                             LONG(pProps.cpFlags));
+                            pProps.cpValue,
+                            LONG(pProps.cpFlags));
 
   Result := hr;
 end;
@@ -2091,6 +2138,7 @@ var
   BaseDevices: PIMFActivate;
 
 begin
+
   AActivate := nil;
   Attributes := nil;
   Devices := nil;
@@ -2133,8 +2181,8 @@ begin
               Current := string(Link);
 
               if (Wanted = '') or
-                 SameText(Current,
-                          Wanted) then
+                SameText(Current,
+                         Wanted) then
                 begin
                   AActivate := Device;
                   Found := True;
@@ -2169,7 +2217,9 @@ end;
 
 
 constructor TRdjProCaptureManager.Create(hEvent: HWND);
+
 begin
+
   // Compatibility constructor for older RDJ code paths.
   // The real Sample-2 engine needs the preview HWND and main form HWND.
   // InitializeCaptureManager supplies them before SetDevice/PrepareSession.
@@ -2194,22 +2244,23 @@ begin
   FVideoSampleStopping := False;
   FVideoSampleHardFlushing := False;
   FVideoSampleFlushEvent := CreateEventW(nil,
-                                        True,
-                                        False,
-                                        nil);
+                                         True,
+                                         False,
+                                         nil);
 
   Initialize();
 end;
 
 
 function TRdjProCaptureManager.InitializeCaptureManager(const hPreviewObject: HWND;
-                                                       const hMainForm: HWND;
-                                                       Unk: IUnknown;
-                                                       pCleanUp: Boolean): HResult;
+                                                        const hMainForm: HWND;
+                                                        Unk: IUnknown;
+                                                        pCleanUp: Boolean): HResult;
 var
   Activate: IMFActivate;
 
 begin
+
   // RDJ bridge for the clean Sample-2 engine.
   //
   // Old SourceReader based code passed an activation object through Unk.
@@ -2232,7 +2283,7 @@ begin
   if FAILED(Result) then
     Exit;
 
-  if hCloseEvent = 0 then
+  if (hCloseEvent = 0) then
     begin
       Result := Initialize();
       if FAILED(Result) then
@@ -2251,7 +2302,7 @@ begin
     Exit;
 
   if not RegisterForDeviceNotification(m_hwnd_MainForm,
-                                       p_hdevnotify) then
+    p_hdevnotify) then
     begin
       Result := HRESULT_FROM_WIN32(GetLastError());
       Exit;
@@ -2264,27 +2315,36 @@ begin
   Result := PrepareSession();
 end;
 
+
 function TRdjProCaptureManager.StartCamera(const APreferredMediaType: IMFMediaType): HRESULT;
+
 begin
+
   Result := StartRecording();
 end;
 
 
 function TRdjProCaptureManager.StopCamera(): HRESULT;
+
 begin
+
   Result := StopRecording();
 end;
 
 
 function TRdjProCaptureManager.StartPreview(pNewPeviewSink: Boolean): HResult;
+
 begin
+
   // The Sample-2 topology starts preview through the media session/EVR.
   Result := StartRecording();
 end;
 
 
 function TRdjProCaptureManager.StopPreview(): HResult;
+
 begin
+
   Result := StopRecording();
 end;
 
@@ -2302,6 +2362,7 @@ var
   Height: DWORD;
 
 begin
+
   pNewType := nil;
 
   if not Assigned(pSourceType) then
@@ -2325,7 +2386,7 @@ begin
   Height := RDJ_DEFAULT_CAMERA_HEIGHT;
 
   if SUCCEEDED(pSourceType.GetUINT64(MF_MT_FRAME_SIZE,
-                                     FrameSize)) then
+    FrameSize)) then
     begin
       Width := RDJHighDWORD(FrameSize);
       Height := RDJLowDWORD(FrameSize);
@@ -2338,7 +2399,7 @@ begin
     Exit;
 
   if SUCCEEDED(pSourceType.GetUINT64(MF_MT_FRAME_RATE,
-                                     FrameRate)) then
+    FrameRate)) then
     pNewType.SetUINT64(MF_MT_FRAME_RATE,
                        FrameRate)
   else
@@ -2347,7 +2408,7 @@ begin
                                      RDJ_DEFAULT_CAMERA_FPS_DEN));
 
   if SUCCEEDED(pSourceType.GetUINT64(MF_MT_PIXEL_ASPECT_RATIO,
-                                     PixelAspect)) then
+    PixelAspect)) then
     pNewType.SetUINT64(MF_MT_PIXEL_ASPECT_RATIO,
                        PixelAspect)
   else
@@ -2356,7 +2417,7 @@ begin
                                      1));
 
   if SUCCEEDED(pSourceType.GetUINT32(MF_MT_INTERLACE_MODE,
-                                     InterlaceMode)) then
+    InterlaceMode)) then
     pNewType.SetUINT32(MF_MT_INTERLACE_MODE,
                        InterlaceMode)
   else
@@ -2432,12 +2493,14 @@ end;
 
 
 function TRdjProCaptureManager.RequestNextVideoSample(): HRESULT;
+
 begin
+
   Result := S_OK;
 
   if FVideoSampleStopping or
-     (not FVideoSampleRunning) or
-     (not Assigned(FVideoSampleReader)) then
+    (not FVideoSampleRunning) or
+    (not Assigned(FVideoSampleReader)) then
     Exit;
 
   Result := FVideoSampleReader.ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
@@ -2450,7 +2513,7 @@ end;
 
 
 function TRdjProCaptureManager.HardFlushVideoSampleReader(const ARestartAfterFlush: Boolean;
-                                                                  const AWaitTimeoutMs: DWORD): HRESULT;
+                                                          const AWaitTimeoutMs: DWORD): HRESULT;
 var
   Reader: IMFSourceReader;
   WaitResult: DWORD;
@@ -2459,6 +2522,7 @@ var
   hrSelectOn: HRESULT;
 
 begin
+
   Reader := FVideoSampleReader;
 
   if not Assigned(Reader) then
@@ -2466,7 +2530,7 @@ begin
 
   FVideoSampleHardFlushing := True;
 
-  if FVideoSampleFlushEvent <> 0 then
+  if (FVideoSampleFlushEvent <> 0) then
     ResetEvent(FVideoSampleFlushEvent);
 
   // The plain SourceReader.Flush call is often too polite for camera capture.
@@ -2476,12 +2540,12 @@ begin
                                            LongBool(0));
   OutputDebugStringW(PChar(Format(
     'TRdjProCaptureManager.HardFlushVideoSampleReader: SetStreamSelection(False) hr=0x%.8x',
-    [Cardinal(hrSelectOff)])));
+                                  [Cardinal(hrSelectOff)])));
 
   hrFlush := Reader.Flush(MF_SOURCE_READER_FIRST_VIDEO_STREAM);
   OutputDebugStringW(PChar(Format(
     'TRdjProCaptureManager.HardFlushVideoSampleReader: Flush(video) hr=0x%.8x',
-    [Cardinal(hrFlush)])));
+                                  [Cardinal(hrFlush)])));
 
   if FAILED(hrSelectOff) then
     Result := hrSelectOff
@@ -2494,7 +2558,7 @@ begin
                                         AWaitTimeoutMs);
       OutputDebugStringW(PChar(Format(
         'TRdjProCaptureManager.HardFlushVideoSampleReader: OnFlush wait result=%d',
-        [WaitResult])));
+                                      [WaitResult])));
     end;
 
   if ARestartAfterFlush and Assigned(FVideoSampleReader) then
@@ -2503,7 +2567,7 @@ begin
                                               LongBool(1));
       OutputDebugStringW(PChar(Format(
         'TRdjProCaptureManager.HardFlushVideoSampleReader: SetStreamSelection(True) hr=0x%.8x',
-        [Cardinal(hrSelectOn)])));
+                                      [Cardinal(hrSelectOn)])));
 
       if SUCCEEDED(Result) then
         Result := hrSelectOn;
@@ -2514,7 +2578,9 @@ end;
 
 
 function TRdjProCaptureManager.FlushVideoSourceReaderHard(const AWaitTimeoutMs: DWORD): HRESULT;
+
 begin
+
   Result := HardFlushVideoSampleReader(True,
                                        AWaitTimeoutMs);
 
@@ -2528,6 +2594,7 @@ var
   Shutdown: IMFShutdown;
 
 begin
+
   FVideoSampleRunning := False;
   FVideoSampleStopping := True;
 
@@ -2538,8 +2605,8 @@ begin
   if Assigned(FVideoSampleSource) then
     begin
       if Supports(FVideoSampleSource,
-                  IMFShutdown,
-                  Shutdown) then
+        IMFShutdown,
+        Shutdown) then
         Shutdown.Shutdown();
 
       FVideoSampleSource := nil;
@@ -2603,7 +2670,9 @@ end;
 
 
 function TRdjProCaptureManager.StopVideoSourceReader(const AWaitTimeoutMs: DWORD): HRESULT;
+
 begin
+
   Result := S_OK;
 
   FVideoSampleStopping := True;
@@ -2628,6 +2697,7 @@ var
   OwnedSample: IMFSample;
 
 begin
+
   Result := S_OK;
 
   if FVideoSampleStopping or FVideoSampleHardFlushing then
@@ -2639,7 +2709,7 @@ begin
       Exit(hrStatus);
     end;
 
-  if (dwStreamFlags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0 then
+  if ((dwStreamFlags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0) then
     begin
       FVideoSampleRunning := False;
       Exit(S_OK);
@@ -2662,13 +2732,15 @@ end;
 
 
 function TRdjProCaptureManager.OnFlush(dwStreamIndex: DWORD): HRESULT;
+
 begin
-  if FVideoSampleFlushEvent <> 0 then
+
+  if (FVideoSampleFlushEvent <> 0) then
     SetEvent(FVideoSampleFlushEvent);
 
   OutputDebugStringW(PChar(Format(
     'TRdjProCaptureManager.OnFlush: stream=%d',
-    [dwStreamIndex])));
+                                  [dwStreamIndex])));
 
   Result := S_OK;
 end;
@@ -2676,13 +2748,17 @@ end;
 
 function TRdjProCaptureManager.OnEvent(dwStreamIndex: DWORD;
                                        pEvent: IMFMediaEvent): HRESULT;
+
 begin
+
   Result := S_OK;
 end;
 
 
 function TRdjProCaptureManager.SetMediaType(pMediaType: IMFMediaType): HResult;
+
 begin
+
   // Sample 2 uses the camera's selected native topology. Format selection can be
   // reintroduced after this clean engine is stable.
   Result := S_OK;
@@ -2690,13 +2766,17 @@ end;
 
 
 function TRdjProCaptureManager.SetVideoFormat(): HResult;
+
 begin
+
   Result := S_OK;
 end;
 
 
 function TRdjProCaptureManager.GetCurrentFormat(): TVideoFormatInfo;
+
 begin
+
   FillChar(Result,
            SizeOf(Result),
            0);
@@ -2704,27 +2784,35 @@ end;
 
 
 function TRdjProCaptureManager.TakePhoto(pSnapShotOption: TSnapShotOptions;
-                                        pMediaType: IMFMediaType): HResult;
+                                         pMediaType: IMFMediaType): HResult;
+
 begin
+
   Result := E_NOTIMPL;
 end;
 
 
 function TRdjProCaptureManager.UpdateVideo(pSrc: PMFVideoNormalizedRect): HResult;
+
 begin
+
   Result := UpdateVideo();
 end;
 
 
 function TRdjProCaptureManager.OnCaptureEvent(pWParam: WPARAM;
-                                             pLParam: LPARAM): Hresult;
+                                              pLParam: LPARAM): Hresult;
+
 begin
+
   Result := S_OK;
 end;
 
 
 procedure TRdjProCaptureManager.ResetTRdjProCaptureManager();
+
 begin
+
   Clear();
 end;
 
@@ -2749,19 +2837,21 @@ var
   msg: string;
 
 begin
+
   hr := S_OK;
   Msg := SysUtils.format('%s  HResult = $%u',
-                                [fmt, hrErr]);
+                         [fmt, hrErr]);
 
   if SUCCEEDED(hr) then
     MessageBoxW(hwnd,
-               lpcwstr(msg),
-               lpcwstr('Error'),
-               MB_ICONERROR);
+                lpcwstr(msg),
+                lpcwstr('Error'),
+                MB_ICONERROR);
 end;
 
 
 procedure TCVPropRecord.Initialize();
+
 begin
 
   prMin := 0;
@@ -2774,6 +2864,7 @@ end;
 
 
 procedure TCameraProps.Initialize();
+
 begin
 
   CameraCtl_Pan.Initialize();
@@ -2788,6 +2879,7 @@ end;
 
 
 procedure TVideoProps.Initialize();
+
 begin
 
   VideoCtl_Brightness.Initialize();

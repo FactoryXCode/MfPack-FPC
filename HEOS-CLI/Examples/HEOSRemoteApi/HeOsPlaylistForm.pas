@@ -64,14 +64,15 @@ unit HEOSPlaylistForm;
 
 interface
 
-  {$WARN SYMBOL_PLATFORM OFF}
+{$WARN SYMBOL_PLATFORM OFF}
 
-uses FxProxy.Dialogs,
-Rdj.Platform,
-LMessages,
+uses
+  FxProxy.Dialogs,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   ShellAPI,
@@ -93,7 +94,7 @@ LMessages,
   ExtCtrls,
   Grids,
   Menus,
-  {FireDAC}  {Application}
+  {FireDAC}{Application}
   HEOSRdjBridge,
   RDJ_Common,
   RDJ.PlaylistTypes,
@@ -109,7 +110,8 @@ LMessages,
 
 type
 
-  THEOSPlaylistPlayEvent = procedure(Sender: TObject; Playlist: TRDJPlaylist;
+  THEOSPlaylistPlayEvent = procedure(Sender: TObject;
+                                     Playlist: TRDJPlaylist;
                                      StartIndex: Integer) of object;
 
   THEOSPlaylistEditor = class(TForm)
@@ -168,17 +170,22 @@ type
     procedure btnMoveUpClick(Sender: TObject);
     procedure btnMoveDownClick(Sender: TObject);
     procedure grdLibraryDblClick(Sender: TObject);
-    procedure grdLibrarySelectCell(Sender: TObject; ACol, ARow: LongInt;
-      var CanSelect: Boolean);
-    procedure grdLibrarySetEditText(Sender: TObject; ACol, ARow: LongInt;
-      const Value: string);
+    procedure grdLibrarySelectCell(Sender: TObject;
+                                   ACol,
+                                   ARow: LongInt;
+                                   var CanSelect: Boolean);
+    procedure grdLibrarySetEditText(Sender: TObject;
+                                    ACol,
+                                    ARow: LongInt;
+                                    const Value: string);
     procedure cbPlaylistsDblClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnTagEditorClick(Sender: TObject);
     procedure grdLibraryMouseDown(Sender: TObject;
                                   Button: TMouseButton;
                                   Shift: TShiftState;
-                                  X, Y: Integer);
+                                  X,
+                                  Y: Integer);
     procedure mnuScanFolderClick(Sender: TObject);
     procedure LibraryPopupPrelistenClick(Sender: TObject); // Pre listen from source, before adding it to a playlist.
     procedure LibraryPopupLoadToChannelClick(Sender: TObject);
@@ -186,20 +193,27 @@ type
     procedure LibraryPopupEditTagsClick(Sender: TObject);
     procedure LibraryPopupOpenFileLocationClick(Sender: TObject);
     procedure LibraryPopupRemoveFromLibraryClick(Sender: TObject);
-    procedure grdPlaylistMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure grdPlaylistMouseDown(Sender: TObject;
+                                   Button: TMouseButton;
+                                   Shift: TShiftState;
+                                   X,
+                                   Y: Integer);
     procedure btnOpenFileClick(Sender: TObject);
     procedure edFileNameMouseDown(Sender: TObject;
                                   Button: TMouseButton;
                                   Shift: TShiftState;
-                                  X, Y: Integer);
+                                  X,
+                                  Y: Integer);
     procedure LoadedFilePopupClick(Sender: TObject);
     procedure btnClearLibraryClick(Sender: TObject);
     procedure btnClearMissingTracksClick(Sender: TObject);
     procedure btnCancelScanClick(Sender: TObject);
     procedure btnScanFolderClick(Sender: TObject);
-    procedure pnlCaptionMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure pnlCaptionMouseDown(Sender: TObject;
+                                  Button: TMouseButton;
+                                  Shift: TShiftState;
+                                  X,
+                                  Y: Integer);
     procedure btnExitClick(Sender: TObject);
     procedure btnMinimizeClick(Sender: TObject);
     procedure btnMaxNormalClick(Sender: TObject);
@@ -226,8 +240,8 @@ type
     FScanThread: TRDJLibraryScanThread;
 
     FCurrentPlaylist: TRDJPlaylist;
-    FLibraryRows: TList<Integer>;    // row -> TrackID
-    FPlaylistRows: TList<Integer>;   // row -> PlaylistItemID
+    FLibraryRows: TList < Integer > ;    // row -> TrackID
+    FPlaylistRows: TList < Integer > ;   // row -> PlaylistItemID
     FCurrentPlaylistDurationMs: Int64; // Gets the total duration of a playlist.
 
     FSendToChannelPopup: TPopupMenu;
@@ -298,7 +312,8 @@ type
 
   public
 
-    constructor CreateWithDatabase(AOwner: TComponent; const DatabaseFile: string);
+    constructor CreateWithDatabase(AOwner: TComponent;
+                                   const DatabaseFile: string);
     function ConfirmSave(): Boolean;
     property Playlist: TRDJPlaylist read FCurrentPlaylist;
     property OnPlay: THEOSPlaylistPlayEvent read FOnPlay write FOnPlay;
@@ -321,7 +336,8 @@ uses
 
 
 constructor THEOSPlaylistEditor.CreateWithDatabase(AOwner: TComponent;
-                                                  const DatabaseFile: string);
+                                                   const DatabaseFile: string);
+
 begin
 
   FDatabaseOverride := DatabaseFile;
@@ -330,6 +346,7 @@ end;
 
 
 function THEOSPlaylistEditor.ConfirmSave(): Boolean;
+
 begin
 
   Result := True;
@@ -342,16 +359,21 @@ procedure THEOSPlaylistEditor.RouteToHEOS(Sender: TObject;
                                           Playlist: TRDJPlaylist;
                                           StartIndex: Integer;
                                           StartPlayback: Boolean);
+
 begin
 
   if StartPlayback then
     begin
 
       if Assigned(FOnPlay) then
-        FOnPlay(Self, Playlist, StartIndex);
+        FOnPlay(Self,
+                Playlist,
+                StartIndex);
     end
   else if Assigned(FOnLoad) then
-    FOnLoad(Self, Playlist, StartIndex);
+    FOnLoad(Self,
+            Playlist,
+            StartIndex);
 end;
 
 
@@ -365,10 +387,10 @@ begin
   SetWindowLong(Handle,
                 GWL_STYLE,
                 GetWindowLong(Handle,
-                             GWL_STYLE) and not WS_CAPTION or WS_BORDER);
+                              GWL_STYLE) and not WS_CAPTION or WS_BORDER);
 
-  FLibraryRows := TList<Integer>.Create;
-  FPlaylistRows := TList<Integer>.Create;
+  FLibraryRows := (TList < Integer > .Create);
+  FPlaylistRows := (TList < Integer > .Create);
   FCurrentPlaylist := nil;
   FCurrentPlaylistDurationMs := 0;
 
@@ -381,7 +403,7 @@ begin
 
   FDb := TRDJPlaylistDb.Create;
   DbFileName := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) +
-                'Data\RDJLibrary.db';
+    'Data\RDJLibrary.db';
 
   if (FDatabaseOverride <> '') then
     DbFileName := FDatabaseOverride;
@@ -409,6 +431,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.FormDestroy(Sender: TObject);
+
 begin
 
   if Assigned(FScanThread) then
@@ -422,7 +445,7 @@ begin
       FreeAndNil(FScanThread);
     end;
 
-  if MainMDIFrm = FBridge then
+  if (MainMDIFrm = FBridge) then
     MainMDIFrm := nil;
   FreeAndNil(FBridge);
   FreeAndNil(FCurrentPlaylist);
@@ -440,6 +463,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.FormShow(Sender: TObject);
+
 begin
 
   ApplyDarkWindowFrame(Handle);
@@ -451,22 +475,24 @@ end;
 // Handlers --------------------------------------------------------------------
 
 procedure THEOSPlaylistEditor.ScanThreadProgress(Sender: TObject;
-                                                const AFileName: string;
-                                                ACurrentIndex: Integer;
-                                                ATotalCount: Integer);
+                                                 const AFileName: string;
+                                                 ACurrentIndex: Integer;
+                                                 ATotalCount: Integer);
+
 begin
 
   SetStatus(Format('Scanning %d/%d: %s',
                    [ACurrentIndex,
-                    ATotalCount,
-                    ExtractFileName(AFileName)]));
+    ATotalCount,
+    ExtractFileName(AFileName)]));
 end;
 
 
 procedure THEOSPlaylistEditor.ScanThreadFinished(Sender: TObject;
-                                                AProcessedCount: Integer;
-                                                ACancelled: Boolean;
-                                                const AErrorMsg: string);
+                                                 AProcessedCount: Integer;
+                                                 ACancelled: Boolean;
+                                                 const AErrorMsg: string);
+
 begin
 
   FScanThread := nil;
@@ -492,6 +518,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.InitLibraryGrid();
+
 begin
 
   grdLibrary.ColCount := 5;  //7 if we want "genre" and "album"
@@ -499,8 +526,8 @@ begin
   grdLibrary.FixedRows := 1;
   grdLibrary.FixedCols := 0;
   grdLibrary.Options := grdLibrary.Options + [goRowSelect,
-                                              goColSizing,
-                                              goEditing];
+    goColSizing,
+    goEditing];
 
   grdLibrary.Cells[0, 0] := 'Artist';
   grdLibrary.Cells[1, 0] := 'Title';
@@ -521,6 +548,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.InitPlaylistGrid;
+
 begin
 
   grdPlaylist.ColCount := 5;
@@ -545,7 +573,7 @@ end;
 
 
 function THEOSPlaylistEditor.FormatDurationMs(const AMs: Int64;
-                                             const ALongFormat: Boolean): string;
+                                              const ALongFormat: Boolean): string;
 var
   TotalSecs: Int64;
   Hours: Int64;
@@ -571,12 +599,12 @@ begin
   if ALongFormat or (Hours > 0) then
     Result := Format('%.2d:%.2d:%.2d',
                      [Hours,
-                      Mins,
-                      Secs])
+      Mins,
+      Secs])
   else
     Result := Format('%.2d:%.2d',
                      [Mins,
-                      Secs]);
+      Secs]);
 end;
 
 
@@ -605,19 +633,21 @@ end;
 
 
 procedure THEOSPlaylistEditor.UpdatePlaylistDurationStatus();
+
 begin
 
   FCurrentPlaylistDurationMs := CalculateCurrentPlaylistDurationMs();
 
   lblPlayListDuration.Caption := Format('Playlist loaded: %s - %d track(s), total duration %s.',
                                         [FCurrentPlaylist.Info.Name,
-                                        FCurrentPlaylist.Count,
-                                        FormatDurationMs(FCurrentPlaylistDurationMs,
-                                        True)]);
+    FCurrentPlaylist.Count,
+    FormatDurationMs(FCurrentPlaylistDurationMs,
+                     True)]);
 end;
 
 
 procedure THEOSPlaylistEditor.SetStatus(const S: string);
+
 begin
 
   lblStatus.Caption := S;
@@ -625,21 +655,23 @@ end;
 
 
 procedure THEOSPlaylistEditor.ScannerProgress(Sender: TObject;
-                                             const AFileName: string;
-                                             ACurrentIndex: Integer;
-                                             ATotalCount: Integer);
+                                              const AFileName: string;
+                                              ACurrentIndex: Integer;
+                                              ATotalCount: Integer);
+
 begin
 
   SetStatus(Format('Scanning %d/%d: %s',
                    [ACurrentIndex,
-                    ATotalCount,
-                    ExtractFileName(AFileName)]));
+    ATotalCount,
+    ExtractFileName(AFileName)]));
 
   Application.ProcessMessages;
 end;
 
 
 procedure THEOSPlaylistEditor.SavePlaylist();
+
 begin
 
   if (FCurrentPlaylist = nil) then
@@ -656,9 +688,10 @@ end;
 
 procedure THEOSPlaylistEditor.RefreshLibraryGrid(const ASearchText: string);
 var
-  L: TList<TRDJTrack>;
+  L: TList < TRDJTrack > ;
   i: Integer;
   T: TRDJTrack;
+
 
   function FormatDuration(const AMs: Int64): string;
   var
@@ -677,7 +710,7 @@ var
 
     Result := Format('%.2d:%.2d',
                      [Mins,
-                      RemSecs]);
+      RemSecs]);
   end;
 
 begin
@@ -724,10 +757,10 @@ begin
 
     SetStatus(Format('%d track(s) found.',
                      [L.Count]));
-    finally
+  finally
 
-      L.Free;
-    end;
+    L.Free;
+  end;
 end;
 
 
@@ -778,7 +811,7 @@ end;
 
 procedure THEOSPlaylistEditor.RefreshPlaylistsCombo();
 var
-  L: TList<TRDJPlaylistInfo>;
+  L: TList < TRDJPlaylistInfo > ;
   i: Integer;
   Info: TRDJPlaylistInfo;
   CurID: Integer;
@@ -815,7 +848,7 @@ begin
           begin
 
             for i := 0 to cbPlaylists.Items.Count - 1 do
-              if Integer(cbPlaylists.Items.Objects[i]) = CurID then
+              if (Integer(cbPlaylists.Items.Objects[i]) = CurID) then
                 begin
 
                   cbPlaylists.ItemIndex := i;
@@ -857,6 +890,7 @@ end;
 
 
 function THEOSPlaylistEditor.GetSelectedPlaylistIndex: Integer;
+
 begin
 
   Result := grdPlaylist.Row - 1;
@@ -870,6 +904,7 @@ end;
 
 
 function THEOSPlaylistEditor.GetCurrentPlaylistIDFromCombo: Integer;
+
 begin
 
   Result := 0;
@@ -882,6 +917,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.LoadPlaylistByID(const APlaylistID: Integer);
+
 begin
 
   FreeAndNil(FCurrentPlaylist);
@@ -924,6 +960,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.btnSearchClick(Sender: TObject);
+
 begin
 
   RefreshLibraryGrid(edtSearch.Text);
@@ -931,6 +968,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.btnTagEditorClick(Sender: TObject);
+
 begin
 
   EditSelectedLibraryTrackTags();
@@ -938,6 +976,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.btnCancelScanClick(Sender: TObject);
+
 begin
 
   if Assigned(FScanThread) then
@@ -946,13 +985,14 @@ end;
 
 
 procedure THEOSPlaylistEditor.btnClearLibraryClick(Sender: TObject);
+
 begin
 
-  if MessageDlg('Clear the entire library database?' + sLineBreak +
-                'This removes all tracks from the library and playlist items that reference them.',
-                mtConfirmation,
-                [mbYes, mbNo],
-                0) <> mrYes then
+  if (MessageDlg('Clear the entire library database?' + sLineBreak +
+    'This removes all tracks from the library and playlist items that reference them.',
+    mtConfirmation,
+    [mbYes, mbNo],
+    0) <> mrYes) then
     Exit;
 
   FLibrary.ClearLibrary(True);
@@ -968,6 +1008,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.btnClearMissingTracksClick(Sender: TObject);
+
 begin
 
   FLibrary.RemoveMissingTracks();
@@ -981,6 +1022,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.btnClearSearchClick(Sender: TObject);
+
 begin
 
   edtSearch.Clear();
@@ -992,7 +1034,7 @@ end;
 
 procedure THEOSPlaylistEditor.btnImportRDJProPlaylistClick(Sender: TObject);
 var
-  Playlists: TList<TRDJPlaylistInfo>;
+  Playlists: TList < TRDJPlaylistInfo > ;
   Item: TMenuItem;
   P: TPoint;
   i: Integer;
@@ -1013,7 +1055,7 @@ begin
   FImportRDJDatabaseFile := dlgImportRDJProPlaylist.FileName;
 
   if SameFileName(ExpandFileName(FImportRDJDatabaseFile),
-                  ExpandFileName(FDb.DbFileName)) then
+    ExpandFileName(FDb.DbFileName)) then
     begin
 
       ShowMessage('Select the RDJ Pro database, not the current HEOS database.');
@@ -1041,9 +1083,9 @@ begin
 
           Item := TMenuItem.Create(pmImportRDJProPlaylist);
           Item.Caption := StringReplace(Playlists[i].Name,
-                                          '&',
-                                          '&&',
-                                          [rfReplaceAll]);
+                                        '&',
+                                        '&&',
+                                        [rfReplaceAll]);
           Item.Tag := Playlists[i].PlaylistID;
           Item.OnClick := ImportRDJProPlaylistClick;
           pmImportRDJProPlaylist.Items.Add(Item);
@@ -1095,7 +1137,7 @@ begin
     cbPlaylists.ItemIndex := cbPlaylists.Items.IndexOfObject(TObject(ID));
     LoadPlaylistByID(ID);
     SetStatus(Format('Imported "%s": %d tracks, %d missing audio files.',
-                       [FCurrentPlaylist.Info.Name, TrackCount, MissingCount]));
+                     [FCurrentPlaylist.Info.Name, TrackCount, MissingCount]));
   except
 
     on E: Exception do
@@ -1199,10 +1241,10 @@ begin
   if (ID = 0) then
     Exit;
 
-  if MessageDlg('Delete selected playlist?',
-                mtConfirmation,
-                [mbYes, mbNo],
-                0) <> mrYes then
+  if (MessageDlg('Delete selected playlist?',
+    mtConfirmation,
+    [mbYes, mbNo],
+    0) <> mrYes) then
     Exit;
 
   FPlaylistMgr.DeletePlaylist(ID);
@@ -1214,6 +1256,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.btnExitClick(Sender: TObject);
+
 begin
 
   Close();
@@ -1266,7 +1309,8 @@ begin
                                   TrackID);
   RefreshPlaylistGrid();
   lblPlayListDuration.Caption := Format('Total duration: %s.',
-                                        [FormatDurationMs(FCurrentPlaylistDurationMs, True)]);
+                                        [FormatDurationMs(FCurrentPlaylistDurationMs,
+                                                          True)]);
   SavePlaylist();
 end;
 
@@ -1277,18 +1321,19 @@ var
 
 begin
 
-  if (FCurrentPlaylist = nil )then
+  if (FCurrentPlaylist = nil) then
     Exit;
 
   Idx := GetSelectedPlaylistIndex();
-  if Idx < 0 then
+  if (Idx < 0) then
     Exit;
 
   FPlaylistMgr.RemovePlaylistItem(FCurrentPlaylist,
                                   Idx);
   RefreshPlaylistGrid;
   lblPlayListDuration.Caption := Format('Total duration: %s.',
-                                        [FormatDurationMs(FCurrentPlaylistDurationMs, True)]);
+                                        [FormatDurationMs(FCurrentPlaylistDurationMs,
+                                                          True)]);
   SavePlaylist();
 end;
 
@@ -1316,7 +1361,7 @@ begin
     Exit;
 
   Idx := GetSelectedPlaylistIndex();
-  if Idx <= 0 then
+  if (Idx <= 0) then
     Exit;
 
   FPlaylistMgr.MovePlaylistItem(FCurrentPlaylist,
@@ -1325,27 +1370,29 @@ begin
   RefreshPlaylistGrid();
   grdPlaylist.Row := Idx;
   lblPlayListDuration.Caption := Format('Total duration: %s.',
-                                        [FormatDurationMs(FCurrentPlaylistDurationMs, True)]);
+                                        [FormatDurationMs(FCurrentPlaylistDurationMs,
+                                                          True)]);
   SavePlaylist();
 end;
 
 
 procedure THEOSPlaylistEditor.btnMaxNormalClick(Sender: TObject);
+
 begin
 
   if (WindowState = wsMaximized) then
     WindowState := wsNormal
-  else
-    if (WindowState = wsNormal) then
-      WindowState := wsMaximized;
+  else if (WindowState = wsNormal) then
+    WindowState := wsMaximized;
   Invalidate;
 end;
 
 
 procedure THEOSPlaylistEditor.btnMinimizeClick(Sender: TObject);
+
 begin
 
-   WindowState := wsMinimized;
+  WindowState := wsMinimized;
 end;
 
 
@@ -1368,12 +1415,14 @@ begin
   RefreshPlaylistGrid();
   grdPlaylist.Row := Idx + 2;
   lblPlayListDuration.Caption := Format('Total duration: %s.',
-                                        [FormatDurationMs(FCurrentPlaylistDurationMs, True)]);
+                                        [FormatDurationMs(FCurrentPlaylistDurationMs,
+                                                          True)]);
   SavePlaylist();
 end;
 
 
 procedure THEOSPlaylistEditor.grdLibraryDblClick(Sender: TObject);
+
 begin
 
   btnAddToPlaylistClick(Sender);
@@ -1381,7 +1430,10 @@ end;
 
 
 procedure THEOSPlaylistEditor.grdLibraryMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                                  Button: TMouseButton;
+                                                  Shift: TShiftState;
+                                                  X,
+                                                  Y: Integer);
 var
   GC: TGridCoord;
   P: TPoint;
@@ -1400,7 +1452,7 @@ begin
   BuildLibraryPopup();
 
   P := grdLibrary.ClientToScreen(Point(X,
-                                      Y));
+                                       Y));
 
   FLibraryPopup.Popup(P.X,
                       P.Y);
@@ -1408,8 +1460,10 @@ end;
 
 
 procedure THEOSPlaylistEditor.grdLibrarySelectCell(Sender: TObject;
-                                                  ACol, ARow: Integer;
-                                                  var CanSelect: Boolean);
+                                                   ACol,
+                                                   ARow: Integer;
+                                                   var CanSelect: Boolean);
+
 begin
 
   CanSelect := True;
@@ -1431,8 +1485,9 @@ end;
 
 
 procedure THEOSPlaylistEditor.grdLibrarySetEditText(Sender: TObject;
-                                                   ACol, ARow: Integer;
-                                                   const Value: string);
+                                                    ACol,
+                                                    ARow: Integer;
+                                                    const Value: string);
 var
   TrackID: Integer;
   Track: TRDJTrack;
@@ -1447,11 +1502,11 @@ begin
     Exit;
 
   TrackID := FLibraryRows[ARow - 1];
-  if TrackID = 0 then
+  if (TrackID = 0) then
     Exit;
 
   if not FLibrary.FindTrackByID(TrackID,
-                                Track) then
+    Track) then
     Exit;
 
   Changed := False;
@@ -1497,7 +1552,10 @@ end;
 
 
 procedure THEOSPlaylistEditor.grdPlaylistMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                                   Button: TMouseButton;
+                                                   Shift: TShiftState;
+                                                   X,
+                                                   Y: Integer);
 var
   P: TPoint;
 
@@ -1518,8 +1576,12 @@ end;
 
 
 function THEOSPlaylistEditor.SelectFolderDialog(var AFolder: string): Boolean;
+
 begin
- Result:=FxSelectDirectory('Select Directory','',AFolder);
+
+  Result := FxSelectDirectory('Select Directory',
+                              '',
+                              AFolder);
 end;
 
 
@@ -1636,18 +1698,20 @@ begin
 
   if SUCCEEDED(Result) then
     SetStatus('Selected row sent to receiver.')
+  else if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
+    SetStatus(Format('File not found %s.',
+                     [Entry.Track.FullPath]))
   else
-    if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
-      SetStatus(Format('File not found %s.',
-                       [Entry.Track.FullPath]))
-    else
-      SetStatus(Format('Failed to send selected row to receiver (Result: %d).',
-                       [Result]));
+    SetStatus(Format('Failed to send selected row to receiver (Result: %d).',
+                     [Result]));
 end;
 
 
 procedure THEOSPlaylistEditor.pnlCaptionMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                                  Button: TMouseButton;
+                                                  Shift: TShiftState;
+                                                  X,
+                                                  Y: Integer);
 const
   SC_DRAGMOVE = $F012;
 
@@ -1697,13 +1761,12 @@ begin
 
   if SUCCEEDED(Result) then
     SetStatus('Selected row loaded into HEOS console.')
+  else if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
+    SetStatus(Format('File not found %s.',
+                     [Entry.Track.FullPath]))
   else
-    if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
-      SetStatus(Format('File not found %s.',
-                       [Entry.Track.FullPath]))
-    else
-      SetStatus(Format('Failed to load selected row into HEOS console (Result: %d).',
-                       [Result]));
+    SetStatus(Format('Failed to load selected row into HEOS console (Result: %d).',
+                     [Result]));
 end;
 
 
@@ -1735,13 +1798,12 @@ begin
 
   Result := Deck.PlayPlaylistByID(PlaylistID);
 
-done:
+  done:
 
-  if SUCCEEDED(Result) then
-    SetStatus(Format('Playlist "%s" sent to receiver.',
+    if SUCCEEDED(Result) then
+      SetStatus(Format('Playlist "%s" sent to receiver.',
                        [FCurrentPlaylist.Info.Name]))
-  else
-    if (Result = ERROR_FILE_NOT_FOUND) then
+    else if (Result = ERROR_FILE_NOT_FOUND) then
       SetStatus(Format('Failed to send playlist "%s" to receiver :File not found.',
                        [FCurrentPlaylist.Info.Name]))
     else
@@ -1778,14 +1840,13 @@ begin
 
   if SUCCEEDED(Result) then
     SetStatus(Format('Playlist "%s" loaded into HEOS console.',
-                       [FCurrentPlaylist.Info.Name]))
+                     [FCurrentPlaylist.Info.Name]))
+  else if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
+    SetStatus(Format('Failed to load playlist "%s" into HEOS console: file not found.',
+                     [FCurrentPlaylist.Info.Name]))
   else
-    if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
-      SetStatus(Format('Failed to load playlist "%s" into HEOS console: file not found.',
-                       [FCurrentPlaylist.Info.Name]))
-    else
-      SetStatus(Format('Failed to load playlist "%s" into HEOS console.',
-                       [FCurrentPlaylist.Info.Name]));
+    SetStatus(Format('Failed to load playlist "%s" into HEOS console.',
+                     [FCurrentPlaylist.Info.Name]));
 
 end;
 
@@ -1804,7 +1865,7 @@ begin
     Exit;
 
   if not FLibrary.FindTrackByID(TrackID,
-                                Track) then
+    Track) then
     Exit;
 
   if not TfrmTagEditor.Execute(Track) then
@@ -1868,6 +1929,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.CMDialogKey(var Message: TCMDialogKey);
+
 begin
 
   if (ActiveControl = edtSearch) and (Message.CharCode = VK_RETURN) then
@@ -1937,9 +1999,10 @@ end;
 
 
 procedure THEOSPlaylistEditor.edFileNameMouseDown(Sender: TObject;
-                                                 Button: TMouseButton;
-                                                 Shift: TShiftState;
-                                                 X, Y: Integer);
+                                                  Button: TMouseButton;
+                                                  Shift: TShiftState;
+                                                  X,
+                                                  Y: Integer);
 var
   P: TPoint;
   FileName: string;
@@ -1987,18 +2050,18 @@ begin
       LoadLoadedFileOnChannel(ChIdx,
                               True);
     end
-  else
-    if (TagValue >= 1000) then
-      begin
+  else if (TagValue >= 1000) then
+    begin
 
-        ChIdx := TagValue - 1000;
-        LoadLoadedFileOnChannel(ChIdx,
-                                False);
-      end;
+      ChIdx := TagValue - 1000;
+      LoadLoadedFileOnChannel(ChIdx,
+                              False);
+    end;
 end;
 
 
 function THEOSPlaylistEditor.GetLoadedFileNameFromEdit(out AFileName: string): Boolean;
+
 begin
 
   AFileName := Trim(edFileName.Hint);
@@ -2014,20 +2077,21 @@ end;
 
 
 function THEOSPlaylistEditor.FindLibraryTrackByFullPath(const AFileName: string;
-                                                       out ATrack: TRDJTrack): Boolean;
+                                                        out ATrack: TRDJTrack): Boolean;
 var
   Artist: string;
   Title: string;
 
+
   function TrySearch(const AText: string): Boolean;
   var
-    L: TList<TRDJTrack>;
+    L: TList < TRDJTrack > ;
     I: Integer;
   begin
 
     Result := False;
 
-    if Trim(AText) = '' then
+    if (Trim(AText) = '') then
       Exit;
 
     L := FLibrary.SearchTrackSummaries(AText);
@@ -2037,7 +2101,7 @@ var
         begin
 
           if SameText(ExpandFileName(L[I].FullPath),
-                      ExpandFileName(AFileName)) then
+            ExpandFileName(AFileName)) then
             begin
 
               ATrack := L[I];
@@ -2087,25 +2151,26 @@ begin
   if (Trim(AFileName) = '') or not FileExists(AFileName) then
     Exit;
 
-  AliasName := 'RDJDuration' + IntToHex(GetTickCount(), 8);
+  AliasName := 'RDJDuration' + IntToHex(GetTickCount(),
+                                        8);
 
   Cmd := Format('open "%s" alias %s',
                 [AFileName,
-                 AliasName]);
+    AliasName]);
 
   Err := mciSendStringW(PChar(Cmd),
-                       nil,
-                       0,
-                       0);
+                        nil,
+                        0,
+                        0);
   if (Err <> 0) then
     Exit;
 
   try
 
     mciSendStringW(PChar('set ' + AliasName + ' time format milliseconds'),
-                  nil,
-                  0,
-                  0);
+                   nil,
+                   0,
+                   0);
 
     FillChar(Buffer,
              SizeOf(Buffer),
@@ -2114,18 +2179,18 @@ begin
     Cmd := 'status ' + AliasName + ' length';
 
     Err := mciSendStringW(PChar(Cmd),
-                         Buffer,
-                         Length(Buffer),
-                         0);
+                          Buffer,
+                          Length(Buffer),
+                          0);
     if (Err = 0) then
       Result := StrToInt64Def(Trim(string(Buffer)),
                               0);
   finally
 
     mciSendStringW(PChar('close ' + AliasName),
-                  nil,
-                  0,
-                  0);
+                   nil,
+                   0,
+                   0);
   end;
 end;
 
@@ -2154,7 +2219,7 @@ begin
     Exit;
 
   if not FindLibraryTrackByFullPath(FileName,
-                                    Track) then
+    Track) then
     begin
 
       TFileNameParser.ResolveArtistTitle(FileName,
@@ -2236,8 +2301,8 @@ begin
 
   SetStatus(Format('Added "%s - %s" to playlist "%s".',
                    [Track.Artist,
-                    Track.Title,
-                    FCurrentPlaylist.Info.Name]));
+    Track.Title,
+    FCurrentPlaylist.Info.Name]));
 
   // Save the playlist.
   SavePlaylist();
@@ -2245,8 +2310,9 @@ begin
   Result := True;
 end;
 
+
 function THEOSPlaylistEditor.LoadLoadedFileOnChannel(const AChannelIndex: Integer;
-  const AStartPlayback: Boolean): HRESULT;
+                                                     const AStartPlayback: Boolean): HRESULT;
 var
   Deck: THEOSDeckAdapter;
   FileName: string;
@@ -2282,18 +2348,17 @@ begin
 
       if AStartPlayback then
         SetStatus(Format('Playing "%s" on receiver.',
-                       [DisplayName]))
+                         [DisplayName]))
       else
         SetStatus(Format('Loaded "%s" into HEOS console.',
-                       [DisplayName]));
+                         [DisplayName]));
     end
+  else if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
+    SetStatus(Format('Failed to open "%s" on receiver: file not found.',
+                     [DisplayName]))
   else
-    if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
-      SetStatus(Format('Failed to open "%s" on receiver: file not found.',
-                       [DisplayName]))
-    else
-      SetStatus(Format('Failed to open "%s" on receiver.',
-                       [DisplayName]));
+    SetStatus(Format('Failed to open "%s" on receiver.',
+                     [DisplayName]));
 end;
 
 
@@ -2401,6 +2466,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.LibraryPopupAddToPlaylistClick(Sender: TObject);
+
 begin
 
   btnAddToPlaylistClick(Sender);
@@ -2408,6 +2474,7 @@ end;
 
 
 procedure THEOSPlaylistEditor.LibraryPopupEditTagsClick(Sender: TObject);
+
 begin
 
   EditSelectedLibraryTrackTags();
@@ -2423,11 +2490,11 @@ var
 begin
 
   TrackID := GetSelectedLibraryTrackID();
-  if TrackID = 0 then
+  if (TrackID = 0) then
     Exit;
 
   if not FLibrary.FindTrackByID(TrackID,
-                                Track) then
+    Track) then
     Exit;
 
   if not FileExists(Track.FullPath) then
@@ -2440,15 +2507,16 @@ begin
   Param := '/select,"' + Track.FullPath + '"';
 
   ShellExecuteW(Handle,
-               'open',
-               'explorer.exe',
-               PChar(Param),
-               nil,
-               SW_SHOWNORMAL);
+                'open',
+                'explorer.exe',
+                PChar(Param),
+                nil,
+                SW_SHOWNORMAL);
 end;
 
 
 procedure THEOSPlaylistEditor.LibraryPopupRemoveFromLibraryClick(Sender: TObject);
+
 begin
 
   RemoveSelectedLibraryTrack();
@@ -2469,14 +2537,14 @@ begin
     Exit;
 
   if not FLibrary.FindTrackByID(TrackID,
-                                Track) then
+    Track) then
     Exit;
 
-  if MessageDlg(Format('Remove "%s" from the library?',
-                       [Track.Title]),
-                mtConfirmation,
-                [mbYes, mbNo],
-                0) <> mrYes then
+  if (MessageDlg(Format('Remove "%s" from the library?',
+    [Track.Title]),
+    mtConfirmation,
+    [mbYes, mbNo],
+    0) <> mrYes) then
     Exit;
 
   FLibrary.DeleteTrackByID(TrackID);
@@ -2513,7 +2581,7 @@ begin
     Exit;
 
   if not FLibrary.FindTrackByID(TrackID,
-                                Track) then
+    Track) then
     Exit;
 
   Result := Deck.LoadSingleTrack(Track.FullPath);
@@ -2525,12 +2593,11 @@ begin
 
   if SUCCEEDED(Result) then
     SetStatus(Format('Loaded "%s" into HEOS console.',
-                       [DisplayName]))
+                     [DisplayName]))
+  else if (Result = ERROR_FILE_NOT_FOUND) then
+    SetStatus('Failed to load selected track into HEOS console: file not found.')
   else
-    if (Result = ERROR_FILE_NOT_FOUND) then
-      SetStatus('Failed to load selected track into HEOS console: file not found.')
-    else
-      SetStatus('Failed to load selected track into HEOS console.');
+    SetStatus('Failed to load selected track into HEOS console.');
 end;
 
 
@@ -2557,7 +2624,7 @@ begin
     Exit;
 
   if not FLibrary.FindTrackByID(TrackID,
-                                Track) then
+    Track) then
     Exit;
 
   //Result := Deck.PlaySingleTrack(Track.FullPath);
@@ -2571,12 +2638,11 @@ begin
 
   if SUCCEEDED(Result) then
     SetStatus(Format('Playing "%s" on receiver.',
-                       [DisplayName]))
+                     [DisplayName]))
+  else if (Result = ERROR_FILE_NOT_FOUND) then
+    SetStatus('Failed to play selected track on receiver.')
   else
-    if (Result = ERROR_FILE_NOT_FOUND) then
-      SetStatus('Failed to play selected track on receiver.')
-    else
-      SetStatus('Failed to play selected track on receiver.');
+    SetStatus('Failed to play selected track on receiver.');
 end;
 
 end.

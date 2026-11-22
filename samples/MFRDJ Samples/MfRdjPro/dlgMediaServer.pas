@@ -64,12 +64,15 @@ unit dlgMediaServer;
 
 interface
 
-uses Rdj.Thread,Rdj.Dispatch,Generics.Collections,
-Rdj.Platform,
-LMessages,
+uses
+  Rdj.Thread,
+  Rdj.Dispatch,
+  Generics.Collections,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   ShlObj,
@@ -115,8 +118,8 @@ LMessages,
   {Cast}
   MfCast,
   MfCastTypes,
-  MfCastWindowsSupport, MfTrackBar;
-
+  MfCastWindowsSupport,
+  MfTrackBar;
 
 const
 
@@ -199,6 +202,7 @@ type
                              mjkDeleteFile);
 
   TRdjProMseMirrorJob = class
+
   public
 
     Kind: TRdjProMseMirrorJobKind;
@@ -208,6 +212,7 @@ type
   end;
 
   TRdjProMseMirrorThread = class(TThread)
+
   private
 
     FLock: SyncObjs.TCriticalSection;
@@ -291,6 +296,7 @@ type
   // The queued restart owns this token after the form has been destroyed.
   // Cancelled is read and written only on the VCL thread.
   TRdjBroadcastRecoveryLifetime = class(TInterfacedObject)
+
   public
 
     Cancelled: Boolean;
@@ -355,15 +361,19 @@ type
     procedure FormCreate(Sender: TObject);
     procedure chkBroadcastClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure btnMinimizeClick(Sender: TObject);
     procedure chkRdjProCameraClick(Sender: TObject);
     procedure tmrTimeTimer(Sender: TObject);
     procedure btnRdjProRecordClick(Sender: TObject);
     procedure chkRecordVideoOnlyClick(Sender: TObject);
     procedure chkRdjProStaticImageClick(Sender: TObject);
-    procedure pnlCaptionMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure pnlCaptionMouseDown(Sender: TObject;
+                                  Button: TMouseButton;
+                                  Shift: TShiftState;
+                                  X,
+                                  Y: Integer);
     procedure chkServerCtrlClick(Sender: TObject);
     procedure chkRecorderCtrlClick(Sender: TObject);
     procedure btnCastDiscoverClick(Sender: TObject);
@@ -376,19 +386,19 @@ type
     procedure chkCastCtrlClick(Sender: TObject);
 
   private
-    procedure DispatchPendingStartProc(Event:TRdjEvent);
-    procedure DispatchStopLocalProc(Event:TRdjEvent);
-    procedure DispatchStopBroadcastProc(Event:TRdjEvent);
-    procedure DispatchFlushProc(Event:TRdjEvent);
+    procedure DispatchPendingStartProc(Event: TRdjEvent);
+    procedure DispatchStopLocalProc(Event: TRdjEvent);
+    procedure DispatchStopBroadcastProc(Event: TRdjEvent);
+    procedure DispatchFlushProc(Event: TRdjEvent);
 
   private
     FUiDispatch: TRdjDispatcher;
-    FUiJobs: TObjectList<TThread>;
+    FUiJobs: TObjectList < TThread > ;
     FPreviewTimer: TTimer;
     FPreviewStep: Integer;
-    procedure OwnUiJob(Job:TThread);
+    procedure OwnUiJob(Job: TThread);
     procedure FinishUiJobs;
-    procedure PreviewRefreshTick(Sender:TObject);
+    procedure PreviewRefreshTick(Sender: TObject);
 
   private
     { Private declarations }
@@ -722,30 +732,77 @@ uses
   RDJ.Log,
   frmMainMDI;
 
-type TRdjRestartJob=class(TThread)
- private
-  FOwner:TfrmMediaServer;
-  OldRecorder:TRdjProFmp4Recorder;
-  Reason,CleanupError:string;
-  RestartNo:Integer;StopHr:HRESULT;
-  Lifetime:IInterface;Token:TRdjBroadcastRecoveryLifetime;
-  procedure Finish;
- private procedure DoWork;
- protected procedure Execute;override;
- public constructor Create(Owner:TfrmMediaServer;Recorder:TRdjProFmp4Recorder;const Why:string;Number:Integer;const KeepAlive:IInterface;Guard:TRdjBroadcastRecoveryLifetime);
- end;
-type TRdjBroadcastStopJob=class(TThread)
- private FOwner:TfrmMediaServer;Recorder:TRdjProFmp4Recorder;hr:HRESULT;WasPublishing:Boolean;procedure Finish;
- private procedure DoWork;
- protected procedure Execute;override;
- public constructor Create(Owner:TfrmMediaServer;Value:TRdjProFmp4Recorder;Publishing:Boolean);
- end;
-type TRdjLocalStopJob=class(TThread)
- private FOwner:TfrmMediaServer;Recorder:TRdjProMp4Recorder;hr:HRESULT;WasPublishing:Boolean;procedure Finish;
- private procedure DoWork;
- protected procedure Execute;override;
- public constructor Create(Owner:TfrmMediaServer;Value:TRdjProMp4Recorder;Publishing:Boolean);
- end;
+type
+  TRdjRestartJob = class(TThread)
+
+  private
+    FOwner: TfrmMediaServer;
+    OldRecorder: TRdjProFmp4Recorder;
+    Reason, CleanupError: string;
+    RestartNo: Integer;
+    StopHr: HRESULT;
+    Lifetime: IInterface;
+    Token: TRdjBroadcastRecoveryLifetime;
+    procedure Finish;
+
+  private
+    procedure DoWork;
+
+  protected
+    procedure Execute; override;
+
+  public
+    constructor Create(Owner: TfrmMediaServer;
+                       Recorder: TRdjProFmp4Recorder;
+                       const Why: string;
+                       Number: Integer;
+                       const KeepAlive: IInterface;
+                       Guard: TRdjBroadcastRecoveryLifetime);
+  end;
+
+type
+  TRdjBroadcastStopJob = class(TThread)
+
+  private
+    FOwner: TfrmMediaServer;
+    Recorder: TRdjProFmp4Recorder;
+    hr: HRESULT;
+    WasPublishing: Boolean;
+    procedure Finish;
+
+  private
+    procedure DoWork;
+
+  protected
+    procedure Execute; override;
+
+  public
+    constructor Create(Owner: TfrmMediaServer;
+                       Value: TRdjProFmp4Recorder;
+                       Publishing: Boolean);
+  end;
+
+type
+  TRdjLocalStopJob = class(TThread)
+
+  private
+    FOwner: TfrmMediaServer;
+    Recorder: TRdjProMp4Recorder;
+    hr: HRESULT;
+    WasPublishing: Boolean;
+    procedure Finish;
+
+  private
+    procedure DoWork;
+
+  protected
+    procedure Execute; override;
+
+  public
+    constructor Create(Owner: TfrmMediaServer;
+                       Value: TRdjProMp4Recorder;
+                       Publishing: Boolean);
+  end;
 
 
 type
@@ -765,6 +822,7 @@ type
   end;
 
   TMfRdjCastStatusMessage = class
+
   public
     Status: TMfCastMediaStatus;
     constructor Create(const AStatus: TMfCastMediaStatus);
@@ -774,7 +832,9 @@ function RDJGetProcessMemoryInfo(Process: THandle;
                                  ppsmemCounters: Pointer;
                                  cb: DWORD): BOOL; stdcall; external 'psapi.dll' name 'GetProcessMemoryInfo';
 
+
 function RDJBytesToMb(const ABytes: UInt64): UInt64;
+
 begin
 
   Result := (ABytes + (1024 * 1024 div 2)) div (1024 * 1024);
@@ -782,6 +842,7 @@ end;
 
 
 function RDJIsRunningUnderDebugger(): Boolean;
+
 begin
 
   // Ord(IsDebuggerPresent) covers the Delphi IDE debugger; IsDebuggerPresent also covers
@@ -818,8 +879,8 @@ begin
   CreateResult := SHCreateDirectory(0,
                                     PChar(Dir));
   Result := (CreateResult = ERROR_SUCCESS) or
-            (CreateResult = ERROR_ALREADY_EXISTS) or
-            (CreateResult = ERROR_FILE_EXISTS);
+    (CreateResult = ERROR_ALREADY_EXISTS) or
+    (CreateResult = ERROR_FILE_EXISTS);
 
   if not Result then
     AErrorCode := DWORD(CreateResult);
@@ -843,23 +904,23 @@ begin
   AErrorCode := ERROR_SUCCESS;
 
   if (AFileName = '') or
-     (Length(ABytes) = 0) then
+    (Length(ABytes) = 0) then
     Exit;
 
   DirectoryName := ExtractFilePath(AFileName);
   if not RDJEnsureDirectoryExists(DirectoryName,
-                                  AErrorCode) then
+    AErrorCode) then
     Exit;
 
   FileHandle := CreateFileW(PChar(AFileName),
-                           GENERIC_WRITE,
-                           AShareMode,
-                           nil,
-                           CREATE_ALWAYS,
-                           FILE_ATTRIBUTE_NORMAL,
-                           0);
+                            GENERIC_WRITE,
+                            AShareMode,
+                            nil,
+                            CREATE_ALWAYS,
+                            FILE_ATTRIBUTE_NORMAL,
+                            0);
 
-  if FileHandle = INVALID_HANDLE_VALUE then
+  if (FileHandle = INVALID_HANDLE_VALUE) then
     begin
       AErrorCode := GetLastError();
       Exit;
@@ -869,22 +930,22 @@ begin
 
     Offset := 0;
 
-    while Offset < Length(ABytes) do
+    while (Offset < Length(ABytes)) do
       begin
         BytesToWrite := DWORD(Length(ABytes) - Offset);
         BytesWritten := 0;
 
         if not WriteFile(FileHandle,
-                         ABytes[Offset],
-                         BytesToWrite,
-                         BytesWritten,
-                         nil) then
+          ABytes[Offset],
+          BytesToWrite,
+          BytesWritten,
+          nil) then
           begin
             AErrorCode := GetLastError();
             Exit;
           end;
 
-        if BytesWritten = 0 then
+        if (BytesWritten = 0) then
           begin
             AErrorCode := ERROR_WRITE_FAULT;
             Exit;
@@ -922,14 +983,14 @@ begin
   AErrorCode := ERROR_SUCCESS;
 
   FileHandle := CreateFileW(PChar(AFileName),
-                           GENERIC_READ,
-                           FILE_SHARE_READ or FILE_SHARE_WRITE or FILE_SHARE_DELETE,
-                           nil,
-                           OPEN_EXISTING,
-                           FILE_ATTRIBUTE_NORMAL,
-                           0);
+                            GENERIC_READ,
+                            FILE_SHARE_READ or FILE_SHARE_WRITE or FILE_SHARE_DELETE,
+                            nil,
+                            OPEN_EXISTING,
+                            FILE_ATTRIBUTE_NORMAL,
+                            0);
 
-  if FileHandle = INVALID_HANDLE_VALUE then
+  if (FileHandle = INVALID_HANDLE_VALUE) then
     begin
       AErrorCode := GetLastError();
       Exit;
@@ -938,22 +999,22 @@ begin
   try
 
     FileSize := Windows.GetFileSize(FileHandle,
-                                          nil);
+                                    nil);
 
     if (FileSize = INVALID_FILE_SIZE) and
-       (GetLastError() <> ERROR_SUCCESS) then
+      (GetLastError() <> ERROR_SUCCESS) then
       begin
         AErrorCode := GetLastError();
         Exit;
       end;
 
-    if FileSize > CMaxHandoverTextFileSize then
+    if (FileSize > CMaxHandoverTextFileSize) then
       begin
         AErrorCode := ERROR_FILE_TOO_LARGE;
         Exit;
       end;
 
-    if FileSize = 0 then
+    if (FileSize = 0) then
       begin
         Result := True;
         Exit;
@@ -964,10 +1025,10 @@ begin
     BytesRead := 0;
 
     if not ReadFile(FileHandle,
-                    Bytes[0],
-                    FileSize,
-                    BytesRead,
-                    nil) then
+      Bytes[0],
+      FileSize,
+      BytesRead,
+      nil) then
       begin
         AErrorCode := GetLastError();
         Exit;
@@ -975,7 +1036,7 @@ begin
 
     SetLength(Utf8,
               BytesRead);
-    if BytesRead > 0 then
+    if (BytesRead > 0) then
       Move(Bytes[0],
            PAnsiChar(Utf8)^,
            BytesRead);
@@ -990,6 +1051,7 @@ end;
 
 
 constructor TMfRdjCastStatusMessage.Create(const AStatus: TMfCastMediaStatus);
+
 begin
 
   inherited Create();
@@ -998,6 +1060,7 @@ end;
 
 
 constructor TRdjProMseMirrorThread.Create(const AMaxJobs: Integer);
+
 begin
 
   inherited Create(False);
@@ -1047,6 +1110,7 @@ end;
 
 
 function TRdjProMseMirrorThread.QueueCount(): Integer;
+
 begin
 
   FLock.Acquire();
@@ -1062,6 +1126,7 @@ end;
 
 
 function TRdjProMseMirrorThread.IsLiveJsonFile(const AFileName: string): Boolean;
+
 begin
 
   Result := SameText(ExtractFileName(AFileName),
@@ -1081,13 +1146,13 @@ begin
   Name := ExtractFileName(AFileName);
 
   if not SameText(Copy(Name,
-                       1,
-                       Length('patched_frag_')),
-                       'patched_frag_') then
+    1,
+    Length('patched_frag_')),
+    'patched_frag_') then
     Exit;
 
   if not SameText(ExtractFileExt(Name),
-                  '.m4s') then
+    '.m4s') then
     Exit;
 
   Digits := Copy(Name,
@@ -1132,30 +1197,30 @@ begin
   P := Pos(Pattern,
            AJson);
 
-  if P <= 0 then
+  if (P <= 0) then
     Exit;
 
   P := P + Length(Pattern);
 
   while (P <= Length(AJson)) and
-        (AJson[P] <> ':') do
+    (AJson[P] <> ':') do
     Inc(P);
 
-  if P > Length(AJson) then
+  if (P > Length(AJson)) then
     Exit;
 
   Inc(P);
 
   while (P <= Length(AJson)) and
-        (AJson[P] <= ' ') do
+    (AJson[P] <= ' ') do
     Inc(P);
 
   I := P;
 
   while (I <= Length(AJson)) and
-        {(AJson[I] in ['0'..'9'])}
-        CharInSet(AJson[I],
-                 ['0'..'9']) do
+    {(AJson[I] in ['0'..'9'])}
+    CharInSet(AJson[I],
+              ['0'..'9']) do
     Inc(I);
 
   S := Copy(AJson,
@@ -1169,8 +1234,8 @@ end;
 
 
 function TRdjProMseMirrorThread.ReplaceJsonInteger(const AJson: string;
-                                                            const AName: string;
-                                                            const AValue: Integer): string;
+                                                   const AName: string;
+                                                   const AValue: Integer): string;
 var
   Pattern: string;
   P: Integer;
@@ -1190,7 +1255,7 @@ begin
   P := P + Length(Pattern);
 
   while (P <= Length(Result)) and
-        (Result[P] <> ':') do
+    (Result[P] <> ':') do
     Inc(P);
 
   if (P > Length(Result)) then
@@ -1199,25 +1264,25 @@ begin
   Inc(P);
 
   while (P <= Length(Result)) and
-        (Result[P] <= ' ') do
+    (Result[P] <= ' ') do
     Inc(P);
 
   I := P;
 
   while (I <= Length(Result)) and
-        {(Result[I] in ['0'..'9'])}
-        CharInSet(Result[I],
-                 ['0'..'9']) do
+    {(Result[I] in ['0'..'9'])}
+    CharInSet(Result[I],
+              ['0'..'9']) do
     Inc(I);
 
-  if I <= P then
+  if (I <= P) then
     Exit;
 
   Result := Copy(Result,
                  1,
                  P - 1) + IntToStr(AValue) + Copy(Result,
-                 I,
-                 MaxInt);
+                                                  I,
+                                                  MaxInt);
 end;
 
 
@@ -1248,14 +1313,13 @@ begin
 
   if (KeepBehind < RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MIN) then
     KeepBehind := RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MIN
-  else
-    if (KeepBehind > RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MAX) then
-      KeepBehind := RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MAX;
+  else if (KeepBehind > RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MAX) then
+    KeepBehind := RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MAX;
 
   if (ManifestFirst <= 0) or
-     (ManifestLast <= 0) or
-     (ManifestLast < ManifestFirst) or
-     (ALastMirroredSeq <= 0) then
+    (ManifestLast <= 0) or
+    (ManifestLast < ManifestFirst) or
+    (ALastMirroredSeq <= 0) then
     Exit;
 
   // The public Caddy manifest must describe what the Caddy mirror has
@@ -1305,7 +1369,7 @@ begin
   SetLength(ABytes,
             Length(Utf8));
 
-  if Length(Utf8) > 0 then
+  if (Length(Utf8) > 0) then
     Move(PAnsiChar(Utf8)^,
          ABytes[0],
          Length(Utf8));
@@ -1314,6 +1378,7 @@ end;
 
 procedure TRdjProMseMirrorThread.StorePendingLiveJson(const AFileName: string;
                                                       const ABytes: TBytes);
+
 begin
 
   FLock.Acquire();
@@ -1335,10 +1400,10 @@ begin
     // small brake when running under the Delphi debugger.  Keep the useful
     // breadcrumb trail, but only print it occasionally.
     if (FPendingLiveJsonGeneration <= 5) or
-       ((FPendingLiveJsonGeneration mod 25) = 0) then
+      ((FPendingLiveJsonGeneration mod 25) = 0) then
       OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: queued pending live.json gen=%d mirroredLast=%d',
-                                     [FPendingLiveJsonGeneration,
-                                      FLastMirroredPatchedSeq])));
+                                      [FPendingLiveJsonGeneration,
+        FLastMirroredPatchedSeq])));
   finally
     FLock.Release();
   end;
@@ -1380,7 +1445,7 @@ begin
 
   try
     if (FPendingLiveJsonFileName = '') or
-       (Length(FPendingLiveJsonBytes) = 0) then
+      (Length(FPendingLiveJsonBytes) = 0) then
       Exit;
 
     JobsQueued := FJobs.Count;
@@ -1394,11 +1459,11 @@ begin
     // from the actual media copies.  When the queue becomes empty, publish
     // immediately.
     if (JobsQueued > 0) and
-       (LastFlushTick <> 0) then
+      (LastFlushTick <> 0) then
       begin
         FlushElapsed := DWORD(NowTick - LastFlushTick);
 
-        if FlushElapsed < LIVE_JSON_FLUSH_INTERVAL_MS then
+        if (FlushElapsed < LIVE_JSON_FLUSH_INTERVAL_MS) then
           Exit;
       end;
 
@@ -1421,8 +1486,8 @@ begin
   Json := Utf8BytesToString(Bytes);
 
   if not BuildSafeLiveJson(Json,
-                           LastMirrored,
-                           SafeJson) then
+    LastMirrored,
+    SafeJson) then
     Exit;
 
   SafeLast := ExtractJsonInteger(SafeJson,
@@ -1433,13 +1498,13 @@ begin
                                   0);
 
   if (SafeLast > 0) and
-     (SafeLast <= PublishedLast) then
+    (SafeLast <= PublishedLast) then
     begin
       FLock.Acquire();
       try
         if (FPendingLiveJsonGeneration = PendingGeneration) and
-           SameText(FPendingLiveJsonFileName,
-                    FileName) then
+          SameText(FPendingLiveJsonFileName,
+                   FileName) then
           begin
             FPendingLiveJsonFileName := '';
             SetLength(FPendingLiveJsonBytes,
@@ -1462,9 +1527,9 @@ begin
       // Keep the pending manifest.  A transient Caddy/SMB lock should not make
       // us forget the newest scoreboard.
       OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: live.json write deferred safeLast=%d gen=%d queue=%d',
-                                     [SafeLast,
-                                      PendingGeneration,
-                                      QueueCount()])));
+                                      [SafeLast,
+        PendingGeneration,
+        QueueCount()])));
       Exit;
     end;
 
@@ -1481,8 +1546,8 @@ begin
     // filename only, but every manifest is called live.json, so a fresh pending
     // manifest could be deleted silently.
     if (FPendingLiveJsonGeneration = PendingGeneration) and
-       SameText(FPendingLiveJsonFileName,
-                FileName) then
+      SameText(FPendingLiveJsonFileName,
+               FileName) then
       begin
         FPendingLiveJsonFileName := '';
         SetLength(FPendingLiveJsonBytes,
@@ -1493,12 +1558,12 @@ begin
   end;
 
   if (SafeLast <= 5) or
-     ((SafeLast mod 25) = 0) then
+    ((SafeLast mod 25) = 0) then
     OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: mirrored safe live.json safeLast=%d mirroredLast=%d gen=%d queue=%d',
-                                   [SafeLast,
-                                    LastMirrored,
-                                    PendingGeneration,
-                                    QueueCount()])));
+                                    [SafeLast,
+      LastMirrored,
+      PendingGeneration,
+      QueueCount()])));
 
   CleanupMirroredFragmentsAfterManifest(FileName,
                                         SafeFirst,
@@ -1507,6 +1572,7 @@ end;
 
 
 function TRdjProMseMirrorThread.IsLowPriorityJob(AJob: TRdjProMseMirrorJob): Boolean;
+
 begin
 
   Result := False;
@@ -1524,8 +1590,8 @@ begin
     Exit;
 
   if (AJob.Kind = mjkWriteBytes) and
-     SameText(ExtractFileName(AJob.FileName),
-              'live.json') then
+    SameText(ExtractFileName(AJob.FileName),
+             'live.json') then
     Result := True;
 end;
 
@@ -1563,8 +1629,8 @@ var
 begin
 
   if Terminated or
-     (AFileName = '') or
-     (Length(ABytes) = 0) then
+    (AFileName = '') or
+    (Length(ABytes) = 0) then
     Exit;
 
   // live.json is not a normal copy job anymore.  It is kept as the latest
@@ -1600,7 +1666,7 @@ begin
             OldJob := TRdjProMseMirrorJob(FJobs[0]);
             FJobs.Delete(0);
             OutputDebugStringW(PChar('TRdjProMseMirrorThread: mirror queue full, dropping oldest media job: ' +
-                                    ExtractFileName(OldJob.FileName)));
+              ExtractFileName(OldJob.FileName)));
             OldJob.Free();
           end;
       end;
@@ -1617,7 +1683,7 @@ end;
 
 
 procedure TRdjProMseMirrorThread.EnqueueCopy(const ASourceFileName: string;
-                                                     const ADestFileName: string);
+                                             const ADestFileName: string);
 var
   Job: TRdjProMseMirrorJob;
   OldJob: TRdjProMseMirrorJob;
@@ -1625,8 +1691,8 @@ var
 begin
 
   if Terminated or
-     (ASourceFileName = '') or
-     (ADestFileName = '') then
+    (ASourceFileName = '') or
+    (ADestFileName = '') then
     Exit;
 
   Job := TRdjProMseMirrorJob.Create();
@@ -1647,7 +1713,7 @@ begin
             OldJob := TRdjProMseMirrorJob(FJobs[0]);
             FJobs.Delete(0);
             OutputDebugStringW(PChar('TRdjProMseMirrorThread: mirror queue full, dropping oldest job: ' +
-                                    ExtractFileName(OldJob.FileName)));
+              ExtractFileName(OldJob.FileName)));
             OldJob.Free();
           end;
       end;
@@ -1670,7 +1736,7 @@ var
 begin
 
   if Terminated or
-     (AFileName = '') then
+    (AFileName = '') then
     Exit;
 
   Job := TRdjProMseMirrorJob.Create();
@@ -1692,6 +1758,7 @@ end;
 
 
 function TRdjProMseMirrorThread.PopJob(): TRdjProMseMirrorJob;
+
 begin
 
   Result := nil;
@@ -1720,7 +1787,7 @@ begin
   Result := False;
 
   if (AFileName = '') or
-     (Length(ABytes) = 0) then
+    (Length(ABytes) = 0) then
     Exit;
 
   Result := RDJWriteBytesToFile(AFileName,
@@ -1730,14 +1797,14 @@ begin
 
   if not Result then
     OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: write failed: %s err=%d %s',
-                                   [ExtractFileName(AFileName),
-                                    ErrorCode,
-                                    SysErrorMessage(ErrorCode)])));
+                                    [ExtractFileName(AFileName),
+      ErrorCode,
+      SysErrorMessage(ErrorCode)])));
 end;
 
 
 function TRdjProMseMirrorThread.WriteBytesToFileAtomicResult(const AFileName: string;
-                                                              const ABytes: TBytes): Boolean;
+                                                             const ABytes: TBytes): Boolean;
 var
   TmpFileName: string;
   I: Integer;
@@ -1747,24 +1814,24 @@ begin
   Result := False;
 
   if (AFileName = '') or
-     (Length(ABytes) = 0) then
+    (Length(ABytes) = 0) then
     Exit;
 
   TmpFileName := AFileName +
-                 Format('.tmp_%x_%x_%x',
-                        [GetCurrentProcessId(),
-                         GetCurrentThreadId(),
-                         GetTickCount()]);
+    Format('.tmp_%x_%x_%x',
+           [GetCurrentProcessId(),
+    GetCurrentThreadId(),
+    GetTickCount()]);
 
   if not WriteBytesToFile(TmpFileName,
-                          ABytes) then
+    ABytes) then
     Exit;
 
   for I := 0 to 20 do
     begin
       if MoveFileExW(PChar(TmpFileName),
-                    PChar(AFileName),
-                    MOVEFILE_REPLACE_EXISTING) then
+        PChar(AFileName),
+        MOVEFILE_REPLACE_EXISTING) then
         begin
           Result := True;
           Exit;
@@ -1774,15 +1841,15 @@ begin
     end;
 
   OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: atomic mirror write failed, keeping old file: %s err=%d',
-                                 [ExtractFileName(AFileName),
-                                  GetLastError()])));
+                                  [ExtractFileName(AFileName),
+    GetLastError()])));
 
   DeleteFileW(PWideChar(TmpFileName));
 end;
 
 
 procedure TRdjProMseMirrorThread.DeleteMirroredFragmentFiles(const ADir: string;
-                                                            const ASeq: Integer);
+                                                             const ASeq: Integer);
 var
   Dir: string;
   PatchedFileName: string;
@@ -1791,34 +1858,34 @@ var
 begin
 
   if (ASeq <= 0) or
-     (Trim(ADir) = '') then
+    (Trim(ADir) = '') then
     Exit;
 
   Dir := IncludeTrailingPathDelimiter(Trim(ADir));
 
   PatchedFileName := Dir +
-                     Format('patched_frag_%.6d.m4s',
-                            [ASeq]);
+    Format('patched_frag_%.6d.m4s',
+           [ASeq]);
 
   if FileExists(PatchedFileName) and (not DeleteFileW(PWideChar(PatchedFileName))) then
     OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: mirror accountant delete failed: %s err=%d',
-                                   [ExtractFileName(PatchedFileName),
-                                    GetLastError()])));
+                                    [ExtractFileName(PatchedFileName),
+      GetLastError()])));
 
   RawFileName := Dir +
-                 Format('frag_%.6d.m4s',
-                        [ASeq]);
+    Format('frag_%.6d.m4s',
+           [ASeq]);
 
   if FileExists(RawFileName) and (not DeleteFileW(PWideChar(RawFileName))) then
     OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: mirror accountant raw delete failed: %s err=%d',
-                                   [ExtractFileName(RawFileName),
-                                    GetLastError()])));
+                                    [ExtractFileName(RawFileName),
+      GetLastError()])));
 end;
 
 
 procedure TRdjProMseMirrorThread.ScanOldMirroredFragments(const ADir: string;
-                                                         const ADeleteThroughSeq: Integer;
-                                                         const ASafeLast: Integer);
+                                                          const ADeleteThroughSeq: Integer;
+                                                          const ASafeLast: Integer);
 var
   SearchRec: TSearchRec;
   Dir: string;
@@ -1829,7 +1896,7 @@ var
 begin
 
   if ((ADeleteThroughSeq <= 0) and (ASafeLast <= 0)) or
-     (Trim(ADir) = '') then
+    (Trim(ADir) = '') then
     Exit;
 
   Dir := IncludeTrailingPathDelimiter(Trim(ADir));
@@ -1840,41 +1907,41 @@ begin
   Deleted := 0;
   DeleteAboveSeq := ASafeLast + RDJ_MSE_MIRROR_CLEANUP_SAFETY_FRAGMENTS;
 
-  if FindFirst(Dir + 'patched_frag_*.m4s',
-               faAnyFile,
-               SearchRec) = 0 then
-    try
-      repeat
-        if (SearchRec.Name <> '.') and
-           (SearchRec.Name <> '..') and
-           ((SearchRec.Attr and faDirectory) = 0) then
-          begin
-            Seq := ExtractPatchedFragmentSeq(SearchRec.Name);
+  if (FindFirst(Dir + 'patched_frag_*.m4s',
+    faAnyFile,
+    SearchRec) = 0) then
+  try
+    repeat
+      if (SearchRec.Name <> '.') and
+        (SearchRec.Name <> '..') and
+        ((SearchRec.Attr and faDirectory) = 0) then
+        begin
+          Seq := ExtractPatchedFragmentSeq(SearchRec.Name);
 
-            if (Seq > 0) and
-               ((Seq <= ADeleteThroughSeq) or ((ASafeLast > 0) and (Seq > DeleteAboveSeq))) then
-              begin
-                DeleteMirroredFragmentFiles(Dir,
-                                            Seq);
-                Inc(Deleted);
-              end;
-          end;
-      until FindNext(SearchRec) <> 0;
-    finally
-      FindClose(SearchRec);
-    end;
+          if (Seq > 0) and
+            ((Seq <= ADeleteThroughSeq) or ((ASafeLast > 0) and (Seq > DeleteAboveSeq))) then
+            begin
+              DeleteMirroredFragmentFiles(Dir,
+                                          Seq);
+              Inc(Deleted);
+            end;
+        end;
+    until (FindNext(SearchRec) <> 0);
+  finally
+    FindClose(SearchRec);
+  end;
 
-  if Deleted > 0 then
+  if (Deleted > 0) then
     OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: mirror accountant orphan scan deleted=%d through=%d safeLast=%d',
-                                   [Deleted,
-                                    ADeleteThroughSeq,
-                                    ASafeLast])));
+                                    [Deleted,
+      ADeleteThroughSeq,
+      ASafeLast])));
 end;
 
 
 procedure TRdjProMseMirrorThread.CleanupMirroredFragmentsAfterManifest(const ALiveJsonFileName: string;
-                                                                      const ASafeFirst: Integer;
-                                                                      const ASafeLast: Integer);
+                                                                       const ASafeFirst: Integer;
+                                                                       const ASafeLast: Integer);
 var
   MirrorDir: string;
   DeleteThroughSeq: Integer;
@@ -1885,9 +1952,9 @@ var
 begin
 
   if (not RDJ_MSE_MIRROR_ACCOUNTANT_ENABLED) or
-     (ALiveJsonFileName = '') or
-     (ASafeFirst <= 0) or
-     (ASafeLast < ASafeFirst) then
+    (ALiveJsonFileName = '') or
+    (ASafeFirst <= 0) or
+    (ASafeLast < ASafeFirst) then
     Exit;
 
   DeleteThroughSeq := ASafeFirst - 1 - RDJ_MSE_MIRROR_CLEANUP_SAFETY_FRAGMENTS;
@@ -1907,14 +1974,14 @@ begin
 
       if (DeleteThroughSeq <= 5) or ((DeleteThroughSeq mod 25) = 0) then
         OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: mirror accountant cleanup safeFirst=%d safeLast=%d deletedThrough=%d',
-                                       [ASafeFirst,
-                                        ASafeLast,
-                                        FLastMirrorCleanupSeq])));
+                                        [ASafeFirst,
+          ASafeLast,
+          FLastMirrorCleanupSeq])));
     end;
 
   NowTick := GetTickCount();
   DoScan := (FLastMirrorOrphanScanTick = 0) or
-            (DWORD(NowTick - FLastMirrorOrphanScanTick) >= RDJ_MSE_MIRROR_ORPHAN_SCAN_INTERVAL_MS);
+    (DWORD(NowTick - FLastMirrorOrphanScanTick) >= RDJ_MSE_MIRROR_ORPHAN_SCAN_INTERVAL_MS);
 
   if DoScan then
     begin
@@ -1956,9 +2023,9 @@ begin
     if (Gap >= RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MAX) then
       begin
         OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: resync stale mirror gap oldSafeLast=%d got=%d gap=%d',
-                                       [FLastMirroredPatchedSeq,
-                                        ASeq,
-                                        Gap])));
+                                        [FLastMirroredPatchedSeq,
+          ASeq,
+          Gap])));
         FLastMirroredPatchedSeq := ASeq;
         Exit;
       end;
@@ -1967,9 +2034,9 @@ begin
     // otherwise overflow the Delphi debugger after long broadcasts.
     if (ASeq <= 5) or ((ASeq mod 25) = 0) then
       OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: mirror sequence gap, keeping safeLast=%d got=%d gap=%d',
-                                     [FLastMirroredPatchedSeq,
-                                      ASeq,
-                                      Gap])));
+                                      [FLastMirroredPatchedSeq,
+        ASeq,
+        Gap])));
   finally
     FLock.Release();
   end;
@@ -2033,25 +2100,25 @@ begin
 
                 if not WriteOk then
                   OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: mirror directory unavailable: %s err=%d %s',
-                                                 [ExtractFilePath(Job.FileName),
-                                                  ErrorCode,
-                                                  SysErrorMessage(ErrorCode)])))
+                                                  [ExtractFilePath(Job.FileName),
+                    ErrorCode,
+                    SysErrorMessage(ErrorCode)])))
                 else if FileExists(Job.SourceFileName) then
                   begin
                     WriteOk := CopyFileW(PChar(Job.SourceFileName),
-                                        PChar(Job.FileName),
-                                        False);
+                                         PChar(Job.FileName),
+                                         False);
 
                     if (not WriteOk) then
                       OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: CopyFile failed: %s err=%d',
-                                                     [ExtractFileName(Job.FileName),
-                                                      GetLastError()])));
+                                                      [ExtractFileName(Job.FileName),
+                        GetLastError()])));
                   end
                 else
                   begin
                     WriteOk := False;
                     OutputDebugStringW(PChar('TRdjProMseMirrorThread: source fragment already gone: ' +
-                                            ExtractFileName(Job.SourceFileName)));
+                      ExtractFileName(Job.SourceFileName)));
                   end;
 
                 if WriteOk and (Seq > 0) then
@@ -2065,8 +2132,8 @@ begin
         except
           on E: Exception do
             OutputDebugStringW(PChar(Format('TRdjProMseMirrorThread: job failed: %s err=%s',
-                                           [ExtractFileName(Job.FileName),
-                                            E.Message])));
+                                            [ExtractFileName(Job.FileName),
+              E.Message])));
         end;
       finally
         Job.Free();
@@ -2078,6 +2145,7 @@ end;
 
 
 procedure TRdjProMseMirrorThread.StopAndWait();
+
 begin
 
   Terminate();
@@ -2090,6 +2158,7 @@ end;
 
 
 procedure TfrmMediaServer.btnMinimizeClick(Sender: TObject);
+
 begin
 
   WindowState := wsMinimized;
@@ -2099,6 +2168,7 @@ end;
 
 
 function TfrmMediaServer.IsBroadcasting(): Boolean;
+
 begin
 
   Result := FBroadcastPublishing;
@@ -2160,6 +2230,7 @@ end;
 
 
 procedure TfrmMediaServer.chkBroadcastClick(Sender: TObject);
+
 begin
 
   if chkBroadcast.Checked then
@@ -2183,6 +2254,7 @@ end;
 
 
 procedure TfrmMediaServer.chkRecordVideoOnlyClick(Sender: TObject);
+
 begin
 
   FRecordVideoOnly := chkRecordVideoOnly.Checked;
@@ -2190,6 +2262,7 @@ end;
 
 
 procedure TfrmMediaServer.chkRecorderCtrlClick(Sender: TObject);
+
 begin
 
   pnlRecorderCtrl.BringToFront();
@@ -2200,6 +2273,7 @@ end;
 
 
 procedure TfrmMediaServer.chkServerCtrlClick(Sender: TObject);
+
 begin
 
   pnlServerCtrl.BringToFront;
@@ -2350,7 +2424,7 @@ end;
 
 
 procedure TfrmMediaServer.FormCloseQuery(Sender: TObject;
-  var CanClose: Boolean);
+                                         var CanClose: Boolean);
 
 begin
 
@@ -2363,36 +2437,39 @@ end;
 
 
 procedure TfrmMediaServer.CastDeviceChanged(const ADevice: TMfCastDevice);
+
 begin
 
   if not FCastClosing then
     PostMessageW(Handle,
-                WM_MFCAST_DEVICES,
-                0,
-                0);
+                 WM_MFCAST_DEVICES,
+                 0,
+                 0);
 end;
 
 
 procedure TfrmMediaServer.CastDeviceRemoved(const ADeviceId: string);
+
 begin
 
   if not FCastClosing then
     PostMessageW(Handle,
-                WM_MFCAST_DEVICES,
-                0,
-                0);
+                 WM_MFCAST_DEVICES,
+                 0,
+                 0);
 end;
 
 
 procedure TfrmMediaServer.CastStateChanged(const AOldState,
-                                                  ANewState: TMfCastState);
+                                           ANewState: TMfCastState);
+
 begin
 
   if not FCastClosing then
     PostMessageW(Handle,
-                WM_MFCAST_STATE,
-                Ord(ANewState),
-                0);
+                 WM_MFCAST_STATE,
+                 Ord(ANewState),
+                 0);
 end;
 
 
@@ -2407,9 +2484,9 @@ begin
 
   StatusMessage := TMfRdjCastStatusMessage.Create(AStatus);
   if not PostMessageW(Handle,
-                     WM_MFCAST_STATUS,
-                     WPARAM(StatusMessage),
-                     0) then
+    WM_MFCAST_STATUS,
+    WPARAM(StatusMessage),
+    0) then
     StatusMessage.Free();
 end;
 
@@ -2422,8 +2499,8 @@ begin
 
   ErrorText := Format('Cast error [%s]: %s (HRESULT $%.8x)',
                       [AError.Stage,
-                       AError.MessageText,
-                       DWORD(AError.HResult)]);
+    AError.MessageText,
+    DWORD(AError.HResult)]);
 
   if (AError.Detail <> '') then
     ErrorText := ErrorText + ' ' + AError.Detail;
@@ -2436,7 +2513,8 @@ end;
 procedure TfrmMediaServer.CastLog(Sender: TObject;
                                   const ALevel: TMfCastLogLevel;
                                   const ASource,
-                                        AMessage: string);
+                                  AMessage: string);
+
 begin
 
   // Normal state is already visible in the compact Cast status label. Keep the
@@ -2445,7 +2523,7 @@ begin
     PostCastText(WM_MFCAST_LOG,
                  Format('Cast [%s] %s',
                         [ASource,
-                         AMessage]));
+      AMessage]));
 end;
 
 
@@ -2461,9 +2539,9 @@ begin
 
   LogMessage := TMfCastUiLogMessage.Create(AText);
   if not PostMessageW(Handle,
-                     AWindowsMessage,
-                     WPARAM(LogMessage),
-                     0) then
+    AWindowsMessage,
+    WPARAM(LogMessage),
+    0) then
     LogMessage.Free();
 end;
 
@@ -2478,7 +2556,7 @@ begin
 
   OldDeviceId := '';
   if (cmbCastDevices.ItemIndex >= 0) and
-     (cmbCastDevices.ItemIndex < Length(FCastDevices)) then
+    (cmbCastDevices.ItemIndex < Length(FCastDevices)) then
     OldDeviceId := FCastDevices[cmbCastDevices.ItemIndex].Id;
 
   if not Assigned(FCast) then
@@ -2499,13 +2577,13 @@ begin
       begin
         cmbCastDevices.Items.Add(FCastDevices[I].FriendlyName);
         if (OldDeviceId <> '') and
-           SameText(FCastDevices[I].Id,
-                    OldDeviceId) then
+          SameText(FCastDevices[I].Id,
+                   OldDeviceId) then
           cmbCastDevices.ItemIndex := I;
       end;
 
     if (cmbCastDevices.ItemIndex < 0) and
-       (cmbCastDevices.Items.Count > 0) then
+      (cmbCastDevices.Items.Count > 0) then
       cmbCastDevices.ItemIndex := 0;
   finally
     cmbCastDevices.Items.EndUpdate();
@@ -2530,29 +2608,29 @@ begin
 
   btnCastDiscover.Enabled := Assigned(FCast) and (not FCastClosing);
   cmbCastDevices.Enabled := Assigned(FCast) and (not Assigned(FCastWorker)) and
-                             (CastState in [csIdle,
-                                            csDiscovering,
-                                            csStopped,
-                                            csError]);
+    (CastState in [csIdle,
+    csDiscovering,
+    csStopped,
+    csError]);
 
   btnCastLive.Enabled := Assigned(FCast) and
-                          (cmbCastDevices.ItemIndex >= 0) and
-                          (cmbCastDevices.ItemIndex < Length(FCastDevices)) and
-                          (not FPendingCastLive) and
-                          (not Assigned(FCastWorker)) and
-                          (CastState in [csIdle,
-                                         csDiscovering,
-                                         csStopped,
-                                         csError]);
+    (cmbCastDevices.ItemIndex >= 0) and
+    (cmbCastDevices.ItemIndex < Length(FCastDevices)) and
+    (not FPendingCastLive) and
+    (not Assigned(FCastWorker)) and
+    (CastState in [csIdle,
+    csDiscovering,
+    csStopped,
+    csError]);
 
   CanControl := Assigned(FCast) and
-                (CastState in [csConnected,
-                               csLaunchingReceiver,
-                               csPreparingMedia,
-                               csBuffering,
-                               csPlaying,
-                               csPaused,
-                               csStopping]);
+    (CastState in [csConnected,
+    csLaunchingReceiver,
+    csPreparingMedia,
+    csBuffering,
+    csPlaying,
+    csPaused,
+    csStopping]);
   btnCastStop.Enabled := CanControl;
   CanSetVolume := CanControl and FCastMediaSessionReady;
   chkCastMuted.Enabled := CanSetVolume;
@@ -2566,6 +2644,7 @@ end;
 
 
 procedure TfrmMediaServer.ClearCastLiveByteStream();
+
 begin
 
   if not Assigned(FCastLiveStreamLock) then
@@ -2598,7 +2677,7 @@ var
 begin
 
   if (Length(AFragment) <= 0) or
-     (not Assigned(FCastLiveStreamLock)) then
+    (not Assigned(FCastLiveStreamLock)) then
     Exit;
 
   FCastLiveStreamLock.Enter();
@@ -2607,8 +2686,8 @@ begin
     if Assigned(Stream) then
       begin
         if (not Assigned(FCastLiveRebaser)) or
-           (not FCastLiveRebaser.Rebase(AFragment,
-                                        RebasedFragment)) then
+          (not FCastLiveRebaser.Rebase(AFragment,
+                                       RebasedFragment)) then
           begin
             OutputDebugStringW(PChar('TfrmMediaServer.Cast live fMP4 rebase failed; fragment was not published.'));
             Exit;
@@ -2632,18 +2711,18 @@ begin
   if FAILED(Hr) or (BytesWritten <> ULONG(Length(RebasedFragment))) then
     begin
       OutputDebugStringW(PChar(Format('TfrmMediaServer.Cast live fMP4 write failed: fragment=%d bytes=%d written=%d HRESULT=$%.8x',
-                                     [FragmentNo,
-                                      Length(RebasedFragment),
-                                      BytesWritten,
-                                      DWORD(Hr)])));
+                                      [FragmentNo,
+        Length(RebasedFragment),
+        BytesWritten,
+        DWORD(Hr)])));
       ClearCastLiveByteStream();
       Exit;
     end;
 
   if (FragmentNo <= 5) or ((FragmentNo mod 25) = 0) then
     OutputDebugStringW(PChar(Format('TfrmMediaServer.Cast live fMP4 write: fragment=%d bytes=%d',
-                                   [FragmentNo,
-                                    BytesWritten])));
+                                    [FragmentNo,
+      BytesWritten])));
 end;
 
 
@@ -2655,15 +2734,15 @@ var
 begin
 
   if (not FPendingCastLive) or
-     (not FCastProducerRequested) or
-     (not Assigned(FCast)) or
-     Assigned(FCastWorker) then
+    (not FCastProducerRequested) or
+    (not Assigned(FCast)) or
+    Assigned(FCastWorker) then
     Exit;
 
   if (not Assigned(FRdjProBroadcastMp4Recorder)) or
-     (not FRdjProBroadcastMp4Recorder.Active) or
-     (not FRdjProBroadcastMp4Recorder.GetInitSegment(InitSegment)) or
-     (Length(InitSegment) <= 24) then
+    (not FRdjProBroadcastMp4Recorder.Active) or
+    (not FRdjProBroadcastMp4Recorder.GetInitSegment(InitSegment)) or
+    (Length(InitSegment) <= 24) then
     Exit;
 
   FPendingCastLive := False;
@@ -2676,7 +2755,7 @@ begin
   FCastWorker.Start();
   lblCastState.Caption := 'Connecting...';
   memLog.Lines.Add('Casting the live fragmented MP4 stream to ' +
-                   DeviceName + '.');
+    DeviceName + '.');
   RDJLog('Cast',
          'Casting the live fragmented MP4 stream to ' + DeviceName + '.');
   UpdateCastControls();
@@ -2695,7 +2774,7 @@ begin
   else
     MessageText := Format('%s failed (HRESULT $%.8x)',
                           [AOperation,
-                           DWORD(AHResult)]);
+      DWORD(AHResult)]);
 
   memLog.Lines.Add(MessageText);
   RDJLog('Cast',
@@ -2704,6 +2783,7 @@ end;
 
 
 procedure TfrmMediaServer.WmCastDevices(var Message: TLMessage);
+
 begin
 
   ReloadCastDevices();
@@ -2711,6 +2791,7 @@ end;
 
 
 procedure TfrmMediaServer.WmCastState(var Message: TLMessage);
+
 begin
 
   lblCastState.Caption := MfCastStateToString(TMfCastState(Message.WParam));
@@ -2728,11 +2809,11 @@ begin
   StatusMessage := TMfRdjCastStatusMessage(Message.WParam);
   try
     StatusText := StatusMessage.Status.PlayerState;
-    if StatusText = '' then
+    if (StatusText = '') then
       StatusText := 'Connected';
 
     lblCastState.Caption := StatusText;
-    FCastMediaSessionReady := StatusMessage.Status.MediaSessionId <> 0;
+    FCastMediaSessionReady := (StatusMessage.Status.MediaSessionId <> 0);
 
     UpdateCastControls();
   finally
@@ -2771,7 +2852,7 @@ begin
       FCastWorker.WaitFor();
 
       if (HRESULT(Message.WParam) = S_OK) and
-         (FCastWorker is TMfCastLiveFmp4Worker) then
+        (FCastWorker is TMfCastLiveFmp4Worker) then
         begin
           LiveWorker := TMfCastLiveFmp4Worker(FCastWorker);
           FCastLiveStreamLock.Enter();
@@ -2821,6 +2902,7 @@ end;
 
 
 procedure TfrmMediaServer.chkCastCtrlClick(Sender: TObject);
+
 begin
 
   pnlCastCtrl.BringToFront();
@@ -2831,6 +2913,7 @@ end;
 
 
 procedure TfrmMediaServer.btnCastDiscoverClick(Sender: TObject);
+
 begin
 
   if not Assigned(FCast) then
@@ -2848,12 +2931,13 @@ end;
 
 
 procedure TfrmMediaServer.btnCastLiveClick(Sender: TObject);
+
 begin
 
   if (not Assigned(FCast)) or
-     Assigned(FCastWorker) or
-     (cmbCastDevices.ItemIndex < 0) or
-     (cmbCastDevices.ItemIndex >= Length(FCastDevices)) then
+    Assigned(FCastWorker) or
+    (cmbCastDevices.ItemIndex < 0) or
+    (cmbCastDevices.ItemIndex >= Length(FCastDevices)) then
     Exit;
 
   FCastProducerRequested := True;
@@ -2862,7 +2946,7 @@ begin
   FPendingCastDevice := FCastDevices[cmbCastDevices.ItemIndex];
 
   if (not FRdjProBroadcasting) and
-     (not StartRdjProBroadcast(False)) then
+    (not StartRdjProBroadcast(False)) then
     begin
       FCastProducerRequested := False;
       FPendingCastLive := False;
@@ -2911,6 +2995,7 @@ end;
 
 
 procedure TfrmMediaServer.chkCastMutedClick(Sender: TObject);
+
 begin
 
   if FCastUpdatingVolume then
@@ -2942,6 +3027,7 @@ end;
 
 
 procedure TfrmMediaServer.cmbCastDevicesChange(Sender: TObject);
+
 begin
 
   UpdateCastControls();
@@ -2949,6 +3035,7 @@ end;
 
 
 procedure TfrmMediaServer.BindBackgroundAudio(AOutput: TRdjBackgroundAudio);
+
 begin
 
   if (FBackgroundAudio = AOutput) then
@@ -2970,13 +3057,16 @@ end;
 
 
 procedure TfrmMediaServer.BackgroundAudioLog(const Text: string);
+
 begin
 
-  RDJLog('Audio radio', Text);
+  RDJLog('Audio radio',
+         Text);
 
   if Assigned(memLog) then
     begin
-      memLog.Lines.Append(FormatDateTime('hh:nn:ss  ', Now) + Text);
+      memLog.Lines.Append(FormatDateTime('hh:nn:ss  ',
+                                         Now) + Text);
 
       while (memLog.Lines.Count > 250) do
         memLog.Lines.Delete(0);
@@ -2985,19 +3075,23 @@ end;
 
 
 procedure TfrmMediaServer.UpdateBackgroundAudio();
+
 begin
 
   if Assigned(FBackgroundAudio) then
     FBackgroundAudio.Update(FBroadcastPublishing and
-                            FBroadcastHandoverLockAcquired and
-                            (not FRecordVideoOnly) and
-                            (not FCastClosing));
+      FBroadcastHandoverLockAcquired and
+      (not FRecordVideoOnly) and
+      (not FCastClosing));
 end;
 
 
 procedure TfrmMediaServer.FormCreate(Sender: TObject);
+
 begin
- FUiDispatch:=TRdjDispatcher.Create;FUiJobs:=TObjectList<TThread>.Create(True);
+
+  FUiDispatch := TRdjDispatcher.Create;
+  FUiJobs := (TObjectList < TThread > .Create(True));
 
   FBroadcastRecoveryToken := TRdjBroadcastRecoveryLifetime.Create();
   FBroadcastRecoveryLifetime := FBroadcastRecoveryToken;
@@ -3048,7 +3142,8 @@ begin
   FBroadcastMseFragmentSeq := 0;
   FBroadcastMsePublicSeq := 0;
   FBroadcastMseGroupPartCount := 0;
-  SetLength(FBroadcastMseGroupBytes, 0);
+  SetLength(FBroadcastMseGroupBytes,
+            0);
   FBroadcastMseGroupStream := TMemoryStream.Create();
   FBroadcastMseGroupFirstTick := 0;
   FBroadcastMseForceNextPublicGroup := False;
@@ -3059,7 +3154,8 @@ begin
   FBroadcastMseLastManifestSeq := 0;
   FBroadcastMseLastCleanupSeq := 0;
   FBroadcastMseManifestPublishSeq := 0;
-  FBroadcastMseSessionId := FormatDateTime('yyyymmddhhnnsszzz', Now);
+  FBroadcastMseSessionId := FormatDateTime('yyyymmddhhnnsszzz',
+                                           Now);
   FBroadcastMseSessionStartedUtc := LocalTimeToUniversal(Now);
   FBroadcastMseMemLastLogTick := 0;
   FBroadcastHandoverLockAcquired := False;
@@ -3106,7 +3202,8 @@ begin
   FCastClosing := False;
   FCastUpdatingVolume := False;
   FCastMediaSessionReady := False;
-  SetLength(FCastDevices, 0);
+  SetLength(FCastDevices,
+            0);
   trkCastVolume.Position := 75;
   chkCastMuted.Checked := False;
 
@@ -3212,24 +3309,24 @@ begin
          'Cast live helpers destruction: complete.');
 
   while PeekMessageW(PendingMessage,
-                    Handle,
-                    WM_MFCAST_STATUS,
-                    WM_MFCAST_STATUS,
-                    PM_REMOVE) do
+      Handle,
+      WM_MFCAST_STATUS,
+      WM_MFCAST_STATUS,
+      PM_REMOVE) do
     TObject(PendingMessage.WParam).Free();
 
   while PeekMessageW(PendingMessage,
-                    Handle,
-                    WM_MFCAST_ERROR,
-                    WM_MFCAST_ERROR,
-                    PM_REMOVE) do
+      Handle,
+      WM_MFCAST_ERROR,
+      WM_MFCAST_ERROR,
+      PM_REMOVE) do
     TObject(PendingMessage.WParam).Free();
 
   while PeekMessageW(PendingMessage,
-                    Handle,
-                    WM_MFCAST_LOG,
-                    WM_MFCAST_LOG,
-                    PM_REMOVE) do
+      Handle,
+      WM_MFCAST_LOG,
+      WM_MFCAST_LOG,
+      PM_REMOVE) do
     TObject(PendingMessage.WParam).Free();
 
   CleanupDumpDir := FBroadcastMseDumpDir;
@@ -3243,7 +3340,8 @@ begin
          'Broadcast mirror thread shutdown: complete.');
 
   FreeAndNil(FBroadcastMseGroupStream);
-  SetLength(FBroadcastMseGroupBytes, 0);
+  SetLength(FBroadcastMseGroupBytes,
+            0);
 
   RDJLog('Shutdown',
          'Device notification unregister: begin.');
@@ -3302,11 +3400,13 @@ begin
   FreeAndNil(FStaticVideoBitmap);
   RDJLog('Shutdown',
          'Media server destruction: complete.');
- FreeAndNil(FUiDispatch);FreeAndNil(FUiJobs);
+  FreeAndNil(FUiDispatch);
+  FreeAndNil(FUiJobs);
 end;
 
 
 procedure TfrmMediaServer.FormShow(Sender: TObject);
+
 begin
 
   SetWindowLong(Handle,
@@ -3333,52 +3433,55 @@ end;
 
 
 procedure TfrmMediaServer.UpdateOnAirLamp(const AOnAir: Boolean);
+
 begin
 
-   if AOnAir then
-     begin
+  if AOnAir then
+    begin
 
-       shpOnAirCap.Pen.Color := clRed;
-       shpOnAir.Pen.Color := clRed;
-       lblOnAir.Font.Color := clRed;
-       lblOnAir.Caption := 'ON AIR';
-     end
-   else
-     begin
+      shpOnAirCap.Pen.Color := clRed;
+      shpOnAir.Pen.Color := clRed;
+      lblOnAir.Font.Color := clRed;
+      lblOnAir.Caption := 'ON AIR';
+    end
+  else
+    begin
 
-       shpOnAirCap.Pen.Color := $00568000;
-       shpOnAir.Pen.Color := $00568000;
-       lblOnAir.Font.Color := $00568000;
-       lblOnAir.Caption := 'OFF AIR';
-     end;
+      shpOnAirCap.Pen.Color := $00568000;
+      shpOnAir.Pen.Color := $00568000;
+      lblOnAir.Font.Color := $00568000;
+      lblOnAir.Caption := 'OFF AIR';
+    end;
 end;
 
 
 procedure TfrmMediaServer.UpdateRecorderLamp(const ARecording: Boolean);
+
 begin
 
-   if ARecording then
-     begin
+  if ARecording then
+    begin
 
-       shpRecordingCap.Pen.Color := clRed;
-       shpRecording.Pen.Color := clRed;
-       lblRecording.Font.Color := clRed;
-       lblRecording.Caption := 'REC ON';
-     end
-   else
-     begin
+      shpRecordingCap.Pen.Color := clRed;
+      shpRecording.Pen.Color := clRed;
+      lblRecording.Font.Color := clRed;
+      lblRecording.Caption := 'REC ON';
+    end
+  else
+    begin
 
-       shpRecordingCap.Pen.Color := $00568000;
-       shpRecording.Pen.Color := $00568000;
-       lblRecording.Font.Color := $00568000;
-       lblRecording.Caption := 'REC OFF';
-     end;
+      shpRecordingCap.Pen.Color := $00568000;
+      shpRecording.Pen.Color := $00568000;
+      lblRecording.Font.Color := $00568000;
+      lblRecording.Caption := 'REC OFF';
+    end;
 end;
 
+
 procedure TfrmMediaServer.SetBroadcastHealth(const ACaption: string;
-                                            const AColor: TColor;
-                                            const AMessage: string;
-                                            const AForceLog: Boolean);
+                                             const AColor: TColor;
+                                             const AMessage: string;
+                                             const AForceLog: Boolean);
 var
   NowTick: UInt64;
   ShouldLog: Boolean;
@@ -3393,14 +3496,14 @@ begin
 
   NowTick := GetTickCount64();
   ShouldLog := AForceLog or
-               (FLastBroadcastHealthCaption <> ACaption) or
-               (FLastBroadcastHealthMessage <> AMessage);
+    (FLastBroadcastHealthCaption <> ACaption) or
+    (FLastBroadcastHealthMessage <> AMessage);
 
   if (not ShouldLog) and
-     (ACaption <> 'HEALTH: IDLE') and
-     (AMessage <> '') and
-     ((FLastBroadcastHealthLogTick = 0) or
-      ((NowTick - FLastBroadcastHealthLogTick) >= RDJ_BROADCAST_HEALTH_LOG_REPEAT_MS)) then
+    (ACaption <> 'HEALTH: IDLE') and
+    (AMessage <> '') and
+    ((FLastBroadcastHealthLogTick = 0) or
+    ((NowTick - FLastBroadcastHealthLogTick) >= RDJ_BROADCAST_HEALTH_LOG_REPEAT_MS)) then
     ShouldLog := True;
 
   if ShouldLog and (AMessage <> '') then
@@ -3432,10 +3535,11 @@ var
   PublicAgeMs: UInt64;
   NeedAudio: Boolean;
   RecorderActive: Boolean;
+
 begin
 
   if FBroadcastPublishing and
-     FBroadcastHandoverConnectionLost then
+    FBroadcastHandoverConnectionLost then
     begin
       SetBroadcastHealth('HEALTH: WARNING',
                          HEALTH_WARNING_COLOR,
@@ -3486,7 +3590,7 @@ begin
     end;
 
   RecorderActive := Assigned(FRdjProBroadcastMp4Recorder) and
-                    FRdjProBroadcastMp4Recorder.Active;
+    FRdjProBroadcastMp4Recorder.Active;
 
   if not RecorderActive then
     begin
@@ -3494,8 +3598,8 @@ begin
         begin
           if Assigned(FRdjProBroadcastMp4Recorder) then
             FLastBroadcastRecoveryError := Format('Broadcast recorder state=%d hr=0x%.8x; recovery pending.',
-                                                 [Ord(FRdjProBroadcastMp4Recorder.State),
-                                                  Cardinal(FRdjProBroadcastMp4Recorder.LastError)])
+                                                  [Ord(FRdjProBroadcastMp4Recorder.State),
+              Cardinal(FRdjProBroadcastMp4Recorder.LastError)])
           else
             FLastBroadcastRecoveryError := 'Broadcast recorder missing; recovery pending.';
         end;
@@ -3545,12 +3649,12 @@ begin
       Exit;
     end;
 
-  if FLastBroadcastPublicSegmentTick = 0 then
+  if (FLastBroadcastPublicSegmentTick = 0) then
     FLastBroadcastPublicSegmentTick := NowTick;
 
   PublicAgeMs := NowTick - FLastBroadcastPublicSegmentTick;
   if (FBroadcastMsePublicSeq <= 0) and
-     (PublicAgeMs < RDJ_BROADCAST_HEALTH_STARTUP_GRACE_MS) then
+    (PublicAgeMs < RDJ_BROADCAST_HEALTH_STARTUP_GRACE_MS) then
     begin
       SetBroadcastHealth('HEALTH: STARTING',
                          HEALTH_WARNING_COLOR,
@@ -3593,31 +3697,36 @@ begin
     CheckBroadcastRecorderRecovery();
 
     if FRdjProBroadcasting and
-       Assigned(FRdjProBroadcastMp4Recorder) and
-       FRdjProBroadcastMp4Recorder.Active then
+      Assigned(FRdjProBroadcastMp4Recorder) and
+      FRdjProBroadcastMp4Recorder.Active then
       begin
         Started := GetTickCount64();
         QueueRdjProStaticVideoSample();
-        FUiTiming.Finished('broadcast.queue-video', Started);
+        FUiTiming.Finished('broadcast.queue-video',
+                           Started);
 
         Started := GetTickCount64();
         DumpBroadcastMseSegments();
-        FUiTiming.Finished('broadcast.publish-fragments', Started);
+        FUiTiming.Finished('broadcast.publish-fragments',
+                           Started);
 
         Started := GetTickCount64();
         TryStartPendingCastLive();
-        FUiTiming.Finished('broadcast.start-cast', Started);
+        FUiTiming.Finished('broadcast.start-cast',
+                           Started);
 
         if FBroadcastPublishing then
           begin
             Started := GetTickCount64();
             CheckBroadcastMseVideoSourceFlush();
-            FUiTiming.Finished('broadcast.check-video', Started);
+            FUiTiming.Finished('broadcast.check-video',
+                               Started);
           end;
 
         Started := GetTickCount64();
         LogBroadcastMseMemoryHeartbeat('timer');
-        FUiTiming.Finished('broadcast.memory-heartbeat', Started);
+        FUiTiming.Finished('broadcast.memory-heartbeat',
+                           Started);
 
       end;
 
@@ -3626,14 +3735,16 @@ begin
       begin
         Started := GetTickCount64();
         UpdateBroadcastHandoverHeartbeat();
-        FUiTiming.Finished('broadcast.server-heartbeat', Started);
+        FUiTiming.Finished('broadcast.server-heartbeat',
+                           Started);
       end;
 
     if not FBroadcastPublishing then
       begin
         Started := GetTickCount64();
         PollBroadcastHandoverStatus();
-        FUiTiming.Finished('broadcast.server-status', Started);
+        FUiTiming.Finished('broadcast.server-status',
+                           Started);
       end;
 
     if FRdjProRecording and not FRdjProBroadcasting then
@@ -3641,9 +3752,11 @@ begin
 
     Started := GetTickCount64();
     UpdateBroadcastHealth();
-    FUiTiming.Finished('broadcast.health', Started);
+    FUiTiming.Finished('broadcast.health',
+                       Started);
   finally
-    FUiTiming.Finished('broadcast.timer-total', WholeTick);
+    FUiTiming.Finished('broadcast.timer-total',
+                       WholeTick);
   end;
 end;
 
@@ -3673,6 +3786,7 @@ end;
 
 
 procedure TfrmMediaServer.UpdateRecordingUi();
+
 begin
 
   if FRecordingRdjPro then
@@ -3693,7 +3807,7 @@ begin
       btnRdjProRecord.Checked := True;
       btnRdjProRecord.Caption := 'Start';
       chkRdjProCamera.Enabled := (not FRdjProBroadcasting) or
-                                  FRdjProStaticImage;
+        FRdjProStaticImage;
       chkRecordVideoOnly.Enabled := not FRdjProBroadcasting;
       chkRdjProStaticImage.Enabled := True;
       edRdjProRecFileName.Enabled := True;
@@ -3707,6 +3821,7 @@ end;
 
 function RdjMakeUINT64(const HighPart: DWORD;
                        const LowPart: DWORD): UINT64;
+
 begin
 
   Result := (UINT64(HighPart) shl 32) or UINT64(LowPart);
@@ -3715,6 +3830,7 @@ end;
 
 procedure TfrmMediaServer.SetRdjProVideoSourceButtons(const AStaticImage,
                                                       ACamera: Boolean);
+
 begin
 
   FUpdatingRdjProVideoSourceButtons := True;
@@ -3731,6 +3847,7 @@ end;
 
 
 procedure TfrmMediaServer.SetRdjProStaticImageMode(const AStaticImage: Boolean);
+
 begin
 
   FRdjProStaticImage := AStaticImage;
@@ -3740,6 +3857,7 @@ end;
 
 
 function TfrmMediaServer.PickRdjProStaticImageFileName(): string;
+
 begin
 
   Result := '';
@@ -3815,8 +3933,8 @@ begin
     TargetHeight := RDJ_STATIC_VIDEO_HEIGHT;
 
   if Assigned(FStaticVideoBitmap) and
-     (FStaticVideoBitmap.Width = TargetWidth) and
-     (FStaticVideoBitmap.Height = TargetHeight) then
+    (FStaticVideoBitmap.Width = TargetWidth) and
+    (FStaticVideoBitmap.Height = TargetHeight) then
     Exit(True);
 
   if not Assigned(FStaticVideoBitmap) then
@@ -3834,7 +3952,7 @@ begin
                                           FStaticVideoBitmap.Height));
 
   ImageFileName := ResolveRdjProStaticImageFileName();
-  if ImageFileName = '' then
+  if (ImageFileName = '') then
     begin
       FStaticVideoBitmap.Canvas.Font.Color := clWhite;
       FStaticVideoBitmap.Canvas.Font.Size := 28;
@@ -3857,7 +3975,7 @@ begin
     end;
 
     if (not Assigned(Picture.Graphic)) or
-       Picture.Graphic.Empty then
+      Picture.Graphic.Empty then
       Exit(True);
 
     SrcW := Picture.Width;
@@ -3887,13 +4005,14 @@ end;
 
 
 procedure TfrmMediaServer.ShowRdjProStaticPreview();
+
 begin
 
   if not Assigned(imgRdjProStaticPreview) then
     Exit;
 
   if EnsureRdjProStaticVideoFrame() and
-     Assigned(FStaticVideoBitmap) then
+    Assigned(FStaticVideoBitmap) then
     imgRdjProStaticPreview.Picture.Assign(FStaticVideoBitmap)
   else
     imgRdjProStaticPreview.Picture.Graphic := nil;
@@ -3904,6 +4023,7 @@ end;
 
 
 procedure TfrmMediaServer.HideRdjProStaticPreview();
+
 begin
 
   if not Assigned(imgRdjProStaticPreview) then
@@ -3915,6 +4035,7 @@ end;
 
 
 procedure TfrmMediaServer.RefreshRdjProCameraPreview();
+
 begin
 
   if Assigned(imgRdjProStaticPreview) then
@@ -3932,7 +4053,7 @@ begin
     end;
 
   if Assigned(FRdjProCaptureManager) and
-     Assigned(pnlRdjProPreviewHost) then
+    Assigned(pnlRdjProPreviewHost) then
     begin
 
       FRdjProCaptureManager.PreviewHandle := pnlRdjProPreviewHost.Handle;
@@ -3943,11 +4064,21 @@ end;
 
 
 procedure TfrmMediaServer.ScheduleRdjProCameraPreviewRefresh();
+
 begin
- if FPreviewFramePending then Exit;
- FPreviewFramePending:=True;FPreviewStep:=0;
- if FPreviewTimer=nil then begin FPreviewTimer:=TTimer.Create(Self);FPreviewTimer.Enabled:=False;FPreviewTimer.OnTimer:=PreviewRefreshTick;end;
- FPreviewTimer.Interval:=100;FPreviewTimer.Enabled:=True;
+
+  if FPreviewFramePending then
+    Exit;
+  FPreviewFramePending := True;
+  FPreviewStep := 0;
+  if (FPreviewTimer = nil) then
+    begin
+      FPreviewTimer := TTimer.Create(Self);
+      FPreviewTimer.Enabled := False;
+      FPreviewTimer.OnTimer := PreviewRefreshTick;
+    end;
+  FPreviewTimer.Interval := 100;
+  FPreviewTimer.Enabled := True;
 end;
 
 
@@ -3982,7 +4113,7 @@ begin
 
   hr := FStaticVideoMediaType.SetUINT64(MF_MT_FRAME_SIZE,
                                         RdjMakeUINT64(RDJ_STATIC_VIDEO_WIDTH,
-                                                     RDJ_STATIC_VIDEO_HEIGHT));
+                                                      RDJ_STATIC_VIDEO_HEIGHT));
   if FAILED(hr) then
     Exit;
 
@@ -3993,13 +4124,13 @@ begin
 
   hr := FStaticVideoMediaType.SetUINT64(MF_MT_FRAME_RATE,
                                         RdjMakeUINT64(RDJ_STATIC_VIDEO_FPS,
-                                                     1));
+                                                      1));
   if FAILED(hr) then
     Exit;
 
   hr := FStaticVideoMediaType.SetUINT64(MF_MT_PIXEL_ASPECT_RATIO,
                                         RdjMakeUINT64(1,
-                                                     1));
+                                                      1));
   if FAILED(hr) then
     Exit;
 
@@ -4042,15 +4173,15 @@ begin
     TargetHeight := RDJ_STATIC_VIDEO_HEIGHT;
 
   if not EnsureRdjProStaticVideoFrame(TargetWidth,
-                                      TargetHeight) then
+    TargetHeight) then
     Exit(MF_E_INVALIDMEDIATYPE);
 
   Stride := TargetWidth * 4;
   BufferSize := DWORD(Stride * TargetHeight);
 
   if (not Assigned(FStaticVideoBuffer)) or
-     (FStaticVideoBufferWidth <> TargetWidth) or
-     (FStaticVideoBufferHeight <> TargetHeight) then
+    (FStaticVideoBufferWidth <> TargetWidth) or
+    (FStaticVideoBufferHeight <> TargetHeight) then
     begin
       Result := MFCreateMemoryBuffer(BufferSize,
                                      NewBuffer);
@@ -4130,7 +4261,7 @@ begin
 
   NowTick := GetTickCount64();
 
-  if FStaticVideoStartTick = 0 then
+  if (FStaticVideoStartTick = 0) then
     begin
       FStaticVideoStartTick := NowTick;
       FStaticVideoFrameIndex := 0;
@@ -4141,24 +4272,24 @@ begin
   StaticHeight := RDJ_STATIC_VIDEO_HEIGHT;
 
   if Assigned(FActiveBroadcastVideoMediaType) and
-     SUCCEEDED(FActiveBroadcastVideoMediaType.GetUINT64(MF_MT_FRAME_SIZE,
-                                                        FrameSize)) then
+    SUCCEEDED(FActiveBroadcastVideoMediaType.GetUINT64(MF_MT_FRAME_SIZE,
+                                                       FrameSize)) then
     begin
       StaticWidth := Integer(FrameSize shr 32);
       StaticHeight := Integer(FrameSize and $FFFFFFFF);
     end;
 
   TargetFrameIndex := Int64(((NowTick - FStaticVideoStartTick) *
-                             UInt64(RDJ_STATIC_VIDEO_FPS)) div
-                             1000);
+    UInt64(RDJ_STATIC_VIDEO_FPS)) div
+    1000);
 
   if (FStaticVideoLastTick <> 0) and
-     (TargetFrameIndex < FStaticVideoFrameIndex) then
+    (TargetFrameIndex < FStaticVideoFrameIndex) then
     Exit;
 
-  if FLastRdjProVideoSampleTick <> 0 then
+  if (FLastRdjProVideoSampleTick <> 0) then
     SampleTime100ns := FLastRdjProVideoSampleTime100ns +
-                       LONGLONG(NowTick - FLastRdjProVideoSampleTick) * 10000
+      LONGLONG(NowTick - FLastRdjProVideoSampleTick) * 10000
   else
     SampleTime100ns := TargetFrameIndex * FStaticVideoFrameDuration100ns;
 
@@ -4167,12 +4298,12 @@ begin
   Queued := False;
 
   NeedLocal := FRdjProRecording and
-               Assigned(FRdjProMp4Recorder) and
-               FRdjProMp4Recorder.Active;
+    Assigned(FRdjProMp4Recorder) and
+    FRdjProMp4Recorder.Active;
 
   NeedBroadcast := FRdjProBroadcasting and
-                   Assigned(FRdjProBroadcastMp4Recorder) and
-                   FRdjProBroadcastMp4Recorder.Active;
+    Assigned(FRdjProBroadcastMp4Recorder) and
+    FRdjProBroadcastMp4Recorder.Active;
 
   if not (NeedLocal or NeedBroadcast) then
     Exit;
@@ -4187,7 +4318,7 @@ begin
         if FAILED(hr) or (not Assigned(LocalSample)) then
           begin
             OutputDebugStringW(PChar(Format('RDJ Pro local static video sample failed hr=0x%.8x',
-                                           [Cardinal(hr)])));
+                                            [Cardinal(hr)])));
           end
         else
           begin
@@ -4208,7 +4339,7 @@ begin
         if FAILED(hr) or (not Assigned(BroadcastSample)) then
           begin
             OutputDebugStringW(PChar(Format('RDJ Pro broadcast static video sample failed hr=0x%.8x',
-                                           [Cardinal(hr)])));
+                                            [Cardinal(hr)])));
           end
         else
           begin
@@ -4303,16 +4434,15 @@ begin
   Result := FRdjProCaptureManager.StartCamera(nil);
   if (Result = E_VIDEOPROCESSOR_NOT_IMPLEMENTED) then
     Result := S_OK
-  else
-    if FAILED(Result) then
-      begin
-        InfoMsg(optShowMsg,
-                'StartRdjProCamera: StartCamera failed.',
-                Result);
+  else if FAILED(Result) then
+    begin
+      InfoMsg(optShowMsg,
+              'StartRdjProCamera: StartCamera failed.',
+              Result);
 
-        memLog.Lines.Append('Start camera failed.');
-        Exit;
-      end;
+      memLog.Lines.Append('Start camera failed.');
+      Exit;
+    end;
 
   FRdjProPreviewing := True;
 
@@ -4326,6 +4456,7 @@ end;
 
 
 procedure TfrmMediaServer.StopRdjProCamera();
+
 begin
 
   if Assigned(FRdjProCaptureManager) then
@@ -4337,6 +4468,7 @@ end;
 
 
 procedure TfrmMediaServer.ResetRdjProCaptureManager();
+
 begin
 
   if Assigned(FRdjProCaptureManager) then
@@ -4352,8 +4484,8 @@ end;
 
 
 procedure TfrmMediaServer.OnRdjProVideoReaderSample(Sender: TObject;
-                                                          ASample: IMFSample;
-                                                          const SampleTime: LONGLONG);
+                                                    ASample: IMFSample;
+                                                    const SampleTime: LONGLONG);
 var
   hr: HRESULT;
 
@@ -4374,8 +4506,8 @@ begin
   // Sample-2 EVR preview is independent. This callback is now fed by the
   // separate SourceReader used for MP4 recording/broadcast samples.
   if FRdjProRecording and
-     Assigned(FRdjProMp4Recorder) and
-     FRdjProMp4Recorder.Active then
+    Assigned(FRdjProMp4Recorder) and
+    FRdjProMp4Recorder.Active then
     begin
 
       hr := FRdjProMp4Recorder.QueueVideoSample(ASample);
@@ -4384,8 +4516,8 @@ begin
     end;
 
   if FRdjProBroadcasting and
-     Assigned(FRdjProBroadcastMp4Recorder) and
-     FRdjProBroadcastMp4Recorder.Active then
+    Assigned(FRdjProBroadcastMp4Recorder) and
+    FRdjProBroadcastMp4Recorder.Active then
     begin
 
       hr := FRdjProBroadcastMp4Recorder.QueueVideoSample(ASample);
@@ -4402,6 +4534,7 @@ var
   FrameSize: UINT64;
 
 begin
+
   AWidth := 0;
   AHeight := 0;
 
@@ -4419,15 +4552,19 @@ end;
 
 
 procedure TfrmMediaServer.pnlCaptionMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                              Button: TMouseButton;
+                                              Shift: TShiftState;
+                                              X,
+                                              Y: Integer);
+
 begin
 
   // Drag window
   ReleaseCapture;
   SendMessageW(Handle,
-              WM_SYSCOMMAND,
-              SC_MOVE + HTCAPTION,
-              0);
+               WM_SYSCOMMAND,
+               SC_MOVE + HTCAPTION,
+               0);
 end;
 
 
@@ -4440,33 +4577,36 @@ var
 begin
 
   if (pwfx <> nil) and
-     (pwfx.nSamplesPerSec <> 0) and
-     (pwfx.nChannels <> 0) and
-     (pwfx.nBlockAlign <> 0) then
+    (pwfx.nSamplesPerSec <> 0) and
+    (pwfx.nChannels <> 0) and
+    (pwfx.nBlockAlign <> 0) then
     begin
 
       FLastRdjProAudioWfx := pwfx^;
       FLastRdjProAudioWfxValid := True;
 
       if (FPendingLocalRecording or FPendingBroadcastRecording) and
-         (InterlockedCompareExchange(FPendingMp4StartQueued, 1, 0) = 0) then
+        (InterlockedCompareExchange(FPendingMp4StartQueued,
+                                    1,
+                                    0) = 0) then
         begin
-          FUiDispatch.Post(DispatchPendingStartProc,0);
+          FUiDispatch.Post(DispatchPendingStartProc,
+                           0);
         end;
     end;
 
   if (not FRdjProRecording) and
-     (not FRdjProBroadcasting) then
+    (not FRdjProBroadcasting) then
     Exit;
 
   if (pData = nil) or
-     (pwfx = nil) or
-     (Frames <= 0) then
+    (pwfx = nil) or
+    (Frames <= 0) then
     Exit;
 
   if FRdjProRecording and
-     Assigned(FRdjProMp4Recorder) and
-     FRdjProMp4Recorder.Active then
+    Assigned(FRdjProMp4Recorder) and
+    FRdjProMp4Recorder.Active then
     begin
 
       try
@@ -4482,14 +4622,15 @@ begin
 
             OutputDebugStringW(PChar('RDJ Pro local MP4 PushPcmFloat32 exception: ' + E.ClassName + ': ' + E.Message));
             FRdjProRecording := False;
-            FUiDispatch.Post(DispatchStopLocalProc,0);
+            FUiDispatch.Post(DispatchStopLocalProc,
+                             0);
           end;
       end;
     end;
 
   if FRdjProBroadcasting and
-     Assigned(FRdjProBroadcastMp4Recorder) and
-     FRdjProBroadcastMp4Recorder.Active then
+    Assigned(FRdjProBroadcastMp4Recorder) and
+    FRdjProBroadcastMp4Recorder.Active then
     begin
 
       try
@@ -4507,7 +4648,8 @@ begin
             OutputDebugStringW(PChar('RDJ Pro broadcast MP4 PushPcmFloat32 exception: ' + E.ClassName + ': ' + E.Message));
             FRdjProBroadcasting := False;
 
-            FUiDispatch.Post(DispatchStopBroadcastProc,0);
+            FUiDispatch.Post(DispatchStopBroadcastProc,
+                             0);
           end;
       end;
     end;
@@ -4516,6 +4658,7 @@ end;
 
 procedure TfrmMediaServer.ArmPendingLocalRecording(const AFileName: string;
                                                    const AVideoOnly: Boolean);
+
 begin
 
   FPendingLocalFileName := AFileName;
@@ -4527,6 +4670,7 @@ end;
 
 procedure TfrmMediaServer.ArmPendingBroadcastRecording(const AFileName: string;
                                                        const AVideoOnly: Boolean);
+
 begin
 
   FPendingBroadcastFileName := AFileName;
@@ -4562,11 +4706,11 @@ begin
         FPendingLocalFileName := '';
 
         if (FileName <> '') and
-           Assigned(FRdjProMp4Recorder) and
-           (not FRdjProMp4Recorder.Active) then
+          Assigned(FRdjProMp4Recorder) and
+          (not FRdjProMp4Recorder.Active) then
           begin
             if not StartRdjProRecording(FileName,
-                                        VideoOnly) then
+              VideoOnly) then
               begin
                 FRdjProRecording := False;
                 FRecordingRdjPro := False;
@@ -4584,8 +4728,8 @@ begin
         FPendingBroadcastFileName := '';
 
         if (FileName <> '') and
-           Assigned(FRdjProBroadcastMp4Recorder) and
-           (not FRdjProBroadcastMp4Recorder.Active) then
+          Assigned(FRdjProBroadcastMp4Recorder) and
+          (not FRdjProBroadcastMp4Recorder.Active) then
           begin
             if not StartRdjProBroadcast(FBroadcastPublishing) then
               begin
@@ -4717,10 +4861,10 @@ begin
   ForceDirectories(Dir);
 
   Result := Dir +
-            Prefix + '_' +
-            FormatDateTime('yyyymmdd_hhnnss_zzz',
-                           Now) +
-            '.mp4';
+    Prefix + '_' +
+    FormatDateTime('yyyymmdd_hhnnss_zzz',
+                   Now) +
+    '.mp4';
 end;
 
 
@@ -4735,7 +4879,7 @@ begin
 
   if (Dir = '') then
     Dir := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) +
-           Trim(MainMDIFrm.Setup.AudioRecordingsDir);
+      Trim(MainMDIFrm.Setup.AudioRecordingsDir);
 
   if (ExtractFileDrive(Dir) <> '') then
     Dir := IncludeTrailingPathDelimiter(Dir)
@@ -4750,8 +4894,8 @@ begin
                                           'rdj_recording')
   else
     Result := IncludeTrailingPathDelimiter(Dir) +
-              ChangeFileExt(ExtractFileName(BaseName),
-                            '.mp4');
+      ChangeFileExt(ExtractFileName(BaseName),
+                    '.mp4');
 end;
 
 
@@ -4766,7 +4910,7 @@ begin
 
   if (Dir = '') then
     Dir := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) +
-           'Video';
+      'Video';
 
   if (ExtractFileDrive(Dir) <> '') then
     Dir := IncludeTrailingPathDelimiter(Dir)
@@ -4799,13 +4943,13 @@ begin
 
   if (BaseDir = '') then
     BaseDir := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) +
-               'VideoRecordings';
+      'VideoRecordings';
 
   if (ExtractFileDrive(BaseDir) <> '') then
     BaseDir := IncludeTrailingPathDelimiter(BaseDir)
   else
     BaseDir := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) +
-               IncludeTrailingPathDelimiter(BaseDir);
+      IncludeTrailingPathDelimiter(BaseDir);
 
   // Result := IncludeTrailingPathDelimiter(BaseDir + 'mse_debug');
   Result := BaseDir;
@@ -4840,29 +4984,32 @@ begin
     Exit;
 
   if (ExtractFileDrive(BaseDir) <> '') or
-     CastStartsWith(BaseDir,'\\',False) then
+    CastStartsWith(BaseDir,
+                   '\\',
+                   False) then
     BaseDir := IncludeTrailingPathDelimiter(BaseDir)
   else
     BaseDir := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) +
-               IncludeTrailingPathDelimiter(BaseDir);
+      IncludeTrailingPathDelimiter(BaseDir);
 
   // Result := IncludeTrailingPathDelimiter(BaseDir + 'mse_debug');
   Result := BaseDir;
 
   if RDJEnsureDirectoryExists(Result,
-                              ErrorCode) then
+    ErrorCode) then
     FBroadcastMseMirrorDir := Result
   else
     begin
       OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE mirror unavailable: err=%d %s',
-                                     [ErrorCode,
-                                      SysErrorMessage(ErrorCode)])));
+                                      [ErrorCode,
+        SysErrorMessage(ErrorCode)])));
       Result := '';
     end;
 end;
 
 
 procedure TfrmMediaServer.memLogChange(Sender: TObject);
+
 begin
 
   if Assigned(memLog) and memLog.HandleAllocated then
@@ -4885,42 +5032,42 @@ begin
   Dir := IncludeTrailingPathDelimiter(Trim(ADir));
 
   if (Dir = '') or
-     (AMask = '') then
+    (AMask = '') then
     Exit;
 
   if not DirectoryExists(Dir) then
     Exit;
 
-  if FindFirst(Dir + AMask,
-               faAnyFile,
-               SearchRec) = 0 then
-    try
+  if (FindFirst(Dir + AMask,
+    faAnyFile,
+    SearchRec) = 0) then
+  try
 
-      repeat
-        if (SearchRec.Name <> '.') and
-           (SearchRec.Name <> '..') and
-           ((SearchRec.Attr and faDirectory) = 0) then
-          begin
-            FileName := Dir + SearchRec.Name;
-            try
-              DeleteFileW(PWideChar(FileName));
-            except
-              on E: Exception do
-                OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE cleanup delete failed: %s err=%s',
-                                               [FileName,
-                                                E.Message])));
-            end;
+    repeat
+      if (SearchRec.Name <> '.') and
+        (SearchRec.Name <> '..') and
+        ((SearchRec.Attr and faDirectory) = 0) then
+        begin
+          FileName := Dir + SearchRec.Name;
+          try
+            DeleteFileW(PWideChar(FileName));
+          except
+            on E: Exception do
+              OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE cleanup delete failed: %s err=%s',
+                                              [FileName,
+                E.Message])));
           end;
-      until FindNext(SearchRec) <> 0;
-    finally
+        end;
+    until (FindNext(SearchRec) <> 0);
+  finally
 
-      FindClose(SearchRec);
-    end;
+    FindClose(SearchRec);
+  end;
 end;
 
 
 procedure TfrmMediaServer.LaunchBroadcastMseCleanupBatch(const ADumpDir: string;
-                                                        const AMirrorDir: string);
+                                                         const AMirrorDir: string);
 var
   Batch: TStringList;
   TempPath: array[0..MAX_PATH] of Char;
@@ -4929,6 +5076,7 @@ var
   CmdLine: string;
   StartupInfo: TStartupInfoW;
   ProcessInfo: TProcessInformation;
+
 
   procedure AddCleanDir(const ADir: string);
   var
@@ -4946,21 +5094,21 @@ var
 begin
 
   if (Trim(ADumpDir) = '') and
-     (Trim(AMirrorDir) = '') then
+    (Trim(AMirrorDir) = '') then
     Exit;
 
   FillChar(TempPath,
            SizeOf(TempPath),
            0);
 
-  if GetTempPathW(MAX_PATH,
-                 TempPath) = 0 then
+  if (GetTempPathW(MAX_PATH,
+    TempPath) = 0) then
     Exit;
 
   BatFileName := IncludeTrailingPathDelimiter(string(TempPath)) +
-                 Format('rdj_mse_cleanup_%x_%x.bat',
-                        [GetCurrentProcessId(),
-                         GetTickCount()]);
+    Format('rdj_mse_cleanup_%x_%x.bat',
+           [GetCurrentProcessId(),
+    GetTickCount()]);
 
   Batch := TStringList.Create();
   try
@@ -4999,7 +5147,7 @@ begin
   ComSpec := SysUtils.GetEnvironmentVariable('ComSpec');
   if (ComSpec = '') then
     ComSpec := IncludeTrailingPathDelimiter(SysUtils.GetEnvironmentVariable('SystemRoot')) +
-               'System32\cmd.exe';
+      'System32\cmd.exe';
 
   if not FileExists(ComSpec) then
     begin
@@ -5022,15 +5170,15 @@ begin
            0);
 
   if CreateProcessW(nil,
-                   PChar(CmdLine),
-                   nil,
-                   nil,
-                   False,
-                   CREATE_NO_WINDOW,
-                   nil,
-                   nil,
-                   StartupInfo,
-                   ProcessInfo) then
+    PChar(CmdLine),
+    nil,
+    nil,
+    False,
+    CREATE_NO_WINDOW,
+    nil,
+    nil,
+    StartupInfo,
+    ProcessInfo) then
     begin
       CloseHandle(ProcessInfo.hThread);
       CloseHandle(ProcessInfo.hProcess);
@@ -5040,8 +5188,8 @@ begin
   else
     begin
       OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE close cleanup batch launch failed: err=%d file=%s',
-                                     [GetLastError(),
-                                      BatFileName])));
+                                      [GetLastError(),
+        BatFileName])));
       DeleteFileW(PWideChar(BatFileName));
     end;
 end;
@@ -5085,7 +5233,7 @@ begin
       OutputDebugStringW(PChar('TfrmMediaServer.MSE stop cleanup: local scratch files cleaned: ' + DumpDir));
     end;
 
-  if MirrorDir <> '' then
+  if (MirrorDir <> '') then
     begin
       // Delete the public manifest first.  A browser refresh after stop should
       // not keep discovering an old live window.  The media files are scratch
@@ -5109,6 +5257,7 @@ end;
 
 
 procedure TfrmMediaServer.ResetBroadcastMseDebugDump();
+
 begin
 
   StopBroadcastMseMirrorThread();
@@ -5120,7 +5269,8 @@ begin
   FBroadcastMseFragmentSeq := 0;
   FBroadcastMsePublicSeq := 0;
   FBroadcastMseGroupPartCount := 0;
-  SetLength(FBroadcastMseGroupBytes, 0);
+  SetLength(FBroadcastMseGroupBytes,
+            0);
 
   if Assigned(FBroadcastMseGroupStream) then
     FBroadcastMseGroupStream.Clear();
@@ -5132,18 +5282,21 @@ begin
   FBroadcastMseLastManifestSeq := 0;
   FBroadcastMseLastCleanupSeq := 0;
   FBroadcastMseManifestPublishSeq := 0;
-  FBroadcastMseSessionId := FormatDateTime('yyyymmddhhnnsszzz', Now);
+  FBroadcastMseSessionId := FormatDateTime('yyyymmddhhnnsszzz',
+                                           Now);
   FBroadcastMseSessionStartedUtc := LocalTimeToUniversal(Now);
   FLastBroadcastVideoSampleTick := GetTickCount64();
   FLastBroadcastPublicSegmentTick := GetTickCount64();
   FLastBroadcastVideoFlushTick := 0;
   FBroadcastMseLastStallTraceTick := 0;
   FBroadcastMseMemLastLogTick := 0;
-  InterlockedExchange(FBroadcastVideoFlushQueued, 0);
+  InterlockedExchange(FBroadcastVideoFlushQueued,
+                      0);
 end;
 
 
 procedure TfrmMediaServer.PrepareBroadcastMseVideoSourceSwitch();
+
 begin
 
   // Preserve already-grouped fMP4 fragments: they contain audio too.  Dropping
@@ -5154,19 +5307,20 @@ end;
 
 
 function TfrmMediaServer.BroadcastMsePublicTargetMs(): Integer;
+
 begin
 
   Result := FBroadcastMsePublicTargetMs;
 
   if (Result < RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MIN_MS) then
     Result := RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MIN_MS
-  else
-    if (Result > RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MAX_MS) then
-      Result := RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MAX_MS;
+  else if (Result > RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MAX_MS) then
+    Result := RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MAX_MS;
 end;
 
 
 function TfrmMediaServer.BroadcastMseGroupSourceFragments(): Integer;
+
 begin
 
   Result := FBroadcastMseGroupSourceFragments;
@@ -5177,19 +5331,20 @@ end;
 
 
 function TfrmMediaServer.BroadcastMseKeepPatchedFragments(): Integer;
+
 begin
 
   Result := FBroadcastMseKeepPatchedFragments;
 
   if (Result < RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MIN) then
     Result := RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MIN
-  else
-    if (Result > RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MAX) then
-      Result := RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MAX;
+  else if (Result > RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MAX) then
+    Result := RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MAX;
 end;
 
 
 function TfrmMediaServer.BroadcastMseGroupForceFlushMs(): Integer;
+
 begin
 
   Result := BroadcastMsePublicTargetMs() * RDJ_MSE_GROUP_FORCE_FLUSH_FACTOR;
@@ -5212,25 +5367,23 @@ begin
   if Assigned(MainMDIFrm) then
     TargetMs := MainMDIFrm.Setup.MsePublicSegmentTargetMs;
 
-  if TargetMs < RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MIN_MS then
+  if (TargetMs < RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MIN_MS) then
     TargetMs := RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MIN_MS
-  else
-  if TargetMs > RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MAX_MS then
+  else if (TargetMs > RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MAX_MS) then
     TargetMs := RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MAX_MS;
 
   GroupCount := (TargetMs + (RDJ_MSE_SOURCE_FRAGMENT_ESTIMATE_MS div 2)) div
-                RDJ_MSE_SOURCE_FRAGMENT_ESTIMATE_MS;
+    RDJ_MSE_SOURCE_FRAGMENT_ESTIMATE_MS;
 
-  if GroupCount < 1 then
+  if (GroupCount < 1) then
     GroupCount := 1;
 
   KeepCount := (RDJ_MSE_PUBLIC_WINDOW_TARGET_MS + TargetMs - 1) div
-               TargetMs;
+    TargetMs;
 
-  if KeepCount < RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MIN then
+  if (KeepCount < RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MIN) then
     KeepCount := RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MIN
-  else
-  if KeepCount > RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MAX then
+  else if (KeepCount > RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MAX) then
     KeepCount := RDJ_MSE_KEEP_PATCHED_FRAGMENTS_MAX;
 
   FBroadcastMsePublicTargetMs := TargetMs;
@@ -5238,21 +5391,22 @@ begin
   FBroadcastMseKeepPatchedFragments := KeepCount;
 
   OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE grouping: targetMs=%d sourceFragments=%d keep=%d',
-                                 [FBroadcastMsePublicTargetMs,
-                                  FBroadcastMseGroupSourceFragments,
-                                  FBroadcastMseKeepPatchedFragments])));
+                                  [FBroadcastMsePublicTargetMs,
+    FBroadcastMseGroupSourceFragments,
+    FBroadcastMseKeepPatchedFragments])));
 end;
 
 
 function TfrmMediaServer.WriteBytesToFile(const AFileName: string;
                                           const ABytes: TBytes): Boolean;
+
 begin
 
   Result := False;
   FLastFileWriteError := ERROR_SUCCESS;
 
   if (AFileName = '') or
-     (Length(ABytes) = 0) then
+    (Length(ABytes) = 0) then
     Exit;
 
   Result := RDJWriteBytesToFile(AFileName,
@@ -5274,17 +5428,17 @@ begin
   FLastFileWriteError := ERROR_SUCCESS;
 
   if (AFileName = '') or
-     (Length(ABytes) = 0) then
+    (Length(ABytes) = 0) then
     Exit;
 
   TmpFileName := AFileName +
-                 Format('.tmp_%x_%x_%x',
-                        [GetCurrentProcessId(),
-                         GetCurrentThreadId(),
-                         GetTickCount()]);
+    Format('.tmp_%x_%x_%x',
+           [GetCurrentProcessId(),
+    GetCurrentThreadId(),
+    GetTickCount()]);
 
   if not WriteBytesToFile(TmpFileName,
-                          ABytes) then
+    ABytes) then
     Exit;
 
   // Make the browser see either the previous complete file or the new
@@ -5298,8 +5452,8 @@ begin
   for I := 0 to 20 do
     begin
       if MoveFileExW(PChar(TmpFileName),
-                    PChar(AFileName),
-                    MOVEFILE_REPLACE_EXISTING) then
+        PChar(AFileName),
+        MOVEFILE_REPLACE_EXISTING) then
         begin
           Result := True;
           Exit;
@@ -5310,8 +5464,8 @@ begin
     end;
 
   OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE atomic write failed, keeping old file: %s err=%d',
-                                 [ExtractFileName(AFileName),
-                                   FLastFileWriteError])));
+                                  [ExtractFileName(AFileName),
+    FLastFileWriteError])));
 
   DeleteFileW(PWideChar(TmpFileName));
 end;
@@ -5329,7 +5483,7 @@ begin
 
   Utf8 := UTF8String(AText);
 
-  if Length(Utf8) = 0 then
+  if (Length(Utf8) = 0) then
     Exit;
 
   SetLength(Bytes,
@@ -5346,6 +5500,7 @@ end;
 
 procedure TfrmMediaServer.SetBroadcastHandoverLockIndicator(const ACaption: string;
                                                             const AColor: TColor);
+
 begin
 
   lblLockBC.Font.Color := AColor;
@@ -5356,6 +5511,7 @@ end;
 
 
 function TfrmMediaServer.BroadcastHandoverBaseDir(): string;
+
 begin
 
   Result := '';
@@ -5379,6 +5535,7 @@ end;
 
 
 function TfrmMediaServer.BroadcastHandoverLockDir(): string;
+
 begin
 
   Result := BroadcastHandoverBaseDir();
@@ -5389,6 +5546,7 @@ end;
 
 
 function TfrmMediaServer.BroadcastHandoverStatusFileName(): string;
+
 begin
 
   Result := BroadcastHandoverBaseDir();
@@ -5409,7 +5567,7 @@ begin
   BufferLen := Length(Buffer);
 
   if GetComputerNameW(Buffer,
-                     BufferLen) then
+    BufferLen) then
     SetString(Result,
               Buffer,
               BufferLen);
@@ -5431,7 +5589,7 @@ begin
   if (Result = '') then
     begin
       UserName := Trim(SysUtils.GetEnvironmentVariable('USERNAME'));
-      if UserName <> '' then
+      if (UserName <> '') then
         Result := UserName;
     end;
 
@@ -5469,11 +5627,12 @@ begin
         #10: Result := Result + '\n';
         #12: Result := Result + '\f';
         #13: Result := Result + '\r';
-      else
-        if Ord(C) < 32 then
-          Result := Result + Format('\u%.4x', [Ord(C)])
         else
-          Result := Result + C;
+          if (Ord(C) < 32) then
+            Result := Result + Format('\u%.4x',
+                                      [Ord(C)])
+          else
+            Result := Result + C;
       end;
     end;
 end;
@@ -5494,7 +5653,7 @@ begin
   P := Pos(Pattern,
            AJson);
 
-  if P <= 0 then
+  if (P <= 0) then
     Exit;
 
   Inc(P,
@@ -5523,20 +5682,20 @@ begin
 
       if Escaped then
         begin
-          if C = 'n' then
+          if (C = 'n') then
             Result := Result + ' '
-          else if C = 'r' then
+          else if (C = 'r') then
             Result := Result + ' '
-          else if C = 't' then
+          else if (C = 't') then
             Result := Result + ' '
           else
             Result := Result + C;
 
           Escaped := False;
         end
-      else if C = '\' then
+      else if (C = '\') then
         Escaped := True
-      else if C = '"' then
+      else if (C = '"') then
         Exit
       else
         Result := Result + C;
@@ -5577,10 +5736,10 @@ begin
     Exit;
 
   if not FileAge(OwnerFileName,
-                 OwnerTime) then
+    OwnerTime) then
     Exit;
 
-  Result := ((Now - OwnerTime) * RDJ_MS_PER_DAY) > RDJ_BROADCAST_HANDOVER_STALE_MS;
+  Result := (((Now - OwnerTime) * RDJ_MS_PER_DAY) > RDJ_BROADCAST_HANDOVER_STALE_MS);
 end;
 
 
@@ -5595,17 +5754,17 @@ begin
 
   DeleteFileW(PWideChar(LockDir + RDJ_BROADCAST_HANDOVER_OWNER_FILE));
 
-  if FindFirst(LockDir + RDJ_BROADCAST_HANDOVER_OWNER_FILE + '.tmp_*',
-               faAnyFile,
-               SearchRec) = 0 then
-    try
-      repeat
-        if (SearchRec.Attr and faDirectory) = 0 then
-          DeleteFileW(PWideChar(LockDir + SearchRec.Name));
-      until FindNext(SearchRec) <> 0;
-    finally
-      FindClose(SearchRec);
-    end;
+  if (FindFirst(LockDir + RDJ_BROADCAST_HANDOVER_OWNER_FILE + '.tmp_*',
+    faAnyFile,
+    SearchRec) = 0) then
+  try
+    repeat
+      if ((SearchRec.Attr and faDirectory) = 0) then
+        DeleteFileW(PWideChar(LockDir + SearchRec.Name));
+    until (FindNext(SearchRec) <> 0);
+  finally
+    FindClose(SearchRec);
+  end;
 
   RemoveDir(ALockDir);
 end;
@@ -5635,7 +5794,7 @@ begin
   OwnerDisplay := BroadcastHandoverOwnerDisplay();
 
   if SameText(AState,
-              'on_air') then
+    'on_air') then
     ActiveText := 'true'
   else
     ActiveText := 'false';
@@ -5643,17 +5802,29 @@ begin
   Result :=
     '{' + sLineBreak +
     '  "version": 1,' + sLineBreak +
-    Format('  "active": %s,', [ActiveText]) + sLineBreak +
-    Format('  "state": "%s",', [BroadcastHandoverJsonEscape(AState)]) + sLineBreak +
-    Format('  "ownerId": "%s",', [BroadcastHandoverJsonEscape(FBroadcastHandoverOwnerId)]) + sLineBreak +
-    Format('  "owner": "%s",', [BroadcastHandoverJsonEscape(OwnerDisplay)]) + sLineBreak +
-    Format('  "djName": "%s",', [BroadcastHandoverJsonEscape(DjName)]) + sLineBreak +
-    Format('  "showName": "%s",', [BroadcastHandoverJsonEscape(ShowName)]) + sLineBreak +
-    Format('  "computerName": "%s",', [BroadcastHandoverJsonEscape(ComputerName)]) + sLineBreak +
-    Format('  "processId": %d,', [GetCurrentProcessId()]) + sLineBreak +
-    Format('  "updated": "%s",', [FormatDateTime('yyyy-mm-dd hh:nn:ss', Now)]) + sLineBreak +
-    Format('  "heartbeatTick": %d,', [GetTickCount()]) + sLineBreak +
-    Format('  "message": "%s"', [BroadcastHandoverJsonEscape(AMessage)]) + sLineBreak +
+    Format('  "active": %s,',
+           [ActiveText]) + sLineBreak +
+    Format('  "state": "%s",',
+           [BroadcastHandoverJsonEscape(AState)]) + sLineBreak +
+    Format('  "ownerId": "%s",',
+           [BroadcastHandoverJsonEscape(FBroadcastHandoverOwnerId)]) + sLineBreak +
+    Format('  "owner": "%s",',
+           [BroadcastHandoverJsonEscape(OwnerDisplay)]) + sLineBreak +
+    Format('  "djName": "%s",',
+           [BroadcastHandoverJsonEscape(DjName)]) + sLineBreak +
+    Format('  "showName": "%s",',
+           [BroadcastHandoverJsonEscape(ShowName)]) + sLineBreak +
+    Format('  "computerName": "%s",',
+           [BroadcastHandoverJsonEscape(ComputerName)]) + sLineBreak +
+    Format('  "processId": %d,',
+           [GetCurrentProcessId()]) + sLineBreak +
+    Format('  "updated": "%s",',
+           [FormatDateTime('yyyy-mm-dd hh:nn:ss',
+                           Now)]) + sLineBreak +
+    Format('  "heartbeatTick": %d,',
+           [GetTickCount()]) + sLineBreak +
+    Format('  "message": "%s"',
+           [BroadcastHandoverJsonEscape(AMessage)]) + sLineBreak +
     '}';
 end;
 
@@ -5728,16 +5899,16 @@ begin
     end;
 
   if not RDJEnsureDirectoryExists(BaseDir,
-                                  ErrorCode) then
+    ErrorCode) then
     begin
       SetBroadcastHandoverConnectionLost('Broadcast server is unavailable: ' +
-                                         SysErrorMessage(ErrorCode));
+        SysErrorMessage(ErrorCode));
       AMessage := 'Cannot reach the broadcast server at ' + BaseDir + '.';
       Exit(False);
     end;
 
   if DirectoryExists(LockDir) and
-     IsBroadcastHandoverLockStale(LockDir) then
+    IsBroadcastHandoverLockStale(LockDir) then
     begin
       memLog.Lines.Append('Removing stale broadcast handover lock.');
       DeleteBroadcastHandoverLockDir(LockDir);
@@ -5749,7 +5920,7 @@ begin
         begin
           ErrorCode := GetLastError();
           SetBroadcastHandoverConnectionLost('Broadcast server is unavailable: ' +
-                                             SysErrorMessage(ErrorCode));
+            SysErrorMessage(ErrorCode));
           AMessage := 'Cannot create the broadcast lock at ' + LockDir + '.';
           Exit(False);
         end;
@@ -5787,14 +5958,14 @@ begin
   FBroadcastHandoverConnectionLost := False;
   FBroadcastHandoverOwnerId := Format('%s-%d-%d',
                                       [BroadcastHandoverComputerName(),
-                                       GetCurrentProcessId(),
-                                       GetTickCount()]);
+    GetCurrentProcessId(),
+    GetTickCount()]);
   FLastBroadcastHandoverHeartbeatTick := 0;
 
   UpdateBroadcastHandoverHeartbeat(True);
 
   if FBroadcastHandoverConnectionLost or
-     (not FBroadcastHandoverLockAcquired) then
+    (not FBroadcastHandoverLockAcquired) then
     begin
       DeleteBroadcastHandoverLockDir(LockDir);
       FBroadcastHandoverLockAcquired := False;
@@ -5856,8 +6027,8 @@ begin
       OwnerId := ExtractBroadcastHandoverJsonString(OwnerJson,
                                                     'ownerId');
       OwnsServerLock := (OwnerId <> '') and
-                        SameText(OwnerId,
-                                 FBroadcastHandoverOwnerId);
+        SameText(OwnerId,
+                 FBroadcastHandoverOwnerId);
     end;
 
   if APublishHandoverReady and OwnsServerLock then
@@ -5906,6 +6077,7 @@ end;
 
 
 procedure TfrmMediaServer.DisableBroadcastPublishingAfterLockConflict(const AMessage: string);
+
 begin
 
   FBroadcastPublishing := False;
@@ -5963,7 +6135,7 @@ begin
 
           try
             if SameText(FHeartbeatWorker.OwnerId, FBroadcastHandoverOwnerId) and
-               FBroadcastHandoverLockAcquired then
+              FBroadcastHandoverLockAcquired then
               begin
                 if FHeartbeatWorker.Conflict then
                   DisableBroadcastPublishingAfterLockConflict('Broadcast ownership changed to another RDJ Pro computer.')
@@ -5983,7 +6155,7 @@ begin
                       end;
 
                     SetBroadcastHandoverLockIndicator(CAP_LOCKED,
-                                                       LOCKED_COLOR);
+                                                      LOCKED_COLOR);
                   end;
               end;
           finally
@@ -6000,11 +6172,11 @@ begin
     Exit;
 
   Tick := GetTickCount();
-  FirstHeartbeat := FLastBroadcastHandoverHeartbeatTick = 0;
+  FirstHeartbeat := (FLastBroadcastHandoverHeartbeatTick = 0);
 
   if (not AForce) and
-     (FLastBroadcastHandoverHeartbeatTick <> 0) and
-     ((Tick - FLastBroadcastHandoverHeartbeatTick) < RDJ_BROADCAST_HANDOVER_HEARTBEAT_MS) then
+    (FLastBroadcastHandoverHeartbeatTick <> 0) and
+    ((Tick - FLastBroadcastHandoverHeartbeatTick) < RDJ_BROADCAST_HANDOVER_HEARTBEAT_MS) then
     Exit;
 
   FLastBroadcastHandoverHeartbeatTick := Tick;
@@ -6019,13 +6191,13 @@ begin
   if not AForce then
     begin
       Json := BuildBroadcastHandoverStatusJson('on_air',
-                                                BroadcastHandoverOwnerDisplay() + ' is on air.');
+                                               BroadcastHandoverOwnerDisplay() + ' is on air.');
       FHeartbeatWorker := TRdjBroadcastHeartbeat.Create(BaseDir,
-                                                         LockDir,
-                                                         BroadcastHandoverStatusFileName(),
-                                                         FBroadcastHandoverOwnerId,
-                                                         Json,
-                                                         FBroadcastHandoverConnectionLost);
+                                                        LockDir,
+                                                        BroadcastHandoverStatusFileName(),
+                                                        FBroadcastHandoverOwnerId,
+                                                        Json,
+                                                        FBroadcastHandoverConnectionLost);
       FHeartbeatWorker.Start();
       Exit;
     end;
@@ -6072,7 +6244,7 @@ begin
             end;
 
           if not SameText(OwnerId,
-                          FBroadcastHandoverOwnerId) then
+            FBroadcastHandoverOwnerId) then
             begin
               DisableBroadcastPublishingAfterLockConflict('Broadcast ownership changed to another RDJ Pro computer.');
               Exit;
@@ -6093,15 +6265,15 @@ begin
 
   OwnerFileName := IncludeTrailingPathDelimiter(LockDir) + RDJ_BROADCAST_HANDOVER_OWNER_FILE;
   Json := BuildBroadcastHandoverStatusJson('on_air',
-                                            BroadcastHandoverOwnerDisplay() + ' is on air.');
+                                           BroadcastHandoverOwnerDisplay() + ' is on air.');
 
   if not WriteUtf8TextToFileAtomic(OwnerFileName,
-                                   Json) then
+    Json) then
     begin
       ErrorCode := FLastFileWriteError;
       ErrorMessage := 'Cannot update the broadcast lock';
 
-      if ErrorCode <> ERROR_SUCCESS then
+      if (ErrorCode <> ERROR_SUCCESS) then
         ErrorMessage := ErrorMessage + ': ' + SysErrorMessage(ErrorCode);
 
       SetBroadcastHandoverConnectionLost(ErrorMessage);
@@ -6141,7 +6313,7 @@ begin
   Tick := GetTickCount();
 
   if (FLastBroadcastHandoverPollTick <> 0) and
-     ((Tick - FLastBroadcastHandoverPollTick) < RDJ_BROADCAST_HANDOVER_POLL_MS) then
+    ((Tick - FLastBroadcastHandoverPollTick) < RDJ_BROADCAST_HANDOVER_POLL_MS) then
     Exit;
 
   SetBroadcastHandoverLockIndicator(CAP_UNLOCKED,
@@ -6151,7 +6323,7 @@ begin
   StatusFileName := BroadcastHandoverStatusFileName();
 
   if (StatusFileName = '') or
-     (not FileExists(StatusFileName)) then
+    (not FileExists(StatusFileName)) then
     Exit;
 
   Json := ReadBroadcastHandoverTextFile(StatusFileName);
@@ -6159,7 +6331,7 @@ begin
                                               'state');
 
   if not SameText(State,
-                  'handover_ready') then
+    'handover_ready') then
     Exit;
 
   MessageText := ExtractBroadcastHandoverJsonString(Json,
@@ -6169,7 +6341,7 @@ begin
 
   NoticeKey := State + '|' + MessageText;
   if SameText(NoticeKey,
-              FLastBroadcastHandoverNotice) then
+    FLastBroadcastHandoverNotice) then
     Exit;
 
   FLastBroadcastHandoverNotice := NoticeKey;
@@ -6180,6 +6352,7 @@ end;
 
 
 function TfrmMediaServer.EnsureBroadcastMseMirrorThread(): TRdjProMseMirrorThread;
+
 begin
 
   if not Assigned(FBroadcastMseMirrorThread) then
@@ -6190,6 +6363,7 @@ end;
 
 
 procedure TfrmMediaServer.StopBroadcastMseMirrorThread();
+
 begin
 
   if Assigned(FBroadcastMseMirrorThread) then
@@ -6208,7 +6382,7 @@ begin
     Exit;
 
   if (AFileName = '') or
-     (Length(ABytes) = 0) then
+    (Length(ABytes) = 0) then
     Exit;
 
   Worker := EnsureBroadcastMseMirrorThread();
@@ -6285,6 +6459,7 @@ end;
 
 
 function TfrmMediaServer.BroadcastMseFirstPublishedSeq(const ALastFragmentSeq: Integer): Integer;
+
 begin
 
   Result := ALastFragmentSeq - BroadcastMseKeepPatchedFragments() + 1;
@@ -6311,7 +6486,7 @@ begin
   FirstKeepSeq := BroadcastMseFirstPublishedSeq(ALastFragmentSeq);
 
   // Nothing became newly deletable.
-  if FBroadcastMseLastCleanupSeq >= (FirstKeepSeq - 1) then
+  if (FBroadcastMseLastCleanupSeq >= (FirstKeepSeq - 1)) then
     Exit;
 
   DumpDir := ResolveBroadcastMseDebugDir();
@@ -6321,8 +6496,8 @@ begin
     begin
 
       FileName := DumpDir +
-                  Format('patched_frag_%.6d.m4s',
-                         [Seq]);
+        Format('patched_frag_%.6d.m4s',
+               [Seq]);
 
       if FileExists(FileName) then
         DeleteFileW(PWideChar(FileName));
@@ -6357,16 +6532,16 @@ begin
   FBroadcastMseLastCleanupSeq := FirstKeepSeq - 1;
 
   if (ALastFragmentSeq <= 5) or
-     ((ALastFragmentSeq mod 25) = 0) then
+    ((ALastFragmentSeq mod 25) = 0) then
     OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE local cleanup: first=%d last=%d deletedThrough=%d',
-                                   [FirstKeepSeq,
-                                    ALastFragmentSeq,
-                                    FBroadcastMseLastCleanupSeq])));
+                                    [FirstKeepSeq,
+      ALastFragmentSeq,
+      FBroadcastMseLastCleanupSeq])));
 end;
 
 
 procedure TfrmMediaServer.WriteBroadcastHlsManifest(const AFirstFragmentSeq,
-                                                           ALastFragmentSeq: Integer);
+                                                    ALastFragmentSeq: Integer);
 var
   DumpDir: string;
   MirrorDir: string;
@@ -6380,43 +6555,43 @@ var
 begin
 
   if (AFirstFragmentSeq <= 0) or
-     (ALastFragmentSeq < AFirstFragmentSeq) then
+    (ALastFragmentSeq < AFirstFragmentSeq) then
     Exit;
 
   SegmentDurationMs := BroadcastMsePublicTargetMs();
-  if SegmentDurationMs < 1 then
+  if (SegmentDurationMs < 1) then
     SegmentDurationMs := RDJ_MSE_PUBLIC_FRAGMENT_TARGET_DEFAULT_MS;
 
   TargetDurationSeconds := (SegmentDurationMs + 999) div 1000;
-  if TargetDurationSeconds < 1 then
+  if (TargetDurationSeconds < 1) then
     TargetDurationSeconds := 1;
 
   Manifest := '#EXTM3U' + sLineBreak +
-              '#EXT-X-VERSION:7' + sLineBreak +
-              '#EXT-X-INDEPENDENT-SEGMENTS' + sLineBreak +
-              Format('#EXT-X-TARGETDURATION:%d',
-                     [TargetDurationSeconds]) + sLineBreak +
-              Format('#EXT-X-MEDIA-SEQUENCE:%d',
-                     [AFirstFragmentSeq]) + sLineBreak +
-              Format('#EXT-X-MAP:URI="init.mp4?session=%s"',
-                     [FBroadcastMseSessionId]) + sLineBreak;
+    '#EXT-X-VERSION:7' + sLineBreak +
+    '#EXT-X-INDEPENDENT-SEGMENTS' + sLineBreak +
+    Format('#EXT-X-TARGETDURATION:%d',
+           [TargetDurationSeconds]) + sLineBreak +
+    Format('#EXT-X-MEDIA-SEQUENCE:%d',
+           [AFirstFragmentSeq]) + sLineBreak +
+    Format('#EXT-X-MAP:URI="init.mp4?session=%s"',
+           [FBroadcastMseSessionId]) + sLineBreak;
 
   // Use integer formatting so the HLS decimal separator is always a dot,
   // regardless of the Windows locale used by the radio workstation.
   for Seq := AFirstFragmentSeq to ALastFragmentSeq do
     begin
       SegmentStartUtc := FBroadcastMseSessionStartedUtc +
-                         (((Seq - 1) * Int64(SegmentDurationMs)) / MSecsPerDay);
+        (((Seq - 1) * Int64(SegmentDurationMs)) / MSecsPerDay);
       Manifest := Manifest +
-                  '#EXT-X-PROGRAM-DATE-TIME:' +
-                  FormatDateTime('yyyy-mm-dd"T"hh:nn:ss.zzz"Z"',
-                                 SegmentStartUtc) + sLineBreak +
-                  Format('#EXTINF:%d.%.3d,',
-                         [SegmentDurationMs div 1000,
-                          SegmentDurationMs mod 1000]) + sLineBreak +
-                  Format('patched_frag_%.6d.m4s?session=%s',
-                         [Seq,
-                          FBroadcastMseSessionId]) + sLineBreak;
+        '#EXT-X-PROGRAM-DATE-TIME:' +
+        FormatDateTime('yyyy-mm-dd"T"hh:nn:ss.zzz"Z"',
+                       SegmentStartUtc) + sLineBreak +
+        Format('#EXTINF:%d.%.3d,',
+               [SegmentDurationMs div 1000,
+        SegmentDurationMs mod 1000]) + sLineBreak +
+        Format('patched_frag_%.6d.m4s?session=%s',
+               [Seq,
+        FBroadcastMseSessionId]) + sLineBreak;
     end;
 
   DumpDir := ResolveBroadcastMseDebugDir();
@@ -6426,17 +6601,17 @@ begin
                             Manifest);
 
   MasterManifest := '#EXTM3U' + sLineBreak +
-                    '#EXT-X-VERSION:7' + sLineBreak +
-                    '#EXT-X-INDEPENDENT-SEGMENTS' + sLineBreak +
-                    '#EXT-X-STREAM-INF:BANDWIDTH=3500000,' +
-                    'AVERAGE-BANDWIDTH=2800000,' +
-                    'CODECS="avc1.42C01F,mp4a.40.2"' + sLineBreak +
-                    Format('live.m3u8?session=%s',
-                           [FBroadcastMseSessionId]) + sLineBreak;
+    '#EXT-X-VERSION:7' + sLineBreak +
+    '#EXT-X-INDEPENDENT-SEGMENTS' + sLineBreak +
+    '#EXT-X-STREAM-INF:BANDWIDTH=3500000,' +
+    'AVERAGE-BANDWIDTH=2800000,' +
+    'CODECS="avc1.42C01F,mp4a.40.2"' + sLineBreak +
+    Format('live.m3u8?session=%s',
+           [FBroadcastMseSessionId]) + sLineBreak;
 
   WriteUtf8TextToFileAtomic(DumpDir + 'master.m3u8',
                             MasterManifest);
-  if MirrorDir <> '' then
+  if (MirrorDir <> '') then
     begin
       MirrorUtf8TextToServerAtomic(MirrorDir + 'live.m3u8',
                                    Manifest);
@@ -6465,11 +6640,11 @@ begin
     Exit;
 
   if (not FBroadcastMseManifestWritten) and
-     (ALastFragmentSeq < RDJ_MSE_STARTUP_MIN_PUBLIC_FRAGMENTS) then
+    (ALastFragmentSeq < RDJ_MSE_STARTUP_MIN_PUBLIC_FRAGMENTS) then
     Exit;
 
   if FBroadcastMseManifestWritten and
-     (ALastFragmentSeq = FBroadcastMseLastManifestSeq) then
+    (ALastFragmentSeq = FBroadcastMseLastManifestSeq) then
     Exit;
 
   DumpDir := ResolveBroadcastMseDebugDir();
@@ -6482,46 +6657,47 @@ begin
   // thread applies the same rule again for the Caddy/UNC side by publishing
   // only up to FLastMirroredPatchedSeq.
   if not FileExists(DumpDir + Format('patched_frag_%.6d.m4s',
-                                     [ALastFragmentSeq])) then
+    [ALastFragmentSeq])) then
     begin
       OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE manifest deferred, missing local patched_frag_%.6d.m4s',
-                                     [ALastFragmentSeq])));
+                                      [ALastFragmentSeq])));
       Exit;
     end;
 
   Json := '{' + sLineBreak +
-          '  "version": 1,' + sLineBreak +
-          '  "live": true,' + sLineBreak +
-          '  "init": "init.mp4",' + sLineBreak +
-          Format('  "first": %d,',
-                 [FirstSeq]) + sLineBreak +
-          Format('  "last": %d,',
-                 [ALastFragmentSeq]) + sLineBreak +
-          Format('  "publishSeq": %d,',
-                 [FBroadcastMseManifestPublishSeq]) + sLineBreak +
-          Format('  "sessionId": "%s",',
-                 [FBroadcastMseSessionId]) + sLineBreak +
-          Format('  "sourceSeq": %d,',
-                 [FBroadcastMseFragmentSeq]) + sLineBreak +
-          Format('  "pendingGroupParts": %d,',
-                 [FBroadcastMseGroupPartCount]) + sLineBreak +
-                  '  "prefix": "patched_frag_",' + sLineBreak +
-                  '  "ext": ".m4s",' + sLineBreak +
-                  '  "digits": 6,' + sLineBreak +
-                  '  "codec": "video/mp4; codecs=\"avc1.42C01F, mp4a.40.2\"",' + sLineBreak +
-          Format('  "pollMs": %d,',
-                 [RDJ_MSE_MANIFEST_POLL_MS]) + sLineBreak +
-          Format('  "fragmentTargetMs": %d,', [
-                 BroadcastMsePublicTargetMs()]) + sLineBreak +
-          Format('  "groupSourceFragments": %d,',
-                 [BroadcastMseGroupSourceFragments()]) + sLineBreak +
-          Format('  "keepBehind": %d',
-                 [BroadcastMseKeepPatchedFragments()]) + sLineBreak + '}';
+    '  "version": 1,' + sLineBreak +
+    '  "live": true,' + sLineBreak +
+    '  "init": "init.mp4",' + sLineBreak +
+    Format('  "first": %d,',
+           [FirstSeq]) + sLineBreak +
+    Format('  "last": %d,',
+           [ALastFragmentSeq]) + sLineBreak +
+    Format('  "publishSeq": %d,',
+           [FBroadcastMseManifestPublishSeq]) + sLineBreak +
+    Format('  "sessionId": "%s",',
+           [FBroadcastMseSessionId]) + sLineBreak +
+    Format('  "sourceSeq": %d,',
+           [FBroadcastMseFragmentSeq]) + sLineBreak +
+    Format('  "pendingGroupParts": %d,',
+           [FBroadcastMseGroupPartCount]) + sLineBreak +
+    '  "prefix": "patched_frag_",' + sLineBreak +
+    '  "ext": ".m4s",' + sLineBreak +
+    '  "digits": 6,' + sLineBreak +
+    '  "codec": "video/mp4; codecs=\"avc1.42C01F, mp4a.40.2\"",' + sLineBreak +
+    Format('  "pollMs": %d,',
+           [RDJ_MSE_MANIFEST_POLL_MS]) + sLineBreak +
+    Format('  "fragmentTargetMs": %d,',
+           [
+    BroadcastMsePublicTargetMs()]) + sLineBreak +
+    Format('  "groupSourceFragments": %d,',
+           [BroadcastMseGroupSourceFragments()]) + sLineBreak +
+    Format('  "keepBehind": %d',
+           [BroadcastMseKeepPatchedFragments()]) + sLineBreak + '}';
 
   WriteUtf8TextToFileAtomic(DumpDir + 'live.json',
                             Json);
 
-  if MirrorDir <> '' then
+  if (MirrorDir <> '') then
     MirrorUtf8TextToServerAtomic(MirrorDir + 'live.json',
                                  Json);
 
@@ -6536,20 +6712,21 @@ begin
   // transition to the form before enabling Cast live.
   if not WasManifestWritten then
     PostMessageW(Handle,
-                WM_MFCAST_DEVICES,
-                0,
-                0);
+                 WM_MFCAST_DEVICES,
+                 0,
+                 0);
 
   CleanupOldBroadcastMseFragments(ALastFragmentSeq);
 
   if (ALastFragmentSeq <= 5) or
-     ((ALastFragmentSeq mod 25) = 0) then
+    ((ALastFragmentSeq mod 25) = 0) then
     OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE manifest: live.json last=%d',
-                                   [ALastFragmentSeq])));
+                                    [ALastFragmentSeq])));
 end;
 
 
 function TfrmMediaServer.CurrentBroadcastMseGroupBytes(): Int64;
+
 begin
 
   if Assigned(FBroadcastMseGroupStream) then
@@ -6564,12 +6741,30 @@ const
   // Cast's FMP4 HLS mode expects CMAF media segments.  Media Foundation emits
   // the moof/mdat data, so add the segment type box when grouping fragments.
   BroadcastCmafSegmentTypeBox: array[0..23] of Byte =
-    ($00, $00, $00, $18,              // box size
-     $73, $74, $79, $70,              // styp
-     $63, $6D, $66, $73,              // cmfs
-     $00, $00, $00, $00,              // minor version
-     $63, $6D, $66, $73,              // cmfs
-     $69, $73, $6F, $36);             // iso6
+    ($00,
+     $00,
+     $00,
+     $18,              // box size
+    $73,
+     $74,
+     $79,
+     $70,              // styp
+    $63,
+     $6D,
+     $66,
+     $73,              // cmfs
+    $00,
+     $00,
+     $00,
+     $00,              // minor version
+    $63,
+     $6D,
+     $66,
+     $73,              // cmfs
+    $69,
+     $73,
+     $6F,
+     $36);             // iso6
 var
   InitSegment: TBytes;
   PatchedFragment: TBytes;
@@ -6583,6 +6778,7 @@ var
   HaveInit: Boolean;
   HaveFragment: Boolean;
 
+
   function CurrentPublicGroupBytes(): Int64;
   begin
 
@@ -6591,6 +6787,7 @@ var
     else
       Result := Length(FBroadcastMseGroupBytes);
   end;
+
 
   procedure ClearPublicGroup();
   begin
@@ -6604,6 +6801,7 @@ var
     FBroadcastMseGroupPartCount := 0;
     FBroadcastMseGroupFirstTick := 0;
   end;
+
 
   procedure AppendToPublicGroup(const ABytes: TBytes);
   begin
@@ -6626,6 +6824,7 @@ var
     Inc(FBroadcastMseGroupPartCount);
   end;
 
+
   function PopPublicGroup(out ABytes: TBytes): Boolean;
   var
     GroupSize: Int64;
@@ -6633,8 +6832,8 @@ var
   begin
 
     Result := (FBroadcastMseGroupPartCount >= BroadcastMseGroupSourceFragments()) or
-              (FBroadcastMseForceNextPublicGroup and
-               (FBroadcastMseGroupPartCount > 0));
+      (FBroadcastMseForceNextPublicGroup and
+      (FBroadcastMseGroupPartCount > 0));
 
     if not Result then
       Exit;
@@ -6676,7 +6875,7 @@ var
 
     AgeMs := GetTickCount64() - FBroadcastMseGroupFirstTick;
 
-    if AgeMs < UInt64(BroadcastMseGroupForceFlushMs()) then
+    if (AgeMs < UInt64(BroadcastMseGroupForceFlushMs())) then
       Exit;
 
     SetLength(ABytes,
@@ -6687,10 +6886,10 @@ var
                                         Integer(GroupSize));
 
     OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE force public group flush: parts=%d targetParts=%d ageMs=%d bytes=%d',
-                                   [FBroadcastMseGroupPartCount,
-                                    BroadcastMseGroupSourceFragments(),
-                                    AgeMs,
-                                    Length(ABytes)])));
+                                    [FBroadcastMseGroupPartCount,
+      BroadcastMseGroupSourceFragments(),
+      AgeMs,
+      Length(ABytes)])));
 
     ClearPublicGroup();
     Result := True;
@@ -6711,7 +6910,8 @@ var
     Started := GetTickCount64();
     WriteBytesToFileAtomic(PublicPatchedFileName,
                            ABytes);
-    FUiTiming.Finished('fragment.local-write', Started);
+    FUiTiming.Finished('fragment.local-write',
+                       Started);
 
     if (MirrorDir <> '') then
       begin
@@ -6724,7 +6924,8 @@ var
         Started := GetTickCount64();
         MirrorFileToServer(PublicPatchedFileName,
                            MirrorDir + ExtractFileName(PublicPatchedFileName));
-        FUiTiming.Finished('fragment.mirror-enqueue', Started);
+        FUiTiming.Finished('fragment.mirror-enqueue',
+                           Started);
       end;
 
     LastPublishedSeq := FBroadcastMsePublicSeq;
@@ -6732,12 +6933,12 @@ var
     FBroadcastMseLastStallTraceTick := 0;
 
     if (FBroadcastMsePublicSeq <= 5) or
-       ((FBroadcastMsePublicSeq mod 10) = 0) then
+      ((FBroadcastMsePublicSeq mod 10) = 0) then
       OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE public dump: %s bytes=%d sourceParts=%d sourceSeq=%d',
-                                     [ExtractFileName(PublicPatchedFileName),
-                                      Length(ABytes),
-                                      BroadcastMseGroupSourceFragments(),
-                                      FBroadcastMseFragmentSeq])));
+                                      [ExtractFileName(PublicPatchedFileName),
+        Length(ABytes),
+        BroadcastMseGroupSourceFragments(),
+        FBroadcastMseFragmentSeq])));
   end;
 
 
@@ -6767,8 +6968,9 @@ begin
   // early stub. Rewrite init.mp4 whenever the available init segment grows.
   Started := GetTickCount64();
   HaveInit := FBroadcastPublishing and
-              FRdjProBroadcastMp4Recorder.GetInitSegment(InitSegment);
-  FUiTiming.Finished('encoder.init-snapshot', Started);
+    FRdjProBroadcastMp4Recorder.GetInitSegment(InitSegment);
+  FUiTiming.Finished('encoder.init-snapshot',
+                     Started);
 
   if HaveInit and (Length(InitSegment) > FBroadcastMseInitSize) then
     begin
@@ -6776,15 +6978,15 @@ begin
       WriteBytesToFileAtomic(DumpDir + 'init.mp4',
                              InitSegment);
 
-      if MirrorDir <> '' then
+      if (MirrorDir <> '') then
         MirrorBytesToServerAtomic(MirrorDir + 'init.mp4',
                                   InitSegment);
 
-      FBroadcastMseInitWritten := Length(InitSegment) > 24;
+      FBroadcastMseInitWritten := (Length(InitSegment) > 24);
       FBroadcastMseInitSize := Length(InitSegment);
 
       OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE dump: init.mp4 bytes=%d',
-                                     [Length(InitSegment)])));
+                                      [Length(InitSegment)])));
     end;
 
   // Milestone 15:
@@ -6804,7 +7006,8 @@ begin
       // and count it as one internal source fragment.
       Started := GetTickCount64();
       HaveFragment := FRdjProBroadcastMp4Recorder.TryPopPatchedFragment(PatchedFragment);
-      FUiTiming.Finished('encoder.fragment-pop', Started);
+      FUiTiming.Finished('encoder.fragment-pop',
+                         Started);
 
       if not HaveFragment then
         Break;
@@ -6815,7 +7018,8 @@ begin
       // resource. Browser/Caddy publication below remains independent.
       Started := GetTickCount64();
       ForwardCastLiveFragment(PatchedFragment);
-      FUiTiming.Finished('fragment.cast-forward', Started);
+      FUiTiming.Finished('fragment.cast-forward',
+                         Started);
 
       if FBroadcastPublishing then
         AppendToPublicGroup(PatchedFragment);
@@ -6823,7 +7027,7 @@ begin
       PatchedFragment := nil;
 
       if FBroadcastPublishing and
-         PopPublicGroup(PublicFragment) then
+        PopPublicGroup(PublicFragment) then
         begin
           PublishPublicFragment(PublicFragment);
           PublicFragment := nil;
@@ -6831,23 +7035,24 @@ begin
 
       if (FBroadcastMseFragmentSeq <= 5) or ((FBroadcastMseFragmentSeq mod 25) = 0) then
         OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE source patched: seq=%d groupParts=%d/%d publicSeq=%d groupBytes=%d',
-                                       [FBroadcastMseFragmentSeq,
-                                        FBroadcastMseGroupPartCount,
-                                        BroadcastMseGroupSourceFragments(),
-                                        FBroadcastMsePublicSeq,
-                                        CurrentPublicGroupBytes()])));
+                                        [FBroadcastMseFragmentSeq,
+          FBroadcastMseGroupPartCount,
+          BroadcastMseGroupSourceFragments(),
+          FBroadcastMsePublicSeq,
+          CurrentPublicGroupBytes()])));
     end;
 
   if FBroadcastPublishing and
-     (LastPublishedSeq <= 0) and
-     PopPublicGroupForced(PublicFragment) then
+    (LastPublishedSeq <= 0) and
+    PopPublicGroupForced(PublicFragment) then
     PublishPublicFragment(PublicFragment);
 
   if (LastPublishedSeq > 0) then
     begin
       Started := GetTickCount64();
       WriteBroadcastMseLiveManifest(LastPublishedSeq);
-      FUiTiming.Finished('fragment.publish-manifests', Started);
+      FUiTiming.Finished('fragment.publish-manifests',
+                         Started);
     end;
 end;
 
@@ -6871,7 +7076,7 @@ begin
 
   NowTick := GetTickCount64();
   if (FBroadcastMseMemLastLogTick <> 0) and
-     ((NowTick - FBroadcastMseMemLastLogTick) < 5000) then
+    ((NowTick - FBroadcastMseMemLastLogTick) < 5000) then
     Exit;
 
   FBroadcastMseMemLastLogTick := NowTick;
@@ -6887,9 +7092,8 @@ begin
   PagefileMb := 0;
   PrivateMb := 0;
 
-  if (RDJGetProcessMemoryInfo(GetCurrentProcess(),
-                             @Mem,
-                             SizeOf(Mem)) <> False) then
+  if (RDJGetProcessMemoryInfo(GetCurrentProcess(), @Mem,
+    SizeOf(Mem)) <> False) then
     begin
       WorkMb := RDJBytesToMb(UInt64(Mem.WorkingSetSize));
       PeakWorkMb := RDJBytesToMb(UInt64(Mem.PeakWorkingSetSize));
@@ -6911,42 +7115,42 @@ begin
 
   MessageText := Format('MSE MEM[%s]: WorkMB=%d PeakWorkMB=%d PagefileMB=%d PrivateMB=%d VQ=%d AQ=%d RawQ=%d PatchedQ=%d MirrorQ=%d GroupParts=%d/%d GroupBytes=%d PublicSeq=%d SourceSeq=%d LastVms=%d LastAms=%d ParserBytes=%d PendingMoof=%d TotalBytes=%d',
                         [AWhere,
-                         WorkMb,
-                         PeakWorkMb,
-                         PagefileMb,
-                         PrivateMb,
-                         Diag.VideoQueueCount,
-                         Diag.AudioQueueCount,
-                         Diag.RawFragmentQueueCount,
-                         Diag.PatchedFragmentQueueCount,
-                         MirrorQ,
-                         FBroadcastMseGroupPartCount,
-                         BroadcastMseGroupSourceFragments(),
-                         CurrentBroadcastMseGroupBytes(),
-                         FBroadcastMsePublicSeq,
-                         FBroadcastMseFragmentSeq,
-                         Diag.LastVideoWriteElapsedMs,
-                         Diag.LastAudioWriteElapsedMs,
-                         Diag.ParserBufferSize,
-                         Diag.PendingMoofBytes,
-                         Diag.TotalBytesWritten]);
+    WorkMb,
+    PeakWorkMb,
+    PagefileMb,
+    PrivateMb,
+    Diag.VideoQueueCount,
+    Diag.AudioQueueCount,
+    Diag.RawFragmentQueueCount,
+    Diag.PatchedFragmentQueueCount,
+    MirrorQ,
+    FBroadcastMseGroupPartCount,
+    BroadcastMseGroupSourceFragments(),
+    CurrentBroadcastMseGroupBytes(),
+    FBroadcastMsePublicSeq,
+    FBroadcastMseFragmentSeq,
+    Diag.LastVideoWriteElapsedMs,
+    Diag.LastAudioWriteElapsedMs,
+    Diag.ParserBufferSize,
+    Diag.PendingMoofBytes,
+    Diag.TotalBytesWritten]);
   OutputDebugStringW(PChar('TfrmMediaServer.' + MessageText));
   RDJLog('Broadcast diag',
          MessageText);
 
   if ((Diag.LastVideoWriteElapsedMs >= RDJ_MSE_RECORDER_RESTART_SLOW_VIDEO_MS) and
-      (Diag.VideoQueueCount >= RDJ_MSE_RECORDER_RESTART_VIDEO_QUEUE)) or
-     (Diag.SlowVideoWriteStreak >= 2) then
+    (Diag.VideoQueueCount >= RDJ_MSE_RECORDER_RESTART_VIDEO_QUEUE)) or
+    (Diag.SlowVideoWriteStreak >= 2) then
     begin
 
       QueueBroadcastMseRecorderRestart(Format('slow fMP4 video writer: lastVideoMs=%d streak=%d videoQueue=%d workMB=%d privateMB=%d publicSeq=%d sourceSeq=%d',
                                               [Diag.LastVideoWriteElapsedMs,
-                                               Diag.SlowVideoWriteStreak,
-                                               Diag.VideoQueueCount,
-                                               WorkMb,
-                                               PrivateMb,
-                                               FBroadcastMsePublicSeq,
-                                               FBroadcastMseFragmentSeq]));
+        Diag.SlowVideoWriteStreak,
+        Diag.VideoQueueCount,
+        WorkMb,
+        PrivateMb,
+        FBroadcastMsePublicSeq,
+        FBroadcastMseFragmentSeq]));
       Exit;
     end;
 end;
@@ -6960,8 +7164,8 @@ var
 begin
 
   if FCastClosing or FBroadcastRecoveryBlocked or FPendingBroadcastRecording or
-     (not (FBroadcastPublishing or FCastProducerRequested)) or
-     (FBroadcastMseRecorderRestartQueued <> 0) then
+    (not (FBroadcastPublishing or FCastProducerRequested)) or
+    (FBroadcastMseRecorderRestartQueued <> 0) then
     Exit;
 
   if FBroadcastPublishing and (not FBroadcastHandoverLockAcquired) then
@@ -6970,7 +7174,7 @@ begin
   NowTick := GetTickCount64();
 
   if (FLastBroadcastRecoveryTick <> 0) and
-     ((NowTick - FLastBroadcastRecoveryTick) < 30000) then
+    ((NowTick - FLastBroadcastRecoveryTick) < 30000) then
     Exit;
 
   Reason := '';
@@ -6978,15 +7182,16 @@ begin
   if not Assigned(FRdjProBroadcastMp4Recorder) then
     Reason := 'recorder is missing'
   else if (not FRdjProBroadcasting) or
-          (not FRdjProBroadcastMp4Recorder.Active) or
-          (not FRdjProBroadcastMp4Recorder.WorkerRunning) then
+    (not FRdjProBroadcastMp4Recorder.Active) or
+    (not FRdjProBroadcastMp4Recorder.WorkerRunning) then
     Reason := Format('recorder state=%d hr=0x%.8x workerRunning=%s',
                      [Ord(FRdjProBroadcastMp4Recorder.State),
-                      Cardinal(FRdjProBroadcastMp4Recorder.LastError),
-                      SysUtils.BoolToStr(FRdjProBroadcastMp4Recorder.WorkerRunning, True)])
+      Cardinal(FRdjProBroadcastMp4Recorder.LastError),
+      SysUtils.BoolToStr(FRdjProBroadcastMp4Recorder.WorkerRunning,
+                         True)])
   else if FRdjProStaticImage and
-          (FLastBroadcastPublicSegmentTick <> 0) and
-          ((NowTick - FLastBroadcastPublicSegmentTick) >= 30000) then
+    (FLastBroadcastPublicSegmentTick <> 0) and
+    ((NowTick - FLastBroadcastPublicSegmentTick) >= 30000) then
     Reason := 'static-image broadcast has not produced a fragment for 30 seconds';
 
   if (Reason <> '') then
@@ -7006,7 +7211,7 @@ var
 begin
 
   if FCastClosing or FBroadcastRecoveryBlocked or
-     (not (FBroadcastPublishing or FCastProducerRequested)) then
+    (not (FBroadcastPublishing or FCastProducerRequested)) then
     Exit;
 
   Lifetime := FBroadcastRecoveryLifetime;
@@ -7017,8 +7222,8 @@ begin
     Reason := 'public MSE output stalled';
 
   if (InterlockedCompareExchange(FBroadcastMseRecorderRestartQueued,
-                                  1,
-                                  0) <> 0) then
+    1,
+    0) <> 0) then
     Exit;
 
   FLastBroadcastRecoveryTick := GetTickCount64();
@@ -7030,10 +7235,10 @@ begin
   RestartNo := FBroadcastMseRecorderRestartCount;
 
   OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE recorder restart queued: count=%d reason=%s publicSeq=%d sourceSeq=%d',
-                                 [RestartNo,
-                                  Reason,
-                                  FBroadcastMsePublicSeq,
-                                  FBroadcastMseFragmentSeq])));
+                                  [RestartNo,
+    Reason,
+    FBroadcastMsePublicSeq,
+    FBroadcastMseFragmentSeq])));
 
   // Stop feeding the stalled writer immediately. The UI remains ON AIR while
   // the internal fMP4 encoder session is rolled over.
@@ -7042,8 +7247,13 @@ begin
   OldRecorder := FRdjProBroadcastMp4Recorder;
   FRdjProBroadcastMp4Recorder := nil;
 
-  RestartThread:=TRdjRestartJob.Create(Self,OldRecorder,Reason,RestartNo,Lifetime,Token);
- OwnUiJob(RestartThread);
+  RestartThread := TRdjRestartJob.Create(Self,
+                                         OldRecorder,
+                                         Reason,
+                                         RestartNo,
+                                         Lifetime,
+                                         Token);
+  OwnUiJob(RestartThread);
 
   RestartThread.FreeOnTerminate := False;
   RestartThread.Start();
@@ -7057,7 +7267,7 @@ var
 begin
 
   if (not FRdjProBroadcasting) and
-     (not chkBroadcast.Down) then
+    (not chkBroadcast.Down) then
     Exit;
 
   Reason := Trim(AReason);
@@ -7116,27 +7326,27 @@ begin
       if (PublicAgeMs >= PublicStaleMs) then
         begin
           if (FBroadcastMseLastStallTraceTick = 0) or
-             ((NowTick - FBroadcastMseLastStallTraceTick) >= 3000) then
+            ((NowTick - FBroadcastMseLastStallTraceTick) >= 3000) then
             begin
               FBroadcastMseLastStallTraceTick := NowTick;
 
               OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE live trace: video fresh, public stale: videoAgeMs=%d publicAgeMs=%d groupParts=%d/%d groupBytes=%d sourceSeq=%d publicSeq=%d',
-                                             [VideoAgeMs,
-                                              PublicAgeMs,
-                                              FBroadcastMseGroupPartCount,
-                                              BroadcastMseGroupSourceFragments(),
-                                              CurrentBroadcastMseGroupBytes(),
-                                              FBroadcastMseFragmentSeq,
-                                              FBroadcastMsePublicSeq])));
+                                              [VideoAgeMs,
+                PublicAgeMs,
+                FBroadcastMseGroupPartCount,
+                BroadcastMseGroupSourceFragments(),
+                CurrentBroadcastMseGroupBytes(),
+                FBroadcastMseFragmentSeq,
+                FBroadcastMsePublicSeq])));
 
               FRdjProBroadcastMp4Recorder.DebugLogLiveState('dlg public stale');
 
               QueueBroadcastMseRecorderRestart(Format('public MSE output stale: videoAgeMs=%d publicAgeMs=%d groupParts=%d sourceSeq=%d publicSeq=%d',
                                                       [VideoAgeMs,
-                                                       PublicAgeMs,
-                                                       FBroadcastMseGroupPartCount,
-                                                       FBroadcastMseFragmentSeq,
-                                                       FBroadcastMsePublicSeq]));
+                PublicAgeMs,
+                FBroadcastMseGroupPartCount,
+                FBroadcastMseFragmentSeq,
+                FBroadcastMsePublicSeq]));
             end;
         end;
 
@@ -7155,20 +7365,23 @@ begin
     Exit;
 
   if (InterlockedCompareExchange(FBroadcastVideoFlushQueued,
-                                   1,
-                                   0) <> 0) then
+    1,
+    0) <> 0) then
     Exit;
 
   FLastBroadcastVideoFlushTick := NowTick;
 
   OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE video SourceReader hard flush queued: videoAgeMs=%d publicAgeMs=%d groupParts=%d sourceSeq=%d publicSeq=%d',
-                                 [VideoAgeMs,
-                                  PublicAgeMs,
-                                  FBroadcastMseGroupPartCount,
-                                  FBroadcastMseFragmentSeq,
-                                  FBroadcastMsePublicSeq])));
+                                  [VideoAgeMs,
+    PublicAgeMs,
+    FBroadcastMseGroupPartCount,
+    FBroadcastMseFragmentSeq,
+    FBroadcastMsePublicSeq])));
 
-  FUiDispatch.Post(DispatchFlushProc,0,VideoAgeMs,PublicAgeMs);
+  FUiDispatch.Post(DispatchFlushProc,
+                   0,
+                   VideoAgeMs,
+                   PublicAgeMs);
 end;
 
 
@@ -7198,7 +7411,7 @@ begin
   for I := 0 to 20 do
     begin
       if RenameFile(ALiveFileName,
-                    ArchiveFileName) then
+        ArchiveFileName) then
         Exit(True);
 
       Sleep(25);
@@ -7250,6 +7463,7 @@ end;
 
 
 procedure TfrmMediaServer.StopRdjProVideoSampleReaderIfIdle();
+
 begin
 
   if FRdjProRecording or FRdjProBroadcasting then
@@ -7273,7 +7487,7 @@ begin
   VideoType := nil;
 
   if FBroadcastRecoveryBlocked or
-     (FBroadcastMseRecorderRestartQueued <> 0) then
+    (FBroadcastMseRecorderRestartQueued <> 0) then
     Exit;
 
   if not Assigned(FRdjProBroadcastMp4Recorder) then
@@ -7306,8 +7520,8 @@ begin
   FBroadcastPublishing := APublishBroadcast;
 
   if APublishBroadcast and
-     (not FBroadcastHandoverLockAcquired) and
-     (not AcquireBroadcastHandoverLock(HandoverMessage)) then
+    (not FBroadcastHandoverLockAcquired) and
+    (not AcquireBroadcastHandoverLock(HandoverMessage)) then
     begin
       FBroadcastPublishing := False;
       memLog.Lines.Append(HandoverMessage);
@@ -7317,137 +7531,137 @@ begin
 
   try
 
-  if FRdjProStaticImage then
-    begin
-      if not EnsureRdjProStaticVideoMediaType() then
-        Exit;
-
-      VideoType := FStaticVideoMediaType;
-    end
-  else
-    begin
-      if not EnsureRdjProVideoSampleReader() then
-        Exit;
-
-      VideoType := FRdjProCaptureManager.VideoSourceReaderMediaType;
-    end;
-
-  FileName := ResolveCaddyLiveMp4Path();
-
-  if not ArchiveExistingCaddyLiveMp4(FileName) then
-    Exit;
-
-  hr := FRdjProBroadcastMp4Recorder.SetVideoPreviewMediaType(VideoType);
-  if FAILED(hr) then
-    begin
-      InfoMsg(optShowMsg,
-              'StartRdjProBroadcast: SetVideoPreviewMediaType failed.',
-              hr);
-      memLog.Lines.Append('Set video preview mediaType failed.');
-      Exit;
-    end;
-
-  if not FRecordVideoOnly then
-    begin
-      if not FLastRdjProAudioWfxValid then
-        begin
-          ArmPendingBroadcastRecording(FileName,
-                                       FRecordVideoOnly);
-          FActiveBroadcastVideoMediaType := VideoType;
-          FLastBroadcastAudioSampleTick := 0;
-          FLastBroadcastVideoSampleTick := GetTickCount64();
-          FLastBroadcastPublicSegmentTick := GetTickCount64();
-          FRdjProBroadcasting := True;
-          chkBroadcast.Checked := FBroadcastPublishing;
-          chkRdjProCamera.Enabled := FRdjProStaticImage and
-                                     (not FRecordingRdjPro);
-          chkRecordVideoOnly.Enabled := False;
-          chkRdjProStaticImage.Enabled := not FRecordingRdjPro;
-          UpdateOnAirLamp(FBroadcastPublishing);
-          UpdateBroadcastHealth();
-
-          if Assigned(MainMDIFrm) then
-            begin
-              if MainMDIFrm.HasActiveLoopbackDeck() then
-                MainMDIFrm.ClearNowPlaying();
-              MainMDIFrm.RefreshMainButtonStates();
-            end;
-
-          Result := True;
+    if FRdjProStaticImage then
+      begin
+        if not EnsureRdjProStaticVideoMediaType() then
           Exit;
-        end;
 
-      hr := FRdjProBroadcastMp4Recorder.SetAudioWaveFormat(@FLastRdjProAudioWfx);
-      if FAILED(hr) then
-        begin
-          InfoMsg(optShowMsg,
-                  'StartRdjProBroadcast: SetAudioWaveFormat failed.',
-                  hr);
-          memLog.Lines.Append('Set audio wave format failed.');
+        VideoType := FStaticVideoMediaType;
+      end
+    else
+      begin
+        if not EnsureRdjProVideoSampleReader() then
           Exit;
-        end;
-    end;
 
-  hr := FRdjProBroadcastMp4Recorder.StartRecording(FileName,
-                                                   FRecordVideoOnly);
-  if FAILED(hr) then
-    begin
-      InfoMsg(optShowMsg,
-              'StartRdjProBroadcast: StartRecording failed.',
-              hr);
-      memLog.Lines.Append('Start recording failed.');
+        VideoType := FRdjProCaptureManager.VideoSourceReaderMediaType;
+      end;
+
+    FileName := ResolveCaddyLiveMp4Path();
+
+    if not ArchiveExistingCaddyLiveMp4(FileName) then
       Exit;
-    end;
 
-  ResetBroadcastMseDebugDump();
+    hr := FRdjProBroadcastMp4Recorder.SetVideoPreviewMediaType(VideoType);
+    if FAILED(hr) then
+      begin
+        InfoMsg(optShowMsg,
+                'StartRdjProBroadcast: SetVideoPreviewMediaType failed.',
+                hr);
+        memLog.Lines.Append('Set video preview mediaType failed.');
+        Exit;
+      end;
 
-  FRdjProBroadcasting := True;
-  FActiveBroadcastVideoMediaType := VideoType;
-  FLastBroadcastAudioSampleTick := 0;
-  FLastBroadcastVideoSampleTick := GetTickCount64();
-  FLastBroadcastPublicSegmentTick := GetTickCount64();
+    if not FRecordVideoOnly then
+      begin
+        if not FLastRdjProAudioWfxValid then
+          begin
+            ArmPendingBroadcastRecording(FileName,
+                                         FRecordVideoOnly);
+            FActiveBroadcastVideoMediaType := VideoType;
+            FLastBroadcastAudioSampleTick := 0;
+            FLastBroadcastVideoSampleTick := GetTickCount64();
+            FLastBroadcastPublicSegmentTick := GetTickCount64();
+            FRdjProBroadcasting := True;
+            chkBroadcast.Checked := FBroadcastPublishing;
+            chkRdjProCamera.Enabled := FRdjProStaticImage and
+              (not FRecordingRdjPro);
+            chkRecordVideoOnly.Enabled := False;
+            chkRdjProStaticImage.Enabled := not FRecordingRdjPro;
+            UpdateOnAirLamp(FBroadcastPublishing);
+            UpdateBroadcastHealth();
 
-  if FRdjProStaticImage and not FRdjProRecording then
-    begin
-      FStaticVideoFrameIndex := 0;
-      FStaticVideoStartTick := 0;
-      FStaticVideoLastTick := 0;
-    end;
+            if Assigned(MainMDIFrm) then
+              begin
+                if MainMDIFrm.HasActiveLoopbackDeck() then
+                  MainMDIFrm.ClearNowPlaying();
+                MainMDIFrm.RefreshMainButtonStates();
+              end;
 
-  tmrTime.Enabled := True;
-  FPendingBroadcastRecording := False;
-  FPendingBroadcastFileName := '';
-  chkBroadcast.Checked := FBroadcastPublishing;
-  chkRdjProCamera.Enabled := FRdjProStaticImage and
-                             (not FRecordingRdjPro);
-  chkRecordVideoOnly.Enabled := False;
-  chkRdjProStaticImage.Enabled := not FRecordingRdjPro;
-  UpdateOnAirLamp(FBroadcastPublishing);
+            Result := True;
+            Exit;
+          end;
 
-  if Assigned(MainMDIFrm) then
-    begin
-      if MainMDIFrm.HasActiveLoopbackDeck() then
-        MainMDIFrm.ClearNowPlaying();
-      MainMDIFrm.RefreshMainButtonStates();
-    end;
+        hr := FRdjProBroadcastMp4Recorder.SetAudioWaveFormat(@FLastRdjProAudioWfx);
+        if FAILED(hr) then
+          begin
+            InfoMsg(optShowMsg,
+                    'StartRdjProBroadcast: SetAudioWaveFormat failed.',
+                    hr);
+            memLog.Lines.Append('Set audio wave format failed.');
+            Exit;
+          end;
+      end;
 
-  if FBroadcastPublishing then
-    memLog.Lines.Append('Broadcasting started.')
-  else
-    memLog.Lines.Append('Live encoder started for Cast only.');
-  UpdateBroadcastHealth();
-  Result := True;
+    hr := FRdjProBroadcastMp4Recorder.StartRecording(FileName,
+                                                     FRecordVideoOnly);
+    if FAILED(hr) then
+      begin
+        InfoMsg(optShowMsg,
+                'StartRdjProBroadcast: StartRecording failed.',
+                hr);
+        memLog.Lines.Append('Start recording failed.');
+        Exit;
+      end;
 
-finally
-  if (not Result) and
-     APublishBroadcast and
-     (not FRdjProBroadcasting) and
-     (not FPendingBroadcastRecording) then
-    begin
-      FBroadcastPublishing := False;
-      ReleaseBroadcastHandoverLock(False);
-    end;
-end;
+    ResetBroadcastMseDebugDump();
+
+    FRdjProBroadcasting := True;
+    FActiveBroadcastVideoMediaType := VideoType;
+    FLastBroadcastAudioSampleTick := 0;
+    FLastBroadcastVideoSampleTick := GetTickCount64();
+    FLastBroadcastPublicSegmentTick := GetTickCount64();
+
+    if FRdjProStaticImage and not FRdjProRecording then
+      begin
+        FStaticVideoFrameIndex := 0;
+        FStaticVideoStartTick := 0;
+        FStaticVideoLastTick := 0;
+      end;
+
+    tmrTime.Enabled := True;
+    FPendingBroadcastRecording := False;
+    FPendingBroadcastFileName := '';
+    chkBroadcast.Checked := FBroadcastPublishing;
+    chkRdjProCamera.Enabled := FRdjProStaticImage and
+      (not FRecordingRdjPro);
+    chkRecordVideoOnly.Enabled := False;
+    chkRdjProStaticImage.Enabled := not FRecordingRdjPro;
+    UpdateOnAirLamp(FBroadcastPublishing);
+
+    if Assigned(MainMDIFrm) then
+      begin
+        if MainMDIFrm.HasActiveLoopbackDeck() then
+          MainMDIFrm.ClearNowPlaying();
+        MainMDIFrm.RefreshMainButtonStates();
+      end;
+
+    if FBroadcastPublishing then
+      memLog.Lines.Append('Broadcasting started.')
+    else
+      memLog.Lines.Append('Live encoder started for Cast only.');
+    UpdateBroadcastHealth();
+    Result := True;
+
+  finally
+    if (not Result) and
+      APublishBroadcast and
+      (not FRdjProBroadcasting) and
+      (not FPendingBroadcastRecording) then
+      begin
+        FBroadcastPublishing := False;
+        ReleaseBroadcastHandoverLock(False);
+      end;
+  end;
 end;
 
 
@@ -7503,10 +7717,10 @@ begin
   chkBroadcast.Checked := False;
 
   chkRdjProCamera.Enabled := (not FCastProducerRequested) and
-                             (not FRecordingRdjPro);
+    (not FRecordingRdjPro);
 
   chkRecordVideoOnly.Enabled := (not FCastProducerRequested) and
-                                (not FRecordingRdjPro);
+    (not FRecordingRdjPro);
 
   chkRdjProStaticImage.Enabled := not FRecordingRdjPro;
   UpdateOnAirLamp(False);
@@ -7548,8 +7762,10 @@ begin
 
   Recorder := FRdjProBroadcastMp4Recorder;
 
-  StopThread:=TRdjBroadcastStopJob.Create(Self,Recorder,WasPublishing);
- OwnUiJob(StopThread);
+  StopThread := TRdjBroadcastStopJob.Create(Self,
+                                            Recorder,
+                                            WasPublishing);
+  OwnUiJob(StopThread);
 
   StopThread.FreeOnTerminate := False;
   StopThread.Start();
@@ -7581,356 +7797,515 @@ begin
 
   Recorder := FRdjProMp4Recorder;
 
-  StopThread:=TRdjLocalStopJob.Create(Self,Recorder,False);
- OwnUiJob(StopThread);
+  StopThread := TRdjLocalStopJob.Create(Self,
+                                        Recorder,
+                                        False);
+  OwnUiJob(StopThread);
 
   StopThread.FreeOnTerminate := False;
   StopThread.Start();
 end;
 
-procedure TfrmMediaServer.PreviewRefreshTick(Sender:TObject);
-const Delays:array[0..3]of Integer=(100,250,500,1000);
+
+procedure TfrmMediaServer.PreviewRefreshTick(Sender: TObject);
+const
+  Delays: array[0..3] of Integer = (100,
+                                    250,
+                                    500,
+                                    1000);
+
 begin
- if not FCastClosing and FRdjProPreviewing and not FRdjProStaticImage then RefreshRdjProCameraPreview;
- Inc(FPreviewStep);
- if (FPreviewStep>=4) or FCastClosing then begin FPreviewTimer.Enabled:=False;FPreviewFramePending:=False;end
- else FPreviewTimer.Interval:=Delays[FPreviewStep];
+
+  if not FCastClosing and FRdjProPreviewing and not FRdjProStaticImage then
+    RefreshRdjProCameraPreview;
+  Inc(FPreviewStep);
+  if (FPreviewStep >= 4) or FCastClosing then
+    begin
+      FPreviewTimer.Enabled := False;
+      FPreviewFramePending := False;
+    end
+  else
+    FPreviewTimer.Interval := Delays[FPreviewStep];
 end;
-procedure TfrmMediaServer.OwnUiJob(Job:TThread);
-var I:Integer;
+
+
+procedure TfrmMediaServer.OwnUiJob(Job: TThread);
+var
+  I: Integer;
+
 begin
- for I:=FUiJobs.Count-1 downto 0 do if FUiJobs[I].Finished then FUiJobs.Delete(I);
- FUiJobs.Add(Job);
+
+  for I := FUiJobs.Count - 1 downto 0 do
+    if FUiJobs[I].Finished then
+      FUiJobs.Delete(I);
+  FUiJobs.Add(Job);
 end;
+
+
 procedure TfrmMediaServer.FinishUiJobs;
-var I:Integer;
+var
+  I: Integer;
+
 begin
- if FUiJobs=nil then Exit;
- for I:=0 to FUiJobs.Count-1 do FUiJobs[I].WaitFor;
- FUiJobs.Clear;
+
+  if (FUiJobs = nil) then
+    Exit;
+  for I := 0 to FUiJobs.Count - 1 do
+    FUiJobs[I].WaitFor;
+  FUiJobs.Clear;
 end;
-constructor TRdjRestartJob.Create(Owner:TfrmMediaServer;Recorder:TRdjProFmp4Recorder;const Why:string;Number:Integer;const KeepAlive:IInterface;Guard:TRdjBroadcastRecoveryLifetime);
-begin inherited Create(True);FreeOnTerminate:=False;FOwner:=Owner;OldRecorder:=Recorder;Reason:=Why;RestartNo:=Number;Lifetime:=KeepAlive;Token:=Guard;end;
+
+
+constructor TRdjRestartJob.Create(Owner: TfrmMediaServer;
+                                  Recorder: TRdjProFmp4Recorder;
+                                  const Why: string;
+                                  Number: Integer;
+                                  const KeepAlive: IInterface;
+                                  Guard: TRdjBroadcastRecoveryLifetime);
+
+begin
+
+  inherited Create(True);
+  FreeOnTerminate := False;
+  FOwner := Owner;
+  OldRecorder := Recorder;
+  Reason := Why;
+  RestartNo := Number;
+  Lifetime := KeepAlive;
+  Token := Guard;
+end;
+
+
 procedure TRdjRestartJob.Execute;
-begin RdjRunMta(DoWork);end;
-procedure TRdjRestartJob.DoWork;
-begin 
 
-      StopHr := S_OK;
-      CleanupError := '';
+begin
 
-      try
-        if Assigned(OldRecorder) then
-          begin
-            try
-              try
-                StopHr := OldRecorder.StopRecording();
-              except
-                on E: Exception do
-                  begin
-                    StopHr := E_FAIL;
-                    OutputDebugStringW(PChar('Broadcast recorder StopRecording exception: ' +
-                                           E.ClassName + ': ' + E.Message));
-                  end;
-              end;
-
-              if FAILED(StopHr) then
-                OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE recorder restart: StopRecording failed hr=0x%.8x; freeing recorder via destructor fallback',
-                                               [Cardinal(StopHr)])));
-            finally
-              OldRecorder.Free();
-            end;
-          end;
-      except
-        on E: Exception do
-          CleanupError := E.ClassName + ': ' + E.Message;
-      end;
-
-      
-      Synchronize(Finish);
+  RdjRunMta(DoWork);
 end;
+
+
+procedure TRdjRestartJob.DoWork;
+
+begin
+
+  StopHr := S_OK;
+  CleanupError := '';
+
+  try
+    if Assigned(OldRecorder) then
+      begin
+        try
+          try
+            StopHr := OldRecorder.StopRecording();
+          except
+            on E: Exception do
+              begin
+                StopHr := E_FAIL;
+                OutputDebugStringW(PChar('Broadcast recorder StopRecording exception: ' +
+                  E.ClassName + ': ' + E.Message));
+              end;
+          end;
+
+          if FAILED(StopHr) then
+            OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE recorder restart: StopRecording failed hr=0x%.8x; freeing recorder via destructor fallback',
+                                            [Cardinal(StopHr)])));
+        finally
+          OldRecorder.Free();
+        end;
+      end;
+  except
+    on E: Exception do
+      CleanupError := E.ClassName + ': ' + E.Message;
+  end;
+
+
+  Synchronize(Finish);
+end;
+
+
 procedure TRdjRestartJob.Finish;
 var
-                         Hr: HRESULT;
-                         FileName: string;
-                         NewRecorder: TRdjProFMp4Recorder;
-                         RestartVideoType: IMFMediaType;
-                         RestartOk: Boolean;
+  Hr: HRESULT;
+  FileName: string;
+  NewRecorder: TRdjProFMp4Recorder;
+  RestartVideoType: IMFMediaType;
+  RestartOk: Boolean;
+
 begin
- if FOwner.FCastClosing then Exit;
- with FOwner do begin
 
-                         // Check the captured token before accessing FOwner.
-                         if (Lifetime = nil) or Token.Cancelled then
-                           Exit;
+  if FOwner.FCastClosing then
+    Exit;
+  with FOwner do
+    begin
 
-                         RestartOk := False;
-                         Hr := E_FAIL;
-                         NewRecorder := nil;
-                         RestartVideoType := nil;
+      // Check the captured token before accessing FOwner.
+      if (Lifetime = nil) or Token.Cancelled then
+        Exit;
 
-                         OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE recorder restart stop completed: count=%d stopHr=0x%.8x reason=%s',
-                                                        [RestartNo,
-                                                         Cardinal(StopHr),
-                                                         Reason])));
+      RestartOk := False;
+      Hr := E_FAIL;
+      NewRecorder := nil;
+      RestartVideoType := nil;
 
-                         try
+      OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE recorder restart stop completed: count=%d stopHr=0x%.8x reason=%s',
+                                      [RestartNo,
+        Cardinal(StopHr),
+        Reason])));
 
-                           if FCastClosing or
-                              (not (FBroadcastPublishing or FCastProducerRequested)) then
-                             Exit;
+      try
 
-                           if (CleanupError <> '') then
-                             begin
-                               // Do not create another writer when destruction
-                               // could not establish that the old worker ended.
-                               FBroadcastRecoveryBlocked := True;
-                               SetBroadcastHealth('HEALTH: ERROR',
-                                                  HEALTH_ERROR_COLOR,
-                                                  'Broadcast recorder cleanup failed; restart RDJ Pro. ' + CleanupError);
-                               Exit;
-                             end;
+        if FCastClosing or
+          (not (FBroadcastPublishing or FCastProducerRequested)) then
+          Exit;
 
-                           // Finalize may fail after releasing the old sink.
-                           // Its destructor has now joined the worker, so a
-                           // fresh encoder can be created safely.
-                           if FAILED(StopHr) then
-                             SetBroadcastHealth('HEALTH: RECOVERING',
-                                                HEALTH_WARNING_COLOR,
-                                                Format('Old recorder closed with hr=0x%.8x; starting a new session.',
-                                                       [Cardinal(StopHr)]));
+        if (CleanupError <> '') then
+          begin
+            // Do not create another writer when destruction
+            // could not establish that the old worker ended.
+            FBroadcastRecoveryBlocked := True;
+            SetBroadcastHealth('HEALTH: ERROR',
+                               HEALTH_ERROR_COLOR,
+                               'Broadcast recorder cleanup failed; restart RDJ Pro. ' + CleanupError);
+            Exit;
+          end;
 
-                           CleanupBroadcastMseArtifactsOnStop();
-                           ResetBroadcastMseDebugDump();
+        // Finalize may fail after releasing the old sink.
+        // Its destructor has now joined the worker, so a
+        // fresh encoder can be created safely.
+        if FAILED(StopHr) then
+          SetBroadcastHealth('HEALTH: RECOVERING',
+                             HEALTH_WARNING_COLOR,
+                             Format('Old recorder closed with hr=0x%.8x; starting a new session.',
+                                    [Cardinal(StopHr)]));
 
-                           if FRdjProStaticImage then
-                             begin
-                               if not EnsureRdjProStaticVideoMediaType() then
-                                 Exit;
+        CleanupBroadcastMseArtifactsOnStop();
+        ResetBroadcastMseDebugDump();
 
-                               RestartVideoType := FStaticVideoMediaType;
-                             end
-                           else
-                             begin
-                               if not Assigned(FRdjProCaptureManager) then
-                                 Exit;
+        if FRdjProStaticImage then
+          begin
+            if not EnsureRdjProStaticVideoMediaType() then
+              Exit;
 
-                               if not EnsureRdjProVideoSampleReader() then
-                                 Exit;
+            RestartVideoType := FStaticVideoMediaType;
+          end
+        else
+          begin
+            if not Assigned(FRdjProCaptureManager) then
+              Exit;
 
-                               if not Assigned(FRdjProCaptureManager.VideoSourceReaderMediaType) then
-                                 Exit;
+            if not EnsureRdjProVideoSampleReader() then
+              Exit;
 
-                               RestartVideoType := FRdjProCaptureManager.VideoSourceReaderMediaType;
-                             end;
+            if not Assigned(FRdjProCaptureManager.VideoSourceReaderMediaType) then
+              Exit;
 
-                           NewRecorder := TRdjProFMp4Recorder.Create();
+            RestartVideoType := FRdjProCaptureManager.VideoSourceReaderMediaType;
+          end;
 
-                           Hr := NewRecorder.SetVideoPreviewMediaType(RestartVideoType);
-                           if FAILED(Hr) then
-                             begin
-                               OutputDebugStringW(PChar(Format(
-                                 'TfrmMediaServer.MSE recorder restart SetVideoPreviewMediaType failed: hr=0x%.8x',
-                                 [Cardinal(Hr)])));
-                               Exit;
-                             end;
+        NewRecorder := TRdjProFMp4Recorder.Create();
 
-                           if not FRecordVideoOnly then
-                             begin
-                               if not FLastRdjProAudioWfxValid then
-                                 begin
-                                   OutputDebugStringW(PChar('TfrmMediaServer.MSE recorder restart failed: audio format not available'));
-                                   Exit;
-                                 end;
+        Hr := NewRecorder.SetVideoPreviewMediaType(RestartVideoType);
+        if FAILED(Hr) then
+          begin
+            OutputDebugStringW(PChar(Format(
+              'TfrmMediaServer.MSE recorder restart SetVideoPreviewMediaType failed: hr=0x%.8x',
+                                            [Cardinal(Hr)])));
+            Exit;
+          end;
 
-                               Hr := NewRecorder.SetAudioWaveFormat(@FLastRdjProAudioWfx);
-                               if FAILED(Hr) then
-                                 begin
-                                   OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE recorder restart SetAudioWaveFormat failed: hr=0x%.8x',
-                                                                  [Cardinal(Hr)])));
-                                   Exit;
-                                 end;
-                             end;
+        if not FRecordVideoOnly then
+          begin
+            if not FLastRdjProAudioWfxValid then
+              begin
+                OutputDebugStringW(PChar('TfrmMediaServer.MSE recorder restart failed: audio format not available'));
+                Exit;
+              end;
 
-                           FileName := ResolveCaddyLiveMp4Path();
+            Hr := NewRecorder.SetAudioWaveFormat(@FLastRdjProAudioWfx);
+            if FAILED(Hr) then
+              begin
+                OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE recorder restart SetAudioWaveFormat failed: hr=0x%.8x',
+                                                [Cardinal(Hr)])));
+                Exit;
+              end;
+          end;
 
-                           Hr := NewRecorder.StartRecording(FileName,
-                                                            FRecordVideoOnly);
-                           if FAILED(Hr) then
-                             begin
-                               OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE recorder restart StartRecording failed: hr=0x%.8x',
-                                                              [Cardinal(Hr)])));
-                               Exit;
-                             end;
+        FileName := ResolveCaddyLiveMp4Path();
 
-                           FRdjProBroadcastMp4Recorder := NewRecorder;
-                           NewRecorder := nil;
-                           FActiveBroadcastVideoMediaType := RestartVideoType;
+        Hr := NewRecorder.StartRecording(FileName,
+                                         FRecordVideoOnly);
+        if FAILED(Hr) then
+          begin
+            OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE recorder restart StartRecording failed: hr=0x%.8x',
+                                            [Cardinal(Hr)])));
+            Exit;
+          end;
 
-                           ResetBroadcastMseDebugDump();
+        FRdjProBroadcastMp4Recorder := NewRecorder;
+        NewRecorder := nil;
+        FActiveBroadcastVideoMediaType := RestartVideoType;
 
-                           FRdjProBroadcasting := True;
+        ResetBroadcastMseDebugDump();
 
-                           if FRdjProStaticImage and not FRdjProRecording then
-                             begin
-                               FStaticVideoFrameIndex := 0;
-                               FStaticVideoStartTick := 0;
-                               FStaticVideoLastTick := 0;
-                             end;
+        FRdjProBroadcasting := True;
 
-                           tmrTime.Enabled := True;
-                           chkBroadcast.Checked := FBroadcastPublishing;
-                           chkRdjProCamera.Enabled := FRdjProStaticImage and
-                                                      (not FRecordingRdjPro);
-                           chkRecordVideoOnly.Enabled := False;
-                           chkRdjProStaticImage.Enabled := not FRecordingRdjPro;
-                           UpdateOnAirLamp(FBroadcastPublishing);
+        if FRdjProStaticImage and not FRdjProRecording then
+          begin
+            FStaticVideoFrameIndex := 0;
+            FStaticVideoStartTick := 0;
+            FStaticVideoLastTick := 0;
+          end;
 
-                           if not FRdjProStaticImage then
-                             begin
-                               RefreshRdjProCameraPreview();
-                               ScheduleRdjProCameraPreviewRefresh();
-                             end;
+        tmrTime.Enabled := True;
+        chkBroadcast.Checked := FBroadcastPublishing;
+        chkRdjProCamera.Enabled := FRdjProStaticImage and
+          (not FRecordingRdjPro);
+        chkRecordVideoOnly.Enabled := False;
+        chkRdjProStaticImage.Enabled := not FRecordingRdjPro;
+        UpdateOnAirLamp(FBroadcastPublishing);
 
-                           RestartOk := True;
-                           FLastBroadcastRecoveryError := '';
+        if not FRdjProStaticImage then
+          begin
+            RefreshRdjProCameraPreview();
+            ScheduleRdjProCameraPreviewRefresh();
+          end;
 
-                           OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE recorder restart completed: count=%d sessionId=%s reason=%s',
-                                                          [RestartNo,
-                                                           FBroadcastMseSessionId,
-                                                           Reason])));
-                         finally
-                           if Assigned(NewRecorder) then
-                             begin
-                               NewRecorder.StopRecording();
-                               NewRecorder.Free();
-                             end;
+        RestartOk := True;
+        FLastBroadcastRecoveryError := '';
 
-                           if not RestartOk then
-                             begin
-                               FRdjProBroadcasting := False;
-                               chkBroadcast.Checked := FBroadcastPublishing;
-                               chkRdjProCamera.Enabled := not FRecordingRdjPro;
-                               chkRecordVideoOnly.Enabled := not FRecordingRdjPro;
-                               chkRdjProStaticImage.Enabled := not FRecordingRdjPro;
-                               UpdateOnAirLamp(False);
+        OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE recorder restart completed: count=%d sessionId=%s reason=%s',
+                                        [RestartNo,
+          FBroadcastMseSessionId,
+          Reason])));
+      finally
+        if Assigned(NewRecorder) then
+          begin
+            NewRecorder.StopRecording();
+            NewRecorder.Free();
+          end;
 
-                               FLastBroadcastRecoveryTick := GetTickCount64();
+        if not RestartOk then
+          begin
+            FRdjProBroadcasting := False;
+            chkBroadcast.Checked := FBroadcastPublishing;
+            chkRdjProCamera.Enabled := not FRecordingRdjPro;
+            chkRecordVideoOnly.Enabled := not FRecordingRdjPro;
+            chkRdjProStaticImage.Enabled := not FRecordingRdjPro;
+            UpdateOnAirLamp(False);
 
-                               if (not FBroadcastRecoveryBlocked) and
-                                  (FBroadcastPublishing or FCastProducerRequested) then
-                                 begin
-                                   FLastBroadcastRecoveryError := Format('Broadcast restart failed: hr=0x%.8x. Retrying in 30 seconds. %s',
-                                                                         [Cardinal(Hr), CleanupError]);
-                                   SetBroadcastHealth('HEALTH: ERROR',
-                                                      HEALTH_ERROR_COLOR,
-                                                      FLastBroadcastRecoveryError);
-                                 end;
+            FLastBroadcastRecoveryTick := GetTickCount64();
 
-                               OutputDebugStringW(PChar(Format(
-                                 'TfrmMediaServer.MSE recorder restart failed: count=%d reason=%s',
-                                 [RestartNo,
-                                  Reason])));
-                             end;
+            if (not FBroadcastRecoveryBlocked) and
+              (FBroadcastPublishing or FCastProducerRequested) then
+              begin
+                FLastBroadcastRecoveryError := Format('Broadcast restart failed: hr=0x%.8x. Retrying in 30 seconds. %s',
+                                                      [Cardinal(Hr), CleanupError]);
+                SetBroadcastHealth('HEALTH: ERROR',
+                                   HEALTH_ERROR_COLOR,
+                                   FLastBroadcastRecoveryError);
+              end;
 
-                           InterlockedExchange(FBroadcastMseRecorderRestartQueued, 0);
-                         end;
- end;
+            OutputDebugStringW(PChar(Format(
+              'TfrmMediaServer.MSE recorder restart failed: count=%d reason=%s',
+                                            [RestartNo,
+              Reason])));
+          end;
+
+        InterlockedExchange(FBroadcastMseRecorderRestartQueued,
+                            0);
+      end;
+    end;
 end;
-constructor TRdjBroadcastStopJob.Create(Owner:TfrmMediaServer;Value:TRdjProFmp4Recorder;Publishing:Boolean);
-begin inherited Create(True);FreeOnTerminate:=False;FOwner:=Owner;Recorder:=Value;WasPublishing:=Publishing;end;
+
+
+constructor TRdjBroadcastStopJob.Create(Owner: TfrmMediaServer;
+                                        Value: TRdjProFmp4Recorder;
+                                        Publishing: Boolean);
+
+begin
+
+  inherited Create(True);
+  FreeOnTerminate := False;
+  FOwner := Owner;
+  Recorder := Value;
+  WasPublishing := Publishing;
+end;
+
+
 procedure TRdjBroadcastStopJob.Execute;
-begin RdjRunMta(DoWork);end;
+
+begin
+
+  RdjRunMta(DoWork);
+end;
+
+
 procedure TRdjBroadcastStopJob.DoWork;
-begin try hr:=Recorder.StopRecording;except hr:=E_FAIL;end;Synchronize(Finish);end;
+
+begin
+
+  try
+    hr := Recorder.StopRecording;
+  except
+    hr := E_FAIL;
+  end;
+  Synchronize(Finish);
+end;
+
+
 procedure TRdjBroadcastStopJob.Finish;
-begin if FOwner.FCastClosing then Exit;with FOwner do begin 
-                                                                if FAILED(hr) then
-                                                                  OutputDebugStringW(PChar('RDJ Pro broadcast MP4 StopRecording failed: ' + IntToStr(hr)))
-                                                                else
-                                                                  OutputDebugStringW(PChar('Broadcast MP4 writer stopped.'));
 
-                                                                if not WasPublishing then
-                                                                  begin
-                                                                    CleanupBroadcastMseArtifactsOnStop();
-                                                                    ResetBroadcastMseDebugDump();
-                                                                  end;
-                                                                StopRdjProVideoSampleReaderIfIdle();
-                                                               end;end;
-constructor TRdjLocalStopJob.Create(Owner:TfrmMediaServer;Value:TRdjProMp4Recorder;Publishing:Boolean);
-begin inherited Create(True);FreeOnTerminate:=False;FOwner:=Owner;Recorder:=Value;WasPublishing:=Publishing;end;
+begin
+
+  if FOwner.FCastClosing then
+    Exit;
+  with FOwner do
+    begin
+      if FAILED(hr) then
+        OutputDebugStringW(PChar('RDJ Pro broadcast MP4 StopRecording failed: ' + IntToStr(hr)))
+      else
+        OutputDebugStringW(PChar('Broadcast MP4 writer stopped.'));
+
+      if not WasPublishing then
+        begin
+          CleanupBroadcastMseArtifactsOnStop();
+          ResetBroadcastMseDebugDump();
+        end;
+      StopRdjProVideoSampleReaderIfIdle();
+    end;
+end;
+
+
+constructor TRdjLocalStopJob.Create(Owner: TfrmMediaServer;
+                                    Value: TRdjProMp4Recorder;
+                                    Publishing: Boolean);
+
+begin
+
+  inherited Create(True);
+  FreeOnTerminate := False;
+  FOwner := Owner;
+  Recorder := Value;
+  WasPublishing := Publishing;
+end;
+
+
 procedure TRdjLocalStopJob.Execute;
-begin RdjRunMta(DoWork);end;
+
+begin
+
+  RdjRunMta(DoWork);
+end;
+
+
 procedure TRdjLocalStopJob.DoWork;
-begin try hr:=Recorder.StopRecording;except hr:=E_FAIL;end;Synchronize(Finish);end;
+
+begin
+
+  try
+    hr := Recorder.StopRecording;
+  except
+    hr := E_FAIL;
+  end;
+  Synchronize(Finish);
+end;
+
+
 procedure TRdjLocalStopJob.Finish;
-begin if FOwner.FCastClosing then Exit;with FOwner do begin 
 
-                                                                 if FAILED(hr) then
-                                                                   begin
+begin
 
-                                                                     lblRecorderStatus.Caption := 'Recorder stop failed: ' + IntToStr(hr);
-                                                                    OutputDebugStringW(PChar('RDJ Pro MP4 StopRecording failed: ' + IntToStr(hr)));
-                                                                  end
-                                                                else
-                                                                  begin
+  if FOwner.FCastClosing then
+    Exit;
+  with FOwner do
+    begin
 
-                                                                     lblRecorderStatus.Caption := 'Recorder is ready.';
-                                                                     StopRdjProVideoSampleReaderIfIdle();
-                                                                   end;
-                                                                end;end;
-procedure TfrmMediaServer.DispatchPendingStartProc(Event:TRdjEvent);
-                              begin
- if FCastClosing then Exit;
-                                try
+      if FAILED(hr) then
+        begin
 
-                                  TryCompletePendingMp4Starts();
-                                finally
+          lblRecorderStatus.Caption := 'Recorder stop failed: ' + IntToStr(hr);
+          OutputDebugStringW(PChar('RDJ Pro MP4 StopRecording failed: ' + IntToStr(hr)));
+        end
+      else
+        begin
 
-                                  InterlockedExchange(FPendingMp4StartQueued, 0);
-                                end;
-                              end;
-procedure TfrmMediaServer.DispatchStopLocalProc(Event:TRdjEvent);
-                             begin
- if FCastClosing then Exit;
-                               StopRdjProRecording();
-                             end;
-procedure TfrmMediaServer.DispatchStopBroadcastProc(Event:TRdjEvent);
-                                 begin
- if FCastClosing then Exit;
+          lblRecorderStatus.Caption := 'Recorder is ready.';
+          StopRdjProVideoSampleReaderIfIdle();
+        end;
+    end;
+end;
 
-                                   StopRdjProBroadcast();
-                                 end;
-procedure TfrmMediaServer.DispatchFlushProc(Event:TRdjEvent);
+
+procedure TfrmMediaServer.DispatchPendingStartProc(Event: TRdjEvent);
+
+begin
+
+  if FCastClosing then
+    Exit;
+  try
+
+    TryCompletePendingMp4Starts();
+  finally
+
+    InterlockedExchange(FPendingMp4StartQueued,
+                        0);
+  end;
+end;
+
+
+procedure TfrmMediaServer.DispatchStopLocalProc(Event: TRdjEvent);
+
+begin
+
+  if FCastClosing then
+    Exit;
+  StopRdjProRecording();
+end;
+
+
+procedure TfrmMediaServer.DispatchStopBroadcastProc(Event: TRdjEvent);
+
+begin
+
+  if FCastClosing then
+    Exit;
+
+  StopRdjProBroadcast();
+end;
+
+
+procedure TfrmMediaServer.DispatchFlushProc(Event: TRdjEvent);
 var
-                 hr: HRESULT;
+  hr: HRESULT;
 
-               begin
- if FCastClosing then Exit;
-                 try
-                   if FRdjProBroadcasting and Assigned(FRdjProCaptureManager) then
-                     begin
-                       hr := FRdjProCaptureManager.FlushVideoSourceReaderHard(1500);
+begin
 
-                       OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE video SourceReader hard flush completed hr=0x%.8x',
-                                                      [Cardinal(hr)])));
+  if FCastClosing then
+    Exit;
+  try
+    if FRdjProBroadcasting and Assigned(FRdjProCaptureManager) then
+      begin
+        hr := FRdjProCaptureManager.FlushVideoSourceReaderHard(1500);
 
-                       if SUCCEEDED(hr) then
-                         FLastBroadcastVideoSampleTick := GetTickCount64()
-                       else
-                         if (Event.I0 >= 15000) then
-                           begin
-                             // With no video, the SinkWriter keeps unmatched audio
-                             // internally even though our own queues remain empty.
-                             // Roll over the recorder before that hidden buffer can
-                             // exhaust the 32-bit process address space.
-                             QueueBroadcastMseRecorderRestart(Format('Camera SourceReader recovery failed: hr=0x%.8x videoAgeMs=%d publicAgeMs=%d',
-                                                                     [Cardinal(hr), Event.I0, Event.U0]));
-                         end;
-                     end;
-                 finally
-                   InterlockedExchange(FBroadcastVideoFlushQueued, 0);
-                 end;
-               end;
+        OutputDebugStringW(PChar(Format('TfrmMediaServer.MSE video SourceReader hard flush completed hr=0x%.8x',
+                                        [Cardinal(hr)])));
+
+        if SUCCEEDED(hr) then
+          FLastBroadcastVideoSampleTick := GetTickCount64()
+        else if (Event.I0 >= 15000) then
+          begin
+            // With no video, the SinkWriter keeps unmatched audio
+            // internally even though our own queues remain empty.
+            // Roll over the recorder before that hidden buffer can
+            // exhaust the 32-bit process address space.
+            QueueBroadcastMseRecorderRestart(Format('Camera SourceReader recovery failed: hr=0x%.8x videoAgeMs=%d publicAgeMs=%d',
+                                                    [Cardinal(hr), Event.I0, Event.U0]));
+          end;
+      end;
+  finally
+    InterlockedExchange(FBroadcastVideoFlushQueued,
+                        0);
+  end;
+end;
 
 end.

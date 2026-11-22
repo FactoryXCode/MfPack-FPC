@@ -66,12 +66,13 @@ unit MfTrackBar;
 
 interface
 
-uses ExtCtrls,
-Rdj.Platform,
-LMessages,
+uses
+  ExtCtrls,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -109,12 +110,15 @@ type
                        tpvBoth);
 
   TMfTrackBar = class(TCustomControl)
+
   published
     property BorderSpacing;
+
   private
     FAnimationTimer: TTimer;
     FAnimationTarget: Integer;
     procedure AnimationTick(Sender: TObject);
+
   private
 
     FMin: Integer;
@@ -206,7 +210,8 @@ type
     procedure MarkBackgroundDirty();
 
     function TrackRect(): TRect;
-    function ThumbSize(out W, H: Integer): Boolean;
+    function ThumbSize(out W,
+                       H: Integer): Boolean;
     function ThumbRectForPos(APos: Integer): TRect;
     function PosFromPoint(const P: TPoint): Integer;
     function ClampPos(APos: Integer): Integer;
@@ -236,11 +241,15 @@ type
     procedure Resize(); override;
     procedure MouseDown(Button: TMouseButton;
                         Shift: TShiftState;
-                        X, Y: Integer); override;
+                        X,
+                        Y: Integer); override;
     procedure MouseMove(Shift: TShiftState;
-                        X, Y: Integer); override;
+                        X,
+                        Y: Integer); override;
     procedure MouseUp(Button: TMouseButton;
-                      Shift: TShiftState; X, Y: Integer); override;
+                      Shift: TShiftState;
+                      X,
+                      Y: Integer); override;
     procedure KeyDown(var Key: Word;
                       Shift: TShiftState); override;
     function DoMouseWheel(Shift: TShiftState;
@@ -258,6 +267,7 @@ type
 
     procedure AnimateTrackBarToPosition(const ATargetPos: Integer;
                                         const ASleepMs: Cardinal);
+
   published
 
     property Align;
@@ -323,6 +333,7 @@ implementation
 
 
 procedure Register;
+
 begin
 
   RegisterComponents('RDJ Controls',
@@ -333,6 +344,7 @@ end;
 { TMfTrackBar }
 
 constructor TMfTrackBar.Create(AOwner: TComponent);
+
 begin
 
   inherited;
@@ -394,6 +406,7 @@ end;
 
 
 destructor TMfTrackBar.Destroy;
+
 begin
 
   FBackBuffer.Free;
@@ -406,6 +419,7 @@ end;
 
 
 procedure TMfTrackBar.Loaded();
+
 begin
 
   inherited;
@@ -415,6 +429,7 @@ end;
 
 
 procedure TMfTrackBar.Resize();
+
 begin
 
   inherited;
@@ -424,6 +439,7 @@ end;
 
 
 procedure TMfTrackBar.PictureChanged(Sender: TObject);
+
 begin
 
   if (Sender = FBackgroundPicture) then
@@ -434,6 +450,7 @@ end;
 
 
 procedure TMfTrackBar.MarkBackgroundDirty();
+
 begin
 
   FBackBufferDirty := True;
@@ -443,6 +460,7 @@ end;
 
 
 function TMfTrackBar.ClampPos(APos: Integer): Integer;
+
 begin
 
   Result := EnsureRange(APos,
@@ -452,6 +470,7 @@ end;
 
 
 function TMfTrackBar.ApplyDetent(const APos: Integer): Integer;
+
 begin
 
   Result := APos;
@@ -462,9 +481,10 @@ end;
 
 
 function TMfTrackBar.ShouldInvert(): Boolean;
+
 begin
 
-  if FOrientation = soHorizontal then
+  if (FOrientation = soHorizontal) then
     Result := (FIncreaseToward = itLeft)
   else
     Result := (FIncreaseToward = itDown);
@@ -475,6 +495,7 @@ end;
 
 
 function TMfTrackBar.PosToFrac(const APos: Integer): Double;
+
 begin
 
   if (FMax = FMin) then
@@ -492,9 +513,10 @@ end;
 
 
 function TMfTrackBar.GetTrackPadding(): Integer;
+
 begin
 
-  if FOrientation = soHorizontal then
+  if (FOrientation = soHorizontal) then
     Result := Max(ThumbWidth div 2,
                   8)
   else
@@ -531,9 +553,10 @@ end;
 
 
 function TMfTrackBar.GetActiveThumbGraphic(): TGraphic;
+
 begin
 
- if (FOrientation = soHorizontal) then
+  if (FOrientation = soHorizontal) then
     Result := FThumbPictureHorz.Graphic
   else
     Result := FThumbPictureVert.Graphic;
@@ -635,9 +658,9 @@ begin
     end;
 
   Result := Types.Rect(X,
-                 Y,
-                 X + W,
-                 Y + H);
+                       Y,
+                       X + W,
+                       Y + H);
 end;
 
 
@@ -655,9 +678,10 @@ begin
     begin
 
       Work := EnsureRange(P.X - FDragOffset,
-      Tr.Left - (ThumbWidth div 2), Tr.Right - (ThumbWidth div 2));
+                          Tr.Left - (ThumbWidth div 2),
+                          Tr.Right - (ThumbWidth div 2));
       Frac := (Work + (ThumbWidth div 2) - Tr.Left) / Max(1,
-      Tr.Width);
+                                                          Tr.Width);
     end
   else
     begin
@@ -697,9 +721,9 @@ begin
                     19);
 
   R := Types.Rect(0,
-            0,
-            ABitmap.Width,
-            ABitmap.Height);
+                  0,
+                  ABitmap.Width,
+                  ABitmap.Height);
 
   ABitmap.Canvas.Brush.Color := clFuchsia;
   ABitmap.Canvas.FillRect(R);
@@ -823,201 +847,213 @@ begin
   TextOff := 2;
 
   for I := 0 to FTickCount - 1 do
-  begin
+    begin
 
-    Frac := I / (FTickCount - 1);
-    PosVal := FMin + Round(Frac * (FMax - FMin));
-    Frac := PosToFrac(PosVal);
+      Frac := I / (FTickCount - 1);
+      PosVal := FMin + Round(Frac * (FMax - FMin));
+      Frac := PosToFrac(PosVal);
 
-    if FOrientation = soHorizontal then
-      begin
+      if (FOrientation = soHorizontal) then
+        begin
 
-        X := TrackR.Left + Round(Frac * TrackR.Width);
+          X := TrackR.Left + Round(Frac * TrackR.Width);
 
-        if (FTickPlacementH = tphBottom) or (FTickPlacementH = tphBoth) then
-          begin
+          if (FTickPlacementH = tphBottom) or (FTickPlacementH = tphBoth) then
+            begin
 
-            ACanvas.MoveTo(X,
-                           TrackR.Bottom + 1);
+              ACanvas.MoveTo(X,
+                             TrackR.Bottom + 1);
 
-            ACanvas.LineTo(X,
-                           TrackR.Bottom + 1 + TickLen);
-          end;
+              ACanvas.LineTo(X,
+                             TrackR.Bottom + 1 + TickLen);
+            end;
 
-        if (FTickPlacementH = tphTop) or (FTickPlacementH = tphBoth) then
-          begin
+          if (FTickPlacementH = tphTop) or (FTickPlacementH = tphBoth) then
+            begin
 
-            ACanvas.MoveTo(X,
-                           TrackR.Top - 1);
+              ACanvas.MoveTo(X,
+                             TrackR.Top - 1);
 
-            ACanvas.LineTo(X,
-                           TrackR.Top - 1 - TickLen);
-          end;
+              ACanvas.LineTo(X,
+                             TrackR.Top - 1 - TickLen);
+            end;
 
-        if (FTickLabelMode <> tlNone) and FTickLabelsVisible then
-          begin
+          if (FTickLabelMode <> tlNone) and FTickLabelsVisible then
+            begin
 
-            if (FTickLabelMode = tlLinear) then
-              begin
+              if (FTickLabelMode = tlLinear) then
+                begin
 
-               Fmt := '0';
-               if (FTickLabelDecimals > 0) then
-                 Fmt := Fmt + '.' + StringOfChar('0',
-                                                 FTickLabelDecimals);
-               Txt := FormatFloat(Fmt,
-                                  PosVal);
-              end
-            else
-              begin
+                  Fmt := '0';
+                  if (FTickLabelDecimals > 0) then
+                    Fmt := Fmt + '.' + StringOfChar('0',
+                                                    FTickLabelDecimals);
+                  Txt := FormatFloat(Fmt,
+                                     PosVal);
+                end
+              else
+                begin
 
-                Norm := (PosVal - FMin) / Max(1.0, (FMax - FMin));
-                Norm := EnsureRange(Norm, 0.0, 1.0);
-                Db := 20.0 * Log10(Max(EPS, Norm));
-                Db := EnsureRange(Db, FDbFloor, FDbCeil);
-                Fmt := '0';
+                  Norm := (PosVal - FMin) / Max(1.0,
+                                                (FMax - FMin));
+                  Norm := EnsureRange(Norm,
+                                      0.0,
+                                      1.0);
+                  Db := 20.0 * Log10(Max(EPS,
+                                         Norm));
+                  Db := EnsureRange(Db,
+                                    FDbFloor,
+                                    FDbCeil);
+                  Fmt := '0';
 
-                if (FTickLabelDecimals > 0) then
-                  Fmt := Fmt + '.' + StringOfChar('0', FTickLabelDecimals);
+                  if (FTickLabelDecimals > 0) then
+                    Fmt := Fmt + '.' + StringOfChar('0',
+                                                    FTickLabelDecimals);
 
-                Txt := FormatFloat(Fmt,
-                                   Db) + ' dB';
-              end;
+                  Txt := FormatFloat(Fmt,
+                                     Db) + ' dB';
+                end;
 
-            TextW := ACanvas.TextWidth(Txt);
-            TextH := ACanvas.TextHeight(Txt);
+              TextW := ACanvas.TextWidth(Txt);
+              TextH := ACanvas.TextHeight(Txt);
 
-            if (FTickPlacementH = tphBottom) or (FTickPlacementH = tphBoth) then
-              begin
+              if (FTickPlacementH = tphBottom) or (FTickPlacementH = tphBoth) then
+                begin
 
-                if (FTickLabelBackColor <> clNone) then
-                  begin
+                  if (FTickLabelBackColor <> clNone) then
+                    begin
 
-                    ACanvas.Brush.Color := FTickLabelBackColor;
-                    ACanvas.FillRect(Types.Rect(X - (TextW div 2) - 2,
-                                          TrackR.Bottom + 1 + TickLen + TextOff - 1,
-                                          X + (TextW div 2) + 2,
-                                          TrackR.Bottom + 1 + TickLen + TextOff - 1 + TextH + 2));
-                  end;
-                ACanvas.TextOut(X - (TextW div 2),
-                                TrackR.Bottom + 1 + TickLen + TextOff,
-                                Txt);
-              end;
+                      ACanvas.Brush.Color := FTickLabelBackColor;
+                      ACanvas.FillRect(Types.Rect(X - (TextW div 2) - 2,
+                                                  TrackR.Bottom + 1 + TickLen + TextOff - 1,
+                                                  X + (TextW div 2) + 2,
+                                                  TrackR.Bottom + 1 + TickLen + TextOff - 1 + TextH + 2));
+                    end;
+                  ACanvas.TextOut(X - (TextW div 2),
+                                  TrackR.Bottom + 1 + TickLen + TextOff,
+                                  Txt);
+                end;
 
-            if (FTickPlacementH = tphTop) or (FTickPlacementH = tphBoth) then
-              begin
+              if (FTickPlacementH = tphTop) or (FTickPlacementH = tphBoth) then
+                begin
 
-                if (FTickLabelBackColor <> clNone) then
-                  begin
+                  if (FTickLabelBackColor <> clNone) then
+                    begin
 
-                    ACanvas.Brush.Color := FTickLabelBackColor;
-                    ACanvas.FillRect(Types.Rect(X - (TextW div 2) - 2,
-                                     TrackR.Top - 1 - TickLen - TextOff - TextH - 1,
-                                     X + (TextW div 2) + 2,
-                                     TrackR.Top - 1 - TickLen - TextOff - TextH - 1 + TextH + 2));
-                  end;
-                ACanvas.TextOut(X - (TextW div 2),
-                                TrackR.Top - 1 - TickLen - TextOff - TextH,
-                                Txt);
-              end;
-          end;
-      end
-    else
-      begin
+                      ACanvas.Brush.Color := FTickLabelBackColor;
+                      ACanvas.FillRect(Types.Rect(X - (TextW div 2) - 2,
+                                                  TrackR.Top - 1 - TickLen - TextOff - TextH - 1,
+                                                  X + (TextW div 2) + 2,
+                                                  TrackR.Top - 1 - TickLen - TextOff - TextH - 1 + TextH + 2));
+                    end;
+                  ACanvas.TextOut(X - (TextW div 2),
+                                  TrackR.Top - 1 - TickLen - TextOff - TextH,
+                                  Txt);
+                end;
+            end;
+        end
+      else
+        begin
 
-        Y := TrackR.Top + Round((1.0 - Frac) * TrackR.Height);
+          Y := TrackR.Top + Round((1.0 - Frac) * TrackR.Height);
 
-        if (FTickPlacementV = tpvLeft) or (FTickPlacementV = tpvBoth) then
-          begin
+          if (FTickPlacementV = tpvLeft) or (FTickPlacementV = tpvBoth) then
+            begin
 
-            ACanvas.MoveTo(TrackR.Left - 1,
-                           Y);
-            ACanvas.LineTo(TrackR.Left - 1 - TickLen,
-                           Y);
-          end;
+              ACanvas.MoveTo(TrackR.Left - 1,
+                             Y);
+              ACanvas.LineTo(TrackR.Left - 1 - TickLen,
+                             Y);
+            end;
 
-        if (FTickPlacementV = tpvRight) or (FTickPlacementV = tpvBoth) then
-          begin
+          if (FTickPlacementV = tpvRight) or (FTickPlacementV = tpvBoth) then
+            begin
 
-            ACanvas.MoveTo(TrackR.Right + 1,
-                           Y);
-            ACanvas.LineTo(TrackR.Right + 1 + TickLen,
-                           Y);
-          end;
+              ACanvas.MoveTo(TrackR.Right + 1,
+                             Y);
+              ACanvas.LineTo(TrackR.Right + 1 + TickLen,
+                             Y);
+            end;
 
-        if (FTickLabelMode <> tlNone) and FTickLabelsVisible then
-          begin
+          if (FTickLabelMode <> tlNone) and FTickLabelsVisible then
+            begin
 
-            if (FTickLabelMode = tlLinear) then
-              begin
+              if (FTickLabelMode = tlLinear) then
+                begin
 
-                Fmt := '0';
-                if (FTickLabelDecimals > 0) then
-                  Fmt := Fmt + '.' + StringOfChar('0', FTickLabelDecimals);
+                  Fmt := '0';
+                  if (FTickLabelDecimals > 0) then
+                    Fmt := Fmt + '.' + StringOfChar('0',
+                                                    FTickLabelDecimals);
 
-                Txt := FormatFloat(Fmt, PosVal);
-              end
-            else
-              begin
+                  Txt := FormatFloat(Fmt,
+                                     PosVal);
+                end
+              else
+                begin
 
-                Norm := (PosVal - FMin) / Max(1.0,
-                                              (FMax - FMin));
+                  Norm := (PosVal - FMin) / Max(1.0,
+                                                (FMax - FMin));
 
-                Norm := EnsureRange(Norm,
-                                    0.0,
-                                    1.0);
+                  Norm := EnsureRange(Norm,
+                                      0.0,
+                                      1.0);
 
-                Db := 20.0 * Log10(Max(EPS,
-                                   Norm));
-                Db := EnsureRange(Db,
-                                  FDbFloor,
-                                  FDbCeil);
-               Fmt := '0';
+                  Db := 20.0 * Log10(Max(EPS,
+                                         Norm));
+                  Db := EnsureRange(Db,
+                                    FDbFloor,
+                                    FDbCeil);
+                  Fmt := '0';
 
-               if (FTickLabelDecimals > 0) then
-                 Fmt := Fmt + '.' + StringOfChar('0',
-                                                 FTickLabelDecimals);
-               Txt := FormatFloat(Fmt, Db) + ' dB';
-              end;
+                  if (FTickLabelDecimals > 0) then
+                    Fmt := Fmt + '.' + StringOfChar('0',
+                                                    FTickLabelDecimals);
+                  Txt := FormatFloat(Fmt,
+                                     Db) + ' dB';
+                end;
 
-            TextW := ACanvas.TextWidth(Txt);
-            TextH := ACanvas.TextHeight(Txt);
+              TextW := ACanvas.TextWidth(Txt);
+              TextH := ACanvas.TextHeight(Txt);
 
-            if (FTickPlacementV = tpvLeft) or (FTickPlacementV = tpvBoth) then
-              begin
+              if (FTickPlacementV = tpvLeft) or (FTickPlacementV = tpvBoth) then
+                begin
 
-                if (FTickLabelBackColor <> clNone) then
-                  begin
+                  if (FTickLabelBackColor <> clNone) then
+                    begin
 
-                    ACanvas.Brush.Color := FTickLabelBackColor;
-                    ACanvas.FillRect(Types.Rect(TrackR.Left - 1 - TickLen - TextOff - TextW - 2,
-                                          Y - (TextH div 2) - 1,
-                                          TrackR.Left - 1 - TickLen - TextOff + 2,
-                                          Y - (TextH div 2) - 1 + TextH + 2));
-                  end;
+                      ACanvas.Brush.Color := FTickLabelBackColor;
+                      ACanvas.FillRect(Types.Rect(TrackR.Left - 1 - TickLen - TextOff - TextW - 2,
+                                                  Y - (TextH div 2) - 1,
+                                                  TrackR.Left - 1 - TickLen - TextOff + 2,
+                                                  Y - (TextH div 2) - 1 + TextH + 2));
+                    end;
 
-                ACanvas.TextOut(TrackR.Left - 1 - TickLen - TextOff - TextW, Y - (TextH div 2), Txt);
-              end;
+                  ACanvas.TextOut(TrackR.Left - 1 - TickLen - TextOff - TextW,
+                                  Y - (TextH div 2),
+                                  Txt);
+                end;
 
-            if (FTickPlacementV = tpvRight) or (FTickPlacementV = tpvBoth) then
-              begin
+              if (FTickPlacementV = tpvRight) or (FTickPlacementV = tpvBoth) then
+                begin
 
-                if (FTickLabelBackColor <> clNone) then
-                  begin
+                  if (FTickLabelBackColor <> clNone) then
+                    begin
 
-                    ACanvas.Brush.Color := FTickLabelBackColor;
-                    ACanvas.FillRect(Types.Rect(TrackR.Right + 1 + TickLen + TextOff - 2,
-                                          Y - (TextH div 2) - 1,
-                                          TrackR.Right + 1 + TickLen + TextOff - 2 + TextW + 4,
-                                           Y - (TextH div 2) - 1 + TextH + 2));
-                  end;
+                      ACanvas.Brush.Color := FTickLabelBackColor;
+                      ACanvas.FillRect(Types.Rect(TrackR.Right + 1 + TickLen + TextOff - 2,
+                                                  Y - (TextH div 2) - 1,
+                                                  TrackR.Right + 1 + TickLen + TextOff - 2 + TextW + 4,
+                                                  Y - (TextH div 2) - 1 + TextH + 2));
+                    end;
 
-                ACanvas.TextOut(TrackR.Right + 1 + TickLen + TextOff,
-                                Y - (TextH div 2),
-                                Txt);
-              end;
-          end;
-      end;
-  end;
+                  ACanvas.TextOut(TrackR.Right + 1 + TickLen + TextOff,
+                                  Y - (TextH div 2),
+                                  Txt);
+                end;
+            end;
+        end;
+    end;
 end;
 
 
@@ -1036,12 +1072,15 @@ begin
   if not FBackBufferDirty then
     Exit;
 
-  FBackBuffer.SetSize(Width, Height);
-  R := Types.Rect(0, 0, Width, Height);
+  FBackBuffer.SetSize(Width,
+                      Height);
+  R := Types.Rect(0,
+                  0,
+                  Width,
+                  Height);
 
   if Assigned(FBackgroundPicture) and
-     Assigned(FBackgroundPicture.Graphic) and
-     not FBackgroundPicture.Graphic.Empty then
+    Assigned(FBackgroundPicture.Graphic) and not FBackgroundPicture.Graphic.Empty then
     begin
 
       FBackBuffer.Canvas.Brush.Color := Color;
@@ -1055,8 +1094,9 @@ begin
                                 0,
                                 FBackgroundPicture.Graphic);
 
-        if FShowTicks then
-          DrawTicksToCanvas(FBackBuffer.Canvas, TrackRect);
+      if FShowTicks then
+        DrawTicksToCanvas(FBackBuffer.Canvas,
+                          TrackRect);
     end
   else
     BuildDefaultBackground(FBackBuffer.Canvas,
@@ -1117,29 +1157,29 @@ begin
     end;
 
   if FAutoDefaultThumb then
-  begin
+    begin
 
-    Tmp := TBitmap.Create;
+      Tmp := TBitmap.Create;
 
-    try
+      try
 
-      BuildDefaultThumb(Tmp,
-                        FOrientation = soHorizontal);
-      Tmp.Transparent := True;
-      Tmp.TransparentColor := clFuchsia;
+        BuildDefaultThumb(Tmp,
+                          FOrientation = soHorizontal);
+        Tmp.Transparent := True;
+        Tmp.TransparentColor := clFuchsia;
 
-      if (FThumbDrawMode = tdmStretch) then
-        ACanvas.StretchDraw(R,
-                            Tmp)
-      else
-        ACanvas.Draw(R.Left,
-                     R.Top,
-                     Tmp);
-    finally
+        if (FThumbDrawMode = tdmStretch) then
+          ACanvas.StretchDraw(R,
+                              Tmp)
+        else
+          ACanvas.Draw(R.Left,
+                       R.Top,
+                       Tmp);
+      finally
 
-      Tmp.Free;
+        Tmp.Free;
+      end;
     end;
-  end;
 end;
 
 
@@ -1197,7 +1237,9 @@ end;
 
 
 procedure TMfTrackBar.MouseDown(Button: TMouseButton;
-                                Shift: TShiftState; X, Y: Integer);
+                                Shift: TShiftState;
+                                X,
+                                Y: Integer);
 var
   Th: TRect;
 
@@ -1212,8 +1254,8 @@ begin
   Th := ThumbRectForPos(FPosition);
 
   if PtInRect(Th,
-              Point(X,
-              Y)) then
+    Point(X,
+          Y)) then
     begin
 
       FDragging := True;
@@ -1223,25 +1265,25 @@ begin
       else
         FDragOffset := Y - Th.Top;
     end
-  else
-    if FClickToJump then
-      begin
+  else if FClickToJump then
+    begin
 
-        FDragging := True;
-        if (FOrientation = soHorizontal) then
-          FDragOffset := Th.Width div 2
-        else
-          FDragOffset := Th.Height div 2;
+      FDragging := True;
+      if (FOrientation = soHorizontal) then
+        FDragOffset := Th.Width div 2
+      else
+        FDragOffset := Th.Height div 2;
 
-     Position := PosFromPoint(Point(X,
-                                    Y));
-      end;
+      Position := PosFromPoint(Point(X,
+                                     Y));
+    end;
 end;
 
 
 procedure TMfTrackBar.MouseMove(Shift: TShiftState;
                                 X,
                                 Y: Integer);
+
 begin
 
   inherited;
@@ -1256,6 +1298,7 @@ procedure TMfTrackBar.MouseUp(Button: TMouseButton;
                               Shift: TShiftState;
                               X,
                               Y: Integer);
+
 begin
 
   inherited;
@@ -1266,6 +1309,7 @@ end;
 
 
 procedure TMfTrackBar.StepBy(Delta: Integer);
+
 begin
 
   Position := ClampPos(FPosition + Delta);
@@ -1274,16 +1318,17 @@ end;
 
 procedure TMfTrackBar.KeyDown(var Key: Word;
                               Shift: TShiftState);
+
 begin
 
   inherited;
 
   case Key of
     VK_LEFT,
-    VK_DOWN:  StepBy(-FSmallChange);
+    VK_DOWN: StepBy(-FSmallChange);
 
     VK_RIGHT,
-    VK_UP:   StepBy(+FSmallChange);
+    VK_UP: StepBy(+FSmallChange);
 
     VK_PRIOR: StepBy(+FLargeChange);
     VK_NEXT: StepBy(-FLargeChange);
@@ -1296,6 +1341,7 @@ end;
 function TMfTrackBar.DoMouseWheel(Shift: TShiftState;
                                   WheelDelta: Integer;
                                   MousePos: TPoint): Boolean;
+
 begin
 
   Result := inherited DoMouseWheel(Shift,
@@ -1305,17 +1351,17 @@ begin
   if not Result then
     begin
 
-      if WheelDelta > 0 then
+      if (WheelDelta > 0) then
         StepBy(FSmallChange)
-      else
-        if (WheelDelta < 0) then
-          StepBy(-FSmallChange);
+      else if (WheelDelta < 0) then
+        StepBy(-FSmallChange);
       Result := True;
     end;
 end;
 
 
 procedure TMfTrackBar.DoChange();
+
 begin
 
   if Assigned(FOnChange) then
@@ -1324,6 +1370,7 @@ end;
 
 
 procedure TMfTrackBar.CMColorChanged(var Msg: TLMessage);
+
 begin
 
   inherited;
@@ -1333,6 +1380,7 @@ end;
 
 
 procedure TMfTrackBar.CMParentColorChanged(var Msg: TLMessage);
+
 begin
 
   inherited;
@@ -1342,6 +1390,7 @@ end;
 
 
 procedure TMfTrackBar.SetMinimum(Value: Integer);
+
 begin
 
   if (FMin <> Value) then
@@ -1355,7 +1404,9 @@ begin
     end;
 end;
 
+
 procedure TMfTrackBar.SetMaximum(Value: Integer);
+
 begin
 
   if (FMax <> Value) then
@@ -1395,6 +1446,7 @@ end;
 
 
 procedure TMfTrackBar.SetOrientation(Value: TMfTrackBarOrientation);
+
 begin
 
   if (FOrientation <> Value) then
@@ -1417,11 +1469,11 @@ begin
 
           FIncreaseToward := itUp;
           if FAutoDefaultThumb then
-          begin
+            begin
 
-            FThumbWidth := 13;
-            FThumbHeight := 19;
-          end;
+              FThumbWidth := 13;
+              FThumbHeight := 19;
+            end;
         end;
       MarkBackgroundDirty();
     end;
@@ -1429,6 +1481,7 @@ end;
 
 
 procedure TMfTrackBar.SetIncreaseToward(Value: TMfIncreaseToward);
+
 begin
 
   if (FIncreaseToward <> Value) then
@@ -1441,18 +1494,20 @@ end;
 
 
 procedure TMfTrackBar.SetReversed(Value: Boolean);
+
 begin
 
   if (FReversed <> Value) then
-  begin
+    begin
 
-    FReversed := Value;
-    MarkBackgroundDirty();
-  end;
+      FReversed := Value;
+      MarkBackgroundDirty();
+    end;
 end;
 
 
 procedure TMfTrackBar.SetThumbDrawMode(Value: TMfThumbDrawMode);
+
 begin
 
   if (FThumbDrawMode <> Value) then
@@ -1465,6 +1520,7 @@ end;
 
 
 procedure TMfTrackBar.SetThumbWidth(Value: Integer);
+
 begin
 
   Value := EnsureRange(Value,
@@ -1472,15 +1528,16 @@ begin
                        300);
 
   if (FThumbWidth <> Value) then
-  begin
+    begin
 
-    FThumbWidth := Value;
-    MarkBackgroundDirty;
-  end;
+      FThumbWidth := Value;
+      MarkBackgroundDirty;
+    end;
 end;
 
 
 procedure TMfTrackBar.SetThumbHeight(Value: Integer);
+
 begin
 
   Value := EnsureRange(Value,
@@ -1497,6 +1554,7 @@ end;
 
 
 procedure TMfTrackBar.SetTransparentThumb(Value: Boolean);
+
 begin
 
   if (FTransparentThumb <> Value) then
@@ -1509,6 +1567,7 @@ end;
 
 
 procedure TMfTrackBar.SetTransparentColor(Value: TColor);
+
 begin
 
   if (FTransparentColor <> Value) then
@@ -1521,6 +1580,7 @@ end;
 
 
 procedure TMfTrackBar.SetAutoDefaultThumb(Value: Boolean);
+
 begin
 
   if (FAutoDefaultThumb <> Value) then
@@ -1533,6 +1593,7 @@ end;
 
 
 procedure TMfTrackBar.SetSmallChange(Value: Integer);
+
 begin
 
   FSmallChange := Max(1,
@@ -1541,6 +1602,7 @@ end;
 
 
 procedure TMfTrackBar.SetLargeChange(Value: Integer);
+
 begin
 
   FLargeChange := Max(1,
@@ -1549,6 +1611,7 @@ end;
 
 
 procedure TMfTrackBar.SetClickToJump(Value: Boolean);
+
 begin
 
   FClickToJump := Value;
@@ -1556,6 +1619,7 @@ end;
 
 
 procedure TMfTrackBar.SetDetentEnabled(Value: Boolean);
+
 begin
 
   if (FDetentEnabled <> Value) then
@@ -1568,6 +1632,7 @@ end;
 
 
 procedure TMfTrackBar.SetDetentValue(Value: Integer);
+
 begin
 
   if (FDetentValue <> Value) then
@@ -1580,6 +1645,7 @@ end;
 
 
 procedure TMfTrackBar.SetDetentThreshold(Value: Integer);
+
 begin
 
   FDetentThreshold := Max(0,
@@ -1588,6 +1654,7 @@ end;
 
 
 procedure TMfTrackBar.SetShowTicks(Value: Boolean);
+
 begin
 
   if (FShowTicks <> Value) then
@@ -1600,6 +1667,7 @@ end;
 
 
 procedure TMfTrackBar.SetTickCount(Value: Integer);
+
 begin
 
   Value := Max(2,
@@ -1615,6 +1683,7 @@ end;
 
 
 procedure TMfTrackBar.SetTickLabelMode(Value: TMfTickLabelMode);
+
 begin
 
   if (FTickLabelMode <> Value) then
@@ -1627,9 +1696,12 @@ end;
 
 
 procedure TMfTrackBar.SetTickLabelDecimals(Value: Integer);
+
 begin
 
-  Value := EnsureRange(Value, 0, 6);
+  Value := EnsureRange(Value,
+                       0,
+                       6);
 
   if (FTickLabelDecimals <> Value) then
     begin
@@ -1641,25 +1713,27 @@ end;
 
 
 procedure TMfTrackBar.SetDbFloor(Value: Single);
+
 begin
 
   if not SameValue(FDbFloor,
-                   Value,
-                   1E-6) then
-  begin
+    Value,
+    1E-6) then
+    begin
 
-    FDbFloor := Value;
-    MarkBackgroundDirty;
-  end;
+      FDbFloor := Value;
+      MarkBackgroundDirty;
+    end;
 end;
 
 
 procedure TMfTrackBar.SetDbCeil(Value: Single);
+
 begin
 
   if not SameValue(FDbCeil,
-                   Value,
-                   1E-6) then
+    Value,
+    1E-6) then
     begin
 
       FDbCeil := Value;
@@ -1669,6 +1743,7 @@ end;
 
 
 procedure TMfTrackBar.SetTickColor(Value: TColor);
+
 begin
 
   if (FTickColor <> Value) then
@@ -1681,6 +1756,7 @@ end;
 
 
 procedure TMfTrackBar.SetTickTextColor(Value: TColor);
+
 begin
 
   if (FTickTextColor <> Value) then
@@ -1693,6 +1769,7 @@ end;
 
 
 procedure TMfTrackBar.SetTickLabelBackColor(Value: TColor);
+
 begin
 
   if (FTickLabelBackColor <> Value) then
@@ -1705,6 +1782,7 @@ end;
 
 
 procedure TMfTrackBar.SetTickLabelsVisible(Value: Boolean);
+
 begin
 
   if (FTickLabelsVisible <> Value) then
@@ -1717,6 +1795,7 @@ end;
 
 
 procedure TMfTrackBar.SetTickPlacementH(Value: TMfTickPlacementH);
+
 begin
 
   if (FTickPlacementH <> Value) then
@@ -1729,6 +1808,7 @@ end;
 
 
 procedure TMfTrackBar.SetTickPlacementV(Value: TMfTickPlacementV);
+
 begin
 
   if (FTickPlacementV <> Value) then
@@ -1741,6 +1821,7 @@ end;
 
 
 procedure TMfTrackBar.SetBackgroundPicture(const Value: TPicture);
+
 begin
 
   FBackgroundPicture.Assign(Value);
@@ -1749,6 +1830,7 @@ end;
 
 
 procedure TMfTrackBar.SetThumbPictureHorz(const Value: TPicture);
+
 begin
 
   FThumbPictureHorz.Assign(Value);
@@ -1757,6 +1839,7 @@ end;
 
 
 procedure TMfTrackBar.SetThumbPictureVert(const Value: TPicture);
+
 begin
 
   FThumbPictureVert.Assign(Value);
@@ -1765,6 +1848,7 @@ end;
 
 
 procedure TMfTrackBar.SetStretchBackground(Value: Boolean);
+
 begin
 
   if (FStretchBackground <> Value) then
@@ -1777,21 +1861,38 @@ end;
 
 
 procedure TMfTrackBar.AnimationTick(Sender: TObject);
+
 begin
- if Position<FAnimationTarget then Position:=Position+1
- else if Position>FAnimationTarget then Position:=Position-1;
- FAnimationTimer.Enabled:=Position<>FAnimationTarget;
+
+  if (Position < FAnimationTarget) then
+    Position := Position + 1
+  else if (Position > FAnimationTarget) then
+    Position := Position - 1;
+  FAnimationTimer.Enabled := (Position <> FAnimationTarget);
 end;
 
-procedure TMfTrackBar.AnimateTrackBarToPosition(const ATargetPos: Integer;const ASleepMs: Cardinal);
+
+procedure TMfTrackBar.AnimateTrackBarToPosition(const ATargetPos: Integer;
+                                                const ASleepMs: Cardinal);
+
 begin
- if FAnimationTimer=nil then begin
-  FAnimationTimer:=TTimer.Create(Self);FAnimationTimer.Enabled:=False;FAnimationTimer.OnTimer:=AnimationTick;
- end;
- FAnimationTarget:=ATargetPos;
- if FAnimationTarget<Minimum then FAnimationTarget:=Minimum;
- if FAnimationTarget>Maximum then FAnimationTarget:=Maximum;
- if ASleepMs=0 then FAnimationTimer.Interval:=1 else FAnimationTimer.Interval:=ASleepMs;
- FAnimationTimer.Enabled:=Position<>FAnimationTarget;
+
+  if (FAnimationTimer = nil) then
+    begin
+      FAnimationTimer := TTimer.Create(Self);
+      FAnimationTimer.Enabled := False;
+      FAnimationTimer.OnTimer := AnimationTick;
+    end;
+  FAnimationTarget := ATargetPos;
+  if (FAnimationTarget < Minimum) then
+    FAnimationTarget := Minimum;
+  if (FAnimationTarget > Maximum) then
+    FAnimationTarget := Maximum;
+  if (ASleepMs = 0) then
+    FAnimationTimer.Interval := 1
+  else
+    FAnimationTimer.Interval := ASleepMs;
+  FAnimationTimer.Enabled := (Position <> FAnimationTarget);
 end;
+
 end.

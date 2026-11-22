@@ -65,11 +65,12 @@ unit RDJ.LibraryScanner;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   SysUtils,
   Classes,
   Generics.Collections,
@@ -90,6 +91,7 @@ type
 
 
   TRDJLibraryScanner = class
+
   private
 
     FLibrary: TRDJTrackLibrary;
@@ -126,13 +128,16 @@ implementation
 
 
 constructor TRDJLibraryScanner.Create(ALibrary: TRDJTrackLibrary);
+
 begin
+
   inherited Create;
   FLibrary := ALibrary;
 end;
 
 
 function TRDJLibraryScanner.CheckCancelled: Boolean;
+
 begin
 
   Result := Assigned(FOnCancelCheck) and FOnCancelCheck(Self);
@@ -144,17 +149,18 @@ var
   Ext: string;
 
 begin
+
   Ext := LowerCase(ExtractFileExt(AFileName));
 
   Result := (Ext = '.mp3') or
-            (Ext = '.wav') or
-            (Ext = '.flac') or
-            (Ext = '.m4a') or
-            (Ext = '.aac') or
-            (Ext = '.ogg') or
-            (Ext = '.wma') or
-            (Ext = '.aif') or
-            (Ext = '.aiff');
+    (Ext = '.wav') or
+    (Ext = '.flac') or
+    (Ext = '.m4a') or
+    (Ext = '.aac') or
+    (Ext = '.ogg') or
+    (Ext = '.wma') or
+    (Ext = '.aif') or
+    (Ext = '.aiff');
 end;
 
 
@@ -176,9 +182,9 @@ begin
 
   Path := IncludeTrailingPathDelimiter(AFolder);
 
-  if FindFirst(Path + '*.*',
-               faAnyFile,
-               SR) = 0 then
+  if (FindFirst(Path + '*.*',
+    faAnyFile,
+    SR) = 0) then
     begin
       try
         repeat
@@ -192,7 +198,7 @@ begin
           if (SR.Name = '.') or (SR.Name = '..') then
             Continue;
 
-          if (SR.Attr and faDirectory) <> 0 then
+          if ((SR.Attr and faDirectory) <> 0) then
             begin
 
               if ARecursive then
@@ -267,7 +273,7 @@ begin
                       Files.Count);
 
         if RDJReadTrackInfo(Files[i],
-                            Track) then
+          Track) then
           begin
 
             RDJUpdateTrackQuality(Track);

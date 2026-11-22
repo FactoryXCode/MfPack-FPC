@@ -73,7 +73,7 @@ interface
 
 uses
   MfGpuCapture.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -87,6 +87,7 @@ uses
 type
 
   TScreenActivityPinger = class
+
   private
 
     FPingWnd: HWND; // Native window handle
@@ -127,8 +128,7 @@ implementation
 function PingerWndProc(aHwnd: HWND;
                        aMsg: UINT;
                        awParam: WPARAM;
-                       alParam: LPARAM):
-                       LRESULT; stdcall;
+                       alParam: LPARAM): LRESULT; stdcall;
 var
   pPaintStruct: PAINTSTRUCT;
   pHdc: HDC;
@@ -149,9 +149,9 @@ begin
   end;
 
   Result := DefWindowProcW(aHwnd,
-                          aMsg,
-                          awParam,
-                          alParam);
+                           aMsg,
+                           awParam,
+                           alParam);
 end;
 
 //------------------------------------------------------------------------------
@@ -163,6 +163,7 @@ constructor TScreenActivityPinger.Create(const aDesktopRect: TRect;
                                          aHorSize: Integer;
                                          aVertSize: Integer;
                                          aColor: TColor);
+
 begin
 
   inherited Create();
@@ -197,6 +198,7 @@ end;
 
 
 destructor TScreenActivityPinger.Destroy;
+
 begin
 
   Stop();
@@ -237,17 +239,17 @@ begin
   y := FDesktopRect.Bottom - FVertSize - 2;
 
   FPingWnd := CreateWindowExW(WS_EX_TOPMOST or WS_EX_TOOLWINDOW,
-                             'ScreenActivityPingerWnd',
-                             nil,
-                             WS_POPUP,     // popup top-level window
-                             x,
-                             y,
-                             FHorSize,     // small pixel window horizontal
-                             FVertSize,    // small pixel window vertical
-                             0,
-                             0,
-                             hInstance,
-                             nil);
+                              'ScreenActivityPingerWnd',
+                              nil,
+                              WS_POPUP,     // popup top-level window
+    x,
+                              y,
+                              FHorSize,     // small pixel window horizontal
+    FVertSize,    // small pixel window vertical
+    0,
+                              0,
+                              hInstance,
+                              nil);
 
   if (FPingWnd = 0) then
     RaiseLastOSError;
@@ -255,6 +257,7 @@ end;
 
 
 procedure TScreenActivityPinger.DestroyPingWindow();
+
 begin
 
   if (FPingWnd <> 0) then
@@ -301,6 +304,7 @@ end;
 //------------------------------------------------------------------------------
 
 procedure TScreenActivityPinger.Start();
+
 begin
 
   if (FPingWnd = 0) then
@@ -315,9 +319,10 @@ end;
 
 
 procedure TScreenActivityPinger.Stop;
+
 begin
 
-  if FTimer <> nil then
+  if (FTimer <> nil) then
     FTimer.Enabled := False;
 
   if (FPingWnd <> 0) then
@@ -348,4 +353,3 @@ begin
 end;
 
 end.
-

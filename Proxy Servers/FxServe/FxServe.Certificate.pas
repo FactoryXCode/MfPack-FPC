@@ -99,7 +99,7 @@ type
   end;
 
   // ===========================================================================
-  const
+const
   FXSERVE_HTTP_SYS_APP_ID: TGUID = '{B44BA4CF-2D33-49C4-B8E6-46B16AB7E37E}';
   FXSERVE_ACME_ACCOUNT_CONTAINER = 'FactoryX FxServe ACME Account';
   FXSERVE_CERTIFICATE_CONTAINER_PREFIX = 'FactoryX FxServe Certificate ';
@@ -169,26 +169,28 @@ type
     Parameters: record
       cbData: DWORD;
       pbData: PByte;
-    end;
+      end;
   end;
 
   PCertInfoPrefix = ^TCertInfoPrefix;
+
   TCertInfoPrefix = record
     dwVersion: DWORD;
     SerialNumber: record
       cbData: DWORD;
       pbData: PByte;
-    end;
+      end;
     SignatureAlgorithm: TCryptAlgorithmIdentifier;
     Issuer: record
       cbData: DWORD;
       pbData: PByte;
-    end;
+      end;
     NotBefore: TFileTime;
     NotAfter: TFileTime;
   end;
 
   PCertContext = ^TCertContext;
+
   TCertContext = record
     dwCertEncodingType: DWORD;
     pbCertEncoded: PByte;
@@ -234,6 +236,7 @@ type
 
 
   PHttpServiceConfigSslSniSet = ^THttpServiceConfigSslSniSet;
+
   THttpServiceConfigSslSniSet = record
     KeyDesc: THttpServiceConfigSslSniKey;
     ParamDesc: THttpServiceConfigSslParam;
@@ -269,7 +272,8 @@ type
 
   // ===========================================================================
 
-  IFxServeAcmeChallengeSource = interface ['{D81C50D3-A645-4E90-BE7C-D2154ED558F8}']
+  IFxServeAcmeChallengeSource = interface
+    ['{D81C50D3-A645-4E90-BE7C-D2154ED558F8}']
     function TryGetAcmeChallenge(const ATarget: string;
                                  out AResponse: string): Boolean;
   end;
@@ -277,6 +281,7 @@ type
   TFxServeCertificateManager = class;
 
   TFxServeCertificateThread = class(TThread)
+
   private
     FManager: TFxServeCertificateManager;
 
@@ -292,6 +297,7 @@ type
 
   TFxServeCertificateManager = class(TInterfacedObject,
                                      IFxServeAcmeChallengeSource)
+
   private
     FLogger: TFxServeLogger;
     FLock: SyncObjs.TCriticalSection;
@@ -324,201 +330,201 @@ type
                                  out AResponse: string): Boolean;
   end;
 
-  procedure ConfigureFxServeCertificate(const AHostName: string;
-                                        const AContactEmail: string;
-                                        const ATermsAccepted: Boolean;
-                                        const AUseStaging: Boolean = False);
+procedure ConfigureFxServeCertificate(const AHostName: string;
+                                      const AContactEmail: string;
+                                      const ATermsAccepted: Boolean;
+                                      const AUseStaging: Boolean = False);
 
-  procedure DisableFxServeCertificate();
-  function LoadFxServeCertificateSettings(out ASettings: TFxServeCertificateSettings): Boolean;
+procedure DisableFxServeCertificate();
+function LoadFxServeCertificateSettings(out ASettings: TFxServeCertificateSettings): Boolean;
 
 
-  // Windows API ===============================================================
+// Windows API ===============================================================
 
-  function CryptAcquireContextW(var phProv: HCRYPTPROV;
-                                pszContainer: PWideChar;
-                                pszProvider: PWideChar;
-                                dwProvType: DWORD;
-                                dwFlags: DWORD): BOOL; stdcall;
+function CryptAcquireContextW(var phProv: HCRYPTPROV;
+                              pszContainer: PWideChar;
+                              pszProvider: PWideChar;
+                              dwProvType: DWORD;
+                              dwFlags: DWORD): BOOL; stdcall;
 
-  function CryptReleaseContext(hProv: HCRYPTPROV;
-                               dwFlags: DWORD): BOOL; stdcall;
-
-  function CryptGetUserKey(hProv: HCRYPTPROV;
-                           dwKeySpec: DWORD;
-                           var phUserKey: HCRYPTKEY): BOOL; stdcall;
-
-  function CryptGenKey(hProv: HCRYPTPROV;
-                       Algid: DWORD;
-                       dwFlags: DWORD;
-                       var phKey: HCRYPTKEY): BOOL; stdcall;
-
-  function CryptDestroyKey(hKey: HCRYPTKEY): BOOL; stdcall;
-
-  function CryptExportKey(hKey: HCRYPTKEY;
-                          hExpKey: HCRYPTKEY;
-                          dwBlobType: DWORD;
-                          dwFlags: DWORD;
-                          pbData: PByte;
-                          var pdwDataLen: DWORD): BOOL; stdcall;
-
-  function CryptCreateHash(hProv: HCRYPTPROV;
-                           Algid: DWORD;
-                           hKey: HCRYPTKEY;
-                           dwFlags: DWORD;
-                           var phHash: HCRYPTHASH): BOOL; stdcall;
-
-  function CryptHashData(hHash: HCRYPTHASH;
-                         pbData: PByte;
-                         dwDataLen: DWORD;
-                         dwFlags: DWORD): BOOL; stdcall;
-
-  function CryptGetHashParam(hHash: HCRYPTHASH;
-                             dwParam: DWORD;
-                             pbData: PByte;
-                             var pdwDataLen: DWORD;
+function CryptReleaseContext(hProv: HCRYPTPROV;
                              dwFlags: DWORD): BOOL; stdcall;
 
-  function CryptSignHashW(hHash: HCRYPTHASH;
-                          dwKeySpec: DWORD;
-                          sDescription: PWideChar;
-                          dwFlags: DWORD;
-                          pbSignature: PByte;
-                          var pdwSigLen: DWORD): BOOL; stdcall;
+function CryptGetUserKey(hProv: HCRYPTPROV;
+                         dwKeySpec: DWORD;
+                         var phUserKey: HCRYPTKEY): BOOL; stdcall;
 
-  function CryptDestroyHash(hHash: HCRYPTHASH): BOOL; stdcall;
+function CryptGenKey(hProv: HCRYPTPROV;
+                     Algid: DWORD;
+                     dwFlags: DWORD;
+                     var phKey: HCRYPTKEY): BOOL; stdcall;
 
-  function CertOpenStore(lpszStoreProvider: PAnsiChar;
-                         dwMsgAndCertEncodingType: DWORD;
-                         hCryptProv: NativeUInt;
+function CryptDestroyKey(hKey: HCRYPTKEY): BOOL; stdcall;
+
+function CryptExportKey(hKey: HCRYPTKEY;
+                        hExpKey: HCRYPTKEY;
+                        dwBlobType: DWORD;
+                        dwFlags: DWORD;
+                        pbData: PByte;
+                        var pdwDataLen: DWORD): BOOL; stdcall;
+
+function CryptCreateHash(hProv: HCRYPTPROV;
+                         Algid: DWORD;
+                         hKey: HCRYPTKEY;
                          dwFlags: DWORD;
-                         pvPara: Pointer): HCERTSTORE; stdcall;
+                         var phHash: HCRYPTHASH): BOOL; stdcall;
 
-  function CertCloseStore(hCertStore: HCERTSTORE;
-                          dwFlags: DWORD): BOOL; stdcall;
+function CryptHashData(hHash: HCRYPTHASH;
+                       pbData: PByte;
+                       dwDataLen: DWORD;
+                       dwFlags: DWORD): BOOL; stdcall;
 
-  function CertEnumCertificatesInStore(hCertStore: HCERTSTORE;
-                                       pPrevCertContext: PCertContext): PCertContext; stdcall;
+function CryptGetHashParam(hHash: HCRYPTHASH;
+                           dwParam: DWORD;
+                           pbData: PByte;
+                           var pdwDataLen: DWORD;
+                           dwFlags: DWORD): BOOL; stdcall;
 
-  function CertCreateCertificateContext(dwCertEncodingType: DWORD;
-                                        pbCertEncoded: PByte;
-                                        cbCertEncoded: DWORD): PCertContext; stdcall;
+function CryptSignHashW(hHash: HCRYPTHASH;
+                        dwKeySpec: DWORD;
+                        sDescription: PWideChar;
+                        dwFlags: DWORD;
+                        pbSignature: PByte;
+                        var pdwSigLen: DWORD): BOOL; stdcall;
 
-  function CertFreeCertificateContext(pCertContext: PCertContext): BOOL; stdcall;
+function CryptDestroyHash(hHash: HCRYPTHASH): BOOL; stdcall;
 
-  function CertAddCertificateContextToStore(hCertStore: HCERTSTORE;
-                                            pCertContext: PCertContext;
-                                            dwAddDisposition: DWORD;
-                                            ppStoreContext: Pointer): BOOL; stdcall;
+function CertOpenStore(lpszStoreProvider: PAnsiChar;
+                       dwMsgAndCertEncodingType: DWORD;
+                       hCryptProv: NativeUInt;
+                       dwFlags: DWORD;
+                       pvPara: Pointer): HCERTSTORE; stdcall;
 
-  function CertSetCertificateContextProperty(pCertContext: PCertContext;
-                                             dwPropId: DWORD;
-                                             dwFlags: DWORD;
-                                             pvData: Pointer): BOOL; stdcall;
+function CertCloseStore(hCertStore: HCERTSTORE;
+                        dwFlags: DWORD): BOOL; stdcall;
 
-  function CertGetCertificateContextProperty(pCertContext: PCertContext;
-                                             dwPropId: DWORD;
-                                             pvData: Pointer;
-                                             var pcbData: DWORD): BOOL; stdcall;
+function CertEnumCertificatesInStore(hCertStore: HCERTSTORE;
+                                     pPrevCertContext: PCertContext): PCertContext; stdcall;
 
-  function CertGetNameStringW(pCertContext: PCertContext;
-                              dwType: DWORD;
-                              dwFlags: DWORD;
-                              pvTypePara: Pointer;
-                              pszNameString: PWideChar;
-                              cchNameString: DWORD): DWORD; stdcall;
+function CertCreateCertificateContext(dwCertEncodingType: DWORD;
+                                      pbCertEncoded: PByte;
+                                      cbCertEncoded: DWORD): PCertContext; stdcall;
 
-  function CryptAcquireCertificatePrivateKey(pCert: PCertContext;
-                                             dwFlags: DWORD;
-                                             pvReserved: Pointer;
-                                             var phCryptProvOrNCryptKey: NativeUInt;
-                                             var pdwKeySpec: DWORD;
-                                             var pfCallerFreeProvOrNCryptKey: BOOL): BOOL; stdcall;
+function CertFreeCertificateContext(pCertContext: PCertContext): BOOL; stdcall;
 
-  function NCryptFreeObject(hObject: NativeUInt): Longint; stdcall;
+function CertAddCertificateContextToStore(hCertStore: HCERTSTORE;
+                                          pCertContext: PCertContext;
+                                          dwAddDisposition: DWORD;
+                                          ppStoreContext: Pointer): BOOL; stdcall;
 
-  function HttpInitialize(Version: UInt64;
-                          Flags: DWORD;
-                          pReserved: Pointer): DWORD; stdcall;
+function CertSetCertificateContextProperty(pCertContext: PCertContext;
+                                           dwPropId: DWORD;
+                                           dwFlags: DWORD;
+                                           pvData: Pointer): BOOL; stdcall;
 
-  function HttpTerminate(Flags: DWORD;
-                         pReserved: Pointer): DWORD; stdcall;
+function CertGetCertificateContextProperty(pCertContext: PCertContext;
+                                           dwPropId: DWORD;
+                                           pvData: Pointer;
+                                           var pcbData: DWORD): BOOL; stdcall;
 
-  function HttpSetServiceConfiguration(ServiceHandle: THandle;
+function CertGetNameStringW(pCertContext: PCertContext;
+                            dwType: DWORD;
+                            dwFlags: DWORD;
+                            pvTypePara: Pointer;
+                            pszNameString: PWideChar;
+                            cchNameString: DWORD): DWORD; stdcall;
+
+function CryptAcquireCertificatePrivateKey(pCert: PCertContext;
+                                           dwFlags: DWORD;
+                                           pvReserved: Pointer;
+                                           var phCryptProvOrNCryptKey: NativeUInt;
+                                           var pdwKeySpec: DWORD;
+                                           var pfCallerFreeProvOrNCryptKey: BOOL): BOOL; stdcall;
+
+function NCryptFreeObject(hObject: NativeUInt): Longint; stdcall;
+
+function HttpInitialize(Version: UInt64;
+                        Flags: DWORD;
+                        pReserved: Pointer): DWORD; stdcall;
+
+function HttpTerminate(Flags: DWORD;
+                       pReserved: Pointer): DWORD; stdcall;
+
+function HttpSetServiceConfiguration(ServiceHandle: THandle;
+                                     ConfigId: DWORD;
+                                     pConfigInformation: Pointer;
+                                     ConfigInformationLength: DWORD;
+                                     pOverlapped: Pointer): DWORD; stdcall;
+
+function HttpDeleteServiceConfiguration(ServiceHandle: THandle;
+                                        ConfigId: DWORD;
+                                        pConfigInformation: Pointer;
+                                        ConfigInformationLength: DWORD;
+                                        pOverlapped: Pointer): DWORD; stdcall;
+
+function HttpQueryServiceConfiguration(ServiceHandle: THandle;
                                        ConfigId: DWORD;
-                                       pConfigInformation: Pointer;
-                                       ConfigInformationLength: DWORD;
+                                       pInputConfigInformation: Pointer;
+                                       InputConfigInformationLength: DWORD;
+                                       pOutputConfigInformation: Pointer;
+                                       OutputConfigInformationLength: DWORD;
+                                       var pReturnLength: DWORD;
                                        pOverlapped: Pointer): DWORD; stdcall;
 
-  function HttpDeleteServiceConfiguration(ServiceHandle: THandle;
-                                          ConfigId: DWORD;
-                                          pConfigInformation: Pointer;
-                                          ConfigInformationLength: DWORD;
-                                          pOverlapped: Pointer): DWORD; stdcall;
+function ConvertStringSecurityDescriptorToSecurityDescriptorW(StringSecurityDescriptor: PWideChar;
+                                                              StringSDRevision: DWORD;
+                                                              var SecurityDescriptor: Pointer;
+                                                              SecurityDescriptorSize: PDWORD): BOOL; stdcall;
 
-  function HttpQueryServiceConfiguration(ServiceHandle: THandle;
-                                         ConfigId: DWORD;
-                                         pInputConfigInformation: Pointer;
-                                         InputConfigInformationLength: DWORD;
-                                         pOutputConfigInformation: Pointer;
-                                         OutputConfigInformationLength: DWORD;
-                                         var pReturnLength: DWORD;
-                                         pOverlapped: Pointer): DWORD; stdcall;
+function WinHttpOpen(pwszUserAgent: PWideChar;
+                     dwAccessType: DWORD;
+                     pwszProxyName: PWideChar;
+                     pwszProxyBypass: PWideChar;
+                     dwFlags: DWORD): HINTERNET; stdcall;
 
-  function ConvertStringSecurityDescriptorToSecurityDescriptorW(StringSecurityDescriptor: PWideChar;
-                                                                StringSDRevision: DWORD;
-                                                                var SecurityDescriptor: Pointer;
-                                                                SecurityDescriptorSize: PDWORD): BOOL; stdcall;
+function WinHttpConnect(hSession: HINTERNET;
+                        pswzServerName: PWideChar;
+                        nServerPort: INTERNET_PORT;
+                        dwReserved: DWORD): HINTERNET; stdcall;
 
-  function WinHttpOpen(pwszUserAgent: PWideChar;
-                       dwAccessType: DWORD;
-                       pwszProxyName: PWideChar;
-                       pwszProxyBypass: PWideChar;
-                       dwFlags: DWORD): HINTERNET; stdcall;
+function WinHttpOpenRequest(hConnect: HINTERNET;
+                            pwszVerb: PWideChar;
+                            pwszObjectName: PWideChar;
+                            pwszVersion: PWideChar;
+                            pwszReferrer: PWideChar;
+                            ppwszAcceptTypes: Pointer;
+                            dwFlags: DWORD): HINTERNET; stdcall;
 
-  function WinHttpConnect(hSession: HINTERNET;
-                          pswzServerName: PWideChar;
-                          nServerPort: INTERNET_PORT;
-                          dwReserved: DWORD): HINTERNET; stdcall;
+function WinHttpSendRequest(hRequest: HINTERNET;
+                            pwszHeaders: PWideChar;
+                            dwHeadersLength: DWORD;
+                            lpOptional: Pointer;
+                            dwOptionalLength: DWORD;
+                            dwTotalLength: DWORD;
+                            dwContext: NativeUInt): BOOL; stdcall;
 
-  function WinHttpOpenRequest(hConnect: HINTERNET;
-                              pwszVerb: PWideChar;
-                              pwszObjectName: PWideChar;
-                              pwszVersion: PWideChar;
-                              pwszReferrer: PWideChar;
-                              ppwszAcceptTypes: Pointer;
-                              dwFlags: DWORD): HINTERNET; stdcall;
+function WinHttpReceiveResponse(hRequest: HINTERNET;
+                                lpReserved: Pointer): BOOL; stdcall;
 
-  function WinHttpSendRequest(hRequest: HINTERNET;
-                              pwszHeaders: PWideChar;
-                              dwHeadersLength: DWORD;
-                              lpOptional: Pointer;
-                              dwOptionalLength: DWORD;
-                              dwTotalLength: DWORD;
-                              dwContext: NativeUInt): BOOL; stdcall;
+function WinHttpQueryHeaders(hRequest: HINTERNET;
+                             dwInfoLevel: DWORD;
+                             pwszName: PWideChar;
+                             lpBuffer: Pointer;
+                             var lpdwBufferLength: DWORD;
+                             var lpdwIndex: DWORD): BOOL; stdcall;
 
-  function WinHttpReceiveResponse(hRequest: HINTERNET;
-                                  lpReserved: Pointer): BOOL; stdcall;
+function WinHttpReadData(hRequest: HINTERNET;
+                         lpBuffer: Pointer;
+                         dwNumberOfBytesToRead: DWORD;
+                         var lpdwNumberOfBytesRead: DWORD): BOOL; stdcall;
 
-  function WinHttpQueryHeaders(hRequest: HINTERNET;
-                               dwInfoLevel: DWORD;
-                               pwszName: PWideChar;
-                               lpBuffer: Pointer;
-                               var lpdwBufferLength: DWORD;
-                               var lpdwIndex: DWORD): BOOL; stdcall;
+function WinHttpSetTimeouts(hInternet: HINTERNET;
+                            nResolveTimeout: Integer;
+                            nConnectTimeout: Integer;
+                            nSendTimeout: Integer;
+                            nReceiveTimeout: Integer): BOOL; stdcall;
 
-  function WinHttpReadData(hRequest: HINTERNET;
-                           lpBuffer: Pointer;
-                           dwNumberOfBytesToRead: DWORD;
-                           var lpdwNumberOfBytesRead: DWORD): BOOL; stdcall;
-
-  function WinHttpSetTimeouts(hInternet: HINTERNET;
-                              nResolveTimeout: Integer;
-                              nConnectTimeout: Integer;
-                              nSendTimeout: Integer;
-                              nReceiveTimeout: Integer): BOOL; stdcall;
-
-  function WinHttpCloseHandle(hInternet: HINTERNET): BOOL; stdcall;
+function WinHttpCloseHandle(hInternet: HINTERNET): BOOL; stdcall;
 
 
 implementation
@@ -575,6 +581,7 @@ end;
 
 
 function BytesToUtf8(const ABytes: TBytes): UTF8String;
+
 begin
 
   SetLength(Result,
@@ -614,7 +621,7 @@ begin
   Result := '';
   I := 0;
 
-  while I < Length(ABytes) do
+  while (I < Length(ABytes)) do
     begin
       Remaining := Length(ABytes) - I;
       Value := Cardinal(ABytes[I]) shl 16;
@@ -626,7 +633,7 @@ begin
         Value := Value or Cardinal(ABytes[I + 2]);
 
       Result := Result + TABLE[((Value shr 18) and $3F) + 1] +
-                         TABLE[((Value shr 12) and $3F) + 1];
+        TABLE[((Value shr 12) and $3F) + 1];
 
       if (Remaining > 1) then
         Result := Result + TABLE[((Value shr 6) and $3F) + 1]
@@ -645,6 +652,7 @@ end;
 
 
 function Base64UrlEncode(const ABytes: TBytes): string;
+
 begin
 
   Result := Base64Encode(ABytes);
@@ -658,7 +666,7 @@ begin
                           [rfReplaceAll]);
 
   while (Result <> '') and
-        (Result[Length(Result)] = '=') do
+    (Result[Length(Result)] = '=') do
     Delete(Result,
            Length(Result),
            1);
@@ -672,18 +680,19 @@ var
   Count: Integer;
   Value: Cardinal;
 
+
   function DecodeChar(const C: Char): Integer;
   begin
     if CharInSet(C,
-                 ['A'..'Z']) then
+      ['A'..'Z']) then
       Exit(Ord(C) - Ord('A'));
 
     if CharInSet(C,
-                 ['a'..'z']) then
+      ['a'..'z']) then
       Exit(Ord(C) - Ord('a') + 26);
 
     if CharInSet(C,
-                 ['0'..'9']) then
+      ['0'..'9']) then
       Exit(Ord(C) - Ord('0') + 52);
 
     if (C = '+') then
@@ -718,7 +727,7 @@ begin
   Count := 0;
   I := 1;
 
-  while I <= Length(Clean) do
+  while (I <= Length(Clean)) do
     begin
       Value := Cardinal(DecodeChar(Clean[I])) shl 18;
       Value := Value or (Cardinal(DecodeChar(Clean[I + 1])) shl 12);
@@ -770,12 +779,12 @@ begin
         #10: Result := Result + '\n';
         #12: Result := Result + '\f';
         #13: Result := Result + '\r';
-      else
-        if (Ord(C) < 32) then
-          Result := Result + Format('\u%.4x',
-                                    [Ord(C)])
         else
-          Result := Result + C;
+          if (Ord(C) < 32) then
+            Result := Result + Format('\u%.4x',
+                                      [Ord(C)])
+          else
+            Result := Result + C;
       end;
     end;
 end;
@@ -807,24 +816,24 @@ begin
   P := P + AStart - 1 + Length(AName) + 2;
 
   while (P <= Length(AJson)) and
-        (AJson[P] <> ':') do
+    (AJson[P] <> ':') do
     Inc(P);
 
   Inc(P);
 
   while (P <= Length(AJson)) and
-        CharInSet(AJson[P],
-                  [' ', #9, #13, #10]) do
+    CharInSet(AJson[P],
+              [' ', #9, #13, #10]) do
     Inc(P);
 
   if (P > Length(AJson)) or
-     (AJson[P] <> '"') then
+    (AJson[P] <> '"') then
     Exit;
 
   Inc(P);
   I := P;
 
-  while I <= Length(AJson) do
+  while (I <= Length(AJson)) do
     begin
       if (AJson[I] = '"') then
         begin
@@ -875,10 +884,10 @@ var
 begin
 
   if not JsonStringAt(AJson,
-                      AName,
-                      1,
-                      Result,
-                      EndPosition) then
+    AName,
+    1,
+    Result,
+    EndPosition) then
     Result := '';
 end;
 
@@ -913,25 +922,25 @@ begin
   Inc(P);
 
   while (P <= Length(AJson)) and
-        (AJson[P] <> ']') do
+    (AJson[P] <> ']') do
     begin
       while (P <= Length(AJson)) and
-            (AJson[P] <> '"') and
-            (AJson[P] <> ']') do
+        (AJson[P] <> '"') and
+        (AJson[P] <> ']') do
         Inc(P);
 
       if (P > Length(AJson)) or
-         (AJson[P] = ']') then
+        (AJson[P] = ']') then
         Break;
 
       Inc(P);
       Value := '';
 
       while (P <= Length(AJson)) and
-            (AJson[P] <> '"') do
+        (AJson[P] <> '"') do
         begin
           if (AJson[P] = '\') and
-             (P < Length(AJson)) then
+            (P < Length(AJson)) then
             Inc(P);
 
           Value := Value + AJson[P];
@@ -958,7 +967,7 @@ begin
     Registry.RootKey := HKEY_LOCAL_MACHINE;
 
     if Registry.OpenKeyReadOnly(FXSERVE_CERTIFICATE_REGISTRY_KEY) and
-       Registry.ValueExists(AName) then
+      Registry.ValueExists(AName) then
       Result := Registry.ReadString(AName);
 
   finally
@@ -981,7 +990,7 @@ begin
     Registry.RootKey := HKEY_LOCAL_MACHINE;
 
     if Registry.OpenKeyReadOnly(FXSERVE_CERTIFICATE_REGISTRY_KEY) and
-       Registry.ValueExists(AName) then
+      Registry.ValueExists(AName) then
       Result := Registry.ReadInteger(AName);
 
   finally
@@ -1001,7 +1010,7 @@ begin
   try
     Registry.RootKey := HKEY_LOCAL_MACHINE;
     Result := Registry.OpenKeyReadOnly(FXSERVE_CERTIFICATE_REGISTRY_KEY) and
-              Registry.ValueExists('Enabled');
+      Registry.ValueExists('Enabled');
 
   finally
     Registry.Free;
@@ -1023,9 +1032,9 @@ begin
   SecurityDescriptor := nil;
 
   if not ConvertStringSecurityDescriptorToSecurityDescriptorW('D:P(A;;KA;;;SY)(A;;KA;;;BA)',
-                                                              SDDL_REVISION_1,
-                                                              SecurityDescriptor,
-                                                               nil) then
+    SDDL_REVISION_1,
+    SecurityDescriptor,
+    nil) then
     RaiseLastOSError();
 
   try
@@ -1055,7 +1064,7 @@ begin
     Registry.RootKey := HKEY_LOCAL_MACHINE;
 
     if not Registry.OpenKey(FXSERVE_CERTIFICATE_REGISTRY_KEY,
-                            True) then
+      True) then
       raise Exception.Create('Could not create the protected FxServe certificate registry key.');
 
     ApplyRegistrySecurity(Registry);
@@ -1099,6 +1108,7 @@ end;
 
 
 function LoadFxServeCertificateSettings(out ASettings: TFxServeCertificateSettings): Boolean;
+
 begin
 
   ASettings.Enabled := False;
@@ -1110,14 +1120,14 @@ begin
   ASettings.CheckIntervalMinutes := 0;
   ASettings.AccountUrl := '';
 
-  ASettings.Enabled := ReadRegistryInteger('Enabled',
-                                           0) <> 0;
+  ASettings.Enabled := (ReadRegistryInteger('Enabled',
+                                            0) <> 0);
   ASettings.HostName := LowerCase(Trim(ReadRegistryString('HostName',
-                                                         '')));
+                                                          '')));
   ASettings.ContactEmail := Trim(ReadRegistryString('ContactEmail',
                                                     ''));
-  ASettings.TermsAccepted := ReadRegistryInteger('TermsAccepted',
-                                                 0) <> 0;
+  ASettings.TermsAccepted := (ReadRegistryInteger('TermsAccepted',
+                                                  0) <> 0);
   ASettings.DirectoryUrl := Trim(ReadRegistryString('DirectoryUrl',
                                                     FXSERVE_ACME_PRODUCTION_DIRECTORY));
   ASettings.RenewBeforeDays := ReadRegistryInteger('RenewBeforeDays',
@@ -1140,9 +1150,9 @@ begin
     ASettings.CheckIntervalMinutes := 1440;
 
   Result := ASettings.Enabled and
-            (ASettings.HostName <> '') and
-            ASettings.TermsAccepted and
-            (ASettings.DirectoryUrl <> '');
+    (ASettings.HostName <> '') and
+    ASettings.TermsAccepted and
+    (ASettings.DirectoryUrl <> '');
 end;
 
 
@@ -1169,7 +1179,8 @@ begin
     Settings.DirectoryUrl := FXSERVE_ACME_PRODUCTION_DIRECTORY;
 
   if (Settings.HostName = '') or
-     (Pos('.', Settings.HostName) = 0) then
+    (Pos('.',
+         Settings.HostName) = 0) then
     raise Exception.Create('A fully-qualified certificate host name is required.');
 
   if not ATermsAccepted then
@@ -1253,25 +1264,24 @@ begin
                 Length(AValue));
 
   while (Length(Value) > 1) and
-        (Value[0] = 0) and
-        ((Value[1] and $80) = 0) do
+    (Value[0] = 0) and
+    ((Value[1] and $80) = 0) do
     Delete(Value,
            0,
            1);
 
   if (Length(Value) = 0) then
     Value := BytesOf([0])
-  else
-    if ((Value[0] and $80) <> 0) then
-      begin
-        SetLength(Result,
-                  Length(Value) + 1);
-        Result[0] := 0;
-        Move(Value[0],
-             Result[1],
-             Length(Value));
-        Value := Result;
-      end;
+  else if ((Value[0] and $80) <> 0) then
+    begin
+      SetLength(Result,
+                Length(Value) + 1);
+      Result[0] := 0;
+      Move(Value[0],
+           Result[1],
+           Length(Value));
+      Value := Result;
+    end;
 
   Result := DerWrap($02,
                     Value);
@@ -1279,6 +1289,7 @@ end;
 
 
 function DerOidRsaEncryption(): TBytes;
+
 begin
 
   Result := BytesOf([$06, $09, $2A, $86, $48, $86, $F7, $0D, $01, $01, $01]);
@@ -1286,6 +1297,7 @@ end;
 
 
 function DerOidSha256WithRsa(): TBytes;
+
 begin
 
   Result := BytesOf([$06, $09, $2A, $86, $48, $86, $F7, $0D, $01, $01, $0B]);
@@ -1293,11 +1305,12 @@ end;
 
 
 function DerAlgorithm(const AOid: TBytes): TBytes;
+
 begin
 
   Result := DerWrap($30,
                     DerConcat([AOid,
-                               BytesOf([$05, $00])]));
+    BytesOf([$05, $00])]));
 end;
 
 
@@ -1308,8 +1321,8 @@ var
 begin
 
   CommonName := DerConcat([BytesOf([$06, $03, $55, $04, $03]),
-                           DerWrap($0C,
-                                   Utf8Bytes(AHostName))]);
+    DerWrap($0C,
+            Utf8Bytes(AHostName))]);
   Result := DerWrap($30,
                     DerWrap($31,
                             DerWrap($30,
@@ -1326,14 +1339,14 @@ begin
 
   RsaPublicKey := DerWrap($30,
                           DerConcat([DerInteger(AKey.Modulus),
-                                     DerInteger(AKey.Exponent)]));
+    DerInteger(AKey.Exponent)]));
   BitString := BytesOf([0]);
   AppendBytes(BitString,
               RsaPublicKey);
   Result := DerWrap($30,
                     DerConcat([DerAlgorithm(DerOidRsaEncryption()),
-                               DerWrap($03,
-                                       BitString)]));
+    DerWrap($03,
+            BitString)]));
 end;
 
 
@@ -1353,20 +1366,21 @@ begin
                           GeneralName);
   Extension := DerWrap($30,
                        DerConcat([BytesOf([$06, $03, $55, $1D, $11]),
-                                  DerWrap($04,
-                                          GeneralNames)]));
+    DerWrap($04,
+            GeneralNames)]));
   Extensions := DerWrap($30,
                         Extension);
   Attribute := DerWrap($30,
                        DerConcat([BytesOf([$06, $09, $2A, $86, $48, $86, $F7, $0D, $01, $09, $0E]),
-                                  DerWrap($31,
-                                          Extensions)]));
+    DerWrap($31,
+            Extensions)]));
   Result := DerWrap($A0,
                     Attribute);
 end;
 
 
 procedure CloseAcmeKey(var AKey: TAcmeKey);
+
 begin
 
   if (AKey.Key <> 0) then
@@ -1415,22 +1429,21 @@ begin
   BlobLength := 0;
 
   if not CryptExportKey(AKey.Key,
-                        0,
-                        PUBLICKEYBLOB,
-                        0,
-                        nil,
-                        BlobLength) then
+    0,
+    PUBLICKEYBLOB,
+    0,
+    nil,
+    BlobLength) then
     RaiseLastOSError();
 
   SetLength(Blob,
             BlobLength);
 
   if not CryptExportKey(AKey.Key,
-                        0,
-                        PUBLICKEYBLOB,
-                        0,
-                        @Blob[0],
-                        BlobLength) then
+    0,
+    PUBLICKEYBLOB,
+    0, @Blob[0],
+    BlobLength) then
     RaiseLastOSError();
 
   if (BlobLength < SizeOf(Header) + SizeOf(PublicKey)) then
@@ -1444,8 +1457,8 @@ begin
        SizeOf(PublicKey));
 
   if (Header.bType <> PUBLICKEYBLOB) or
-     (Header.bVersion <> CUR_BLOB_VERSION) or
-     (PublicKey.magic <> RSA1_MAGIC) then
+    (Header.bVersion <> CUR_BLOB_VERSION) or
+    (PublicKey.magic <> RSA1_MAGIC) then
     raise Exception.Create('The Windows key is not an RSA public key.');
 
   SetLength(ModulusLittleEndian,
@@ -1459,7 +1472,7 @@ begin
   ExponentLength := 4;
 
   while (ExponentLength > 1) and
-        ((ExponentValue shr ((ExponentLength - 1) * 8)) = 0) do
+    ((ExponentValue shr ((ExponentLength - 1) * 8)) = 0) do
     Dec(ExponentLength);
 
   SetLength(AKey.Exponent,
@@ -1493,10 +1506,10 @@ begin
   AKey.KeySpec := AKeySpec;
 
   if not CryptAcquireContextW(AKey.Provider,
-                              PWideChar(AContainerName),
-                              PWideChar(MICROSOFT_RSA_AES_PROVIDER),
-                              PROV_RSA_AES,
-                              CRYPT_MACHINE_KEYSET) then
+    PWideChar(AContainerName),
+    PWideChar(MICROSOFT_RSA_AES_PROVIDER),
+    PROV_RSA_AES,
+    CRYPT_MACHINE_KEYSET) then
     begin
       ErrorCode := GetLastError;
 
@@ -1504,10 +1517,10 @@ begin
         RaiseLastOSError(ErrorCode);
 
       if not CryptAcquireContextW(AKey.Provider,
-                                  PWideChar(AContainerName),
-                                  PWideChar(MICROSOFT_RSA_AES_PROVIDER),
-                                  PROV_RSA_AES,
-                                  CRYPT_MACHINE_KEYSET or CRYPT_NEWKEYSET) then
+        PWideChar(AContainerName),
+        PWideChar(MICROSOFT_RSA_AES_PROVIDER),
+        PROV_RSA_AES,
+        CRYPT_MACHINE_KEYSET or CRYPT_NEWKEYSET) then
         RaiseLastOSError();
     end;
 
@@ -1515,8 +1528,8 @@ begin
     if ACreateNew then
       begin
         if CryptGetUserKey(AKey.Provider,
-                           AKeySpec,
-                           AKey.Key) then
+          AKeySpec,
+          AKey.Key) then
           begin
             CryptDestroyKey(AKey.Key);
             AKey.Key := 0;
@@ -1524,20 +1537,19 @@ begin
           end;
 
         if not CryptGenKey(AKey.Provider,
-                           AKeySpec,
-                           DWORD(2048) shl 16,
-                           AKey.Key) then
+          AKeySpec,
+          DWORD(2048) shl 16,
+          AKey.Key) then
           RaiseLastOSError();
       end
-    else
-      if not CryptGetUserKey(AKey.Provider,
-                             AKeySpec,
-                             AKey.Key) then
-        if not CryptGenKey(AKey.Provider,
-                           AKeySpec,
-                           DWORD(2048) shl 16,
-                           AKey.Key) then
-          RaiseLastOSError();
+    else if not CryptGetUserKey(AKey.Provider,
+      AKeySpec,
+      AKey.Key) then
+      if not CryptGenKey(AKey.Provider,
+        AKeySpec,
+        DWORD(2048) shl 16,
+        AKey.Key) then
+        RaiseLastOSError();
 
     ReadPublicKey(AKey);
 
@@ -1561,18 +1573,16 @@ begin
   Hash := 0;
 
   if not CryptCreateHash(AProvider,
-                         CALG_SHA_256,
-                         0,
-                         0,
-                         Hash) then
+    CALG_SHA_256,
+    0,
+    0,
+    Hash) then
     RaiseLastOSError();
 
   try
-    if (Length(AData) > 0) and
-       not CryptHashData(Hash,
-                         @AData[0],
-                         Length(AData),
-                         0) then
+    if (Length(AData) > 0) and not CryptHashData(Hash, @AData[0],
+      Length(AData),
+      0) then
       RaiseLastOSError();
 
     HashLength := 32;
@@ -1580,10 +1590,9 @@ begin
               HashLength);
 
     if not CryptGetHashParam(Hash,
-                             HP_HASHVAL,
-                             @Result[0],
-                             HashLength,
-                             0) then
+      HP_HASHVAL, @Result[0],
+      HashLength,
+      0) then
       RaiseLastOSError();
 
     SetLength(Result,
@@ -1606,39 +1615,36 @@ begin
   Hash := 0;
 
   if not CryptCreateHash(AKey.Provider,
-                         CALG_SHA_256,
-                         0,
-                         0,
-                         Hash) then
+    CALG_SHA_256,
+    0,
+    0,
+    Hash) then
     RaiseLastOSError();
 
   try
-    if (Length(AData) > 0) and
-       not CryptHashData(Hash,
-                         @AData[0],
-                         Length(AData),
-                         0) then
+    if (Length(AData) > 0) and not CryptHashData(Hash, @AData[0],
+      Length(AData),
+      0) then
       RaiseLastOSError();
 
     SignatureLength := 0;
 
     if not CryptSignHashW(Hash,
-                          AKey.KeySpec,
-                          nil,
-                          0,
-                          nil,
-                          SignatureLength) then
+      AKey.KeySpec,
+      nil,
+      0,
+      nil,
+      SignatureLength) then
       RaiseLastOSError();
 
     SetLength(Result,
               SignatureLength);
 
     if not CryptSignHashW(Hash,
-                          AKey.KeySpec,
-                          nil,
-                          0,
-                          @Result[0],
-                          SignatureLength) then
+      AKey.KeySpec,
+      nil,
+      0, @Result[0],
+      SignatureLength) then
       RaiseLastOSError();
 
     SetLength(Result,
@@ -1662,9 +1668,9 @@ begin
 
   RequestInfo := DerWrap($30,
                          DerConcat([BytesOf([$02, $01, $00]),
-                                    DerSubject(AHostName),
-                                    DerSubjectPublicKeyInfo(AKey),
-                                    DerExtensionRequest(AHostName)]));
+    DerSubject(AHostName),
+    DerSubjectPublicKeyInfo(AKey),
+    DerExtensionRequest(AHostName)]));
   Signature := SignSha256(AKey,
                           RequestInfo);
   SignatureBits := BytesOf([0]);
@@ -1672,21 +1678,23 @@ begin
               Signature);
   Result := DerWrap($30,
                     DerConcat([RequestInfo,
-                               DerAlgorithm(DerOidSha256WithRsa()),
-                               DerWrap($03,
-                                       SignatureBits)]));
+    DerAlgorithm(DerOidSha256WithRsa()),
+    DerWrap($03,
+            SignatureBits)]));
 end;
 
 
 function AccountJwk(const AKey: TAcmeKey): string;
+
 begin
 
   Result := '{"e":"' + Base64UrlEncode(AKey.Exponent) +
-            '","kty":"RSA","n":"' + Base64UrlEncode(AKey.Modulus) + '"}';
+    '","kty":"RSA","n":"' + Base64UrlEncode(AKey.Modulus) + '"}';
 end;
 
 
 function AccountThumbprint(const AKey: TAcmeKey): string;
+
 begin
 
   Result := Base64UrlEncode(HashSha256(AKey.Provider,
@@ -1708,9 +1716,9 @@ begin
   Value := Trim(AUrl);
 
   if not SameText(Copy(Value,
-                       1,
-                       8),
-                  'https://') then
+    1,
+    8),
+    'https://') then
     raise Exception.Create('ACME returned a non-HTTPS URL.');
 
   Delete(Value,
@@ -1738,7 +1746,8 @@ begin
                      HostPort);
 
   if (P > 0) and
-     (Pos(']', HostPort) = 0) then
+    (Pos(']',
+         HostPort) = 0) then
     begin
       AHost := Copy(HostPort,
                     1,
@@ -1786,7 +1795,7 @@ begin
                       Index);
 
   if (GetLastError <> ERROR_INSUFFICIENT_BUFFER) or
-     (Size = 0) then
+    (Size = 0) then
     Exit;
 
   SetLength(Buffer,
@@ -1794,11 +1803,10 @@ begin
   Index := 0;
 
   if WinHttpQueryHeaders(ARequest,
-                         AQuery,
-                         NamePointer,
-                         @Buffer[0],
-                         Size,
-                         Index) then
+    AQuery,
+    NamePointer, @Buffer[0],
+    Size,
+    Index) then
     Result := PWideChar(@Buffer[0]);
 end;
 
@@ -1875,7 +1883,7 @@ begin
         Headers := '';
 
         if SameText(AMethod,
-                    'POST') then
+          'POST') then
           Headers := 'Content-Type: application/jose+json'#13#10;
 
         if (Length(ABody) > 0) then
@@ -1884,16 +1892,16 @@ begin
           BodyPointer := nil;
 
         if not WinHttpSendRequest(Request,
-                                  PWideChar(Headers),
-                                  Length(Headers),
-                                  BodyPointer,
-                                  Length(ABody),
-                                  Length(ABody),
-                                  0) then
+          PWideChar(Headers),
+          Length(Headers),
+          BodyPointer,
+          Length(ABody),
+          Length(ABody),
+          0) then
           RaiseLastOSError();
 
         if not WinHttpReceiveResponse(Request,
-                                      nil) then
+          nil) then
           RaiseLastOSError();
 
         StatusCode := 0;
@@ -1901,11 +1909,10 @@ begin
         HeaderIndex := 0;
 
         if not WinHttpQueryHeaders(Request,
-                                   WINHTTP_QUERY_STATUS_CODE or WINHTTP_QUERY_FLAG_NUMBER,
-                                   nil,
-                                   @StatusCode,
-                                   StatusSize,
-                                   HeaderIndex) then
+          WINHTTP_QUERY_STATUS_CODE or WINHTTP_QUERY_FLAG_NUMBER,
+          nil, @StatusCode,
+          StatusSize,
+          HeaderIndex) then
           RaiseLastOSError();
 
         AResponse.StatusCode := StatusCode;
@@ -1919,10 +1926,9 @@ begin
         repeat
           BytesRead := 0;
 
-          if not WinHttpReadData(Request,
-                                 @Buffer[0],
-                                 SizeOf(Buffer),
-                                 BytesRead) then
+          if not WinHttpReadData(Request, @Buffer[0],
+            SizeOf(Buffer),
+            BytesRead) then
             RaiseLastOSError();
 
           if (BytesRead > 0) then
@@ -1965,13 +1971,13 @@ var
 begin
 
   if not AcmeHttpRequest('GET',
-                         AUrl,
-                         '',
-                         Response) then
+    AUrl,
+    '',
+    Response) then
     raise Exception.Create('Could not read the ACME directory.');
 
   if (Response.StatusCode < 200) or
-     (Response.StatusCode >= 300) then
+    (Response.StatusCode >= 300) then
     raise Exception.CreateFmt('ACME directory request failed (HTTP %d).',
                               [Response.StatusCode]);
 
@@ -1984,8 +1990,8 @@ begin
                                     'newOrder');
 
   if (ADirectory.NewNonce = '') or
-     (ADirectory.NewAccount = '') or
-     (ADirectory.NewOrder = '') then
+    (ADirectory.NewAccount = '') or
+    (ADirectory.NewOrder = '') then
     raise Exception.Create('The ACME directory response is incomplete.');
 end;
 
@@ -1997,9 +2003,9 @@ var
 begin
 
   if not AcmeHttpRequest('HEAD',
-                         ADirectory.NewNonce,
-                         '',
-                         Response) then
+    ADirectory.NewNonce,
+    '',
+    Response) then
     raise Exception.Create('Could not request an ACME nonce.');
 
   Result := Response.ReplayNonce;
@@ -2024,7 +2030,7 @@ var
 begin
 
   ProtectedJson := '{"alg":"RS256","nonce":"' + JsonEscape(ANonce) +
-                   '","url":"' + JsonEscape(AUrl) + '"';
+    '","url":"' + JsonEscape(AUrl) + '"';
 
   if (AAccountUrl = '') then
     ProtectedJson := ProtectedJson + ',"jwk":' + AccountJwk(AKey)
@@ -2039,8 +2045,8 @@ begin
                           Utf8Bytes(SigningInput));
 
   Result := UTF8String('{"protected":"' + ProtectedText +
-                       '","payload":"' + PayloadText +
-                       '","signature":"' + Base64UrlEncode(Signature) + '"}');
+    '","payload":"' + PayloadText +
+    '","signature":"' + Base64UrlEncode(Signature) + '"}');
 end;
 
 
@@ -2069,15 +2075,16 @@ begin
                         AKey);
 
       if not AcmeHttpRequest('POST',
-                             AUrl,
-                             Body,
-                             AResponse) then
+        AUrl,
+        Body,
+        AResponse) then
         raise Exception.Create('The ACME request failed.');
 
       ANonce := AResponse.ReplayNonce;
 
       if (AResponse.StatusCode <> 400) or
-         (Pos('badNonce', string(AResponse.Body)) = 0) then
+        (Pos('badNonce',
+             string(AResponse.Body)) = 0) then
         Exit;
 
       ANonce := '';
@@ -2095,7 +2102,7 @@ var
 begin
 
   if (AResponse.StatusCode >= AMinimum) and
-     (AResponse.StatusCode <= AMaximum) then
+    (AResponse.StatusCode <= AMaximum) then
     Exit;
 
   Detail := JsonString(string(AResponse.Body),
@@ -2115,7 +2122,7 @@ function ExtractPemCertificateAt(const APem: string;
                                  var APosition: Integer): TBytes;
 const
   BEGIN_CERTIFICATE = '-----BEGIN CERTIFICATE-----';
-  END_CERTIFICATE   = '-----END CERTIFICATE-----';
+  END_CERTIFICATE = '-----END CERTIFICATE-----';
 
 var
   StartPosition: Integer;
@@ -2189,16 +2196,16 @@ begin
       if (Context = nil) then
         RaiseLastOSError();
 
-      try
-        if not CertAddCertificateContextToStore(Store,
-                                                Context,
-                                                CERT_STORE_ADD_REPLACE_EXISTING,
-                                                nil) then
-          RaiseLastOSError();
+    try
+      if not CertAddCertificateContextToStore(Store,
+        Context,
+        CERT_STORE_ADD_REPLACE_EXISTING,
+        nil) then
+        RaiseLastOSError();
 
-      finally
-        CertFreeCertificateContext(Context);
-      end;
+    finally
+      CertFreeCertificateContext(Context);
+    end;
     until False;
 
   finally
@@ -2247,9 +2254,8 @@ begin
     KeyInfo.dwKeySpec := AKey.KeySpec;
 
     if not CertSetCertificateContextProperty(Context,
-                                             CERT_KEY_PROV_INFO_PROP_ID,
-                                             0,
-                                             @KeyInfo) then
+      CERT_KEY_PROV_INFO_PROP_ID,
+      0, @KeyInfo) then
       RaiseLastOSError();
 
     Store := CertOpenStore(PAnsiChar(CERT_STORE_PROV_SYSTEM_W),
@@ -2263,9 +2269,9 @@ begin
 
     try
       if not CertAddCertificateContextToStore(Store,
-                                              Context,
-                                              CERT_STORE_ADD_REPLACE_EXISTING,
-                                              nil) then
+        Context,
+        CERT_STORE_ADD_REPLACE_EXISTING,
+        nil) then
         RaiseLastOSError();
 
     finally
@@ -2276,18 +2282,17 @@ begin
     HashLength := 0;
 
     if not CertGetCertificateContextProperty(Context,
-                                             CERT_HASH_PROP_ID,
-                                             nil,
-                                             HashLength) then
+      CERT_HASH_PROP_ID,
+      nil,
+      HashLength) then
       RaiseLastOSError();
 
     SetLength(Hash,
               HashLength);
 
     if not CertGetCertificateContextProperty(Context,
-                                             CERT_HASH_PROP_ID,
-                                             @Hash[0],
-                                             HashLength) then
+      CERT_HASH_PROP_ID, @Hash[0],
+      HashLength) then
       RaiseLastOSError();
 
     Result := '';
@@ -2326,11 +2331,11 @@ begin
             Length);
 
   if (CertGetNameStringW(AContext,
-                         CERT_NAME_DNS_TYPE,
-                         0,
-                         nil,
-                         PChar(Result),
-                         Length) <> Length) then
+    CERT_NAME_DNS_TYPE,
+    0,
+    nil,
+    PChar(Result),
+    Length) <> Length) then
     Exit('');
 
   SetLength(Result,
@@ -2366,10 +2371,11 @@ end;
 
 
 function FileTimeValue(const AFileTime: TFileTime): Int64;
+
 begin
 
   Result := (Int64(AFileTime.dwHighDateTime) shl 32) or
-            AFileTime.dwLowDateTime;
+    AFileTime.dwLowDateTime;
 end;
 
 
@@ -2420,26 +2426,25 @@ begin
       Info := PCertInfoPrefix(Context^.pCertInfo);
 
       if SameText(CertificateDnsName(Context),
-                  AHostName) and
-         (FileTimeValue(Info^.NotBefore) <= FileTimeValue(NowFileTime)) and
-         (FileTimeValue(Info^.NotAfter) > FileTimeValue(NowFileTime)) and
-         (FileTimeValue(Info^.NotAfter) > BestExpiry) and
-         CertificateHasPrivateKey(Context) then
+        AHostName) and
+        (FileTimeValue(Info^.NotBefore) <= FileTimeValue(NowFileTime)) and
+        (FileTimeValue(Info^.NotAfter) > FileTimeValue(NowFileTime)) and
+        (FileTimeValue(Info^.NotAfter) > BestExpiry) and
+        CertificateHasPrivateKey(Context) then
         begin
           HashLength := 0;
 
           if CertGetCertificateContextProperty(Context,
-                                               CERT_HASH_PROP_ID,
-                                               nil,
-                                               HashLength) then
+            CERT_HASH_PROP_ID,
+            nil,
+            HashLength) then
             begin
               SetLength(Hash,
                         HashLength);
 
               if CertGetCertificateContextProperty(Context,
-                                                   CERT_HASH_PROP_ID,
-                                                   @Hash[0],
-                                                   HashLength) then
+                CERT_HASH_PROP_ID, @Hash[0],
+                HashLength) then
                 begin
                   AThumbprint := '';
 
@@ -2547,7 +2552,7 @@ begin
     Existing := nil;
 
     if (Error = ERROR_INSUFFICIENT_BUFFER) and
-       (ExistingLength > 0) then
+      (ExistingLength > 0) then
       begin
         SetLength(ExistingBuffer,
                   ExistingLength);
@@ -2566,10 +2571,10 @@ begin
 
     Hash := ThumbprintBytes(AThumbprint);
     ExistingMatches := Assigned(Existing) and
-                       (Existing^.ParamDesc.SslHashLength = DWORD(Length(Hash))) and
-                       CompareMem(Existing^.ParamDesc.pSslHash,
-                                  @Hash[0],
-                                  Length(Hash));
+      (Existing^.ParamDesc.SslHashLength = DWORD(Length(Hash))) and
+      CompareMem(Existing^.ParamDesc.pSslHash,
+                 @Hash[0],
+                 Length(Hash));
 
     if ExistingMatches then
       Exit;
@@ -2595,7 +2600,7 @@ begin
                                                 nil);
 
         if (Error <> ERROR_SUCCESS) and
-           (Error <> ERROR_FILE_NOT_FOUND) then
+          (Error <> ERROR_FILE_NOT_FOUND) then
           raise Exception.CreateFmt('Could not replace the HTTP.sys certificate binding (%d).',
                                     [Error]);
       end;
@@ -2645,21 +2650,21 @@ begin
     Exit;
 
   if not JsonStringAt(AJson,
-                      'url',
-                      P,
-                      AUrl,
-                      EndPosition) then
+    'url',
+    P,
+    AUrl,
+    EndPosition) then
     Exit;
 
   if not JsonStringAt(AJson,
-                      'token',
-                      P,
-                      AToken,
-                      EndPosition) then
+    'token',
+    P,
+    AToken,
+    EndPosition) then
     Exit;
 
   Result := (AUrl <> '') and
-            (AToken <> '');
+    (AToken <> '');
 end;
 
 
@@ -2702,14 +2707,14 @@ begin
                            'status');
 
       if SameText(Status,
-                  AExpectedStatus) then
+        AExpectedStatus) then
         Exit(True);
 
       if SameText(Status,
-                  'invalid') then
+        'invalid') then
         raise Exception.Create('The certificate authority rejected the ACME request: ' +
-                               JsonString(AJson,
-                                          'detail'));
+          JsonString(AJson,
+                     'detail'));
     end;
 
   raise Exception.Create('Timed out waiting for the certificate authority.');
@@ -2748,7 +2753,7 @@ begin
 
   if (ASettings.ContactEmail <> '') then
     Payload := Payload + ',"contact":["mailto:' +
-               JsonEscape(ASettings.ContactEmail) + '"]';
+      JsonEscape(ASettings.ContactEmail) + '"]';
 
   Payload := Payload + '}';
 
@@ -2829,7 +2834,7 @@ begin
                                     Nonce);
 
     Payload := '{"identifiers":[{"type":"dns","value":"' +
-               JsonEscape(ASettings.HostName) + '"}]}';
+      JsonEscape(ASettings.HostName) + '"}]}';
 
     AcmePost(Directory,
              Directory.NewOrder,
@@ -2852,8 +2857,8 @@ begin
 
     try
       if (OrderUrl = '') or
-         (FinalizeUrl = '') or
-         (AuthorizationUrls.Count = 0) then
+        (FinalizeUrl = '') or
+        (AuthorizationUrls.Count = 0) then
         raise Exception.Create('The ACME order response is incomplete.');
 
       for I := 0 to AuthorizationUrls.Count - 1 do
@@ -2874,12 +2879,12 @@ begin
                                'status');
 
           if SameText(Status,
-                      'valid') then
+            'valid') then
             Continue;
 
           if not FindHttpChallenge(AuthorizationJson,
-                                   ChallengeUrl,
-                                   ChallengeToken) then
+            ChallengeUrl,
+            ChallengeToken) then
             raise Exception.Create('The certificate authority did not offer an HTTP-01 challenge.');
 
           KeyAuthorization := ChallengeToken + '.' + AccountThumbprint(AccountKey);
@@ -2900,13 +2905,13 @@ begin
                               'ACME challenge acknowledgement');
 
             if not WaitForAcmeObject(Directory,
-                                     AuthorizationUrls[I],
-                                     AccountUrl,
-                                     AccountKey,
-                                     Nonce,
-                                     'valid',
-                                     AManager.FStopEvent,
-                                     AuthorizationJson) then
+              AuthorizationUrls[I],
+              AccountUrl,
+              AccountKey,
+              Nonce,
+              'valid',
+              AManager.FStopEvent,
+              AuthorizationJson) then
               raise Exception.Create('Certificate renewal was stopped.');
 
           finally
@@ -2919,8 +2924,8 @@ begin
     end;
 
     ContainerName := FXSERVE_CERTIFICATE_CONTAINER_PREFIX +
-                     FormatDateTime('yyyymmddhhnnsszzz',
-                                    Now);
+      FormatDateTime('yyyymmddhhnnsszzz',
+                     Now);
     OpenOrCreateKey(ContainerName,
                     AT_KEYEXCHANGE,
                     True,
@@ -2946,15 +2951,15 @@ begin
                            'status');
 
       if not SameText(Status,
-                      'valid') then
+        'valid') then
         if not WaitForAcmeObject(Directory,
-                                 OrderUrl,
-                                 AccountUrl,
-                                 AccountKey,
-                                 Nonce,
-                                 'valid',
-                                 AManager.FStopEvent,
-                                 AuthorizationJson) then
+          OrderUrl,
+          AccountUrl,
+          AccountKey,
+          Nonce,
+          'valid',
+          AManager.FStopEvent,
+          AuthorizationJson) then
           raise Exception.Create('Certificate renewal was stopped.');
 
       CertificateUrl := JsonString(AuthorizationJson,
@@ -2986,7 +2991,7 @@ begin
       CloseAcmeKey(CertificateKey);
 
       if not CertificateInstalled and
-         (ContainerName <> '') then
+        (ContainerName <> '') then
         DeleteKeyContainer(ContainerName);
     end;
 
@@ -2997,6 +3002,7 @@ end;
 
 
 constructor TFxServeCertificateThread.Create(AManager: TFxServeCertificateManager);
+
 begin
 
   inherited Create(True);
@@ -3007,6 +3013,7 @@ end;
 
 
 procedure TFxServeCertificateThread.Execute();
+
 begin
 
   FManager.Execute();
@@ -3014,9 +3021,10 @@ end;
 
 
 constructor TFxServeCertificateManager.Create(ALogger: TFxServeLogger;
-                                               const AHostName: string;
-                                               const AHttpsPort: Word;
-                                               const AHttpChallengeAvailable: Boolean);
+                                              const AHostName: string;
+                                              const AHttpsPort: Word;
+                                              const AHttpChallengeAvailable: Boolean);
+
 begin
 
   inherited Create();
@@ -3034,6 +3042,7 @@ end;
 
 
 destructor TFxServeCertificateManager.Destroy();
+
 begin
 
   Stop();
@@ -3045,6 +3054,7 @@ end;
 
 
 procedure TFxServeCertificateManager.Start();
+
 begin
 
   if Assigned(FThread) then
@@ -3078,6 +3088,7 @@ end;
 
 procedure TFxServeCertificateManager.SetChallenge(const AToken: string;
                                                   const AResponse: string);
+
 begin
 
   FLock.Acquire;
@@ -3095,6 +3106,7 @@ end;
 
 
 procedure TFxServeCertificateManager.ClearChallenge();
+
 begin
 
   FLock.Acquire;
@@ -3122,7 +3134,7 @@ begin
   AResponse := '';
 
   if (Pos(PREFIX,
-          LowerCase(ATarget)) <> 1) then
+    LowerCase(ATarget)) <> 1) then
     Exit;
 
   Token := Copy(ATarget,
@@ -3132,13 +3144,14 @@ begin
   if (Pos('?', Token) > 0) then
     Token := Copy(Token,
                   1,
-                  Pos('?', Token) - 1);
+                  Pos('?',
+                      Token) - 1);
 
   FLock.Acquire;
 
   try
     Result := (FChallengeToken <> '') and
-              (Token = FChallengeToken);
+      (Token = FChallengeToken);
 
     if Result then
       AResponse := FChallengeResponse;
@@ -3179,24 +3192,24 @@ begin
         Exit;
 
       FLogger.Info('FxServe initialized protected internal certificate management for ' +
-                   FHostName + '.');
+        FHostName + '.');
     end;
 
   if not SameText(Settings.HostName,
-                  FHostName) then
+    FHostName) then
     raise Exception.CreateFmt('The protected certificate host name (%s) does not match the FxServe WAN host name (%s).',
                               [Settings.HostName, FHostName]);
 
   if FindCurrentCertificate(Settings.HostName,
-                            Thumbprint,
-                            Expires) then
+    Thumbprint,
+    Expires) then
     begin
       BindHttpSysCertificate(Settings.HostName,
-                              FHttpsPort,
-                              Thumbprint);
+                             FHttpsPort,
+                             Thumbprint);
       GetSystemTimeAsFileTime(NowFileTime);
       RenewAt := FileTimeValue(Expires) -
-                 (Int64(Settings.RenewBeforeDays) * 24 * 60 * 60 * 10000000);
+        (Int64(Settings.RenewBeforeDays) * 24 * 60 * 60 * 10000000);
 
       if (FileTimeValue(NowFileTime) < RenewAt) then
         Exit;
@@ -3213,17 +3226,16 @@ begin
                                   Self);
 
   if not FindCurrentCertificate(Settings.HostName,
-                                ResultThumbprint,
-                                Expires) or
-     not SameText(ResultThumbprint,
-                  Thumbprint) then
+    ResultThumbprint,
+    Expires) or not SameText(ResultThumbprint,
+                             Thumbprint) then
     raise Exception.Create('The new FxServe certificate could not be verified in the Local Machine certificate store.');
 
   BindHttpSysCertificate(Settings.HostName,
                          FHttpsPort,
                          Thumbprint);
   FLogger.Info('FxServe obtained and bound a new HTTPS certificate for ' +
-               Settings.HostName + '.');
+    Settings.HostName + '.');
 end;
 
 
@@ -3258,6 +3270,7 @@ begin
     end;
 end;
 
+
 procedure DisableFxServeCertificate();
 var
   Settings: TFxServeCertificateSettings;
@@ -3285,46 +3298,46 @@ const
   winhttpLib = 'winhttp.dll';
 
 {$WARN SYMBOL_PLATFORM OFF}
-  function CryptAcquireContextW; external advapi32Lib name 'CryptAcquireContextW' ;
-  function CryptReleaseContext;  external advapi32Lib name 'CryptReleaseContext' ;
-  function CryptGetUserKey;      external advapi32Lib name 'CryptGetUserKey' ;
-  function CryptGenKey;          external advapi32Lib name 'CryptGenKey' ;
-  function CryptDestroyKey;      external advapi32Lib name 'CryptDestroyKey' ;
-  function CryptExportKey;       external advapi32Lib name 'CryptExportKey' ;
-  function CryptCreateHash;      external advapi32Lib name 'CryptCreateHash' ;
-  function CryptHashData;        external advapi32Lib name 'CryptHashData' ;
-  function CryptGetHashParam;    external advapi32Lib name 'CryptGetHashParam' ;
-  function CryptSignHashW;       external advapi32Lib name 'CryptSignHashW' ;
-  function CryptDestroyHash;     external advapi32Lib name 'CryptDestroyHash' ;
-  function ConvertStringSecurityDescriptorToSecurityDescriptorW; external advapi32Lib name 'ConvertStringSecurityDescriptorToSecurityDescriptorW' ;
+function CryptAcquireContextW; external advapi32Lib name 'CryptAcquireContextW';
+function CryptReleaseContext; external advapi32Lib name 'CryptReleaseContext';
+function CryptGetUserKey; external advapi32Lib name 'CryptGetUserKey';
+function CryptGenKey; external advapi32Lib name 'CryptGenKey';
+function CryptDestroyKey; external advapi32Lib name 'CryptDestroyKey';
+function CryptExportKey; external advapi32Lib name 'CryptExportKey';
+function CryptCreateHash; external advapi32Lib name 'CryptCreateHash';
+function CryptHashData; external advapi32Lib name 'CryptHashData';
+function CryptGetHashParam; external advapi32Lib name 'CryptGetHashParam';
+function CryptSignHashW; external advapi32Lib name 'CryptSignHashW';
+function CryptDestroyHash; external advapi32Lib name 'CryptDestroyHash';
+function ConvertStringSecurityDescriptorToSecurityDescriptorW; external advapi32Lib name 'ConvertStringSecurityDescriptorToSecurityDescriptorW';
 
-  function CertOpenStore;  external crypt32Lib name 'CertOpenStore' ;
-  function CertCloseStore; external crypt32Lib name 'CertCloseStore' ;
-  function CertEnumCertificatesInStore;       external crypt32Lib name 'CertEnumCertificatesInStore' ;
-  function CertCreateCertificateContext;      external crypt32Lib name 'CertCreateCertificateContext' ;
-  function CertFreeCertificateContext;        external crypt32Lib name 'CertFreeCertificateContext' ;
-  function CertAddCertificateContextToStore;  external crypt32Lib name 'CertAddCertificateContextToStore' ;
-  function CertSetCertificateContextProperty; external crypt32Lib name 'CertSetCertificateContextProperty' ;
-  function CertGetCertificateContextProperty; external crypt32Lib name 'CertGetCertificateContextProperty' ;
-  function CertGetNameStringW;                external crypt32Lib name 'CertGetNameStringW' ;
-  function CryptAcquireCertificatePrivateKey; external crypt32Lib name 'CryptAcquireCertificatePrivateKey' ;
-  function NCryptFreeObject;                  external ncryptLib name 'NCryptFreeObject' ;
+function CertOpenStore; external crypt32Lib name 'CertOpenStore';
+function CertCloseStore; external crypt32Lib name 'CertCloseStore';
+function CertEnumCertificatesInStore; external crypt32Lib name 'CertEnumCertificatesInStore';
+function CertCreateCertificateContext; external crypt32Lib name 'CertCreateCertificateContext';
+function CertFreeCertificateContext; external crypt32Lib name 'CertFreeCertificateContext';
+function CertAddCertificateContextToStore; external crypt32Lib name 'CertAddCertificateContextToStore';
+function CertSetCertificateContextProperty; external crypt32Lib name 'CertSetCertificateContextProperty';
+function CertGetCertificateContextProperty; external crypt32Lib name 'CertGetCertificateContextProperty';
+function CertGetNameStringW; external crypt32Lib name 'CertGetNameStringW';
+function CryptAcquireCertificatePrivateKey; external crypt32Lib name 'CryptAcquireCertificatePrivateKey';
+function NCryptFreeObject; external ncryptLib name 'NCryptFreeObject';
 
-  function HttpInitialize; external httpapiLib name 'HttpInitialize' ;
-  function HttpTerminate;  external httpapiLib name 'HttpTerminate' ;
-  function HttpSetServiceConfiguration;    external httpapiLib name 'HttpSetServiceConfiguration' ;
-  function HttpDeleteServiceConfiguration; external httpapiLib name 'HttpDeleteServiceConfiguration' ;
-  function HttpQueryServiceConfiguration;  external httpapiLib name 'HttpQueryServiceConfiguration' ;
+function HttpInitialize; external httpapiLib name 'HttpInitialize';
+function HttpTerminate; external httpapiLib name 'HttpTerminate';
+function HttpSetServiceConfiguration; external httpapiLib name 'HttpSetServiceConfiguration';
+function HttpDeleteServiceConfiguration; external httpapiLib name 'HttpDeleteServiceConfiguration';
+function HttpQueryServiceConfiguration; external httpapiLib name 'HttpQueryServiceConfiguration';
 
-  function WinHttpOpen;            external winhttpLib name 'WinHttpOpen' ;
-  function WinHttpConnect;         external winhttpLib name 'WinHttpConnect' ;
-  function WinHttpOpenRequest;     external winhttpLib name 'WinHttpOpenRequest' ;
-  function WinHttpSendRequest;     external winhttpLib name 'WinHttpSendRequest' ;
-  function WinHttpReceiveResponse; external winhttpLib name 'WinHttpReceiveResponse' ;
-  function WinHttpQueryHeaders;    external winhttpLib name 'WinHttpQueryHeaders' ;
-  function WinHttpReadData;        external winhttpLib name 'WinHttpReadData' ;
-  function WinHttpSetTimeouts;     external winhttpLib name 'WinHttpSetTimeouts' ;
-  function WinHttpCloseHandle;     external winhttpLib name 'WinHttpCloseHandle' ;
+function WinHttpOpen; external winhttpLib name 'WinHttpOpen';
+function WinHttpConnect; external winhttpLib name 'WinHttpConnect';
+function WinHttpOpenRequest; external winhttpLib name 'WinHttpOpenRequest';
+function WinHttpSendRequest; external winhttpLib name 'WinHttpSendRequest';
+function WinHttpReceiveResponse; external winhttpLib name 'WinHttpReceiveResponse';
+function WinHttpQueryHeaders; external winhttpLib name 'WinHttpQueryHeaders';
+function WinHttpReadData; external winhttpLib name 'WinHttpReadData';
+function WinHttpSetTimeouts; external winhttpLib name 'WinHttpSetTimeouts';
+function WinHttpCloseHandle; external winhttpLib name 'WinHttpCloseHandle';
 
 {$WARN SYMBOL_PLATFORM ON}
 

@@ -77,9 +77,9 @@ interface
 
 uses
   MfCapturePlatform,
-LMessages,
+  LMessages,
   LCLIntf,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   WinApi.WinMM.MMeApi,
@@ -96,7 +96,7 @@ LMessages,
   {Application}
   ChatTransport;
 
-// Global Variables:
+  // Global Variables:
 const
   MAX_LOADSTRING = 100;
 
@@ -106,7 +106,7 @@ const
   //
 type
   ChatState = (ChatStatePlaying,    // We're currently playing/capturing
-               ChatStateNotPlaying);
+    ChatStateNotPlaying);
 
 type
   TForm1 = class(TForm)
@@ -173,6 +173,7 @@ var
   ver: OSVERSIONINFOW;
 
 begin
+
   bWin7OrLater := True;
 
   ver.dwOSVersionInfoSize := SizeOf(ver);
@@ -180,7 +181,7 @@ begin
   if GetVersionExW(ver) then
     begin
       bWin7OrLater := (ver.dwMajorVersion > 6) or
-                      ((ver.dwMajorVersion = 6) And (ver.dwMinorVersion >= 1));
+        ((ver.dwMajorVersion = 6) And (ver.dwMinorVersion >= 1));
     end;
 
   Result := bWin7OrLater;
@@ -188,6 +189,7 @@ end;
 
 
 procedure TForm1.btnChatStartClick(Sender: TObject);
+
 begin
 
   //
@@ -199,7 +201,9 @@ end;
 
 
 procedure TForm1.btnChatStopClick(Sender: TObject);
+
 begin
+
   //
   //  Stop the chat engine.
   //
@@ -212,7 +216,9 @@ end;
 
 
 procedure TForm1.butExitClick(Sender: TObject);
+
 begin
+
   //
   //  Stop on Cancel/OK.
   //
@@ -252,9 +258,9 @@ begin
       if not Assigned(g_CurrentChat) then
         begin
           MessageBoxW(Handle,
-                     'Unable to create WASAPI chat transport',
-                     'Error',
-                     MB_OK);
+                      'Unable to create WASAPI chat transport',
+                      'Error',
+                      MB_OK);
         end;
       // Set the in or output device
       //g_CurrentChat.i
@@ -267,10 +273,10 @@ begin
       g_CurrentChat := CWaveChat.Create(Self.Handle);
       if not Assigned(g_CurrentChat) then
         begin
-              MessageBoxW(Handle,
-                         'Unable to create WAVE chat transport',
-                         'Error',
-                         MB_OK);
+          MessageBoxW(Handle,
+                      'Unable to create WAVE chat transport',
+                      'Error',
+                      MB_OK);
         end;
     end;
 
@@ -291,13 +297,14 @@ begin
     SyncUIState(ChatStateNotPlaying)
   else
     MessageBoxW(Handle,
-               'Unable to initialize chat',
-               'Error',
-               MB_OK);
+                'Unable to initialize chat',
+                'Error',
+                MB_OK);
 end;
 
 
 procedure TForm1.FormCreate(Sender: TObject);
+
 begin
 
   g_WaveComboBoxIndex := 0;
@@ -305,10 +312,10 @@ begin
 
   if Not IsWin7OrLater() then
     begin
-      if MessageBoxW(0,
-                    'This sample requires Windows 7 or later',
-                    'Incompatible OS Version',
-                    MB_OK or MB_ICONSTOP) = IDOK then
+      if (MessageBoxW(0,
+        'This sample requires Windows 7 or later',
+        'Incompatible OS Version',
+        MB_OK or MB_ICONSTOP) = IDOK) then
         Close;
     end;
 
@@ -321,11 +328,11 @@ begin
   if not Assigned(g_CurrentChat) then
     begin
       MessageBoxW(Handle,
-                'Unable to allocate WAVE chat transport',
-                'Startup Error',
-                MB_OK);
+                  'Unable to allocate WAVE chat transport',
+                  'Startup Error',
+                  MB_OK);
 
-        Close; // EndDialog(hWnd, TRUE);
+      Close; // EndDialog(hWnd, TRUE);
     end;
 
   if Not g_CurrentChat.Initialize(true) then
@@ -345,7 +352,9 @@ end;
 
 
 procedure TForm1.FormDestroy(Sender: TObject);
+
 begin
+
   if Assigned(g_CurrentChat) then
     begin
       g_CurrentChat.StopChat();
@@ -361,7 +370,9 @@ end;
 //  Makes all of the dialog controls consistent with the current transport and specified chat state
 //
 procedure TForm1.SyncUIState({hWnd: HWND;} State: ChatState);
+
 begin
+
   if (State = ChatStatePlaying) then
     begin
       //
@@ -415,6 +426,7 @@ var
   currentSel: Integer;
 
 begin
+
   currentSel := cbxChatTransport.ItemIndex;
   //
   //  The radio button selection may change when the transport is changed to Wave because render is not
@@ -436,14 +448,14 @@ begin
       g_CurrentChat := CWasapiChat.Create(Self.Handle);
       if not Assigned(g_CurrentChat) then
         MessageBoxW(Self.Handle,
-                   'Unable to create WASAPI chat transport',
-                   'Error',
-                   MB_OK)
-      else if g_CurrentChat.Initialize(chkHideFromVolumeMixer.Checked) = False then
+                    'Unable to create WASAPI chat transport',
+                    'Error',
+                    MB_OK)
+      else if (g_CurrentChat.Initialize(chkHideFromVolumeMixer.Checked) = False) then
         MessageBoxW(Self.Handle,
-                   'Unable to initialize chat',
-                   'Error',
-                   MB_OK);
+                    'Unable to initialize chat',
+                    'Error',
+                    MB_OK);
       //
       //  Sync the UI to the state again - we're not playing but after initializing the state might change.
       //
@@ -459,19 +471,25 @@ end;
 
 
 procedure TForm1.WimOpenProc(var message: LMessages.TLMessage);
+
 begin
+
   // discard
 end;
 
 
 procedure TForm1.WimCloseProc(var message: LMessages.TLMessage);
+
 begin
+
   // discard
 end;
 
 
 procedure TForm1.WimDataProc(var message: LMessages.TLMessage);
+
 begin
+
   DataProcHandled := False;
   //
   //  If the current chat transport is going to handle this message, pass the message to the transport.
@@ -480,7 +498,8 @@ begin
   //
   if assigned(g_CurrentChat) then
     if g_CurrentChat.HandlesMessage(Handle, message.Msg) then
-      DataProcHandled := Boolean(g_CurrentChat.MessageHandler(Handle, message));
+      DataProcHandled := Boolean(g_CurrentChat.MessageHandler(Handle,
+                                                              message));
 end;
 
 end.

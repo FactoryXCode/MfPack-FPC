@@ -65,47 +65,48 @@ unit Common;
 
 interface
 
-  // Undefine this when not needed!
-  {$DEFINE SAVE_DEBUG_REPORT}
-  {$DEFINE SHOW_IN_IDE_MESSAGES}
+// Undefine this when not needed!
+{$DEFINE SAVE_DEBUG_REPORT}
+{$DEFINE SHOW_IN_IDE_MESSAGES}
 
-  uses
+uses
   MfCaptureSamples.Platform,
   Windows,
-    {MediaFoundationApi}
+  {MediaFoundationApi}
 
-    {$IFDEF SAVE_DEBUG_REPORT}
-    WinApi.MediaFoundationApi.MfMediaTypeDebug,
-    {$ENDIF}
-    SysUtils;
+  {$IFDEF SAVE_DEBUG_REPORT}
+  WinApi.MediaFoundationApi.MfMediaTypeDebug,
+  {$ENDIF}
+  SysUtils;
 
 const
   // File filters                                                   filter index
   VIDEO_FILE_FILTER = 'Audio Video Interleave|*.avi|' +             // 1
-                      'MPEG-4 Video with AAC Audio|*.mp4|' +        // 2
-                      'MPEG-4 Video with Dolby AC-3 Audio|*.mp4|' + // 3
-                      'Windows Media Video|*.wmv';                  // 4
+    'MPEG-4 Video with AAC Audio|*.mp4|' +        // 2
+    'MPEG-4 Video with Dolby AC-3 Audio|*.mp4|' + // 3
+    'Windows Media Video|*.wmv';                  // 4
 
   AUDIO_FILE_FILTER = 'Waveform Audio File Format|*.wav|' +         // 5
-                      'MPEG Audio Layer III|*.mp3|' +               // 6
-                      'Free Lossless Audio Codec|*.flac|' +         // 7
-                      'MPEG-4 Audio|*.m4a|' +                       // 8
-                      'Windows Media Audio|*.wma';                  // 9
+    'MPEG Audio Layer III|*.mp3|' +               // 6
+    'Free Lossless Audio Codec|*.flac|' +         // 7
+    'MPEG-4 Audio|*.m4a|' +                       // 8
+    'Windows Media Audio|*.wma';                  // 9
 
-  ALL_FILE_FILTER   = 'All Files|*.*';                              // 10  Source File Dialog only
+  ALL_FILE_FILTER = 'All Files|*.*';                              // 10  Source File Dialog only
 
-// ITEM                                  URL
-// MF Supported Media Formats            https://github.com/MicrosoftDocs/win32/blob/docs/desktop-src/medfound/supported-media-formats-in-media-foundation.md
-//
+  // ITEM                                  URL
+  // MF Supported Media Formats            https://github.com/MicrosoftDocs/win32/blob/docs/desktop-src/medfound/supported-media-formats-in-media-foundation.md
+  //
 
   {$IFDEF SAVE_DEBUG_REPORT}
-  var FMediaTypeDebug: TMediaTypeDebug;
+var
+  FMediaTypeDebug: TMediaTypeDebug;
   {$ENDIF}
 
-  // Simple debugMsg message handler that reports by default in the IDE Messages screen or
-  // shows a messagedialog at runtime.
-  procedure DebugMsg(pErrMsg: string;
-                     pHr: HResult);
+// Simple debugMsg message handler that reports by default in the IDE Messages screen or
+// shows a messagedialog at runtime.
+procedure DebugMsg(pErrMsg: string;
+                   pHr: HResult);
 
 
 implementation
@@ -117,15 +118,17 @@ uses
 // DebugMsg
 procedure DebugMsg(pErrMsg: string;
                    pHr: HResult);
+
 begin
-{$IFDEF SHOW_IN_IDE_MESSAGES}
+
+  {$IFDEF SHOW_IN_IDE_MESSAGES}
   OutputDebugStringW(StrToPWideChar(Format('Error: %s (hr = %d)',
-                                          [pErrMsg, pHr])))
-{$ELSE}
+                                           [pErrMsg, pHr])))
+  {$ELSE}
 
   ShowMessage(format('Error: %s (hr = %d)',
                      [pErrMsg, pHr]));
-{$ENDIF}
+  {$ENDIF}
 end;
 
 

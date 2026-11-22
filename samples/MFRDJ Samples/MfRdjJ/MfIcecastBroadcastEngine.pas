@@ -64,11 +64,12 @@ unit MfIcecastBroadcastEngine;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   Messages,
@@ -97,7 +98,6 @@ LMessages,
   RDJ.Setup,
   RDJ.FilenameParser;
 
-
 type
 
   TMfBroadcastState = (bsStopped,
@@ -122,6 +122,7 @@ type
                                      const Msg: string) of object;
 
   TMfBroadcastEncoderBase = class(TObject)
+
   public
 
     function Initialize(const ASettings: TRDJBroadcastSetup): HRESULT; virtual; abstract;
@@ -145,6 +146,7 @@ type
 
 
   TIcecastSourceClient = class
+
   private
 
     FSocket: TSocket;
@@ -198,6 +200,7 @@ type
 
 
   TMfPcmBlockQueue = class
+
   private
 
     FLock: SyncObjs.TCriticalSection;
@@ -226,12 +229,15 @@ type
   TMfIcecastBroadcastEngine = class;
 
   TMfIcecastBroadcastWorker = class(TThread)
+
   private
 
     FOwner: TMfIcecastBroadcastEngine;
+
   protected
 
     procedure Execute; override;
+
   public
 
     constructor Create(AOwner: TMfIcecastBroadcastEngine);
@@ -239,6 +245,7 @@ type
 
 
   TMfIcecastBroadcastEngine = class(TComponent)
+
   private
 
     FSettings: TRDJBroadcastSetup;
@@ -321,8 +328,9 @@ const
 
 // Helpers
 function ClampInt(const X,
-                       AMin,
-                       AMax: Integer): Integer; inline;
+                  AMin,
+                  AMax: Integer): Integer; inline;
+
 begin
 
   if (X < AMin) then
@@ -334,6 +342,7 @@ end;
 
 
 function DbToMul(const ADb: Single): Single; inline;
+
 begin
 
   Result := Power(10.0,
@@ -374,6 +383,7 @@ end;
 { TMfBroadcastEncoderNull }
 
 function TMfBroadcastEncoderNull.Initialize(const ASettings: TRDJBroadcastSetup): HRESULT;
+
 begin
 
   Result := S_OK;
@@ -383,6 +393,7 @@ end;
 function TMfBroadcastEncoderNull.EncodeInterleavedFloat32(const pData: PSingle;
                                                           AFrames: Integer;
                                                           out AOutBuf: TBytes): HRESULT;
+
 begin
 
   SetLength(AOutBuf,
@@ -392,6 +403,7 @@ end;
 
 
 procedure TMfBroadcastEncoderNull.Flush(out AOutBuf: TBytes);
+
 begin
 
   SetLength(AOutBuf,
@@ -402,6 +414,7 @@ end;
 { TIcecastSourceClient }
 
 constructor TIcecastSourceClient.Create;
+
 begin
 
   inherited Create;
@@ -412,6 +425,7 @@ end;
 
 
 destructor TIcecastSourceClient.Destroy();
+
 begin
 
   Disconnect();
@@ -456,11 +470,12 @@ var
 
 begin
 
-  if Length(AData) = 0 then
+  if (Length(AData) = 0) then
     Exit('');
 
   OutLen := ((Length(AData) + 2) div 3) * 4;
-  SetLength(Result, OutLen);
+  SetLength(Result,
+            OutLen);
   P := PAnsiChar(Result);
   I := 0;
 
@@ -530,9 +545,18 @@ begin
 
   Raw := TEncoding.ASCII.GetBytes(AUser + ':' + APassword);
   Enc := TNetEncoding.Base64.EncodeBytesToString(Raw);
-  Enc := StringReplace(Enc, sLineBreak, '', [rfReplaceAll]);
-  Enc := StringReplace(Enc, #13, '', [rfReplaceAll]);
-  Enc := StringReplace(Enc, #10, '', [rfReplaceAll]);
+  Enc := StringReplace(Enc,
+                       sLineBreak,
+                       '',
+                       [rfReplaceAll]);
+  Enc := StringReplace(Enc,
+                       #13,
+                       '',
+                       [rfReplaceAll]);
+  Enc := StringReplace(Enc,
+                       #10,
+                       '',
+                       [rfReplaceAll]);
   Result := AnsiString('Basic ' + Enc);
 end;
 
@@ -600,8 +624,8 @@ begin
 
         AHeader := AHeader + Chunk;
 
-        if Pos(#13#10#13#10,
-               string(AHeader)) > 0 then
+        if (Pos(#13#10#13#10,
+          string(AHeader)) > 0) then
           begin
 
             Result := True;
@@ -622,7 +646,7 @@ begin
 
     // timeout / would block: no header arrived in time
     if (Err = WSAETIMEDOUT) or
-       (Err = WSAEWOULDBLOCK) then
+      (Err = WSAEWOULDBLOCK) then
       begin
 
         Exit(False);
@@ -643,32 +667,32 @@ begin
 
   S := UpperCase(Trim(string(AHeader)));
 
-  if Pos('HTTP/1.0 100',
-         S) = 1 then
+  if (Pos('HTTP/1.0 100',
+    S) = 1) then
     Exit(100);
-  if Pos('HTTP/1.1 100',
-         S) = 1 then
+  if (Pos('HTTP/1.1 100',
+    S) = 1) then
     Exit(100);
 
-  if Pos('HTTP/1.0 200',
-         S) = 1 then
+  if (Pos('HTTP/1.0 200',
+    S) = 1) then
     Exit(200);
-  if Pos('HTTP/1.1 200',
-         S) = 1 then
+  if (Pos('HTTP/1.1 200',
+    S) = 1) then
     Exit(200);
 
-  if Pos('HTTP/1.0 401',
-         S) = 1 then
+  if (Pos('HTTP/1.0 401',
+    S) = 1) then
     Exit(401);
-  if Pos('HTTP/1.1 401',
-         S) = 1 then
+  if (Pos('HTTP/1.1 401',
+    S) = 1) then
     Exit(401);
 
-  if Pos('HTTP/1.0 403',
-         S) = 1 then
+  if (Pos('HTTP/1.0 403',
+    S) = 1) then
     Exit(403);
-  if Pos('HTTP/1.1 403',
-         S) = 1 then
+  if (Pos('HTTP/1.1 403',
+    S) = 1) then
     Exit(403);
 end;
 
@@ -713,9 +737,9 @@ begin
            HostEnt^.h_length);
     end;
 
-  if WinSock.connect(FSocket,
-                             PSockAddr(@Addr)^,
-                             SizeOf(Addr)) <> 0 then
+  if (WinSock.connect(FSocket,
+    PSockAddr(@Addr)^,
+    SizeOf(Addr)) <> 0) then
     Exit(False);
 
   TimeOutMs := 1500;
@@ -749,22 +773,21 @@ begin
   Mount := Trim(ASettings.Mount);
   if (Mount = '') then
     Mount := '/live'
-  else
-    if (Mount[1] <> '/') then
-      Mount := '/' + Mount;
+  else if (Mount[1] <> '/') then
+    Mount := '/' + Mount;
 
   Auth := BuildBasicAuth(ASettings.Username,
                          ASettings.Password);
 
   Result := 'SOURCE ' + AnsiString(Mount) + ' ICE/1.0' + #13#10 +
-            'Authorization: ' + Auth + #13#10 +
-            'Content-Type: ' + AnsiString(AContentType) + #13#10 +
-            'Ice-Name: ' + AnsiString(ASettings.StreamName) + #13#10 +
-            'Ice-Description: ' + AnsiString(ASettings.Description) + #13#10 +
-            'Ice-Genre: ' + AnsiString(ASettings.Genre) + #13#10 +
-            'Ice-URL: ' + AnsiString(ASettings.Url) + #13#10 +
-            'Ice-Public: ' + AnsiString(IntToStr(Ord(ASettings.PublicStream))) + #13#10 +
-            'User-Agent: RDJ/1.0' + #13#10 + #13#10;
+    'Authorization: ' + Auth + #13#10 +
+    'Content-Type: ' + AnsiString(AContentType) + #13#10 +
+    'Ice-Name: ' + AnsiString(ASettings.StreamName) + #13#10 +
+    'Ice-Description: ' + AnsiString(ASettings.Description) + #13#10 +
+    'Ice-Genre: ' + AnsiString(ASettings.Genre) + #13#10 +
+    'Ice-URL: ' + AnsiString(ASettings.Url) + #13#10 +
+    'Ice-Public: ' + AnsiString(IntToStr(Ord(ASettings.PublicStream))) + #13#10 +
+    'User-Agent: RDJ/1.0' + #13#10 + #13#10;
 
 end;
 
@@ -781,25 +804,24 @@ begin
 
   if (Mount = '') then
     Mount := '/live'
-  else
-    if (Mount[1] <> '/') then
-      Mount := '/' + Mount;
+  else if (Mount[1] <> '/') then
+    Mount := '/' + Mount;
 
   Auth := BuildBasicAuth(ASettings.Username,
                          ASettings.Password);
 
   Result := 'PUT ' + AnsiString(Mount) + ' HTTP/1.1'#13#10 +
-            'Host: ' + AnsiString(ASettings.Host) + ':' + AnsiString(IntToStr(ASettings.Port)) + #13#10 +
-            'Authorization: ' + Auth + #13#10 +
-            'Content-Type: ' + AnsiString(AContentType) + #13#10 +
-            'User-Agent: RDJ/1.0'#13#10 +
-            'Ice-Name: ' + AnsiString(ASettings.StreamName) + #13#10 +
-            'Ice-Description: ' + AnsiString(ASettings.Description) + #13#10 +
-            'Ice-Genre: ' + AnsiString(ASettings.Genre) + #13#10 +
-            'Ice-URL: ' + AnsiString(ASettings.Url) + #13#10 +
-            'Ice-Public: ' + AnsiString(IntToStr(Ord(ASettings.PublicStream))) + #13#10 +
-            'Transfer-Encoding: chunked'#13#10 +
-            'Expect: 100-continue'#13#10 + #13#10;
+    'Host: ' + AnsiString(ASettings.Host) + ':' + AnsiString(IntToStr(ASettings.Port)) + #13#10 +
+    'Authorization: ' + Auth + #13#10 +
+    'Content-Type: ' + AnsiString(AContentType) + #13#10 +
+    'User-Agent: RDJ/1.0'#13#10 +
+    'Ice-Name: ' + AnsiString(ASettings.StreamName) + #13#10 +
+    'Ice-Description: ' + AnsiString(ASettings.Description) + #13#10 +
+    'Ice-Genre: ' + AnsiString(ASettings.Genre) + #13#10 +
+    'Ice-URL: ' + AnsiString(ASettings.Url) + #13#10 +
+    'Ice-Public: ' + AnsiString(IntToStr(Ord(ASettings.PublicStream))) + #13#10 +
+    'Transfer-Encoding: chunked'#13#10 +
+    'Expect: 100-continue'#13#10 + #13#10;
 end;
 
 
@@ -831,7 +853,7 @@ begin
                                   AContentType);
 
   if (Req = '') or (not SendAll(Req[1],
-                                Length(Req))) then
+    Length(Req))) then
     begin
 
       Disconnect;
@@ -926,6 +948,7 @@ end;
 
 
 procedure TIcecastSourceClient.Disconnect();
+
 begin
 
   if (FSocket <> INVALID_SOCKET) then
@@ -966,34 +989,34 @@ begin
       ChunkEnd := #13#10;
 
       if not SendAll(ChunkHdr[1],
-                     Length(ChunkHdr)) then
+        Length(ChunkHdr)) then
         begin
 
           Disconnect();
           Exit(E_FAIL);
         end;
 
-    if not SendAll(AData,
-                   ASize) then
-      begin
+      if not SendAll(AData,
+        ASize) then
+        begin
 
-        Disconnect();
-        Exit(E_FAIL);
-      end;
+          Disconnect();
+          Exit(E_FAIL);
+        end;
 
-    if not SendAll(ChunkEnd[1],
-                   Length(ChunkEnd)) then
-      begin
+      if not SendAll(ChunkEnd[1],
+        Length(ChunkEnd)) then
+        begin
 
-        Disconnect();
-        Exit(E_FAIL);
-      end;
+          Disconnect();
+          Exit(E_FAIL);
+        end;
     end
   else
     begin
 
       if not SendAll(AData,
-                     ASize) then
+        ASize) then
         begin
 
           Disconnect();
@@ -1016,7 +1039,9 @@ var
   TotalSize: Integer;
   ChunkHdr: AnsiString;
   ChunkEnd: AnsiString;
+
 begin
+
   Result := E_FAIL;
   if not FConnected then
     Exit;
@@ -1026,55 +1051,55 @@ begin
     Exit(S_FALSE);
 
   if FUseChunkedTransfer then
-  begin
-    ChunkHdr := AnsiString(IntToHex(TotalSize,
-                                    1) + #13#10);
-    ChunkEnd := #13#10;
-
-    if not SendAll(ChunkHdr[1],
-                   Length(ChunkHdr)) then
     begin
-      Disconnect();
-      Exit(E_FAIL);
-    end;
+      ChunkHdr := AnsiString(IntToHex(TotalSize,
+                                      1) + #13#10);
+      ChunkEnd := #13#10;
 
-    if (ASize1 > 0) and not SendAll(AData1,
-                                    ASize1) then
-    begin
-      Disconnect();
-      Exit(E_FAIL);
-    end;
+      if not SendAll(ChunkHdr[1],
+        Length(ChunkHdr)) then
+        begin
+          Disconnect();
+          Exit(E_FAIL);
+        end;
 
-    if (ASize2 > 0) and not SendAll(AData2,
-                                    ASize2) then
-    begin
-      Disconnect();
-      Exit(E_FAIL);
-    end;
+      if (ASize1 > 0) and not SendAll(AData1,
+        ASize1) then
+        begin
+          Disconnect();
+          Exit(E_FAIL);
+        end;
 
-    if not SendAll(ChunkEnd[1],
-                   Length(ChunkEnd)) then
-    begin
-      Disconnect();
-      Exit(E_FAIL);
-    end;
-  end
+      if (ASize2 > 0) and not SendAll(AData2,
+        ASize2) then
+        begin
+          Disconnect();
+          Exit(E_FAIL);
+        end;
+
+      if not SendAll(ChunkEnd[1],
+        Length(ChunkEnd)) then
+        begin
+          Disconnect();
+          Exit(E_FAIL);
+        end;
+    end
   else
-  begin
-    if (ASize1 > 0) and not SendAll(AData1,
-                                    ASize1) then
     begin
-      Disconnect();
-      Exit(E_FAIL);
-    end;
+      if (ASize1 > 0) and not SendAll(AData1,
+        ASize1) then
+        begin
+          Disconnect();
+          Exit(E_FAIL);
+        end;
 
-    if (ASize2 > 0) and not SendAll(AData2,
-                                    ASize2) then
-    begin
-      Disconnect();
-      Exit(E_FAIL);
+      if (ASize2 > 0) and not SendAll(AData2,
+        ASize2) then
+        begin
+          Disconnect();
+          Exit(E_FAIL);
+        end;
     end;
-  end;
 
   Inc(FBytesSent,
       TotalSize);
@@ -1098,17 +1123,18 @@ begin
       B := Ord(S[I]);
 
       if ((B >= Ord('A')) and (B <= Ord('Z'))) or
-         ((B >= Ord('a')) and (B <= Ord('z'))) or
-         ((B >= Ord('0')) and (B <= Ord('9'))) or
-         (B = Ord('-')) or
-         (B = Ord('_')) or
-         (B = Ord('.')) or
-         (B = Ord('~')) then
+        ((B >= Ord('a')) and (B <= Ord('z'))) or
+        ((B >= Ord('0')) and (B <= Ord('9'))) or
+        (B = Ord('-')) or
+        (B = Ord('_')) or
+        (B = Ord('.')) or
+        (B = Ord('~')) then
         Result := Result + AnsiChar(B)
-      else if B = Ord(' ') then
+      else if (B = Ord(' ')) then
         Result := Result + '+'
       else
-        Result := Result + '%' + AnsiString(IntToHex(B, 2));
+        Result := Result + '%' + AnsiString(IntToHex(B,
+                                                     2));
     end;
 end;
 
@@ -1129,6 +1155,7 @@ var
   Auth: AnsiString;
   Code: Integer;
 
+
   function SendAllLocal(const AData;
                         ASize: Integer): Boolean;
   var
@@ -1148,16 +1175,18 @@ var
                         P^,
                         Remaining,
                         0);
-        if SentNow <= 0 then
+        if (SentNow <= 0) then
           Exit(False);
 
-        Inc(P, SentNow);
+        Inc(P,
+            SentNow);
         Dec(Remaining,
             SentNow);
       end;
 
     Result := True;
   end;
+
 
   function RecvHeaderLocal(out AHeader: AnsiString): Boolean;
   var
@@ -1186,7 +1215,7 @@ var
       S := S + AHeader;
 
       if (Pos(#13#10#13#10,
-              string(S)) > 0) then
+        string(S)) > 0) then
         begin
 
           AHeader := S;
@@ -1195,7 +1224,8 @@ var
     until False;
   end;
 
-// Main body
+  // Main body
+
 begin
 
   Result := E_FAIL;
@@ -1203,9 +1233,8 @@ begin
   Mount := Trim(FMount);
   if (Mount = '') then
     Mount := '/live'
-  else
-    if (Mount[1] <> '/') then
-      Mount := '/' + Mount;
+  else if (Mount[1] <> '/') then
+    Mount := '/' + Mount;
 
   MetaSocket := socket(AF_INET,
                        SOCK_STREAM,
@@ -1240,9 +1269,9 @@ begin
              HostEnt^.h_length);
       end;
 
-    if WinSock.connect(MetaSocket,
-                               PSockAddr(@Addr)^,
-                               SizeOf(Addr)) <> 0 then
+    if (WinSock.connect(MetaSocket,
+      PSockAddr(@Addr)^,
+      SizeOf(Addr)) <> 0) then
       Exit;
 
     TimeOutMs := 1500;
@@ -1267,14 +1296,14 @@ begin
                            FPassword);
 
     Req := 'GET /admin/metadata?mount=' + AnsiString(Mount) +
-           '&mode=updinfo&song=' + SongEnc + ' HTTP/1.0' + #13#10 +
-           'Host: ' + AnsiString(FHost) + ':' + AnsiString(IntToStr(FPort)) + #13#10 +
-           'Authorization: ' + Auth + #13#10 +
-           'User-Agent: RDJ/1.0' + #13#10 +
-           'Connection: close' + #13#10 + #13#10;
+      '&mode=updinfo&song=' + SongEnc + ' HTTP/1.0' + #13#10 +
+      'Host: ' + AnsiString(FHost) + ':' + AnsiString(IntToStr(FPort)) + #13#10 +
+      'Authorization: ' + Auth + #13#10 +
+      'User-Agent: RDJ/1.0' + #13#10 +
+      'Connection: close' + #13#10 + #13#10;
 
     if not SendAllLocal(Req[1],
-                        Length(Req)) then
+      Length(Req)) then
       Exit;
 
     if not RecvHeaderLocal(Resp) then
@@ -1283,11 +1312,10 @@ begin
     Code := ParseStatusCode(Resp);
     if (Code = 200) then
       Result := S_OK
+    else if (Code = 401) then
+      Result := E_ACCESSDENIED
     else
-      if (Code = 401) then
-        Result := E_ACCESSDENIED
-      else
-        Result := E_FAIL;
+      Result := E_FAIL;
 
   finally
 
@@ -1300,6 +1328,7 @@ end;
 { TMfPcmBlockQueue }
 
 constructor TMfPcmBlockQueue.Create(ACapacity: Integer);
+
 begin
 
   inherited Create;
@@ -1317,6 +1346,7 @@ end;
 
 
 destructor TMfPcmBlockQueue.Destroy();
+
 begin
 
   Close();
@@ -1352,6 +1382,7 @@ end;
 
 
 procedure TMfPcmBlockQueue.Close();
+
 begin
 
   FLock.Acquire;
@@ -1368,6 +1399,7 @@ end;
 
 
 function TMfPcmBlockQueue.Count(): Integer;
+
 begin
 
   FLock.Acquire;
@@ -1383,6 +1415,7 @@ end;
 
 
 function TMfPcmBlockQueue.Push(const ABlock: TMfPcmFloatBlock): Boolean;
+
 begin
 
   FLock.Acquire;
@@ -1392,7 +1425,7 @@ begin
     if FClosed then
       Exit(False);
 
-    if FCount >= FCapacity then
+    if (FCount >= FCapacity) then
       Exit(False);
 
     FItems[FTail] := ABlock;
@@ -1412,6 +1445,7 @@ function TMfPcmBlockQueue.Pop(out ABlock: TMfPcmFloatBlock;
 var
 
   WaitRes: TWaitResult;
+
 begin
 
   ABlock := Default(TMfPcmFloatBlock);
@@ -1440,16 +1474,17 @@ begin
         FLock.Release;
       end;
 
-    WaitRes := FEvent.WaitFor(ATimeoutMs);
-    if (WaitRes <> wrSignaled) then
-      Exit(False);
-  end;
+      WaitRes := FEvent.WaitFor(ATimeoutMs);
+      if (WaitRes <> wrSignaled) then
+        Exit(False);
+    end;
 end;
 
 
 { TMfIcecastBroadcastWorker }
 
 constructor TMfIcecastBroadcastWorker.Create(AOwner: TMfIcecastBroadcastEngine);
+
 begin
 
   inherited Create(False);
@@ -1460,6 +1495,7 @@ end;
 
 
 procedure TMfIcecastBroadcastWorker.Execute();
+
 begin
 
   CoInitializeEx(nil,
@@ -1480,7 +1516,9 @@ end;
 // Helpers ---------------------------------------------------------------------
 
 function AacSampleRateIndex(const ASampleRate: Integer): Integer;
+
 begin
+
   case ASampleRate of
     96000: Result := 0;
     88200: Result := 1;
@@ -1493,10 +1531,10 @@ begin
     16000: Result := 8;
     12000: Result := 9;
     11025: Result := 10;
-    8000:  Result := 11;
-    7350:  Result := 12;
-  else
-    Result := 4; // default 44100
+    8000: Result := 11;
+    7350: Result := 12;
+    else
+      Result := 4; // default 44100
   end;
 end;
 
@@ -1524,10 +1562,10 @@ begin
   Result[0] := $FF;
   Result[1] := $F1; // syncword + MPEG-4 + layer + no CRC
   Result[2] := Byte(((Profile and $03) shl 6) or
-                    ((FreqIdx and $0F) shl 2) or
-                    ((ChanCfg and $04) shr 2));
+    ((FreqIdx and $0F) shl 2) or
+    ((ChanCfg and $04) shr 2));
   Result[3] := Byte(((ChanCfg and $03) shl 6) or
-                    ((FullLen and $1800) shr 11));
+    ((FullLen and $1800) shr 11));
   Result[4] := Byte((FullLen and $07F8) shr 3);
   Result[5] := Byte(((FullLen and $0007) shl 5) or $1F);
   Result[6] := $FC;
@@ -1569,6 +1607,7 @@ end;
 // Helpers end -----------------------------------------------------------------
 
 constructor TMfIcecastBroadcastEngine.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
@@ -1593,6 +1632,7 @@ end;
 
 
 destructor TMfIcecastBroadcastEngine.Destroy();
+
 begin
 
   Stop();
@@ -1605,6 +1645,7 @@ end;
 
 procedure TMfIcecastBroadcastEngine.DoError(Ahr: HResult;
                                             const AMsg: string);
+
 begin
 
   if Assigned(FOnError) then
@@ -1616,6 +1657,7 @@ end;
 
 procedure TMfIcecastBroadcastEngine.SetState(ANewState: TMfBroadcastState;
                                              const AMsg: string);
+
 begin
 
   FState := ANewState;
@@ -1628,18 +1670,20 @@ end;
 
 
 function TMfIcecastBroadcastEngine.ContentTypeFromCodec(): string;
+
 begin
 
   case FSettings.Codec of
     bcAac: Result := 'audio/aac';
     bcMp3: Result := 'audio/mpeg';
-  else
-    Result := 'application/octet-stream';
+    else
+      Result := 'application/octet-stream';
   end;
 end;
 
 
 function TMfIcecastBroadcastEngine.CreateEncoder(): TMfBroadcastEncoderBase;
+
 begin
 
   case FSettings.Codec of
@@ -1652,6 +1696,7 @@ end;
 
 
 procedure TMfIcecastBroadcastEngine.FreeRuntimeObjects();
+
 begin
 
   if Assigned(FWorker) then
@@ -1724,6 +1769,7 @@ end;
 
 
 procedure TMfIcecastBroadcastEngine.Stop();
+
 begin
 
   if (FState = bsStopped) then
@@ -1764,8 +1810,8 @@ begin
     Exit;
 
   if SameValue(FGainMul,
-               1.0,
-               1E-6) then
+    1.0,
+    1E-6) then
     Exit;
 
   PS := pData;
@@ -1793,7 +1839,7 @@ begin
   ABlock := Default(TMfPcmFloatBlock);
 
   if (FSettings.SampleRate <= 0) or
-     (FSettings.Channels <= 0) then
+    (FSettings.Channels <= 0) then
     Exit;
 
   Frames := Round((Int64(FSettings.SampleRate) * ADurationMs) / 1000);
@@ -1834,8 +1880,8 @@ begin
     Exit;
 
   if (pData = nil) or
-     (pwfx = nil) or
-     (AFrames <= 0) then
+    (pwfx = nil) or
+    (AFrames <= 0) then
     Exit(E_INVALIDARG);
 
   if (pwfx.nChannels <> 2) then
@@ -1850,7 +1896,7 @@ begin
 
   // Drop silent PCM completely.
   if IsSilentStereoFloat32(pData,
-                           AFrames) then
+    AFrames) then
     Exit(S_FALSE);
 
   if not Assigned(FQueue) then
@@ -1921,7 +1967,7 @@ begin
                                              MainMDIFrm.CoverJpg,
                                              ListenerCount,
                                              1,  // onAir
-                                             Trim(MainMDIFrm.DjName)); // lock owner);
+    Trim(MainMDIFrm.DjName)); // lock owner);
 end;
 
 
@@ -1955,6 +2001,7 @@ begin
                                              Trim(MainMDIFrm.DjName),
                                              True);
 end;
+
 
 procedure TMfIcecastBroadcastEngine.UpdateNowPlayingFromFileName(const AFileName: string);
 var
@@ -1991,19 +2038,22 @@ var
   OldLength: Integer;
   TimeoutMs: DWORD;
 
+
   function ReadListeners(const Obj: TJSONObject): Integer;
   var
     V: TJSONValue;
   begin
     Result := -1;
 
-    if Obj = nil then
+    if (Obj = nil) then
       Exit;
 
     V := Obj.GetValue('listeners');
-    if V <> nil then
-      Result := StrToIntDef(V.Value, -1);
+    if (V <> nil) then
+      Result := StrToIntDef(V.Value,
+                            -1);
   end;
+
 
   function SourceMatches(const Obj: TJSONObject): Boolean;
   var
@@ -2030,15 +2080,16 @@ var
   end;
 
 begin
+
   Result := -1;
   Internet := nil;
   Request := nil;
   Root := nil;
 
-  if Trim(FSettings.Host) = '' then
+  if (Trim(FSettings.Host) = '') then
     Exit;
 
-  if FSettings.Port = 0 then
+  if (FSettings.Port = 0) then
     Exit;
 
   Mount := AMount;
@@ -2052,7 +2103,7 @@ begin
                                nil,
                                nil,
                                0);
-      if Internet = nil then
+      if (Internet = nil) then
         Exit;
 
       TimeoutMs := 1500;
@@ -2067,27 +2118,26 @@ begin
 
       StatusUrl := Format('http://%s:%d/status-json.xsl',
                           [Trim(FSettings.Host),
-                           FSettings.Port]);
+        FSettings.Port]);
       Request := InternetOpenUrlW(Internet,
-                                 PChar(StatusUrl),
-                                 nil,
-                                 0,
-                                 INTERNET_FLAG_RELOAD or
-                                 INTERNET_FLAG_NO_CACHE_WRITE,
-                                 0);
-      if Request = nil then
+                                  PChar(StatusUrl),
+                                  nil,
+                                  0,
+                                  INTERNET_FLAG_RELOAD or
+        INTERNET_FLAG_NO_CACHE_WRITE,
+                                  0);
+      if (Request = nil) then
         Exit;
 
       ResponseText := '';
       repeat
         BytesRead := 0;
-        if not InternetReadFile(Request,
-                                @Buffer[0],
-                                SizeOf(Buffer),
-                                BytesRead) then
+        if not InternetReadFile(Request, @Buffer[0],
+          SizeOf(Buffer),
+          BytesRead) then
           Exit;
 
-        if BytesRead > 0 then
+        if (BytesRead > 0) then
           begin
             OldLength := Length(ResponseText);
             SetLength(ResponseText,
@@ -2096,48 +2146,48 @@ begin
                  ResponseText[OldLength + 1],
                  BytesRead);
           end;
-      until BytesRead = 0;
+      until (BytesRead = 0);
 
       Root := FxParseJSON(UTF8ToString(ResponseText)) as TJSONObject;
 
-        if (Root = nil) then
+      if (Root = nil) then
+        Exit;
+
+      IceStats := Root.GetValue('icestats') as TJSONObject;
+      if (IceStats = nil) then
+        Exit;
+
+      SourceValue := IceStats.GetValue('source');
+      if (SourceValue = nil) then
+        Exit;
+
+      if (SourceValue is TJSONObject) then
+        begin
+
+          SourceObj := TJSONObject(SourceValue);
+          Result := ReadListeners(SourceObj);
           Exit;
+        end;
 
-        IceStats := Root.GetValue('icestats') as TJSONObject;
-        if (IceStats = nil) then
-          Exit;
+      if (SourceValue is TJSONArray) then
+        begin
 
-        SourceValue := IceStats.GetValue('source');
-        if (SourceValue = nil) then
-          Exit;
+          SourceArr := TJSONArray(SourceValue);
 
-        if (SourceValue is TJSONObject) then
-          begin
+          for I := 0 to SourceArr.Count - 1 do
+            if (SourceArr.Items[I] is TJSONObject) then
+              begin
 
-            SourceObj := TJSONObject(SourceValue);
-            Result := ReadListeners(SourceObj);
-            Exit;
-          end;
+                SourceObj := TJSONObject(SourceArr.Items[I]);
 
-        if (SourceValue is TJSONArray) then
-          begin
+                if SourceMatches(SourceObj) then
+                  begin
 
-            SourceArr := TJSONArray(SourceValue);
-
-            for I := 0 to SourceArr.Count - 1 do
-              if (SourceArr.Items[I] is TJSONObject) then
-                begin
-
-                  SourceObj := TJSONObject(SourceArr.Items[I]);
-
-                  if SourceMatches(SourceObj) then
-                    begin
-
-                      Result := ReadListeners(SourceObj);
-                      Exit;
-                    end;
-                end;
-          end;
+                    Result := ReadListeners(SourceObj);
+                    Exit;
+                  end;
+              end;
+        end;
     except
 
       // Listener count is optional. Never let a failed status probe break
@@ -2146,15 +2196,16 @@ begin
     end;
   finally
     Root.Free;
-    if Request <> nil then
+    if (Request <> nil) then
       InternetCloseHandle(Request);
-    if Internet <> nil then
+    if (Internet <> nil) then
       InternetCloseHandle(Internet);
   end;
 end;
 
 
 function TMfIcecastBroadcastEngine.WorkerConnect(): HRESULT;
+
 begin
 
   Result := E_FAIL;
@@ -2185,6 +2236,7 @@ end;
 
 
 procedure TMfIcecastBroadcastEngine.WorkerDisconnect();
+
 begin
 
   if Assigned(FClient) then
@@ -2207,113 +2259,113 @@ begin
   while not TThread.CurrentThread.CheckTerminated do
     begin
 
-    hr := WorkerConnect();
-    if Failed(hr) then
-      begin
+      hr := WorkerConnect();
+      if Failed(hr) then
+        begin
 
-        if not FSettings.AutoReconnect then
-          Exit;
+          if not FSettings.AutoReconnect then
+            Exit;
 
-        if Assigned(FQueue) then
-          FQueue.Clear();
+          if Assigned(FQueue) then
+            FQueue.Clear();
 
-        SetState(bsReconnecting,
-                 'Reconnect in progress');
-        Sleep(2000);
-        Continue;
-      end;
+          SetState(bsReconnecting,
+                   'Reconnect in progress');
+          Sleep(2000);
+          Continue;
+        end;
 
-    while not TThread.CurrentThread.CheckTerminated do
-      begin
+      while not TThread.CurrentThread.CheckTerminated do
+        begin
 
-        Block := Default(TMfPcmFloatBlock);
-        Encoded := nil;
+          Block := Default(TMfPcmFloatBlock);
+          Encoded := nil;
 
-        try
+          try
 
-          if not Assigned(FQueue) then
-            Break;
+            if not Assigned(FQueue) then
+              Break;
 
-          if not FQueue.Pop(Block,
-                            50) then
-          begin
-
-            if not BuildSilenceBlock(50,
-                                     Block) then
-            Continue;
-          end;
-
-          if not Assigned(FEncoder) then
-            Continue;
-
-          if (Block.Frames <= 0) or (Length(Block.Data) = 0) then
-            Continue;
-
-          hr := FEncoder.EncodeInterleavedFloat32(PSingle(@Block.Data[0]),
-                                                  Block.Frames,
-                                                  Encoded);
-          if Failed(hr) then
-            begin
-
-              SetState(bsError,
-                       'Broadcast encoder error');
-              DoError(hr,
-                      'Broadcast encoder returned failure');
-              Exit;
-            end;
-
-          if (Length(Encoded) > 0) and
-             Assigned(FClient) and
-             FClient.Connected then
-          begin
-            if (FSettings.Codec = bcAac) then
-            begin
-              AdtsHdr := BuildAdtsHeader(Length(Encoded),
-                                         FSettings.SampleRate,
-                                         FSettings.Channels);
-              hr := FClient.SendDataParts(AdtsHdr[0],
-                                          Length(AdtsHdr),
-                                          Encoded[0],
-                                          Length(Encoded));
-            end
-            else
-              hr := FClient.SendData(Encoded[0],
-                                     Length(Encoded));
-
-            if Failed(hr) then
-            begin
-              WorkerDisconnect();
-
-              if not FSettings.AutoReconnect then
+            if not FQueue.Pop(Block,
+              50) then
               begin
-                SetState(bsError,
-                         'Broadcast send failed');
 
+                if not BuildSilenceBlock(50,
+                  Block) then
+                  Continue;
+              end;
+
+            if not Assigned(FEncoder) then
+              Continue;
+
+            if (Block.Frames <= 0) or (Length(Block.Data) = 0) then
+              Continue;
+
+            hr := FEncoder.EncodeInterleavedFloat32(PSingle(@Block.Data[0]),
+                                                    Block.Frames,
+                                                    Encoded);
+            if Failed(hr) then
+              begin
+
+                SetState(bsError,
+                         'Broadcast encoder error');
                 DoError(hr,
-                        'Broadcast send failed');
+                        'Broadcast encoder returned failure');
                 Exit;
               end;
 
-              if Assigned(FQueue) then
-                FQueue.Clear;
+            if (Length(Encoded) > 0) and
+              Assigned(FClient) and
+              FClient.Connected then
+              begin
+                if (FSettings.Codec = bcAac) then
+                  begin
+                    AdtsHdr := BuildAdtsHeader(Length(Encoded),
+                                               FSettings.SampleRate,
+                                               FSettings.Channels);
+                    hr := FClient.SendDataParts(AdtsHdr[0],
+                                                Length(AdtsHdr),
+                                                Encoded[0],
+                                                Length(Encoded));
+                  end
+                else
+                  hr := FClient.SendData(Encoded[0],
+                                         Length(Encoded));
 
-              SetState(bsReconnecting,
-                       'Broadcast reconnecting');
-              Break;
-            end;
+                if Failed(hr) then
+                  begin
+                    WorkerDisconnect();
+
+                    if not FSettings.AutoReconnect then
+                      begin
+                        SetState(bsError,
+                                 'Broadcast send failed');
+
+                        DoError(hr,
+                                'Broadcast send failed');
+                        Exit;
+                      end;
+
+                    if Assigned(FQueue) then
+                      FQueue.Clear;
+
+                    SetState(bsReconnecting,
+                             'Broadcast reconnecting');
+                    Break;
+                  end;
+              end;
+          finally
+
+            Encoded := nil;
+            Block := Default(TMfPcmFloatBlock);
           end;
-        finally
-
-          Encoded := nil;
-          Block := Default(TMfPcmFloatBlock);
         end;
+
+      if not FSettings.AutoReconnect then
+        Break;
+
+      Sleep(2000);
     end;
-
-    if not FSettings.AutoReconnect then
-      Break;
-
-    Sleep(2000);
-  end;
 
   WorkerDisconnect();
 end;

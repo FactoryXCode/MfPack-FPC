@@ -69,7 +69,7 @@ unit WinApi.MediaFoundationApi.KsOpmApi;
 
 {$I MfPack.Fpc.inc}
 
-  {$HPPEMIT '#include "ksopmapi.h"'}
+{$HPPEMIT '#include "ksopmapi.h"'}
 
 interface
 
@@ -82,7 +82,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -95,7 +96,7 @@ const
   //
   // Ks Property set to use with AVStram drivers
   // KSPROPSETID_OPMVideoOutput {06F414BB-F43A-4fe2-A566-774B4C81F0DB}
-  KSPROPSETID_OPMVideoOutput : TGUID = '{06F414BB-F43A-4fe2-A566-774B4C81F0DB}';
+  KSPROPSETID_OPMVideoOutput: TGUID = '{06F414BB-F43A-4fe2-A566-774B4C81F0DB}';
 
 type
 
@@ -105,19 +106,26 @@ type
   //  Output OPM_STANDARD_INFORMATION
   //  Input is OPM_GET_INFO_PARAMETERS, output is OPM_REQUESTED_INFORMATION
   //  Use KsMethod - both input and output in the buffer (not after the KSMETHOD structure)
-  KSMETHOD_OPMVIDEOOUTPUT                        = (KSMETHOD_OPMVIDEOOUTPUT_STARTINITIALIZATION  = 0,
-                                                    KSMETHOD_OPMVIDEOOUTPUT_FINISHINITIALIZATION = 1,
-                                                    KSMETHOD_OPMVIDEOOUTPUT_GETINFORMATION       = 2
-                                                   );
+  KSMETHOD_OPMVIDEOOUTPUT = (KSMETHOD_OPMVIDEOOUTPUT_STARTINITIALIZATION = 0,
+                             KSMETHOD_OPMVIDEOOUTPUT_FINISHINITIALIZATION = 1,
+                             KSMETHOD_OPMVIDEOOUTPUT_GETINFORMATION = 2
+    );
   {$EXTERNALSYM KSMETHOD_OPMVIDEOOUTPUT}
 
 const
 
   //  Currently on this GetInformation call is supported
-  PM_GET_CODEC_INFO  : TGUID = (D1: $4f374491;
-                                D2: $8f5f;
-                                D3: $4445;
-                                D4: ($9d, $ba, $95, $58, $8f, $6b, $58, $b4));
+  PM_GET_CODEC_INFO: TGUID = (D1: $4f374491;
+    D2: $8f5f;
+    D3: $4445;
+    D4: ($9d,
+         $ba,
+         $95,
+         $58,
+         $8f,
+         $6b,
+         $58,
+         $b4));
 
 type
 
@@ -134,20 +142,21 @@ type
 const
 
   {enum}
-  OPM_OMAC_SIZE                                  = 16;
-  OPM_128_BIT_RANDOM_NUMBER_SIZE                 = 16;
-  OPM_ENCRYPTED_INITIALIZATION_PARAMETERS_SIZE   = 256;
-  OPM_CONFIGURE_SETTING_DATA_SIZE                = 4056;
-  OPM_GET_INFORMATION_PARAMETERS_SIZE            = 4056;
-  OPM_REQUESTED_INFORMATION_SIZE                 = 4076;
-  OPM_HDCP_KEY_SELECTION_VECTOR_SIZE             = 5;
-  OPM_PROTECTION_TYPE_SIZE                       = 4;
-  OPM_BUS_TYPE_MASK                              = $FFFF;
-  OPM_BUS_IMPLEMENTATION_MODIFIER_MASK           = $7FFF;
+  OPM_OMAC_SIZE = 16;
+  OPM_128_BIT_RANDOM_NUMBER_SIZE = 16;
+  OPM_ENCRYPTED_INITIALIZATION_PARAMETERS_SIZE = 256;
+  OPM_CONFIGURE_SETTING_DATA_SIZE = 4056;
+  OPM_GET_INFORMATION_PARAMETERS_SIZE = 4056;
+  OPM_REQUESTED_INFORMATION_SIZE = 4076;
+  OPM_HDCP_KEY_SELECTION_VECTOR_SIZE = 5;
+  OPM_PROTECTION_TYPE_SIZE = 4;
+  OPM_BUS_TYPE_MASK = $FFFF;
+  OPM_BUS_IMPLEMENTATION_MODIFIER_MASK = $7FFF;
 
 type
 
   POPM_OMAC = ^OPM_OMAC;
+
   _OPM_OMAC = record
     abOMAC: array[0..OPM_OMAC_SIZE - 1] of Byte;
   end;
@@ -157,6 +166,7 @@ type
 
 
   POPM_GET_INFO_PARAMETERS = ^OPM_GET_INFO_PARAMETERS;
+
   _OPM_GET_INFO_PARAMETERS = record
     omac: OPM_OMAC;
     rnRandomNumber: OPM_RANDOM_NUMBER;
@@ -171,6 +181,7 @@ type
 
 
   POPM_REQUESTED_INFORMATION = ^OPM_REQUESTED_INFORMATION;
+
   _OPM_REQUESTED_INFORMATION = record
     omac: OPM_OMAC;
     cbRequestedInformationSize: ULONG;
@@ -182,6 +193,7 @@ type
 
 
   POPM_ENCRYPTED_INITIALIZATION_PARAMETERS = ^OPM_ENCRYPTED_INITIALIZATION_PARAMETERS;
+
   _OPM_ENCRYPTED_INITIALIZATION_PARAMETERS = record
     abEncryptedInitializationParameters: array[0..OPM_ENCRYPTED_INITIALIZATION_PARAMETERS_SIZE - 1] of Byte;
   end;
@@ -190,7 +202,8 @@ type
   {$EXTERNALSYM OPM_ENCRYPTED_INITIALIZATION_PARAMETERS}
 
 
-  POPM_STANDARD_INFORMATION =^OPM_STANDARD_INFORMATION;
+  POPM_STANDARD_INFORMATION = ^OPM_STANDARD_INFORMATION;
+
   _OPM_STANDARD_INFORMATION = record
     rnRandomNumber: OPM_RANDOM_NUMBER;
     ulStatusFlags: ULONG;
@@ -204,10 +217,11 @@ type
 
 
   POPM_GET_CODEC_INFO_PARAMETERS = ^OPM_GET_CODEC_INFO_PARAMETERS;
+
   _OPM_GET_CODEC_INFO_PARAMETERS = record
     cbVerifier: DWORD;
     Verifier: array[0..OPM_GET_INFORMATION_PARAMETERS_SIZE - 4 - 1] of Byte;  // Class ID of MFT or symbolic link for AVStream
-                                                                              // drivers
+    // drivers
   end;
   {$EXTERNALSYM _OPM_GET_CODEC_INFO_PARAMETERS}
   OPM_GET_CODEC_INFO_PARAMETERS = _OPM_GET_CODEC_INFO_PARAMETERS;
@@ -215,6 +229,7 @@ type
 
 
   POPM_GET_CODEC_INFO_INFORMATION = ^OPM_GET_CODEC_INFO_INFORMATION;
+
   _OPM_GET_CODEC_INFO_INFORMATION = record
     rnRandomNumber: OPM_RANDOM_NUMBER;
     Merit: DWORD;                   // Merit assigned to the codec
@@ -229,13 +244,13 @@ type
   // End of Additional Prototypes
 
 
-// Additional SDK declarations; legacy spellings remain available.
+  // Additional SDK declarations; legacy spellings remain available.
 const
   OPM_GET_CODEC_INFO: TGUID = '{4F374491-8F5F-4445-9DBA-95588F6B58B4}';
   {$EXTERNALSYM OPM_GET_CODEC_INFO}
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

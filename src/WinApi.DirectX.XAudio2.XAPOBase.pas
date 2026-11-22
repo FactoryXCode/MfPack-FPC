@@ -87,33 +87,35 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
 const
 
   // Default audio format ranges supported, applies to XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS.pFormat
-  XAPOBASE_DEFAULT_FORMAT_TAG              = WAVE_FORMAT_IEEE_FLOAT;  // 32-bit float only, applies to WAVEFORMATEX.wFormatTag or WAVEFORMATEXTENSIBLE.SubFormat when used
-  XAPOBASE_DEFAULT_FORMAT_MIN_CHANNELS     = XAPO_MIN_CHANNELS;       // minimum channel count, applies to WAVEFORMATEX.nChannels
-  XAPOBASE_DEFAULT_FORMAT_MAX_CHANNELS     = XAPO_MAX_CHANNELS;       // maximum channel count, applies to WAVEFORMATEX.nChannels
-  XAPOBASE_DEFAULT_FORMAT_MIN_FRAMERATE    = XAPO_MIN_FRAMERATE;      // minimum framerate, applies to WAVEFORMATEX.nSamplesPerSec
-  XAPOBASE_DEFAULT_FORMAT_MAX_FRAMERATE    = XAPO_MAX_FRAMERATE;      // maximum framerate, applies to WAVEFORMATEX.nSamplesPerSec
-  XAPOBASE_DEFAULT_FORMAT_BITSPERSAMPLE    = 32;  // 32-bit float only, applies to WAVEFORMATEX.wBitsPerSample and WAVEFORMATEXTENSIBLE.wValidBitsPerSample when used
+  XAPOBASE_DEFAULT_FORMAT_TAG = WAVE_FORMAT_IEEE_FLOAT;  // 32-bit float only, applies to WAVEFORMATEX.wFormatTag or WAVEFORMATEXTENSIBLE.SubFormat when used
+  XAPOBASE_DEFAULT_FORMAT_MIN_CHANNELS = XAPO_MIN_CHANNELS;       // minimum channel count, applies to WAVEFORMATEX.nChannels
+  XAPOBASE_DEFAULT_FORMAT_MAX_CHANNELS = XAPO_MAX_CHANNELS;       // maximum channel count, applies to WAVEFORMATEX.nChannels
+  XAPOBASE_DEFAULT_FORMAT_MIN_FRAMERATE = XAPO_MIN_FRAMERATE;      // minimum framerate, applies to WAVEFORMATEX.nSamplesPerSec
+  XAPOBASE_DEFAULT_FORMAT_MAX_FRAMERATE = XAPO_MAX_FRAMERATE;      // maximum framerate, applies to WAVEFORMATEX.nSamplesPerSec
+  XAPOBASE_DEFAULT_FORMAT_BITSPERSAMPLE = 32;  // 32-bit float only, applies to WAVEFORMATEX.wBitsPerSample and WAVEFORMATEXTENSIBLE.wValidBitsPerSample when used
 
   // Default XAPO property flags supported, applies to XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS
-  XAPOBASE_DEFAULT_FLAG               = (XAPO_FLAG_CHANNELS_MUST_MATCH or
-                                         XAPO_FLAG_FRAMERATE_MUST_MATCH or
-                                         XAPO_FLAG_BITSPERSAMPLE_MUST_MATCH or
-                                         XAPO_FLAG_BUFFERCOUNT_MUST_MATCH or
-                                         XAPO_FLAG_INPLACE_SUPPORTED);
+  XAPOBASE_DEFAULT_FLAG = (XAPO_FLAG_CHANNELS_MUST_MATCH or
+    XAPO_FLAG_FRAMERATE_MUST_MATCH or
+    XAPO_FLAG_BITSPERSAMPLE_MUST_MATCH or
+    XAPO_FLAG_BUFFERCOUNT_MUST_MATCH or
+    XAPO_FLAG_INPLACE_SUPPORTED);
 
   // default number of input and output buffers supported, applies to XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS
-  XAPOBASE_DEFAULT_BUFFER_COUNT       = 1;
+  XAPOBASE_DEFAULT_BUFFER_COUNT = 1;
 
   //--------------<D-A-T-A---T-Y-P-E-S>---------------------------------------//
   //#pragma pack(push, 8) // set packing alignment to ensure consistency across arbitrary build environments, and ensure synchronization variables used by Interlocked functionality are correctly aligned
-  {$ALIGN 8}  // Default for Delphi (Quad Word)
+  {$ALIGN 8}
+  // Default for Delphi (Quad Word)
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -138,16 +140,19 @@ type
   //  Windows Phone 8 (XAudio 2.8);
   //  DirectX SDK (XAudio 2.7)
   ////
-  CXAPOBase = class(TInterfacedObject, IXAPO)
+  CXAPOBase = class(TInterfacedObject,
+                    IXAPO)
+
   private
-{$HINTS OFF}
+    {$HINTS OFF}
     m_pRegistrationProperties: XAPO_REGISTRATION_PROPERTIES;  // registration properties copied by the constructor
     m_pfnMatrixMixFunction: Pointer;      // optimal matrix function pointer, used for thru processing
     m_pfl32MatrixCoefficients: PSingle;   // matrix coefficient table, used for thru processing
     m_nSrcFormatType: UINT32;             // input format type, used for thru processing
     m_fIsScalarMatrix: BOOL;              // TRUE if m_pfl32MatrixCoefficients is diagonal matrix with all main diagonal entries equal, i.e. m_pfnMatrixMixFunction only used for type conversion (no channel conversion), used for thru processing
     m_fIsLocked: BOOL;                    // TRUE if XAPO locked via CXAPOBase.LockForProcess
-{$HINTS ON}
+    {$HINTS ON}
+
   protected
 
     // accessors
@@ -244,9 +249,11 @@ type
   //  For smaller parameter blocks, use atomic operations directly
   //  on the parameters for synchronization.
   ////
-  CXAPOParametersBase = class(CXAPOBase, IXAPOParameters)
+  CXAPOParametersBase = class(CXAPOBase,
+                              IXAPOParameters)
+
   private
-{$HINTS OFF}
+    {$HINTS OFF}
     m_pParameterBlocks: PByte;             // three contiguous process parameter blocks used for synchronization, user responsible for initialization of parameter blocks before IXAPO::Process/SetParameters/GetParameters called
     m_pCurrentParameters: PByte;           // pointer to current process parameters, must be aligned for atomic operations
     m_pCurrentParametersInternal: PByte;   // pointer to current process parameters (temp pointer read by SetParameters/BeginProcess/EndProcess)
@@ -254,7 +261,7 @@ type
     m_uParameterBlockByteSize: UINT32;     // size of a single parameter block in bytes, must be > 0
     m_fNewerResultsReady: BOOL;            // TRUE if there exists new processing results not yet picked up by GetParameters(), must be aligned for atomic operations
     m_fProducer: BOOL;                     // TRUE if IXAPO::Process produces data to be returned by GetParameters(), SetParameters() and ParametersChanged() disallowed
-{$HINTS ON}
+    {$HINTS ON}
 
   public
 
@@ -331,7 +338,8 @@ type
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   //---------------------------------<-EOF->----------------------------------//
@@ -348,7 +356,9 @@ implementation
 //
 // Constructor
 constructor CXAPOBase.Create(pRegistrationProperties: XAPO_REGISTRATION_PROPERTIES);
+
 begin
+
   inherited Create();
   m_pRegistrationProperties := pRegistrationProperties;
 
@@ -357,6 +367,7 @@ end;
 //
 // Destructor
 destructor CXAPOBase.Destroy();
+
 begin
 
   inherited Destroy();
@@ -366,6 +377,7 @@ end;
 
 
 function CXAPOBase.GetRegistrationPropertiesInternal(): XAPO_REGISTRATION_PROPERTIES;
+
 begin
 
   Result := m_pRegistrationProperties;
@@ -374,6 +386,7 @@ end;
 
 
 function CXAPOBase.IsLocked(): BOOL;
+
 begin
 
   Result := m_fIsLocked;
@@ -383,10 +396,12 @@ end;
 
 function CXAPOBase.Initialize(pData: Pointer;
                               DataByteSize: UINT32): HRESULT;
+
 begin
+
   // UNREFERENCED_PARAMETER(DataByteSize);  >> a C++ workaround to surpress compiler W4 warning "Unreferenced Parameter"
   // Just translated this for completeness.
-  Result :=  S_OK;
+  Result := S_OK;
 end;
 
 
@@ -396,11 +411,13 @@ end;
 function CXAPOBase.GetRegistrationProperties(ppRegistrationProperties: PPXAPO_REGISTRATION_PROPERTIES): HRESULT;
 var
   Properties: PXAPO_REGISTRATION_PROPERTIES;
+
 begin
-  if ppRegistrationProperties = nil then
+
+  if (ppRegistrationProperties = nil) then
     Exit(E_POINTER);
   Properties := XAPOAlloc(SizeOf(XAPO_REGISTRATION_PROPERTIES));
-  if Properties = nil then
+  if (Properties = nil) then
     Exit(E_OUTOFMEMORY);
   Properties^ := m_pRegistrationProperties;
   ppRegistrationProperties^ := Properties;
@@ -411,6 +428,7 @@ end;
 function CXAPOBase.IsInputFormatSupported(pOutputFormat: PWAVEFORMATEX;
                                           pRequestedInputFormat: PWAVEFORMATEX;
                                           ppSupportedInputFormat: PPWAVEFORMATEX): HRESULT;
+
 begin
 
   Result := E_NOTIMPL; // Do your implementations here, by replacing this line for your code.
@@ -421,6 +439,7 @@ end;
 function CXAPOBase.IsOutputFormatSupported(pInputFormat: PWAVEFORMATEX;
                                            pRequestedOutputFormat: PWAVEFORMATEX;
                                            ppSupportedOutputFormat: PPWAVEFORMATEX): HRESULT;
+
 begin
 
   Result := E_NOTIMPL; // Do your implementations here, by replacing this line for your code.
@@ -429,16 +448,19 @@ end;
 
 
 procedure CXAPOBase.Reset();
+
 begin
 
-   // Do your implementations here
+  // Do your implementations here
 
 end;
+
 
 function CXAPOBase.LockForProcess(InputLockedParameterCount: UINT32;
                                   pInputLockedParameters: PXAPO_LOCKFORPROCESS_PARAMETERS;
                                   OutputLockedParameterCount: UINT32;
                                   pOutputLockedParameters: PXAPO_LOCKFORPROCESS_PARAMETERS): HRESULT; stdcall;
+
 begin
 
   Result := E_NOTIMPL; // Do your implementations here, by replacing this line for your code.
@@ -447,9 +469,10 @@ end;
 
 
 procedure CXAPOBase.UnlockForProcess();
+
 begin
 
-   // Do your implementations here
+  // Do your implementations here
 
 end;
 
@@ -457,6 +480,7 @@ end;
 
 
 function CXAPOBase.CalcInputFrames(OutputFrameCount: UINT32): UINT32;
+
 begin
 
   Result := OutputFrameCount;
@@ -465,6 +489,7 @@ end;
 
 
 function CXAPOBase.CalcOutputFrames(InputFrameCount: UINT32): UINT32;
+
 begin
 
   Result := InputFrameCount;
@@ -480,18 +505,20 @@ constructor CXAPOParametersBase.Create(pRegistrationProperties: XAPO_REGISTRATIO
                                        pParameterBlocks: PByte;
                                        uParameterBlockByteSize: UINT32;
                                        fProducer: BOOL);
+
 begin
+
   inherited create(pRegistrationProperties);
 
   m_pParameterBlocks := pParameterBlocks;
   m_uParameterBlockByteSize := uParameterBlockByteSize;
   m_fProducer := fProducer;
 
-
 end;
 //
 // Destructor
 destructor CXAPOParametersBase.Destroy();
+
 begin
 
   inherited Destroy();
@@ -502,22 +529,21 @@ end;
 
 
 
-
-
 procedure CXAPOParametersBase.OnSetParameters(pParameters: Pointer;
                                               ParameterByteSize: UINT32);
+
 begin
-{$IFDEF DEBUG}
+
+  {$IFDEF DEBUG}
   Assert(m_uParameterBlockByteSize > 0,
          'XAPO ASSERT: Procedure OnSetParameters, m_uParameterBlockByteSize <= 0');
   Assert(pParameters <> nil,
          'XAPO ASSERT: Procedure OnSetParameters, pParameters = nil');
   Assert(ParameterByteSize = m_uParameterBlockByteSize,
          'XAPO ASSERT: Procedure OnSetParameters, ParameterByteSize <> m_uParameterBlockByteSize');
-{$ENDIF}
+  {$ENDIF}
 
   // Do your implementations here
-
 
 end;
 

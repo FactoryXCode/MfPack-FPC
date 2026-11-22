@@ -100,14 +100,15 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
 
 const
-  SID_AudioProcessingObjectRTQueue         : TGUID = '{458c1a1f-6899-4c12-99ac-e2e6ac253104}';
-  SID_AudioProcessingObjectLoggingService  : TGUID = '{8B8008AF-09F9-456E-A173-BDB58499BCE7}';
+  SID_AudioProcessingObjectRTQueue: TGUID = '{458c1a1f-6899-4c12-99ac-e2e6ac253104}';
+  SID_AudioProcessingObjectLoggingService: TGUID = '{8B8008AF-09F9-456E-A173-BDB58499BCE7}';
 
 
 type
@@ -115,10 +116,11 @@ type
   PAUDIO_SYSTEMEFFECT_STATE = ^AUDIO_SYSTEMEFFECT_STATE;
   AUDIO_SYSTEMEFFECT_STATE = (AUDIO_SYSTEMEFFECT_STATE_OFF = 0,
                               AUDIO_SYSTEMEFFECT_STATE_ON = 1
-                             );
+    );
 
 
   PAUDIO_SYSTEMEFFECT = ^AUDIO_SYSTEMEFFECT;
+
   AUDIO_SYSTEMEFFECT = record
     id: TGUID;
     canSetState: BOOL;
@@ -133,7 +135,7 @@ type
   // This is the interface by which system effects the implement and use the new settings, notification, logging and threading frameworks get identified.
   //
   IAudioSystemEffects3 = interface(IAudioSystemEffects2)
-  ['{C58B31CD-FC6A-4255-BC1F-AD29BB0A4A17}']
+    ['{C58B31CD-FC6A-4255-BC1F-AD29BB0A4A17}']
 
     function GetControllableSystemEffectsList(out effects: PAUDIO_SYSTEMEFFECT;
                                               out numEffects: UINT;
@@ -143,10 +145,12 @@ type
     function SetAudioSystemEffectState(effectId: TGUID;
                                        state: AUDIO_SYSTEMEFFECT_STATE): HResult; stdcall;
   end;
+
   IID_IAudioSystemEffects3 = IAudioSystemEffects3;
 
 
   PAPOInitSystemEffects3 = ^APOInitSystemEffects3;
+
   APOInitSystemEffects3 = record
     APOInit: APOInitBaseStruct;
     pAPOEndpointProperties: IPropertyStore;
@@ -164,6 +168,7 @@ type
   // configuration of the loopback provided to the AEC.
   //
   PAcousticEchoCancellerReferenceInput = ^AcousticEchoCanceller_Reference_Input;
+
   AcousticEchoCanceller_Reference_Input = record
     apoInitSystemEffects: APOInitSystemEffects3;
     streamProperties: APO_REFERENCE_STREAM_PROPERTIES;
@@ -176,11 +181,12 @@ type
   // Interface used by the threading framework to get the work queue id.
   //
   IAudioProcessingObjectRTQueueService = interface(IUnknown)
-  ['{ACD65E2F-955B-4B57-B9BF-AC297BB752C9}']
+    ['{ACD65E2F-955B-4B57-B9BF-AC297BB752C9}']
 
     function GetRealTimeWorkQueue(out workQueueId: DWORD): HResult; stdcall;
 
   end;
+
   IID_IAudioProcessingObjectRTQueueService = IAudioProcessingObjectRTQueueService;
 
   //
@@ -193,9 +199,10 @@ type
                    APO_LOG_LEVEL_WARNING = 3,
                    APO_LOG_LEVEL_INFO = 4,
                    APO_LOG_LEVEL_VERBOSE = 5
-                  );
+    );
+
   IAudioProcessingObjectLoggingService = interface(IUnknown)
-  ['{698f0107-1745-4708-95a5-d84478a62a65}']
+    ['{698f0107-1745-4708-95a5-d84478a62a65}']
 
     // This will generate events with the format specified in the API call.
     // Variadic SDK slot: use ApoLogMessage or the FPC ApoLogEntryPoint helper.
@@ -203,6 +210,7 @@ type
                      format: PWideChar); cdecl;
 
   end;
+
   IID_IAudioProcessingObjectLoggingService = IAudioProcessingObjectLoggingService;
 
 
@@ -219,11 +227,12 @@ type
                            APO_NOTIFICATION_TYPE_DEVICE_ORIENTATION = 5,
                            APO_NOTIFICATION_TYPE_MICROPHONE_BOOST = 6,
                            APO_NOTIFICATION_TYPE_AUDIO_ENVIRONMENT_STATE_CHANGE = 7
-                          );
+    );
 
 
   // When an endpoint volume changes, the OS will send an object with the following structure to the APOs that are interested in volume change notifications.
   PAUDIO_ENDPOINT_VOLUME_CHANGE_NOTIFICATION = ^AUDIO_ENDPOINT_VOLUME_CHANGE_NOTIFICATION;
+
   AUDIO_ENDPOINT_VOLUME_CHANGE_NOTIFICATION = record
     // Borrowed native COM pointers keep this SDK payload unmanaged for inline unions.
     // Device that the volume has changed on.
@@ -236,6 +245,7 @@ type
   // When an endpoint property is changed, the OS will send an object with the following structure to
   // the APOs that are interested in endpoint property change notifications.
   PAUDIO_ENDPOINT_PROPERTY_CHANGE_NOTIFICATION = ^AUDIO_ENDPOINT_PROPERTY_CHANGE_NOTIFICATION;
+
   AUDIO_ENDPOINT_PROPERTY_CHANGE_NOTIFICATION = record
     // Borrowed native COM pointers keep this SDK payload unmanaged for inline unions.
     // Device that the property has changed on.
@@ -250,6 +260,7 @@ type
   // When an audio system effects property is changed, the OS will send an object with the
   // following structure to the APOs that are interested in audio system effects property change notifications.
   PAUDIO_SYSTEMEFFECTS_PROPERTY_CHANGE_NOTIFICATION = ^AUDIO_SYSTEMEFFECTS_PROPERTY_CHANGE_NOTIFICATION;
+
   AUDIO_SYSTEMEFFECTS_PROPERTY_CHANGE_NOTIFICATION = record
     // Borrowed native COM pointers keep this SDK payload unmanaged for inline unions.
     // Device that the volume has changed on.
@@ -266,6 +277,7 @@ type
 
 
   PAUDIO_VOLUME_NOTIFICATION_DATA2 = ^AUDIO_VOLUME_NOTIFICATION_DATA2;
+
   AUDIO_VOLUME_NOTIFICATION_DATA2 = record
     notificationData: PAUDIO_VOLUME_NOTIFICATION_DATA;
     // Specifies the current master volume level of the audio stream in dB.
@@ -295,6 +307,7 @@ type
 
 
   PAUDIO_ENDPOINT_VOLUME_CHANGE_NOTIFICATION2 = ^AUDIO_ENDPOINT_VOLUME_CHANGE_NOTIFICATION2;
+
   AUDIO_ENDPOINT_VOLUME_CHANGE_NOTIFICATION2 = record
     // Borrowed native COM pointers keep this SDK payload unmanaged for inline unions.
     endpoint: Pointer;
@@ -307,10 +320,11 @@ type
                              DEVICE_ROTATED_90_DEGREES_CLOCKWISE = 1,
                              DEVICE_ROTATED_180_DEGREES_CLOCKWISE = 2,
                              DEVICE_ROTATED_270_DEGREES_CLOCKWISE = 3
-                            );
+    );
 
 
   PAUDIO_MICROPHONE_BOOST_NOTIFICATION = ^AUDIO_MICROPHONE_BOOST_NOTIFICATION;
+
   AUDIO_MICROPHONE_BOOST_NOTIFICATION = record
     // Borrowed native COM pointers keep this SDK payload unmanaged for inline unions.
     // Device associated with mic boost notification.
@@ -344,14 +358,22 @@ type
   // PKEY_AudioEnvironment_SpatialStreams_Active: Boolean that when TRUE indicates that spatial audio is in use, FALSE otherwise.
   // vartype = VT_BOOL
 const
-  PKEY_AudioEnvironment_SpatialAudioActive  :  PROPERTYKEY = (fmtid: (D1: $4AFB7B88;
-                                                                      D2: $A653;
-                                                                      D3: $44A5;
-                                                                      D4: ($99, $DB, $68, $7F, $D7, $4A, $F0, $BB));
-                                                                      Pid: 2);
+  PKEY_AudioEnvironment_SpatialAudioActive: PROPERTYKEY = (fmtid: (D1: $4AFB7B88;
+    D2: $A653;
+    D3: $44A5;
+    D4: ($99,
+         $DB,
+         $68,
+         $7F,
+         $D7,
+         $4A,
+         $F0,
+         $BB));
+    Pid: 2);
 
 type
   PAUDIO_ENVIRONMENT_STATE_CHANGE_NOTIFICATION = ^AUDIO_ENVIRONMENT_STATE_CHANGE_NOTIFICATION;
+
   AUDIO_ENVIRONMENT_STATE_CHANGE_NOTIFICATION = record
     // Borrowed native COM pointers keep this SDK payload unmanaged for inline unions.
     // The property store that the change occurred on. Use this to query the new value of propertyKey below.
@@ -364,36 +386,37 @@ type
   // This structure is used to describe the type of notification that is sent from the
   // OS to the APO using IAudioProcessingObjectNotifications.HandleNotification.
   PAPO_NOTIFICATION = ^APO_NOTIFICATION;
+
   APO_NOTIFICATION = record
 
     _type: APO_NOTIFICATION_TYPE;
 
     DUMMYUNIONNAME: record
 
-    case Integer of
+      case Integer of
 
-         // Used when type is APO_NOTIFICATION_TYPE_ENDPOINT_VOLUME.
-      0: (audioEndpointVolumeChange: AUDIO_ENDPOINT_VOLUME_CHANGE_NOTIFICATION);
+        // Used when type is APO_NOTIFICATION_TYPE_ENDPOINT_VOLUME.
+        0: (audioEndpointVolumeChange: AUDIO_ENDPOINT_VOLUME_CHANGE_NOTIFICATION);
 
-         // Used when type is APO_NOTIFICATION_TYPE_ENDPOINT_PROPERTY_CHANGE.
-      1: (audioEndpointPropertyChange: AUDIO_ENDPOINT_PROPERTY_CHANGE_NOTIFICATION);
+        // Used when type is APO_NOTIFICATION_TYPE_ENDPOINT_PROPERTY_CHANGE.
+        1: (audioEndpointPropertyChange: AUDIO_ENDPOINT_PROPERTY_CHANGE_NOTIFICATION);
 
-         // Used when type is AUDIO_SYSTEMEFFECTS_PROPERTY_CHANGE_NOTIFICATION.
-      2: (audioSystemEffectsPropertyChange: AUDIO_SYSTEMEFFECTS_PROPERTY_CHANGE_NOTIFICATION);
+        // Used when type is AUDIO_SYSTEMEFFECTS_PROPERTY_CHANGE_NOTIFICATION.
+        2: (audioSystemEffectsPropertyChange: AUDIO_SYSTEMEFFECTS_PROPERTY_CHANGE_NOTIFICATION);
 
-         // Used when type is APO_NOTIFICATION_TYPE_ENDPOINT_VOLUME2.
-      4: (audioEndpointVolumeChange2: AUDIO_ENDPOINT_VOLUME_CHANGE_NOTIFICATION2);
+        // Used when type is APO_NOTIFICATION_TYPE_ENDPOINT_VOLUME2.
+        4: (audioEndpointVolumeChange2: AUDIO_ENDPOINT_VOLUME_CHANGE_NOTIFICATION2);
 
-         // Used when type is APO_NOTIFICATION_TYPE_DEVICE_ORIENTATION.
-      5: (deviceOrientation: DEVICE_ORIENTATION_TYPE;);
+        // Used when type is APO_NOTIFICATION_TYPE_DEVICE_ORIENTATION.
+        5: (deviceOrientation: DEVICE_ORIENTATION_TYPE;);
 
-         // Used when type is APO_NOTIFICATION_TYPE_MICROPHONE_BOOST.
-      6: (audioMicrophoneBoostChange: AUDIO_MICROPHONE_BOOST_NOTIFICATION);
+        // Used when type is APO_NOTIFICATION_TYPE_MICROPHONE_BOOST.
+        6: (audioMicrophoneBoostChange: AUDIO_MICROPHONE_BOOST_NOTIFICATION);
 
-         // Used when type is APO_NOTIFICATION_TYPE_AUDIO_ENVIRONMENT_STATE_CHANGE.
-      7: (audioEnvironmentChange: AUDIO_ENVIRONMENT_STATE_CHANGE_NOTIFICATION);
+        // Used when type is APO_NOTIFICATION_TYPE_AUDIO_ENVIRONMENT_STATE_CHANGE.
+        7: (audioEnvironmentChange: AUDIO_ENVIRONMENT_STATE_CHANGE_NOTIFICATION);
 
-    end;
+      end;
 
     procedure Clear();
   end;
@@ -402,6 +425,7 @@ type
 
   // Used to request endpoint volume change notifications on a specific endpoint.
   PAUDIO_ENDPOINT_VOLUME_APO_NOTIFICATION_DESCRIPTOR = ^AUDIO_ENDPOINT_VOLUME_APO_NOTIFICATION_DESCRIPTOR;
+
   AUDIO_ENDPOINT_VOLUME_APO_NOTIFICATION_DESCRIPTOR = record
     // Borrowed native COM pointers keep this SDK payload unmanaged for inline unions.
     device: Pointer;
@@ -410,6 +434,7 @@ type
 
   // Used to request endpoint property change notifications on a specific endpoint.
   PAUDIO_ENDPOINT_PROPERTY_CHANGE_APO_NOTIFICATION_DESCRIPTOR = ^AUDIO_ENDPOINT_PROPERTY_CHANGE_APO_NOTIFICATION_DESCRIPTOR;
+
   AUDIO_ENDPOINT_PROPERTY_CHANGE_APO_NOTIFICATION_DESCRIPTOR = record
     // Borrowed native COM pointers keep this SDK payload unmanaged for inline unions.
     device: Pointer;
@@ -418,6 +443,7 @@ type
 
   // Used to request audio system effects property change notifications on a specific endpoint and property context.
   PAUDIO_SYSTEMEFFECTS_PROPERTY_CHANGE_APO_NOTIFICATION_DESCRIPTOR = ^AUDIO_SYSTEMEFFECTS_PROPERTY_CHANGE_APO_NOTIFICATION_DESCRIPTOR;
+
   AUDIO_SYSTEMEFFECTS_PROPERTY_CHANGE_APO_NOTIFICATION_DESCRIPTOR = record
     // Borrowed native COM pointers keep this SDK payload unmanaged for inline unions.
     device: Pointer;
@@ -427,6 +453,7 @@ type
 
   // Used to request microphone boost notifications.
   PAUDIO_MICROPHONE_BOOST_APO_NOTIFICATION_DESCRIPTOR = ^AUDIO_MICROPHONE_BOOST_APO_NOTIFICATION_DESCRIPTOR;
+
   AUDIO_MICROPHONE_BOOST_APO_NOTIFICATION_DESCRIPTOR = record
     // Borrowed native COM pointers keep this SDK payload unmanaged for inline unions.
     device: Pointer;
@@ -437,25 +464,26 @@ type
   // This is the structure provided by the APO to indicate the type of notification it is interested in.
   //
   PAPO_NOTIFICATION_DESCRIPTOR = ^APO_NOTIFICATION_DESCRIPTOR;
+
   APO_NOTIFICATION_DESCRIPTOR = record
 
     _type: APO_NOTIFICATION_TYPE;
 
     DUMMYUNIONNAME: record
-    case integer of
+      case integer of
 
-       // Used for volume notifications on a specific endpoint.
-    0: (audioEndpointVolume: AUDIO_ENDPOINT_VOLUME_APO_NOTIFICATION_DESCRIPTOR);
+        // Used for volume notifications on a specific endpoint.
+        0: (audioEndpointVolume: AUDIO_ENDPOINT_VOLUME_APO_NOTIFICATION_DESCRIPTOR);
 
-       // Used for property change notifications on a specific endpoint.
-    1: (audioEndpointPropertyChange: AUDIO_ENDPOINT_PROPERTY_CHANGE_APO_NOTIFICATION_DESCRIPTOR);
+        // Used for property change notifications on a specific endpoint.
+        1: (audioEndpointPropertyChange: AUDIO_ENDPOINT_PROPERTY_CHANGE_APO_NOTIFICATION_DESCRIPTOR);
 
-       // Used for audio system effects property store notifications on a specific endpoint, property context pair.
-    2: (audioSystemEffectsPropertyChange: AUDIO_SYSTEMEFFECTS_PROPERTY_CHANGE_APO_NOTIFICATION_DESCRIPTOR);
+        // Used for audio system effects property store notifications on a specific endpoint, property context pair.
+        2: (audioSystemEffectsPropertyChange: AUDIO_SYSTEMEFFECTS_PROPERTY_CHANGE_APO_NOTIFICATION_DESCRIPTOR);
 
-       // Used for microphone boost notifications.
-    3: (audioMicrophoneBoost: AUDIO_MICROPHONE_BOOST_APO_NOTIFICATION_DESCRIPTOR;);
-    end;
+        // Used for microphone boost notifications.
+        3: (audioMicrophoneBoost: AUDIO_MICROPHONE_BOOST_APO_NOTIFICATION_DESCRIPTOR;);
+      end;
     procedure Clear();
   end;
 
@@ -476,6 +504,7 @@ type
                                       out preferredFormat: IAudioMediaType): HResult; stdcall;
 
   end;
+
   IID_IAudioProcessingObjectPreferredFormatSupport = IAudioProcessingObjectPreferredFormatSupport;
 
 
@@ -485,7 +514,7 @@ type
   // Interface to be implemented by an APO that wishes to use the notification service provided by the OS.
   //
   IAudioProcessingObjectNotifications = interface(IUnknown)
-  ['{56B0C76F-02FD-4B21-A52E-9F8219FC86E4}']
+    ['{56B0C76F-02FD-4B21-A52E-9F8219FC86E4}']
 
     // The APO provides an array of APO_NOTIFICATION_DESCRIPTORs indicating the type of notifications it is interested in.
     function GetApoNotificationRegistrationInfo(out apoNotifications: PAPO_NOTIFICATION_DESCRIPTOR;
@@ -495,6 +524,7 @@ type
     procedure HandleNotification(apoNotification: PAPO_NOTIFICATION); stdcall;
 
   end;
+
   IID_IAudioProcessingObjectNotifications = IAudioProcessingObjectNotifications;
 
 
@@ -502,13 +532,14 @@ type
   // ==============================================
   //
   IAudioProcessingObjectNotifications2 = interface(IAudioProcessingObjectNotifications)
-  ['{ca2cfbde-a9d6-4eb0-bc95-c4d026b380f0}']
+    ['{ca2cfbde-a9d6-4eb0-bc95-c4d026b380f0}']
 
     function GetApoNotificationRegistrationInfo2(maxApoNotificationTypeSupported: APO_NOTIFICATION_TYPE;
                                                  out apoNotifications: PAPO_NOTIFICATION_DESCRIPTOR;
                                                  out count: DWORD): HResult; stdcall;
 
   end;
+
   IID_IAudioProcessingObjectNotifications2 = IAudioProcessingObjectNotifications2;
 
 
@@ -517,29 +548,29 @@ type
 
   // End of Additional Prototypes
 
-  // Preserve C++ by-value GUID semantics across the Win64 language boundary.
-  function SetAudioSystemEffectState(const effects: IAudioSystemEffects3;
-                                     const effectId: TGUID;
-                                     state: AUDIO_SYSTEMEFFECT_STATE): HRESULT;
+// Preserve C++ by-value GUID semantics across the Win64 language boundary.
+function SetAudioSystemEffectState(const effects: IAudioSystemEffects3;
+                                   const effectId: TGUID;
+                                   state: AUDIO_SYSTEMEFFECT_STATE): HRESULT;
 
-  // Log arbitrary text safely through the SDK's variadic logging slot.
-  // The fixed method declaration above exposes its two required parameters.
-  function ApoLogMessage(const service: IAudioProcessingObjectLoggingService;
-                         level: APO_LOG_LEVEL;
-                         const message: UnicodeString): HRESULT;
+// Log arbitrary text safely through the SDK's variadic logging slot.
+// The fixed method declaration above exposes its two required parameters.
+function ApoLogMessage(const service: IAudioProcessingObjectLoggingService;
+                       level: APO_LOG_LEVEL;
+                       const message: UnicodeString): HRESULT;
 
 
-  // FPC can call an arbitrary variadic native slot through a procedural value.
+// FPC can call an arbitrary variadic native slot through a procedural value.
 type
   TApoLogVarArgs = procedure(instance: Pointer;
                              level: APO_LOG_LEVEL;
                              format: PWideChar); cdecl; varargs;
-  // Keep the service interface alive while calling this variadic entry point.
-  function ApoLogEntryPoint(const service: IAudioProcessingObjectLoggingService): TApoLogVarArgs;
+// Keep the service interface alive while calling this variadic entry point.
+function ApoLogEntryPoint(const service: IAudioProcessingObjectLoggingService): TApoLogVarArgs;
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 
 type
@@ -550,10 +581,11 @@ type
                                format: PWideChar;
                                message: PWideChar); cdecl;
 
+
 function SetAudioSystemEffectState(const effects: IAudioSystemEffects3;
                                    const effectId: TGUID;
                                    state: AUDIO_SYSTEMEFFECT_STATE): HRESULT;
-{$IFDEF WIN64}
+  {$IFDEF WIN64}
 type
   TEffectsVTable = array[0..5] of Pointer;
   PEffectsVTable = ^TEffectsVTable;
@@ -565,25 +597,31 @@ var
   privateGuid: PGUID;
   table: PEffectsVTable;
   entry: TSetStateEntry;
-{$ELSE}
+  {$ELSE}
 var
   privateGuid: TGUID;
-{$ENDIF}
+  {$ENDIF}
+
 begin
-  if effects = nil then
+
+  if (effects = nil) then
     Exit(HRESULT($80004003));
-{$IFDEF WIN64}
+  {$IFDEF WIN64}
   // The Microsoft x64 ABI passes a 16-byte aggregate through aligned caller storage.
-  privateGuid := PGUID((NativeUInt(@storage[0])+15) and not NativeUInt(15));
+  privateGuid := PGUID((NativeUInt(@storage[0]) + 15) and not NativeUInt(15));
   privateGuid^ := effectId;
   table := PEffectsVTable(PPointer(Pointer(effects))^);
   entry := TSetStateEntry(table^[5]);
-  Result := entry(Pointer(effects),privateGuid,state);
-{$ELSE}
+  Result := entry(Pointer(effects),
+                  privateGuid,
+                  state);
+  {$ELSE}
   privateGuid := effectId;
-  Result := effects.SetAudioSystemEffectState(privateGuid,state);
-{$ENDIF}
+  Result := effects.SetAudioSystemEffectState(privateGuid,
+                                              state);
+  {$ENDIF}
 end;
+
 
 function ApoLogMessage(const service: IAudioProcessingObjectLoggingService;
                        level: APO_LOG_LEVEL;
@@ -591,34 +629,51 @@ function ApoLogMessage(const service: IAudioProcessingObjectLoggingService;
 var
   table: PApoLoggingVTable;
   entry: TApoLogTextEntry;
+
 begin
-  if service = nil then
+
+  if (service = nil) then
     Exit(HRESULT($80004003));
   table := PApoLoggingVTable(PPointer(Pointer(service))^);
   entry := TApoLogTextEntry(table^[3]);
-  entry(Pointer(service),level,'%ls',PWideChar(message));
+  entry(Pointer(service),
+        level,
+        '%ls',
+        PWideChar(message));
   Result := 0;
 end;
 
 
 function ApoLogEntryPoint(const service: IAudioProcessingObjectLoggingService): TApoLogVarArgs;
-var table: PApoLoggingVTable;
+var
+  table: PApoLoggingVTable;
+
 begin
-  if service = nil then
+
+  if (service = nil) then
     Exit(nil);
   table := PApoLoggingVTable(PPointer(Pointer(service))^);
   Result := TApoLogVarArgs(table^[3]);
 end;
 
+
 procedure APO_NOTIFICATION.Clear();
+
 begin
-  FillChar(Self,SizeOf(Self),0);
+
+  FillChar(Self,
+           SizeOf(Self),
+           0);
 end;
 
 
 procedure APO_NOTIFICATION_DESCRIPTOR.Clear();
+
 begin
-  FillChar(Self,SizeOf(Self),0);
+
+  FillChar(Self,
+           SizeOf(Self),
+           0);
 end;
 
 end.

@@ -88,6 +88,7 @@ uses
 type
 
   TMfLowMidHighEqEffect = class(TMfWasApiFxComponentBase)
+
   private
 
     FMft: IMFTransform;
@@ -125,9 +126,9 @@ type
     // Optional helper for callers (not part of TMfWasApiFxComponentBase).
     procedure ResetState();
     procedure GetBiquadCoeffs(out Low,
-                                 Mid,
-                                 High: TBiquadCoeffs;
-                                 out SampleRate: Double);
+                              Mid,
+                              High: TBiquadCoeffs;
+                              out SampleRate: Double);
 
 
   published
@@ -160,6 +161,7 @@ implementation
 
 
 procedure Register;
+
 begin
 
   RegisterComponents('MfPack Core Audio Samples',
@@ -170,6 +172,7 @@ end;
 { TMfLowMidHighEqEffect }
 
 constructor TMfLowMidHighEqEffect.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
@@ -198,6 +201,7 @@ end;
 
 
 destructor TMfLowMidHighEqEffect.Destroy();
+
 begin
 
   FMft := nil;
@@ -208,6 +212,7 @@ end;
 
 
 function TMfLowMidHighEqEffect.GetEnabled(): LongBool;
+
 begin
 
   Result := FSettings.Enabled;
@@ -215,6 +220,7 @@ end;
 
 
 procedure TMfLowMidHighEqEffect.SetEnabled(const Value: LongBool);
+
 begin
 
   if Value then
@@ -227,6 +233,7 @@ end;
 
 
 procedure TMfLowMidHighEqEffect.SetRampMs(const Value: Integer);
+
 begin
 
   FSettings.RampMs := EnsureRange(Value,
@@ -237,6 +244,7 @@ end;
 
 
 procedure TMfLowMidHighEqEffect.SetLowFreqHz(const Value: Single);
+
 begin
 
   FSettings.LowFreqHz := EnsureRange(Value,
@@ -247,6 +255,7 @@ end;
 
 
 procedure TMfLowMidHighEqEffect.SetLowGainDb(const Value: Single);
+
 begin
 
   FSettings.LowGainDb := EnsureRange(Value,
@@ -257,6 +266,7 @@ end;
 
 
 procedure TMfLowMidHighEqEffect.SetLowQ(const Value: Single);
+
 begin
 
   FSettings.LowQ := EnsureRange(Value,
@@ -267,6 +277,7 @@ end;
 
 
 procedure TMfLowMidHighEqEffect.SetMidFreqHz(const Value: Single);
+
 begin
 
   FSettings.MidFreqHz := EnsureRange(Value,
@@ -277,6 +288,7 @@ end;
 
 
 procedure TMfLowMidHighEqEffect.SetMidGainDb(const Value: Single);
+
 begin
 
   FSettings.MidGainDb := EnsureRange(Value,
@@ -287,6 +299,7 @@ end;
 
 
 procedure TMfLowMidHighEqEffect.SetMidQ(const Value: Single);
+
 begin
 
   FSettings.MidQ := EnsureRange(Value,
@@ -297,6 +310,7 @@ end;
 
 
 procedure TMfLowMidHighEqEffect.SetMidMode(const Value: TMfEqMidMode);
+
 begin
 
   FSettings.MidMode := Value;
@@ -305,6 +319,7 @@ end;
 
 
 procedure TMfLowMidHighEqEffect.SetHighFreqHz(const Value: Single);
+
 begin
 
   FSettings.HighFreqHz := EnsureRange(Value,
@@ -315,6 +330,7 @@ end;
 
 
 procedure TMfLowMidHighEqEffect.SetHighGainDb(const Value: Single);
+
 begin
 
   FSettings.HighGainDb := EnsureRange(Value,
@@ -325,6 +341,7 @@ end;
 
 
 procedure TMfLowMidHighEqEffect.SetHighQ(const Value: Single);
+
 begin
 
   FSettings.HighQ := EnsureRange(Value,
@@ -335,6 +352,7 @@ end;
 
 
 procedure TMfLowMidHighEqEffect.CheckForMft();
+
 begin
 
   if IsDesigning() then
@@ -350,6 +368,7 @@ end;
 
 
 function TMfLowMidHighEqEffect.GetMftInstance(): IMFTransform;
+
 begin
 
   Result := FMft;
@@ -366,24 +385,30 @@ begin
     Exit;
 
   if Supports(FMft,
-              IMfLowMidHighEqMft,
-              Eq) then
+    IMfLowMidHighEqMft,
+    Eq) then
     Eq.SetSettings(FSettings);
 end;
 
 
 procedure TMfLowMidHighEqEffect.GetBiquadCoeffs(out Low,
-                                                 Mid,
-                                                 High: TBiquadCoeffs;
-                                                 out SampleRate: Double);
+                                                Mid,
+                                                High: TBiquadCoeffs;
+                                                out SampleRate: Double);
+
 begin
 
   CheckForMft();
   if Assigned(FMftObj) then
-    FMftObj.GetBiquadCoeffs(Low, Mid, High, SampleRate)
+    FMftObj.GetBiquadCoeffs(Low,
+                            Mid,
+                            High,
+                            SampleRate)
   else
     begin
-      FillChar(Low, SizeOf(Low), 0);
+      FillChar(Low,
+               SizeOf(Low),
+               0);
       Low.b0 := 1.0;
       Mid := Low;
       High := Low;
@@ -402,10 +427,9 @@ begin
     Exit;
 
   if Supports(FMft,
-              IMfLowMidHighEqMft,
-              Eq) then
+    IMfLowMidHighEqMft,
+    Eq) then
     Eq.ResetState;
 end;
 
 end.
-

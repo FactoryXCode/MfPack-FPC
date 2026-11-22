@@ -64,11 +64,12 @@ unit HEOSTransport;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   Classes,
@@ -77,6 +78,7 @@ LMessages,
 type
 
   THeosRequest = class(TThread)
+
   private
     FHost: string;
     FPort: Integer;
@@ -119,6 +121,7 @@ uses
   {Application}
   HEOSSockets;
 
+
 constructor THeosRequest.Create(const Host: string;
                                 const Commands: array of string;
                                 Port: Integer;
@@ -149,6 +152,7 @@ end;
 
 
 destructor THeosRequest.Destroy();
+
 begin
 
   FCommands.Free;
@@ -195,13 +199,13 @@ begin
   LeftReceived := False;
   RightReceived := False;
   ChannelReceived := False;
-  MainZoneReceived := FCommands.IndexOf('ZM?') < 0;
-  Zone2Received := FCommands.IndexOf('Z2?') < 0;
-  ToneReceived := FCommands.IndexOf('PSTONE CTRL ?') < 0;
-  BassReceived := FCommands.IndexOf('PSBAS ?') < 0;
-  TrebleReceived := FCommands.IndexOf('PSTRE ?') < 0;
-  ModeReceived := FCommands.IndexOf('MS?') < 0;
-  DynamicEqReceived := FCommands.IndexOf('PSDYNEQ ?') < 0;
+  MainZoneReceived := (FCommands.IndexOf('ZM?') < 0);
+  Zone2Received := (FCommands.IndexOf('Z2?') < 0);
+  ToneReceived := (FCommands.IndexOf('PSTONE CTRL ?') < 0);
+  BassReceived := (FCommands.IndexOf('PSBAS ?') < 0);
+  TrebleReceived := (FCommands.IndexOf('PSTRE ?') < 0);
+  ModeReceived := (FCommands.IndexOf('MS?') < 0);
+  DynamicEqReceived := (FCommands.IndexOf('PSDYNEQ ?') < 0);
   ExpectedTone := '';
   ExpectedBass := '';
   ExpectedTreble := '';
@@ -211,20 +215,30 @@ begin
       if (Command = 'PSTONE CTRL ON') or (Command = 'PSTONE CTRL OFF') then
         ExpectedTone := Command;
       if (Copy(Command, 1, 6) = 'PSBAS ') and
-         TryStrToInt(Copy(Command, 7, MaxInt), Value) then
+        TryStrToInt(Copy(Command,
+                         7,
+                         MaxInt),
+                    Value) then
         ExpectedBass := Command;
       if (Copy(Command, 1, 6) = 'PSTRE ') and
-         TryStrToInt(Copy(Command, 7, MaxInt), Value) then
+        TryStrToInt(Copy(Command,
+                         7,
+                         MaxInt),
+                    Value) then
         ExpectedTreble := Command;
     end;
 
   try
     try
-      if not THEOSConnection.TryConnect(FHost, FPort, 2500, Client, FError) then Exit;
+      if not THEOSConnection.TryConnect(FHost, FPort, 2500, Client, FError) then
+        Exit;
       for Command in FCommands do
         if (Copy(Command, 1, 2) = 'MV') and
-           (Length(Command) in [4, 5]) and
-           TryStrToInt(Copy(Command, 3, MaxInt), Value) then
+          (Length(Command) in [4, 5]) and
+          TryStrToInt(Copy(Command,
+                           3,
+                           MaxInt),
+                      Value) then
           begin
             if (Length(Command) = 4) then
               ExpectedVolume := Value * 2
@@ -238,7 +252,8 @@ begin
             Exit;
 
           // Denon's AVR protocol terminates commands with CR, not CR/LF.
-          if not Client.TrySend(AnsiString(Command) + #13, FError) then Exit;
+          if not Client.TrySend(AnsiString(Command) + #13, FError) then
+            Exit;
           // Space commands to avoid overrunning the receiver's control interface.
           if (Command = 'PWON') or (Command = 'ZMON') or (Command = 'Z2ON') then
             Sleep(1000)
@@ -246,11 +261,12 @@ begin
             Sleep(80);
         end;
 
-        Timer := TStopwatch.StartNew();
+      Timer := TStopwatch.StartNew();
 
       while (not Terminated) and (Timer.ElapsedMilliseconds < 2500) do
         begin
-          if not Client.TryReadLine(#13, 250, Line, FError) then Exit;
+          if not Client.TryReadLine(#13, 250, Line, FError) then
+            Exit;
 
           if (Trim(Line) <> '') then
             FLines.Add(Trim(Line));
@@ -261,29 +277,29 @@ begin
                 ToneReceived := (ExpectedTone = '') or (Line = ExpectedTone);
 
               if (Copy(Line, 1,
-                             6) = 'PSBAS ') and
-                 TryStrToInt(Copy(Line,
-                                  7,
-                                  MaxInt),
-                             Value) and
-                            (Value >= 44) and
-                            (Value <= 56) then
+                6) = 'PSBAS ') and
+                TryStrToInt(Copy(Line,
+                                 7,
+                                 MaxInt),
+                            Value) and
+                (Value >= 44) and
+                (Value <= 56) then
                 BassReceived := (ExpectedBass = '') or (Line = ExpectedBass);
 
               if (Copy(Line,
-                       1,
-                       6) = 'PSTRE ') and
-                 TryStrToInt(Copy(Line,
-                                  7,
-                                  MaxInt),
-                             Value) and
-                             (Value >= 44) and
-                             (Value <= 56) then
+                1,
+                6) = 'PSTRE ') and
+                TryStrToInt(Copy(Line,
+                                 7,
+                                 MaxInt),
+                            Value) and
+                (Value >= 44) and
+                (Value <= 56) then
                 TrebleReceived := (ExpectedTreble = '') or (Line = ExpectedTreble);
 
               if (Copy(Line,
-                       1,
-                       2) = 'MS') and (Length(Line) > 2) then
+                1,
+                2) = 'MS') and (Length(Line) > 2) then
                 ModeReceived := True;
 
               if (Line = 'PSDYNEQ ON') or (Line = 'PSDYNEQ OFF') then
@@ -302,21 +318,21 @@ begin
           if FStopOnChannelReply then
             begin
               if (Copy(Line,
-                       1,
-                       5) = 'CVFL ') and
-                 TryStrToInt(Copy(Line,
-                                  6,
-                                  MaxInt),
-                             Value) then
+                1,
+                5) = 'CVFL ') and
+                TryStrToInt(Copy(Line,
+                                 6,
+                                 MaxInt),
+                            Value) then
                 LeftReceived := True;
 
               if (Copy(Line,
-                       1,
-                       5) = 'CVFR ') and
-                 TryStrToInt(Copy(Line,
-                                  6,
-                                  MaxInt),
-                             Value) then
+                1,
+                5) = 'CVFR ') and
+                TryStrToInt(Copy(Line,
+                                 6,
+                                 MaxInt),
+                            Value) then
                 RightReceived := True;
 
               if (Line = 'CVEND') and LeftReceived and RightReceived then
@@ -326,14 +342,14 @@ begin
             end;
 
           if FStopOnVolumeReply and
-             (Copy(Line,
-                   1,
-                   2) = 'MV') and
-             (Length(Line) in [4, 5]) and
-             TryStrToInt(Copy(Line,
-                              3,
-                              MaxInt),
-                         Value) then
+            (Copy(Line,
+                  1,
+                  2) = 'MV') and
+            (Length(Line) in [4, 5]) and
+            TryStrToInt(Copy(Line,
+                             3,
+                             MaxInt),
+                        Value) then
             begin
               if (Length(Line) = 4) then
                 ReplyVolume := Value * 2
@@ -343,19 +359,19 @@ begin
             end;
 
           if FStopOnVolumeReply and (Copy(Line,
-                                          1,
-                                          6) = 'MVMAX ') and
-             TryStrToInt(Copy(Line,
-                              7,
-                              MaxInt), Value) then
+            1,
+            6) = 'MVMAX ') and
+            TryStrToInt(Copy(Line,
+                             7,
+                             MaxInt),
+                        Value) then
             begin
               if (Length(Line) = 8) then
                 Value := Value * 2
+              else if (Length(Line) = 9) and (Value mod 5 = 0) then
+                Value := Value div 5
               else
-                if (Length(Line) = 9) and (Value mod 5 = 0) then
-                  Value := Value div 5
-                else
-                  Value := -1;
+                Value := -1;
 
               if (Value >= 0) and (Value <= 196) then
                 begin
@@ -371,19 +387,19 @@ begin
 
               // Confirm the target, including a target capped by the receiver.
               VolumeReceived := (ReplyVolume >= 0) and
-                                  ((ExpectedVolume < 0) or (ReplyVolume = ExpectedVolume));
+                ((ExpectedVolume < 0) or (ReplyVolume = ExpectedVolume));
             end;
 
           if (FStopOnVolumeReply or
-              FStopOnChannelReply or
-              FStopOnZoneReply or
-              FStopOnToneReply) and
-              (not FStopOnVolumeReply or VolumeReceived) and
-              (not FStopOnVolumeReply or VolumeMaximumReceived or (Line = '')) and
-              (not FStopOnChannelReply or ChannelReceived) and
-              (not FStopOnZoneReply or (MainZoneReceived and Zone2Received)) and
-              (not FStopOnToneReply or (ToneReceived and BassReceived and TrebleReceived and
-              ModeReceived and DynamicEqReceived)) then
+            FStopOnChannelReply or
+            FStopOnZoneReply or
+            FStopOnToneReply) and
+            (not FStopOnVolumeReply or VolumeReceived) and
+            (not FStopOnVolumeReply or VolumeMaximumReceived or (Line = '')) and
+            (not FStopOnChannelReply or ChannelReceived) and
+            (not FStopOnZoneReply or (MainZoneReceived and Zone2Received)) and
+            (not FStopOnToneReply or (ToneReceived and BassReceived and TrebleReceived and
+            ModeReceived and DynamicEqReceived)) then
             Break;
         end;
 

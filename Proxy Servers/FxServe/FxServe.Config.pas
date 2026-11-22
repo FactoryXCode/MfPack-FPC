@@ -76,6 +76,7 @@ uses
 type
 
   TFxServeConfig = class
+
   private
     FBindAddress: string;
     FPort: Word;
@@ -176,15 +177,15 @@ begin
                                          '')));
 
   if (Text = '1') or
-     (Text = 'true') or
-     (Text = 'yes') or
-     (Text = 'on') then
+    (Text = 'true') or
+    (Text = 'yes') or
+    (Text = 'on') then
     Exit(True);
 
   if (Text = '0') or
-     (Text = 'false') or
-     (Text = 'no') or
-     (Text = 'off') then
+    (Text = 'false') or
+    (Text = 'no') or
+    (Text = 'off') then
     Exit(False);
 
   Result := ADefault;
@@ -192,6 +193,7 @@ end;
 
 
 function NormalizeRoute(const ARoute: string): string;
+
 begin
 
   Result := Trim(ARoute);
@@ -221,15 +223,16 @@ begin
   PathText := LowerCase(APath);
 
   Result := (PathText = ARoute) or
-            ((Copy(PathText,
-                   1,
-                   Length(ARoute)) = ARoute) and
-             (Length(PathText) > Length(ARoute)) and
-             (PathText[Length(ARoute) + 1] = '/'));
+    ((Copy(PathText,
+           1,
+           Length(ARoute)) = ARoute) and
+    (Length(PathText) > Length(ARoute)) and
+    (PathText[Length(ARoute) + 1] = '/'));
 end;
 
 
 constructor TFxServeConfig.Create();
+
 begin
 
   inherited Create();
@@ -240,6 +243,7 @@ end;
 
 
 destructor TFxServeConfig.Destroy();
+
 begin
 
   FNoStoreRoutes.Free;
@@ -325,9 +329,13 @@ begin
 
     FWebRoot := ExcludeTrailingPathDelimiter(FWebRoot);
 
-    FAlertStatusFileName := Trim(Ini.ReadString('FxAlert', 'StatusFile', ''));
-    if FAlertStatusFileName = '' then
-      FAlertStatusFileName := TPath.Combine(TPath.Combine(FWebRoot, 'FxAlert'), 'status.json')
+    FAlertStatusFileName := Trim(Ini.ReadString('FxAlert',
+                                                'StatusFile',
+                                                ''));
+    if (FAlertStatusFileName = '') then
+      FAlertStatusFileName := TPath.Combine(TPath.Combine(FWebRoot,
+                                                          'FxAlert'),
+                                            'status.json')
     else if not TPath.IsPathRooted(FAlertStatusFileName) then
       FAlertStatusFileName := ExpandFileName(IncludeTrailingPathDelimiter(BaseDir) + FAlertStatusFileName)
     else
@@ -338,8 +346,10 @@ begin
                                       'index.html'));
 
     if (FIndexFile = '') or
-       (Pos('\', FIndexFile) > 0) or
-       (Pos('/', FIndexFile) > 0) then
+      (Pos('\',
+           FIndexFile) > 0) or
+      (Pos('/',
+           FIndexFile) > 0) then
       raise Exception.Create('IndexFile must contain a file name only.');
 
     FMaxConnections := Ini.ReadInteger('Server',
@@ -420,15 +430,26 @@ begin
           raise Exception.Create('WAN HTTP and HTTPS ports must differ.');
       end;
 
-    FRadioEnabled := ReadIniBoolean(Ini, 'Radio', 'Enabled', False);
-    FRadioHost := Trim(Ini.ReadString('Radio', 'Host', '127.0.0.1'));
-    Value := Ini.ReadInteger('Radio', 'Port', 8098);
+    FRadioEnabled := ReadIniBoolean(Ini,
+                                    'Radio',
+                                    'Enabled',
+                                    False);
+    FRadioHost := Trim(Ini.ReadString('Radio',
+                                      'Host',
+                                      '127.0.0.1'));
+    Value := Ini.ReadInteger('Radio',
+                             'Port',
+                             8098);
     if (Value < 1) or (Value > 65535) then
       raise Exception.Create('Radio Port must be between 1 and 65535.');
     FRadioPort := Value;
     if FRadioEnabled and ((FRadioHost = '') or (Pos(#13, FRadioHost) > 0) or
-                          (Pos(#10, FRadioHost) > 0) or (Pos('/', FRadioHost) > 0) or
-                          (Pos(' ', FRadioHost) > 0) or (Pos(':', FRadioHost) > 0)) then
+      (Pos(#10,
+           FRadioHost) > 0) or (Pos('/',
+                                    FRadioHost) > 0) or
+      (Pos(' ',
+           FRadioHost) > 0) or (Pos(':',
+                                    FRadioHost) > 0)) then
       raise Exception.Create('Radio Host must be an IPv4 address or host name without a URL scheme or port.');
 
     FProxyEnabled := ReadIniBoolean(Ini,
@@ -471,12 +492,12 @@ begin
                                         'FxServe.log'));
 
     if (FLogFileName <> '') then
-    begin
-      if not TPath.IsPathRooted(FLogFileName) then
-        FLogFileName := ExpandFileName(IncludeTrailingPathDelimiter(BaseDir) + FLogFileName)
-      else
-        FLogFileName := ExpandFileName(FLogFileName);
-    end;
+      begin
+        if not TPath.IsPathRooted(FLogFileName) then
+          FLogFileName := ExpandFileName(IncludeTrailingPathDelimiter(BaseDir) + FLogFileName)
+        else
+          FLogFileName := ExpandFileName(FLogFileName);
+      end;
 
     FLogRetentionDays := Ini.ReadInteger('Logging',
                                          'RetentionDays',
@@ -491,30 +512,30 @@ begin
                                          False);
 
     FProtectionRequestsPerMinute := Ini.ReadInteger('Protection',
-                                                     'RequestsPerMinute',
-                                                     300);
+                                                    'RequestsPerMinute',
+                                                    300);
     if (FProtectionRequestsPerMinute < 1) or
-       (FProtectionRequestsPerMinute > 100000) then
+      (FProtectionRequestsPerMinute > 100000) then
       raise Exception.Create('Protection RequestsPerMinute must be between 1 and 100000.');
 
     FProtectionBurst := Ini.ReadInteger('Protection',
-                                         'Burst',
-                                         60);
+                                        'Burst',
+                                        60);
     if (FProtectionBurst < 1) or (FProtectionBurst > 100000) then
       raise Exception.Create('Protection Burst must be between 1 and 100000.');
 
     FProtectionMaxConcurrentPerAddress := Ini.ReadInteger('Protection',
-                                                           'MaxConcurrentPerAddress',
-                                                           12);
+                                                          'MaxConcurrentPerAddress',
+                                                          12);
     if (FProtectionMaxConcurrentPerAddress < 1) or
-       (FProtectionMaxConcurrentPerAddress > 10000) then
+      (FProtectionMaxConcurrentPerAddress > 10000) then
       raise Exception.Create('Protection MaxConcurrentPerAddress must be between 1 and 10000.');
 
     FProtectionBlockSeconds := Ini.ReadInteger('Protection',
-                                                'BlockSeconds',
-                                                60);
+                                               'BlockSeconds',
+                                               60);
     if (FProtectionBlockSeconds < 1) or
-       (FProtectionBlockSeconds > 86400) then
+      (FProtectionBlockSeconds > 86400) then
       raise Exception.Create('Protection BlockSeconds must be between 1 and 86400.');
 
   finally
@@ -532,10 +553,14 @@ var
 begin
 
   Path := APath;
-  P := Pos('?', Path);
+  P := Pos('?',
+           Path);
   if (P > 0) then
-    Path := Copy(Path, 1, P - 1);
-  Result := FRadioEnabled and SameText(Path, '/radio/live.aac');
+    Path := Copy(Path,
+                 1,
+                 P - 1);
+  Result := FRadioEnabled and SameText(Path,
+                                       '/radio/live.aac');
 end;
 
 
@@ -552,7 +577,7 @@ begin
 
   for I := 0 to FProxyRoutes.Count - 1 do
     if RouteMatches(APath,
-                    FProxyRoutes[I]) then
+      FProxyRoutes[I]) then
       Exit(True);
 end;
 
@@ -567,7 +592,7 @@ begin
 
   for I := 0 to FNoStoreRoutes.Count - 1 do
     if RouteMatches(APath,
-                    FNoStoreRoutes[I]) then
+      FNoStoreRoutes[I]) then
       Exit(True);
 end;
 

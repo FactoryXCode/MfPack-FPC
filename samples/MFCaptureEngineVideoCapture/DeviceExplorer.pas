@@ -65,14 +65,14 @@ unit DeviceExplorer;
 
 interface
 
-  // Undefine this when not needed!
-  //{$DEFINE SAVE_DEBUG_REPORT}
+// Undefine this when not needed!
+//{$DEFINE SAVE_DEBUG_REPORT}
 
 
 uses
   LMessages,
   LCLIntf,
-{Winapi}
+  {Winapi}
   Windows,
   WinApi.ComBaseApi,
   WinApi.WinApiTypes,
@@ -109,16 +109,17 @@ type
   //
 
   TDeviceExplorer = class(TObject)
+
   private
 
     FDeviceProperties: TDevicePropertiesArray;  // Holds an array that represent video
-                                                // capture device properties and capabilities
-                                                // Extended array of TDeviceProperties.
+    // capture device properties and capabilities
+    // Extended array of TDeviceProperties.
 
     FVideoFormatInfo: TVideoFormatInfo;         // Current video format.
     iDevices: Integer;                          // Number of elements in the array.
     iSelection: Integer;                        // Selected device, by array index.
-    iVideoFormatIndex: Integer ;                // Selected video format.
+    iVideoFormatIndex: Integer;                // Selected video format.
     lpSelectedDeviceName: LPWSTR;               // Selected device name.
     lpSelectedSymbolicLink: LPWSTR;             // Selected device symbolic link.
     gSelectedDeviceGuid: TGuid;                 // Guid of the selected device.
@@ -158,7 +159,7 @@ type
 
     // Use this function to get and set all devices and params.
     function SetCurrentDeviceProperties(pDeviceIndex: Integer;   // = zero based
-                                        pFormatsIndex: Integer): HRESULT;   // = zero based
+      pFormatsIndex: Integer): HRESULT;   // = zero based
 
 
     // Gets the activate interfaces from all capturedevices found on this system.
@@ -195,6 +196,7 @@ var
   hr: HResult;
 
 begin
+
   inherited Create();
 
   {$IFDEF SAVE_DEBUG_REPORT}
@@ -218,14 +220,15 @@ var
   hr: HResult;
 
 begin
+
   hr := GetCaptureDevices(uiC);
   if SUCCEEDED(hr) then
     begin
       if (uiC = 0) then
         begin
           {$IFDEF SAVE_DEBUG_REPORT}
-          OutputDebugStringW(StrToPWideChar(format('No devices found. (%d)',
-                                           [uiC])));
+              OutputDebugStringW(StrToPWideChar(format('No devices found. (%d)',
+                                                       [uiC])));
           {$ENDIF}
           hr := MF_E_NO_CAPTURE_DEVICES_AVAILABLE;
         end
@@ -241,7 +244,9 @@ end;
 
 //
 destructor TDeviceExplorer.Destroy();
+
 begin
+
   // Clear selected device record and arrays
   ResetCaptureDeviceCaps();
   {$IFDEF SAVE_DEBUG_REPORT}
@@ -258,6 +263,7 @@ var
   hr: HResult;
 
 begin
+
   // Clear existing content.
   ResetCaptureDeviceCaps();
 
@@ -276,7 +282,8 @@ var
   i: Integer;
 
 begin
-  for i := 0 to Length(FDeviceProperties) -1 do
+
+  for i := 0 to Length(FDeviceProperties) - 1 do
     FDeviceProperties[i].Reset;
   // Dynamic array's are managed types, but just to be sure, assign nil to it.
   FDeviceProperties := nil;
@@ -307,7 +314,7 @@ label
 begin
 
   if (pDeviceIndex >= 0) and (pDeviceIndex < Length(FDeviceProperties)) and
-     (pFormatsIndex >= 0) and (pFormatsIndex < Length(FDeviceProperties[pDeviceIndex].aVideoFormats)) then
+    (pFormatsIndex >= 0) and (pFormatsIndex < Length(FDeviceProperties[pDeviceIndex].aVideoFormats)) then
     begin
 
       iSelection := pDeviceIndex;
@@ -322,8 +329,8 @@ begin
 
 
       {$IFDEF SAVE_DEBUG_REPORT}
-      FMediaTypeDebug.LogMediaType(DeviceProperties[pDeviceIndex].aVideoFormats[pFormatsIndex].mfMediaType);
-      FMediaTypeDebug.SafeDebugResultsToFile('TDeviceExplorer.SetCurrentDeviceProperties');
+        FMediaTypeDebug.LogMediaType(DeviceProperties[pDeviceIndex].aVideoFormats[pFormatsIndex].mfMediaType);
+        FMediaTypeDebug.SafeDebugResultsToFile('TDeviceExplorer.SetCurrentDeviceProperties');
       {$ENDIF}
 
       SafeRelease(FMediaType);
@@ -336,8 +343,8 @@ begin
         goto done;
 
       {$IFDEF SAVE_DEBUG_REPORT}
-      FMediaTypeDebug.LogMediaType(FMediaType);
-      FMediaTypeDebug.SafeDebugResultsToFile('TDeviceExplorer.SetCurrentDeviceProperties');
+        FMediaTypeDebug.LogMediaType(FMediaType);
+        FMediaTypeDebug.SafeDebugResultsToFile('TDeviceExplorer.SetCurrentDeviceProperties');
       {$ENDIF}
 
       // Set the videoformat that has been selected by user.
@@ -347,8 +354,8 @@ begin
   else
     hr := HRESULT_FROM_WIN32(ERROR_INVALID_PARAMETER);
 
-Done:
-  Result := hr;
+  Done:
+    Result := hr;
 end;
 
 
@@ -360,6 +367,7 @@ var
   hr: HResult;
 
 begin
+
   pActivate := nil;
   pCount := 0;
   hr := MFCreateAttributes(mfAttributes,
@@ -382,7 +390,9 @@ end;
 
 
 procedure TDeviceExplorer.SetMediaType(aMediaType: IMFMediaType);
+
 begin
+
   SafeRelease(FMediaType);
   FMediaType := aMediaType;
 end;

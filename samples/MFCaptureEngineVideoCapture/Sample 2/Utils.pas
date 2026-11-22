@@ -66,13 +66,13 @@ unit Utils;
 
 interface
 
-  // Undefine this when not needed!
-  {$DEFINE SAVE_DEBUG_REPORT}
+// Undefine this when not needed!
+{$DEFINE SAVE_DEBUG_REPORT}
 
 uses
   LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.ComBaseApi,
@@ -92,17 +92,16 @@ uses
   WinApi.MediaFoundationApi.MfIdl,
   WinApi.MediaFoundationApi.MfMetLib;
 
-
 const
 
-  IDTIMEOUT      = 'Unable to set the capture device.';
+  IDTIMEOUT = 'Unable to set the capture device.';
   ERR_INITIALIZE = 'Unable to initialize the capture engine.';
-  ERR_PREVIEW    = 'An error occurred during preview.';
-  ERR_RECORD     = 'An error occurred during recording.';
-  ERR_CAPTURE    = 'An error occurred during capture.';
-  ERR_PHOTO      = 'Unable to capture still photo.';
+  ERR_PREVIEW = 'An error occurred during preview.';
+  ERR_RECORD = 'An error occurred during recording.';
+  ERR_CAPTURE = 'An error occurred during capture.';
+  ERR_PHOTO = 'Unable to capture still photo.';
   ERR_OUTPUT_MEDIATYPE_SET = 'Unable to set the CaptureEngine MediaType output.';
-  ERR_SET_DEVICE   = 'Selecting a device failed.';
+  ERR_SET_DEVICE = 'Selecting a device failed.';
   ERR_STOP_PREVIEW = 'Stopping preview failed.';
 
 type
@@ -112,8 +111,9 @@ type
     Count: UINT32;
     SelectedDevice: Integer;
     SelectedFormat: Integer;
-    public
-      procedure Reset();
+
+  public
+    procedure Reset();
   end;
 
   TFrameDataEvent = procedure(AMemoryStream: TMemoryStream) of object;
@@ -124,6 +124,7 @@ type
 
   // CriticalSection
   TMFCritSec = class(TObject)
+
   private
     FCriticalSection: TRTLCriticalSection;
 
@@ -140,6 +141,7 @@ type
   // CompilerVersion < Delphi 10 Seattle
 
   TMfpBitmap = class(TBitmap)
+
   public
     constructor Create(); overload; override;
     destructor Destroy(); override;
@@ -150,30 +152,30 @@ type
 
   end;
 
-  procedure SaveImage(const pBitmap: TMfpBitmap;
-                      const pPath: string;
-                      pType: TImageType);
+procedure SaveImage(const pBitmap: TMfpBitmap;
+                    const pPath: string;
+                    pType: TImageType);
 
-  // Simple error handler
-  procedure ErrMsg(pErrMsg: string;
-                   pHr: HResult);
+// Simple error handler
+procedure ErrMsg(pErrMsg: string;
+                 pHr: HResult);
 
-  // See also WinApi.MediaFoundationApi.MfUtils/HnsTimeToStr
-  function TranslateHnsTimeToStr(hns: MFTIME;
-                                 ShowMilliSeconds: Boolean = True;
-                                 DelimiterFormat: string = ':'): string; inline;
+// See also WinApi.MediaFoundationApi.MfUtils/HnsTimeToStr
+function TranslateHnsTimeToStr(hns: MFTIME;
+                               ShowMilliSeconds: Boolean = True;
+                               DelimiterFormat: string = ':'): string; inline;
 
 
-  function CloneVideoMediaType(pSrcMediaType: IMFMediaType;
-                               const guidSubType: REFGUID;
-                               out ppNewMediaType: IMFMediaType): HResult;
+function CloneVideoMediaType(pSrcMediaType: IMFMediaType;
+                             const guidSubType: REFGUID;
+                             out ppNewMediaType: IMFMediaType): HResult;
 
-  function CopyAttribute(pSrc: IMFAttributes;
-                         pDest: IMFAttributes;
-                         const key: TGUID): HResult; inline;
+function CopyAttribute(pSrc: IMFAttributes;
+                       pDest: IMFAttributes;
+                       const key: TGUID): HResult; inline;
 
-  function GetActivationObjects(out ppActivate: PIMFActivate;
-                                out pCount: UINT32): HResult;
+function GetActivationObjects(out ppActivate: PIMFActivate;
+                              out pCount: UINT32): HResult;
 
 
 implementation
@@ -184,8 +186,9 @@ var
   i: Integer;
 
 begin
-{$POINTERMATH ON}
-  for i := 0 to Integer(Count)-1 do
+
+  {$POINTERMATH ON}
+  for i := 0 to Integer(Count) - 1 do
     SafeRelease(ppDevices[i]);
   CoTaskMemFree(ppDevices);
   ppDevices := nil;
@@ -199,27 +202,35 @@ end;
 { TMFCritSec }
 
 constructor TMFCritSec.Create();
+
 begin
+
   inherited Create();
   InitializeCriticalSection(FCriticalSection);
 end;
 
 
 destructor TMFCritSec.Destroy();
+
 begin
+
   DeleteCriticalSection(FCriticalSection);
   inherited Destroy();
 end;
 
 
 procedure TMFCritSec.Lock();
+
 begin
+
   EnterCriticalSection(FCriticalSection);
 end;
 
 
 procedure TMFCritSec.Unlock();
+
 begin
+
   LeaveCriticalSection(FCriticalSection);
 end;
 
@@ -228,13 +239,16 @@ end;
 // TMfpBitmap ==================================================================
 
 constructor TMfpBitmap.Create();
+
 begin
+
   inherited;
 
 end;
 
 
 destructor TMfpBitmap.Destroy();
+
 begin
 
   inherited;
@@ -252,9 +266,9 @@ begin
 
   try
     Result := (Stream.Size - Stream.Position = 0) or
-              (Stream.Read(oBitmapFileHeader,
-                           SizeOf(oBitmapFileHeader)) = SizeOf(oBitmapFileHeader)) and
-              (oBitmapFileHeader.bfType = $4D42 {BM = 19778});
+      (Stream.Read(oBitmapFileHeader,
+                   SizeOf(oBitmapFileHeader)) = SizeOf(oBitmapFileHeader)) and
+      (oBitmapFileHeader.bfType = $4D42 {BM = 19778});
   finally
     Stream.Position := iPosition;
   end;
@@ -268,22 +282,34 @@ procedure SaveImage(const pBitmap: TMfpBitmap;
 var
   pPng: TPortableNetworkGraphic;
   pJpg: TJPEGImage;
+
 begin
-  if pBitmap = nil then raise Exception.Create('No image to save');
+
+  if (pBitmap = nil) then
+    raise Exception.Create('No image to save');
   case pType of
     itBitmap: pBitmap.SaveToFile(pPath);
     itPNG:
       begin
         pPng := TPortableNetworkGraphic.Create();
-        try pPng.Assign(pBitmap);pPng.SaveToFile(pPath);finally pPng.Free;end;
+        try
+          pPng.Assign(pBitmap);
+          pPng.SaveToFile(pPath);
+        finally
+          pPng.Free;
+        end;
       end;
     itJPG:
       begin
         pJpg := TJPEGImage.Create();
         try
           pJpg.ProgressiveEncoding := True;
-          pJpg.Assign(pBitmap);pJpg.Compress();pJpg.SaveToFile(pPath);
-        finally pJpg.Free;end;
+          pJpg.Assign(pBitmap);
+          pJpg.Compress();
+          pJpg.SaveToFile(pPath);
+        finally
+          pJpg.Free;
+        end;
       end;
   end;
 end;
@@ -292,15 +318,17 @@ end;
 // ErrMsg
 procedure ErrMsg(pErrMsg: string;
                  pHr: HResult);
+
 begin
-{$IFDEF SAVE_DEBUG_REPORT}
+
+  {$IFDEF SAVE_DEBUG_REPORT}
   OutputDebugStringW(StrToPWideChar(Format('Error: %s (hr = %d)',
-                                          [pErrMsg, pHr])))
-{$ELSE}
+                                           [pErrMsg, pHr])))
+  {$ELSE}
 
   ShowMessage(format('Error: %s (hr = %d)',
                      [pErrMsg, pHr]));
-{$ENDIF}
+  {$ENDIF}
 end;
 
 
@@ -315,38 +343,41 @@ var
   millisec: Word;
 
 begin
-try
-  hours := hns div MFTIME(36000000000);
-  hns := hns mod MFTIME(36000000000);
 
-  mins := hns div 600000000;
-  hns := hns mod 600000000;
+  try
+    hours := hns div MFTIME(36000000000);
+    hns := hns mod MFTIME(36000000000);
 
-  secs := hns div 10000000;
-  hns := hns mod 10000000;
+    mins := hns div 600000000;
+    hns := hns mod 600000000;
 
-  millisec := hns div 10000;
+    secs := hns div 10000000;
+    hns := hns mod 10000000;
+
+    millisec := hns div 10000;
 
 
-  if ShowMilliSeconds then
-    Result := Format('%2.2d%s%2.2d%s%2.2d,%3.3d', [hours,
-                                                   DelimiterFormat,
-                                                   mins,
-                                                   DelimiterFormat,
-                                                   secs,
-                                                   DelimiterFormat,
-                                                   millisec])
-  else
-    Result := Format('%2.2d%s%2.2d%s%2.2d', [hours,
-                                             DelimiterFormat,
-                                             mins,
-                                             DelimiterFormat,
-                                             secs]);
+    if ShowMilliSeconds then
+      Result := Format('%2.2d%s%2.2d%s%2.2d,%3.3d',
+                       [hours,
+        DelimiterFormat,
+        mins,
+        DelimiterFormat,
+        secs,
+        DelimiterFormat,
+        millisec])
+    else
+      Result := Format('%2.2d%s%2.2d%s%2.2d',
+                       [hours,
+        DelimiterFormat,
+        mins,
+        DelimiterFormat,
+        secs]);
 
-except
-  on exception do
-    Result:= '00:00:00,000';
-end;
+  except
+    on exception do
+      Result := '00:00:00,000';
+  end;
 end;
 
 
@@ -359,6 +390,7 @@ var
 
 label
   done;
+
 begin
 
   hr := MFCreateMediaType(pNewMediaType);
@@ -401,8 +433,8 @@ begin
 
   ppNewMediaType := pNewMediaType;
 
-done:
-  SafeRelease(pNewMediaType);
+  done:
+    SafeRelease(pNewMediaType);
   Result := hr;
 end;
 
@@ -413,9 +445,12 @@ function CopyAttribute(pSrc: IMFAttributes;
 var
   hr: HResult;
   pVar: PROPVARIANT;
+
 begin
+
   PropVariantInit(pVar);
-  hr := pSrc.GetItem(key,@pVar);
+  hr := pSrc.GetItem(key,
+                     @pVar);
 
   if SUCCEEDED(hr) then
     begin
@@ -435,6 +470,7 @@ var
   hr: HResult;
 
 begin
+
   pActivate := nil;
   pCount := 0;
   hr := MFCreateAttributes(mfAttributes,

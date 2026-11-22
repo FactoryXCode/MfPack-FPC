@@ -68,9 +68,9 @@ interface
 uses
   LMessages,
   LCLIntf,
-WinApi.ComBaseApi,
-WinApi.DirectX.D3D11_4,
-{Winapi}
+  WinApi.ComBaseApi,
+  WinApi.DirectX.D3D11_4,
+  {Winapi}
   Windows,
   Messages,
   {System}
@@ -90,7 +90,6 @@ WinApi.DirectX.D3D11_4,
   Support,
   SampleConverter;
 
-
 type
 
   TVideoFormat = record
@@ -102,7 +101,7 @@ type
     oSubType: TGUID;
   end;
 
-  TVideoFormats = TArray<TVideoFormat>;
+  TVideoFormats = TArray < TVideoFormat > ;
 
   TOnCalculateComplete = procedure(const AFramesPerSecond: Integer) of object;
 
@@ -119,6 +118,7 @@ type
   end;
 
   TCameraCapture = class(TInterfacedPersistent)
+
   private
     FMaxFramesToSkip: Integer;
     FOnLog: TLogEvent;
@@ -264,10 +264,12 @@ uses
   {VCL}
   Graphics;
 
-{ TCameraCapture }
+  { TCameraCapture }
 
 constructor TCameraCapture.Create();
+
 begin
+
   Inherited;
   ResetVariables;
   SetLength(FVideoFormats,
@@ -285,7 +287,9 @@ end;
 
 
 destructor TCameraCapture.Destroy();
+
 begin
+
   CloseSource();
   FVideoAmp := nil;
   FreeAndNil(FCritSec);
@@ -296,7 +300,9 @@ end;
 
 
 procedure TCameraCapture.CalculateMaxFrameRate(AOnComplete: TOnCalculateComplete);
+
 begin
+
   FCalculatingMax := True;
   FMaxFrameRateReadable := 0;
   FOnCalculateComplete := AOnComplete;
@@ -304,13 +310,17 @@ end;
 
 
 procedure TCameraCapture.CancelCapture;
+
 begin
+
   Flush();
 end;
 
 
 procedure TCameraCapture.CloseSource;
+
 begin
+
   if SourceOpen then
     begin
       Flush();
@@ -322,13 +332,16 @@ begin
     end;
 
   FVideoAmp := nil;
-  SetLength(FVideoFormats,0);
+  SetLength(FVideoFormats,
+            0);
   ResetVariables();
 end;
 
 
 procedure TCameraCapture.ResetVariables();
+
 begin
+
   FVideoInfo.Reset();
   FAwaitingFlush := False;
   FSupportsSeek := False;
@@ -343,10 +356,11 @@ var
   sError: string;
 
 begin
+
   if SampleConverter.DataFromSample(ASample,
-                                    VideoInfo,
-                                    sError,
-                                    oData) then
+    VideoInfo,
+    sError,
+    oData) then
     begin
       SafeRelease(ASample);
 
@@ -359,43 +373,56 @@ begin
 
       Log('Failed to return data from frame sample: ' + sError,
           ltError);
-   end;
+    end;
 end;
 
 
 procedure TCameraCapture.Flush();
+
 begin
+
   FAwaitingFlush := True;
 end;
 
 
 function TCameraCapture.GetMaxFramesToSkip(): Integer;
+
 begin
+
   Result := FMaxFramesToSkip;
 end;
 
 
 function TCameraCapture.GetSourceOpen(): Boolean;
+
 begin
+
   Result := Assigned(FSourceReader);
 end;
 
 
 procedure TCameraCapture.HandleFlushComplete();
+
 begin
-  Log('Flush complete', ltInfo);
+
+  Log('Flush complete',
+      ltInfo);
   FAwaitingFlush := False;
 end;
 
 
 procedure TCameraCapture.HandleFrameSkipped();
+
 begin
+
   inc(FFramesSkipped);
 end;
 
 
 procedure TCameraCapture.HandleMediaFormatChanged();
+
 begin
+
   Log('Media Format Changed',
       ltInfo);
   GetVideoFormat(True);
@@ -409,13 +436,14 @@ var
   iMediaIndex: Integer;
 
 begin
+
   iMediaIndex := FVideoFormats[AFormatIndex].iMediaIndex;
 
   try
     Result := (SUCCEEDED(SourceReader.GetNativeMediaType(DWORD(MF_SOURCE_READER_FIRST_VIDEO_STREAM),
-                                                        iMediaIndex,
-                                                        @pMediaType)) and
-               SetMediaType(pMediaType));
+                                                         iMediaIndex,
+                                                         @pMediaType)) and
+      SetMediaType(pMediaType));
   finally
     SafeRelease(pMediaType);
   end;
@@ -427,6 +455,7 @@ var
   pMediaType: IMFMediaType;
 
 begin
+
   Result := SUCCEEDED(MFCreateMediaType(pMediaType));
 
   try
@@ -452,6 +481,7 @@ var
   pCurrentType: IMFMediaType;
 
 begin
+
   Result := SourceOpen;
 
   if Result then
@@ -459,12 +489,12 @@ begin
       try
         Result := (SUCCEEDED(SourceReader.GetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
                                                               @pCurrentType)) and
-                   PopulateFormatDetails(pCurrentType,
-                                         AFormat));
+          PopulateFormatDetails(pCurrentType,
+                                AFormat));
       finally
-      SafeRelease(pCurrentType);
+        SafeRelease(pCurrentType);
       end;
-  end;
+    end;
 end;
 
 
@@ -473,6 +503,7 @@ var
   oAttributes: IMFAttributes;
 
 begin
+
   Result := SUCCEEDED(MFCreateAttributes(oAttributes,
                                          1));
   if Result then
@@ -499,6 +530,7 @@ var
   oCaps: Integer;
 
 begin
+
   Result := SUCCEEDED(AMediaSource.QueryInterface(IAMVideoProcAmp,
                                                   FVideoAmp));
   FCameraBrightness.Reset();
@@ -506,15 +538,15 @@ begin
   if Result then
     begin
       Result := SUCCEEDED(FVideoAmp.GetRange(Long(VideoProcAmp_Brightness),
-                          FCameraBrightness.FMin,
-                          FCameraBrightness.FMax,
-                          FCameraBrightness.FStep,
-                          FCameraBrightness.FDefault,
-                          oCaps));
+                                             FCameraBrightness.FMin,
+                                             FCameraBrightness.FMax,
+                                             FCameraBrightness.FStep,
+                                             FCameraBrightness.FDefault,
+                                             oCaps));
 
       if Result then
         FCameraBrightness.FManualControl := (oCaps = Ord(VideoProcAmp_Flags_Manual));
-   end;
+    end;
 end;
 
 
@@ -523,6 +555,7 @@ var
   oFlags: Long;
 
 begin
+
   oFlags := 0;
   if Assigned(FVideoAmp) then
     FVideoAmp.Set_(Long(VideoProcAmp_Brightness),
@@ -536,7 +569,9 @@ function TCameraCapture.GetBrightness: Integer;
 var
   iValue: Integer;
   oFlags: Integer;
+
 begin
+
   oFlags := 0;
   if Assigned(FVideoAmp) and SUCCEEDED(FVideoAmp.Get(Long(VideoProcAmp_Brightness), iValue, oFlags)) then
     Result := iValue
@@ -552,11 +587,12 @@ var
   oFeatureLevels: array[0..6] of D3D_FEATURE_LEVEL;
 
 const
-   // This should be in the D3D11_CREATE_DEVICE_FLAG enumeration of Embarcadero's translation WinApi.D3D11.pas
-   // Note that Embarcadero's translation WinApi.D3D11.pas is not up to date with the latest Windows API, if you encounter issues, switch to  WinApi.DirectX.D3D11.pas.
-   D3D11_CREATE_DEVICE_VIDEO_SUPPORT = $800;
+  // This should be in the D3D11_CREATE_DEVICE_FLAG enumeration of Embarcadero's translation WinApi.D3D11.pas
+  // Note that Embarcadero's translation WinApi.D3D11.pas is not up to date with the latest Windows API, if you encounter issues, switch to  WinApi.DirectX.D3D11.pas.
+  D3D11_CREATE_DEVICE_VIDEO_SUPPORT = $800;
 
 begin
+
   oFlags := D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 
   oFeatureLevels[0] := D3D_FEATURE_LEVEL_11_1;
@@ -568,21 +604,21 @@ begin
   oFeatureLevels[6] := D3D_FEATURE_LEVEL_9_1;
 
   Result := CheckSucceeded(D3D11CreateDevice(nil, // Default adapter
-                                             D3D_DRIVER_TYPE_HARDWARE, // A hardware driver, which implements Direct3D features in hardware.
-                                             0,
+    D3D_DRIVER_TYPE_HARDWARE, // A hardware driver, which implements Direct3D features in hardware.
+    0,
                                              oFlags,
                                              @oFeatureLevels,
                                              Length(oFeatureLevels),
                                              D3D11_SDK_VERSION,
                                              @FDirectXDevice,
                                              @FFeatureLevel,   // This level is the Direct3D runtime the device use.
-                                             @FContext),
-                                             'Create D3D11 device');
+    @FContext),
+                           'Create D3D11 device');
 
   if Result then
     begin
       Result := SUCCEEDED(FDirectXDevice.QueryInterface(IID_ID3D11Multithread,
-                          pMultithread));
+                                                        pMultithread));
 
       if Result then
         pMultithread.SetMultithreadProtected(True);
@@ -591,18 +627,23 @@ begin
     end;
 
   if Result then
-    Result := SUCCEEDED(MFCreateDXGIDeviceManager(FDXResetToken, FManager));
+    Result := SUCCEEDED(MFCreateDXGIDeviceManager(FDXResetToken,
+                                                  FManager));
 
   if Result then
-    Result := SUCCEEDED(FManager.ResetDevice(FDirectXDevice, FDXResetToken));
+    Result := SUCCEEDED(FManager.ResetDevice(FDirectXDevice,
+                                             FDXResetToken));
 
   if Result then
-    Result := SUCCEEDED(oAttributes.SetUnknown(MF_SOURCE_READER_D3D_MANAGER, FManager));
+    Result := SUCCEEDED(oAttributes.SetUnknown(MF_SOURCE_READER_D3D_MANAGER,
+                                               FManager));
 end;
 
 
 procedure TCameraCapture.DestroyDirectXDevice();
+
 begin
+
   if Assigned(FManager) then
     FManager.ResetDevice(FDirectXDevice,
                          FDXResetToken);
@@ -617,9 +658,10 @@ var
   pSource: IMFMediaSource;
 
 begin
+
   CloseSource();
 
-  Result := ADeviceSymbolicLink <> '';
+  Result := (ADeviceSymbolicLink <> '');
 
   if Result then
     begin
@@ -634,10 +676,10 @@ begin
         finally
           pSource := nil;
         end;
-     finally
-       CritSec.Unlock;
-     end;
-  end;
+      finally
+        CritSec.Unlock;
+      end;
+    end;
 end;
 
 
@@ -646,30 +688,42 @@ function TCameraCapture.ActiveDevice(const ADeviceSymbolicLink: PWideChar;
 var
   Attributes: IMFAttributes;
   Devices: PIMFActivate;
-  Count,Length: UINT32;
+  Count, Length: UINT32;
   Name: PWideChar;
   I: Integer;
+
 begin
-  Result := False;AMediaSource := nil;Devices := nil;Count := 0;
-  if FAILED(MFCreateAttributes(Attributes,1)) then Exit;
-  if FAILED(Attributes.SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID)) then Exit;
-  if FAILED(MFEnumDeviceSources(Attributes,Devices,Count)) then Exit;
+
+  Result := False;
+  AMediaSource := nil;
+  Devices := nil;
+  Count := 0;
+  if FAILED(MFCreateAttributes(Attributes, 1)) then
+    Exit;
+  if FAILED(Attributes.SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE, MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID)) then
+    Exit;
+  if FAILED(MFEnumDeviceSources(Attributes, Devices, Count)) then
+    Exit;
   try
-    for I := 0 to Integer(Count)-1 do
+    for I := 0 to Integer(Count) - 1 do
       begin
         Name := nil;
         {$POINTERMATH ON}
-        if SUCCEEDED(Devices[I].GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,Name,Length)) then
-          try
-            if SameText(UnicodeString(Name),UnicodeString(ADeviceSymbolicLink)) then
-              begin
-                Result := SUCCEEDED(Devices[I].ActivateObject(IID_IMFMediaSource,Pointer(AMediaSource)));
-                Exit;
-              end;
-          finally CoTaskMemFree(Name);end;
+        if SUCCEEDED(Devices[I].GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK, Name, Length)) then
+        try
+          if SameText(UnicodeString(Name), UnicodeString(ADeviceSymbolicLink)) then
+            begin
+              Result := SUCCEEDED(Devices[I].ActivateObject(IID_IMFMediaSource,
+                                                            Pointer(AMediaSource)));
+              Exit;
+            end;
+        finally
+          CoTaskMemFree(Name);
+        end;
       end;
   finally
-    for I := 0 to Integer(Count)-1 do Devices[I] := nil;
+    for I := 0 to Integer(Count) - 1 do
+      Devices[I] := nil;
     {$POINTERMATH OFF}
     CoTaskMemFree(Devices);
   end;
@@ -684,7 +738,9 @@ var
   iCount: Integer;
 
 begin
-  SetLength(FVideoFormats, 0);
+
+  SetLength(FVideoFormats,
+            0);
   Result := SourceOpen;
 
   if Result then
@@ -713,8 +769,8 @@ begin
           finally
             pMediaType := nil;
           end;
+        end;
     end;
-  end;
 end;
 
 
@@ -722,13 +778,16 @@ function TCameraCapture.IsFormatAvailable(const AMediaType: IMFMediaType): Boole
 var
   oMajorType: TGUID;
   oSubType: TGUID;
+
 begin
+
   Result := SUCCEEDED(AMediaType.GetMajorType(oMajorType)) and
-            IsEqualGUID(oMajorType,MFMediaType_Video) and
-            SUCCEEDED(AMediaType.GetGUID(MF_MT_SUBTYPE,
-                                         oSubType)) and
-            SampleConverter.IsInputSupported(oSubType) and
-            (GetFrameRate(AMediaType) >= FMinimumFrameRate);
+    IsEqualGUID(oMajorType,
+                MFMediaType_Video) and
+    SUCCEEDED(AMediaType.GetGUID(MF_MT_SUBTYPE,
+                                 oSubType)) and
+    SampleConverter.IsInputSupported(oSubType) and
+    (GetFrameRate(AMediaType) >= FMinimumFrameRate);
 end;
 
 
@@ -740,23 +799,24 @@ var
   oSubType: TGUID;
 
 begin
-   // Get the video frame size
-   Result := SUCCEEDED(MFGetAttributeSize(AMediaFormat,
-                       MF_MT_FRAME_SIZE,
-                       uiWidth,
-                       uiHeigth));
-   if Result then
-     begin
-       ADetails.iFrameWidth := uiWidth;
-       ADetails.iFrameHeigth := uiHeigth;
-     end;
 
-   // Get the frame rate
-   ADetails.iFramesPerSecond := GetFrameRate(AMediaFormat);
+  // Get the video frame size
+  Result := SUCCEEDED(MFGetAttributeSize(AMediaFormat,
+                                         MF_MT_FRAME_SIZE,
+                                         uiWidth,
+                                         uiHeigth));
+  if Result then
+    begin
+      ADetails.iFrameWidth := uiWidth;
+      ADetails.iFrameHeigth := uiHeigth;
+    end;
 
-   if SUCCEEDED(AMediaFormat.GetGUID(MF_MT_SUBTYPE,
-                                     oSubType)) then
-     ADetails.oSubType := oSubType;
+  // Get the frame rate
+  ADetails.iFramesPerSecond := GetFrameRate(AMediaFormat);
+
+  if SUCCEEDED(AMediaFormat.GetGUID(MF_MT_SUBTYPE,
+    oSubType)) then
+    ADetails.oSubType := oSubType;
 end;
 
 
@@ -766,10 +826,11 @@ var
   uiDenominator: UINT32;
 
 begin
+
   if SUCCEEDED(MFGetAttributeRatio(AMediaFormat,
-                                   MF_MT_FRAME_RATE,
-                                   uiNumerator,
-                                   uiDenominator)) then
+    MF_MT_FRAME_RATE,
+    uiNumerator,
+    uiDenominator)) then
     Result := Round(uiNumerator / uiDenominator)
   else
     Result := 0;
@@ -781,6 +842,7 @@ var
   sError: string;
 
 begin
+
   case AResult of
     E_POINTER:
       sError := 'Object not initialized.';
@@ -792,8 +854,8 @@ begin
       sError := 'A flush operation is pending';
     E_INVALIDARG:
       sError := 'Invalid argument.';
-  else
-    sError := 'Unknown error';
+    else
+      sError := 'Unknown error';
   end;
 
   Log('ReadSample call failed: ' + sError,
@@ -803,7 +865,9 @@ end;
 
 procedure TCameraCapture.Log(const AMessage: string;
                              const AType: TLogType);
+
 begin
+
   if Assigned(FOnLog) then
     FOnLog(AMessage,
            AType);
@@ -811,7 +875,9 @@ end;
 
 
 function TCameraCapture.ConfigureSourceReader(const AAttributes: IMFAttributes): Boolean;
+
 begin
+
   if FEnabledDirectX then
     SetupDirectXAccereration(AAttributes);
 
@@ -840,11 +906,12 @@ var
 
 
 begin
+
   Result := SUCCEEDED(FSourceReader.GetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
                                                         @pInputType));
 
   if (Result and SUCCEEDED(pInputType.GetGUID(MF_MT_SUBTYPE,
-                                             oSubType))) then
+    oSubType))) then
     begin
       FVideoInfo.oSubType := oSubType;
 
@@ -868,9 +935,9 @@ begin
             end;
         end;
 
-       FVideoInfo.iStride := MFGetAttributeUINT32(pInputType,
-                                                   MF_MT_DEFAULT_STRIDE,
-                                                   1);
+      FVideoInfo.iStride := MFGetAttributeUINT32(pInputType,
+                                                 MF_MT_DEFAULT_STRIDE,
+                                                 1);
 
       SampleConverter.UpdateConverter(FManager,
                                       pInputType);
@@ -879,7 +946,9 @@ end;
 
 
 function TCameraCapture.SelectVideoStream(): Boolean;
+
 begin
+
   Result := SUCCEEDED(FSourceReader.SetStreamSelection(MF_SOURCE_READER_ALL_STREAMS,
                                                        False));
 
@@ -896,28 +965,36 @@ end;
 
 
 procedure TCameraCapture.SetOnLog(const Value: TLogEvent);
+
 begin
+
   FOnLog := Value;
   if Assigned(FSampleConverter) then
-   FSampleConverter.OnLog := FOnLog;
+    FSampleConverter.OnLog := FOnLog;
 end;
 
 
 procedure TCameraCapture.StartTimer();
+
 begin
+
   QueryPerformanceCounter(FTimerStart);
 end;
 
 
 procedure TCameraCapture.StopTimer();
+
 begin
+
   QueryPerformanceCounter(FTimerEnd);
 end;
 
 
 function TCameraCapture.GetTimerMs(): Double;
+
 begin
-  if TimerFrequency > 0 then
+
+  if (TimerFrequency > 0) then
     Result := (FTimerEnd - FTimerStart) / TimerFrequency * 1000
   else
     Result := 0;
@@ -925,13 +1002,17 @@ end;
 
 
 procedure TCameraCapture.ResetFramesSkipped();
+
 begin
+
   FFramesSkipped := 0;
 end;
 
 
 procedure TCameraCapture.SetEnabledDirectX(const AValue: Boolean);
+
 begin
+
   FEnabledDirectX := AValue;
   if not FEnabledDirectX then
     DestroyDirectXDevice();
@@ -939,7 +1020,9 @@ end;
 
 
 procedure TCameraCapture.SetMaxFramesToSkip(const AValue: Integer);
+
 begin
+
   FMaxFramesToSkip := AValue;
 end;
 
@@ -947,9 +1030,11 @@ end;
 function TCameraCapture.CheckSucceeded(AStatus: HRESULT;
                                        const AMethod: string;
                                        ALogFailure: Boolean = True): Boolean;
+
 begin
- Result := SUCCEEDED(AStatus);
- if not Result and Assigned(OnLog) then
+
+  Result := SUCCEEDED(AStatus);
+  if not Result and Assigned(OnLog) then
     OnLog(Format('Method "%s" failed. Error code: %d',
                  [AMethod, AStatus]),
           ltError);
@@ -959,7 +1044,9 @@ end;
 { TCameraBrightness }
 
 procedure TCameraBrightness.Reset();
+
 begin
+
   FMin := 0;
   FMax := 0;
   FStep := 0;

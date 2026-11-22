@@ -141,8 +141,8 @@ type
                               ccskWindow);
 
   TMfCastVideoCodecPreference = (cvcpAutomatic,
-                                  cvcpH264,
-                                  cvcpHEVC);
+                                 cvcpH264,
+                                 cvcpHEVC);
 
   TMfCastVideoCodec = (cvcNone,
                        cvcH264,
@@ -430,7 +430,6 @@ type
     Encoding: TMfCastEncodingSettings;
     PreferredMediaMode: TMfCastMediaMode;
     PreferredSubtitleMode: TMfCastSubtitleMode;
-
     class function CreateDefault(): TMfCastSettings; static;
   end;
 
@@ -502,26 +501,26 @@ type
     procedure Reset();
   end;
 
-  function MfCastStateToString(const AState: TMfCastState): string;
-  function MfCastLogLevelToString(const ALevel: TMfCastLogLevel): string;
-  function MfCastFormatLogLine(const AText: string;
-                               const ATimestamp: TDateTime): string;
-  function MfCastMediaModeToString(const AMode: TMfCastMediaMode): string;
-  function MfCastSubtitleModeToString(const AMode: TMfCastSubtitleMode): string;
-  function MfCastStreamTypeToString(const AStreamType: TMfCastStreamType): string;
-  function MfCastDeviceIsAudioOnly(const ADevice: TMfCastDevice): Boolean;
+function MfCastStateToString(const AState: TMfCastState): string;
+function MfCastLogLevelToString(const ALevel: TMfCastLogLevel): string;
+function MfCastFormatLogLine(const AText: string;
+                             const ATimestamp: TDateTime): string;
+function MfCastMediaModeToString(const AMode: TMfCastMediaMode): string;
+function MfCastSubtitleModeToString(const AMode: TMfCastSubtitleMode): string;
+function MfCastStreamTypeToString(const AStreamType: TMfCastStreamType): string;
+function MfCastDeviceIsAudioOnly(const ADevice: TMfCastDevice): Boolean;
 
-  function MfCastMakeTrackId(const AKind: TMfCastTrackKind;
-                             const ASource: TMfCastTrackSource;
-                             const AStreamIndex: DWORD): Int64;
+function MfCastMakeTrackId(const AKind: TMfCastTrackKind;
+                           const ASource: TMfCastTrackSource;
+                           const AStreamIndex: DWORD): Int64;
 
-  function MfCastDecodeTrackId(const ATrackId: Int64;
-                               out AKind: TMfCastTrackKind;
-                               out ASource: TMfCastTrackSource;
-                               out AStreamIndex: DWORD): Boolean;
+function MfCastDecodeTrackId(const ATrackId: Int64;
+                             out AKind: TMfCastTrackKind;
+                             out ASource: TMfCastTrackSource;
+                             out AStreamIndex: DWORD): Boolean;
 
-  function MfCastStablePathIndex(const AFileName: string): DWORD;
-  
+function MfCastStablePathIndex(const AFileName: string): DWORD;
+
 
 implementation
 
@@ -529,10 +528,11 @@ const
   // Standard subtype GUIDs kept local so the public settings types do not
   // require the Media Foundation declaration units.
   MFCAST_DEFAULT_VIDEO_SUBTYPE_H264: TGUID = '{34363248-0000-0010-8000-00AA00389B71}';
-  MFCAST_DEFAULT_AUDIO_SUBTYPE_AAC: TGUID =  '{00001610-0000-0010-8000-00AA00389B71}';
+  MFCAST_DEFAULT_AUDIO_SUBTYPE_AAC: TGUID = '{00001610-0000-0010-8000-00AA00389B71}';
 
 
 procedure TMfCastTxtEntry.Reset();
+
 begin
 
   Name := '';
@@ -541,6 +541,7 @@ end;
 
 
 procedure TMfCastDevice.Reset();
+
 begin
 
   Id := '';
@@ -551,12 +552,14 @@ begin
   Address := '';
   Port := 0;
   RawCapabilities := 0;
-  SetLength(TxtEntries, 0);
+  SetLength(TxtEntries,
+            0);
   LastSeenUtc := 0;
 end;
 
 
 procedure TMfCastSubtitleAsset.Reset();
+
 begin
 
   TrackId := 0;
@@ -569,11 +572,13 @@ begin
   Name := '';
   SourceName := '';
   AspectRatio := 0.0;
-  SetLength(Data, 0);
+  SetLength(Data,
+            0);
 end;
 
 
 procedure TMfCastTrackInfo.Reset();
+
 begin
 
   TrackId := 0;
@@ -592,6 +597,7 @@ end;
 
 
 procedure TMfCastMediaInfo.Reset();
+
 begin
 
   SourceName := '';
@@ -618,12 +624,16 @@ end;
 
 
 procedure TMfCastDeviceProfile.Reset();
+
 begin
 
   Name := '';
-  SetLength(AllowedContentTypes, 0);
-  SetLength(AllowedVideoSubtypes, 0);
-  SetLength(AllowedAudioSubtypes, 0);
+  SetLength(AllowedContentTypes,
+            0);
+  SetLength(AllowedVideoSubtypes,
+            0);
+  SetLength(AllowedAudioSubtypes,
+            0);
   MaxVideoWidth := 0;
   MaxVideoHeight := 0;
   MaxFrameRateNumerator := 0;
@@ -634,6 +644,7 @@ end;
 
 
 procedure TMfCastLoadRequest.Reset();
+
 begin
 
   ContentId := '';
@@ -642,12 +653,15 @@ begin
   Title := '';
   StartTime100ns := 0;
   AutoPlay := True;
-  SetLength(Tracks, 0);
-  SetLength(ActiveTrackIds, 0);
+  SetLength(Tracks,
+            0);
+  SetLength(ActiveTrackIds,
+            0);
 end;
 
 
 procedure TMfCastMediaStatus.Reset();
+
 begin
 
   MediaSessionId := 0;
@@ -661,6 +675,7 @@ end;
 
 
 procedure TMfCastErrorInfo.Reset();
+
 begin
 
   HResult := S_OK;
@@ -671,6 +686,7 @@ end;
 
 
 procedure TMfCastDiscoveryCallbacks.Reset();
+
 begin
 
   OnStarted := nil;
@@ -683,6 +699,7 @@ end;
 
 
 procedure TMfCastChannelCallbacks.Reset();
+
 begin
 
   OnReceiverReady := nil;
@@ -693,6 +710,7 @@ end;
 
 
 procedure TMfCastControllerCallbacks.Reset();
+
 begin
 
   OnDeviceAdded := nil;
@@ -705,6 +723,7 @@ end;
 
 
 procedure TMfCastProtocolSettings.Reset();
+
 begin
 
   DiscoveryServiceName := '';
@@ -729,6 +748,7 @@ end;
 
 
 procedure TMfCastDiscoverySettings.Reset();
+
 begin
 
   LocalInterfaceAddress := '';
@@ -742,6 +762,7 @@ end;
 
 
 procedure TMfCastHttpSettings.Reset();
+
 begin
 
   BindAddress := '';
@@ -761,6 +782,7 @@ end;
 
 
 procedure TMfCastEncodingSettings.Reset();
+
 begin
 
   OutputMode := comHlsFmp4;
@@ -784,6 +806,7 @@ end;
 
 
 class function TMfCastSettings.CreateDefault(): TMfCastSettings;
+
 begin
 
   Result.Protocol.Reset();
@@ -854,6 +877,7 @@ end;
 
 
 procedure TMfCastTranscodeRequest.Reset();
+
 begin
 
   SourceName := '';
@@ -867,7 +891,8 @@ begin
   SubtitleStreamIndex := 0;
   HasSubtitleStreamIndex := False;
   SubtitleAspectRatio := 0.0;
-  SetLength(SubtitleData, 0);
+  SetLength(SubtitleData,
+            0);
   AudioTrackId := 0;
   AudioStreamIndex := 0;
   HasAudioStreamIndex := False;
@@ -879,6 +904,7 @@ end;
 
 
 procedure TMfCastCaptureSettings.Reset();
+
 begin
 
   SourceKind := ccskDesktop;
@@ -902,6 +928,7 @@ end;
 
 
 procedure TMfCastCaptureCapabilities.Reset();
+
 begin
 
   AudioOnly := False;
@@ -916,6 +943,7 @@ end;
 
 
 procedure TMfCastRemuxRequest.Reset();
+
 begin
 
   SourceName := '';
@@ -929,6 +957,7 @@ end;
 
 
 procedure TMfCastSubtitleChoice.Reset();
+
 begin
 
   Source := cscsSidecar;
@@ -944,11 +973,12 @@ end;
 function MfCastMakeTrackId(const AKind: TMfCastTrackKind;
                            const ASource: TMfCastTrackSource;
                            const AStreamIndex: DWORD): Int64;
+
 begin
 
   Result := (Int64(Ord(AKind) + 1) shl 56) or
-            (Int64(Ord(ASource) + 1) shl 48) or
-            Int64(AStreamIndex);
+    (Int64(Ord(ASource) + 1) shl 48) or
+    Int64(AStreamIndex);
 end;
 
 
@@ -970,9 +1000,9 @@ begin
   SourceValue := Integer((ATrackId shr 48) and $FF) - 1;
 
   Result := (KindValue >= Ord(Low(TMfCastTrackKind))) and
-            (KindValue <= Ord(High(TMfCastTrackKind))) and
-            (SourceValue >= Ord(Low(TMfCastTrackSource))) and
-            (SourceValue <= Ord(High(TMfCastTrackSource)));
+    (KindValue <= Ord(High(TMfCastTrackKind))) and
+    (SourceValue >= Ord(Low(TMfCastTrackSource))) and
+    (SourceValue <= Ord(High(TMfCastTrackSource)));
   if not Result then
     Exit;
 
@@ -1000,6 +1030,7 @@ end;
 
 
 function MfCastStateToString(const AState: TMfCastState): string;
+
 begin
 
   case AState of
@@ -1015,47 +1046,52 @@ begin
     csStopping: Result := 'Stopping';
     csStopped: Result := 'Stopped';
     csError: Result := 'Error';
-  else
-    Result := 'Unknown';
+    else
+      Result := 'Unknown';
   end;
 end;
 
 
 function MfCastFormatLogLine(const AText: string;
                              const ATimestamp: TDateTime): string;
+
 begin
-  Result := '[' + FormatDateTime('hh:nn:ss.zzz', ATimestamp) + '] ' + AText;
+
+  Result := '[' + FormatDateTime('hh:nn:ss.zzz',
+                                 ATimestamp) + '] ' + AText;
 end;
 
 
 function MfCastLogLevelToString(const ALevel: TMfCastLogLevel): string;
+
 begin
 
   case ALevel of
-    cllTrace:   Result := 'TRACE';
-    cllDebug:   Result := 'DEBUG';
-    cllInfo:    Result := 'INFO';
+    cllTrace: Result := 'TRACE';
+    cllDebug: Result := 'DEBUG';
+    cllInfo: Result := 'INFO';
     cllWarning: Result := 'WARNING';
-    cllError:   Result := 'ERROR';
-  else
-    Result := 'UNKNOWN';
+    cllError: Result := 'ERROR';
+    else
+      Result := 'UNKNOWN';
   end;
 end;
 
 
 function MfCastMediaModeToString(const AMode: TMfCastMediaMode): string;
+
 begin
 
   case AMode of
-    cmmAutomatic:                 Result := 'Automatic';
-    cmmDirectFile:                Result := 'DirectFile';
-    cmmDirectWithTextTrack:       Result := 'DirectWithTextTrack';
-    cmmTranscodeBurnedSubtitles:  Result := 'TranscodeBurnedSubtitles';
+    cmmAutomatic: Result := 'Automatic';
+    cmmDirectFile: Result := 'DirectFile';
+    cmmDirectWithTextTrack: Result := 'DirectWithTextTrack';
+    cmmTranscodeBurnedSubtitles: Result := 'TranscodeBurnedSubtitles';
     cmmTranscodeAudioWithArtwork: Result := 'TranscodeAudioWithArtwork';
-    cmmRemuxFile:                 Result := 'RemuxFile';
-    cmmTranscodeAudioOnly:        Result := 'TranscodeAudioOnly';
-  else
-    Result := 'Unknown';
+    cmmRemuxFile: Result := 'RemuxFile';
+    cmmTranscodeAudioOnly: Result := 'TranscodeAudioOnly';
+    else
+      Result := 'Unknown';
   end;
 end;
 
@@ -1063,37 +1099,40 @@ end;
 function MfCastDeviceIsAudioOnly(const ADevice: TMfCastDevice): Boolean;
 const
   MFCAST_CAPABILITY_VIDEO_OUT = Cardinal(1) shl 0;
+
 begin
 
   // Zero means unknown because some older/incomplete DNS-SD replies omit ca.
   Result := (ADevice.RawCapabilities <> 0) and
-            ((ADevice.RawCapabilities and MFCAST_CAPABILITY_VIDEO_OUT) = 0);
+    ((ADevice.RawCapabilities and MFCAST_CAPABILITY_VIDEO_OUT) = 0);
 end;
 
 
 function MfCastSubtitleModeToString(const AMode: TMfCastSubtitleMode): string;
+
 begin
 
   case AMode of
-    csmAutomatic:         Result := 'Automatic';
-    csmNone:              Result := 'None';
+    csmAutomatic: Result := 'Automatic';
+    csmNone: Result := 'None';
     csmExternalTextTrack: Result := 'ExternalTextTrack';
-    csmBurnIntoVideo:     Result := 'BurnIntoVideo';
-  else
-    Result := 'Unknown';
+    csmBurnIntoVideo: Result := 'BurnIntoVideo';
+    else
+      Result := 'Unknown';
   end;
 end;
 
 
 function MfCastStreamTypeToString(const AStreamType: TMfCastStreamType): string;
+
 begin
 
   case AStreamType of
     cstBuffered: Result := 'BUFFERED';
-    cstLive:     Result := 'LIVE';
-    cstNone:     Result := 'NONE';
-  else
-    Result := 'BUFFERED';
+    cstLive: Result := 'LIVE';
+    cstNone: Result := 'NONE';
+    else
+      Result := 'BUFFERED';
   end;
 end;
 

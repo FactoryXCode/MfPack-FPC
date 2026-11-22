@@ -70,26 +70,26 @@ unit WinApi.WinMM.MMiscApi2;
 {$I MfPack.Fpc.inc}
 
 
-  {$PACKENUM 4}
+{$PACKENUM 4}
 
-  {$IFDEF WIN32}
+{$IFDEF WIN32}
     {$ALIGN 1}
-  {$ELSE}
-    {$ALIGN 8} // Win64
-  {$ENDIF}
+{$ELSE}
+{$ALIGN 8}
+// Win64
+{$ENDIF}
 
 interface
 
-  (*$HPPEMIT '' *)
-  (*$HPPEMIT '#include <mmiscapi2.h>' *)
-  (*$HPPEMIT '' *)
+(*$HPPEMIT '' *)
+(*$HPPEMIT '#include <mmiscapi2.h>' *)
+(*$HPPEMIT '' *)
 
 uses
   {WinApi}
   WinApi.WinApiTypes,
   {WinMM}
   WinApi.WinMM.MMSysCom;
-
 
 type
 
@@ -106,40 +106,41 @@ type
 
 const
 
-  TIME_ONESHOT                        = $0000;  { program timer for single event }
-  TIME_PERIODIC                       = $0001;  { program for continuous periodic event }
+  TIME_ONESHOT = $0000;  { program timer for single event }
+  TIME_PERIODIC = $0001;  { program for continuous periodic event }
 
-  TIME_CALLBACK_FUNCTION              = $0000;  { callback is function }
-  TIME_CALLBACK_EVENT_SET             = $0010;  { callback is event - use SetEvent }
-  TIME_CALLBACK_EVENT_PULSE           = $0020;  { callback is event - use PulseEvent }
+  TIME_CALLBACK_FUNCTION = $0000;  { callback is function }
+  TIME_CALLBACK_EVENT_SET = $0010;  { callback is event - use SetEvent }
+  TIME_CALLBACK_EVENT_PULSE = $0020;  { callback is event - use PulseEvent }
 
-  TIME_KILL_SYNCHRONOUS               = $0100;  { This flag prevents the event from occurring }
-                                                { after the user calls timeKillEvent() to }
-                                                { destroy it. }
+  TIME_KILL_SYNCHRONOUS = $0100;  { This flag prevents the event from occurring }
 
-
-  function timeSetEvent(uDelay: UINT;
-                        uResolution: UINT;
-                        fptc: LPTIMECALLBACK;
-                        dwUser: DWORD_PTR;
-                        fuEvent: UINT): MMRESULT; stdcall;
+  { after the user calls timeKillEvent() to }
+  { destroy it. }
 
 
-  function timeKillEvent(uTimerID: UINT): MMRESULT; stdcall;
+function timeSetEvent(uDelay: UINT;
+                      uResolution: UINT;
+                      fptc: LPTIMECALLBACK;
+                      dwUser: DWORD_PTR;
+                      fuEvent: UINT): MMRESULT; stdcall;
 
 
-  // Additional Prototypes for ALL interfaces
+function timeKillEvent(uTimerID: UINT): MMRESULT; stdcall;
 
-  // End of Additional Prototypes
+
+// Additional Prototypes for ALL interfaces
+
+// End of Additional Prototypes
 
 implementation
 
 const
   MMiscApi2Lib = 'Winmm.dll';
 
-  function timeSetEvent; external MMiscApi2Lib name 'timeSetEvent' ;
-  function timeKillEvent; external MMiscApi2Lib name 'timeKillEvent' ;
+function timeSetEvent; external MMiscApi2Lib name 'timeSetEvent';
+function timeKillEvent; external MMiscApi2Lib name 'timeKillEvent';
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

@@ -64,11 +64,12 @@ unit MfBroadcastEncoderAac;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   WinApi.ComBaseApi,
@@ -92,6 +93,7 @@ LMessages,
 type
 
   TMfBroadcastEncoderAac = class(TMfBroadcastEncoderBase)
+
   private
 
     FTransform: IMFTransform;
@@ -130,11 +132,11 @@ const
 
   CLSID_CMSAACEncMFT: TGUID = '{93AF0C51-2275-45D2-A35B-F2BA21CAED00}';
 
-{ TMfBroadcastEncoderAac }
+  { TMfBroadcastEncoderAac }
 
 // Helper
 function _AppendBytes(const A,
-                            B: TBytes): TBytes;
+                      B: TBytes): TBytes;
 var
   LA: Integer;
   LB: Integer;
@@ -160,6 +162,7 @@ end;
 
 
 constructor TMfBroadcastEncoderAac.Create();
+
 begin
 
   inherited Create;
@@ -173,6 +176,7 @@ end;
 
 
 destructor TMfBroadcastEncoderAac.Destroy();
+
 begin
 
   FOutputType := nil;
@@ -273,10 +277,12 @@ begin
   if Failed(hr) then
     Exit(hr);
 
-  if FChannels = 1 then
-    hr := FInputType.SetUINT32(MF_MT_AUDIO_CHANNEL_MASK, $4)
+  if (FChannels = 1) then
+    hr := FInputType.SetUINT32(MF_MT_AUDIO_CHANNEL_MASK,
+                               $4)
   else
-    hr := FInputType.SetUINT32(MF_MT_AUDIO_CHANNEL_MASK, $3);
+    hr := FInputType.SetUINT32(MF_MT_AUDIO_CHANNEL_MASK,
+                               $3);
   if Failed(hr) then
     Exit(hr);
 
@@ -366,7 +372,7 @@ begin
   if (SampleBytes <= 0) then
     Exit;
 
-  if Length(FTemp16) < SampleBytes then
+  if (Length(FTemp16) < SampleBytes) then
     SetLength(FTemp16,
               SampleBytes);
 
@@ -383,9 +389,8 @@ begin
 
       if (X > 1.0) then
         X := 1.0
-      else
-        if (X < -1.0) then
-          X := -1.0;
+      else if (X < -1.0) then
+        X := -1.0;
 
       Dst^ := Round(X * 32767.0);
 
@@ -499,7 +504,7 @@ begin
   // OutputBuffer.pEvents := nil;
   // or
   ZeroMemory(@OutputBuffer,
-                 SizeOf(OutputBuffer));
+             SizeOf(OutputBuffer));
   OutputBuffer.pSample := OutSample;
 
 
@@ -572,6 +577,7 @@ var
   Combined: TBytes;
   OldLen: Integer;
   ChunkLen: Integer;
+
 
   procedure AppendChunk(const AChunk: TBytes);
   var

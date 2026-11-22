@@ -91,7 +91,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   //////////////////////////////////////////////////////////////////////////////
@@ -142,7 +143,7 @@ uses
   //
   //////////////////////////////////////////////////////////////////////////////
 
-  type
+type
   PFN_D3D11ON12_CREATE_DEVICE = function(pDevice: IUnknown;
                                          Flags: UINT;
                                          pFeatureLevels: PD3D_FEATURE_LEVEL;
@@ -154,7 +155,7 @@ uses
                                          ppImmediateContext: PID3D11DeviceContext;
                                          pChosenFeatureLevel: PD3D_FEATURE_LEVEL): HRESULT; stdcall;
 
-  function D3D11On12CreateDevice(pDevice: IUnknown;
+function D3D11On12CreateDevice(pDevice: IUnknown;
                                Flags: UINT;
                                pFeatureLevels: PD3D_FEATURE_LEVEL;
                                FeatureLevels: UINT;
@@ -171,6 +172,7 @@ type
   ID3D11On12Device = interface;
 
   PD3D11_RESOURCE_FLAGS = ^D3D11_RESOURCE_FLAGS;
+
   D3D11_RESOURCE_FLAGS = record
     BindFlags: UINT;
     MiscFlags: UINT;
@@ -198,6 +200,7 @@ type
     procedure AcquireWrappedResources(ppResources: PID3D11Resource;
                                       NumResources: UINT); stdcall;
   end;
+
   IID_ID3D11On12Device = ID3D11On12Device;
 
 
@@ -211,6 +214,7 @@ type
                             ppvDevice: PPointer): HRESULT; stdcall;
 
   end;
+
   IID_ID3D11On12Device1 = ID3D11On12Device1;
 
 
@@ -231,6 +235,7 @@ type
                                       ppFences: PID3D12Fence): HRESULT; stdcall;
 
   end;
+
   IID_ID3D11On12Device2 = ID3D11On12Device2;
 
 
@@ -240,15 +245,14 @@ type
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 
 const
   D3D11on12lib = 'd3d11.dll';
 
 
-function D3D11On12CreateDevice; external D3D11on12lib name 'D3D11On12CreateDevice' ;
+function D3D11On12CreateDevice; external D3D11on12lib name 'D3D11On12CreateDevice';
 
 
 end.
-

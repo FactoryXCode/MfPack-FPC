@@ -83,9 +83,9 @@ uses
   Classes,
   SysUtils;
 
-
 type
   TLatencyTool = class(TObject)
+
   private
 
     // The data that we are most interested in:
@@ -148,13 +148,17 @@ implementation
 
 
 constructor TLatencyTool.Create();
+
 begin
+
   inherited Create();
 end;
 
 
 destructor TLatencyTool.Destroy();
+
 begin
+
   try
     RestoreAffinity;
   finally
@@ -166,22 +170,25 @@ end;
 procedure TLatencyTool.RestoreAffinity;
 var
   ErrorCode: DWORD;
+
 begin
+
   prRunning := False;
   prStartP := 0;
-  if prThreadHandle = 0 then
+  if (prThreadHandle = 0) then
     Exit;
   ErrorCode := 0;
   try
     if (prPreviousAffinity <> 0) and
-       (SetThreadAffinityMask(prThreadHandle,prPreviousAffinity) = 0) then
+      (SetThreadAffinityMask(prThreadHandle,
+                             prPreviousAffinity) = 0) then
       ErrorCode := GetLastError;
   finally
     CloseHandle(prThreadHandle);
     prThreadHandle := 0;
     prPreviousAffinity := 0;
   end;
-  if ErrorCode <> 0 then
+  if (ErrorCode <> 0) then
     RaiseLastOSError(ErrorCode);
 end;
 
@@ -189,7 +196,9 @@ end;
 function TLatencyTool.Initialize(): Boolean;
 var
   PerfFrequency: TLargeInteger;
+
 begin
+
   RestoreAffinity;
   prCurrentExecutionTime := 0;
   prExecutionCount := 0;
@@ -213,14 +222,16 @@ end;
 procedure TLatencyTool.UpdateStats(pElapsed: LONGLONG);
 var
   ElapsedMicroseconds: Double;
+
 begin
+
   if not prDoMeasure or (pElapsed < 0) then
     Exit;
   ElapsedMicroseconds := pElapsed * prFreqFactor;
   prCurrentExecutionTime := ElapsedMicroseconds;
   if (prExecutionCount = 0) or (prCurrentExecutionTime < prMinExecutionTime) then
     prMinExecutionTime := prCurrentExecutionTime;
-  if prCurrentExecutionTime > prMaxExecutionTime then
+  if (prCurrentExecutionTime > prMaxExecutionTime) then
     prMaxExecutionTime := prCurrentExecutionTime;
   Inc(prExecutionCount);
   prTotalMicroseconds := prTotalMicroseconds + ElapsedMicroseconds;
@@ -230,20 +241,22 @@ end;
 
 
 procedure TLatencyTool.Start(var pStart: TLargeInteger;
-                              pCPU: DWORD_PTR = 1);
+                             pCPU: DWORD_PTR = 1);
+
 begin
+
   pStart := 0;
   RestoreAffinity;
   if not prDoMeasure then
     Exit;
   try
-    if pCPU <> 0 then
+    if (pCPU <> 0) then
       begin
-        if not DuplicateHandle(GetCurrentProcess,GetCurrentThread,GetCurrentProcess,
-                                @prThreadHandle,0,False,DUPLICATE_SAME_ACCESS) then
+        if not DuplicateHandle(GetCurrentProcess, GetCurrentThread, GetCurrentProcess, @prThreadHandle, 0, False, DUPLICATE_SAME_ACCESS) then
           RaiseLastOSError;
-        prPreviousAffinity := SetThreadAffinityMask(prThreadHandle,pCPU);
-        if prPreviousAffinity = 0 then
+        prPreviousAffinity := SetThreadAffinityMask(prThreadHandle,
+                                                    pCPU);
+        if (prPreviousAffinity = 0) then
           RaiseLastOSError;
       end;
     if QueryPerformanceCounter(pStart) then
@@ -261,8 +274,10 @@ end;
 
 
 procedure TLatencyTool.Stop(var pEnd: TLargeInteger;
-                             out pLatency: TLargeInteger);
+                            out pLatency: TLargeInteger);
+
 begin
+
   pEnd := 0;
   pLatency := 0;
   if not prDoMeasure or not prRunning then
@@ -270,7 +285,7 @@ begin
   try
     if QueryPerformanceCounter(pEnd) then
       begin
-        if pEnd >= prStartP then
+        if (pEnd >= prStartP) then
           begin
             pLatency := pEnd - prStartP;
             UpdateStats(pLatency);

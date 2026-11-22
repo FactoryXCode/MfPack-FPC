@@ -68,7 +68,7 @@ interface
 uses
   LMessages,
   LCLIntf,
-{Winapi}
+  {Winapi}
   Messages,
   Windows,
   WinApi.WinApiTypes,
@@ -95,11 +95,14 @@ const
 
 type
   PSampleReply = ^TSampleReply;
+
   TSampleReply = record
     oSample: IMFSample;
   end;
 
-  TCameraCaptureAsync = class(TCameraCapture, IMFSourceReaderCallback)
+  TCameraCaptureAsync = class(TCameraCapture,
+                              IMFSourceReaderCallback)
+
   private
     FMessageHandler: TMessageHandler;
     FFindingSample: Boolean;
@@ -131,7 +134,7 @@ type
     {$endregion}
 
   protected
-    function ConfigureSourceReader(const AAttributes: IMFAttributes) : Boolean; override;
+    function ConfigureSourceReader(const AAttributes: IMFAttributes): Boolean; override;
     procedure ProcessSample(ASample: IMFSample); override;
     procedure Flush(); override;
     procedure ResetVariables(); override;
@@ -143,7 +146,7 @@ type
     procedure StartBurst();
     procedure StopBurst();
 
-    procedure CalculateMaxFrameRate(AOnComplete : TOnCalculateComplete); override;
+    procedure CalculateMaxFrameRate(AOnComplete: TOnCalculateComplete); override;
 
     procedure RequestFrame();
     property BurstEnabled: Boolean read FBurstEnabled;
@@ -154,10 +157,16 @@ implementation
 
 
 constructor TCameraCaptureAsync.Create();
+
 begin
+
   inherited;
-  FFlushEvent := CreateEventW(nil,True,False,nil);
-  if FFlushEvent = 0 then RaiseLastOSError;
+  FFlushEvent := CreateEventW(nil,
+                              True,
+                              False,
+                              nil);
+  if (FFlushEvent = 0) then
+    RaiseLastOSError;
   FMaxCalcStartTime := 0;
   FSampleReadCount := 0;
   FMessageHandler := TMessageHandler.Create();
@@ -170,35 +179,44 @@ end;
 destructor TCameraCaptureAsync.Destroy();
 var
   Msg: TMsg;
+
 begin
+
   FClosing := True;
   StopBurst();
   CloseSource();
-  if FMessageHandler <> nil then
+  if (FMessageHandler <> nil) then
     begin
-      while PeekMessageW(Msg,FMessageHandler.Handle,WM_SAMPLE_FOUND,WM_SAMPLE_FOUND,PM_REMOVE) do
+      while PeekMessageW(Msg, FMessageHandler.Handle, WM_SAMPLE_FOUND, WM_SAMPLE_FOUND, PM_REMOVE) do
         Dispose(PSampleReply(Msg.LParam));
       FreeAndNil(FMessageHandler);
     end;
-  if FFlushEvent <> 0 then CloseHandle(FFlushEvent);
+  if (FFlushEvent <> 0) then
+    CloseHandle(FFlushEvent);
   inherited;
 end;
 
 
 procedure TCameraCaptureAsync.Flush;
+
 begin
-  if SourceReader = nil then Exit;
+
+  if (SourceReader = nil) then
+    Exit;
   inherited;
   ResetEvent(FFlushEvent);
   if SUCCEEDED(SourceReader.Flush(MF_SOURCE_READER_ALL_STREAMS)) then
-    WaitForSingleObject(FFlushEvent,5000);
+    WaitForSingleObject(FFlushEvent,
+                        5000);
   HandleFlushComplete();
 end;
 
 
 function TCameraCaptureAsync.OnEvent(dwStreamIndex: DWord;
                                      pEvent: IMFMediaEvent): HRESULT;
+
 begin
+
   // Note: This will be called in a worker thread.
 
   Result := S_OK;
@@ -206,7 +224,9 @@ end;
 
 
 function TCameraCaptureAsync.OnFlush(dwStreamIndex: DWord): HRESULT;
+
 begin
+
   SetEvent(FFlushEvent);
   Result := S_OK;
 end;
@@ -221,6 +241,7 @@ var
   bEndOfStream: Boolean;
 
 begin
+
   // Note: This will be called in a worker thread. Be careful of accessing anything outside of this method.
   Result := hrStatus;
   try
@@ -233,34 +254,32 @@ begin
 
           if ((dwStreamFlags and MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) <> 0) then
             NotifyMediaFormatChanged
-          else
-            if not Assigned(pSample) and (FramesSkipped < MaxFramesToSkip) and not bEndOfStream then
-              begin
-                ReadNextSample();
-                HandleFrameSkipped();
-              end
-          else
-            if Assigned(pSample) then
-              begin
-                if FCalculatingMax then
-                  begin
-                    // Exclude the time taken to read the first sample
-                    if (FSampleReadCount = 0) then
-                      FMaxCalcStartTime := Now();
+          else if not Assigned(pSample) and (FramesSkipped < MaxFramesToSkip) and not bEndOfStream then
+            begin
+              ReadNextSample();
+              HandleFrameSkipped();
+            end
+          else if Assigned(pSample) then
+            begin
+              if FCalculatingMax then
+                begin
+                  // Exclude the time taken to read the first sample
+                  if (FSampleReadCount = 0) then
+                    FMaxCalcStartTime := Now();
 
-                    inc(FSampleReadCount);
+                  inc(FSampleReadCount);
+                  ReadNextSample();
+                end
+              else
+                begin
+                  if BurstEnabled then
                     ReadNextSample();
-                  end
-                else
-                  begin
-                    if BurstEnabled then
-                      ReadNextSample();
 
-                    ProcessSample(pSample);
-                  end;
+                  ProcessSample(pSample);
+                end;
 
-                FFindingSample := False;
-              end;
+              FFindingSample := False;
+            end;
         finally
           CritSec.Unlock();
         end;
@@ -276,40 +295,59 @@ end;
 procedure TCameraCaptureAsync.ProcessSample(ASample: IMFSample);
 var
   Reply: PSampleReply;
+
 begin
-  if FClosing then Exit;
+
+  if FClosing then
+    Exit;
   New(Reply);
   Reply.oSample := ASample;
-  if not PostMessageW(FMessageHandler.Handle,WM_SAMPLE_FOUND,0,LPARAM(Reply)) then Dispose(Reply);
+  if not PostMessageW(FMessageHandler.Handle, WM_SAMPLE_FOUND, 0, LPARAM(Reply)) then
+    Dispose(Reply);
 end;
 
 
 procedure TCameraCaptureAsync.CalculateMaxFrameRate(AOnComplete: TOnCalculateComplete);
 var
-  Started,Elapsed: DWORD;
+  Started, Elapsed: DWORD;
   Count: Integer;
+
 begin
+
   inherited;
   FSampleReadCount := 0;
   Started := GetTickCount();
-  if not ReadNextSample() then FCalculatingMax := False;
+  if not ReadNextSample() then
+    FCalculatingMax := False;
   while FCalculatingMax and (DWORD((UInt64(GetTickCount()) + $100000000 - Started) and $FFFFFFFF) < 10000) do
-    begin HandleThreadMessages(GetCurrentThread(),0);Sleep(10);end;
+    begin
+      HandleThreadMessages(GetCurrentThread(),
+                           0);
+      Sleep(10);
+    end;
   CritSec.Lock();
-  try FCalculatingMax := False;finally CritSec.Unlock();end;
+  try
+    FCalculatingMax := False;
+  finally
+    CritSec.Unlock();
+  end;
   Flush();
   Elapsed := DWORD((UInt64(GetTickCount()) + $100000000 - Started) and $FFFFFFFF);
   Count := FSampleReadCount;
   if Assigned(OnCalculateComplete) then
     begin
-      if (Elapsed = 0) or (Count = 0) then OnCalculateComplete(0)
-      else OnCalculateComplete(Round(Int64(Count)*1000.0/Elapsed));
+      if (Elapsed = 0) or (Count = 0) then
+        OnCalculateComplete(0)
+      else
+        OnCalculateComplete(Round(Int64(Count) * 1000.0 / Elapsed));
     end;
 end;
 
 
 function TCameraCaptureAsync.ConfigureSourceReader(const AAttributes: IMFAttributes): Boolean;
+
 begin
+
   Result := inherited;
 
   if Result then
@@ -323,9 +361,10 @@ end;
 
 procedure TCameraCaptureAsync.StartBurst();
 var
-  oCurrentFormat : TVideoFormat;
+  oCurrentFormat: TVideoFormat;
 
 begin
+
   StopBurst;
   if not FBurstEnabled then
     begin
@@ -340,34 +379,38 @@ end;
 
 
 procedure TCameraCaptureAsync.StopBurst();
+
 begin
- if FBurstEnabled then
-  begin
-    FCancelBurst := True;
-    FBurstEnabled := False;
-  end;
+
+  if FBurstEnabled then
+    begin
+      FCancelBurst := True;
+      FBurstEnabled := False;
+    end;
 end;
 
 
 procedure TCameraCaptureAsync.HandleMessages(var AMessage: TLMessage;
                                              var AHandled: Boolean);
+
 begin
-  if AMessage.Msg = WM_REQUEST_FLUSH then
+
+  if (AMessage.Msg = WM_REQUEST_FLUSH) then
     begin
       AHandled := True;
       Flush();
     end
-  else if AMessage.Msg = WM_FLUSH_COMPLETE then
+  else if (AMessage.Msg = WM_FLUSH_COMPLETE) then
     begin
       AHandled := True;
       HandleFlushComplete();
     end
-  else if AMessage.Msg = WM_MEDIA_FORMAT_CHANGED then
+  else if (AMessage.Msg = WM_MEDIA_FORMAT_CHANGED) then
     begin
       AHandled := True;
       HandleMediaFormatChanged();
     end
-  else if AMessage.Msg = WM_SAMPLE_FOUND then
+  else if (AMessage.Msg = WM_SAMPLE_FOUND) then
     begin
       AHandled := True;
       HandleSampleFoundMessage(AMessage);
@@ -380,10 +423,13 @@ end;
 procedure TCameraCaptureAsync.HandleSampleFoundMessage(var AMessage: TLMessage);
 var
   Reply: PSampleReply;
+
 begin
+
   Reply := PSampleReply(AMessage.LParam);
   try
-    if not FClosing and not FCancelBurst then ReturnDataFromSample(Reply.oSample);
+    if not FClosing and not FCancelBurst then
+      ReturnDataFromSample(Reply.oSample);
   finally
     Dispose(Reply);
   end;
@@ -391,18 +437,22 @@ end;
 
 
 procedure TCameraCaptureAsync.NotifyMediaFormatChanged();
+
 begin
+
   // Note: This will be called in a worker thread.
   PostMessageW(FMessageHandler.Handle,
-              WM_MEDIA_FORMAT_CHANGED,
-              0,
-              0);
+               WM_MEDIA_FORMAT_CHANGED,
+               0,
+               0);
   HandleThreadMessages(GetCurrentThread());
 end;
 
 
 procedure TCameraCaptureAsync.RequestFrame();
+
 begin
+
   FCancelBurst := False;
   ResetFramesSkipped();
   ReadNextSample();
@@ -429,14 +479,16 @@ begin
                                          nil);
       Result := SUCCEEDED(oResult);
 
-    if not Result then
-      HandleSampleReadError(oResult);
-  end;
+      if not Result then
+        HandleSampleReadError(oResult);
+    end;
 end;
 
 
 procedure TCameraCaptureAsync.ResetVariables();
+
 begin
+
   inherited;
   MaxFramesToSkip := 1;
 end;

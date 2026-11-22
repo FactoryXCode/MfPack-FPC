@@ -168,14 +168,15 @@ type
 
     class function MapMatroskaFormat(const Format: TMfMatroskaSubtitleFormat): TMfEmbeddedSubtitleFormat; static;
     class function EnumerateMatroskaTracks(const MediaFileName: WideString;
-                                            out Tracks: TMfEmbeddedSubtitleTrackInfoArray): HRESULT; static;
+                                           out Tracks: TMfEmbeddedSubtitleTrackInfoArray): HRESULT; static;
     class function EnumerateMediaSourceTracks(const MediaFileName: WideString;
-                                               out Tracks: TMfEmbeddedSubtitleTrackInfoArray): HRESULT; static;
+                                              out Tracks: TMfEmbeddedSubtitleTrackInfoArray): HRESULT; static;
 
     class function ImportMatroskaTextTrack(const MediaFileName: WideString;
                                            const Track: TMfEmbeddedSubtitleTrackInfo;
                                            const TimedText: TMfTimedText;
                                            const CancelEvent: THandle): HRESULT; static;
+
   public
 
     class function EnumeratePresentationTracks(const PresentationDescriptor: IMFPresentationDescriptor;
@@ -218,6 +219,7 @@ const
 
 
 procedure TMfEmbeddedSubtitleTrackInfo.Reset();
+
 begin
 
   Source := essMediaFoundation;
@@ -236,6 +238,7 @@ end;
 
 class function TMfEmbeddedSubtitleReader.CreateReader(const MediaFileName: WideString;
                                                       out Reader: IMFSourceReader): HRESULT;
+
 begin
 
   Reader := nil;
@@ -269,17 +272,17 @@ begin
 
   try
     if FAILED(Reader.GetPresentationAttribute(StreamIndex,
-                                              AttributeKey,
-                                              Value)) then
+      AttributeKey,
+      Value)) then
       Exit;
 
     case Value.vt of
       VT_LPWSTR: if Assigned(Value.pwszVal) then
-                   Result := Value.pwszVal;
-      VT_BSTR:   if Assigned(Value.bstrVal) then
-                   Result := Value.bstrVal;
-      VT_LPSTR:  if Assigned(Value.pszVal) then
-                   Result := string(AnsiString(Value.pszVal));
+          Result := Value.pwszVal;
+      VT_BSTR: if Assigned(Value.bstrVal) then
+          Result := Value.bstrVal;
+      VT_LPSTR: if Assigned(Value.pszVal) then
+          Result := string(AnsiString(Value.pszVal));
     end;
   finally
     PropVariantClear(Value);
@@ -302,17 +305,16 @@ begin
   PropVariantInit(Value);
 
   try
-    if FAILED(Descriptor.GetItem(AttributeKey,
-                                 @Value)) then
+    if FAILED(Descriptor.GetItem(AttributeKey, @Value)) then
       Exit;
 
     case Value.vt of
       VT_LPWSTR: if Assigned(Value.pwszVal) then
-                   Result := Value.pwszVal;
-      VT_BSTR:   if Assigned(Value.bstrVal) then
-                   Result := Value.bstrVal;
-      VT_LPSTR:  if Assigned(Value.pszVal) then
-                   Result := string(AnsiString(Value.pszVal));
+          Result := Value.pwszVal;
+      VT_BSTR: if Assigned(Value.bstrVal) then
+          Result := Value.bstrVal;
+      VT_LPSTR: if Assigned(Value.pszVal) then
+          Result := string(AnsiString(Value.pszVal));
     end;
   finally
     PropVariantClear(Value);
@@ -321,6 +323,7 @@ end;
 
 
 class function TMfEmbeddedSubtitleReader.IsSubtitleMajorType(const MajorType: TGUID): Boolean;
+
 begin
 
   // The Windows Matroska source normally reports MFMediaType_Subtitle, but
@@ -328,47 +331,46 @@ begin
   // Script. The subtype remains the decisive classifier.
   Result := IsEqualGUID(MajorType,
                         MFMediaType_Subtitle) or
-            IsEqualGUID(MajorType,
-                        MFMediaType_SAMI) or
-            IsEqualGUID(MajorType,
-                        MFMediaType_Script);
+    IsEqualGUID(MajorType,
+                MFMediaType_SAMI) or
+    IsEqualGUID(MajorType,
+                MFMediaType_Script);
 end;
 
 
 class function TMfEmbeddedSubtitleReader.ClassifySubtype(const Subtype: TGUID): TMfEmbeddedSubtitleFormat;
+
 begin
 
   if IsEqualGUID(Subtype,
-                 MFSubtitleFormat_SRT) then
+    MFSubtitleFormat_SRT) then
     Result := esfSrt
+  else if IsEqualGUID(Subtype,
+    MFSubtitleFormat_SSA) then
+    Result := esfSsaAss
+  else if IsEqualGUID(Subtype,
+    FSubtitleFormat_VobSub) then
+    Result := esfVobSub
+  else if IsEqualGUID(Subtype,
+    MFSubtitleFormat_PGS) then
+    Result := esfPgs
   else
-    if IsEqualGUID(Subtype,
-                   MFSubtitleFormat_SSA) then
-      Result := esfSsaAss
-    else
-      if IsEqualGUID(Subtype,
-                     FSubtitleFormat_VobSub) then
-        Result := esfVobSub
-      else
-        if IsEqualGUID(Subtype,
-                       MFSubtitleFormat_PGS) then
-          Result := esfPgs
-        else
-          Result := esfUnknown;
+    Result := esfUnknown;
 end;
 
 
 class function TMfEmbeddedSubtitleReader.FormatName(const SubtitleFormat: TMfEmbeddedSubtitleFormat): string;
+
 begin
 
   case SubtitleFormat of
-    esfSrt: Result :=         'SRT/UTF-8';
-    esfSsaAss: Result :=      'SSA/ASS';
+    esfSrt: Result := 'SRT/UTF-8';
+    esfSsaAss: Result := 'SSA/ASS';
     esfGenericText: Result := 'Text';
-    esfVobSub: Result :=      'VobSub';
-    esfPgs: Result :=         'PGS';
-  else
-    Result :=                 'Unknown';
+    esfVobSub: Result := 'VobSub';
+    esfPgs: Result := 'PGS';
+    else
+      Result := 'Unknown';
   end;
 end;
 
@@ -409,8 +411,9 @@ begin
     begin
 
       if SameText(Preferred,
-                  Language) then
-        Inc(Result, 1000)
+        Language) then
+        Inc(Result,
+            1000)
       else
         begin
           PreferredBase := Preferred;
@@ -431,7 +434,7 @@ begin
                                  SeparatorPos - 1);
 
           if (PreferredBase <> '') and SameText(PreferredBase,
-                                                LanguageBase) then
+            LanguageBase) then
             Inc(Result,
                 500);
         end;
@@ -446,6 +449,7 @@ begin
                         2);
   end;
 end;
+
 
 class function TMfEmbeddedSubtitleReader.ReadSampleBytes(const Sample: IMFSample;
                                                          out Data: TBytes): HRESULT;
@@ -512,7 +516,7 @@ var
 begin
 
   Result := '';
-  if Length(Data) = 0 then
+  if (Length(Data) = 0) then
     Exit;
 
   StartIndex := 0;
@@ -525,9 +529,8 @@ begin
   // byte-order mark. Detect that representation before treating the bytes as
   // UTF-8. Matroska itself stores text as UTF-8, but a media source is allowed
   // to expose a transformed representation.
-  if (ByteCount >= 4) and
-     not (((Data[0] = $FF) and (Data[1] = $FE)) or
-          ((Data[0] = $FE) and (Data[1] = $FF))) then
+  if (ByteCount >= 4) and not (((Data[0] = $FF) and (Data[1] = $FE)) or
+    ((Data[0] = $FE) and (Data[1] = $FF))) then
     begin
       PairCount := ByteCount div 2;
       if (PairCount > 64) then
@@ -540,15 +543,15 @@ begin
         begin
           if (Data[I * 2] = 0) then
             Inc(ZeroEven);
-          if Data[(I * 2) + 1] = 0 then
+          if (Data[(I * 2) + 1] = 0) then
             Inc(ZeroOdd);
         end;
 
       LooksUtf16LE := (ZeroOdd >= ((PairCount * 3) div 4)) and
-                      (ZeroEven <= (PairCount div 4));
+        (ZeroEven <= (PairCount div 4));
 
       LooksUtf16BE := (ZeroEven >= ((PairCount * 3) div 4)) and
-                      (ZeroOdd <= (PairCount div 4));
+        (ZeroOdd <= (PairCount div 4));
     end;
 
   if (ByteCount >= 2) and (Data[0] = $FF) and (Data[1] = $FE) then
@@ -565,69 +568,66 @@ begin
                                               StartIndex,
                                               ByteCount);
     end
+  else if (ByteCount >= 2) and (Data[0] = $FE) and (Data[1] = $FF) then
+    begin
+      StartIndex := 2;
+      Dec(ByteCount,
+          2);
+
+      if Odd(ByteCount) then
+        Dec(ByteCount);
+
+      if (ByteCount > 0) then
+        Result := TEncoding.BigEndianUnicode.GetString(Data,
+                                                       StartIndex,
+                                                       ByteCount);
+    end
+  else if LooksUtf16LE then
+    begin
+      if Odd(ByteCount) then
+        Dec(ByteCount);
+
+      if (ByteCount > 0) then
+        Result := TEncoding.Unicode.GetString(Data,
+                                              0,
+                                              ByteCount);
+    end
+  else if LooksUtf16BE then
+    begin
+      if Odd(ByteCount) then
+        Dec(ByteCount);
+
+      if (ByteCount > 0) then
+        Result := TEncoding.BigEndianUnicode.GetString(Data,
+                                                       0,
+                                                       ByteCount);
+    end
   else
-    if (ByteCount >= 2) and (Data[0] = $FE) and (Data[1] = $FF) then
-      begin
-        StartIndex := 2;
-        Dec(ByteCount,
-            2);
+    begin
+      while (ByteCount > 0) and (Data[StartIndex + ByteCount - 1] = 0) do
+        Dec(ByteCount);
 
-        if Odd(ByteCount) then
-          Dec(ByteCount);
-
-        if (ByteCount > 0) then
-          Result := TEncoding.BigEndianUnicode.GetString(Data,
-                                                         StartIndex,
-                                                         ByteCount);
-      end
-    else
-      if LooksUtf16LE then
+      if (ByteCount >= 3) and
+        (Data[0] = $EF) and
+        (Data[1] = $BB) and
+        (Data[2] = $BF) then
         begin
-          if Odd(ByteCount) then
-            Dec(ByteCount);
+          StartIndex := 3;
+          Dec(ByteCount,
+              3);
+        end;
 
-          if (ByteCount > 0) then
-            Result := TEncoding.Unicode.GetString(Data,
-                                                  0,
-                                                  ByteCount);
-        end
-      else
-        if LooksUtf16BE then
-          begin
-            if Odd(ByteCount) then
-              Dec(ByteCount);
-
-            if (ByteCount > 0) then
-              Result := TEncoding.BigEndianUnicode.GetString(Data,
-                                                             0,
-                                                             ByteCount);
-          end
-        else
-          begin
-            while (ByteCount > 0) and (Data[StartIndex + ByteCount - 1] = 0) do
-              Dec(ByteCount);
-
-            if (ByteCount >= 3) and
-               (Data[0] = $EF) and
-               (Data[1] = $BB) and
-               (Data[2] = $BF) then
-              begin
-                StartIndex := 3;
-                Dec(ByteCount,
-                    3);
-              end;
-
-            if (ByteCount > 0) then
-              try
-                Result := TEncoding.UTF8.GetString(Data,
-                                                   StartIndex,
-                                                   ByteCount);
-              except
-                Result := TEncoding.Default.GetString(Data,
-                                                      StartIndex,
-                                                      ByteCount);
-              end;
-          end;
+      if (ByteCount > 0) then
+      try
+        Result := TEncoding.UTF8.GetString(Data,
+                                           StartIndex,
+                                           ByteCount);
+      except
+        Result := TEncoding.Default.GetString(Data,
+                                              StartIndex,
+                                              ByteCount);
+      end;
+    end;
 
   LastIndex := Length(Result);
 
@@ -650,11 +650,13 @@ begin
 
   Normalized := StringReplace(Value,
                               ULBR,
-                              #10, [rfReplaceAll]);
+                              #10,
+                              [rfReplaceAll]);
 
   Normalized := StringReplace(Normalized,
                               LFEED,
-                              #10, [rfReplaceAll]);
+                              #10,
+                              [rfReplaceAll]);
   Normalized := Trim(Normalized);
 
   // Matroska text blocks normally contain only cue text, but tolerate a
@@ -668,17 +670,16 @@ begin
                                 [rfReplaceAll]);
 
     if (Lines.Count >= 2) and
-       TryStrToInt(Trim(Lines[0]),
-                   FirstLineNumber) and
-       (Pos('-->',
-            Lines[1]) > 0) then
+      TryStrToInt(Trim(Lines[0]),
+                  FirstLineNumber) and
+      (Pos('-->',
+           Lines[1]) > 0) then
       begin
         Lines.Delete(0);
         Lines.Delete(0);
       end
-    else
-      if (Lines.Count >= 1) and (Pos('-->', Lines[0]) > 0) then
-        Lines.Delete(0);
+    else if (Lines.Count >= 1) and (Pos('-->', Lines[0]) > 0) then
+      Lines.Delete(0);
 
     Result := Trim(StringReplace(Lines.Text,
                                  Lines.LineBreak,
@@ -730,12 +731,10 @@ begin
     begin
       if (Value[I] = '{') then
         InTag := True
-      else
-        if (Value[I] = '}') then
-          InTag := False
-        else
-          if not InTag then
-            Result := Result + Value[I];
+      else if (Value[I] = '}') then
+        InTag := False
+      else if not InTag then
+        Result := Result + Value[I];
     end;
 end;
 
@@ -749,9 +748,9 @@ begin
   Text := Trim(Value);
 
   if SameText(Copy(Text,
-                   1,
-                   9),
-                   'Dialogue:') then
+    1,
+    9),
+    'Dialogue:') then
     begin
       Delete(Text,
              1,
@@ -801,7 +800,7 @@ begin
       if (Cues[I].StartMs < 0) then
         Cues[I].StartMs := 0;
 
-      if Cues[I].StopMs <= Cues[I].StartMs then
+      if (Cues[I].StopMs <= Cues[I].StartMs) then
         begin
 
           if (I < High(Cues)) and (Cues[I + 1].StartMs > Cues[I].StartMs) then
@@ -864,17 +863,17 @@ begin
       CandidateSubtype := GUID_NULL;
 
       if FAILED(Candidate.GetGUID(MF_MT_SUBTYPE,
-                                  CandidateSubtype)) then
+        CandidateSubtype)) then
         CandidateSubtype := GUID_NULL;
 
       CandidateFormat := ClassifySubtype(CandidateSubtype);
 
       if ((not IsEqualGUID(Track.Subtype,
-                           GUID_NULL)) and
-          IsEqualGUID(CandidateSubtype,
-                      Track.Subtype)) or
-         ((Track.Format <> esfUnknown) and
-          (CandidateFormat = Track.Format)) then
+        GUID_NULL)) and
+        IsEqualGUID(CandidateSubtype,
+                    Track.Subtype)) or
+        ((Track.Format <> esfUnknown) and
+        (CandidateFormat = Track.Format)) then
         begin
           NativeType := Candidate;
           NativeTypeIndex := TypeIndex;
@@ -943,7 +942,8 @@ begin
   if FAILED(Result) then
     begin
       OutputDebugStringW(PChar(Format('Subtitle native type resolution failed stream=%d descriptorType=%d hr=%s',
-                                     [Track.StreamIndex, Track.NativeTypeIndex, IntToHex(DWORD(Result), 8)])));
+                                      [Track.StreamIndex, Track.NativeTypeIndex, IntToHex(DWORD(Result),
+                                                                                          8)])));
       Exit;
     end;
 
@@ -952,7 +952,8 @@ begin
   if FAILED(Result) then
     begin
       OutputDebugStringW(PChar(Format('Subtitle deselect-all failed hr=%s',
-                                     [IntToHex(DWORD(Result), 8)])));
+                                      [IntToHex(DWORD(Result),
+                                                8)])));
       Exit;
     end;
 
@@ -961,7 +962,8 @@ begin
   if FAILED(Result) then
     begin
       OutputDebugStringW(PChar(Format('Subtitle select failed stream=%d hr=%s',
-                                     [Track.StreamIndex, IntToHex(DWORD(Result), 8)])));
+                                      [Track.StreamIndex, IntToHex(DWORD(Result),
+                                                                   8)])));
       Exit;
     end;
 
@@ -975,17 +977,17 @@ begin
   if FAILED(Result) then
     begin
       OutputDebugStringW(PChar(Format('Subtitle SetCurrentMediaType was rejected stream=%d hr=%s; trying native current type',
-                                     [Track.StreamIndex, IntToHex(DWORD(Result), 8)])));
+                                      [Track.StreamIndex, IntToHex(DWORD(Result),
+                                                                   8)])));
     end;
 
   // Force the Source Reader to commit the stream configuration before the
   // first sample request. This also provides a useful diagnostic if the source
   // silently substitutes another media type.
-  if SUCCEEDED(Reader.GetCurrentMediaType(Track.StreamIndex,
-                                          @CurrentType)) and
-     Assigned(CurrentType) then
+  if SUCCEEDED(Reader.GetCurrentMediaType(Track.StreamIndex, @CurrentType)) and
+    Assigned(CurrentType) then
     OutputDebugStringW(PChar(Format('Subtitle current type ready stream=%d nativeType=%d',
-                                   [Track.StreamIndex, ReaderNativeTypeIndex])));
+                                    [Track.StreamIndex, ReaderNativeTypeIndex])));
 
   SampleCount := 0;
   EmptySampleCount := 0;
@@ -1006,17 +1008,18 @@ begin
       if FAILED(HrRead) then
         begin
           OutputDebugStringW(PChar(Format('Subtitle ReadSample failed stream=%d hr=%s samples=%d',
-                                         [Track.StreamIndex, IntToHex(DWORD(HrRead), 8), SampleCount])));
+                                          [Track.StreamIndex, IntToHex(DWORD(HrRead),
+                                                                       8), SampleCount])));
           Result := HrRead;
           Exit;
         end;
 
-      EndOfStream := (Flags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0;
+      EndOfStream := ((Flags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0);
 
       if ((Flags and MF_SOURCE_READERF_ERROR) <> 0) then
         begin
           OutputDebugStringW(PChar(Format('Subtitle source flagged error stream=%d samples=%d',
-                                         [Track.StreamIndex, SampleCount])));
+                                          [Track.StreamIndex, SampleCount])));
           Result := E_FAIL;
           Exit;
         end;
@@ -1028,10 +1031,10 @@ begin
           Inc(SampleCount);
 
           if (ActualStreamIndex <> MF_SOURCE_READER_INVALID_STREAM_INDEX) and
-             (ActualStreamIndex <> Track.StreamIndex) then
+            (ActualStreamIndex <> Track.StreamIndex) then
             begin
               OutputDebugStringW(PChar(Format('Subtitle unexpected stream actual=%d requested=%d',
-                                             [ActualStreamIndex, Track.StreamIndex])));
+                                              [ActualStreamIndex, Track.StreamIndex])));
               Sample := nil;
             end;
         end;
@@ -1062,8 +1065,8 @@ begin
         esfSrt,
         esfGenericText: Text := NormalizeSrtText(Text);
         esfSsaAss: Text := NormalizeSsaAssText(Text);
-      else
-        Text := '';
+        else
+          Text := '';
       end;
 
       if (Text = '') then
@@ -1095,7 +1098,7 @@ begin
   NormalizeCueTimes(Cues);
 
   OutputDebugStringW(PChar(Format('Subtitle read complete stream=%d samples=%d cues=%d empty=%d',
-                                 [Track.StreamIndex, SampleCount, Length(Cues), EmptySampleCount])));
+                                  [Track.StreamIndex, SampleCount, Length(Cues), EmptySampleCount])));
 
   if (Length(Cues) = 0) then
     Result := S_FALSE
@@ -1150,13 +1153,13 @@ begin
                                               NativeTypeIndex,
                                               @MediaType);
 
-          if HrType = MF_E_INVALIDSTREAMNUMBER then
+          if (HrType = MF_E_INVALIDSTREAMNUMBER) then
             begin
               // Stream indices are contiguous for the Source Reader.
               if (NativeTypeIndex = 0) then
                 begin
 
-                  if Length(Tracks) = 0 then
+                  if (Length(Tracks) = 0) then
                     Result := S_FALSE
                   else
                     Result := S_OK;
@@ -1172,15 +1175,16 @@ begin
           if FAILED(HrType) then
             begin
               OutputDebugStringW(PChar(Format('Stream enumeration failed stream=%d type=%d hr=%s',
-                                             [StreamIndex, NativeTypeIndex, IntToHex(DWORD(HrType), 8)])));
+                                              [StreamIndex, NativeTypeIndex, IntToHex(DWORD(HrType),
+                                                                                      8)])));
               Break;
             end;
 
           if FAILED(MediaType.GetGUID(MF_MT_MAJOR_TYPE,
-                                      MajorType)) then
+            MajorType)) then
             MajorType := GUID_NULL;
           if FAILED(MediaType.GetGUID(MF_MT_SUBTYPE,
-                                      Subtype)) then
+            Subtype)) then
             Subtype := GUID_NULL;
 
           SubtitleFormat := ClassifySubtype(Subtype);
@@ -1189,18 +1193,18 @@ begin
             SubtitleFormat := esfGenericText;
 
           OutputDebugStringW(PChar(Format('Media stream=%d type=%d major=%s subtype=%s',
-                                         [StreamIndex, NativeTypeIndex, GUIDToString(MajorType), GUIDToString(Subtype)])));
+                                          [StreamIndex, NativeTypeIndex, GUIDToString(MajorType), GUIDToString(Subtype)])));
 
           // Do not depend exclusively on the major type. The native Microsoft
           // Matroska source normally uses MFMediaType_Subtitle, while older or
           // third-party media sources can expose a known subtitle subtype under
           // SAMI, Script, or another data major type.
           if IsSubtitleMajorType(MajorType) or
-             (SubtitleFormat <> esfUnknown) then
+            (SubtitleFormat <> esfUnknown) then
             begin
               if (not CandidateFound) or
-                 ((SubtitleFormat in [esfSrt, esfSsaAss, esfGenericText]) and
-                  (not CandidateSupported)) then
+                ((SubtitleFormat in [esfSrt, esfSsaAss, esfGenericText]) and
+                (not CandidateSupported)) then
                 begin
                   Candidate.Reset();
                   Candidate.StreamIndex := StreamIndex;
@@ -1238,13 +1242,13 @@ begin
           Tracks[TrackIndex] := Candidate;
 
           OutputDebugStringW(PChar(Format('Embedded subtitle stream=%d type=%d major=%s subtype=%s format=%s lang=%s name=%s supported=%s',
-                                         [Candidate.StreamIndex, Candidate.NativeTypeIndex,
-                                          GUIDToString(Candidate.MajorType),
-                                          GUIDToString(Candidate.Subtype),
-                                          FormatName(Candidate.Format),
-                                          Candidate.Language,
-                                          Candidate.Name,
-                                          BoolToStr(Candidate.Supported)])));
+                                          [Candidate.StreamIndex, Candidate.NativeTypeIndex,
+            GUIDToString(Candidate.MajorType),
+            GUIDToString(Candidate.Subtype),
+            FormatName(Candidate.Format),
+            Candidate.Language,
+            Candidate.Name,
+            BoolToStr(Candidate.Supported)])));
         end;
     end;
 
@@ -1278,7 +1282,7 @@ var
   StreamName: string;
   HrType: HRESULT;
 
-  // Helpers
+// Helpers
   procedure ConsiderMediaType(const AType: IMFMediaType;
                               const ATypeIndex: DWORD);
   begin
@@ -1290,30 +1294,30 @@ var
     Subtype := GUID_NULL;
 
     if FAILED(AType.GetGUID(MF_MT_MAJOR_TYPE,
-                            MajorType)) then
+      MajorType)) then
       MajorType := HandlerMajorType;
 
     if FAILED(AType.GetGUID(MF_MT_SUBTYPE,
-                            Subtype)) then
+      Subtype)) then
       Subtype := GUID_NULL;
 
     SubtitleFormat := ClassifySubtype(Subtype);
 
     if (SubtitleFormat = esfUnknown) and
-       IsSubtitleMajorType(MajorType) then
+      IsSubtitleMajorType(MajorType) then
       SubtitleFormat := esfGenericText;
 
     OutputDebugStringW(PChar(Format('Descriptor stream=%d selected=%s type=%d major=%s subtype=%s',
-                                   [StreamIndex, BoolToStr(Selected <> False),
-                                    ATypeIndex, GUIDToString(MajorType),
-                                    GUIDToString(Subtype)])));
+                                    [StreamIndex, BoolToStr(Selected <> False),
+      ATypeIndex, GUIDToString(MajorType),
+      GUIDToString(Subtype)])));
 
     if IsSubtitleMajorType(MajorType) or
-       (SubtitleFormat <> esfUnknown) then
+      (SubtitleFormat <> esfUnknown) then
       begin
         if (not CandidateFound) or
-           ((SubtitleFormat in [esfSrt, esfSsaAss, esfGenericText]) and
-            (not CandidateSupported)) then
+          ((SubtitleFormat in [esfSrt, esfSsaAss, esfGenericText]) and
+          (not CandidateSupported)) then
           begin
             Candidate.Reset();
             Candidate.StreamIndex := StreamIndex;
@@ -1346,7 +1350,7 @@ begin
     Exit;
 
   OutputDebugStringW(PChar(Format('Presentation descriptor stream count=%d',
-                                 [StreamCount])));
+                                  [StreamCount])));
 
   if (StreamCount = 0) then
     begin
@@ -1379,7 +1383,8 @@ begin
       if FAILED(Result) then
         begin
           OutputDebugStringW(PChar(Format('Descriptor handler failed stream=%d hr=%s',
-                                         [StreamIndex, IntToHex(DWORD(Result), 8)])));
+                                          [StreamIndex, IntToHex(DWORD(Result),
+                                                                 8)])));
           Continue;
         end;
 
@@ -1396,14 +1401,16 @@ begin
                           0)
       else
         OutputDebugStringW(PChar(Format('Descriptor current media type unavailable stream=%d hr=%s',
-                                       [StreamIndex, IntToHex(DWORD(HrType), 8)])));
+                                        [StreamIndex, IntToHex(DWORD(HrType),
+                                                               8)])));
 
       TypeCount := 0;
       HrType := TypeHandler.GetMediaTypeCount(TypeCount);
       if FAILED(HrType) then
         begin
           OutputDebugStringW(PChar(Format('Descriptor media-type count failed stream=%d hr=%s',
-                                         [StreamIndex, IntToHex(DWORD(HrType), 8)])));
+                                          [StreamIndex, IntToHex(DWORD(HrType),
+                                                                 8)])));
           TypeCount := 0;
         end;
 
@@ -1417,7 +1424,8 @@ begin
             if FAILED(HrType) then
               begin
                 OutputDebugStringW(PChar(Format('Descriptor media type failed stream=%d type=%d hr=%s',
-                                               [StreamIndex, TypeIndex, IntToHex(DWORD(HrType), 8)])));
+                                                [StreamIndex, TypeIndex, IntToHex(DWORD(HrType),
+                                                                                  8)])));
                 Continue;
               end;
 
@@ -1429,9 +1437,11 @@ begin
       // important for diagnostics and for sources that expose a generic text
       // subtype instead of the documented MFSubtitleFormat_SRT/SSA subtype.
       if (not CandidateFound) and
-         (not IsEqualGUID(HandlerMajorType, MFMediaType_Audio)) and
-         (not IsEqualGUID(HandlerMajorType, MFMediaType_Video)) and
-         ((Language <> '') or (StreamName <> '')) then
+        (not IsEqualGUID(HandlerMajorType,
+                         MFMediaType_Audio)) and
+        (not IsEqualGUID(HandlerMajorType,
+                         MFMediaType_Video)) and
+        ((Language <> '') or (StreamName <> '')) then
         begin
           Candidate.Reset();
           Candidate.StreamIndex := StreamIndex;
@@ -1443,8 +1453,8 @@ begin
           CandidateFound := True;
 
           OutputDebugStringW(PChar(Format('Descriptor unclassified language stream=%d major=%s lang=%s name=%s',
-                                         [StreamIndex, GUIDToString(HandlerMajorType),
-                                          Language, StreamName])));
+                                          [StreamIndex, GUIDToString(HandlerMajorType),
+            Language, StreamName])));
         end;
 
       if CandidateFound then
@@ -1459,9 +1469,9 @@ begin
           Tracks[TrackIndex] := Candidate;
 
           OutputDebugStringW(PChar(Format('Descriptor subtitle stream=%d type=%d format=%s lang=%s name=%s supported=%s',
-                                         [Candidate.StreamIndex, Candidate.NativeTypeIndex,
-                                          FormatName(Candidate.Format), Candidate.Language,
-                                          Candidate.Name, BoolToStr(Candidate.Supported)])));
+                                          [Candidate.StreamIndex, Candidate.NativeTypeIndex,
+            FormatName(Candidate.Format), Candidate.Language,
+            Candidate.Name, BoolToStr(Candidate.Supported)])));
         end;
     end;
 
@@ -1473,15 +1483,16 @@ end;
 
 
 class function TMfEmbeddedSubtitleReader.MapMatroskaFormat(const Format: TMfMatroskaSubtitleFormat): TMfEmbeddedSubtitleFormat;
+
 begin
 
   case Format of
-    msfSrt:    Result := esfSrt;
+    msfSrt: Result := esfSrt;
     msfSsaAss: Result := esfSsaAss;
     msfVobSub: Result := esfVobSub;
-    msfPgs:    Result := esfPgs;
-  else
-    Result := esfUnknown;
+    msfPgs: Result := esfPgs;
+    else
+      Result := esfUnknown;
   end;
 end;
 
@@ -1501,16 +1512,15 @@ begin
             0);
 
   if not SameText(ExtractFileExt(MediaFileName),
-                  '.mkv') and
-     not SameText(ExtractFileExt(MediaFileName),
-                  '.webm') then
+    '.mkv') and not SameText(ExtractFileExt(MediaFileName),
+                             '.webm') then
     begin
       Result := S_FALSE;
       Exit;
     end;
 
   Result := TMfMatroskaSubtitleReader.EnumerateTracks(MediaFileName,
-                                                       MatroskaTracks);
+                                                      MatroskaTracks);
   if (Result <> S_OK) then
     Exit;
 
@@ -1538,11 +1548,11 @@ begin
       Tracks[I].Format := MapMatroskaFormat(MatroskaTracks[I].Format);
 
       case Tracks[I].Format of
-        esfSrt:    Tracks[I].Subtype := MFSubtitleFormat_SRT;
+        esfSrt: Tracks[I].Subtype := MFSubtitleFormat_SRT;
         esfSsaAss: Tracks[I].Subtype := MFSubtitleFormat_SSA;
-        esfPgs:    Tracks[I].Subtype := MFSubtitleFormat_PGS;
-      else
-        Tracks[I].Subtype := GUID_NULL;
+        esfPgs: Tracks[I].Subtype := MFSubtitleFormat_PGS;
+        else
+          Tracks[I].Subtype := GUID_NULL;
       end;
 
       Tracks[I].Language := MatroskaTracks[I].Language;
@@ -1551,9 +1561,9 @@ begin
       Tracks[I].Supported := MatroskaTracks[I].Supported;
 
       OutputDebugStringW(PChar(Format('Direct MKV subtitle track=%d codec=%s format=%s lang=%s name=%s supported=%s',
-                                     [Tracks[I].StreamIndex, Tracks[I].CodecId,
-                                      FormatName(Tracks[I].Format), Tracks[I].Language,
-                                      Tracks[I].Name, BoolToStr(Tracks[I].Supported)])));
+                                      [Tracks[I].StreamIndex, Tracks[I].CodecId,
+        FormatName(Tracks[I].Format), Tracks[I].Language,
+        Tracks[I].Name, BoolToStr(Tracks[I].Supported)])));
     end;
 end;
 
@@ -1579,7 +1589,7 @@ begin
 
   try
     Result := MediaSource.CreatePresentationDescriptor(
-                            PresentationDescriptor);
+      PresentationDescriptor);
     if SUCCEEDED(Result) then
       Result := EnumeratePresentationTracks(PresentationDescriptor,
                                             Tracks);
@@ -1610,22 +1620,23 @@ begin
   MatroskaTrack.Reset();
 
   Result := TMfMatroskaSubtitleReader.ReadTrack(MediaFileName,
-                                                 UInt64(Track.StreamIndex),
-                                                 MatroskaTrack,
-                                                 MatroskaCues,
-                                                 CancelEvent);
-  if Result <> S_OK then
+                                                UInt64(Track.StreamIndex),
+                                                MatroskaTrack,
+                                                MatroskaCues,
+                                                CancelEvent);
+  if (Result <> S_OK) then
     Exit;
 
-  SetLength(Cues, Length(MatroskaCues));
+  SetLength(Cues,
+            Length(MatroskaCues));
   for I := Low(MatroskaCues) to High(MatroskaCues) do
     begin
       CueText := MatroskaCues[I].Text;
 
       case Track.Format of
         esfSsaAss: CueText := NormalizeSsaAssText(CueText);
-      else
-        CueText :=            NormalizeSrtText(CueText);
+        else
+          CueText := NormalizeSrtText(CueText);
       end;
 
       Cues[I].StartMs := MatroskaCues[I].StartMs;
@@ -1646,7 +1657,8 @@ begin
                                  FriendlyName);
 
   OutputDebugStringW(PChar(Format('Direct MKV subtitle import track=%d cues=%d hr=%s',
-                                [Track.StreamIndex, Length(Cues), IntToHex(DWORD(Result), 8)])));
+                                  [Track.StreamIndex, Length(Cues), IntToHex(DWORD(Result),
+                                                                             8)])));
 end;
 
 
@@ -1674,8 +1686,8 @@ begin
   EndOfTrack := False;
 
   if (Track.Source <> essMatroska) or
-     (StartMs < 0) or
-     (EndMs <= StartMs) then
+    (StartMs < 0) or
+    (EndMs <= StartMs) then
     begin
       Result := E_INVALIDARG;
       Exit;
@@ -1702,8 +1714,8 @@ begin
 
       case Track.Format of
         esfSsaAss: CueText := NormalizeSsaAssText(CueText);
-      else
-        CueText :=            NormalizeSrtText(CueText);
+        else
+          CueText := NormalizeSrtText(CueText);
       end;
 
       Cues[I].StartMs := MatroskaCues[I].StartMs;
@@ -1712,8 +1724,9 @@ begin
     end;
 
   OutputDebugStringW(PChar(Format('Direct MKV subtitle window track=%d start=%d end=%d cues=%d eof=%s hr=%s',
-                                 [Track.StreamIndex, StartMs, EndMs, Length(Cues),
-                                  BoolToStr(EndOfTrack), IntToHex(DWORD(Result), 8)])));
+                                  [Track.StreamIndex, StartMs, EndMs, Length(Cues),
+    BoolToStr(EndOfTrack), IntToHex(DWORD(Result),
+                                    8)])));
 end;
 
 
@@ -1729,6 +1742,7 @@ var
   HrMatroska: HRESULT;
   IsMatroska: Boolean;
 
+
   function HasUsefulLanguage(const Language: string): Boolean;
   var
     Value: string;
@@ -1737,8 +1751,8 @@ var
 
     Value := LowerCase(Trim(Language));
     Result := (Value <> '') and
-              (Value <> 'iv') and
-              (Value <> 'und');
+      (Value <> 'iv') and
+      (Value <> 'und');
   end;
 
 begin
@@ -1751,8 +1765,8 @@ begin
 
   IsMatroska := SameText(ExtractFileExt(MediaFileName),
                          '.mkv') or
-                SameText(ExtractFileExt(MediaFileName),
-                         '.webm');
+    SameText(ExtractFileExt(MediaFileName),
+             '.webm');
 
   // Prefer the compact direct EBML metadata pass. Reconcile it with the
   // presentation descriptor because some muxers expose a generic subtitle
@@ -1764,17 +1778,17 @@ begin
       if (HrMatroska = S_OK) then
         begin
           HrDescriptor := EnumerateMediaSourceTracks(MediaFileName,
-                                                      DescriptorTracks);
+                                                     DescriptorTracks);
           if (HrDescriptor = S_OK) then
             begin
               MergeCount := Length(Tracks);
-              if Length(DescriptorTracks) < MergeCount then
+              if (Length(DescriptorTracks) < MergeCount) then
                 MergeCount := Length(DescriptorTracks);
 
               for I := 0 to MergeCount - 1 do
                 begin
                   if (not HasUsefulLanguage(Tracks[I].Language)) and
-                     HasUsefulLanguage(DescriptorTracks[I].Language) then
+                    HasUsefulLanguage(DescriptorTracks[I].Language) then
                     Tracks[I].Language := DescriptorTracks[I].Language;
 
                   if (Trim(Tracks[I].Name) = '') then
@@ -1785,11 +1799,11 @@ begin
                   // which can expose generic text codecs the EBML reader does
                   // not decode itself.
                   if (not Tracks[I].Supported) and
-                     DescriptorTracks[I].Supported then
+                    DescriptorTracks[I].Supported then
                     Tracks[I] := DescriptorTracks[I];
                 end;
 
-              if Length(DescriptorTracks) > Length(Tracks) then
+              if (Length(DescriptorTracks) > Length(Tracks)) then
                 begin
                   MergeCount := Length(Tracks);
                   SetLength(Tracks,
@@ -1808,7 +1822,7 @@ begin
     begin
       HrMatroska := S_FALSE;
       HrDescriptor := EnumerateMediaSourceTracks(MediaFileName,
-                                                  Tracks);
+                                                 Tracks);
       if (HrDescriptor = S_OK) then
         begin
           Result := S_OK;
@@ -1837,7 +1851,8 @@ begin
   Result := HrMatroska;
 
   OutputDebugStringW(PChar(Format('Direct MKV enumeration hr=%s tracks=%d',
-                                 [IntToHex(DWORD(Result), 8), Length(Tracks)])));
+                                  [IntToHex(DWORD(Result),
+                                            8), Length(Tracks)])));
 
   if (Result <> S_OK) and FAILED(HrReader) then
     Result := HrReader;
@@ -1861,7 +1876,7 @@ begin
 
   for I := Low(Tracks) to High(Tracks) do
     if Tracks[I].Supported and
-       (Tracks[I].Format in [esfSrt, esfSsaAss, esfGenericText]) then
+      (Tracks[I].Format in [esfSrt, esfSsaAss, esfGenericText]) then
       begin
         Score := TrackScore(Tracks[I],
                             PreferredLanguage);
@@ -1910,9 +1925,9 @@ begin
   if (Track.Source = essMatroska) then
     begin
       Result := ImportMatroskaTextTrack(MediaFileName,
-                                         Track,
-                                         TimedText,
-                                         CancelEvent);
+                                        Track,
+                                        TimedText,
+                                        CancelEvent);
       Exit;
     end;
 
@@ -1982,9 +1997,10 @@ begin
 
       for I := Low(Tracks) to High(Tracks) do
         if (not Tried[I]) and Tracks[I].Supported and
-           (Tracks[I].Format in [esfSrt, esfSsaAss, esfGenericText]) then
+          (Tracks[I].Format in [esfSrt, esfSsaAss, esfGenericText]) then
           begin
-            Score := TrackScore(Tracks[I], PreferredLanguage);
+            Score := TrackScore(Tracks[I],
+                                PreferredLanguage);
             if (Score > BestScore) then
               begin
                 BestScore := Score;
@@ -2008,7 +2024,8 @@ begin
         end;
 
       OutputDebugStringW(PChar(Format('Embedded subtitle import rejected stream=%d hr=%s; trying next track',
-                                     [Tracks[CandidateIndex].StreamIndex, IntToHex(DWORD(HrImport), 8)])));
+                                      [Tracks[CandidateIndex].StreamIndex, IntToHex(DWORD(HrImport),
+                                                                                    8)])));
     end;
 
   Result := S_FALSE;

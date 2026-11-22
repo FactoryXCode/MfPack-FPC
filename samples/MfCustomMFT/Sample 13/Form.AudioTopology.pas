@@ -69,7 +69,7 @@ interface
 uses
   LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -108,9 +108,11 @@ type
     procedure btnStopClick(Sender: TObject);
     procedure tbEffectChange(Sender: TObject);
     procedure tbTimelineChange(Sender: TObject);
-    procedure tbTimelineKeyDown(Sender: TObject; var Key: Word;
+    procedure tbTimelineKeyDown(Sender: TObject;
+                                var Key: Word;
                                 Shift: TShiftState);
-    procedure tbTimelineKeyUp(Sender: TObject; var Key: Word;
+    procedure tbTimelineKeyUp(Sender: TObject;
+                              var Key: Word;
                               Shift: TShiftState);
     procedure tbTimelineExit(Sender: TObject);
     procedure tmrTimelineTimer(Sender: TObject);
@@ -150,6 +152,7 @@ implementation
 
 
 procedure TfrmAudioTopology.FormCreate(Sender: TObject);
+
 begin
 
   tbEffectChange(nil);
@@ -173,15 +176,16 @@ begin
   ClosePlayer(True);
 
   while PeekMessageW(Msg,
-                    Handle,
-                    WM_AUDIO_TOPOLOGY_EVENT,
-                    WM_AUDIO_TOPOLOGY_EVENT,
-                    PM_REMOVE) do
+      Handle,
+      WM_AUDIO_TOPOLOGY_EVENT,
+      WM_AUDIO_TOPOLOGY_EVENT,
+      PM_REMOVE) do
     TAudioTopologyNotice(Pointer(Msg.LParam)).Free;
 end;
 
 
 procedure TfrmAudioTopology.ClosePlayer(const ADetachWindow: Boolean);
+
 begin
 
   FReady := False;
@@ -218,6 +222,7 @@ end;
 
 
 procedure TfrmAudioTopology.LogError(const E: Exception);
+
 begin
 
   lblState.Caption := 'Error';
@@ -350,6 +355,7 @@ end;
 
 
 procedure TfrmAudioTopology.btnOpenClick(Sender: TObject);
+
 begin
 
   if not dlgOpenAudio.Execute then
@@ -371,15 +377,16 @@ begin
 
   except
     on E: Exception do
-    begin
-      ClosePlayer(False);
-      LogError(E);
-    end;
+      begin
+        ClosePlayer(False);
+        LogError(E);
+      end;
   end;
 end;
 
 
 procedure TfrmAudioTopology.tbEffectChange(Sender: TObject);
+
 begin
 
   // Both labels also update before a file is open. Once the transform exists,
@@ -390,12 +397,13 @@ begin
                            [tbMix.Position]);
 
   if Assigned(FPlayer) then
-    try
-      FPlayer.UpdateEffect(Cardinal(tbDelay.Position),
-                           Cardinal(tbMix.Position));
-    except
-      on E: Exception do LogError(E);
-    end;
+  try
+    FPlayer.UpdateEffect(Cardinal(tbDelay.Position),
+                         Cardinal(tbMix.Position));
+  except
+    on E: Exception do
+      LogError(E);
+  end;
 end;
 
 
@@ -409,20 +417,21 @@ begin
   if (Seconds >= 3600) then
     Result := Format('%d:%.2d:%.2d',
                      [Seconds div 3600,
-                      (Seconds div 60) mod 60,
-                      Seconds mod 60])
+      (Seconds div 60) mod 60,
+      Seconds mod 60])
   else
     Result := Format('%.2d:%.2d',
                      [Seconds div 60,
-                      Seconds mod 60]);
+      Seconds mod 60]);
 end;
 
 
 function TfrmAudioTopology.TimelinePosition(): Int64;
+
 begin
 
   Result := Trunc((FDuration / tbTimeline.Max) *
-                  tbTimeline.Position);
+    tbTimeline.Position);
 end;
 
 
@@ -434,10 +443,9 @@ var
 
 begin
 
-  if not Assigned(FPlayer) or
-     not FPlayer.GetTimeline(Position,
-                             Duration,
-                             CanSeek) then
+  if not Assigned(FPlayer) or not FPlayer.GetTimeline(Position,
+    Duration,
+    CanSeek) then
     begin
       FCanSeek := False;
       FDuration := 0;
@@ -464,13 +472,13 @@ begin
   FUpdatingTimeline := True;
   try
     tbTimeline.Position := Trunc((Position / Duration) *
-                                 tbTimeline.Max);
+      tbTimeline.Max);
   finally
     FUpdatingTimeline := False;
   end;
 
   lblTimeline.Caption := FormatTimelineTime(Position) + ' / ' +
-                         FormatTimelineTime(Duration);
+    FormatTimelineTime(Duration);
 end;
 
 
@@ -481,7 +489,7 @@ var
 begin
 
   if not FReady or not FCanSeek or FSeekPending or
-     (FDuration <= 0) or not Assigned(FPlayer) then
+    (FDuration <= 0) or not Assigned(FPlayer) then
     Exit;
 
   Position := TimelinePosition();
@@ -508,6 +516,7 @@ end;
 
 
 procedure TfrmAudioTopology.tbTimelineChange(Sender: TObject);
+
 begin
 
   if not FUpdatingTimeline and (FDuration > 0) then
@@ -518,7 +527,7 @@ begin
         FDragging := True;
 
       lblTimeline.Caption := FormatTimelineTime(TimelinePosition()) + ' / ' +
-                             FormatTimelineTime(FDuration);
+        FormatTimelineTime(FDuration);
     end;
 end;
 
@@ -526,6 +535,7 @@ end;
 procedure TfrmAudioTopology.tbTimelineKeyDown(Sender: TObject;
                                               var Key: Word;
                                               Shift: TShiftState);
+
 begin
 
   if Key in [VK_LEFT, VK_RIGHT, VK_HOME, VK_END, VK_PRIOR, VK_NEXT] then
@@ -536,6 +546,7 @@ end;
 procedure TfrmAudioTopology.tbTimelineKeyUp(Sender: TObject;
                                             var Key: Word;
                                             Shift: TShiftState);
+
 begin
 
   if Key in [VK_LEFT, VK_RIGHT, VK_HOME, VK_END, VK_PRIOR, VK_NEXT] then
@@ -547,6 +558,7 @@ end;
 
 
 procedure TfrmAudioTopology.tbTimelineExit(Sender: TObject);
+
 begin
 
   if FKeyboardSeeking then
@@ -558,6 +570,7 @@ end;
 
 
 procedure TfrmAudioTopology.tmrTimelineTimer(Sender: TObject);
+
 begin
 
   if FDragging and (GetAsyncKeyState(VK_LBUTTON) >= 0) then
@@ -566,13 +579,13 @@ begin
       SeekTimeline();
     end;
 
-  if FReady and not FSeekPending and not FDragging and
-     not FKeyboardSeeking then
+  if FReady and not FSeekPending and not FDragging and not FKeyboardSeeking then
     UpdateTimeline();
 end;
 
 
 procedure TfrmAudioTopology.btnPlayPauseClick(Sender: TObject);
+
 begin
 
   if not FReady or FSeekPending or not Assigned(FPlayer) then
@@ -585,12 +598,14 @@ begin
       FPlayer.Start(FRestartOnPlay);
 
   except
-    on E: Exception do LogError(E);
+    on E: Exception do
+      LogError(E);
   end;
 end;
 
 
 procedure TfrmAudioTopology.btnStopClick(Sender: TObject);
+
 begin
 
   if not FReady or not Assigned(FPlayer) then
@@ -602,7 +617,8 @@ begin
     btnStop.Enabled := False;
 
   except
-    on E: Exception do LogError(E);
+    on E: Exception do
+      LogError(E);
   end;
 end;
 

@@ -120,10 +120,10 @@ uses
   WinApi.MediaFoundationApi.MfApi,
   WinApi.MediaFoundationApi.MfError;
 
-
 type
 
   TMediaTypeDebug = class(TObject)
+
   private
 
     slDebug: TStringlist;
@@ -161,25 +161,39 @@ type
     property DebugDirectory: string read sDebugDirectory write sDebugDirectory;
   end;
 
-// Global accessible.
+  // Global accessible.
 var
   FMediaTypeDebug: TMediaTypeDebug;
 
 implementation
+
 
 procedure SaveDebugStrings(List: TStringList;
                            const FileName: string);
 var
   Handle: THandle;
   Stream: THandleStream;
+
 begin
-  Handle := CreateFileW(PWideChar(FileName),GENERIC_WRITE,0,nil,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0);
-  if Handle = INVALID_HANDLE_VALUE then
+
+  Handle := CreateFileW(PWideChar(FileName),
+                        GENERIC_WRITE,
+                        0,
+                        nil,
+                        CREATE_ALWAYS,
+                        FILE_ATTRIBUTE_NORMAL,
+                        0);
+  if (Handle = INVALID_HANDLE_VALUE) then
     RaiseLastOSError;
   try
     Stream := THandleStream.Create(Handle);
     try
-      List.SaveToStream(Stream{$IFNDEF FPC},TEncoding.UTF8{$ENDIF});
+      List.SaveToStream(Stream
+        {$IFNDEF FPC}
+,
+                        TEncoding.UTF8
+        {$ENDIF}
+        );
     finally
       Stream.Free;
     end;
@@ -191,14 +205,19 @@ end;
 
 function Format(const Fmt: UnicodeString;
                 const Args: array of const): UnicodeString;
+
 begin
-  Result := SysUtils.WideFormat(Fmt,Args);
+
+  Result := SysUtils.WideFormat(Fmt,
+                                Args);
 end;
 
 
 {PUBLIC}
 constructor TMediaTypeDebug.Create();
+
 begin
+
   inherited Create();
   slDebug := TStringlist.Create();
   SetLength(arDebug,
@@ -208,7 +227,9 @@ end;
 
 
 destructor TMediaTypeDebug.Destroy();
+
 begin
+
   if Assigned(arDebug) then
     begin
       SetLength(arDebug,
@@ -245,9 +266,9 @@ begin
 
   if (unCount = 0) then
     begin
-        DebugMsg(StrToPWideChar(Format('Empty media type. %d',
-                                       [unCount])));
-        goto Return;
+      DebugMsg(StrToPWideChar(Format('Empty media type. %d',
+                                     [unCount])));
+      goto Return;
     end;
 
   slDebug.BeginUpdate;
@@ -257,27 +278,30 @@ begin
   DebugMsg(Format('IMFMediaType var name: %s',
                   [pMediaTypeName]));
 
-  for i := 0 to unCount -1 do
-   begin
-     hr := LogAttributeValueByIndex(pType,
-                                    i);
-     if FAILED(hr) then
-       Break;
-   end;
+  for i := 0 to unCount - 1 do
+    begin
+      hr := LogAttributeValueByIndex(pType,
+                                     i);
+      if FAILED(hr) then
+        Break;
+    end;
 
   // Add a separatorline when done.
   slDebug.Append('== END =======================================================' + #13);
 
   slDebug.EndUpdate;
 
-Return:
-  Result := hr;
+  Return:
+    Result := hr;
 end;
 
 
 procedure TMediaTypeDebug.SafeAllDebugResultsToOneFile(pFileName: string);
+
 begin
-  SaveDebugStrings(slDebug,IncludeTrailingPathDelimiter(sDebugDirectory) + pFileName);
+
+  SaveDebugStrings(slDebug,
+                   IncludeTrailingPathDelimiter(sDebugDirectory) + pFileName);
 end;
 
 
@@ -295,20 +319,22 @@ var
   bFileExists: Boolean;
 
 begin
+
   i := 0;
   bFileExists := True;
 
-  if pMethodName = '' then
+  if (pMethodName = '') then
     sMetName := ''
   else
-    sMetName := Format('_%s',[pMethodName]);
+    sMetName := Format('_%s',
+                       [pMethodName]);
 
   sFileName := Format(scFormat,
                       [sDebugDirectory,
-                       pFileName,
-                       sMetName,
-                       i,
-                       pExt]);
+    pFileName,
+    sMetName,
+    i,
+    pExt]);
 
   while (bFileExists = True) do
     begin
@@ -316,10 +342,10 @@ begin
         begin
           sFileName := Format(scFormat,
                               [sDebugDirectory,
-                               pFileName,
-                               sMetName,
-                               i,
-                               pExt]);
+            pFileName,
+            sMetName,
+            i,
+            pExt]);
           Inc(i);
         end
       else
@@ -328,7 +354,8 @@ begin
 
   // When you don't want to safe each item to file,
   // you should call property DebugResults.SafeToFile when done.
-  SaveDebugStrings(slDebug,sFileName);
+  SaveDebugStrings(slDebug,
+                   sFileName);
   slDebug.Clear();
 
 end;
@@ -360,6 +387,7 @@ label
   Return;
 
 begin
+
   pwcGuidName := '';
   pwcFormatTag := '';
   pwcFOURCC := 0;
@@ -384,9 +412,9 @@ begin
                             majorGuid);
   if FAILED(hr) then
     begin
-       DebugMsg(Format('Unexpected error in function pAttributes.GetGUID. (HResult = %d)',
-                       [hr]));
-       goto Return;
+      DebugMsg(Format('Unexpected error in function pAttributes.GetGUID. (HResult = %d)',
+                      [hr]));
+      goto Return;
     end;
 
 
@@ -399,9 +427,9 @@ begin
 
   if FAILED(hr) then
     begin
-       DebugMsg(Format('Unexpected error in function GetGUIDNameConst. (HResult = %d)',
-                       [hr]));
-       goto Return;
+      DebugMsg(Format('Unexpected error in function GetGUIDNameConst. (HResult = %d)',
+                      [hr]));
+      goto Return;
     end;
 
   DebugMsg(Format('Guidname: %s',
@@ -420,35 +448,35 @@ begin
                                 [pvVar.ulVal]));
 
         VT_UI8: DebugMsg(Format('Value: %d',
-                               [pvVar.uhVal.QuadPart]));
+                                [pvVar.uhVal.QuadPart]));
 
-        VT_R8:  DebugMsg(Format('Value: %f',
-                                [pvVar.dblVal]));
+        VT_R8: DebugMsg(Format('Value: %f',
+                               [pvVar.dblVal]));
 
-        VT_CLSID: begin
-                    hr := GetGUIDNameConst(majorGuid,
-                                           pvVar.puuid^,
-                                           pwcValGuidName,
-                                           pwcValFormatTag,
-                                           pwcValFOURCC,
-                                           pwcValFmtDesc);
-                    if SUCCEEDED(hr) then
-                      begin
-                        DebugMsg(Format('GuidName: %s',
-                                        [pwcValGuidName]));
-                        DebugMsg(Format('FormatTag: %s',
-                                        [pwcValFormatTag]));
-                        DebugMsg(Format('FOURCC: %d',
-                                        [pwcValFOURCC]));
-                        DebugMsg(Format('Description: %s',
-                                        [pwcValFmtDesc]));
-                      end;
-                  end;
+          VT_CLSID: begin
+            hr := GetGUIDNameConst(majorGuid,
+                                   pvVar.puuid^,
+                                   pwcValGuidName,
+                                   pwcValFormatTag,
+                                   pwcValFOURCC,
+                                   pwcValFmtDesc);
+            if SUCCEEDED(hr) then
+              begin
+                DebugMsg(Format('GuidName: %s',
+                                [pwcValGuidName]));
+                DebugMsg(Format('FormatTag: %s',
+                                [pwcValFormatTag]));
+                DebugMsg(Format('FOURCC: %d',
+                                [pwcValFOURCC]));
+                DebugMsg(Format('Description: %s',
+                                [pwcValFmtDesc]));
+              end;
+          end;
 
         VT_LPWSTR: DebugMsg(Format('Value: %s',
                                    [pvVar.pwszVal]));
 
-        VT_VECTOR or VT_UI1 : DebugMsg('Value: Byte Array');
+        VT_VECTOR or VT_UI1: DebugMsg('Value: Byte Array');
 
         VT_UNKNOWN: DebugMsg('Value: IUnknown');
 
@@ -457,11 +485,11 @@ begin
         else
           DebugMsg(Format('Unexpected attribute type (vt = %d)',
                           [pvVar.vt]));
-        end;
+      end;
     end;
 
-Return:
-  PropVariantClear(pvVar);
+  Return:
+    PropVariantClear(pvVar);
   Result := hr;
 end;
 
@@ -477,28 +505,28 @@ begin
   hr := S_OK;
 
   if (isEqualGuid(pGuid,
-                  MF_MT_FRAME_RATE) or
-      isEqualGuid(pGuid,
-                  MF_MT_FRAME_RATE_RANGE_MAX) or
-      isEqualGuid(pGuid,
-                  MF_MT_FRAME_RATE_RANGE_MIN) or
-      isEqualGuid(pGuid,
-                  MF_MT_FRAME_SIZE) or
-      isEqualGuid(pGuid,
-                  MF_MT_PIXEL_ASPECT_RATIO)) then
+    MF_MT_FRAME_RATE) or
+    isEqualGuid(pGuid,
+                MF_MT_FRAME_RATE_RANGE_MAX) or
+    isEqualGuid(pGuid,
+                MF_MT_FRAME_RATE_RANGE_MIN) or
+    isEqualGuid(pGuid,
+                MF_MT_FRAME_SIZE) or
+    isEqualGuid(pGuid,
+                MF_MT_PIXEL_ASPECT_RATIO)) then
     begin
       // Attributes that contain two packed 32-bit values.
-      if pPropVar.vt = VT_UI8 then
+      if (pPropVar.vt = VT_UI8) then
         LogUINT32AsUINT64(pPropVar)
       else
         hr := E_INVALIDARG;
     end
   else if (isEqualGuid(pGuid,
-                       MF_MT_GEOMETRIC_APERTURE) or
-           isEqualGuid(pGuid,
-                       MF_MT_MINIMUM_DISPLAY_APERTURE) or
-           isEqualGuid(pGuid,
-                       MF_MT_PAN_SCAN_APERTURE)) then
+    MF_MT_GEOMETRIC_APERTURE) or
+    isEqualGuid(pGuid,
+                MF_MT_MINIMUM_DISPLAY_APERTURE) or
+    isEqualGuid(pGuid,
+                MF_MT_PAN_SCAN_APERTURE)) then
     begin
       // Attributes that has an MFVideoArea structure.
       hr := LogVideoArea(pPropVar);
@@ -516,6 +544,7 @@ var
   uLow: UINT32;
 
 begin
+
   Unpack2UINT32AsUINT64(pPropVar.uhVal.QuadPart,
                         uHigh,
                         uLow);
@@ -537,13 +566,15 @@ begin
     Result := MF_E_BUFFERTOOSMALL
   else
     begin
-      Move(pPropVar.caub.pElems^,pArea,SizeOf(pArea));
+      Move(pPropVar.caub.pElems^,
+           pArea,
+           SizeOf(pArea));
 
       DebugMsg(StrToPWideChar(Format('MFVideoArea: (OffsetX: %f, OffsetY: %f) (cx: %d, cy: %d)',
                                      [MFOffsetToFloat(pArea.OffsetX),
-                                      MFOffsetToFloat(pArea.OffsetY),
-                                      pArea.Area.cx,
-                                      pArea.Area.cy])));
+        MFOffsetToFloat(pArea.OffsetY),
+        pArea.Area.cx,
+        pArea.Area.cy])));
       Result := S_OK;
     end;
 end;
@@ -551,10 +582,12 @@ end;
 
 //
 procedure TMediaTypeDebug.DebugMsg(pFormat: string);
+
 begin
-{$IFDEF DEBUG}
+
+  {$IFDEF DEBUG}
   OutputDebugStringW(PWideChar(pFormat));
-{$ENDIF}
+  {$ENDIF}
 
   slDebug.Append(UTF8Encode(Format('%d %s',
                                    [slDebug.Count, pFormat])));

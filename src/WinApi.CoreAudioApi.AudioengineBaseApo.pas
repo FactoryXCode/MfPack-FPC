@@ -108,7 +108,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -118,33 +119,33 @@ const
   // Error Codes for APO
   // The facility code for APOs is $887D.
 
-  APOERR_ALREADY_INITIALIZED          = $887D0001; // The object has already been initialized.
-  APOERR_NOT_INITIALIZED              = $887D0002; // Object/structure is not initialized.
-  APOERR_FORMAT_NOT_SUPPORTED         = $887D0003; // a pin supporting the format cannot be found.
-  APOERR_INVALID_APO_CLSID            = $887D0004; // Invalid CLSID in an APO Initialization structure.
-  APOERR_BUFFERS_OVERLAP              = $887D0005; // Buffers overlap on an APO that does not accept in-place buffers.
-  APOERR_ALREADY_UNLOCKED             = $887D0006; // APO is already in an unlocked state.
-  APOERR_NUM_CONNECTIONS_INVALID      = $887D0007; // number of input or output connections not valid on this APO
+  APOERR_ALREADY_INITIALIZED = $887D0001; // The object has already been initialized.
+  APOERR_NOT_INITIALIZED = $887D0002; // Object/structure is not initialized.
+  APOERR_FORMAT_NOT_SUPPORTED = $887D0003; // a pin supporting the format cannot be found.
+  APOERR_INVALID_APO_CLSID = $887D0004; // Invalid CLSID in an APO Initialization structure.
+  APOERR_BUFFERS_OVERLAP = $887D0005; // Buffers overlap on an APO that does not accept in-place buffers.
+  APOERR_ALREADY_UNLOCKED = $887D0006; // APO is already in an unlocked state.
+  APOERR_NUM_CONNECTIONS_INVALID = $887D0007; // number of input or output connections not valid on this APO
   APOERR_INVALID_OUTPUT_MAXFRAMECOUNT = $887D0008; // Output maxFrameCount not large enough.
-  APOERR_INVALID_CONNECTION_FORMAT    = $887D0009; // Invalid connection format for this operation
-  APOERR_APO_LOCKED                   = $887D000A; // APO is locked ready to process and can not be changed
-  APOERR_INVALID_COEFFCOUNT           = $887D000B; // Invalid coefficient count
-  APOERR_INVALID_COEFFICIENT          = $887D000C; // Invalid coefficient
-  APOERR_INVALID_CURVE_PARAM          = $887D000D; // an invalid curve parameter was specified
+  APOERR_INVALID_CONNECTION_FORMAT = $887D0009; // Invalid connection format for this operation
+  APOERR_APO_LOCKED = $887D000A; // APO is locked ready to process and can not be changed
+  APOERR_INVALID_COEFFCOUNT = $887D000B; // Invalid coefficient count
+  APOERR_INVALID_COEFFICIENT = $887D000C; // Invalid coefficient
+  APOERR_INVALID_CURVE_PARAM = $887D000D; // an invalid curve parameter was specified
 
 
   // Signatures for data structures.
   APO_CONNECTION_DESCRIPTOR_SIGNATURE = DWORD($41434453);
-  APO_CONNECTION_PROPERTY_SIGNATURE   = DWORD($41435053);
+  APO_CONNECTION_PROPERTY_SIGNATURE = DWORD($41435053);
   APO_CONNECTION_PROPERTY_V2_SIGNATURE = DWORD($41435032);
 
   // Min and max framerates for the engine")
-  AUDIO_MIN_FRAMERATE                 = 10.0;  // Minimum frame rate for APOs.
-  AUDIO_MAX_FRAMERATE                 = 384000.0;  // Maximum frame rate for APOs.
+  AUDIO_MIN_FRAMERATE = 10.0;  // Minimum frame rate for APOs.
+  AUDIO_MAX_FRAMERATE = 384000.0;  // Maximum frame rate for APOs.
 
   // Min and max # of channels (samples per frame) for the APOs.
-  AUDIO_MIN_CHANNELS                  = 1;  // Current minimum number of channels for APOs.
-  AUDIO_MAX_CHANNELS                  = 4096;  // Current maximum number of channels for APOs.
+  AUDIO_MIN_CHANNELS = 1;  // Current minimum number of channels for APOs.
+  AUDIO_MAX_CHANNELS = 4096;  // Current maximum number of channels for APOs.
 
 
 type
@@ -155,11 +156,11 @@ type
     // Connection buffer is internally allocated (Initialize)
     APO_CONNECTION_BUFFER_TYPE_ALLOCATED = 0,
     // Connection buffer is passed as parameter (InitializeWithBuffer)
-    APO_CONNECTION_BUFFER_TYPE_EXTERNAL  = 1,
+    APO_CONNECTION_BUFFER_TYPE_EXTERNAL = 1,
     // Connection buffer is extracted from another Connection Object
     // (InitializeWithConnection)
     APO_CONNECTION_BUFFER_TYPE_DEPENDANT = 2
-  );
+    );
   ApoConnectionBufferType = APO_CONNECTION_BUFFER_TYPE;
 
 
@@ -202,25 +203,26 @@ type
   PApoFlag = ^APO_FLAG;
   APO_FLAG = DWord;
   ApoFlag = APO_FLAG;
+
 const
   // No flags set
-  APO_FLAG_NONE                       = APO_FLAG($00000000);
+  APO_FLAG_NONE = APO_FLAG($00000000);
   // APO can perform in-place processing. This allows the processor to
   // connect a common buffer on input and output.
-  APO_FLAG_INPLACE                    = APO_FLAG($00000001);
+  APO_FLAG_INPLACE = APO_FLAG($00000001);
   // Samples Per Frame of input and output connections must match.
   APO_FLAG_SAMPLESPERFRAME_MUST_MATCH = APO_FLAG($00000002);
   // Frames per second of input and output connections must match
   APO_FLAG_FRAMESPERSECOND_MUST_MATCH = APO_FLAG($00000004);
   // Bits per sample AND bytes per sample containter of input and output
   // connections must match.
-  APO_FLAG_BITSPERSAMPLE_MUST_MATCH   = APO_FLAG($00000008);
+  APO_FLAG_BITSPERSAMPLE_MUST_MATCH = APO_FLAG($00000008);
   // APO is a mix APO. This flag should be set only for the mixer APO.
-  APO_FLAG_MIXER                      = APO_FLAG($00000010);
+  APO_FLAG_MIXER = APO_FLAG($00000010);
   // standard flags for default APOs
-  APO_FLAG_DEFAULT                    = APO_FLAG_SAMPLESPERFRAME_MUST_MATCH or
-                                        APO_FLAG_FRAMESPERSECOND_MUST_MATCH or
-                                        APO_FLAG_BITSPERSAMPLE_MUST_MATCH;  // In other words: APO_FLAG_DEFAULT = APO_FLAG_SAMPLESPERFRAME_MUST_MATCH
+  APO_FLAG_DEFAULT = APO_FLAG_SAMPLESPERFRAME_MUST_MATCH or
+    APO_FLAG_FRAMESPERSECOND_MUST_MATCH or
+    APO_FLAG_BITSPERSAMPLE_MUST_MATCH;  // In other words: APO_FLAG_DEFAULT = APO_FLAG_SAMPLESPERFRAME_MUST_MATCH
 
 
 type
@@ -228,6 +230,7 @@ type
   // Registration properties for an APO.
   // This structure is used by the registration API functions and by IAudioProcessingObject.GetRegistrationProperties().
   PApoRegProperties = ^ApoRegProperties;
+
   APO_REG_PROPERTIES = record
     // The CLSID that uniquely identifies this COM object.
     clsid: CLSID;
@@ -266,6 +269,7 @@ type
   // This the base initialization header that must preceed other
   // initialization data in IAudioProcessingObject.Initialize
   PAPOInitBaseStruct = ^APOInitBaseStruct;
+
   APOInitBaseStruct = record
     // This is the total size in bytes of the structure.
     cbSize: UINT32;
@@ -282,28 +286,28 @@ type
   // These flow types specify how the rate converter will consume and
   // generate samples based on the amount of available input, or amount of requested output.
   PAudioFlowType = ^AUDIO_FLOW_TYPE;
-  AUDIO_FLOW_TYPE   = (
+  AUDIO_FLOW_TYPE = (
     AUDIO_FLOW_PULL = 0,                      // If AUDIO_FLOW_PULL is specified then the converter will
-                                              // generate a fixed and equal number of output frames on
-                                              // each processing pass, and consume the entire input APO Connection buffer.
-                                              // The CalcMaxInputFrames API should be called initially to
-                                              // determine the maximum frameCount for APOC buffer allocation.
-                                              // CalcInputFrames should then be called before every call to
-                                              // APOProcess to determine the number of input frames required
-                                              // to fill the output APO Connection.  On subsequent calls to APOProcess,
-                                              // the returned u32InputFrameCount must equal the input APO Connectionâ€™s
-                                              // u32ValidFrameCount value, or the APO will fail.
+    // generate a fixed and equal number of output frames on
+    // each processing pass, and consume the entire input APO Connection buffer.
+    // The CalcMaxInputFrames API should be called initially to
+    // determine the maximum frameCount for APOC buffer allocation.
+    // CalcInputFrames should then be called before every call to
+    // APOProcess to determine the number of input frames required
+    // to fill the output APO Connection.  On subsequent calls to APOProcess,
+    // the returned u32InputFrameCount must equal the input APO Connectionâ€™s
+    // u32ValidFrameCount value, or the APO will fail.
 
     AUDIO_FLOW_PUSH = (AUDIO_FLOW_PULL + 1)   // With AUDIO_FLOW_PUSH the converter will generate as much output
-                                              // possible with the available input on each processing pass, and
-                                              // consume the entire input APO Connection buffer.
-                                              // CalcMaxOutputFrames should be called to determine the maximum
-                                              // frameCount that may be generated on a processing pass.
-                                              // This call should be made after Initialize to determine the
-                                              // size of APO output Connection buffer to allocate.
-                                              // CalcOutputFrames may be called to query the next output
-                                              // frameCount, however, this call is not required when using AUDIO_FLOW_PUSH.
-  );
+    // possible with the available input on each processing pass, and
+    // consume the entire input APO Connection buffer.
+    // CalcMaxOutputFrames should be called to determine the maximum
+    // frameCount that may be generated on a processing pass.
+    // This call should be made after Initialize to determine the
+    // size of APO output Connection buffer to allocate.
+    // CalcOutputFrames may be called to query the next output
+    // frameCount, however, this call is not required when using AUDIO_FLOW_PUSH.
+    );
   AudioFlowType = AUDIO_FLOW_TYPE;
 
 
@@ -311,16 +315,17 @@ type
   PEAudioConstriction = ^EAudioConstriction;
   EAudioConstriction = (
     // order least to most
-    eAudioConstrictionOff   = 0,    // Audio is not constricted.
-    eAudioConstriction48_16 = (eAudioConstrictionOff  + 1),    // Audio is down sampled to 48 kHz/16-bit.
-    eAudioConstriction44_16 = (eAudioConstriction48_16  + 1),  // Audio is down sampled to 44 kHz/16-bit.
-    eAudioConstriction14_14 = (eAudioConstriction44_16  + 1),  // Audio is down sampled to 14 kHz/16-bit.
-    eAudioConstrictionMute  = (eAudioConstriction14_14  + 1)   // Audio is muted.
-  );
+    eAudioConstrictionOff = 0,    // Audio is not constricted.
+    eAudioConstriction48_16 = (eAudioConstrictionOff + 1),    // Audio is down sampled to 48 kHz/16-bit.
+    eAudioConstriction44_16 = (eAudioConstriction48_16 + 1),  // Audio is down sampled to 44 kHz/16-bit.
+    eAudioConstriction14_14 = (eAudioConstriction44_16 + 1),  // Audio is down sampled to 14 kHz/16-bit.
+    eAudioConstrictionMute = (eAudioConstriction14_14 + 1)   // Audio is muted.
+    );
 
 
   // This is the structure that gets passed to the system effects APO for initialization.
   PAPOInitSystemEffects = ^APOInitSystemEffects;
+
   APOInitSystemEffects = record
     APOInit: APOInitBaseStruct;                // currently defined in AudioEngineBaseAPO.idl
     pAPOEndpointProperties: IPropertyStore;
@@ -334,6 +339,7 @@ type
   // The APOInitSystemEffects2 structure was introduced with Windows 8.1,
   // to make it possible to provide additional initialization context to the audio processing object (APO) for initialization.
   PAPOInitSystemEffects2 = ^APOInitSystemEffects2;
+
   APOInitSystemEffects2 = record
     APOInit: APOInitBaseStruct;
     pAPOEndpointProperties: IPropertyStore;
@@ -350,6 +356,7 @@ type
   // This is the structure that is passed to the system effects ControlPanel
   // Extension PropertyPage via IShellPropSheetExt.AddPages
   PAudioFXExtensionParams = ^AudioFXExtensionParams;
+
   AudioFXExtensionParams = record
     AddPageParam: LPARAM;
     pwstrEndpointID: PWideChar;
@@ -357,7 +364,7 @@ type
   end;
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
   // This is the realtime-safe interface for an APO. It may be called from
@@ -372,234 +379,493 @@ type
 const
   // _GFX_ properties
 
-  PKEY_FX_Association:         PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2:$594B; D3:$4fb6;
-                                                      D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                      pid: 0);
+  PKEY_FX_Association: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 0);
 
-  PKEY_FX_PreMixEffectClsid:   PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2:$594B; D3:$4fb6;
-                                                      D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                      pid: 1);
+  PKEY_FX_PreMixEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 1);
 
-  PKEY_FX_PostMixEffectClsid:  PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2:$594B; D3:$4fb6;
-                                                      D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                      pid: 2);
+  PKEY_FX_PostMixEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 2);
 
-  PKEY_FX_UserInterfaceClsid:  PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2:$594B; D3:$4fb6;
-                                                      D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                      pid: 3);
+  PKEY_FX_UserInterfaceClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 3);
 
-  PKEY_FX_FriendlyName:        PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2:$594B; D3:$4fb6;
-                                                      D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                      pid: 4);
+  PKEY_FX_FriendlyName: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 4);
 
-  PKEY_FX_StreamEffectClsid:   PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2:$594B; D3:$4fb6;
-                                                      D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                      pid: 5);
+  PKEY_FX_StreamEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 5);
 
-  PKEY_FX_ModeEffectClsid:    PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2:$594B; D3:$4fb6;
-                                                     D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                     pid: 6);
+  PKEY_FX_ModeEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 6);
 
-  PKEY_FX_EndpointEffectClsid:PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2:$594B; D3:$4fb6;
-                                                     D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                     pid: 7);
+  PKEY_FX_EndpointEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 7);
 
-  PKEY_FX_KeywordDetector_StreamEffectClsid   :	PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
-                                                                       D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                       pid: 8);
+  PKEY_FX_KeywordDetector_StreamEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 8);
 
-  PKEY_FX_KeywordDetector_ModeEffectClsid     :	PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
-                                                                       D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                       pid: 9);
+  PKEY_FX_KeywordDetector_ModeEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 9);
 
-  PKEY_FX_KeywordDetector_EndpointEffectClsid :	PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
-                                                                       D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                       pid: 10);
+  PKEY_FX_KeywordDetector_EndpointEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 10);
 
-  PKEY_FX_Offload_StreamEffectClsid           :	PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
-                                                                       D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                       pid: 11);
+  PKEY_FX_Offload_StreamEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 11);
 
-  PKEY_FX_Offload_ModeEffectClsid             : PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
-                                                                       D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                       pid: 12);
+  PKEY_FX_Offload_ModeEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 12);
 
-  PKEY_CompositeFX_StreamEffectClsid          : PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
-                                                                       D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                       pid: 13);
+  PKEY_CompositeFX_StreamEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 13);
 
-  PKEY_CompositeFX_ModeEffectClsid            : PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
-                                                                       D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                       pid: 14);
+  PKEY_CompositeFX_ModeEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 14);
 
-  PKEY_CompositeFX_EndpointEffectClsid        : PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
-                                                                       D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                       pid: 15);
+  PKEY_CompositeFX_EndpointEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 15);
 
-  PKEY_CompositeFX_KeywordDetector_StreamEffectClsid   : PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                pid: 16);
+  PKEY_CompositeFX_KeywordDetector_StreamEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 16);
 
-  PKEY_CompositeFX_KeywordDetector_ModeEffectClsid     : PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                pid: 17);
+  PKEY_CompositeFX_KeywordDetector_ModeEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 17);
 
-  PKEY_CompositeFX_KeywordDetector_EndpointEffectClsid : PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                pid: 18);
+  PKEY_CompositeFX_KeywordDetector_EndpointEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 18);
 
-  PKEY_CompositeFX_Offload_StreamEffectClsid           : PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                pid: 19);
+  PKEY_CompositeFX_Offload_StreamEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 19);
 
-  PKEY_CompositeFX_Offload_ModeEffectClsid             : PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                pid: 20);
+  PKEY_CompositeFX_Offload_ModeEffectClsid: PROPERTYKEY = (fmtid: (D1: $D04E05A6; D2: $594B; D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    pid: 20);
 
   // PKEY_FX_SupportAppLauncher:
   // vartype = VT_LPWSTR
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},21
-  PKEY_FX_SupportAppLauncher                          :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 21);
+  PKEY_FX_SupportAppLauncher: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 21);
 
   // PKEY_FX_SupportedFormats:
   // vartype = VT_LPWSTR
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},22
-  PKEY_FX_SupportedFormats                            :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 22);
+  PKEY_FX_SupportedFormats: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 22);
 
   // PKEY_FX_Enumerator:
   // vartype = VT_VECTOR | VT_LPWSTR
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},23
-  PKEY_FX_Enumerator                                  :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 23);
+  PKEY_FX_Enumerator: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 23);
 
   // PKEY_FX_VersionMajor:
   // vartype = VT_I4
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},24
-  PKEY_FX_VersionMajor                                :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 24);
+  PKEY_FX_VersionMajor: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 24);
 
   // PKEY_FX_VersionMinor:
   // vartype = VT_I4
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},25
-  PKEY_FX_VersionMinor                                :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 25);
+  PKEY_FX_VersionMinor: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 25);
 
   // PKEY_FX_Author:
   // vartype = VT_I4
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},26
-  PKEY_FX_Author                                      :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 26);
+  PKEY_FX_Author: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 26);
 
   // PKEY_FX_ObjectId:
   // vartype = VT_I4
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},27
-  PKEY_FX_ObjectId                                    :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 27);
+  PKEY_FX_ObjectId: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 27);
 
 
   // PKEY_FX_State:
   // vartype = VT_I4
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},28
-  PKEY_FX_State                                       :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 28);
+  PKEY_FX_State: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 28);
 
   // PKEY_FX_EffectPackSchema_Version:
   // vartype = VT_LPWSTR
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},29
-  PKEY_FX_EffectPackSchema_Version                    :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 29);
+  PKEY_FX_EffectPackSchema_Version: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 29);
 
   // PKEY_FX_ApplyToBluetooth:
   // vartype = VT_I4
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},30
-  PKEY_FX_ApplyToBluetooth                            :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 30);
+  PKEY_FX_ApplyToBluetooth: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 30);
 
   // PKEY_FX_ApplyToUsb:
   // vartype = VT_I4
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},31
-  PKEY_FX_ApplyToUsb                                  :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 31);
+  PKEY_FX_ApplyToUsb: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 31);
 
   // PKEY_FX_ApplyToRender:
   // vartype = VT_I4
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},32
-  PKEY_FX_ApplyToRender                               :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 32);
+  PKEY_FX_ApplyToRender: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 32);
 
   // PKEY_FX_ApplyToCapture:
   // vartype = VT_I4
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},33
-  PKEY_FX_ApplyToCapture                              :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 33);
+  PKEY_FX_ApplyToCapture: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 33);
 
   // PKEY_FX_RequestSetAsDefault:
   // vartype = VT_I4
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},34
-  PKEY_FX_RequestSetAsDefault                         :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 34);
+  PKEY_FX_RequestSetAsDefault: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 34);
 
   // PKEY_FX_RequestSetAsDefaultPriority:
   // vartype = VT_I4
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},35
-  PKEY_FX_RequestSetAsDefaultPriority                 :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 35);
+  PKEY_FX_RequestSetAsDefaultPriority: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 35);
 
   // PKEY_FX_OEM_Preferred_EffectPack_Id:
   // vartype = VT_I4
   // {D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},36
-  PKEY_FX_OEM_Preferred_EffectPack_Id                 :  PROPERTYKEY = (fmtid: (D1: $D04E05A6;
-                                                                                D2: $594B;
-                                                                                D3: $4fb6;
-                                                                                D4: ($A8, $0D, $01, $AF, $5E, $ED, $7D, $1D));
-                                                                                Pid: 36);
+  PKEY_FX_OEM_Preferred_EffectPack_Id: PROPERTYKEY = (fmtid: (D1: $D04E05A6;
+    D2: $594B;
+    D3: $4fb6;
+    D4: ($A8,
+         $0D,
+         $01,
+         $AF,
+         $5E,
+         $ED,
+         $7D,
+         $1D));
+    Pid: 36);
 
 
 
@@ -607,67 +873,137 @@ const
   // Lists the signal processing modes supported by the stream effect APO.
   // This list only includes signal processing modes where the APO actually processes the audio signal during streaming.
   // This list does not include any signal processing modes supported by the APO for discovery purposes only.
-  PKEY_SFX_ProcessingModes_Supported_For_Streaming  :   PROPERTYKEY = (fmtid:  (D1: $d3993a3f;
-                                                                                D2:$99c2;
-                                                                                D3:$4402;
-                                                                                D4: ($b5, $ec, $a9, $2a, $3, $67, $66, $4b));
-                                                                                pid: 5);
+  PKEY_SFX_ProcessingModes_Supported_For_Streaming: PROPERTYKEY = (fmtid: (D1: $d3993a3f;
+    D2: $99c2;
+    D3: $4402;
+    D4: ($b5,
+         $ec,
+         $a9,
+         $2a,
+         $3,
+         $67,
+         $66,
+         $4b));
+    pid: 5);
 
 
   // Lists the signal processing modes supported by the mode effect APO.
   // This list only includes signal processing modes where the APO actually processes the audio signal during streaming.
   // This list does not include any signal processing modes supported by the APO for discovery purposes only.
-  PKEY_MFX_ProcessingModes_Supported_For_Streaming  :   PROPERTYKEY = (fmtid:  (D1: $d3993a3f;
-                                                                                D2:$99c2;
-                                                                                D3:$4402;
-                                                                                D4: ($b5, $ec, $a9, $2a, $3, $67, $66, $4b));
-                                                                                pid: 6);
+  PKEY_MFX_ProcessingModes_Supported_For_Streaming: PROPERTYKEY = (fmtid: (D1: $d3993a3f;
+    D2: $99c2;
+    D3: $4402;
+    D4: ($b5,
+         $ec,
+         $a9,
+         $2a,
+         $3,
+         $67,
+         $66,
+         $4b));
+    pid: 6);
 
   // Lists the signal processing modes supported by the endpoint effect APO.
   // This list only includes signal processing modes where the APO actually processes the audio signal during streaming.
   // This list does not include any signal processing modes supported by the APO for discovery purposes only.
-  PKEY_EFX_ProcessingModes_Supported_For_Streaming:   PROPERTYKEY = (fmtid:  (D1: $d3993a3f; D2:$99c2; D3:$4402;
-                                                                              D4: ($b5, $ec, $a9, $2a, $3, $67, $66, $4b));
-                                                                              pid: 7);
+  PKEY_EFX_ProcessingModes_Supported_For_Streaming: PROPERTYKEY = (fmtid: (D1: $d3993a3f; D2: $99c2; D3: $4402;
+    D4: ($b5,
+         $ec,
+         $a9,
+         $2a,
+         $3,
+         $67,
+         $66,
+         $4b));
+    pid: 7);
 
-  PKEY_SFX_KeywordDetector_ProcessingModes_Supported_For_Streaming : PROPERTYKEY = (fmtid: (D1: $d3993a3f; D2: $99c2; D3: $4402;
-                                                                                            D4: ($b5, $ec, $a9, $2a, $3, $67, $66, $4b));
-                                                                                            pid: 8);
+  PKEY_SFX_KeywordDetector_ProcessingModes_Supported_For_Streaming: PROPERTYKEY = (fmtid: (D1: $d3993a3f; D2: $99c2; D3: $4402;
+    D4: ($b5,
+         $ec,
+         $a9,
+         $2a,
+         $3,
+         $67,
+         $66,
+         $4b));
+    pid: 8);
 
-  PKEY_MFX_KeywordDetector_ProcessingModes_Supported_For_Streaming :  PROPERTYKEY = (fmtid: (D1: $d3993a3f; D2: $99c2; D3: $4402;
-                                                                                             D4: ($b5, $ec, $a9, $2a, $3, $67, $66, $4b));
-                                                                                             pid: 9);
+  PKEY_MFX_KeywordDetector_ProcessingModes_Supported_For_Streaming: PROPERTYKEY = (fmtid: (D1: $d3993a3f; D2: $99c2; D3: $4402;
+    D4: ($b5,
+         $ec,
+         $a9,
+         $2a,
+         $3,
+         $67,
+         $66,
+         $4b));
+    pid: 9);
 
-  PKEY_EFX_KeywordDetector_ProcessingModes_Supported_For_Streaming :  PROPERTYKEY = (fmtid: (D1: $d3993a3f; D2: $99c2; D3: $4402;
-                                                                                             D4: ($b5, $ec, $a9, $2a, $3, $67, $66, $4b));
-                                                                                             pid: 10);
+  PKEY_EFX_KeywordDetector_ProcessingModes_Supported_For_Streaming: PROPERTYKEY = (fmtid: (D1: $d3993a3f; D2: $99c2; D3: $4402;
+    D4: ($b5,
+         $ec,
+         $a9,
+         $2a,
+         $3,
+         $67,
+         $66,
+         $4b));
+    pid: 10);
 
-  PKEY_SFX_Offload_ProcessingModes_Supported_For_Streaming         :  PROPERTYKEY = (fmtid: (D1: $d3993a3f; D2: $99c2; D3: $4402;
-                                                                                             D4: ($b5, $ec, $a9, $2a, $3, $67, $66, $4b));
-                                                                                             pid: 11);
+  PKEY_SFX_Offload_ProcessingModes_Supported_For_Streaming: PROPERTYKEY = (fmtid: (D1: $d3993a3f; D2: $99c2; D3: $4402;
+    D4: ($b5,
+         $ec,
+         $a9,
+         $2a,
+         $3,
+         $67,
+         $66,
+         $4b));
+    pid: 11);
 
-  PKEY_MFX_Offload_ProcessingModes_Supported_For_Streaming         :  PROPERTYKEY = (fmtid: (D1: $d3993a3f; D2: $99c2; D3: $4402;
-                                                                                             D4: ($b5, $ec, $a9, $2a, $3, $67, $66, $4b));
-                                                                                             pid: 12);
+  PKEY_MFX_Offload_ProcessingModes_Supported_For_Streaming: PROPERTYKEY = (fmtid: (D1: $d3993a3f; D2: $99c2; D3: $4402;
+    D4: ($b5,
+         $ec,
+         $a9,
+         $2a,
+         $3,
+         $67,
+         $66,
+         $4b));
+    pid: 12);
 
   // PKEY_APO_SWFallback_ProcessingModes:
   // vartype = VT_VECTOR | VT_LPWSTR
   // {D3993A3F-99C2-4402-B5EC-A92A0367664B},13
   // Lists the signal processing modes supported by the host connector that are available for fallback to SW APO if sufficient HW resources
   // aren't available.
-  PKEY_APO_SWFallback_ProcessingModes                              :  PROPERTYKEY = (fmtid: (D1: $d3993a3f;
-                                                                                             D2: $99c2;
-                                                                                             D3: $4402;
-                                                                                             D4: ($b5, $ec, $a9, $2a, $03, $67, $66, $4b));
-                                                                                             Pid: 13);
+  PKEY_APO_SWFallback_ProcessingModes: PROPERTYKEY = (fmtid: (D1: $d3993a3f;
+    D2: $99c2;
+    D3: $4402;
+    D4: ($b5,
+         $ec,
+         $a9,
+         $2a,
+         $03,
+         $67,
+         $66,
+         $4b));
+    Pid: 13);
 
   // PKEY_FX_EffectPack_Schema_V1:
   // {7abf23d9-727e-4d0b-86a3-dd501d260001}
   // Effect pack schema version 1 GUID, used with PKEY_FX_EffectPackSchema_Version
-  PKEY_FX_EffectPack_Schema_V1 : TGUID = (D1: $7abf23d9;
-                                          D2: $727e;
-                                          D3: $4d0b;
-                                          D4: ($86, $a3, $dd, $50, $1d, $26, $0, $1));
+  PKEY_FX_EffectPack_Schema_V1: TGUID = (D1: $7abf23d9;
+    D2: $727e;
+    D3: $4d0b;
+    D4: ($86,
+         $a3,
+         $dd,
+         $50,
+         $1d,
+         $26,
+         $0,
+         $1));
 
 
 
@@ -708,11 +1044,11 @@ type
   // IAudioProcessingObjectRT.CalcOutputFrames
   //
   IAudioProcessingObjectRT = interface(IUnknown)
-  ['{9E1D6A6D-DDBC-4E95-A4C7-AD64BA37846C}']
+    ['{9E1D6A6D-DDBC-4E95-A4C7-AD64BA37846C}']
     procedure APOProcess(u32NumInputConnections: UINT32;
-                          ppInputConnections: PPAPO_CONNECTION_PROPERTY;
-                          u32NumOutputConnections: UINT32;
-                          ppOutputConnections: PPAPO_CONNECTION_PROPERTY); stdcall;
+                         ppInputConnections: PPAPO_CONNECTION_PROPERTY;
+                         u32NumOutputConnections: UINT32;
+                         ppOutputConnections: PPAPO_CONNECTION_PROPERTY); stdcall;
 
     function CalcInputFrames(u32OutputFrameCount: UINT32): UINT32; stdcall;
 
@@ -762,7 +1098,7 @@ type
   // paged memory, or call any blocking system routines.
   //
   IAudioProcessingObjectVBR = interface(IUnknown)
-  ['{7ba1db8f-78ad-49cd-9591-f79d80a17c81}']
+    ['{7ba1db8f-78ad-49cd-9591-f79d80a17c81}']
     function CalcMaxInputFrames(u32MaxOutputFrameCount: UINT32;
                                 out pu32InputFrameCount: UINT32): HResult; stdcall;
     // Description:
@@ -884,7 +1220,7 @@ type
   //  Note: This method may not be called from a real-time processing thread.
   //
   IAudioProcessingObjectConfiguration = interface(IUnknown)
-  ['{0E5ED805-ABA6-49c3-8F9A-2B8C889C4FA8}']
+    ['{0E5ED805-ABA6-49c3-8F9A-2B8C889C4FA8}']
     function LockForProcess(const u32NumInputConnections: UINT32;
                             ppInputConnections: PPApoConnectionDescriptor;
                             const u32NumOutputConnections: UINT32;
@@ -975,67 +1311,67 @@ type
   // IAudioProcessingObject.Initialize
   //
   IAudioProcessingObject = interface(IUnknown)
-  ['{FD7F2B29-24D0-4b5c-B177-592C39F9CA10}']
+    ['{FD7F2B29-24D0-4b5c-B177-592C39F9CA10}']
     function Reset(): HRESULT; stdcall;
-      // Description:
-      // Resets the APO to its initial state.
-      //
-      // Return values:
-      // S_OK        Successful completion.
-      //
-      // Remarks:
-      // This method resets the APO to a known state. It does not cause
-      // any changes in the connection objects attached to the input or output of the APO.
-      // The APO defines the initial state.
-      //
-      // See the documentation for each APO for specifics as to exactly what
-      // the "known" state of the APO is after this call.
-      //
-      // Note:
-      // This method may not be called from a real-time processing thread. The
-      // implementation of this method does not and should not block, touch paged
-      // memory, or call any blocking system routines.
+    // Description:
+    // Resets the APO to its initial state.
+    //
+    // Return values:
+    // S_OK        Successful completion.
+    //
+    // Remarks:
+    // This method resets the APO to a known state. It does not cause
+    // any changes in the connection objects attached to the input or output of the APO.
+    // The APO defines the initial state.
+    //
+    // See the documentation for each APO for specifics as to exactly what
+    // the "known" state of the APO is after this call.
+    //
+    // Note:
+    // This method may not be called from a real-time processing thread. The
+    // implementation of this method does not and should not block, touch paged
+    // memory, or call any blocking system routines.
 
     function GetLatency(out pTime: HNSTIME): HRESULT; stdcall;
-      // Description:
-      // Returns the latency for this APO.
-      //
-      // Parameters:
-      // pTime - [out] Points to a HNSTIME structure that will receive the
-      //               number of 100 nanosecond units of delay that this APO introduces.
-      //
-      // Return values:
-      // S_OK        Successful completion.
-      // E_POINTER   Invalid pointer passed to function.
-      //
-      // Remarks:
-      // Get the latency in 100 nanosecond units.  If the caller knows the
-      // sampling rate, they can calculate the latency in number of frames. The
-      // latency is with respect to this APO.  To get the total latency on the
-      // processing stream, the caller would query every APO in the processing
-      // chain for its latency and sum the results.
-      //
-      // Latency is the amount of time it takes a frame to traverse the
-      // processing pass of this APO. That is, it describes how long an APO
-      // will hold on to a frame before releasing it downstream to the remainder
-      // of the audio graph. Another way of looking at it is that it is the
-      // amount of time by which the timestamp of the output connection will
-      // be offset relative to the timestamp of the input connection.
-      //
-      // For instance, a typical APO such as volume or mixing will not introduce
-      // any latency. A frame going in the input connection buffer will come out at the
-      // corresponding position of the output connection buffer, and the timestamp on the
-      // output connection will match that of the input connection in a single APOProcess()
-      // call. An APO such as a delay or frame rate converter will introduce a
-      // latency into the stream. That is, the input frames will be held by the
-      // APO for a time (the latency time) and only output at a later time. So a
-      // frame coming in at time 10 on the input will still come out at time 10
-      // on the output, but if there is a 5 time-unit latency for the APO, the
-      // APOProcess() pass made with an input connection of time 10 would generate an
-      // output connection of time 5. In effect, the input frames have been held or
-      // delayed by 5 time units. The APO would report a latency of 5 units.
-      //
-      // Note: This method may not be called from a real-time processing thread.
+    // Description:
+    // Returns the latency for this APO.
+    //
+    // Parameters:
+    // pTime - [out] Points to a HNSTIME structure that will receive the
+    //               number of 100 nanosecond units of delay that this APO introduces.
+    //
+    // Return values:
+    // S_OK        Successful completion.
+    // E_POINTER   Invalid pointer passed to function.
+    //
+    // Remarks:
+    // Get the latency in 100 nanosecond units.  If the caller knows the
+    // sampling rate, they can calculate the latency in number of frames. The
+    // latency is with respect to this APO.  To get the total latency on the
+    // processing stream, the caller would query every APO in the processing
+    // chain for its latency and sum the results.
+    //
+    // Latency is the amount of time it takes a frame to traverse the
+    // processing pass of this APO. That is, it describes how long an APO
+    // will hold on to a frame before releasing it downstream to the remainder
+    // of the audio graph. Another way of looking at it is that it is the
+    // amount of time by which the timestamp of the output connection will
+    // be offset relative to the timestamp of the input connection.
+    //
+    // For instance, a typical APO such as volume or mixing will not introduce
+    // any latency. A frame going in the input connection buffer will come out at the
+    // corresponding position of the output connection buffer, and the timestamp on the
+    // output connection will match that of the input connection in a single APOProcess()
+    // call. An APO such as a delay or frame rate converter will introduce a
+    // latency into the stream. That is, the input frames will be held by the
+    // APO for a time (the latency time) and only output at a later time. So a
+    // frame coming in at time 10 on the input will still come out at time 10
+    // on the output, but if there is a 5 time-unit latency for the APO, the
+    // APOProcess() pass made with an input connection of time 10 would generate an
+    // output connection of time 5. In effect, the input frames have been held or
+    // delayed by 5 time units. The APO would report a latency of 5 units.
+    //
+    // Note: This method may not be called from a real-time processing thread.
 
     function GetRegistrationProperties(out ppRegProps: PApoRegProperties): HRESULT; stdcall;
     // Description:
@@ -1208,7 +1544,7 @@ type
   // ===================================
   //
   IAudioDeviceModulesClient = interface(IUnknown)
-  ['{98F37DAC-D0B6-49F5-896A-AA4D169A4C48}']
+    ['{98F37DAC-D0B6-49F5-896A-AA4D169A4C48}']
     function SetAudioDeviceModulesManager(pAudioDeviceModulesManager: IUnknown): HResult; stdcall;
   end;
   // IAudioDeviceModulesClient
@@ -1224,7 +1560,7 @@ type
   // IAudioProcessingObject.Initialize method.
   //
   IAudioSystemEffects = interface(IUnknown)
-  ['{5FA00F27-ADD6-499a-8A9D-6B98521FA75B}']
+    ['{5FA00F27-ADD6-499a-8A9D-6B98521FA75B}']
     // Marker interface: no methods beyond IUnknown.
 
   end;
@@ -1239,34 +1575,34 @@ type
   //
   IAudioSystemEffects2 = interface(IAudioSystemEffects)
     ['{BAFE99D2-7436-44CE-9E0E-4D89AFBFFF56}']
-      function GetEffectsList(out ppEffectsIds: LPGUID;
-                              out pcEffects: UINT;
-                              Event: THandle): HResult; stdcall;
-      // The GetEffectsList method is used for retrieving the list of audio processing effects that are currently active,
-      // and stores an event to be signaled if the list changes.
-      // Parameters:
-      // ppEffectsIds [out]   Pointer to the list of GUIDs that represent audio processing effects.
-      //                      The caller is responsible for freeing this memory by calling CoTaskMemFree.
-      // pcEffects    [out]   A count of the audio processing effects in the list.
-      // Event        [const] The HANDLE of the event that will be signaled if the list changes.
-      //
-      // Return value:
-      // The GetEffectsList method returns S_OK, If the method call is successful.
-      // If there are no effects in the list, the function still succeeds, ppEffectsIds returns a NULL pointer,
-      // and pcEffects returns a count of 0.
-      //
-      // Remarks:
-      // The APO signals the specified event when the list of audio processing effects changes from the list that
-      // was returned by GetEffectsList.
-      // The APO uses this event until either GetEffectsList is called again, or the APO is destroyed.
-      // The passed handle can be NULL, in which case the APO stops using any previous handle and does not signal an event.
-      // An APO implements this method to allow Windows to discover the current effects applied by the APO.
-      // The list of effects may depend on the processing mode that the APO initialized,
-      // and on any end user configuration.
-      // The processing mode is indicated by the AudioProcessingMode member of APOInitSystemEffects2.
-      // APOs should identify effects using GUIDs defined by Windows, such as AUDIO_EFFECT_TYPE_ACOUSTIC_ECHO_CANCELLATION.
-      // An APO should only define and return a custom GUID in rare cases where the type of effect is
-      // clearly different from the ones defined by Windows.
+    function GetEffectsList(out ppEffectsIds: LPGUID;
+                            out pcEffects: UINT;
+                            Event: THandle): HResult; stdcall;
+    // The GetEffectsList method is used for retrieving the list of audio processing effects that are currently active,
+    // and stores an event to be signaled if the list changes.
+    // Parameters:
+    // ppEffectsIds [out]   Pointer to the list of GUIDs that represent audio processing effects.
+    //                      The caller is responsible for freeing this memory by calling CoTaskMemFree.
+    // pcEffects    [out]   A count of the audio processing effects in the list.
+    // Event        [const] The HANDLE of the event that will be signaled if the list changes.
+    //
+    // Return value:
+    // The GetEffectsList method returns S_OK, If the method call is successful.
+    // If there are no effects in the list, the function still succeeds, ppEffectsIds returns a NULL pointer,
+    // and pcEffects returns a count of 0.
+    //
+    // Remarks:
+    // The APO signals the specified event when the list of audio processing effects changes from the list that
+    // was returned by GetEffectsList.
+    // The APO uses this event until either GetEffectsList is called again, or the APO is destroyed.
+    // The passed handle can be NULL, in which case the APO stops using any previous handle and does not signal an event.
+    // An APO implements this method to allow Windows to discover the current effects applied by the APO.
+    // The list of effects may depend on the processing mode that the APO initialized,
+    // and on any end user configuration.
+    // The processing mode is indicated by the AudioProcessingMode member of APOInitSystemEffects2.
+    // APOs should identify effects using GUIDs defined by Windows, such as AUDIO_EFFECT_TYPE_ACOUSTIC_ECHO_CANCELLATION.
+    // An APO should only define and return a custom GUID in rare cases where the type of effect is
+    // clearly different from the ones defined by Windows.
 
   end;
   // IAudioSystemEffects2
@@ -1304,54 +1640,54 @@ type
   //
   IAudioSystemEffectsCustomFormats = interface(IUnknown)
     ['{B1176E34-BB7F-4f05-BEBD-1B18A534E097}']
-      function GetFormatCount(out pcFormats: UINT): HResult; stdcall;
-      // Description:
-      // Retrieves the number of custom formats supported by this APO
-      //
-      // Parameters:
-      // pcFormats   [out]  Receives the number of formats supported
-      //
-      // Return values:
-      // S_OK            Successful completion.
-      // E_POINTER       Invalid pointer passed to function.
+    function GetFormatCount(out pcFormats: UINT): HResult; stdcall;
+    // Description:
+    // Retrieves the number of custom formats supported by this APO
+    //
+    // Parameters:
+    // pcFormats   [out]  Receives the number of formats supported
+    //
+    // Return values:
+    // S_OK            Successful completion.
+    // E_POINTER       Invalid pointer passed to function.
 
-      function GetFormat(nFormat: UINT;
-                         out ppFormat: IAudioMediaType): HResult; stdcall;
-      // Description:
-      // Retrieves a IAudioMediaType representation of a custom format
-      //
-      // Parameters:
-      // nFormat    [const] the index of the format (in the range 0 to GetFormatCount() result - 1)
-      // ppFormat   [out]   the address of a pointer that will receive the format
-      //
-      // Return values:
-      // S_OK            Successful completion.
-      // E_POINTER       Invalid pointer passed to function.
-      // E_OUTOFMEMORY   Return buffer cannot be allocated.
-      // E_INVALIDARG    nFormat is out of range.
-      //
-      // Remarks:
-      // The caller is responsible for deleting the IAudioMediaType object pointed to by *ppFormat.
+    function GetFormat(nFormat: UINT;
+                       out ppFormat: IAudioMediaType): HResult; stdcall;
+    // Description:
+    // Retrieves a IAudioMediaType representation of a custom format
+    //
+    // Parameters:
+    // nFormat    [const] the index of the format (in the range 0 to GetFormatCount() result - 1)
+    // ppFormat   [out]   the address of a pointer that will receive the format
+    //
+    // Return values:
+    // S_OK            Successful completion.
+    // E_POINTER       Invalid pointer passed to function.
+    // E_OUTOFMEMORY   Return buffer cannot be allocated.
+    // E_INVALIDARG    nFormat is out of range.
+    //
+    // Remarks:
+    // The caller is responsible for deleting the IAudioMediaType object pointed to by *ppFormat.
 
-      function GetFormatRepresentation(nFormat: UINT;
-                                       out ppwstrFormatRep: PWideChar): HResult; stdcall;
-      // Description:
-      // Retrieves a string representation of a custom format for UI purposes
-      //
-      // Parameters:
-      // nFormat           [const] the index of the format (in the range 0 to GetFormatCount() result - 1)
-      // ppwstrFormatRep   [out]   the address of a buffer pointer that will receive a null-
-      //                           terminated string describing the format
-      //
-      // Return values:
-      // S_OK            Successful completion.
-      // E_POINTER       Invalid pointer passed to function.
-      // E_OUTOFMEMORY   Return buffer cannot be allocated.
-      // E_INVALIDARG    nFormat is out of range.
-      //
-      // Remarks:
-      // The caller is responsible for freeing the buffer pointed to by *pwstrFormatRep
-      // using CoTaskMemFree.
+    function GetFormatRepresentation(nFormat: UINT;
+                                     out ppwstrFormatRep: PWideChar): HResult; stdcall;
+    // Description:
+    // Retrieves a string representation of a custom format for UI purposes
+    //
+    // Parameters:
+    // nFormat           [const] the index of the format (in the range 0 to GetFormatCount() result - 1)
+    // ppwstrFormatRep   [out]   the address of a buffer pointer that will receive a null-
+    //                           terminated string describing the format
+    //
+    // Return values:
+    // S_OK            Successful completion.
+    // E_POINTER       Invalid pointer passed to function.
+    // E_OUTOFMEMORY   Return buffer cannot be allocated.
+    // E_INVALIDARG    nFormat is out of range.
+    //
+    // Remarks:
+    // The caller is responsible for freeing the buffer pointed to by *pwstrFormatRep
+    // using CoTaskMemFree.
 
   end;
   // IAudioSystemEffectsCustomFormats
@@ -1368,11 +1704,11 @@ type
   //
   //
   IApoAuxiliaryInputConfiguration = interface(IUnknown)
-  ['{4CEB0AAB-FA19-48ED-A857-87771AE1B768}']
+    ['{4CEB0AAB-FA19-48ED-A857-87771AE1B768}']
     function AddAuxiliaryInput({in} dwInputId: DWORD;
-                               {in} cbDataSize: UINT32;
-                               {in} pbyData: PByte;
-                               {in} pInputConnection: PApoConnectionDescriptor): HResult; stdcall;
+    {in} cbDataSize: UINT32;
+    {in} pbyData: PByte;
+    {in} pInputConnection: PApoConnectionDescriptor): HResult; stdcall;
     // Description:
     //
     //  Adds an auxiliary input to the APO, and provides initialization parameters.
@@ -1424,7 +1760,7 @@ type
     //
 
     function IsInputFormatSupported({in} pRequestedInputFormat: IAudioMediaType;
-                                    {out} ppSupportedInputFormat: PIAudioMediaType): HResult; stdcall;
+    {out} ppSupportedInputFormat: PIAudioMediaType): HResult; stdcall;
     // Description:
     //
     //  Verifies that a specific auxiliary input format is supported.
@@ -1477,6 +1813,7 @@ type
     //
 
   end;
+
   IID_IApoAuxiliaryInputConfiguration = IApoAuxiliaryInputConfiguration;
 
 
@@ -1493,9 +1830,9 @@ type
   // This interface is declared "local" and is not callable out of proc.
   //
   IApoAuxiliaryInputRT = interface(IUnknown)
-  ['{F851809C-C177-49A0-B1B2-B66F017943AB}']
+    ['{F851809C-C177-49A0-B1B2-B66F017943AB}']
     procedure AcceptInput({in} dwInputId: DWORD;
-                          {in} pInputConnection: PAPO_CONNECTION_PROPERTY); stdcall;
+    {in} pInputConnection: PAPO_CONNECTION_PROPERTY); stdcall;
     // Description:
     //
     //  Provides input to the APO on one of its auxiliary inputs
@@ -1516,6 +1853,7 @@ type
     //
 
   end;
+
   IID_IApoAuxiliaryInputRT = IApoAuxiliaryInputRT;
 
 
@@ -1525,10 +1863,11 @@ type
   // This interface is used to identify APOs that implement Acoustic Echo Cancellation
   //
   IApoAcousticEchoCancellation = interface(IUnknown)
-  ['{25385759-3236-4101-A943-25693DFB5D2D}']
+    ['{25385759-3236-4101-A943-25693DFB5D2D}']
 
 
   end;
+
   IID_IApoAcousticEchoCancellation = IApoAcousticEchoCancellation;
 
   //-------------------------------------------------------------------------
@@ -1540,9 +1879,9 @@ type
   //         for the loopback stream.
   PAPO_REFERENCE_STREAM_PROPERTIES = ^APO_REFERENCE_STREAM_PROPERTIES;
   APO_REFERENCE_STREAM_PROPERTIES = (
-    APO_REFERENCE_STREAM_PROPERTIES_NONE                  = $00,
-    APO_REFERENCE_STREAM_PROPERTIES_POST_VOLUME_LOOPBACK  = $01
-  );
+    APO_REFERENCE_STREAM_PROPERTIES_NONE = $00,
+                                     APO_REFERENCE_STREAM_PROPERTIES_POST_VOLUME_LOOPBACK = $01
+    );
 
 
   // DEFINE_ENUM_FLAG_OPERATORS(APO_REFERENCE_STREAM_PROPERTIES);
@@ -1557,12 +1896,13 @@ type
     function GetDesiredReferenceStreamProperties(out pProperties: APO_REFERENCE_STREAM_PROPERTIES): HRESULT; stdcall;
 
   end;
+
   IID_IApoAcousticEchoCancellation2 = IApoAcousticEchoCancellation2;
 
 
 type
-  FNAPONOTIFICATIONCALLBACK = function(pProperties : PApoRegProperties;
-                                       pvRefData : Pointer): HRESULT; stdcall;
+  FNAPONOTIFICATIONCALLBACK = function(pProperties: PApoRegProperties;
+                                       pvRefData: Pointer): HRESULT; stdcall;
 
 
   {$IFDEF MFPACK_LINK_SDK_APO_HELPERS}
@@ -1589,16 +1929,17 @@ type
 
 implementation
 
-    // Implement Additional functions here.
+// Implement Additional functions here.
 
 // These helpers are supplied by the SDK static AudioBaseProcessingObject library,
 // not DLL exports. Calling them requires a compatible native static-library link.
-  {$IFDEF MFPACK_LINK_SDK_APO_HELPERS}
+{$IFDEF MFPACK_LINK_SDK_APO_HELPERS}
   function RegisterAPO; external;
   function UnregisterAPO; external;
   function RegisterAPONotification; external;
   function UnregisterAPONotification; external;
   function EnumerateAPOs; external;
   function GetAPOProperties; external;
-  {$ENDIF}
+{$ENDIF}
+
 end.

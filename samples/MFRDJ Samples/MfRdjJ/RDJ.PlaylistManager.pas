@@ -73,16 +73,17 @@ unit RDJ.PlaylistManager;
 
 interface
 
-uses Rdj.Platform,
-Rdj.SQLite,
-LMessages,
+uses
+  Rdj.Platform,
+  Rdj.SQLite,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   SysUtils,
   Classes,
   Generics.Collections,
-  {FireDAC}  {Application}
+  {FireDAC}{Application}
   RDJ.PlaylistTypes,
   RDJ.PlaylistDb,
   RDJ.TrackLibrary;
@@ -90,6 +91,7 @@ LMessages,
 type
 
   TRDJPlaylistManager = class
+
   private
 
     FDb: TRDJPlaylistDb;
@@ -106,7 +108,7 @@ type
     function CreateNewPlaylist(const AName: string;
                                const ANotes: string = ''): Integer;
 
-    function GetAllPlaylists: TList<TRDJPlaylistInfo>;
+    function GetAllPlaylists: TList < TRDJPlaylistInfo > ;
     function LoadPlaylist(const APlaylistID: Integer): TRDJPlaylist;
     function SavePlaylist(APlaylist: TRDJPlaylist): Boolean;
 
@@ -135,6 +137,7 @@ implementation
 
 constructor TRDJPlaylistManager.Create(ADb: TRDJPlaylistDb;
                                        ALibrary: TRDJTrackLibrary);
+
 begin
 
   inherited Create;
@@ -145,6 +148,7 @@ end;
 
 
 function TRDJPlaylistManager.QueryPlaylistInfo(const Q: TFDQuery): TRDJPlaylistInfo;
+
 begin
 
   Result := RDJEmptyPlaylistInfo;
@@ -153,15 +157,18 @@ begin
   Result.Name := Q.FieldByName('Name').AsWideString;
   Result.Notes := Q.FieldByName('Notes').AsWideString;
 
-  if Trim(Q.FieldByName('CreatedUtc').AsWideString) <> '' then
-    Result.CreatedUtc := StrToDateTimeDef(Q.FieldByName('CreatedUtc').AsWideString, 0);
+  if (Trim(Q.FieldByName('CreatedUtc').AsWideString) <> '') then
+    Result.CreatedUtc := StrToDateTimeDef(Q.FieldByName('CreatedUtc').AsWideString,
+                                          0);
 
-  if Trim(Q.FieldByName('ModifiedUtc').AsWideString) <> '' then
-    Result.ModifiedUtc := StrToDateTimeDef(Q.FieldByName('ModifiedUtc').AsWideString, 0);
+  if (Trim(Q.FieldByName('ModifiedUtc').AsWideString) <> '') then
+    Result.ModifiedUtc := StrToDateTimeDef(Q.FieldByName('ModifiedUtc').AsWideString,
+                                           0);
 end;
 
 
 function TRDJPlaylistManager.QueryPlaylistEntry(const Q: TFDQuery): TRDJPlaylistEntry;
+
 begin
 
   Result := RDJEmptyPlaylistEntry;
@@ -203,14 +210,17 @@ begin
 
   Result.Track.FileSize := Q.FieldByName('FileSize').AsLargeInt;
 
-  if Trim(Q.FieldByName('FileModifiedUtc').AsWideString) <> '' then
-    Result.Track.FileModifiedUtc := StrToDateTimeDef(Q.FieldByName('FileModifiedUtc').AsWideString, 0);
+  if (Trim(Q.FieldByName('FileModifiedUtc').AsWideString) <> '') then
+    Result.Track.FileModifiedUtc := StrToDateTimeDef(Q.FieldByName('FileModifiedUtc').AsWideString,
+                                                     0);
 
-  if Trim(Q.FieldByName('DateAddedUtc').AsWideString) <> '' then
-    Result.Track.DateAddedUtc := StrToDateTimeDef(Q.FieldByName('DateAddedUtc').AsWideString, 0);
+  if (Trim(Q.FieldByName('DateAddedUtc').AsWideString) <> '') then
+    Result.Track.DateAddedUtc := StrToDateTimeDef(Q.FieldByName('DateAddedUtc').AsWideString,
+                                                  0);
 
-  if Trim(Q.FieldByName('LastScanUtc').AsWideString) <> '' then
-    Result.Track.LastScanUtc := StrToDateTimeDef(Q.FieldByName('LastScanUtc').AsWideString, 0);
+  if (Trim(Q.FieldByName('LastScanUtc').AsWideString) <> '') then
+    Result.Track.LastScanUtc := StrToDateTimeDef(Q.FieldByName('LastScanUtc').AsWideString,
+                                                 0);
 
   Result.Track.Rating := Q.FieldByName('Rating').AsInteger;
   Result.Track.ColorTag := Q.FieldByName('ColorTag').AsInteger;
@@ -224,6 +234,7 @@ end;
 
 function TRDJPlaylistManager.CreateNewPlaylist(const AName: string;
                                                const ANotes: string = ''): Integer;
+
 begin
 
   Result := FDb.CreatePlaylist(AName,
@@ -231,13 +242,13 @@ begin
 end;
 
 
-function TRDJPlaylistManager.GetAllPlaylists: TList<TRDJPlaylistInfo>;
+function TRDJPlaylistManager.GetAllPlaylists: TList < TRDJPlaylistInfo > ;
 var
   Q: TFDQuery;
 
 begin
 
-  Result := TList<TRDJPlaylistInfo>.Create;
+  Result := (TList < TRDJPlaylistInfo > .Create);
 
   Q := TFDQuery.Create(nil);
 
@@ -245,8 +256,8 @@ begin
 
     Q.Connection := FDb.Connection;
     Q.SQL.Text := 'SELECT PlaylistID, Name, Notes, CreatedUtc, ModifiedUtc ' +
-                  'FROM Playlists ' +
-                  'ORDER BY Name';
+      'FROM Playlists ' +
+      'ORDER BY Name';
 
     Q.Open;
 
@@ -279,8 +290,8 @@ begin
     Q.Connection := FDb.Connection;
 
     Q.SQL.Text := 'SELECT PlaylistID, Name, Notes, CreatedUtc, ModifiedUtc ' +
-                  'FROM Playlists ' +
-                  'WHERE PlaylistID = :PlaylistID';
+      'FROM Playlists ' +
+      'WHERE PlaylistID = :PlaylistID';
 
     Q.ParamByName('PlaylistID').AsInteger := APlaylistID;
     Q.Open;
@@ -294,17 +305,17 @@ begin
 
     Q.Close;
     Q.SQL.Text := 'SELECT ' +
-                  '  pi.PlaylistItemID, pi.PlaylistID, pi.TrackID, pi.SortOrder, ' +
-                  '  pi.CueInMs, pi.CueOutMs, pi.UserNote, ' +
-                  '  t.TrackID, t.FullPath, t.FileName, t.FileExt, ' +
-                  '  t.Title, t.Artist, t.Album, t.AlbumArtist, t.Genre, t.Comment, t.Composer, ' +
-                  '  t.Year, t.TrackNumber, t.DiscNumber, t.DurationMs, t.BitRate, t.SampleRate, t.Channels, ' +
-                  '  t.BPM, t.MusicalKey, t.GainDb, t.FileSize, t.FileModifiedUtc, t.DateAddedUtc, t.LastScanUtc, ' +
-                  '  t.Rating, t.ColorTag, t.CueInMs AS TrackCueInMs, t.CueOutMs AS TrackCueOutMs, t.IsMissing ' +
-                  'FROM PlaylistItems pi ' +
-                  'INNER JOIN Tracks t ON t.TrackID = pi.TrackID ' +
-                  'WHERE pi.PlaylistID = :PlaylistID ' +
-                  'ORDER BY pi.SortOrder';
+      '  pi.PlaylistItemID, pi.PlaylistID, pi.TrackID, pi.SortOrder, ' +
+      '  pi.CueInMs, pi.CueOutMs, pi.UserNote, ' +
+      '  t.TrackID, t.FullPath, t.FileName, t.FileExt, ' +
+      '  t.Title, t.Artist, t.Album, t.AlbumArtist, t.Genre, t.Comment, t.Composer, ' +
+      '  t.Year, t.TrackNumber, t.DiscNumber, t.DurationMs, t.BitRate, t.SampleRate, t.Channels, ' +
+      '  t.BPM, t.MusicalKey, t.GainDb, t.FileSize, t.FileModifiedUtc, t.DateAddedUtc, t.LastScanUtc, ' +
+      '  t.Rating, t.ColorTag, t.CueInMs AS TrackCueInMs, t.CueOutMs AS TrackCueOutMs, t.IsMissing ' +
+      'FROM PlaylistItems pi ' +
+      'INNER JOIN Tracks t ON t.TrackID = pi.TrackID ' +
+      'WHERE pi.PlaylistID = :PlaylistID ' +
+      'ORDER BY pi.SortOrder';
 
     Q.ParamByName('PlaylistID').AsInteger := APlaylistID;
     Q.Open;
@@ -377,6 +388,7 @@ end;
 
 procedure TRDJPlaylistManager.RenamePlaylist(const APlaylistID: Integer;
                                              const ANewName: string);
+
 begin
 
   FDb.RenamePlaylist(APlaylistID,
@@ -385,6 +397,7 @@ end;
 
 
 procedure TRDJPlaylistManager.DeletePlaylist(const APlaylistID: Integer);
+
 begin
 
   FDb.DeletePlaylist(APlaylistID);
@@ -405,7 +418,7 @@ begin
     Exit;
 
   if not FLibrary.FindTrackByID(ATrackID,
-                                T) then
+    T) then
     Exit;
 
   E := RDJEmptyPlaylistEntry;
@@ -427,6 +440,7 @@ end;
 
 procedure TRDJPlaylistManager.RemovePlaylistItem(APlaylist: TRDJPlaylist;
                                                  const AIndex: Integer);
+
 begin
 
   if (APlaylist = nil) then
@@ -439,6 +453,7 @@ end;
 procedure TRDJPlaylistManager.MovePlaylistItem(APlaylist: TRDJPlaylist;
                                                const AFromIndex,
                                                AToIndex: Integer);
+
 begin
 
   if (APlaylist = nil) then

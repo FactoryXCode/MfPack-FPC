@@ -73,7 +73,7 @@ unit WinApi.ActiveX.ObjIdl;
 interface
 
 uses
-  
+
   {WinApi}
   Windows,
   WinApi.WinApiTypes,
@@ -85,7 +85,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -122,29 +123,29 @@ const
   //
 
   //* Object Definitions for EnumObjects() *//
-  OBJ_PEN                             = 1;
-  OBJ_BRUSH                           = 2;
-  OBJ_DC                              = 3;
-  OBJ_METADC                          = 4;
-  OBJ_PAL                             = 5;
-  OBJ_FONT                            = 6;
-  OBJ_BITMAP                          = 7;
-  OBJ_REGION                          = 8;
-  OBJ_METAFILE                        = 9;
-  OBJ_MEMDC                           = 10;
-  OBJ_EXTPEN                          = 11;
-  OBJ_ENHMETADC                       = 12;
-  OBJ_ENHMETAFILE                     = 13;
+  OBJ_PEN = 1;
+  OBJ_BRUSH = 2;
+  OBJ_DC = 3;
+  OBJ_METADC = 4;
+  OBJ_PAL = 5;
+  OBJ_FONT = 6;
+  OBJ_BITMAP = 7;
+  OBJ_REGION = 8;
+  OBJ_METAFILE = 9;
+  OBJ_MEMDC = 10;
+  OBJ_EXTPEN = 11;
+  OBJ_ENHMETADC = 12;
+  OBJ_ENHMETAFILE = 13;
 
   // Well-known Property Set Format IDs
-  FMTID_SummaryInformation:           TGuid = '{F29F85E0-4FF9-1068-AB91-08002B27B3D9}';
-  FMTID_DocSummaryInformation:        TGuid = '{D5CDD502-2E9C-101B-9397-08002B2CF9AE}';
-  FMTID_UserDefinedProperties:        TGuid = '{D5CDD505-2E9C-101B-9397-08002B2CF9AE}';
-  FMTID_DiscardableInformation:       TGuid = '{D725EBB0-C9B8-111D-89BC-0000F804B057}';
-  FMTID_ImageSummaryInformation:      TGuid = '{6444048F-4C8B-111D-8B70-080036B11A03}';
-  FMTID_AudioSummaryInformation:      TGuid = '{64440490-4C8B-111D-8B70-080036B11A03}';
-  FMTID_VideoSummaryInformation:      TGuid = '{64440491-4C8B-111D-8B70-080036B11A03}';
-  FMTID_MediaFileSummaryInformation:  TGuid = '{64440492-4C8B-111D-8B70-080036B11A03}';
+  FMTID_SummaryInformation: TGuid = '{F29F85E0-4FF9-1068-AB91-08002B27B3D9}';
+  FMTID_DocSummaryInformation: TGuid = '{D5CDD502-2E9C-101B-9397-08002B2CF9AE}';
+  FMTID_UserDefinedProperties: TGuid = '{D5CDD505-2E9C-101B-9397-08002B2CF9AE}';
+  FMTID_DiscardableInformation: TGuid = '{D725EBB0-C9B8-111D-89BC-0000F804B057}';
+  FMTID_ImageSummaryInformation: TGuid = '{6444048F-4C8B-111D-8B70-080036B11A03}';
+  FMTID_AudioSummaryInformation: TGuid = '{64440490-4C8B-111D-8B70-080036B11A03}';
+  FMTID_VideoSummaryInformation: TGuid = '{64440491-4C8B-111D-8B70-080036B11A03}';
+  FMTID_MediaFileSummaryInformation: TGuid = '{64440492-4C8B-111D-8B70-080036B11A03}';
 
 
 
@@ -262,7 +263,7 @@ type
   // ====================
   //
   IMallocSpy = interface(IUnknown)
-  ['{0000001d-0000-0000-C000-000000000046}']
+    ['{0000001d-0000-0000-C000-000000000046}']
     function PreAlloc(cbRequest: DWORD): DWORD; stdcall;
 
     function PostAlloc(pActual: Pointer): Pointer; stdcall;
@@ -297,6 +298,7 @@ type
 
     procedure PostHeapMinimize(); stdcall;
   end;
+
   IID_IMallocSpy = IMallocSpy;
 
 
@@ -305,6 +307,7 @@ type
   //****************************************************************************
 
   PBIND_OPTS = ^tagBIND_OPTS;
+
   tagBIND_OPTS = record
     cbStruct: Longint;
     grfFlags: Longint;
@@ -318,7 +321,7 @@ type
   // ==================
   //
   IBindCtx = interface(IUnknown)
-  ['{0000000e-0000-0000-C000-000000000046}']
+    ['{0000000e-0000-0000-C000-000000000046}']
     function RegisterObjectBound(unk: IUnknown): HResult; stdcall;
 
     function RevokeObjectBound(unk: IUnknown): HResult; stdcall;
@@ -342,6 +345,7 @@ type
     function RevokeObjectParam(pszKey: POLESTR): HResult; stdcall;
 
   end;
+
   IID_IBindCtx = IBindCtx;
 
 
@@ -350,10 +354,10 @@ type
   // ======================
   //
   IEnumMoniker = interface(IUnknown)
-  ['{00000102-0000-0000-C000-000000000046}']
+    ['{00000102-0000-0000-C000-000000000046}']
     function Next(celt: ULONG;
                   out rgelt: PIMoniker; // array of IMoniker
-                  out pceltFetched: PDWORD): HResult; stdcall;
+      out pceltFetched: PDWORD): HResult; stdcall;
 
     function Skip(celt: DWORD): HResult; stdcall;
 
@@ -362,6 +366,7 @@ type
     function Clone(out enm: IEnumMoniker): HResult; stdcall;
 
   end;
+
   IID_IEnumMoniker = IEnumMoniker;
 
 
@@ -369,7 +374,7 @@ type
   // =========================
   //
   IRunnableObject = interface(IUnknown)
-  ['{00000126-0000-0000-C000-000000000046}']
+    ['{00000126-0000-0000-C000-000000000046}']
     function GetRunningClass(out clsid: CLSID): HResult; stdcall;
 
     function Run(bc: IBindCtx): HResult; stdcall;
@@ -382,6 +387,7 @@ type
     function SetContainedObject(fContained: BOOL): HResult; stdcall;
 
   end;
+
   IID_IRunnableObject = IRunnableObject;
 
 
@@ -389,7 +395,7 @@ type
   // =============================
   //
   IRunningObjectTable = interface(IUnknown)
-  ['{00000010-0000-0000-C000-000000000046}']
+    ['{00000010-0000-0000-C000-000000000046}']
     function _Register(grfFlags: DWORD;
                        unkObject: IUnknown;
                        mkObjectName: IMoniker;
@@ -411,6 +417,7 @@ type
     function EnumRunning(out enumMoniker: IEnumMoniker): HResult; stdcall;
 
   end;
+
   IID_IRunningObjectTable = IRunningObjectTable;
 
 
@@ -418,10 +425,11 @@ type
   // ==================
   //
   IPersist = interface(IUnknown)
-  ['{0000010c-0000-0000-C000-000000000046}']
+    ['{0000010c-0000-0000-C000-000000000046}']
     function GetClassID(out pClassID: CLSID): HResult; stdcall;
 
   end;
+
   IID_IPersist = IPersist;
 
 
@@ -429,7 +437,7 @@ type
   // ========================
   //
   IPersistStream = interface(IPersist)
-  ['{00000109-0000-0000-C000-000000000046}']
+    ['{00000109-0000-0000-C000-000000000046}']
     function IsDirty(): HResult; stdcall;
 
     function Load(stm: IStream): HResult; stdcall;
@@ -440,23 +448,24 @@ type
     function GetSizeMax(out cbSize: ULARGE_INTEGER): HResult; stdcall;
 
   end;
+
   IID_IPersistStream = IPersistStream;
 
 
   // system moniker types; returned from IsSystemMoniker.
   PMKSYS = ^tagMKSYS;
-  tagMKSYS                  = (
-    MKSYS_NONE            	= 0,
-    MKSYS_GENERICCOMPOSITE	= 1,
-    MKSYS_FILEMONIKER	      = 2,
-    MKSYS_ANTIMONIKER	      = 3,
-    MKSYS_ITEMMONIKER	      = 4,
-    MKSYS_POINTERMONIKER	  = 5,
-    MKSYS_CLASSMONIKER	    = 7,
-    MKSYS_OBJREFMONIKER	    = 8,
-    MKSYS_SESSIONMONIKER	  = 9,
-    MKSYS_LUAMONIKER	      = 10
-  );
+  tagMKSYS = (
+    MKSYS_NONE = 0,
+              MKSYS_GENERICCOMPOSITE = 1,
+              MKSYS_FILEMONIKER = 2,
+              MKSYS_ANTIMONIKER = 3,
+              MKSYS_ITEMMONIKER = 4,
+              MKSYS_POINTERMONIKER = 5,
+              MKSYS_CLASSMONIKER = 7,
+              MKSYS_OBJREFMONIKER = 8,
+              MKSYS_SESSIONMONIKER = 9,
+              MKSYS_LUAMONIKER = 10
+    );
   MKSYS = tagMKSYS;
 
 
@@ -470,7 +479,7 @@ type
   // ==================
   //
   IMoniker = interface(IPersistStream)
-  ['{0000000f-0000-0000-C000-000000000046}']
+    ['{0000000f-0000-0000-C000-000000000046}']
     function BindToObject(bc: IBindCtx;
                           mkToLeft: IMoniker;
                           const iidResult: IID;
@@ -526,6 +535,7 @@ type
     function IsSystemMoniker(out dwMksys: DWORD): HResult; stdcall;
 
   end;
+
   IID_IMoniker = IMoniker;
 
 
@@ -533,11 +543,12 @@ type
   // ==================
   //
   IROTData = interface(IUnknown)
-  ['{f29f6bc0-5021-11ce-aa15-00006901293f}']
+    ['{f29f6bc0-5021-11ce-aa15-00006901293f}']
     function GetComparisonData(out pbData: Pbyte;
                                cbMax: ULONG;
                                out pcbData: ULONG): HResult; stdcall;
   end;
+
   IID_IROTData = IROTData;
 
 
@@ -546,10 +557,10 @@ type
   // ======================
   //
   IEnumSTATSTG = interface(IUnknown)
-  ['{0000000d-0000-0000-C000-000000000046}']
+    ['{0000000d-0000-0000-C000-000000000046}']
     function Next(celt: ULONG;
                   out rgelt: PSTATSTG; // array of STATSTG;
-                  pceltFetched: PDWORD): HResult; stdcall;
+      pceltFetched: PDWORD): HResult; stdcall;
 
     function Skip(celt: DWORD): HResult; stdcall;
 
@@ -558,11 +569,13 @@ type
     function Clone(out enm: IEnumSTATSTG): HResult; stdcall;
 
   end;
+
   IID_IEnumSTATSTG = IEnumSTATSTG;
 
 
   wireSNB = ^tagRemSNB;
   PRemSNB = ^tagRemSNB;
+
   tagRemSNB = record
     ulCntStr: ULONG;
     ulCntChar: ULONG;
@@ -577,7 +590,7 @@ type
   // ==================
   //
   IStorage = interface(IUnknown)
-  ['{0000000b-0000-0000-C000-000000000046}']
+    ['{0000000b-0000-0000-C000-000000000046}']
     function CreateStream(pwcsName: POLESTR;
                           grfMode: DWORD;
                           reserved1: DWORD;
@@ -641,6 +654,7 @@ type
                   grfStatFlag: DWORD): HResult; stdcall;
 
   end;
+
   IID_IStorage = IStorage;
 
 
@@ -648,7 +662,7 @@ type
   // ======================
   //
   IPersistFile = interface(IPersist)
-  ['{0000010b-0000-0000-C000-000000000046}']
+    ['{0000010b-0000-0000-C000-000000000046}']
     function IsDirty: HResult; stdcall;
 
     function Load(pszFileName: POLESTR;
@@ -662,6 +676,7 @@ type
     function GetCurFile(out pszFileName: POLESTR): HResult; stdcall;
 
   end;
+
   IID_IPersistFile = IPersistFile;
 
 
@@ -669,7 +684,7 @@ type
   // =========================
   //
   IPersistStorage = interface(IPersist)
-  ['{0000010a-0000-0000-C000-000000000046}']
+    ['{0000010a-0000-0000-C000-000000000046}']
     function IsDirty: HResult; stdcall;
 
     function InitNew(stg: IStorage): HResult; stdcall;
@@ -684,6 +699,7 @@ type
     function HandsOffStorage(): HResult; stdcall;
 
   end;
+
   IID_IPersistStorage = IPersistStorage;
 
 
@@ -691,7 +707,7 @@ type
   // ====================
   //
   ILockBytes = interface(IUnknown)
-  ['{0000000a-0000-0000-C000-000000000046}']
+    ['{0000000a-0000-0000-C000-000000000046}']
     function ReadAt(ulOffset: ULARGE_INTEGER;
                     pv: Pointer;
                     cb: DWORD;
@@ -715,13 +731,15 @@ type
                           dwLockType: DWORD): HResult; stdcall;
 
     function Stat(out statstg: STATSTG;
-                  grfStatFlag: Longint): HResult;  stdcall;
+                  grfStatFlag: Longint): HResult; stdcall;
 
   end;
+
   IID_ILockBytes = ILockBytes;
 
 
   PDVTARGETDEVICE = ^tagDVTARGETDEVICE;
+
   tagDVTARGETDEVICE = record
     tdSize: DWORD;
     tdDriverNameOffset: WORD;
@@ -735,6 +753,7 @@ type
   LPCLIPFORMAT = ^CLIPFORMAT;
 
   PFORMATETC = ^tagFORMATETC;
+
   tagFORMATETC = record
     cfFormat: CLIPFORMAT;
     ptd: PDVTARGETDEVICE;
@@ -750,10 +769,10 @@ type
   // ========================
   //
   IEnumFORMATETC = interface(IUnknown)
-  ['{00000103-0000-0000-C000-000000000046}']
+    ['{00000103-0000-0000-C000-000000000046}']
     function Next(celt: DWORD;
                   out elt: PFORMATETC;  // An array of enumerated items.
-                  pceltFetched: PDWORD): HResult; stdcall;
+      pceltFetched: PDWORD): HResult; stdcall;
 
     function Skip(celt: DWORD): HResult; stdcall;
 
@@ -762,6 +781,7 @@ type
     function Clone(out Enum: IEnumFormatEtc): HResult; stdcall;
 
   end;
+
   IID_IEnumFORMATETC = IEnumFORMATETC;
 
 
@@ -777,8 +797,9 @@ type
   // will be Nil.
 
   PSTATDATA = ^tagSTATDATA;
+
   tagSTATDATA = record
-                                     // field used by:
+    // field used by:
     formatetc: FORMATETC;            // EnumAdvise, EnumData (cache), EnumFormats
     advf: DWORD;                     // EnumAdvise, EnumData (cache)
     pAdvSink: IAdviseSink;           // EnumAdvise
@@ -792,10 +813,12 @@ type
   // =======================
   //
   IEnumSTATDATA = interface(IUnknown)
-  ['{00000105-0000-0000-C000-000000000046}']
+    ['{00000105-0000-0000-C000-000000000046}']
 
     // SDK native virtual methods. Pointer parameters preserve optional buffers and arrays.
-    function Next(celt: ULONG; rgelt: PSTATDATA; pceltFetched: PULONG): HRESULT; stdcall;
+    function Next(celt: ULONG;
+                  rgelt: PSTATDATA;
+                  pceltFetched: PULONG): HRESULT; stdcall;
 
     function Skip(celt: ULONG): HRESULT; stdcall;
 
@@ -803,6 +826,7 @@ type
 
     function Clone(out ppenum: IEnumSTATDATA): HRESULT; stdcall;
   end;
+
   IID_IEnumSTATDATA = IEnumSTATDATA;
 
 
@@ -810,10 +834,11 @@ type
   // ======================
   //
   IRootStorage = interface(IUnknown)
-  ['{00000012-0000-0000-C000-000000000046}']
+    ['{00000012-0000-0000-C000-000000000046}']
     function SwitchToFile(pszFile: LPOLESTR): HResult; stdcall;
 
   end;
+
   IID_IRootStorage = IRootStorage;
 
 
@@ -828,6 +853,7 @@ type
 
 
   PRemSTGMEDIUM = ^tagRemSTGMEDIUM;
+
   tagRemSTGMEDIUM = record
     tymed: DWORD;
     dwHandleType: DWORD;
@@ -840,11 +866,12 @@ type
 
 
   PSTGMEDIUM = ^tagSTGMEDIUM;
+
   tagSTGMEDIUM = record
     tymed: DWORD;
     case Integer of
       0: (hBitmap: HBITMAP;
-          unkForRelease: Pointer); // IUnknown
+        unkForRelease: Pointer); // IUnknown
       1: (hMetaFilePict: THandle);
       2: (hEnhMetaFile: THandle);
       3: (hGlobal: HGLOBAL);
@@ -856,14 +883,15 @@ type
 
 
   PGDI_OBJECT = ^_GDI_OBJECT;
-  _GDI_OBJECT = record
-      ObjectType: DWORD;
-      case integer of
-        0: (hGeneric: wireHGLOBAL);
 
-        1: (case integer of
-             OBJ_BITMAP: (hBitmap: wireHBITMAP);
-             OBJ_PAL:    (hPalette: wireHPALETTE));
+  _GDI_OBJECT = record
+    ObjectType: DWORD;
+    case integer of
+      0: (hGeneric: wireHGLOBAL);
+
+      1: (case integer of
+          OBJ_BITMAP: (hBitmap: wireHBITMAP);
+          OBJ_PAL: (hPalette: wireHPALETTE));
   end;
   GDI_OBJECT = _GDI_OBJECT;
 
@@ -871,19 +899,20 @@ type
   wireASYNC_STGMEDIUM = ^_userSTGMEDIUM;
   wireSTGMEDIUM = ^_userSTGMEDIUM;
   PuserSTGMEDIUM = ^_userSTGMEDIUM;
+
   _userSTGMEDIUM = record
     tymed: DWORD;
     case integer of
-    0: (case tagTYMED of
-         TYMED_NULL:        ( {Nothing to do} );
-         TYMED_MFPICT:      (hMetaFilePict: wireHMETAFILEPICT);
-         TYMED_ENHMF:       (hHENHMETAFILE: wireHENHMETAFILE);
-         TYMED_GDI:         (hGdiHandle: GDI_OBJECT);
-         TYMED_HGLOBAL:     (hGlobal: wireHGLOBAL);
-         TYMED_FILE:        (lpszFileName: LPOLESTR);
-         TYMED_ISTREAM:     (pstm: PBYTE_BLOB);
-         TYMED_ISTORAGE:    (pstg: PBYTE_BLOB));
-     1: (pUnkForRelease: Pointer); // IUnknown
+      0: (case tagTYMED of
+          TYMED_NULL: ( {Nothing to do});
+          TYMED_MFPICT: (hMetaFilePict: wireHMETAFILEPICT);
+          TYMED_ENHMF: (hHENHMETAFILE: wireHENHMETAFILE);
+          TYMED_GDI: (hGdiHandle: GDI_OBJECT);
+          TYMED_HGLOBAL: (hGlobal: wireHGLOBAL);
+          TYMED_FILE: (lpszFileName: LPOLESTR);
+          TYMED_ISTREAM: (pstm: PBYTE_BLOB);
+          TYMED_ISTORAGE: (pstg: PBYTE_BLOB));
+      1: (pUnkForRelease: Pointer); // IUnknown
   end;
   userSTGMEDIUM = _userSTGMEDIUM;
 
@@ -894,6 +923,7 @@ type
 
   wireFLAG_STGMEDIUM = ^userFLAG_STGMEDIUM;
   PUserFLAGSTGMEDIUM = ^_userFLAG_STGMEDIUM;
+
   _userFLAG_STGMEDIUM = record
     ContextFlags: LONG;
     fPassOwnership: LONG;
@@ -903,6 +933,7 @@ type
 
 
   PFLAG_STGMEDIUM = ^_FLAG_STGMEDIUM;
+
   _FLAG_STGMEDIUM = record
     ContextFlags: LONG;
     fPassOwnership: LONG;
@@ -915,7 +946,7 @@ type
   // =====================
   //
   IAdviseSink = interface(IUnknown)
-  ['{0000010f-0000-0000-C000-000000000046}']
+    ['{0000010f-0000-0000-C000-000000000046}']
     procedure OnDataChange(formatetc: FORMATETC;
                            stgmed: STGMEDIUM); stdcall;
 
@@ -929,6 +960,7 @@ type
     procedure OnClose(); stdcall;
 
   end;
+
   IID_IAdviseSink = IAdviseSink;
 
 
@@ -936,19 +968,20 @@ type
   // ======================
   //
   IAdviseSink2 = interface(IAdviseSink)
-  ['{00000125-0000-0000-C000-000000000046}']
+    ['{00000125-0000-0000-C000-000000000046}']
     procedure OnLinkSrcChange(mk: IMoniker); stdcall;
 
   end;
+
   IID_IAdviseSink2 = IAdviseSink2;
 
 
   //DATA format DIRection
   PDATADIR = ^tagDATADIR;
-  tagDATADIR    = (
+  tagDATADIR = (
     DATADIR_GET = 1,
-    DATADIR_SET = 2
-  );
+                DATADIR_SET = 2
+    );
   DATADIR = tagDATADIR;
 
 
@@ -956,7 +989,7 @@ type
   // =====================
   //
   IDataObject = interface(IUnknown)
-  ['{0000010e-0000-0000-C000-000000000046}']
+    ['{0000010e-0000-0000-C000-000000000046}']
     function GetData(formatetcIn: FORMATETC;
                      out medium: STGMEDIUM): HResult; stdcall;
 
@@ -968,7 +1001,8 @@ type
     function GetCanonicalFormatEtc(FORMATETC: FormatEtc;
                                    out formatetcOut: FORMATETC): HResult; stdcall;
 
-    function SetData(formatetc: FORMATETC; var medium: STGMEDIUM;
+    function SetData(formatetc: FORMATETC;
+                     var medium: STGMEDIUM;
                      fRelease: BOOL): HResult; stdcall;
 
     function EnumFormatEtc(dwDirection: DWORD;
@@ -984,6 +1018,7 @@ type
     function EnumDAdvise(out enumAdvise: IEnumStatData): HResult; stdcall;
 
   end;
+
   IID_IDataObject = IDataObject;
 
 
@@ -991,7 +1026,7 @@ type
   // ===========================
   //
   IDataAdviseHolder = interface(IUnknown)
-  ['{00000110-0000-0000-C000-000000000046}']
+    ['{00000110-0000-0000-C000-000000000046}']
     function Advise(dataObject: IDataObject;
                     fetc: FORMATETC;
                     advf: DWORD;
@@ -1007,50 +1042,52 @@ type
                               advf: DWORD): HResult; stdcall;
 
   end;
+
   IID_IDataAdviseHolder = IDataAdviseHolder;
 
 
   // call type used by IMessageFilter.HandleIncomingMessage
   PCALLTYPE = ^tagCALLTYPE;
-  tagCALLTYPE                     = (
-    CALLTYPE_TOPLEVEL             = 1,          // toplevel call - no outgoing call
-    CALLTYPE_NESTED               = 2,          // callback on behalf of previous outgoing call - should always handle
-    CALLTYPE_ASYNC                = 3,          // aysnchronous call - can NOT be rejected
+  tagCALLTYPE = (
+    CALLTYPE_TOPLEVEL = 1,          // toplevel call - no outgoing call
+    CALLTYPE_NESTED = 2,          // callback on behalf of previous outgoing call - should always handle
+    CALLTYPE_ASYNC = 3,          // aysnchronous call - can NOT be rejected
     CALLTYPE_TOPLEVEL_CALLPENDING = 4,          // new toplevel call with new LID
-    CALLTYPE_ASYNC_CALLPENDING    = 5           // async call - can NOT be rejected
-  );
+    CALLTYPE_ASYNC_CALLPENDING = 5           // async call - can NOT be rejected
+    );
   CALLTYPE = tagCALLTYPE;
 
   // status of server call - returned by IMessageFilter::HandleIncomingCall
   // and passed to  IMessageFilter::RetryRejectedCall
   PSERVERCALL = ^tagSERVERCALL;
-  tagSERVERCALL           = (
-    SERVERCALL_ISHANDLED  = 0,
-    SERVERCALL_REJECTED   = 1,
-    SERVERCALL_RETRYLATER = 2
-  );
+  tagSERVERCALL = (
+    SERVERCALL_ISHANDLED = 0,
+                   SERVERCALL_REJECTED = 1,
+                   SERVERCALL_RETRYLATER = 2
+    );
   SERVERCALL = tagSERVERCALL;
 
   // Pending type indicates the level of nesting
   PPENDINGTYPE = ^tagPENDINGTYPE;
-  tagPENDINGTYPE         = (
+  tagPENDINGTYPE = (
     PENDINGTYPE_TOPLEVEL = 1,       // toplevel call
-    PENDINGTYPE_NESTED   = 2        // nested call
-  );
+    PENDINGTYPE_NESTED = 2        // nested call
+    );
   PENDINGTYPE = tagPENDINGTYPE;
 
   // return values of MessagePending
   PPENDINGMSG = ^tagPENDINGMSG;
-  tagPENDINGMSG               = (
-    PENDINGMSG_CANCELCALL     = 0,      // cancel the outgoing call
-    PENDINGMSG_WAITNOPROCESS  = 1,      // wait for the return and don't dispatch the message
+  tagPENDINGMSG = (
+    PENDINGMSG_CANCELCALL = 0,      // cancel the outgoing call
+    PENDINGMSG_WAITNOPROCESS = 1,      // wait for the return and don't dispatch the message
     PENDINGMSG_WAITDEFPROCESS = 2       // wait and dispatch the message
-  );
+    );
   PENDINGMSG = tagPENDINGMSG;
 
   // additional interface information about the incoming call
   LPINTERFACEINFO = ^tagINTERFACEINFO;
   PINTERFACEINFO = ^tagINTERFACEINFO;
+
   tagINTERFACEINFO = record
     pUnk: IUnknown;                 // the pointer to the object
     iid: IID;                       // interface id
@@ -1063,7 +1100,7 @@ type
   // ========================
   //
   IMessageFilter = interface(IUnknown)
-  ['{00000016-0000-0000-C000-000000000046}']
+    ['{00000016-0000-0000-C000-000000000046}']
     function HandleInComingCall(dwCallType: DWORD;
                                 htaskCaller: HTask;
                                 dwTickCount: DWORD;
@@ -1078,6 +1115,7 @@ type
                             dwPendingType: DWORD): DWORD; stdcall;
 
   end;
+
   IID_IMessageFilter = IMessageFilter;
 
 
@@ -1091,18 +1129,20 @@ type
   // ==========================
   //
   IConnectionPoint = interface(IUnknown)
-  ['{B196B286-BAB4-101A-B69C-00AA00341D07}']
+    ['{B196B286-BAB4-101A-B69C-00AA00341D07}']
     function GetConnectionInterface(out iid: IID): HResult; stdcall;
 
     function GetConnectionPointContainer(out cpc: IConnectionPointContainer): HResult; stdcall;
 
-    function Advise(const unkSink: IUnknown; out dwCookie: Longint): HResult; stdcall;
+    function Advise(const unkSink: IUnknown;
+                    out dwCookie: Longint): HResult; stdcall;
 
     function Unadvise(dwCookie: Longint): HResult; stdcall;
 
     function EnumConnections(out Enum: IEnumConnections): HResult; stdcall;
 
   end;
+
   IID_IConnectionPoint = IConnectionPoint;
 
 
@@ -1110,17 +1150,19 @@ type
   // ===================================
   //
   IConnectionPointContainer = interface(IUnknown)
-  ['{B196B284-BAB4-101A-B69C-00AA00341D07}']
+    ['{B196B284-BAB4-101A-B69C-00AA00341D07}']
     function EnumConnectionPoints(out Enum: IEnumConnectionPoints): HResult; stdcall;
 
     function FindConnectionPoint(const iid: IID;
                                  out cp: IConnectionPoint): HResult; stdcall;
   end;
+
   IID_IConnectionPointContainer = IConnectionPointContainer;
 
 
   LPCONNECTDATA = ^tagCONNECTDATA;
   PCONNECTDATA = ^tagCONNECTDATA;
+
   tagCONNECTDATA = record
     pUnk: IUnknown;
     dwCookie: DWORD;
@@ -1132,10 +1174,10 @@ type
   // ==========================
   //
   IEnumConnections = interface(IUnknown)
-  ['{B196B287-BAB4-101A-B69C-00AA00341D07}']
+    ['{B196B287-BAB4-101A-B69C-00AA00341D07}']
     function Next(celt: ULONG;
                   out elt: PCONNECTDATA;  // array of CONNECTDATA
-                  pceltFetched: PDWORD): HResult; stdcall;
+      pceltFetched: PDWORD): HResult; stdcall;
 
     function Skip(celt: DWORD): HResult; stdcall;
 
@@ -1143,6 +1185,7 @@ type
 
     function Clone(out Enum: IEnumConnections): HResult; stdcall;
   end;
+
   IID_IEnumConnections = IEnumConnections;
 
 
@@ -1151,10 +1194,10 @@ type
   // ===============================
   //
   IEnumConnectionPoints = interface(IUnknown)
-  ['{B196B285-BAB4-101A-B69C-00AA00341D07}']
+    ['{B196B285-BAB4-101A-B69C-00AA00341D07}']
     function Next(celt: DWORD;
                   out elt: PIConnectionPoint;  // array of IConnectionPoint
-                  pceltFetched: PLongint): HResult; stdcall;
+      pceltFetched: PLongint): HResult; stdcall;
 
     function Skip(celt: DWORD): HResult; stdcall;
 
@@ -1163,6 +1206,7 @@ type
     function Clone(out Enum: IEnumConnectionPoints): HResult; stdcall;
 
   end;
+
   IID_IEnumConnectionPoints = IEnumConnectionPoints;
 
 
@@ -1170,7 +1214,7 @@ type
   // =========================
   //
   IClassActivator = interface(IUnknown)
-  ['{00000140-0000-0000-C000-000000000046}']
+    ['{00000140-0000-0000-C000-000000000046}']
     function GetClassObject(const rclsid: REFCLSID;
                             dwClassContext: DWORD;
                             const locale: LCID;
@@ -1178,6 +1222,7 @@ type
                             out ppv): HResult; stdcall;
 
   end;
+
   IID_IClassActivator = IClassActivator;
 
 
@@ -1185,15 +1230,16 @@ type
   // ========================
   //
   PIFillLockBytes = ^IFillLockBytes;
+
   IFillLockBytes = interface(IUnknown)
-  ['{99caf010-415e-11cf-8814-00aa00b569f5}']
+    ['{99caf010-415e-11cf-8814-00aa00b569f5}']
     function FillAppend(pv: Pointer;  // Pointer to the data to be appended to the end of an existing byte array.
-                        cb: Longint;
+      cb: Longint;
                         out cbWritten: DWORD): HResult; stdcall;
 
     function FillAt(Offset: DWORD;
                     pv: Pointer; // Pointer to the data to be appended to the end of an existing byte array.
-                    cb: DWORD;
+      cb: DWORD;
                     out cbWritten: DWORD): HResult; stdcall;
 
     function SetFillSize(Offset: DWORD): HResult; stdcall;
@@ -1201,6 +1247,7 @@ type
     function Terminate(bCanceled: BOOL): HResult; stdcall;
 
   end;
+
   IID_IFillLockBytes = IFillLockBytes;
 
 
@@ -1209,7 +1256,7 @@ type
   // =========================
   //
   IProgressNotify = interface(IUnknown)
-  ['{a9d758a0-4617-11cf-95fc-00aa00680db4}']
+    ['{a9d758a0-4617-11cf-95fc-00aa00680db4}']
 
     function OnProgress(dwProgressCurrent: DWORD;
                         dwProgressMaximum: DWORD;
@@ -1217,10 +1264,12 @@ type
                         fOwner: BOOL): HResult; stdcall;
 
   end;
+
   IID_IProgressNotify = IProgressNotify;
 
 
   PStorageLayout = ^tagStorageLayout;
+
   tagStorageLayout = record
     LayoutType: DWORD;
     pwcsElementName: POLECHAR;
@@ -1234,7 +1283,7 @@ type
   // ========================
   //
   ILayoutStorage = interface(IUnknown)
-  ['{0e6d4d90-6738-11cf-9608-00aa00680db4}']
+    ['{0e6d4d90-6738-11cf-9608-00aa00680db4}']
 
     function LayoutScript(pStorageLayout: StorageLayout;
                           nEntries: DWORD;
@@ -1249,6 +1298,7 @@ type
     function ReLayoutDocfileOnILockBytes(pILockBytes: ILockBytes): HResult; stdcall;
 
   end;
+
   IID_ILayoutStorage = ILayoutStorage;
 
 
@@ -1256,12 +1306,13 @@ type
   // =======================
   //
   IBlockingLock = interface(IUnknown)
-  ['{30f3d47a-6447-11d1-8e3c-00c04fb9386d}']
+    ['{30f3d47a-6447-11d1-8e3c-00c04fb9386d}']
     function Lock(dwTimeout: DWORD): HResult; stdcall;
 
     function Unlock(): HResult; stdcall;
 
   end;
+
   IID_IBlockingLock = IBlockingLock;
 
 
@@ -1269,11 +1320,12 @@ type
   // ===============================
   //
   ITimeAndNoticeControl = interface(IUnknown)
-  ['{bc0bf6ae-8878-11d1-83e9-00c04fc2c6d4}']
+    ['{bc0bf6ae-8878-11d1-83e9-00c04fc2c6d4}']
     function SuppressChanges(res1: DWORD;
                              res2: DWORD): HResult; stdcall;
 
   end;
+
   IID_ITimeAndNoticeControl = ITimeAndNoticeControl;
 
 
@@ -1281,7 +1333,7 @@ type
   // ========================
   //
   IOplockStorage = interface(IUnknown)
-  ['{8d19c834-8879-11d1-83e9-00c04fc2c6d4}']
+    ['{8d19c834-8879-11d1-83e9-00c04fc2c6d4}']
 
     function CreateStorageEx(pwcsName: LPCWSTR;
                              grfMode: DWORD;
@@ -1297,6 +1349,7 @@ type
                            const riid: REFIID;
                            out ppstgOpen: Pointer): HResult; stdcall;
   end;
+
   IID_IOplockStorage = IOplockStorage;
 
 
@@ -1305,13 +1358,14 @@ type
   // ===========================
   //
   IDirectWriterLock = interface(IUnknown)
-  ['{0e6d4d92-6738-11cf-9608-00aa00680db4}']
+    ['{0e6d4d92-6738-11cf-9608-00aa00680db4}']
     function WaitForWriteAccess(dwTimeout: DWORD): HResult; stdcall;
 
     function ReleaseWriteAccess(): HResult; stdcall;
 
     function HaveWriteAccess(): HResult; stdcall;
   end;
+
   IID_IDirectWriterLock = IDirectWriterLock;
 
 
@@ -1319,7 +1373,7 @@ type
   // =================
   //
   IUrlMon = interface(IUnknown)
-  ['{00000026-0000-0000-C000-000000000046}']
+    ['{00000026-0000-0000-C000-000000000046}']
     function AsyncGetClassBits(const rclsid: REFCLSID;
                                pszTYPE: LPCWSTR;
                                pszExt: LPCWSTR;
@@ -1331,6 +1385,7 @@ type
                                const riid: REFIID;
                                const flags: DWORD): HResult; stdcall;
   end;
+
   IID_IUrlMon = IUrlMon;
 
 
@@ -1338,10 +1393,11 @@ type
   // =============================
   //
   IForegroundTransfer = interface(IUnknown)
-  ['{00000145-0000-0000-C000-000000000046}']
+    ['{00000145-0000-0000-C000-000000000046}']
     function AllowForegroundTransfer(lpvReserved: Pointer): HResult; stdcall;
 
   end;
+
   IID_IForegroundTransfer = IForegroundTransfer;
 
 
@@ -1353,7 +1409,7 @@ type
   // =============================
   //
   IThumbnailExtractor = interface(IUnknown)
-  ['{969dc708-5c76-11d1-8d86-0000f804b057}']
+    ['{969dc708-5c76-11d1-8d86-0000f804b057}']
 
     function ExtractThumbnail(pStg: IStorage;
                               ulLength: ULONG;
@@ -1365,6 +1421,7 @@ type
     function OnFileUpdated(pStg: IStorage): HResult; stdcall;
 
   end;
+
   IID_IThumbnailExtractor = IThumbnailExtractor;
 
 
@@ -1376,11 +1433,12 @@ type
   // =============================
   //
   IDummyHICONIncluder = interface(IUnknown)
-  ['{947990de-cc28-11d2-a0f7-00805f858fb1}']
+    ['{947990de-cc28-11d2-a0f7-00805f858fb1}']
     function Dummy(h1: HICON;
                    h2: HDC): HResult; stdcall;
 
   end;
+
   IID_IDummyHICONIncluder = IDummyHICONIncluder;
 
 
@@ -1394,7 +1452,7 @@ type
   PApplicationType = ^tagApplicationType;
   tagApplicationType = (
     ServerApplication,
-    LibraryApplication);
+                        LibraryApplication);
   ApplicationType = tagApplicationType;
 
   //
@@ -1403,8 +1461,8 @@ type
   PShutdownType = ^tagShutdownType;
   tagShutdownType = (
     IdleShutdown,
-    ForcedShutdown
-  );
+                     ForcedShutdown
+    );
   ShutdownType = tagShutdownType;
 
 
@@ -1417,12 +1475,13 @@ type
   // ======================
   //
   IProcessLock = interface(IUnknown)
-  ['{000001d5-0000-0000-C000-000000000046}']
-	 function AddRefOnProcess(): ULONG; stdcall;
+    ['{000001d5-0000-0000-C000-000000000046}']
+    function AddRefOnProcess(): ULONG; stdcall;
 
-	 function ReleaseRefOnProcess(): ULONG; stdcall;
+    function ReleaseRefOnProcess(): ULONG; stdcall;
 
   end;
+
   IID_IProcessLock = IProcessLock;
 
 
@@ -1431,7 +1490,7 @@ type
   // ===========================
   //
   ISurrogateService = interface(IUnknown)
-  ['{000001d4-0000-0000-C000-000000000046}']
+    ['{000001d4-0000-0000-C000-000000000046}']
 
     function Init(const rguidProcessID: REFGUID;
                   pProcessLock: IProcessLock;
@@ -1447,16 +1506,17 @@ type
     function ProcessShutdown(shutdownType: ShutdownType): HResult; stdcall;
 
   end;
+
   IID_ISurrogateService = ISurrogateService;
 
 
-// #if _WIN32_WINNT >= 0x0501
+  // #if _WIN32_WINNT >= 0x0501
 
   // Interface IInitializeSpy
   // ========================
   //
   IInitializeSpy = interface(IUnknown)
-  ['{00000034-0000-0000-C000-000000000046}']
+    ['{00000034-0000-0000-C000-000000000046}']
 
     function PreInitialize(dwCoInit: DWORD;
                            dwCurThreadAptRefs: DWORD): HResult; stdcall;
@@ -1470,6 +1530,7 @@ type
     function PostUninitialize(dwNewThreadAptRefs: DWORD): HResult; stdcall;
 
   end;
+
   IID_IInitializeSpy = IInitializeSpy;
 
 
@@ -1477,14 +1538,16 @@ type
   // ============================
   //
   IApartmentShutdown = interface(IUnknown)
-  ['{A2F05A09-27A2-42B5-BC0E-AC163EF49D9B}']
+    ['{A2F05A09-27A2-42B5-BC0E-AC163EF49D9B}']
     procedure OnUninitialize(const ui64ApartmentIdentifier: UINT64);
 
   end;
+
   IID_IApartmentShutdown = IApartmentShutdown;
 
 
   PCoserverinfo = ^COSERVERINFO;
+
   _COSERVERINFO = record
     dwReserved1: DWORD;
     pwszName: LPWSTR;
@@ -1498,38 +1561,40 @@ type
   // ==================
   //
   LPMARSHAL = ^IMarshal;
+
   IMarshal = interface(IUnknown)
-  ['{00000003-0000-0000-C000-000000000046}']
+    ['{00000003-0000-0000-C000-000000000046}']
 
     function GetUnmarshalClass(const riid: REFIID;
                                pv: Pointer;
                                dwDestContext: DWORD;
-                 {in Reserved} pvDestContext: Pointer; // must be nil
-                               mshlflags: DWORD;
+    {in Reserved} pvDestContext: Pointer; // must be nil
+      mshlflags: DWORD;
                                out pCid: CLSID): HResult; stdcall;
 
     function GetMarshalSizeMax(const riid: REFIID;
-                      {In_opt} pv: Pointer;
+    {In_opt} pv: Pointer;
                                dwDestContext: DWORD;
-                 {in Reserved} pvDestContext: Pointer; // must be nil
-                               mshlflags: DWORD;
+    {in Reserved} pvDestContext: Pointer; // must be nil
+      mshlflags: DWORD;
                                out pSize: DWORD): HResult; stdcall;
 
     function MarshalInterface(pStm: IStream;
                               const riid: REFIID;
-                     {In_opt} pv: Pointer;
+    {In_opt} pv: Pointer;
                               dwDestContext: DWORD;
-                {in Reserved} pvDestContext: Pointer; // must be nil
-                              mshlflags: DWORD): HResult; stdcall;
+    {in Reserved} pvDestContext: Pointer; // must be nil
+      mshlflags: DWORD): HResult; stdcall;
 
     function UnmarshalInterface(pStm: IStream;
                                 const riid: REFIID;
-                       {Outptr} out ppv: Pointer): HResult; stdcall;
+    {Outptr} out ppv: Pointer): HResult; stdcall;
 
     function ReleaseMarshalData(pStm: IStream): HResult; stdcall;
 
     function DisconnectObject(dwReserved: DWORD): HResult; stdcall;
   end;
+
   IID_IMarshal = IMarshal;
 
 
@@ -1537,9 +1602,10 @@ type
   // ====================
   //
   INoMarshal = interface(IUnknown)
-  ['{ecc8691b-c1db-4dc0-855e-65f6c551af49}']
+    ['{ecc8691b-c1db-4dc0-855e-65f6c551af49}']
     // public
   end;
+
   IID_INoMarshal = INoMarshal;
 
 
@@ -1553,21 +1619,22 @@ type
   // When an object that implements the IAgileObject interface is placed in the GIT and
   // localized to another apartment, the object is called directly in the new apartment, rather than marshaling.
   IAgileObject = interface(IUnknown)
-  ['{94ea2b94-e9cc-49e0-c0ff-ee64ca8f5b90}']
+    ['{94ea2b94-e9cc-49e0-c0ff-ee64ca8f5b90}']
     // public
   end;
+
   IID_IAgileObject = IAgileObject;
 
 
   PActivationtype = ^ACTIVATIONTYPE;
-  tagACTIVATIONTYPE              = (
+  tagACTIVATIONTYPE = (
     ACTIVATIONTYPE_UNCATEGORIZED = 0,
-    ACTIVATIONTYPE_FROM_MONIKER  = $1,
-    ACTIVATIONTYPE_FROM_DATA     = $2,
-    ACTIVATIONTYPE_FROM_STORAGE  = $4,
-    ACTIVATIONTYPE_FROM_STREAM   = $8,
-    ACTIVATIONTYPE_FROM_FILE     = $10
-  );
+                       ACTIVATIONTYPE_FROM_MONIKER = $1,
+                       ACTIVATIONTYPE_FROM_DATA = $2,
+                       ACTIVATIONTYPE_FROM_STORAGE = $4,
+                       ACTIVATIONTYPE_FROM_STREAM = $8,
+                       ACTIVATIONTYPE_FROM_FILE = $10
+    );
   ACTIVATIONTYPE = tagACTIVATIONTYPE;
 
 
@@ -1575,13 +1642,14 @@ type
   // ===========================
   //
   IActivationFilter = interface(IUnknown)
-  ['{00000017-0000-0000-C000-000000000046}']
+    ['{00000017-0000-0000-C000-000000000046}']
 
     function HandleActivation(dwActivationType: DWORD;
                               const rclsid: REFCLSID;
                               out pReplacementClsId: CLSID): HResult; stdcall;
 
   end;
+
   IID_IActivationFilter = IActivationFilter;
 
 
@@ -1590,9 +1658,10 @@ type
   //
   LPMARSHAL2 = ^IMarshal2;
   IMarshal2 = interface(IMarshal)
-  ['{000001cf-0000-0000-C000-000000000046}']
+    ['{000001cf-0000-0000-C000-000000000046}']
     // public
   end;
+
   IID_IMarshal2 = IMarshal2;
 
 
@@ -1602,6 +1671,7 @@ type
   // End of Additional Prototypes
 
 implementation
-  // Implement Additional functions here.
+
+// Implement Additional functions here.
 
 end.

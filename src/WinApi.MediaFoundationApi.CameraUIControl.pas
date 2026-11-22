@@ -82,13 +82,14 @@ uses
   {$ELSE}
   WinApi.ActiveX.OaIdl;
   {$ENDIF}
-  
+
   {$PACKENUM 4}
 
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -100,47 +101,47 @@ type
   PCameraUIControlMode = ^CameraUIControlMode;
   CameraUIControlMode = (Browse = 0,
                          Linear = (Browse + 1)
-                        );
+    );
   {$EXTERNALSYM CameraUIControlMode}
 
   PCameraUIControlLinearSelectionMode = ^CameraUIControlLinearSelectionMode;
-  CameraUIControlLinearSelectionMode = (Single   = 0,
+  CameraUIControlLinearSelectionMode = (Single = 0,
                                         Multiple = (Single + 1)
-                                       );
+    );
   {$EXTERNALSYM CameraUIControlLinearSelectionMode}
 
   PCameraUIControlCaptureMode = ^CameraUIControlCaptureMode;
   CameraUIControlCaptureMode = (PhotoOrVideo = 0,
-                                Photo        = (PhotoOrVideo + 1),
-                                Video        = (Photo + 1)
-                               );
+                                Photo = (PhotoOrVideo + 1),
+                                Video = (Photo + 1)
+    );
   {$EXTERNALSYM CameraUIControlCaptureMode}
 
 
   PCameraUIControlPhotoFormat = ^CameraUIControlPhotoFormat;
-  CameraUIControlPhotoFormat = (Jpeg   = 0,
-                                Png    = (Jpeg + 1),
+  CameraUIControlPhotoFormat = (Jpeg = 0,
+                                Png = (Jpeg + 1),
                                 JpegXR = (Png + 1)
-                               );
+    );
   {$EXTERNALSYM CameraUIControlPhotoFormat}
 
   PCameraUIControlVideoFormat = ^CameraUIControlVideoFormat;
   CameraUIControlVideoFormat = (Mp4 = 0,
                                 Wmv = (Mp4 + 1)
-                               );
+    );
   {$EXTERNALSYM CameraUIControlVideoFormat}
 
   PCameraUIControlViewType = ^CameraUIControlViewType;
   CameraUIControlViewType = (SingleItem = 0,
-                             ItemList   = (SingleItem + 1)
-                            );
+                             ItemList = (SingleItem + 1)
+    );
   {$EXTERNALSYM CameraUIControlViewType}
 
 
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(ICameraUIControlEventCallback);'}
   {$EXTERNALSYM ICameraUIControlEventCallback}
   ICameraUIControlEventCallback = interface(IUnknown)
-  ['{1BFA0C2C-FBCD-4776-BDA4-88BF974E74F4}']
+    ['{1BFA0C2C-FBCD-4776-BDA4-88BF974E74F4}']
 
     procedure OnStartupComplete(); stdcall;
 
@@ -158,7 +159,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(ICameraUIControl);'}
   {$EXTERNALSYM ICameraUIControl}
   ICameraUIControl = interface(IUnknown)
-  ['{B8733ADF-3D68-4b8f-BB08-E28A0BED0376}']
+    ['{B8733ADF-3D68-4b8f-BB08-E28A0BED0376}']
 
     function Show(pWindow: IUnknown;
                   mode: CameraUIControlMode;
@@ -167,7 +168,7 @@ type
                   photoFormat: CameraUIControlPhotoFormat;
                   videoFormat: CameraUIControlVideoFormat;
                   bHasCloseButton: BOOL;
-                  {optional} pEventCallback: ICameraUIControlEventCallback = Nil): HResult; stdcall;
+    {optional} pEventCallback: ICameraUIControlEventCallback = Nil): HResult; stdcall;
 
     function Close(): HResult; stdcall;
 
@@ -192,6 +193,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

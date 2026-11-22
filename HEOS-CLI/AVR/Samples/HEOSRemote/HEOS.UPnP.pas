@@ -66,19 +66,21 @@ interface
 
 function TrySeekReceiverPosition(const AHost: string;
                                  const APositionMs: Int64;
-                                 APort: Word; out ErrorText: string): Boolean;
+                                 APort: Word;
+                                 out ErrorText: string): Boolean;
 
 
 implementation
 
-uses WinApi.WinApiTypes,
-WinApi.ComBaseApi,
-DOM,
-Rdj.Platform,
-LMessages,
+uses
+  WinApi.WinApiTypes,
+  WinApi.ComBaseApi,
+  DOM,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ActiveX.ObjBase,
   {System}
@@ -92,35 +94,67 @@ type
 
   HINTERNET = Pointer;
 
-function WinHttpOpen(Agent: PWideChar; AccessType: DWORD; ProxyName,
-                      ProxyBypass: PWideChar; Flags: DWORD): HINTERNET; stdcall; external 'winhttp.dll';
-function WinHttpConnect(Session: HINTERNET; ServerName: PWideChar;
-                         ServerPort: Word; Reserved: DWORD): HINTERNET; stdcall; external 'winhttp.dll';
-function WinHttpOpenRequest(Connection: HINTERNET; Verb, ObjectName,
-                             Version, Referrer: PWideChar; AcceptTypes: Pointer;
-                             Flags: DWORD): HINTERNET; stdcall; external 'winhttp.dll';
-function WinHttpSendRequest(Request: HINTERNET; Headers: PWideChar;
-                             HeadersLength: DWORD; Optional: Pointer;
-                             OptionalLength, TotalLength: DWORD;
-                             Context: NativeUInt): BOOL; stdcall; external 'winhttp.dll';
-function WinHttpReceiveResponse(Request: HINTERNET; Reserved: Pointer): BOOL; stdcall; external 'winhttp.dll';
-function WinHttpReadData(Request: HINTERNET; Buffer: Pointer;
-                          BytesToRead: DWORD; var BytesRead: DWORD): BOOL; stdcall; external 'winhttp.dll';
-function WinHttpQueryHeaders(Request: HINTERNET; InfoLevel: DWORD;
-                              Name: PWideChar; Buffer: Pointer;
-                              var BufferLength: DWORD; Index: Pointer): BOOL; stdcall; external 'winhttp.dll';
-function WinHttpSetTimeouts(Session: HINTERNET; ResolveTimeout,
-                             ConnectTimeout, SendTimeout,
-                             ReceiveTimeout: Integer): BOOL; stdcall; external 'winhttp.dll';
+function WinHttpOpen(Agent: PWideChar;
+                     AccessType: DWORD;
+                     ProxyName,
+                     ProxyBypass: PWideChar;
+                     Flags: DWORD): HINTERNET; stdcall; external 'winhttp.dll';
+function WinHttpConnect(Session: HINTERNET;
+                        ServerName: PWideChar;
+                        ServerPort: Word;
+                        Reserved: DWORD): HINTERNET; stdcall; external 'winhttp.dll';
+function WinHttpOpenRequest(Connection: HINTERNET;
+                            Verb,
+                            ObjectName,
+                            Version,
+                            Referrer: PWideChar;
+                            AcceptTypes: Pointer;
+                            Flags: DWORD): HINTERNET; stdcall; external 'winhttp.dll';
+function WinHttpSendRequest(Request: HINTERNET;
+                            Headers: PWideChar;
+                            HeadersLength: DWORD;
+                            Optional: Pointer;
+                            OptionalLength,
+                            TotalLength: DWORD;
+                            Context: NativeUInt): BOOL; stdcall; external 'winhttp.dll';
+function WinHttpReceiveResponse(Request: HINTERNET;
+                                Reserved: Pointer): BOOL; stdcall; external 'winhttp.dll';
+function WinHttpReadData(Request: HINTERNET;
+                         Buffer: Pointer;
+                         BytesToRead: DWORD;
+                         var BytesRead: DWORD): BOOL; stdcall; external 'winhttp.dll';
+function WinHttpQueryHeaders(Request: HINTERNET;
+                             InfoLevel: DWORD;
+                             Name: PWideChar;
+                             Buffer: Pointer;
+                             var BufferLength: DWORD;
+                             Index: Pointer): BOOL; stdcall; external 'winhttp.dll';
+function WinHttpSetTimeouts(Session: HINTERNET;
+                            ResolveTimeout,
+                            ConnectTimeout,
+                            SendTimeout,
+                            ReceiveTimeout: Integer): BOOL; stdcall; external 'winhttp.dll';
 function WinHttpCloseHandle(Handle: HINTERNET): BOOL; stdcall; external 'winhttp.dll';
 
 
-function LocalNodeName(Node:TDOMNode):UnicodeString;
-var P:Integer;
-begin Result:=Node.NodeName;P:=Pos(':',Result);if P>0 then Delete(Result,1,P);end;
+function LocalNodeName(Node: TDOMNode): UnicodeString;
+var
+  P: Integer;
+
+begin
+
+  Result := Node.NodeName;
+  P := Pos(':',
+           Result);
+  if (P > 0) then
+    Delete(Result,
+           1,
+           P);
+end;
+
 
 function FindNode(const ANode: TDOMNode;
-                    const AName: string): TDOMNode;
+                  const AName: string): TDOMNode;
 var
   i: Integer;
 
@@ -132,14 +166,14 @@ begin
     Exit;
 
   if SameText(LocalNodeName(ANode),
-                AName) then
+    AName) then
     Exit(ANode);
 
   for i := 0 to ANode.ChildNodes.Count - 1 do
     begin
 
       Result := FindNode(ANode.ChildNodes[i],
-                           AName);
+                         AName);
       if (Result <> nil) then
         Exit;
     end;
@@ -147,7 +181,7 @@ end;
 
 
 function NodeText(const ANode: TDOMNode;
-                    const AName: string): string;
+                  const AName: string): string;
 var
   Node: TDOMNode;
 
@@ -155,7 +189,7 @@ begin
 
   Result := '';
   Node := FindNode(ANode,
-                     AName);
+                   AName);
 
   if (Node <> nil) then
     Result := Node.TextContent;
@@ -174,9 +208,10 @@ begin
     Exit;
 
   if SameText(LocalNodeName(ANode),
-                'service') and
-     (Pos('urn:schemas-upnp-org:service:AVTransport:',
-            NodeText(ANode, 'serviceType')) = 1) then
+    'service') and
+    (Pos('urn:schemas-upnp-org:service:AVTransport:',
+         NodeText(ANode,
+                  'serviceType')) = 1) then
     Exit(ANode);
 
   for i := 0 to ANode.ChildNodes.Count - 1 do
@@ -189,25 +224,47 @@ begin
 end;
 
 
-function TryLoadXml(const Text: string; out Doc: TXMLDocument; out ErrorText: string): Boolean;
-var Stream:TStringStream;
+function TryLoadXml(const Text: string;
+                    out Doc: TXMLDocument;
+                    out ErrorText: string): Boolean;
+var
+  Stream: TStringStream;
+
 begin
- Doc:=nil;Result:=False;
- if (Pos('<!DOCTYPE',UpperCase(Text))>0) or (Pos('<!ENTITY',UpperCase(Text))>0) then begin ErrorText:='Unsupported receiver XML declarations';Exit;end;
- Stream:=TStringStream.Create(UTF8Encode(Text));
- try
-  try ReadXMLFile(Doc,Stream);Result:=True;
-  except on E:Exception do begin FreeAndNil(Doc);ErrorText:='Receiver returned invalid UPnP XML: '+E.Message;end;end;
- finally Stream.Free;end;
+
+  Doc := nil;
+  Result := False;
+  if (Pos('<!DOCTYPE', UpperCase(Text)) > 0) or (Pos('<!ENTITY', UpperCase(Text)) > 0) then
+    begin
+      ErrorText := 'Unsupported receiver XML declarations';
+      Exit;
+    end;
+  Stream := TStringStream.Create(UTF8Encode(Text));
+  try
+    try
+      ReadXMLFile(Doc,
+                  Stream);
+      Result := True;
+    except
+      on E: Exception do
+        begin
+          FreeAndNil(Doc);
+          ErrorText := 'Receiver returned invalid UPnP XML: ' + E.Message;
+        end;
+    end;
+  finally
+    Stream.Free;
+  end;
 end;
 
 
 function HttpExchange(const AHost: string;
-                        APort: Word;
-                        const APath,
-                              ABody,
-                              ASoapAction: string;
-                        out AStatus: DWORD; out ErrorText: string): string;
+                      APort: Word;
+                      const APath,
+                      ABody,
+                      ASoapAction: string;
+                      out AStatus: DWORD;
+                      out ErrorText: string): string;
 var
   Session: HINTERNET;
   Connection: HINTERNET;
@@ -233,22 +290,34 @@ begin
   try
 
     Session := WinHttpOpen('HEOSRemote/1.0',
-                             1,
-                             nil,
-                             nil,
-                             0);
+                           1,
+                           nil,
+                           nil,
+                           0);
     if (Session = nil) then
-      begin ErrorText := Format('Receiver UPnP request failed (Windows error %d)', [GetLastError]); Exit; end;
+      begin
+        ErrorText := Format('Receiver UPnP request failed (Windows error %d)',
+                            [GetLastError]);
+        Exit;
+      end;
 
     if not WinHttpSetTimeouts(Session, 2500, 2500, 3000, 3000) then
-      begin ErrorText := Format('Receiver UPnP request failed (Windows error %d)', [GetLastError]); Exit; end;
+      begin
+        ErrorText := Format('Receiver UPnP request failed (Windows error %d)',
+                            [GetLastError]);
+        Exit;
+      end;
 
     Connection := WinHttpConnect(Session,
-                                    PWideChar(AHost),
-                                    APort,
-                                    0);
+                                 PWideChar(AHost),
+                                 APort,
+                                 0);
     if (Connection = nil) then
-      begin ErrorText := Format('Receiver UPnP request failed (Windows error %d)', [GetLastError]); Exit; end;
+      begin
+        ErrorText := Format('Receiver UPnP request failed (Windows error %d)',
+                            [GetLastError]);
+        Exit;
+      end;
 
     Verb := 'GET';
     Headers := '';
@@ -259,63 +328,84 @@ begin
 
         Verb := 'POST';
         Headers := 'Content-Type: text/xml; charset="utf-8"'#13#10 +
-                   'SOAPACTION: "' + ASoapAction + '"'#13#10;
+          'SOAPACTION: "' + ASoapAction + '"'#13#10;
       end;
 
     Request := WinHttpOpenRequest(Connection,
-                                    PWideChar(Verb),
-                                    PWideChar(APath),
-                                    nil,
-                                    nil,
-                                    nil,
-                                    0);
+                                  PWideChar(Verb),
+                                  PWideChar(APath),
+                                  nil,
+                                  nil,
+                                  nil,
+                                  0);
     if (Request = nil) then
-      begin ErrorText := Format('Receiver UPnP request failed (Windows error %d)', [GetLastError]); Exit; end;
+      begin
+        ErrorText := Format('Receiver UPnP request failed (Windows error %d)',
+                            [GetLastError]);
+        Exit;
+      end;
 
     if not WinHttpSendRequest(Request,
-                                PWideChar(Headers),
-                                Length(Headers),
-                                PAnsiChar(Body),
-                                Length(Body),
-                                Length(Body),
-                                0) then
-      begin ErrorText := Format('Receiver UPnP request failed (Windows error %d)', [GetLastError]); Exit; end;
+      PWideChar(Headers),
+      Length(Headers),
+      PAnsiChar(Body),
+      Length(Body),
+      Length(Body),
+      0) then
+      begin
+        ErrorText := Format('Receiver UPnP request failed (Windows error %d)',
+                            [GetLastError]);
+        Exit;
+      end;
 
     if not WinHttpReceiveResponse(Request,
-                                     nil) then
-      begin ErrorText := Format('Receiver UPnP request failed (Windows error %d)', [GetLastError]); Exit; end;
+      nil) then
+      begin
+        ErrorText := Format('Receiver UPnP request failed (Windows error %d)',
+                            [GetLastError]);
+        Exit;
+      end;
 
     Size := SizeOf(AStatus);
     if not WinHttpQueryHeaders(Request,
-                                  19 or $20000000,
-                                  nil,
-                                  @AStatus,
-                                  Size,
-                                  nil) then
-      begin ErrorText := Format('Receiver UPnP request failed (Windows error %d)', [GetLastError]); Exit; end;
+      19 or $20000000,
+      nil, @AStatus,
+      Size,
+      nil) then
+      begin
+        ErrorText := Format('Receiver UPnP request failed (Windows error %d)',
+                            [GetLastError]);
+        Exit;
+      end;
 
     repeat
 
-      if not WinHttpReadData(Request,
-                                @Buffer[0],
-                                SizeOf(Buffer),
-                                BytesRead) then
-        begin ErrorText := Format('Receiver UPnP request failed (Windows error %d)', [GetLastError]); Exit; end;
+      if not WinHttpReadData(Request, @Buffer[0],
+        SizeOf(Buffer),
+        BytesRead) then
+        begin
+          ErrorText := Format('Receiver UPnP request failed (Windows error %d)',
+                              [GetLastError]);
+          Exit;
+        end;
 
       if (Data.Size + BytesRead > 1024 * 1024) then
-        begin ErrorText := 'Receiver UPnP response is too large.'; Exit; end;
+        begin
+          ErrorText := 'Receiver UPnP response is too large.';
+          Exit;
+        end;
 
       if (BytesRead > 0) then
         Data.WriteBuffer(Buffer,
-                            BytesRead);
+                         BytesRead);
     until (BytesRead = 0);
 
     SetLength(Body,
-                Data.Size);
+              Data.Size);
     if (Data.Size > 0) then
       Move(Data.Memory^,
-             Body[1],
-             Data.Size);
+           Body[1],
+           Data.Size);
 
     Result := UTF8ToString(Body);
   finally
@@ -332,8 +422,9 @@ end;
 
 
 function ExecuteReceiverSeek(const AHost: string;
-                                 const APositionMs: Int64;
-                                 APort: Word; out ErrorText: string): Boolean;
+                             const APositionMs: Int64;
+                             APort: Word;
+                             out ErrorText: string): Boolean;
 var
   Doc: TXMLDocument;
   Service: TDOMNode;
@@ -348,67 +439,93 @@ begin
 
   Result := False;
   ErrorText := '';
-  Doc:=nil;Service:=nil;
+  Doc := nil;
+  Service := nil;
   if (APositionMs < 0) then
-    begin ErrorText := 'Seek position must not be negative.'; Exit; end;
+    begin
+      ErrorText := 'Seek position must not be negative.';
+      Exit;
+    end;
 
   try
 
     Body := HttpExchange(AHost,
-                            APort,
-                            '/upnp/desc/aios_device/aios_device.xml',
-                            '',
-                            '',
-                            Status, ErrorText);
-    if ErrorText <> '' then Exit;
+                         APort,
+                         '/upnp/desc/aios_device/aios_device.xml',
+                         '',
+                         '',
+                         Status,
+                         ErrorText);
+    if (ErrorText <> '') then
+      Exit;
     if (Status <> 200) then
-      begin ErrorText := Format('UPnP discovery failed (HTTP %d).', [Status]); Exit; end;
+      begin
+        ErrorText := Format('UPnP discovery failed (HTTP %d).',
+                            [Status]);
+        Exit;
+      end;
 
-    if not TryLoadXml(Body, Doc, ErrorText) then Exit;
+    if not TryLoadXml(Body, Doc, ErrorText) then
+      Exit;
     Service := FindTransportService(Doc.DocumentElement);
     if (Service = nil) then
-      begin ErrorText := 'Receiver has no UPnP AVTransport service.'; Exit; end;
+      begin
+        ErrorText := 'Receiver has no UPnP AVTransport service.';
+        Exit;
+      end;
 
     ControlPath := NodeText(Service,
-                              'controlURL');
+                            'controlURL');
     ServiceType := NodeText(Service,
-                              'serviceType');
+                            'serviceType');
     if (ControlPath = '') or (ControlPath[1] <> '/') or
-       (Copy(ControlPath, 1, 2) = '//') then
-      begin ErrorText := 'Receiver returned an unsupported UPnP control URL.'; Exit; end;
+      (Copy(ControlPath,
+            1,
+            2) = '//') then
+      begin
+        ErrorText := 'Receiver returned an unsupported UPnP control URL.';
+        Exit;
+      end;
 
     Seconds := APositionMs div 1000;
     Target := Format('%.2d:%.2d:%.2d',
-                       [Seconds div 3600, (Seconds div 60) mod 60, Seconds mod 60]);
+                     [Seconds div 3600, (Seconds div 60) mod 60, Seconds mod 60]);
     Body := '<?xml version="1.0" encoding="utf-8"?>' +
-            '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" ' +
-            's:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">' +
-            '<s:Body><u:Seek xmlns:u="' + ServiceType + '">' +
-            '<InstanceID>0</InstanceID><Unit>REL_TIME</Unit><Target>' + Target +
-            '</Target></u:Seek></s:Body></s:Envelope>';
+      '<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" ' +
+      's:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">' +
+      '<s:Body><u:Seek xmlns:u="' + ServiceType + '">' +
+      '<InstanceID>0</InstanceID><Unit>REL_TIME</Unit><Target>' + Target +
+      '</Target></u:Seek></s:Body></s:Envelope>';
     Body := HttpExchange(AHost,
-                            APort,
-                            ControlPath,
-                            Body,
-                            ServiceType + '#Seek',
-                            Status, ErrorText);
-    if ErrorText <> '' then Exit;
+                         APort,
+                         ControlPath,
+                         Body,
+                         ServiceType + '#Seek',
+                         Status,
+                         ErrorText);
+    if (ErrorText <> '') then
+      Exit;
     Service := nil;
     FreeAndNil(Doc);
 
     if (Body <> '') then
-      if not TryLoadXml(Body, Doc, ErrorText) then Exit;
+      if not TryLoadXml(Body, Doc, ErrorText) then
+        Exit;
 
     if (Status <> 200) or (Doc = nil) or
-       (FindNode(Doc.DocumentElement, 'SeekResponse') = nil) then
+      (FindNode(Doc.DocumentElement,
+                'SeekResponse') = nil) then
       begin
 
         ErrorText := '';
         if (Doc <> nil) then
-          ErrorText := NodeText(Doc.DocumentElement, 'errorCode') + ' ' +
-                       NodeText(Doc.DocumentElement, 'errorDescription');
+          ErrorText := NodeText(Doc.DocumentElement,
+                                'errorCode') + ' ' +
+            NodeText(Doc.DocumentElement,
+                     'errorDescription');
 
-        ErrorText := Format('Receiver seek failed (HTTP %d): %s', [Status, Trim(ErrorText)]);
+        ErrorText := Format('Receiver seek failed (HTTP %d): %s',
+                            [Status, Trim(ErrorText)]);
         Exit;
       end;
     Result := True;
@@ -422,26 +539,35 @@ end;
 
 function TrySeekReceiverPosition(const AHost: string;
                                  const APositionMs: Int64;
-                                 APort: Word; out ErrorText: string): Boolean;
+                                 APort: Word;
+                                 out ErrorText: string): Boolean;
 var
   InitResult: HRESULT;
 
 begin
 
   InitResult := CoInitializeEx(nil,
-                                 COINIT_APARTMENTTHREADED);
+                               COINIT_APARTMENTTHREADED);
   Result := False;
   ErrorText := '';
   if Failed(InitResult) then
-    begin ErrorText := Format('Cannot initialize seek COM (0x%.8x)', [Cardinal(InitResult)]); Exit; end;
+    begin
+      ErrorText := Format('Cannot initialize seek COM (0x%.8x)',
+                          [Cardinal(InitResult)]);
+      Exit;
+    end;
 
   try
 
     // Release all XML interface temporaries before leaving the COM apartment.
-    Result := ExecuteReceiverSeek(AHost, APositionMs, APort, ErrorText);
+    Result := ExecuteReceiverSeek(AHost,
+                                  APositionMs,
+                                  APort,
+                                  ErrorText);
   finally
 
     CoUninitialize;
   end;
 end;
+
 end.

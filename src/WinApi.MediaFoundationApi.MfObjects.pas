@@ -96,7 +96,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
@@ -136,9 +137,9 @@ const
   // Format type match = both of them have format blocks
   // Format_data match = both format blocks match exactly
 
-  MF_MEDIATYPE_EQUAL_MAJOR_TYPES      = $00000001;
-  MF_MEDIATYPE_EQUAL_FORMAT_TYPES     = $00000002;
-  MF_MEDIATYPE_EQUAL_FORMAT_DATA      = $00000004;
+  MF_MEDIATYPE_EQUAL_MAJOR_TYPES = $00000001;
+  MF_MEDIATYPE_EQUAL_FORMAT_TYPES = $00000002;
+  MF_MEDIATYPE_EQUAL_FORMAT_DATA = $00000004;
   MF_MEDIATYPE_EQUAL_FORMAT_USER_DATA = $00000008;
 
   // Interface IMFAsyncCallback
@@ -148,24 +149,24 @@ const
   //
 
   MFASYNC_FAST_IO_PROCESSING_CALLBACK = $00000001;
-  MFASYNC_SIGNAL_CALLBACK             = $00000002;
-  MFASYNC_BLOCKING_CALLBACK           = $00000004;
-  MFASYNC_REPLY_CALLBACK              = $00000008; // Callback will reply via IMFAsyncCallback in GetObject()
-  MFASYNC_LOCALIZE_REMOTE_CALLBACK    = $00000010; // The callback object is not apartment-agile and the callback pointer must be localized after an RPC
+  MFASYNC_SIGNAL_CALLBACK = $00000002;
+  MFASYNC_BLOCKING_CALLBACK = $00000004;
+  MFASYNC_REPLY_CALLBACK = $00000008; // Callback will reply via IMFAsyncCallback in GetObject()
+  MFASYNC_LOCALIZE_REMOTE_CALLBACK = $00000010; // The callback object is not apartment-agile and the callback pointer must be localized after an RPC
 
   //
   // Async callback invocation queue IDs
   //
 
-  MFASYNC_CALLBACK_QUEUE_UNDEFINED     = $00000000;
-  MFASYNC_CALLBACK_QUEUE_STANDARD      = $00000001;
-  MFASYNC_CALLBACK_QUEUE_RT            = $00000002;
-  MFASYNC_CALLBACK_QUEUE_IO            = $00000003;
-  MFASYNC_CALLBACK_QUEUE_TIMER         = $00000004;
+  MFASYNC_CALLBACK_QUEUE_UNDEFINED = $00000000;
+  MFASYNC_CALLBACK_QUEUE_STANDARD = $00000001;
+  MFASYNC_CALLBACK_QUEUE_RT = $00000002;
+  MFASYNC_CALLBACK_QUEUE_IO = $00000003;
+  MFASYNC_CALLBACK_QUEUE_TIMER = $00000004;
   MFASYNC_CALLBACK_QUEUE_MULTITHREADED = $00000005;
   MFASYNC_CALLBACK_QUEUE_LONG_FUNCTION = $00000007;
-  MFASYNC_CALLBACK_QUEUE_PRIVATE_MASK  = $FFFF0000;
-  MFASYNC_CALLBACK_QUEUE_ALL           = MAXDW; // 0xFFFFFFFF
+  MFASYNC_CALLBACK_QUEUE_PRIVATE_MASK = $FFFF0000;
+  MFASYNC_CALLBACK_QUEUE_ALL = MAXDW; // 0xFFFFFFFF
 
 type
   // MediaEventType
@@ -177,131 +178,131 @@ const
   // generic events
   //-------------------------------------------------------------------------
 
-  MEUnknown                               = MediaEventType(0);
-  MEError                                 = MediaEventType(1);
-  MEExtendedType                          = MediaEventType(2);
-  MENonFatalError                         = MediaEventType(3);
-  MEGenericV1Anchor                       = MENonFatalError;
+  MEUnknown = MediaEventType(0);
+  MEError = MediaEventType(1);
+  MEExtendedType = MediaEventType(2);
+  MENonFatalError = MediaEventType(3);
+  MEGenericV1Anchor = MENonFatalError;
 
   //-------------------------------------------------------------------------
   // Media Session events:
   // Events of interest to applications using the Media Session
   //-------------------------------------------------------------------------
 
-  MESessionUnknown                        = MediaEventType(100);
-  MESessionTopologySet                    = MediaEventType(101);
-  MESessionTopologiesCleared              = MediaEventType(102);
-  MESessionStarted                        = MediaEventType(103);
-  MESessionPaused                         = MediaEventType(104);
-  MESessionStopped                        = MediaEventType(105);
-  MESessionClosed                         = MediaEventType(106);
-  MESessionEnded                          = MediaEventType(107);
-  MESessionRateChanged                    = MediaEventType(108);
-  MESessionScrubSampleComplete            = MediaEventType(109);
-  MESessionCapabilitiesChanged            = MediaEventType(110);
-  MESessionTopologyStatus                 = MediaEventType(111);
-  MESessionNotifyPresentationTime         = MediaEventType(112);
-  MENewPresentation                       = MediaEventType(113);
-  MELicenseAcquisitionStart               = MediaEventType(114);
-  MELicenseAcquisitionCompleted           = MediaEventType(115);
-  MEIndividualizationStart                = MediaEventType(116);
-  MEIndividualizationCompleted            = MediaEventType(117);
-  MEEnablerProgress                       = MediaEventType(118);
-  MEEnablerCompleted                      = MediaEventType(119);
-  MEPolicyError                           = MediaEventType(120);
-  MEPolicyReport                          = MediaEventType(121);
-  MEBufferingStarted                      = MediaEventType(122);
-  MEBufferingStopped                      = MediaEventType(123);
-  MEConnectStart                          = MediaEventType(124);
-  MEConnectEnd                            = MediaEventType(125);
-  MEReconnectStart                        = MediaEventType(126);
-  MEReconnectEnd                          = MediaEventType(127);
-  MERendererEvent                         = MediaEventType(128);
-  MESessionStreamSinkFormatChanged        = MediaEventType(129);
-  MESessionV1Anchor                       = MESessionStreamSinkFormatChanged;
-  MESourceUnknown                         = MediaEventType(200);
-  MESourceStarted                         = MediaEventType(201);
-  MEStreamStarted                         = MediaEventType(202);
-  MESourceSeeked                          = MediaEventType(203);
-  MEStreamSeeked                          = MediaEventType(204);
-  MENewStream                             = MediaEventType(205);
-  MEUpdatedStream                         = MediaEventType(206);
-  MESourceStopped                         = MediaEventType(207);
-  MEStreamStopped                         = MediaEventType(208);
-  MESourcePaused                          = MediaEventType(209);
-  MEStreamPaused                          = MediaEventType(210);
-  MEEndOfPresentation                     = MediaEventType(211);
-  MEEndOfStream                           = MediaEventType(212);
-  MEMediaSample                           = MediaEventType(213);  // Sent when a media stream delivers a new sample in response to a call to IMFMediaStream.RequestSample.
-  MEStreamTick                            = MediaEventType(214);  // Signals that a media stream does not have data available at a specified time.
-  MEStreamThinMode                        = MediaEventType(215);
-  MEStreamFormatChanged                   = MediaEventType(216);
-  MESourceRateChanged                     = MediaEventType(217);
-  MEEndOfPresentationSegment              = MediaEventType(218);
-  MESourceCharacteristicsChanged          = MediaEventType(219);
-  MESourceRateChangeRequested             = MediaEventType(220);
-  MESourceMetadataChanged                 = MediaEventType(221);
-  MESequencerSourceTopologyUpdated        = MediaEventType(222);
-  MESourceV1Anchor                        = MESequencerSourceTopologyUpdated;
-  MESinkUnknown                           = MediaEventType(300);
-  MEStreamSinkStarted                     = MediaEventType(301);
-  MEStreamSinkStopped                     = MediaEventType(302);
-  MEStreamSinkPaused                      = MediaEventType(303);
-  MEStreamSinkRateChanged                 = MediaEventType(304);
-  MEStreamSinkRequestSample               = MediaEventType(305);
-  MEStreamSinkMarker                      = MediaEventType(306);
-  MEStreamSinkPrerolled                   = MediaEventType(307);
-  MEStreamSinkScrubSampleComplete         = MediaEventType(308);
-  MEStreamSinkFormatChanged               = MediaEventType(309);
-  MEStreamSinkDeviceChanged               = MediaEventType(310);
-  MEQualityNotify                         = MediaEventType(311);
-  MESinkInvalidated                       = MediaEventType(312);
-  MEAudioSessionNameChanged               = MediaEventType(313);
-  MEAudioSessionVolumeChanged             = MediaEventType(314);
-  MEAudioSessionDeviceRemoved             = MediaEventType(315);
-  MEAudioSessionServerShutdown            = MediaEventType(316);
-  MEAudioSessionGroupingParamChanged      = MediaEventType(317);
-  MEAudioSessionIconChanged               = MediaEventType(318);
-  MEAudioSessionFormatChanged             = MediaEventType(319);
-  MEAudioSessionDisconnected              = MediaEventType(320);
-  MEAudioSessionExclusiveModeOverride     = MediaEventType(321);
-  MESinkV1Anchor                          = MEAudioSessionExclusiveModeOverride;
-  MECaptureAudioSessionVolumeChanged      = MediaEventType(322);
-  MECaptureAudioSessionDeviceRemoved      = MediaEventType(323);
-  MECaptureAudioSessionFormatChanged      = MediaEventType(324);
-  MECaptureAudioSessionDisconnected       = MediaEventType(325);
-  MECaptureAudioSessionExclusiveModeOverride  = MediaEventType(326);
-  MECaptureAudioSessionServerShutdown     = MediaEventType(327);
-  MESinkV2Anchor                          = MECaptureAudioSessionServerShutdown;
-  METrustUnknown                          = MediaEventType(400);
-  MEPolicyChanged                         = MediaEventType(401);
-  MEContentProtectionMessage              = MediaEventType(402);
-  MEPolicySet                             = MediaEventType(403);
-  METrustV1Anchor                         = MEPolicySet;
-  MEWMDRMLicenseBackupCompleted           = MediaEventType(500);
-  MEWMDRMLicenseBackupProgress            = MediaEventType(501);
-  MEWMDRMLicenseRestoreCompleted          = MediaEventType(502);
-  MEWMDRMLicenseRestoreProgress           = MediaEventType(503);
-  MEWMDRMLicenseAcquisitionCompleted      = MediaEventType(506);
-  MEWMDRMIndividualizationCompleted       = MediaEventType(508);
-  MEWMDRMIndividualizationProgress        = MediaEventType(513);
-  MEWMDRMProximityCompleted               = MediaEventType(514);
-  MEWMDRMLicenseStoreCleaned              = MediaEventType(515);
-  MEWMDRMRevocationDownloadCompleted      = MediaEventType(516);
-  MEWMDRMV1Anchor                         = MEWMDRMRevocationDownloadCompleted;
-  METransformUnknown                      = MediaEventType(600);
-  METransformNeedInput                    = METransformUnknown + 1;
-  METransformHaveOutput                   = METransformNeedInput + 1;
-  METransformDrainComplete                = METransformHaveOutput + 1;
-  METransformMarker                       = METransformDrainComplete + 1;
-  METransformInputStreamStateChanged      = METransformMarker + 1;
-  MEByteStreamCharacteristicsChanged      = MediaEventType(700);
-  MEVideoCaptureDeviceRemoved             = MediaEventType(800);
-  MEVideoCaptureDevicePreempted           = MediaEventType(801);
-  MEStreamSinkFormatInvalidated           = MediaEventType(802);
-  MEEncodingParameters                    = MediaEventType(803);
-  MEContentProtectionMetadata             = MediaEventType(900);
-  MEDeviceThermalStateChanged             = MediaEventType(950);
+  MESessionUnknown = MediaEventType(100);
+  MESessionTopologySet = MediaEventType(101);
+  MESessionTopologiesCleared = MediaEventType(102);
+  MESessionStarted = MediaEventType(103);
+  MESessionPaused = MediaEventType(104);
+  MESessionStopped = MediaEventType(105);
+  MESessionClosed = MediaEventType(106);
+  MESessionEnded = MediaEventType(107);
+  MESessionRateChanged = MediaEventType(108);
+  MESessionScrubSampleComplete = MediaEventType(109);
+  MESessionCapabilitiesChanged = MediaEventType(110);
+  MESessionTopologyStatus = MediaEventType(111);
+  MESessionNotifyPresentationTime = MediaEventType(112);
+  MENewPresentation = MediaEventType(113);
+  MELicenseAcquisitionStart = MediaEventType(114);
+  MELicenseAcquisitionCompleted = MediaEventType(115);
+  MEIndividualizationStart = MediaEventType(116);
+  MEIndividualizationCompleted = MediaEventType(117);
+  MEEnablerProgress = MediaEventType(118);
+  MEEnablerCompleted = MediaEventType(119);
+  MEPolicyError = MediaEventType(120);
+  MEPolicyReport = MediaEventType(121);
+  MEBufferingStarted = MediaEventType(122);
+  MEBufferingStopped = MediaEventType(123);
+  MEConnectStart = MediaEventType(124);
+  MEConnectEnd = MediaEventType(125);
+  MEReconnectStart = MediaEventType(126);
+  MEReconnectEnd = MediaEventType(127);
+  MERendererEvent = MediaEventType(128);
+  MESessionStreamSinkFormatChanged = MediaEventType(129);
+  MESessionV1Anchor = MESessionStreamSinkFormatChanged;
+  MESourceUnknown = MediaEventType(200);
+  MESourceStarted = MediaEventType(201);
+  MEStreamStarted = MediaEventType(202);
+  MESourceSeeked = MediaEventType(203);
+  MEStreamSeeked = MediaEventType(204);
+  MENewStream = MediaEventType(205);
+  MEUpdatedStream = MediaEventType(206);
+  MESourceStopped = MediaEventType(207);
+  MEStreamStopped = MediaEventType(208);
+  MESourcePaused = MediaEventType(209);
+  MEStreamPaused = MediaEventType(210);
+  MEEndOfPresentation = MediaEventType(211);
+  MEEndOfStream = MediaEventType(212);
+  MEMediaSample = MediaEventType(213);  // Sent when a media stream delivers a new sample in response to a call to IMFMediaStream.RequestSample.
+  MEStreamTick = MediaEventType(214);  // Signals that a media stream does not have data available at a specified time.
+  MEStreamThinMode = MediaEventType(215);
+  MEStreamFormatChanged = MediaEventType(216);
+  MESourceRateChanged = MediaEventType(217);
+  MEEndOfPresentationSegment = MediaEventType(218);
+  MESourceCharacteristicsChanged = MediaEventType(219);
+  MESourceRateChangeRequested = MediaEventType(220);
+  MESourceMetadataChanged = MediaEventType(221);
+  MESequencerSourceTopologyUpdated = MediaEventType(222);
+  MESourceV1Anchor = MESequencerSourceTopologyUpdated;
+  MESinkUnknown = MediaEventType(300);
+  MEStreamSinkStarted = MediaEventType(301);
+  MEStreamSinkStopped = MediaEventType(302);
+  MEStreamSinkPaused = MediaEventType(303);
+  MEStreamSinkRateChanged = MediaEventType(304);
+  MEStreamSinkRequestSample = MediaEventType(305);
+  MEStreamSinkMarker = MediaEventType(306);
+  MEStreamSinkPrerolled = MediaEventType(307);
+  MEStreamSinkScrubSampleComplete = MediaEventType(308);
+  MEStreamSinkFormatChanged = MediaEventType(309);
+  MEStreamSinkDeviceChanged = MediaEventType(310);
+  MEQualityNotify = MediaEventType(311);
+  MESinkInvalidated = MediaEventType(312);
+  MEAudioSessionNameChanged = MediaEventType(313);
+  MEAudioSessionVolumeChanged = MediaEventType(314);
+  MEAudioSessionDeviceRemoved = MediaEventType(315);
+  MEAudioSessionServerShutdown = MediaEventType(316);
+  MEAudioSessionGroupingParamChanged = MediaEventType(317);
+  MEAudioSessionIconChanged = MediaEventType(318);
+  MEAudioSessionFormatChanged = MediaEventType(319);
+  MEAudioSessionDisconnected = MediaEventType(320);
+  MEAudioSessionExclusiveModeOverride = MediaEventType(321);
+  MESinkV1Anchor = MEAudioSessionExclusiveModeOverride;
+  MECaptureAudioSessionVolumeChanged = MediaEventType(322);
+  MECaptureAudioSessionDeviceRemoved = MediaEventType(323);
+  MECaptureAudioSessionFormatChanged = MediaEventType(324);
+  MECaptureAudioSessionDisconnected = MediaEventType(325);
+  MECaptureAudioSessionExclusiveModeOverride = MediaEventType(326);
+  MECaptureAudioSessionServerShutdown = MediaEventType(327);
+  MESinkV2Anchor = MECaptureAudioSessionServerShutdown;
+  METrustUnknown = MediaEventType(400);
+  MEPolicyChanged = MediaEventType(401);
+  MEContentProtectionMessage = MediaEventType(402);
+  MEPolicySet = MediaEventType(403);
+  METrustV1Anchor = MEPolicySet;
+  MEWMDRMLicenseBackupCompleted = MediaEventType(500);
+  MEWMDRMLicenseBackupProgress = MediaEventType(501);
+  MEWMDRMLicenseRestoreCompleted = MediaEventType(502);
+  MEWMDRMLicenseRestoreProgress = MediaEventType(503);
+  MEWMDRMLicenseAcquisitionCompleted = MediaEventType(506);
+  MEWMDRMIndividualizationCompleted = MediaEventType(508);
+  MEWMDRMIndividualizationProgress = MediaEventType(513);
+  MEWMDRMProximityCompleted = MediaEventType(514);
+  MEWMDRMLicenseStoreCleaned = MediaEventType(515);
+  MEWMDRMRevocationDownloadCompleted = MediaEventType(516);
+  MEWMDRMV1Anchor = MEWMDRMRevocationDownloadCompleted;
+  METransformUnknown = MediaEventType(600);
+  METransformNeedInput = METransformUnknown + 1;
+  METransformHaveOutput = METransformNeedInput + 1;
+  METransformDrainComplete = METransformHaveOutput + 1;
+  METransformMarker = METransformDrainComplete + 1;
+  METransformInputStreamStateChanged = METransformMarker + 1;
+  MEByteStreamCharacteristicsChanged = MediaEventType(700);
+  MEVideoCaptureDeviceRemoved = MediaEventType(800);
+  MEVideoCaptureDevicePreempted = MediaEventType(801);
+  MEStreamSinkFormatInvalidated = MediaEventType(802);
+  MEEncodingParameters = MediaEventType(803);
+  MEContentProtectionMetadata = MediaEventType(900);
+  MEDeviceThermalStateChanged = MediaEventType(950);
 
   //-------------------------------------------------------------------------
   // MF reserves a range of events for internal and future use
@@ -311,7 +312,7 @@ const
   //     All event type codes up to and including this value are
   //     reserved.
   // </member>
-  MEReservedMax                           = MediaEventType(10000);
+  MEReservedMax = MediaEventType(10000);
 
 
 
@@ -320,17 +321,17 @@ const
   MF_EVENT_FLAG_NO_WAIT = $00000001;
 
   // Interface IMFByteStream
-  MFBYTESTREAM_IS_READABLE                 = $00000001;
-  MFBYTESTREAM_IS_WRITABLE                 = $00000002;
-  MFBYTESTREAM_IS_SEEKABLE                 = $00000004;
-  MFBYTESTREAM_IS_REMOTE                   = $00000008;
-  MFBYTESTREAM_IS_DIRECTORY                = $00000080;
-  MFBYTESTREAM_HAS_SLOW_SEEK               = $00000100;
-  MFBYTESTREAM_IS_PARTIALLY_DOWNLOADED     = $00000200;
+  MFBYTESTREAM_IS_READABLE = $00000001;
+  MFBYTESTREAM_IS_WRITABLE = $00000002;
+  MFBYTESTREAM_IS_SEEKABLE = $00000004;
+  MFBYTESTREAM_IS_REMOTE = $00000008;
+  MFBYTESTREAM_IS_DIRECTORY = $00000080;
+  MFBYTESTREAM_HAS_SLOW_SEEK = $00000100;
+  MFBYTESTREAM_IS_PARTIALLY_DOWNLOADED = $00000200;
 
-  MFBYTESTREAM_SHARE_WRITE                 = $00000400;    // (WINVER >= _WIN32_WINNT_WIN7)
+  MFBYTESTREAM_SHARE_WRITE = $00000400;    // (WINVER >= _WIN32_WINNT_WIN7)
 
-  MFBYTESTREAM_DOES_NOT_USE_NETWORK        = $00000800;    // (WINVER >= _WIN32_WINNT_WIN8)
+  MFBYTESTREAM_DOES_NOT_USE_NETWORK = $00000800;    // (WINVER >= _WIN32_WINNT_WIN8)
 
   MFBYTESTREAM_SEEK_FLAG_CANCEL_PENDING_IO = $00000001;
 
@@ -340,22 +341,22 @@ const
   // Byte Stream attributes (query the Byte Stream for IMFAttributes)
   //
 
-  MF_BYTESTREAM_ORIGIN_NAME                        : TGUID = '{fc358288-3cb6-460c-a424-b6681260375a}';
-  MF_BYTESTREAM_CONTENT_TYPE                       : TGUID = '{fc358289-3cb6-460c-a424-b6681260375a}';
-  MF_BYTESTREAM_DURATION                           : TGUID = '{fc35828a-3cb6-460c-a424-b6681260375a}';
-  MF_BYTESTREAM_LAST_MODIFIED_TIME                 : TGUID = '{fc35828b-3cb6-460c-a424-b6681260375a}';
+  MF_BYTESTREAM_ORIGIN_NAME: TGUID = '{fc358288-3cb6-460c-a424-b6681260375a}';
+  MF_BYTESTREAM_CONTENT_TYPE: TGUID = '{fc358289-3cb6-460c-a424-b6681260375a}';
+  MF_BYTESTREAM_DURATION: TGUID = '{fc35828a-3cb6-460c-a424-b6681260375a}';
+  MF_BYTESTREAM_LAST_MODIFIED_TIME: TGUID = '{fc35828b-3cb6-460c-a424-b6681260375a}';
 
   // >= Windows 7
   //#if (WINVER >= _WIN32_WINNT_WIN7)
-  MF_BYTESTREAM_IFO_FILE_URI                       : TGUID = '{fc35828c-3cb6-460c-a424-b6681260375a}';
-  MF_BYTESTREAM_DLNA_PROFILE_ID                    : TGUID = '{fc35828d-3cb6-460c-a424-b6681260375a}';
-  MF_BYTESTREAM_EFFECTIVE_URL                      : TGUID = '{9AFA0209-89D1-42AF-8456-1DE6B562D691}';
-  MF_BYTESTREAM_TRANSCODED                         : TGUID = '{b6c5c282-4dc9-4db9-ab48-cf3b6d8bc5e0}';
+  MF_BYTESTREAM_IFO_FILE_URI: TGUID = '{fc35828c-3cb6-460c-a424-b6681260375a}';
+  MF_BYTESTREAM_DLNA_PROFILE_ID: TGUID = '{fc35828d-3cb6-460c-a424-b6681260375a}';
+  MF_BYTESTREAM_EFFECTIVE_URL: TGUID = '{9AFA0209-89D1-42AF-8456-1DE6B562D691}';
+  MF_BYTESTREAM_TRANSCODED: TGUID = '{b6c5c282-4dc9-4db9-ab48-cf3b6d8bc5e0}';
   //#endif // (WINVER >= _WIN32_WINNT_WIN7)
   //end >= Windows 7
 
 
-  CLSID_MFByteStreamProxyClassFactory   : TGUID = '{770e8e77-4916-441c-a9a7-b342d0eebc71}';
+  CLSID_MFByteStreamProxyClassFactory: TGUID = '{770e8e77-4916-441c-a9a7-b342d0eebc71}';
 
 
 
@@ -376,11 +377,11 @@ type
 
   PMF_ATTRIBUTES_MATCH_TYPE = ^_MF_ATTRIBUTES_MATCH_TYPE;
   _MF_ATTRIBUTES_MATCH_TYPE = (
-    MF_ATTRIBUTES_MATCH_OUR_ITEMS    = 0,    // do all of our items exist in their store and have identical data?
-    MF_ATTRIBUTES_MATCH_THEIR_ITEMS  = 1,    // do all of their items exist in our store and have identical data?
-    MF_ATTRIBUTES_MATCH_ALL_ITEMS    = 2,    // do both stores have the same set of identical items?
+    MF_ATTRIBUTES_MATCH_OUR_ITEMS = 0,    // do all of our items exist in their store and have identical data?
+    MF_ATTRIBUTES_MATCH_THEIR_ITEMS = 1,    // do all of their items exist in our store and have identical data?
+    MF_ATTRIBUTES_MATCH_ALL_ITEMS = 2,    // do both stores have the same set of identical items?
     MF_ATTRIBUTES_MATCH_INTERSECTION = 3,    // do the attributes that intersect match?
-    MF_ATTRIBUTES_MATCH_SMALLER      = 4     // do all the attributes in the type that has fewer attributes match?
+    MF_ATTRIBUTES_MATCH_SMALLER = 4     // do all the attributes in the type that has fewer attributes match?
     );
   MF_ATTRIBUTES_MATCH_TYPE = _MF_ATTRIBUTES_MATCH_TYPE;
 
@@ -388,12 +389,14 @@ type
   PMF_ATTRIBUTE_SERIALIZE_OPTIONS = ^cwMF_ATTRIBUTE_SERIALIZE_OPTIONS;
   cwMF_ATTRIBUTE_SERIALIZE_OPTIONS = DWord;
   MF_ATTRIBUTE_SERIALIZE_OPTIONS = cwMF_ATTRIBUTE_SERIALIZE_OPTIONS;
+
 const
-    MF_ATTRIBUTE_SERIALIZE_UNKNOWN_BYREF = MF_ATTRIBUTE_SERIALIZE_OPTIONS($1);
+  MF_ATTRIBUTE_SERIALIZE_UNKNOWN_BYREF = MF_ATTRIBUTE_SERIALIZE_OPTIONS($1);
 
 type
 
   PBITMAPINFOHEADER = ^BITMAPINFOHEADER;
+
   cwBITMAPINFOHEADER = record
     biSize: DWORD;
     biWidth: LONG;
@@ -411,16 +414,18 @@ type
 
 
   PBitmapinfo = ^TBitmapinfo;
+
   BITMAPINFO = record
     bmiHeader: BITMAPINFOHEADER;
     bmiColors: array[0..0] of RGBQUAD;
   end;
   TBitmapinfo = BITMAPINFO;
 
-//
-// New version of MFT_REGISTER_TYPE_INFO for MF
-//
+  //
+  // New version of MFT_REGISTER_TYPE_INFO for MF
+  //
   PMFT_REGISTER_TYPE_INFO = ^MFT_REGISTER_TYPE_INFO;
+
   cwMFT_REGISTER_TYPE_INFO = record
     guidMajorType: TGUID;
     guidSubtype: TGUID;
@@ -432,17 +437,18 @@ type
   PMFVideoInterlaceMode = ^MFVideoInterlaceMode;
   _MFVideoInterlaceMode = UINT32;
   MFVideoInterlaceMode = _MFVideoInterlaceMode;
+
 const
-  MFVideoInterlace_Unknown                     = MFVideoInterlaceMode(0);  // The type of interlacing is not known.
-  MFVideoInterlace_Progressive                 = MFVideoInterlaceMode(2);  // Progressive frames.
-  MFVideoInterlace_FieldInterleavedUpperFirst  = MFVideoInterlaceMode(3);  // Interlaced frames. Each frame contains two fields.
-                                                                           // The field lines are interleaved, with the upper field appearing on the first line.
-  MFVideoInterlace_FieldInterleavedLowerFirst  = MFVideoInterlaceMode(4);  // Interlaced frames. Each frame contains two fields.
-                                                                           // The field lines are interleaved, with the lower field appearing on the first line.
-  MFVideoInterlace_FieldSingleUpper            = MFVideoInterlaceMode(5);  // Interlaced frames. Each frame contains one field, with the upper field appearing first.
-  MFVideoInterlace_FieldSingleLower            = MFVideoInterlaceMode(6);  // Interlaced frames. Each frame contains one field, with the lower field appearing first.
+  MFVideoInterlace_Unknown = MFVideoInterlaceMode(0);  // The type of interlacing is not known.
+  MFVideoInterlace_Progressive = MFVideoInterlaceMode(2);  // Progressive frames.
+  MFVideoInterlace_FieldInterleavedUpperFirst = MFVideoInterlaceMode(3);  // Interlaced frames. Each frame contains two fields.
+  // The field lines are interleaved, with the upper field appearing on the first line.
+  MFVideoInterlace_FieldInterleavedLowerFirst = MFVideoInterlaceMode(4);  // Interlaced frames. Each frame contains two fields.
+  // The field lines are interleaved, with the lower field appearing on the first line.
+  MFVideoInterlace_FieldSingleUpper = MFVideoInterlaceMode(5);  // Interlaced frames. Each frame contains one field, with the upper field appearing first.
+  MFVideoInterlace_FieldSingleLower = MFVideoInterlaceMode(6);  // Interlaced frames. Each frame contains one field, with the lower field appearing first.
   MFVideoInterlace_MixedInterlaceOrProgressive = MFVideoInterlaceMode(7);  // The stream contains a mix of interlaced and progressive modes.
-  MFVideoInterlace_Last                        = MFVideoInterlace_MixedInterlaceOrProgressive + 1; // Reserved
+  MFVideoInterlace_Last = MFVideoInterlace_MixedInterlaceOrProgressive + 1; // Reserved
   //MFVideoInterlace_ForceDWORD                  = FORCEDWORD);
 
 const
@@ -457,44 +463,45 @@ type
   PMFVideoTransferFunction = ^MFVideoTransferFunction;
   _MFVideoTransferFunction = UINT32;
   MFVideoTransferFunction = _MFVideoTransferFunction;
+
 const
-  MFVideoTransFunc_Unknown     = MFVideoTransferFunction(0); // Unknown. Treat as MFVideoTransFunc_709.
-  MFVideoTransFunc_10          = MFVideoTransferFunction(1); // Linear RGB (gamma = 1.0).
-  MFVideoTransFunc_18          = MFVideoTransferFunction(2); // True 1.8 gamma, L' = L^1/1.8.
-  MFVideoTransFunc_20          = MFVideoTransferFunction(3); // True 2.0 gamma, L' = L^1/2.0.
-  MFVideoTransFunc_22          = MFVideoTransferFunction(4); // True 2.2 gamma, L' = L^1/2.2. This transfer function is used in ITU-R BT.470-2 System M (NTSC).
-  MFVideoTransFunc_709         = MFVideoTransferFunction(5); // ITU-R BT.709 transfer function.
-                                                             // Gamma 2.2 curve with a linear segment in the lower range.
-                                                             // This transfer function is used in BT.709, BT.601, SMPTE 296M, SMPTE 170M, BT.470, and SPMTE 274M.
-                                                             // In addition BT-1361 uses this function within the range [0...1].
-  MFVideoTransFunc_240M        = MFVideoTransferFunction(6); // SPMTE 240M transfer function. Gamma 2.2 curve with a linear segment in the lower range.
-  MFVideoTransFunc_sRGB        = MFVideoTransferFunction(7); // sRGB transfer function. Gamma 2.4 curve with a linear segment in the lower range.
-  MFVideoTransFunc_28          = MFVideoTransferFunction(8); // True 2.8 gamma. L' = L^1/2.8. This transfer function is used in ITU-R BT.470-2 System B, G (PAL).
-  MFVideoTransFunc_Log_100     = MFVideoTransferFunction(9); // Logarithmic transfer (100:1 range); for example, as used in H.264 video.
+  MFVideoTransFunc_Unknown = MFVideoTransferFunction(0); // Unknown. Treat as MFVideoTransFunc_709.
+  MFVideoTransFunc_10 = MFVideoTransferFunction(1); // Linear RGB (gamma = 1.0).
+  MFVideoTransFunc_18 = MFVideoTransferFunction(2); // True 1.8 gamma, L' = L^1/1.8.
+  MFVideoTransFunc_20 = MFVideoTransferFunction(3); // True 2.0 gamma, L' = L^1/2.0.
+  MFVideoTransFunc_22 = MFVideoTransferFunction(4); // True 2.2 gamma, L' = L^1/2.2. This transfer function is used in ITU-R BT.470-2 System M (NTSC).
+  MFVideoTransFunc_709 = MFVideoTransferFunction(5); // ITU-R BT.709 transfer function.
+  // Gamma 2.2 curve with a linear segment in the lower range.
+  // This transfer function is used in BT.709, BT.601, SMPTE 296M, SMPTE 170M, BT.470, and SPMTE 274M.
+  // In addition BT-1361 uses this function within the range [0...1].
+  MFVideoTransFunc_240M = MFVideoTransferFunction(6); // SPMTE 240M transfer function. Gamma 2.2 curve with a linear segment in the lower range.
+  MFVideoTransFunc_sRGB = MFVideoTransferFunction(7); // sRGB transfer function. Gamma 2.4 curve with a linear segment in the lower range.
+  MFVideoTransFunc_28 = MFVideoTransferFunction(8); // True 2.8 gamma. L' = L^1/2.8. This transfer function is used in ITU-R BT.470-2 System B, G (PAL).
+  MFVideoTransFunc_Log_100 = MFVideoTransferFunction(9); // Logarithmic transfer (100:1 range); for example, as used in H.264 video.
 
   {The following elements requires Windows 7 or later.}
 
-  MFVideoTransFunc_Log_316     = MFVideoTransferFunction(10); // Logarithmic transfer (316.22777:1 range); for example, as used in H.264 video.
-  MFVideoTransFunc_709_sym     = MFVideoTransferFunction(11); // Symmetric ITU-R BT.709.
-  MFVideoTransFunc_2020_const  = MFVideoTransferFunction(12); // Constant luminance ITU-R BT.2020. See Recommendation ITU-R BT.2020-2.
-                                                              // See: https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.2020-2-201510-I!!PDF-E.pdf
+  MFVideoTransFunc_Log_316 = MFVideoTransferFunction(10); // Logarithmic transfer (316.22777:1 range); for example, as used in H.264 video.
+  MFVideoTransFunc_709_sym = MFVideoTransferFunction(11); // Symmetric ITU-R BT.709.
+  MFVideoTransFunc_2020_const = MFVideoTransferFunction(12); // Constant luminance ITU-R BT.2020. See Recommendation ITU-R BT.2020-2.
+  // See: https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.2020-2-201510-I!!PDF-E.pdf
 
   {The following elements requires Windows 8 or later.}
 
-  MFVideoTransFunc_2020        = MFVideoTransferFunction(13); // Non-constant luminance ITU-R BT.2020.
-                                                              // See: https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.2020-2-201510-I!!PDF-E.pdf
-  MFVideoTransFunc_26          = MFVideoTransferFunction(14); // True 2.6 gamma, L’=L^1/2.6
-  MFVideoTransFunc_2084        = MFVideoTransferFunction(15); // SMPTE ST.2084
-  MFVideoTransFunc_HLG         = MFVideoTransferFunction(16); // Hybrid Log-Gamma, ARIB STD-B67
+  MFVideoTransFunc_2020 = MFVideoTransferFunction(13); // Non-constant luminance ITU-R BT.2020.
+  // See: https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.2020-2-201510-I!!PDF-E.pdf
+  MFVideoTransFunc_26 = MFVideoTransferFunction(14); // True 2.6 gamma, L’=L^1/2.6
+  MFVideoTransFunc_2084 = MFVideoTransferFunction(15); // SMPTE ST.2084
+  MFVideoTransFunc_HLG = MFVideoTransferFunction(16); // Hybrid Log-Gamma, ARIB STD-B67
 
   {The following elements requires Windows 10, version 1703 (NTDDI_WIN10_RS4) or later.}
 
-  MFVideoTransFunc_10_rel      = MFVideoTransferFunction(17); // No gamma, display referred (relative)
+  MFVideoTransFunc_10_rel = MFVideoTransferFunction(17); // No gamma, display referred (relative)
 
-  MFVideoTransFunc_BT1361_ECG  = MFVideoTransferFunction(18); // BT.1361 Extended Color Gamut
-  MFVideoTransFunc_SMPTE428    = MFVideoTransferFunction(19); // SMPTE ST 428-1
+  MFVideoTransFunc_BT1361_ECG = MFVideoTransferFunction(18); // BT.1361 Extended Color Gamut
+  MFVideoTransFunc_SMPTE428 = MFVideoTransferFunction(19); // SMPTE ST 428-1
 
-  FVideoTransFunc_Last         = MFVideoTransFunc_HLG + 1;    // Reserved.
+  FVideoTransFunc_Last = MFVideoTransFunc_HLG + 1;    // Reserved.
   // MFVideoTransFunc_ForceMFVideoTransferFunction = FORCEMFVideoTransferFunction;
 
 
@@ -502,48 +509,51 @@ type
   PMFVideoPrimaries = ^MFVideoPrimaries;
   _MFVideoPrimaries = UINT32;
   MFVideoPrimaries = _MFVideoPrimaries;
+
 const
-  MFVideoPrimaries_Unknown       = MFVideoPrimaries(0);
-  MFVideoPrimaries_reserved      = MFVideoPrimaries(1);
-  MFVideoPrimaries_BT709         = MFVideoPrimaries(2);
-  MFVideoPrimaries_BT470_2_SysM  = MFVideoPrimaries(3);
+  MFVideoPrimaries_Unknown = MFVideoPrimaries(0);
+  MFVideoPrimaries_reserved = MFVideoPrimaries(1);
+  MFVideoPrimaries_BT709 = MFVideoPrimaries(2);
+  MFVideoPrimaries_BT470_2_SysM = MFVideoPrimaries(3);
   MFVideoPrimaries_BT470_2_SysBG = MFVideoPrimaries(4);
-  MFVideoPrimaries_SMPTE170M     = MFVideoPrimaries(5); // includes BT.601-5
-  MFVideoPrimaries_SMPTE240M     = MFVideoPrimaries(6);
-  MFVideoPrimaries_EBU3213       = MFVideoPrimaries(7);
-  MFVideoPrimaries_SMPTE_C       = MFVideoPrimaries(8);
-  MFVideoPrimaries_BT2020        = MFVideoPrimaries(9);
-  MFVideoPrimaries_XYZ           = MFVideoPrimaries(10);
-  MFVideoPrimaries_DCI_P3        = MFVideoPrimaries(11);
-  MFVideoPrimaries_ACES          = MFVideoPrimaries(12);
-  MFVideoPrimaries_Display_P3    = MFVideoPrimaries(13); // SMPTE EG 432-1
-  MFVideoPrimaries_Last          = MFVideoPrimaries_ACES + 1;
+  MFVideoPrimaries_SMPTE170M = MFVideoPrimaries(5); // includes BT.601-5
+  MFVideoPrimaries_SMPTE240M = MFVideoPrimaries(6);
+  MFVideoPrimaries_EBU3213 = MFVideoPrimaries(7);
+  MFVideoPrimaries_SMPTE_C = MFVideoPrimaries(8);
+  MFVideoPrimaries_BT2020 = MFVideoPrimaries(9);
+  MFVideoPrimaries_XYZ = MFVideoPrimaries(10);
+  MFVideoPrimaries_DCI_P3 = MFVideoPrimaries(11);
+  MFVideoPrimaries_ACES = MFVideoPrimaries(12);
+  MFVideoPrimaries_Display_P3 = MFVideoPrimaries(13); // SMPTE EG 432-1
+  MFVideoPrimaries_Last = MFVideoPrimaries_ACES + 1;
   //MFVideoPrimaries_ForceMFVideoPrimaries    = FORCEMFVideoPrimaries);
 
 type
   PMFVideoLighting = ^MFVideoLighting;
   _MFVideoLighting = UINT32;
   MFVideoLighting = _MFVideoLighting;
+
 const
-  MFVideoLighting_Unknown    = MFVideoLighting(0);
-  MFVideoLighting_bright     = MFVideoLighting(1);
-  MFVideoLighting_office     = MFVideoLighting(2);
-  MFVideoLighting_dim        = MFVideoLighting(3);
-  MFVideoLighting_dark       = MFVideoLighting(4);
-  MFVideoLighting_Last       = MFVideoLighting_dark + 1;
+  MFVideoLighting_Unknown = MFVideoLighting(0);
+  MFVideoLighting_bright = MFVideoLighting(1);
+  MFVideoLighting_office = MFVideoLighting(2);
+  MFVideoLighting_dim = MFVideoLighting(3);
+  MFVideoLighting_dark = MFVideoLighting(4);
+  MFVideoLighting_Last = MFVideoLighting_dark + 1;
   //MFVideoLighting_ForceDWORD = FORCEDWORD);
 
 type
   PMFVideoTransferMatrix = ^MFVideoTransferMatrix;
   _MFVideoTransferMatrix = UINT32;
   MFVideoTransferMatrix = _MFVideoTransferMatrix;
+
 const
-  MFVideoTransferMatrix_Unknown    = MFVideoTransferMatrix(0);
-  MFVideoTransferMatrix_BT709      = MFVideoTransferMatrix(1);
-  MFVideoTransferMatrix_BT601      = MFVideoTransferMatrix(2);
-  MFVideoTransferMatrix_SMPTE240M  = MFVideoTransferMatrix(3);
-  MFVideoTransferMatrix_BT2020_10  = MFVideoTransferMatrix(4);
-  MFVideoTransferMatrix_BT2020_12  = MFVideoTransferMatrix(5);
+  MFVideoTransferMatrix_Unknown = MFVideoTransferMatrix(0);
+  MFVideoTransferMatrix_BT709 = MFVideoTransferMatrix(1);
+  MFVideoTransferMatrix_BT601 = MFVideoTransferMatrix(2);
+  MFVideoTransferMatrix_SMPTE240M = MFVideoTransferMatrix(3);
+  MFVideoTransferMatrix_BT2020_10 = MFVideoTransferMatrix(4);
+  MFVideoTransferMatrix_BT2020_12 = MFVideoTransferMatrix(5);
   MFVideoTransferMatrix_Identity = MFVideoTransferMatrix(6);
   MFVideoTransferMatrix_FCC47 = MFVideoTransferMatrix(7); // FCC Title 47
   MFVideoTransferMatrix_YCgCo = MFVideoTransferMatrix(8); // IEC 23091-2
@@ -551,84 +561,88 @@ const
   MFVideoTransferMatrix_Chroma = MFVideoTransferMatrix(10); // Chromacity-derived, non-constant luminance, IEC 23091-2
   MFVideoTransferMatrix_Chroma_const = MFVideoTransferMatrix(11); // Chromacity-derived, constant luminance, IEC 23091-2
   MFVideoTransferMatrix_ICtCp = MFVideoTransferMatrix(12); // BT.2100 ICtCp
-  MFVideoTransferMatrix_Last       = MFVideoTransferMatrix_BT2020_12 + 1;
+  MFVideoTransferMatrix_Last = MFVideoTransferMatrix_BT2020_12 + 1;
   //MFVideoTransferMatrix_ForceDWORD = FORCEDWORD);
 
 type
   PMFVideoChromaSubsampling = ^MFVideoChromaSubsampling;
   _MFVideoChromaSubsampling = UINT32;
   MFVideoChromaSubsampling = _MFVideoChromaSubsampling;
+
 const
-  MFVideoChromaSubsampling_Unknown                        = MFVideoChromaSubsampling(0);
-  MFVideoChromaSubsampling_ProgressiveChroma              = MFVideoChromaSubsampling($8);
-  MFVideoChromaSubsampling_Horizontally_Cosited           = MFVideoChromaSubsampling($4);
-  MFVideoChromaSubsampling_Vertically_Cosited             = MFVideoChromaSubsampling($2);
+  MFVideoChromaSubsampling_Unknown = MFVideoChromaSubsampling(0);
+  MFVideoChromaSubsampling_ProgressiveChroma = MFVideoChromaSubsampling($8);
+  MFVideoChromaSubsampling_Horizontally_Cosited = MFVideoChromaSubsampling($4);
+  MFVideoChromaSubsampling_Vertically_Cosited = MFVideoChromaSubsampling($2);
   MFVideoChromaSubsampling_Vertically_AlignedChromaPlanes = MFVideoChromaSubsampling($1);
-  MFVideoChromaSubsampling_MPEG2                          = MFVideoChromaSubsampling_Horizontally_Cosited or
-                                                            MFVideoChromaSubsampling_Vertically_AlignedChromaPlanes;
-  MFVideoChromaSubsampling_MPEG1                          = MFVideoChromaSubsampling_Vertically_AlignedChromaPlanes;
-  MFVideoChromaSubsampling_DV_PAL                         = MFVideoChromaSubsampling_Horizontally_Cosited or
-                                                            MFVideoChromaSubsampling_Vertically_Cosited;
-  MFVideoChromaSubsampling_Cosited                        = MFVideoChromaSubsampling_Horizontally_Cosited or
-                                                            MFVideoChromaSubsampling_Vertically_Cosited or
-                                                            MFVideoChromaSubsampling_Vertically_AlignedChromaPlanes;
-  MFVideoChromaSubsampling_Last                           = MFVideoChromaSubsampling_Cosited + 1;
+  MFVideoChromaSubsampling_MPEG2 = MFVideoChromaSubsampling_Horizontally_Cosited or
+    MFVideoChromaSubsampling_Vertically_AlignedChromaPlanes;
+  MFVideoChromaSubsampling_MPEG1 = MFVideoChromaSubsampling_Vertically_AlignedChromaPlanes;
+  MFVideoChromaSubsampling_DV_PAL = MFVideoChromaSubsampling_Horizontally_Cosited or
+    MFVideoChromaSubsampling_Vertically_Cosited;
+  MFVideoChromaSubsampling_Cosited = MFVideoChromaSubsampling_Horizontally_Cosited or
+    MFVideoChromaSubsampling_Vertically_Cosited or
+    MFVideoChromaSubsampling_Vertically_AlignedChromaPlanes;
+  MFVideoChromaSubsampling_Last = MFVideoChromaSubsampling_Cosited + 1;
   //MFVideoChromaSubsampling_ForceDWORD                     = FORCEDWORD);
 
 type
   PMFNominalRange = ^MFNominalRange;
   _MFNominalRange = UINT32;
   MFNominalRange = _MFNominalRange;
+
 const
-  MFNominalRange_Unknown    = MFNominalRange(0);
-  MFNominalRange_Normal     = MFNominalRange(1);
-  MFNominalRange_Wide       = MFNominalRange(2);
-  MFNominalRange_0_255      = MFNominalRange(1);
-  MFNominalRange_16_235     = MFNominalRange(2);
-  MFNominalRange_48_208     = MFNominalRange(3);
-  MFNominalRange_64_127     = MFNominalRange(4);
-  MFNominalRange_Last       = MFNominalRange_64_127 + 1;
+  MFNominalRange_Unknown = MFNominalRange(0);
+  MFNominalRange_Normal = MFNominalRange(1);
+  MFNominalRange_Wide = MFNominalRange(2);
+  MFNominalRange_0_255 = MFNominalRange(1);
+  MFNominalRange_16_235 = MFNominalRange(2);
+  MFNominalRange_48_208 = MFNominalRange(3);
+  MFNominalRange_64_127 = MFNominalRange(4);
+  MFNominalRange_Last = MFNominalRange_64_127 + 1;
   // MFNominalRange_ForceMFNominalRange = FORCEMFNominalRange);
 
 type
   PMFVideoFlags = ^MFVideoFlags;
   _MFVideoFlags = QWORD;
   MFVideoFlags = _MFVideoFlags;
+
 const
   // static flags
-  MFVideoFlag_PAD_TO_Mask           = MFVideoFlags($1 or $2);
-  MFVideoFlag_PAD_TO_None           = MFVideoFlags(0 * $1);
-  MFVideoFlag_PAD_TO_4x3            = MFVideoFlags(1 * $1);
-  MFVideoFlag_PAD_TO_16x9           = MFVideoFlags(2 * $1);
+  MFVideoFlag_PAD_TO_Mask = MFVideoFlags($1 or $2);
+  MFVideoFlag_PAD_TO_None = MFVideoFlags(0 * $1);
+  MFVideoFlag_PAD_TO_4x3 = MFVideoFlags(1 * $1);
+  MFVideoFlag_PAD_TO_16x9 = MFVideoFlags(2 * $1);
 
-  MFVideoFlag_SrcContentHintMask    = MFVideoFlags(($4 or $8) or $10);
-  MFVideoFlag_SrcContentHintNone    = MFVideoFlags(0 * $4);
-  MFVideoFlag_SrcContentHint16x9    = MFVideoFlags(1 * $4);
-  MFVideoFlag_SrcContentHint235_1   = MFVideoFlags(2 * $4);
+  MFVideoFlag_SrcContentHintMask = MFVideoFlags(($4 or $8) or $10);
+  MFVideoFlag_SrcContentHintNone = MFVideoFlags(0 * $4);
+  MFVideoFlag_SrcContentHint16x9 = MFVideoFlags(1 * $4);
+  MFVideoFlag_SrcContentHint235_1 = MFVideoFlags(2 * $4);
 
   // static/dynamic flags
-  MFVideoFlag_AnalogProtected       = MFVideoFlags($20);
-  MFVideoFlag_DigitallyProtected    = MFVideoFlags($40);
+  MFVideoFlag_AnalogProtected = MFVideoFlags($20);
+  MFVideoFlag_DigitallyProtected = MFVideoFlags($40);
 
   // dynamic flags
-  MFVideoFlag_ProgressiveContent    = MFVideoFlags($80);
-  MFVideoFlag_FieldRepeatCountMask  = MFVideoFlags(($100 or $200) or $400);
+  MFVideoFlag_ProgressiveContent = MFVideoFlags($80);
+  MFVideoFlag_FieldRepeatCountMask = MFVideoFlags(($100 or $200) or $400);
   MFVideoFlag_FieldRepeatCountShift = MFVideoFlags(8);
-  MFVideoFlag_ProgressiveSeqReset   = MFVideoFlags($800);
-  MFVideoFlag_PanScanEnabled        = MFVideoFlags($20000);
-  MFVideoFlag_LowerFieldFirst       = MFVideoFlags($40000);
-  MFVideoFlag_BottomUpLinearRep     = MFVideoFlags($80000);
+  MFVideoFlag_ProgressiveSeqReset = MFVideoFlags($800);
+  MFVideoFlag_PanScanEnabled = MFVideoFlags($20000);
+  MFVideoFlag_LowerFieldFirst = MFVideoFlags($40000);
+  MFVideoFlag_BottomUpLinearRep = MFVideoFlags($80000);
 
   // ******************************************
   // static surface creation flags - UNAPPROVED
   // --------------- DO NOT USE ---------------
   // ******************************************
-  MFVideoFlags_DXVASurface          = MFVideoFlags($100000);
-  MFVideoFlags_RenderTargetSurface  = MFVideoFlags($400000);
+  MFVideoFlags_DXVASurface = MFVideoFlags($100000);
+  MFVideoFlags_RenderTargetSurface = MFVideoFlags($400000);
   //  MFVideoFlags_ForceQWORD           = $7FFFFFFF);
 
 type
   PMFRatio = ^MFRatio;
+
   _MFRatio = record
     Numerator: DWORD;
     Denominator: DWORD;
@@ -636,6 +650,7 @@ type
   MFRatio = _MFRatio;
 
   PMFOffset = ^MFOffset;
+
   _MFOffset = record
     fract: WORD;
     value: SHORT;
@@ -643,17 +658,19 @@ type
   MFOffset = _MFOffset;
 
   PMFVideoArea = ^MFVideoArea;
+
   _MFVideoArea = record
     OffsetX: MFOffset;  // Contains the x-coordinate of the upper-left corner of the rectangle.
-                        // This coordinate might have a fractional value.
+    // This coordinate might have a fractional value.
     OffsetY: MFOffset;  // Contains the y-coordinate of the upper-left corner of the rectangle.
-                        // This coordinate might have a fractional value.
+    // This coordinate might have a fractional value.
     Area: SIZE;         // A SIZE structure that contains the width and height of the rectangle.
   end;
   MFVideoArea = _MFVideoArea;
 
 
   PMFVideoInfo = ^MFVideoInfo;
+
   _MFVideoInfo = record
     dwWidth: DWORD;
     dwHeight: DWORD;
@@ -671,11 +688,12 @@ type
     PanScanAperture: MFVideoArea;
     VideoFlags: UInt64;
   end;
-//####old  MFVideoInfo = _MFVideoInfo;
+  //####old  MFVideoInfo = _MFVideoInfo;
   MFVideoInfo = _MFVideoInfo;
 
 
   PMFAYUVSample = ^MFAYUVSample;
+
   __MFAYUVSample = record
     bCrValue: Byte;
     bCbValue: Byte;
@@ -686,6 +704,7 @@ type
 
 
   PMFARGB = ^MFARGB;
+
   _MFARGB = record
     rgbBlue: Byte;
     rgbGreen: Byte;
@@ -696,6 +715,7 @@ type
 
 
   PMFPaletteEntry = ^MFPaletteEntry;
+
   _MFPaletteEntry = record
     ARGB: MFARGB;
     AYCbCr: MFAYUVSample;
@@ -704,6 +724,7 @@ type
 
 
   PMFVideoSurfaceInfo = ^MFVideoSurfaceInfo;
+
   _MFVideoSurfaceInfo = record
     Format: DWORD;
     PaletteEntries: DWORD;
@@ -713,6 +734,7 @@ type
 
 
   PMFVideoCompressedInfo = ^MFVideoCompressedInfo;
+
   _MFVideoCompressedInfo = record
     AvgBitrate: LONGLONG;
     AvgBitErrorRate: LONGLONG;
@@ -724,6 +746,7 @@ type
   // Instead, it is recommended that applications use attributes to describe the video format.
   // See: https://learn.microsoft.com/en-us/windows/win32/api/mfobjects/ns-mfobjects-mfvideoformat
   PMFVIDEOFORMAT = ^MFVIDEOFORMAT;
+
   _MFVIDEOFORMAT = record
     dwSize: DWORD;
     videoInfo: MFVideoInfo;
@@ -735,24 +758,24 @@ type
 
 
   PMFStandardVideoFormat = ^MFStandardVideoFormat;
-  _MFStandardVideoFormat        = (
-    MFStdVideoFormat_reserved     = 0,
-    MFStdVideoFormat_NTSC         = (MFStdVideoFormat_reserved + 1),
-    MFStdVideoFormat_PAL          = (MFStdVideoFormat_NTSC + 1),
-    MFStdVideoFormat_DVD_NTSC     = (MFStdVideoFormat_PAL + 1),
-    MFStdVideoFormat_DVD_PAL      = (MFStdVideoFormat_DVD_NTSC + 1),
-    MFStdVideoFormat_DV_PAL       = (MFStdVideoFormat_DVD_PAL + 1),
-    MFStdVideoFormat_DV_NTSC      = (MFStdVideoFormat_DV_PAL + 1),
-    MFStdVideoFormat_ATSC_SD480i  = (MFStdVideoFormat_DV_NTSC + 1),
-    MFStdVideoFormat_ATSC_HD1080i = (MFStdVideoFormat_ATSC_SD480i + 1),
-    MFStdVideoFormat_ATSC_HD720p  = (MFStdVideoFormat_ATSC_HD1080i + 1));
+  _MFStandardVideoFormat = (
+    MFStdVideoFormat_reserved = 0,
+                            MFStdVideoFormat_NTSC = (MFStdVideoFormat_reserved + 1),
+                            MFStdVideoFormat_PAL = (MFStdVideoFormat_NTSC + 1),
+                            MFStdVideoFormat_DVD_NTSC = (MFStdVideoFormat_PAL + 1),
+                            MFStdVideoFormat_DVD_PAL = (MFStdVideoFormat_DVD_NTSC + 1),
+                            MFStdVideoFormat_DV_PAL = (MFStdVideoFormat_DVD_PAL + 1),
+                            MFStdVideoFormat_DV_NTSC = (MFStdVideoFormat_DV_PAL + 1),
+                            MFStdVideoFormat_ATSC_SD480i = (MFStdVideoFormat_DV_NTSC + 1),
+                            MFStdVideoFormat_ATSC_HD1080i = (MFStdVideoFormat_ATSC_SD480i + 1),
+                            MFStdVideoFormat_ATSC_HD720p = (MFStdVideoFormat_ATSC_HD1080i + 1));
   MFStandardVideoFormat = _MFStandardVideoFormat;
 
 
   PMFBYTESTREAM_SEEK_ORIGIN = ^MFBYTESTREAM_SEEK_ORIGIN;
   _MFBYTESTREAM_SEEK_ORIGIN = (
-    msoBegin                  = 0,
-    msoCurrent                = (msoBegin  + 1));
+    msoBegin = 0,
+                               msoCurrent = (msoBegin + 1));
   MFBYTESTREAM_SEEK_ORIGIN = _MFBYTESTREAM_SEEK_ORIGIN;
 
   //
@@ -764,47 +787,48 @@ type
 
   PMF_FILE_ACCESSMODE = ^MF_FILE_ACCESSMODE;
   __MIDL___MIDL_itf_mfobjects_0000_0017_0001 = (
-    MF_ACCESSMODE_READ      = 1,
-    MF_ACCESSMODE_WRITE     = 2,
-    MF_ACCESSMODE_READWRITE = 3);
+    MF_ACCESSMODE_READ = 1,
+                                                MF_ACCESSMODE_WRITE = 2,
+                                                MF_ACCESSMODE_READWRITE = 3);
   MF_FILE_ACCESSMODE = __MIDL___MIDL_itf_mfobjects_0000_0017_0001;
 
 
   PMF_FILE_OPENMODE = ^MF_FILE_OPENMODE;
   __MIDL___MIDL_itf_mfobjects_0000_0017_0002 = (
-    MF_OPENMODE_FAIL_IF_NOT_EXIST   = 0,
-    MF_OPENMODE_FAIL_IF_EXIST       = 1,
-    MF_OPENMODE_RESET_IF_EXIST      = 2,
-    MF_OPENMODE_APPEND_IF_EXIST     = 3,
-    MF_OPENMODE_DELETE_IF_EXIST     = 4);
+    MF_OPENMODE_FAIL_IF_NOT_EXIST = 0,
+                                                MF_OPENMODE_FAIL_IF_EXIST = 1,
+                                                MF_OPENMODE_RESET_IF_EXIST = 2,
+                                                MF_OPENMODE_APPEND_IF_EXIST = 3,
+                                                MF_OPENMODE_DELETE_IF_EXIST = 4);
   MF_FILE_OPENMODE = __MIDL___MIDL_itf_mfobjects_0000_0017_0002;
 
 type
   PMF_FILE_FLAGS = ^MF_FILE_FLAGS;
   __MIDL___MIDL_itf_mfobjects_0000_0017_0003 = DWord;
-  MF_FILE_FLAGS = __MIDL___MIDL_itf_mfobjects_0000_0017_0003 ;
+  MF_FILE_FLAGS = __MIDL___MIDL_itf_mfobjects_0000_0017_0003;
+
 const
-  MF_FILEFLAGS_NONE                 = MF_FILE_FLAGS(0);
-  MF_FILEFLAGS_NOBUFFERING          = MF_FILE_FLAGS($1);
-  MF_FILEFLAGS_ALLOW_WRITE_SHARING  = MF_FILE_FLAGS($2);
+  MF_FILEFLAGS_NONE = MF_FILE_FLAGS(0);
+  MF_FILEFLAGS_NOBUFFERING = MF_FILE_FLAGS($1);
+  MF_FILEFLAGS_ALLOW_WRITE_SHARING = MF_FILE_FLAGS($2);
 
 
-// >= Windows 7
+  // >= Windows 7
 
 type
   //
   //  List IDs for IMFPluginControl
   //
   PMF_Plugin_Type = ^MF_Plugin_Type;
-  _MF_Plugin_Type            = (
-    MF_Plugin_Type_MFT                 = 0,
-    MF_Plugin_Type_MediaSource         = 1,
-    MF_Plugin_Type_MFT_MatchOutputType = 2,
-    MF_Plugin_Type_Other               = DWORD(-1)
-  );
+  _MF_Plugin_Type = (
+    MF_Plugin_Type_MFT = 0,
+                     MF_Plugin_Type_MediaSource = 1,
+                     MF_Plugin_Type_MFT_MatchOutputType = 2,
+                     MF_Plugin_Type_Other = DWORD(-1)
+    );
   MF_Plugin_Type = _MF_Plugin_Type;
 
-//end  >= Windows 7
+  //end  >= Windows 7
 
 type
 
@@ -823,8 +847,9 @@ type
   // deleted, or retrieved.
   //
   PIMFAttributes = ^IMFAttributes;
+
   IMFAttributes = interface(IUnknown)
-  ['{2cd2d921-c447-44a7-a13c-4adabfc247e3}']
+    ['{2cd2d921-c447-44a7-a13c-4adabfc247e3}']
 
     function GetItem(const guidKey: REFGUID;
                      pValue: PPROPVARIANT): HResult; stdcall;
@@ -868,9 +893,9 @@ type
                          out pcbBlobSize: UINT32): HResult; stdcall;
 
     function GetBlob(const guidKey: TGUID;
-                     {out} pBuf: PUINT8;
-                     {in} cbBufSize: UINT32;
-                     {out} pcbBlobSize: PUINT32 = nil): HResult; stdcall;
+    {out} pBuf: PUINT8;
+    {in} cbBufSize: UINT32;
+    {out} pcbBlobSize: PUINT32 = nil): HResult; stdcall;
     // Usage example:
     // var
     //    pArea: MFVideoArea;
@@ -912,7 +937,7 @@ type
 
     function SetBlob(const guidKey: TGUID;
                      pBuf: PUINT8;  // Pointer to a byte array to associate with this key. The method stores a copy of the array.
-                     cbBufSize: UINT32): HResult; stdcall;
+      cbBufSize: UINT32): HResult; stdcall;
 
     function SetUnknown(const constguidKey: TGUID;
                         pUnk: IUnknown): HResult; stdcall;
@@ -930,6 +955,7 @@ type
     function CopyAllItems(pDest: IMFAttributes): HResult; stdcall;
 
   end;
+
   IID_IMFAttributes = IMFAttributes;
 
 
@@ -941,13 +967,14 @@ type
   // length, and the maximum length of the buffer.
   //
   PIMFMediaBuffer = ^IMFMediaBuffer;
+
   IMFMediaBuffer = interface(IUnknown)
-  ['{045FA593-8799-42b8-BC8D-8968C6453507}']
+    ['{045FA593-8799-42b8-BC8D-8968C6453507}']
 
     function Lock(out ppbBuffer: PByte;      // Receives a pointer to the start of the buffer.
-                  {out} pcbMaxLength: PDWord;     // Receives the maximum amount of data that can be written to the buffer. This parameter can be nil.
-                  {out} pcbCurrentLength: PDWord  // Receives the length of the valid data in the buffer, in bytes. This parameter can be nil.
-                  ): HResult; stdcall;
+    {out} pcbMaxLength: PDWord;     // Receives the maximum amount of data that can be written to the buffer. This parameter can be nil.
+    {out} pcbCurrentLength: PDWord  // Receives the length of the valid data in the buffer, in bytes. This parameter can be nil.
+      ): HResult; stdcall;
 
     function Unlock(): HResult; stdcall;
 
@@ -958,6 +985,7 @@ type
     function GetMaxLength(out pcbMaxLength: DWord): HResult; stdcall;
 
   end;
+
   IID_IMFMediaBuffer = IMFMediaBuffer;
 
 
@@ -974,8 +1002,9 @@ type
   //
   PIMFSample = ^IMFSample;
   PPIMFSample = ^PIMFSample; //a test issue
+
   IMFSample = interface(IMFAttributes)
-  ['{c40a00f2-b93a-4d80-ae8c-5a1c634f58e4}']
+    ['{c40a00f2-b93a-4d80-ae8c-5a1c634f58e4}']
 
     function GetSampleFlags({out} pdwSampleFlags: PDWord): HResult; stdcall;
 
@@ -994,7 +1023,7 @@ type
     function GetBufferCount({out} pdwBufferCount: PDWord): HResult; stdcall;
 
     function GetBufferByIndex(dwIndex: DWord;
-                              {out} ppBuffer: PIMFMediaBuffer): HResult; stdcall;
+    {out} ppBuffer: PIMFMediaBuffer): HResult; stdcall;
 
     function ConvertToContiguousBuffer({out} ppBuffer: PIMFMediaBuffer): HResult; stdcall;
 
@@ -1009,6 +1038,7 @@ type
     function CopyToBuffer(pBuffer: IMFMediaBuffer): HResult; stdcall;
 
   end;
+
   IID_IMFSample = IMFSample;
 
 
@@ -1036,12 +1066,13 @@ type
   // </summary>
   //
   PIMF2DBuffer = ^IMF2DBuffer;
+
   IMF2DBuffer = interface(IUnknown)
-  ['{7DC9D5F9-9ED9-44ec-9BBF-0600BB589FBB}']
+    ['{7DC9D5F9-9ED9-44ec-9BBF-0600BB589FBB}']
 
     function Lock2D(out pbScanline0: PByte; // Receives a pointer to the first byte of the top row of pixels in the image. The top row is defined as the top row when the image is presented to the viewer, and might not be the first row in memory.
-                    out plPitch: LONG       // Receives the surface stride, in bytes.
-                    ): HResult; stdcall;    // The stride might be negative, indicating that the image is oriented from the bottom up in memory.
+      out plPitch: LONG       // Receives the surface stride, in bytes.
+      ): HResult; stdcall;    // The stride might be negative, indicating that the image is oriented from the bottom up in memory.
 
 
     function Unlock2D(): HResult; stdcall;
@@ -1060,6 +1091,7 @@ type
                                 cbSrcBuffer: DWord): HResult; stdcall;
 
   end;
+
   IID_IMF2DBuffer = IMF2DBuffer;
 
 
@@ -1084,6 +1116,7 @@ type
     function Copy2DTo(pDestBuffer: IMF2DBuffer2): HRESULT; stdcall;
 
   end;
+
   IID_IMF2DBuffer2 = IMF2DBuffer2;
 
 
@@ -1105,6 +1138,7 @@ type
     function SetUnknown(const guid: REFIID;
                         pUnkData: IUnknown): HRESULT; stdcall;
   end;
+
   IID_IMFDXGIBuffer = IMFDXGIBuffer;
 
   // Interface IMFDXGIBuffer
@@ -1132,7 +1166,7 @@ type
 
     function SetUnknownForDevice(const pUnkDevice: IUnknown;
                                  const guid: REFIID;
-                                 {_In_opt_} pUnkData: IUnknown {GUID_NULL when not used}): HResult; stdcall;
+    {_In_opt_} pUnkData: IUnknown {GUID_NULL when not used}): HResult; stdcall;
   end;
 
 
@@ -1141,8 +1175,9 @@ type
   // Represents a description of a media format.
   //
   PIMFMediaType = ^IMFMediaType;
+
   IMFMediaType = interface(IMFAttributes)
-  ['{44ae0fa8-ea31-4109-8d2e-4cae4997c555}']
+    ['{44ae0fa8-ea31-4109-8d2e-4cae4997c555}']
     function GetMajorType(out pguidMajorType: TGuid): HResult; stdcall;
 
     function IsCompressedFormat(out pfCompressed: BOOL): HResult; stdcall;
@@ -1156,6 +1191,7 @@ type
     function FreeRepresentation(const guidRepresentation: TGuid;
                                 pvRepresentation: LPVOID): HResult; stdcall;
   end;
+
   IID_IMFMediaType = IMFMediaType;
 
 
@@ -1167,8 +1203,9 @@ type
   //        Instead, use the media type attributes to get the properties of the audio format.
   //
   PIMFAudioMediaType = ^IMFAudioMediaType;
+
   IMFAudioMediaType = interface(IMFMediaType)
-  ['{26a0adc3-ce26-4672-9304-69552edd3faf}']
+    ['{26a0adc3-ce26-4672-9304-69552edd3faf}']
     //
     // This method has been deprecated, and its use should be avoided.
     // There are no guarantees about how long the memory pointed to by the
@@ -1179,6 +1216,7 @@ type
     function GetAudioFormat(): PWAVEFORMATEX; stdcall;
 
   end;
+
   IID_IMFAudioMediaType = IMFAudioMediaType;
 
 
@@ -1190,8 +1228,9 @@ type
   //       video media type through the IMFAttributes interface, which IMFMediaType inherits.
   //
   PIMFVideoMediaType = ^IMFVideoMediaType;
+
   IMFVideoMediaType = interface(IMFMediaType)
-  ['{b99f381f-a8f9-47a2-a5af-ca3a225a3890}']
+    ['{b99f381f-a8f9-47a2-a5af-ca3a225a3890}']
 
     //Returns a pointer to an MFVIDEOFORMAT structure that describes the video format. (Deprecated)
     function GetVideoFormat(): PMFVIDEOFORMAT; stdcall;
@@ -1201,6 +1240,7 @@ type
                                     out ppvRepresentation: LPVOID;
                                     lStride: LONG): HResult; stdcall;
   end;
+
   IID_IMFVideoMediaType = IMFVideoMediaType;
 
 
@@ -1216,8 +1256,9 @@ type
   //     MFASYNCRESULT structure defined in mfapi.h
   // </summary>
   PIMFAsyncResult = ^IMFAsyncResult;
+
   IMFAsyncResult = interface(IUnknown)
-  ['{ac6b7889-0740-4d51-8619-905994a55cc6}']
+    ['{ac6b7889-0740-4d51-8619-905994a55cc6}']
 
     function GetState(out ppunkState: IUnknown): HResult; stdcall;
 
@@ -1230,6 +1271,7 @@ type
     function GetStateNoAddRef(): IUnknown; stdcall;
 
   end;
+
   IID_IMFAsyncResult = IMFAsyncResult;
 
 
@@ -1238,8 +1280,9 @@ type
   // Callback interface to notify the application when an asynchronous method completes.
   //
   PIMFAsyncCallback = ^IMFAsyncCallback;
+
   IMFAsyncCallback = interface(IUnknown)
-  ['{a27003cf-2354-4f2a-8d6a-ab7cff15437e}']
+    ['{a27003cf-2354-4f2a-8d6a-ab7cff15437e}']
 
     function GetParameters(out pdwFlags: DWord;
                            out pdwQueue: DWord): HResult; stdcall;
@@ -1247,6 +1290,7 @@ type
     function Invoke(pAsyncResult: IMFAsyncResult): HResult; stdcall;
 
   end;
+
   IID_IMFAsyncCallback = IMFAsyncCallback;
 
 
@@ -1258,8 +1302,9 @@ type
   // IMFMediaEventGenerator.GetEvent on the event generator.
   //
   PIMFMediaEvent = ^IMFMediaEvent;
+
   IMFMediaEvent = interface(IMFAttributes)
-  ['{DF598932-F10C-4E39-BBA2-C308F101DAA3}']
+    ['{DF598932-F10C-4E39-BBA2-C308F101DAA3}']
 
     function GetType(out pmet: MediaEventType): HResult; stdcall;
 
@@ -1270,6 +1315,7 @@ type
     function GetValue(out pvValue: PROPVARIANT): HResult; stdcall;
 
   end;
+
   IID_IMFMediaEvent = IMFMediaEvent;
 
 
@@ -1282,8 +1328,9 @@ type
   //       The asynchronous methods are BeginGetEvent and EndGetEvent.
   //
   PIMFMediaEventGenerator = ^IMFMediaEventGenerator;
+
   IMFMediaEventGenerator = interface(IUnknown)
-  ['{2CD0BD52-BCD5-4B89-B62C-EADC0C031E7D}']
+    ['{2CD0BD52-BCD5-4B89-B62C-EADC0C031E7D}']
 
     function GetEvent(dwFlags: DWord;
                       out ppEvent: IMFMediaEvent): HResult; stdcall;
@@ -1299,6 +1346,7 @@ type
                         hrStatus: HRESULT;
                         pvValue: PROPVARIANT): HResult; stdcall;
   end;
+
   IID_IMFMediaEventGenerator = IMFMediaEventGenerator;
 
 
@@ -1310,12 +1358,14 @@ type
   //     Media Foundation applications need not implement this interface.
   // </summary>
   PIMFRemoteAsyncCallback = ^IMFRemoteAsyncCallback;
+
   IMFRemoteAsyncCallback = interface(IUnknown)
-  ['{a27003d0-2354-4f2a-8d6a-ab7cff15437e}']
+    ['{a27003d0-2354-4f2a-8d6a-ab7cff15437e}']
 
     function Invoke(const hr: HRESULT;
                     pRemoteResult: IUnknown): HResult; stdcall;
   end;
+
   IID_IMFRemoteAsyncCallback = IMFRemoteAsyncCallback;
 
 
@@ -1326,8 +1376,9 @@ type
   // The IMFByteStream interface supports the typical stream operations, such as reading, writing, and seeking.
   //
   PIMFByteStream = ^IMFByteStream;
+
   IMFByteStream = interface(IUnknown)
-  ['{ad4c1b00-4bf7-422f-9175-756693d9130d}']
+    ['{ad4c1b00-4bf7-422f-9175-756693d9130d}']
 
     function GetCapabilities(out pdwCapabilities: DWord): HResult; stdcall;
 
@@ -1375,6 +1426,7 @@ type
     function Close(): HResult; stdcall;
 
   end;
+
   IID_IMFByteStream = IMFByteStream;
 
 
@@ -1384,8 +1436,9 @@ type
   // NOTE: To create an empty collection object, call MFCreateCollection.
   //
   PIMFCollection = ^IMFCollection;
+
   IMFCollection = interface(IUnknown)
-  ['{5BC8A76B-869A-46a3-9B03-FA218A66AEBE}']
+    ['{5BC8A76B-869A-46a3-9B03-FA218A66AEBE}']
 
     function GetElementCount(out pcElements: DWord): HResult; stdcall;
 
@@ -1403,6 +1456,7 @@ type
     function RemoveAllElements(): HResult; stdcall;
 
   end;
+
   IID_IMFCollection = IMFCollection;
 
 
@@ -1417,8 +1471,9 @@ type
   // To create the event queue object, call MFCreateEventQueue.
   //
   PIMFMediaEventQueue = ^IMFMediaEventQueue;
+
   IMFMediaEventQueue = interface(IUnknown)
-  ['{36f846fc-2256-48b6-b58e-e2b638316581}']
+    ['{36f846fc-2256-48b6-b58e-e2b638316581}']
     // <summary>
     //     Media Event Generator components that use the Media Event Queue
     //     object should just forward IMFMediaEventGenerator::GetEvent
@@ -1510,6 +1565,7 @@ type
     function Shutdown(): HResult; stdcall;
 
   end;
+
   IID_IMFMediaEventQueue = IMFMediaEventQueue;
 
 
@@ -1522,8 +1578,9 @@ type
   // ShutdownObject() or DetachObject() is called, then it can create a new instance.
   //
   PIMFActivate = ^IMFActivate;
+
   IMFActivate = interface(IMFAttributes)
-  ['{7FEE9E9A-4A89-47a6-899C-B6A53A70FB67}']
+    ['{7FEE9E9A-4A89-47a6-899C-B6A53A70FB67}']
 
     // <summary>
     //     Creates the object that this activate represents.
@@ -1553,11 +1610,12 @@ type
     // </summary>
     function DetachObject(): HResult; stdcall;
 
-   end;
+  end;
+
   IID_IMFActivate = IMFActivate;
 
 
-// >= Windows 8
+  // >= Windows 8
 
   // Interface IMFPluginControl
   // ==========================
@@ -1565,8 +1623,9 @@ type
   // To get a pointer to this interface, call MFGetPluginControl.
   //
   PIMFPluginControl = ^IMFPluginControl;
+
   IMFPluginControl = interface(IUnknown)
-  ['{5c6c44bf-1db6-435b-9249-e8cd10fdec96}']
+    ['{5c6c44bf-1db6-435b-9249-e8cd10fdec96}']
 
     function GetPreferredClsid(pluginType: DWord;
                                selector: LPCWSTR;
@@ -1592,7 +1651,8 @@ type
                          const clsid: REFCLSID;
                          disabled: BOOL): HResult; stdcall;
   end;
- IID_IMFPluginControl = IMFPluginControl;
+
+  IID_IMFPluginControl = IMFPluginControl;
   // end >= Windows 8
 
 
@@ -1600,24 +1660,26 @@ type
   // ===============
   //
   PMfPluginControlPolicy = ^MF_PLUGIN_CONTROL_POLICY;
-  MF_PLUGIN_CONTROL_POLICY                            = (
-    MF_PLUGIN_CONTROL_POLICY_USE_ALL_PLUGINS          = 0,
-    MF_PLUGIN_CONTROL_POLICY_USE_APPROVED_PLUGINS     = 1,
-    MF_PLUGIN_CONTROL_POLICY_USE_WEB_PLUGINS          = 2,
-    MF_PLUGIN_CONTROL_POLICY_USE_WEB_PLUGINS_EDGEMODE = 3
-  );
+  MF_PLUGIN_CONTROL_POLICY = (
+    MF_PLUGIN_CONTROL_POLICY_USE_ALL_PLUGINS = 0,
+                              MF_PLUGIN_CONTROL_POLICY_USE_APPROVED_PLUGINS = 1,
+                              MF_PLUGIN_CONTROL_POLICY_USE_WEB_PLUGINS = 2,
+                              MF_PLUGIN_CONTROL_POLICY_USE_WEB_PLUGINS_EDGEMODE = 3
+    );
 
 
 
   // Interface IMFPluginControl2
   // ===========================
   PIMFPluginControl2 = ^IMFPluginControl2;
+
   IMFPluginControl2 = interface(IMFPluginControl)
-  ['{C6982083-3DDC-45CB-AF5E-0F7A8CE4DE77}']
+    ['{C6982083-3DDC-45CB-AF5E-0F7A8CE4DE77}']
 
     function SetPolicy(policy: MF_PLUGIN_CONTROL_POLICY): HResult; stdcall;
 
   end;
+
   IID_IMFPluginControl2 = IMFPluginControl2;
 
 
@@ -1626,8 +1688,9 @@ type
   // ==============================
   //
   PIMFDXGIDeviceManager = ^IMFDXGIDeviceManager;
+
   IMFDXGIDeviceManager = interface(IUnknown)
-  ['{eb533d5d-2db6-40f8-97a9-494692014f07}']
+    ['{eb533d5d-2db6-40f8-97a9-494692014f07}']
 
     function CloseDeviceHandle(hDevice: THandle): HResult; stdcall;
 
@@ -1652,31 +1715,33 @@ type
 
 
   end;
+
   IID_IMFDXGIDeviceManager = IMFDXGIDeviceManager;
 
 
   PMF_DXGI_DEVICE_MANAGER_MODE = ^MF_DXGI_DEVICE_MANAGER_MODE;
-  MF_DXGI_DEVICE_MANAGER_MODE           = (
+  MF_DXGI_DEVICE_MANAGER_MODE = (
     MF_DXGI_DEVICE_MANAGER_MODE_INVALID = 0,
-    MF_DXGI_DEVICE_MANAGER_MODE_D3D11,
-    MF_DXGI_DEVICE_MANAGER_MODE_D3D12
-  );
+                                 MF_DXGI_DEVICE_MANAGER_MODE_D3D11,
+                                 MF_DXGI_DEVICE_MANAGER_MODE_D3D12
+    );
 
   PMfStreamState = ^MF_STREAM_STATE;
-  _MF_STREAM_STATE          = (
+  _MF_STREAM_STATE = (
     MF_STREAM_STATE_STOPPED = 0,
-    MF_STREAM_STATE_PAUSED  = 1,
-    MF_STREAM_STATE_RUNNING = 2
-  );
+                      MF_STREAM_STATE_PAUSED = 1,
+                      MF_STREAM_STATE_RUNNING = 2
+    );
   MF_STREAM_STATE = _MF_STREAM_STATE;
 
 
   // Interface IMFMuxStreamAttributesManager
   // =======================================
   //
-  PIMFMuxStreamAttributesManager =^IMFMuxStreamAttributesManager;
+  PIMFMuxStreamAttributesManager = ^IMFMuxStreamAttributesManager;
+
   IMFMuxStreamAttributesManager = interface(IUnknown)
-  ['{CE8BD576-E440-43B3-BE34-1E53F565F7E8}']
+    ['{CE8BD576-E440-43B3-BE34-1E53F565F7E8}']
 
     function GetStreamCount(out pdwMuxStreamCount: DWORD): HResult; stdcall;
 
@@ -1684,15 +1749,17 @@ type
                            out ppStreamAttributes: IMFAttributes): HResult; stdcall;
 
   end;
+
   IID_IMFMuxStreamAttributesManager = IMFMuxStreamAttributesManager;
 
 
   // Interface IMFMuxStreamMediaTypeManager
   // ======================================
   //
-  PIMFMuxStreamMediaTypeManager =^IMFMuxStreamMediaTypeManager;
+  PIMFMuxStreamMediaTypeManager = ^IMFMuxStreamMediaTypeManager;
+
   IMFMuxStreamMediaTypeManager = interface(IUnknown)
-  ['{505A2C72-42F7-4690-AEAB-8F513D0FFDB8}']
+    ['{505A2C72-42F7-4690-AEAB-8F513D0FFDB8}']
 
     function GetStreamCount(out pdwMuxStreamCount: DWORD): HResult; stdcall;
 
@@ -1709,15 +1776,17 @@ type
                                     out pullStreamMask: ULONGLONG): HResult; stdcall;
 
   end;
+
   IID_IMFMuxStreamMediaTypeManager = IMFMuxStreamMediaTypeManager;
 
 
   // Interface IMFMuxStreamSampleManager
   // ===================================
   //
-  PIMFMuxStreamSampleManager =^IMFMuxStreamSampleManager;
+  PIMFMuxStreamSampleManager = ^IMFMuxStreamSampleManager;
+
   IMFMuxStreamSampleManager = interface(IUnknown)
-  ['{74ABBC19-B1CC-4E41-BB8B-9D9B86A8F6CA}']
+    ['{74ABBC19-B1CC-4E41-BB8B-9D9B86A8F6CA}']
 
     function GetStreamCount(out pdwMuxStreamCount: DWORD): HResult; stdcall;
 
@@ -1727,6 +1796,7 @@ type
     function GetStreamConfiguration(): ULONGLONG; stdcall;
 
   end;
+
   IID_IMFMuxStreamSampleManager = IMFMuxStreamSampleManager;
 
 
@@ -1736,7 +1806,7 @@ type
   // =========================
   //
   IMFSecureBuffer = interface(IUnknown)
-  ['{C1209904-E584-4752-A2D6-7F21693F8B21}']
+    ['{C1209904-E584-4752-A2D6-7F21693F8B21}']
     // <summary>
     // Get the identifier for a secure buffer. This GUID can be used by
     // a device's trustlet to open a secure section containing the buffer.
@@ -1744,22 +1814,24 @@ type
     function GetIdentifier(out pGuidIdentifier: TGUID): HResult; stdcall;
 
   end;
+
   IID_IMFSecureBuffer = IMFSecureBuffer;
 
 
   IMFByteStreamProxyClassFactory = interface(IUnknown)
-  ['{a6b43f84-5c0a-42e8-a44d-b1857a76992f}']
+    ['{a6b43f84-5c0a-42e8-a44d-b1857a76992f}']
     function CreateByteStreamProxy(pByteStream: IMFByteStream;
                                    pAttributes: IMFAttributes;
                                    const riid: REFIID;
                                    out ppvObject: LPVOID): HResult; stdcall;
 
   end;
+
   IID_IMFByteStreamProxyClassFactory = IMFByteStreamProxyClassFactory;
 
 
   IMFSampleOutputStream = interface(IUnknown)
-  ['{8feed468-6f7e-440d-869a-49bdd283ad0d}']
+    ['{8feed468-6f7e-440d-869a-49bdd283ad0d}']
     /// <summary>
     ///     Begin async write operation.
     /// </summary>
@@ -1775,23 +1847,24 @@ type
     function Close(): HResult; stdcall;
 
   end;
+
   IID_IMFSampleOutputStream = IMFSampleOutputStream;
 
 
 
   // functions /////////////////////////////////////////////////////////////////
 
-  function MFSerializeAttributesToStream(pAttr: IMFAttributes;
-                                         dwOptions: DWord;  // Bitwise OR of zero or more flags from the MF_ATTRIBUTE_SERIALIZE_OPTIONS enumeration.
-                                         pStm: IStream): HResult; stdcall;
+function MFSerializeAttributesToStream(pAttr: IMFAttributes;
+                                       dwOptions: DWord;  // Bitwise OR of zero or more flags from the MF_ATTRIBUTE_SERIALIZE_OPTIONS enumeration.
+  pStm: IStream): HResult; stdcall;
 
-  function MFDeserializeAttributesFromStream(pAttr: IMFAttributes;
-                                             dwOptions: DWord;  // Bitwise OR of zero or more flags from the MF_ATTRIBUTE_SERIALIZE_OPTIONS enumeration.
-                                             pStm: IStream): HResult; stdcall;
+function MFDeserializeAttributesFromStream(pAttr: IMFAttributes;
+                                           dwOptions: DWord;  // Bitwise OR of zero or more flags from the MF_ATTRIBUTE_SERIALIZE_OPTIONS enumeration.
+  pStm: IStream): HResult; stdcall;
 
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
 type
 
@@ -1829,12 +1902,13 @@ type
 
 
 implementation
+
 const
   MfObjectsLib = 'Mfplat.dll';
 
-  function MFSerializeAttributesToStream; external MfObjectsLib name 'MFSerializeAttributesToStream' ;
-  function MFDeserializeAttributesFromStream; external MfObjectsLib name 'MFDeserializeAttributesFromStream' ;
+function MFSerializeAttributesToStream; external MfObjectsLib name 'MFSerializeAttributesToStream';
+function MFDeserializeAttributesFromStream; external MfObjectsLib name 'MFDeserializeAttributesFromStream';
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

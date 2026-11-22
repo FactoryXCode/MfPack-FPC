@@ -64,11 +64,12 @@ unit HEOSTransport;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   Classes,
   SysUtils,
   {FactoryX API}
@@ -78,6 +79,7 @@ LMessages,
 type
 
   TDenonRequest = class(TThread)
+
   private
 
     FHost: string;
@@ -91,7 +93,7 @@ type
     FStopOnToneReply: Boolean;
 
     procedure RunCommand(Client: TAvrClient;
-                             const Command: TAvrCommand);
+                         const Command: TAvrCommand);
 
   protected
 
@@ -100,12 +102,12 @@ type
   public
 
     constructor Create(const Host: string;
-                           const Commands: array of string;
-                           Port: Integer = 23;
-                           StopOnVolumeReply: Boolean = False;
-                           StopOnChannelReply: Boolean = False;
-                           StopOnZoneReply: Boolean = False;
-                           StopOnToneReply: Boolean = False);
+                       const Commands: array of string;
+                       Port: Integer = 23;
+                       StopOnVolumeReply: Boolean = False;
+                       StopOnChannelReply: Boolean = False;
+                       StopOnZoneReply: Boolean = False;
+                       StopOnToneReply: Boolean = False);
     destructor Destroy(); override;
 
     property Lines: TStringList read FLines;
@@ -119,6 +121,7 @@ uses
   {System}
   Rdj.Diagnostics,
   StrUtils;
+
 
 function ApiCommand(const Text: string): TAvrCommand;
 var
@@ -150,9 +153,12 @@ begin
   if (Text = 'SI?') then
     Exit(TAvrCommands.GetInput());
   if StartsStr('SI', Text) then
-    Exit(TAvrCommands.SetInput(Copy(Text, 3, MaxInt)));
+    Exit(TAvrCommands.SetInput(Copy(Text,
+                                    3,
+                                    MaxInt)));
   if (Text = 'CV?') then
-    Exit(TAvrCommand.Raw(Text, 'CVEND'));
+    Exit(TAvrCommand.Raw(Text,
+                         'CVEND'));
   if StartsStr('CVFL ', Text) and TryAvrLevel(Copy(Text, 6, MaxInt), Level) then
     Exit(TAvrCommands.SetFrontLeft(Level - 50));
   if StartsStr('CVFR ', Text) and TryAvrLevel(Copy(Text, 6, MaxInt), Level) then
@@ -179,12 +185,12 @@ end;
 
 
 constructor TDenonRequest.Create(const Host: string;
-                                     const Commands: array of string;
-                                     Port: Integer;
-                                     StopOnVolumeReply: Boolean;
-                                     StopOnChannelReply: Boolean;
-                                     StopOnZoneReply: Boolean;
-                                     StopOnToneReply: Boolean);
+                                 const Commands: array of string;
+                                 Port: Integer;
+                                 StopOnVolumeReply: Boolean;
+                                 StopOnChannelReply: Boolean;
+                                 StopOnZoneReply: Boolean;
+                                 StopOnToneReply: Boolean);
 var
   I: Integer;
 
@@ -206,6 +212,7 @@ end;
 
 
 destructor TDenonRequest.Destroy();
+
 begin
 
   FCommands.Free;
@@ -215,7 +222,7 @@ end;
 
 
 procedure TDenonRequest.RunCommand(Client: TAvrClient;
-                                       const Command: TAvrCommand);
+                                   const Command: TAvrCommand);
 var
   Id: UInt64;
   Message: TAvrMessage;
@@ -241,7 +248,7 @@ begin
       try
 
         if (Message.Value.RawText <> '') and
-           ((FLines.Count = 0) or (FLines[FLines.Count - 1] <> Message.Value.RawText)) then
+          ((FLines.Count = 0) or (FLines[FLines.Count - 1] <> Message.Value.RawText)) then
           FLines.Add(Message.Value.RawText);
 
         if (Message.RequestId <> Id) then
@@ -252,7 +259,7 @@ begin
 
             if Message.DeliveryUnknown then
               raise EInvalidOperation.Create(Message.ErrorText +
-                                               ' Delivery is uncertain; command was not replayed.');
+                ' Delivery is uncertain; command was not replayed.');
             raise EInvalidOperation.Create(Message.ErrorText);
           end;
 
@@ -285,14 +292,16 @@ begin
       if (FPort < 1) or (FPort > 65535) then
         raise EArgumentOutOfRangeException.Create('Invalid AVR port.');
 
-      Client := TAvrClient.Create(FHost, FPort);
+      Client := TAvrClient.Create(FHost,
+                                  FPort);
       // Keep commands serial: a failed write must not send the next command.
       for Command in FCommands do
         begin
 
           if Terminated then
             Exit;
-          RunCommand(Client, ApiCommand(Command));
+          RunCommand(Client,
+                     ApiCommand(Command));
         end;
 
       // Capture trailing notifications, including MVMAX after an MV reply.
@@ -309,7 +318,7 @@ begin
 
           try
             if (Message.Value.RawText <> '') and
-               ((FLines.Count = 0) or (FLines[FLines.Count - 1] <> Message.Value.RawText)) then
+              ((FLines.Count = 0) or (FLines[FLines.Count - 1] <> Message.Value.RawText)) then
               FLines.Add(Message.Value.RawText);
           finally
             Message.Free;
@@ -318,7 +327,8 @@ begin
 
       Received := [];
       for Line in FLines do
-        Include(Received, ParseAvrValue(Line).Kind);
+        Include(Received,
+                ParseAvrValue(Line).Kind);
 
       if FStopOnVolumeReply and not (avVolume in Received) then
         raise EInvalidOperation.Create('Receiver did not confirm a volume value.');
@@ -327,7 +337,7 @@ begin
       if FStopOnZoneReply and not ([avMainZonePower, avZone2Power] <= Received) then
         raise EInvalidOperation.Create('Receiver did not confirm both zone power states.');
       if FStopOnToneReply and not
-         ([avToneControl, avBass, avTreble, avSurroundMode, avDynamicEq] <= Received) then
+        ([avToneControl, avBass, avTreble, avSurroundMode, avDynamicEq] <= Received) then
         raise EInvalidOperation.Create('Receiver did not confirm tone settings. Check the sound mode, Dynamic EQ and audio signal.');
     except
       on E: Exception do

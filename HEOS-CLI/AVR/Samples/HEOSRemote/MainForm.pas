@@ -63,12 +63,13 @@ unit MainForm;
 
 interface
 
-uses MfCastText,
-Rdj.Platform,
-LMessages,
+uses
+  MfCastText,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   Classes,
   SysUtils,
   Generics.Collections,
@@ -101,7 +102,6 @@ LMessages,
   HEOSButton,
   HEOSTrackBar;
 
-
 const
   // Data storage folder.
   HEOS_REMOTE_DATADIR = 'FactoryX\HEOSRemote\';
@@ -114,6 +114,7 @@ const
 type
 
   TReceiverAvailabilityProbe = class(TThread)
+
   private
 
     FHost: string;
@@ -136,6 +137,7 @@ type
 
 
   THEOSTrackInfo = class(TThread)
+
   private
     FFileName: string;
     FDurationMs: Int64;
@@ -248,9 +250,15 @@ type
     lblStreamInfo: TLabel;
 
     procedure FormCreate(Sender: TObject);
-    procedure pbProgressMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure pbProgressMouseUp(Sender: TObject; Button: TMouseButton;
-                                Shift: TShiftState; X, Y: Integer);
+    procedure pbProgressMouseMove(Sender: TObject;
+                                  Shift: TShiftState;
+                                  X,
+                                  Y: Integer);
+    procedure pbProgressMouseUp(Sender: TObject;
+                                Button: TMouseButton;
+                                Shift: TShiftState;
+                                X,
+                                Y: Integer);
     procedure SeekHintTick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ActionClick(Sender: TObject);
@@ -267,7 +275,8 @@ type
     procedure HEOSDeviceChange(Sender: TObject);
     procedure PlaylistClick(Sender: TObject);
     procedure TrackClick(Sender: TObject);
-    procedure MainCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure MainCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure btnStreamWinAudioClick(Sender: TObject);
     procedure StreamClick(Sender: TObject);
     procedure PlayPauseClick(Sender: TObject);
@@ -282,14 +291,23 @@ type
     procedure ToneClick(Sender: TObject);
     procedure ToneChange(Sender: TObject);
     procedure ToneDblClick(Sender: TObject);
-    procedure Panel3MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure imgLogoMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure Panel3MouseDown(Sender: TObject;
+                              Button: TMouseButton;
+                              Shift: TShiftState;
+                              X,
+                              Y: Integer);
+    procedure imgLogoMouseDown(Sender: TObject;
+                               Button: TMouseButton;
+                               Shift: TShiftState;
+                               X,
+                               Y: Integer);
     procedure btnCloseClick(Sender: TObject);
     procedure btnMinimizeClick(Sender: TObject);
-    procedure lblStreamInfoMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure lblStreamInfoMouseDown(Sender: TObject;
+                                     Button: TMouseButton;
+                                     Shift: TShiftState;
+                                     X,
+                                     Y: Integer);
 
   private
     FReceiverSettingsFile: string;
@@ -322,7 +340,7 @@ type
     procedure ContinuePendingRadio();
     function NewDiscovery(): THEOSDiscovery; virtual;
 
-    procedure ApplyDiscoveredDevices(const Devices: TArray<THEOSDevice>;
+    procedure ApplyDiscoveredDevices(const Devices: TArray < THEOSDevice > ;
                                      const ErrorText: string);
 
   private
@@ -331,8 +349,8 @@ type
     FRadioStartedTick: UInt64;
 
     procedure BeforeRadioPlay(Sender: TObject;
-                                const Command: THeosCommand;
-                                const StationName: string);
+                              const Command: THeosCommand;
+                              const StationName: string);
     procedure RadioPlayback(Sender: TObject;
                             const StationName: string;
                             Playing: Boolean);
@@ -417,10 +435,10 @@ type
     FProgressTick: UInt64;
     FProgressSequence: Cardinal;
     FClockRunning: Boolean;
-    FTrackInfoThreads: TList<THEOSTrackInfo>;
-    FProgressMonitors: TList<THeosProgressMonitor>;
+    FTrackInfoThreads: TList < THEOSTrackInfo > ;
+    FProgressMonitors: TList < THeosProgressMonitor > ;
     FProgressMonitor: THeosProgressMonitor;
-    FStreamActions: TList<THEOSStreamAction>;
+    FStreamActions: TList < THEOSStreamAction > ;
     FDesiredPlaybackState: string;
     FDesiredPlaybackFile: string;
     FProcessingStreamActions: Boolean;
@@ -428,7 +446,7 @@ type
     FCloseStopSent: Boolean;
     FCloseReady: Boolean;
     FDiscovery: THEOSDiscovery;
-    FDevices: TArray<THEOSDevice>;
+    FDevices: TArray < THEOSDevice > ;
     FPlaylistEditor: THEOSPlaylistEditor;
     FPlaylistDb: TRDJPlaylistDb;
     FPlaylistManager: TRDJPlaylistManager;
@@ -469,7 +487,7 @@ type
     procedure StartProgressMonitor();
 
     procedure BeginReceiverCheck(ReadAll: Boolean = False;
-                                  Discover: Boolean = True);
+                                 Discover: Boolean = True);
 
     procedure BeginDiscovery(Reconnect: Boolean;
                              ReadAll: Boolean);
@@ -519,7 +537,7 @@ type
 
   end;
 
-  function GetTickCount64(): UInt64; stdcall;
+function GetTickCount64(): UInt64; stdcall;
 
 var
   HEOSForm: THEOSForm;
@@ -553,7 +571,6 @@ uses
   RDJ.TagReader,
   LWFileBrowserExDlg;
 
-
 const
 
   Kernel32Lib = 'kernel32.dll';
@@ -569,6 +586,7 @@ const
 
 
 constructor TReceiverAvailabilityProbe.Create(const Host: string);
+
 begin
 
   inherited Create(True);
@@ -598,6 +616,7 @@ end;
 
 
 constructor THEOSTrackInfo.Create(const FileName: string);
+
 begin
 
   inherited Create(True);
@@ -614,12 +633,12 @@ var
 begin
 
   if Failed(CoInitializeEx(nil,
-                           COINIT_MULTITHREADED)) then
+    COINIT_MULTITHREADED)) then
     Exit;
 
   try
     if Failed(MFStartup(MF_VERSION,
-                        MFSTARTUP_FULL)) then
+      MFSTARTUP_FULL)) then
       Exit;
 
     try
@@ -627,7 +646,7 @@ begin
         Track := RDJEmptyTrack;
 
         if not Terminated and ReadDurationMf(FFileName,
-                                             Track) then
+          Track) then
           FDurationMs := Track.DurationMs;
 
       except
@@ -678,7 +697,7 @@ begin
   lblStreamInfo.Caption := TFileNameParser.BuildIceCastSongText(Artist,
                                                                 Title,
                                                                 ChangeFileExt(ExtractFileName(FileName),
-                                                                ''));
+                                                                              ''));
   lblStreamInfo.Hint := FileName;
 
   if Changed then
@@ -702,6 +721,7 @@ end;
 
 
 procedure THEOSForm.StartProgressMonitor();
+
 begin
 
   if Assigned(FProgressMonitor) then
@@ -714,8 +734,9 @@ begin
 end;
 
 
-function THEOSForm.ProgressPositionAt(X, Y: Integer;
-                                        out PositionMs: Int64): Boolean;
+function THEOSForm.ProgressPositionAt(X,
+                                      Y: Integer;
+                                      out PositionMs: Int64): Boolean;
 var
   DurationMs: Int64;
   Coordinate: Integer;
@@ -767,19 +788,22 @@ end;
 
 
 function THEOSForm.CanSeekPlayback(): Boolean;
+
 begin
 
   Result := Assigned(FAudioServer) and not Assigned(FLoopback) and
-            (FPlaybackFile <> '') and
-            SameFileName(FSelectedFile, FPlaybackFile) and
-            ((FPlaybackState = 'play') or (FPlaybackState = 'pause')) and
-            (RequestedPlaybackState() <> 'stop');
+    (FPlaybackFile <> '') and
+    SameFileName(FSelectedFile,
+                 FPlaybackFile) and
+    ((FPlaybackState = 'play') or (FPlaybackState = 'pause')) and
+    (RequestedPlaybackState() <> 'stop');
 end;
 
 
 procedure THEOSForm.pbProgressMouseMove(Sender: TObject;
-                                         Shift: TShiftState;
-                                         X, Y: Integer);
+                                        Shift: TShiftState;
+                                        X,
+                                        Y: Integer);
 var
   PositionMs: Int64;
   P: TPoint;
@@ -794,7 +818,8 @@ begin
     end;
 
   lblSeekTime.Caption := ' ' + PlaybackTimeText(PositionMs) + ' ';
-  P := lblSeekTime.Parent.ScreenToClient(pbProgress.ClientToScreen(Types.Point(X, pbProgress.Height)));
+  P := lblSeekTime.Parent.ScreenToClient(pbProgress.ClientToScreen(Types.Point(X,
+                                                                               pbProgress.Height)));
   P.X := P.X - lblSeekTime.Width div 2;
 
   if (P.X > lblSeekTime.Parent.ClientWidth - lblSeekTime.Width - 2) then
@@ -819,8 +844,8 @@ begin
   P := pbProgress.ScreenToClient(Mouse.CursorPos);
 
   if not pbProgress.Showing or (P.X < 0) or (P.Y < 0) or
-     (P.X >= pbProgress.ClientWidth) or (P.Y >= pbProgress.ClientHeight) or
-     (WindowState = wsMinimized) then
+    (P.X >= pbProgress.ClientWidth) or (P.Y >= pbProgress.ClientHeight) or
+    (WindowState = wsMinimized) then
     begin
       lblSeekTime.Visible := False;
       SeekHintTimer.Enabled := False;
@@ -829,9 +854,10 @@ end;
 
 
 procedure THEOSForm.pbProgressMouseUp(Sender: TObject;
-                                       Button: TMouseButton;
-                                       Shift: TShiftState;
-                                       X, Y: Integer);
+                                      Button: TMouseButton;
+                                      Shift: TShiftState;
+                                      X,
+                                      Y: Integer);
 var
   PositionMs: Int64;
   Command: THEOSStreamAction;
@@ -843,8 +869,8 @@ begin
     Exit;
 
   if not ProgressPositionAt(X,
-                            Y,
-                            PositionMs) then
+    Y,
+    PositionMs) then
     Exit;
 
   Command := Default(THEOSStreamAction);
@@ -867,6 +893,7 @@ end;
 procedure THEOSForm.UpdateProgressDisplay();
 var
   DurationMs: Int64;
+
 begin
 
   if not Assigned(pbProgress) or not Assigned(lblDuration) or not Assigned(lblPlayed) then
@@ -887,14 +914,12 @@ begin
 
   if Assigned(FLoopback) then
     lblDuration.Caption := 'Duration: Live'
+  else if (DurationMs > 0) then
+    lblDuration.Caption := 'Duration: ' + PlaybackTimeText(DurationMs)
+  else if (FSelectedFile <> '') then
+    lblDuration.Caption := 'Duration: --:--:--'
   else
-    if (DurationMs > 0) then
-      lblDuration.Caption := 'Duration: ' + PlaybackTimeText(DurationMs)
-    else
-      if (FSelectedFile <> '') then
-        lblDuration.Caption := 'Duration: --:--:--'
-      else
-        lblDuration.Caption := 'Duration: 00:00:00';
+    lblDuration.Caption := 'Duration: 00:00:00';
 
   if not Assigned(FLoopback) and (DurationMs > 0) and (FPlayedMs > DurationMs) then
     FPlayedMs := DurationMs;
@@ -935,7 +960,7 @@ begin
         Continue;
 
       if SameFileName(Info.FileName,
-                      FSelectedFile) then
+        FSelectedFile) then
         FTrackDurationMs := Info.DurationMs;
 
       FTrackInfoThreads.Delete(I);
@@ -985,21 +1010,22 @@ begin
     end;
 
   FClockRunning := CurrentSource and
-                   (FPlaybackState = 'play') and
-                   Assigned(FAudioServer) and
-                   (FAudioServer.Requests > 0);
+    (FPlaybackState = 'play') and
+    Assigned(FAudioServer) and
+    (FAudioServer.Requests > 0);
 
   UpdateProgressDisplay();
 end;
 
 
 procedure THEOSForm.FormCreate(Sender: TObject);
+
 begin
 
   FQueue := TStringList.Create;
-  FStreamActions := TList<THEOSStreamAction>.Create;
-  FTrackInfoThreads := TList<THEOSTrackInfo>.Create;
-  FProgressMonitors := TList<THEOSProgressMonitor>.Create;
+  FStreamActions := (TList < THEOSStreamAction > .Create);
+  FTrackInfoThreads := (TList < THEOSTrackInfo > .Create);
+  FProgressMonitors := (TList < THEOSProgressMonitor > .Create);
   FProgressTick := GetTickCount64;
   pbProgress.Minimum := 0;
   pbProgress.Maximum := 1000;
@@ -1038,6 +1064,7 @@ end;
 
 
 procedure THEOSForm.FormShow(Sender: TObject);
+
 begin
 
   SetWindowLong(Handle,
@@ -1061,7 +1088,8 @@ end;
 
 
 procedure THEOSForm.BeginReceiverCheck(ReadAll: Boolean;
-                                         Discover: Boolean);
+                                       Discover: Boolean);
+
 begin
 
   if Assigned(FReceiverCheck) then
@@ -1070,8 +1098,7 @@ begin
   if Assigned(FWorker) and not FWorker.Finished then
     Exit;
 
-  if Assigned(FDiscovery) and not FDiscovery.Finished and
-     not FDiscoveryComplete then
+  if Assigned(FDiscovery) and not FDiscovery.Finished and not FDiscoveryComplete then
     Exit;
 
   FReceiverCheckReadAll := ReadAll;
@@ -1135,8 +1162,8 @@ begin
       VolumeTimer.Enabled := False;
 
       FStatus.Caption := 'HEOS unavailable at ' + Host + ':1255. ' +
-                         'Status read skipped. Check power, IP and Network Control; ' +
-                         'click Read status to retry.';
+        'Status read skipped. Check power, IP and Network Control; ' +
+        'click Read status to retry.';
 
       lblStreamInfo.Caption := FStatus.Caption;
       memFLog.Lines.Add('! ' + FStatus.Caption + ' ' + ErrorText);
@@ -1183,20 +1210,23 @@ end;
 
 
 function THEOSForm.FeatureAllowed(Feature: TAvrFeature): Boolean;
+
 begin
 
   Result := not Assigned(FCapabilities) or
-              (FCapabilities.Support(Feature) <> asUnsupported);
+    (FCapabilities.Support(Feature) <> asUnsupported);
   Result := Result and (not FAvrAvailabilityKnown or FAvrReachable);
 end;
 
 
 procedure THEOSForm.BeginCapabilityRefresh();
+
 begin
 
   if not Assigned(FCapabilities) then
     Exit;
-  FCapabilities.SelectDevice(Trim(edHost.Text), FPreferredDeviceId);
+  FCapabilities.SelectDevice(Trim(edHost.Text),
+                             FPreferredDeviceId);
   FCapabilities.Refresh();
   UpdateControlAvailability();
 end;
@@ -1216,7 +1246,8 @@ begin
       // A manually entered address is unconfirmed until the startup probe finishes.
       if not FReceiverVerified or (FVerifiedHost <> Trim(edHost.Text)) then
         DeviceId := '';
-      FCapabilities.SelectDevice(Trim(edHost.Text), DeviceId);
+      FCapabilities.SelectDevice(Trim(edHost.Text),
+                                 DeviceId);
       FAvrAvailabilityKnown := False;
       UpdateControlAvailability();
     end;
@@ -1226,7 +1257,7 @@ begin
         memFLog.Lines.Add('! Capabilities: ' + FCapabilities.ErrorText)
       else
         memFLog.Lines.Add(Format('Capabilities refreshed: %s, %d ms.',
-                                  [FCapabilities.Data.Model, FCapabilities.ElapsedMs]));
+                                 [FCapabilities.Data.Model, FCapabilities.ElapsedMs]));
       UpdateToneDisplay();
       UpdateControlAvailability();
     end;
@@ -1237,6 +1268,7 @@ procedure THEOSForm.UpdateControlAvailability();
 var
   ToneAvailable: Boolean;
 
+
   procedure Apply(Control: TControl;
                   Feature: TAvrFeature;
                   const Name: string);
@@ -1246,14 +1278,12 @@ var
     Control.ShowHint := True;
     if FAvrAvailabilityKnown and not FAvrReachable then
       Control.Hint := Name + ': receiver AVR connection is unavailable.'
-    else
-      if Assigned(FCapabilities) and
-         (FCapabilities.Support(Feature) = asUnsupported) then
-        Control.Hint := Name + ': not supported by this receiver.'
-    else
-      if Assigned(FCapabilities) and
-         (FCapabilities.Support(Feature) = asUnknown) then
-        Control.Hint := Name + ': capability not confirmed; standard AVR control is available.'
+    else if Assigned(FCapabilities) and
+      (FCapabilities.Support(Feature) = asUnsupported) then
+      Control.Hint := Name + ': not supported by this receiver.'
+    else if Assigned(FCapabilities) and
+      (FCapabilities.Support(Feature) = asUnknown) then
+      Control.Hint := Name + ': capability not confirmed; standard AVR control is available.'
     else
       Control.Hint := Name;
   end;
@@ -1294,27 +1324,25 @@ begin
 
 
   ToneAvailable := chkTone.Enabled and
-                   (FPowerText = 'On') and
-                   not FMainZonePending and
-                   not (FZoneRequest and (FZoneRequestKind = 1)) and
-                   FToneKnown and not
-                   ContainsText(FToneMode,
-                                'DIRECT') and not
-                   FDynamicEq;
+    (FPowerText = 'On') and not FMainZonePending and not (FZoneRequest and (FZoneRequestKind = 1)) and
+    FToneKnown and not
+    ContainsText(FToneMode,
+                 'DIRECT') and not
+    FDynamicEq;
 
   chkTone.Enabled := ToneAvailable;
 
   tbBass.Enabled := tbBass.Enabled and
-                    ToneAvailable and
-                    FToneEnabled and not
-                    (FTonePending and not
-                    FDesiredToneEnabled);
+    ToneAvailable and
+    FToneEnabled and not
+    (FTonePending and not
+    FDesiredToneEnabled);
 
   tbTreble.Enabled := tbTreble.Enabled and
-                      ToneAvailable and
-                      FToneEnabled and not
-                      (FTonePending and not
-                      FDesiredToneEnabled);
+    ToneAvailable and
+    FToneEnabled and not
+    (FTonePending and not
+    FDesiredToneEnabled);
 
   if not FeatureAllowed(afTone) then
     begin
@@ -1381,36 +1409,29 @@ begin
   Text := UpperCase(Trim(Command));
   Result := True;
   if StartsText('MV',
-                Text) then
+    Text) then
     Result := FeatureAllowed(afVolume)
-  else
-    if StartsText('MU',
-                  Text) then
-      Result := FeatureAllowed(afMute)
-    else
-      if StartsText('ZM',
-                    Text) then
-        Result := FeatureAllowed(afMainZone)
-      else
-        if StartsText('Z2',
-                      Text) then
-          Result := FeatureAllowed(afZone2)
-        else
-          if StartsText('CV',
-                        Text) then
-            Result := FeatureAllowed(afBalance)
-          else
-            if StartsText('PSTONE',
-                          Text) then
-              Result := FeatureAllowed(afTone)
-            else
-              if StartsText('PSBAS',
-                            Text) then
-                Result := FeatureAllowed(afBass)
-              else
-                if StartsText('PSTRE',
-                              Text) then
-                  Result := FeatureAllowed(afTreble);
+  else if StartsText('MU',
+    Text) then
+    Result := FeatureAllowed(afMute)
+  else if StartsText('ZM',
+    Text) then
+    Result := FeatureAllowed(afMainZone)
+  else if StartsText('Z2',
+    Text) then
+    Result := FeatureAllowed(afZone2)
+  else if StartsText('CV',
+    Text) then
+    Result := FeatureAllowed(afBalance)
+  else if StartsText('PSTONE',
+    Text) then
+    Result := FeatureAllowed(afTone)
+  else if StartsText('PSBAS',
+    Text) then
+    Result := FeatureAllowed(afBass)
+  else if StartsText('PSTRE',
+    Text) then
+    Result := FeatureAllowed(afTreble);
 end;
 
 
@@ -1422,12 +1443,12 @@ function THEOSForm.CreateReceiverRequest(const Host: string;
                                          StopOnZoneReply: Boolean;
                                          StopOnToneReply: Boolean): TDenonRequest;
 var
-  Allowed: TList<string>;
+  Allowed: TList < string > ;
   Command: string;
 
 begin
 
-  Allowed := TList<string>.Create;
+  Allowed := (TList < string > .Create);
   try
     for Command in Commands do
       if ReceiverCommandAllowed(Command) then
@@ -1498,7 +1519,10 @@ begin
 
   // Destruction must also work when form streaming failed before controls exist.
   if Assigned(FProgressMonitor) then
-    begin FProgressMonitor.Terminate;FProgressMonitor:=nil;end;
+    begin
+      FProgressMonitor.Terminate;
+      FProgressMonitor := nil;
+    end;
   FreeAndNil(FLoopback);
   FreeAndNil(FAudioServer);
 
@@ -1550,17 +1574,17 @@ var
 begin
 
   if BrowseLWFileEx(Self,
-                    fbxAudio,
-                    FileName,
-                    FileURI,
-                    Duration,
-                    ExtractFilePath(FSelectedFile)) then
+    fbxAudio,
+    FileName,
+    FileURI,
+    Duration,
+    ExtractFilePath(FSelectedFile)) then
     begin
       // Loading another file ends the current source; Play starts the new file.
       if (FPlaybackState <> 'stop') or
-         Assigned(FAudioServer) or
-         FWaitingForCapture or
-         (FStreamActions.Count > 0) then
+        Assigned(FAudioServer) or
+        FWaitingForCapture or
+        (FStreamActions.Count > 0) then
         StartStreamAction(4);
 
       SelectAudioFile(FileName);
@@ -1569,6 +1593,7 @@ end;
 
 
 procedure THEOSForm.StopLocalStream();
+
 begin
 
   FRadioPlaying := False;
@@ -1618,7 +1643,7 @@ begin
   // Background playlist status polls must not disable playback controls.
   // Source changes made during a poll are serialized by ProcessStreamActions.
   Busy := FWaitingForCapture or (Assigned(FHeos) and not FHeos.Finished and
-                                 (FLastHeosAction <> haGetState));
+    (FLastHeosAction <> haGetState));
   if Assigned(FRadioForm) then
     Busy := Busy or FRadioForm.PlaybackPending();
 
@@ -1627,13 +1652,13 @@ begin
   btnStreamWinAudio.Enabled := not Busy;
 
   btnStreamWinAudio.Checked := Assigned(FAudioServer) and
-                               Assigned(FLoopback) and
-                               FLoopback.Ready and
-                               FLoopback.Initialized and not
-                               FLoopback.Finished and not
-                               FWaitingForCapture and
-                               (FPlaybackState = 'play') and
-                               (RequestedPlaybackState() = 'play');
+    Assigned(FLoopback) and
+    FLoopback.Ready and
+    FLoopback.Initialized and not
+    FLoopback.Finished and not
+    FWaitingForCapture and
+    (FPlaybackState = 'play') and
+    (RequestedPlaybackState() = 'play');
 
 
   btnPrevious.Enabled := (not Busy) and (FQueueIndex > 0);
@@ -1645,16 +1670,15 @@ begin
   btnPrevious.Enabled := not Busy and Assigned(FQueue) and ((FQueueIndex > 0) or (btnLoop.Checked and (FQueue.Count > 0)));
 
   btnNext.Enabled := not Busy and Assigned(FQueue) and
-                     ((FQueueIndex + 1 < FQueue.Count) or
-                      (btnLoop.Checked and (FQueue.Count > 0)));
+    ((FQueueIndex + 1 < FQueue.Count) or
+    (btnLoop.Checked and (FQueue.Count > 0)));
 
   if (RequestedPlaybackState() = 'play') then
     btnPlayPause.Caption := 'Pause'
+  else if (RequestedPlaybackState() = 'pause') then
+    btnPlayPause.Caption := 'Resume'
   else
-    if RequestedPlaybackState() = 'pause' then
-      btnPlayPause.Caption := 'Resume'
-    else
-      btnPlayPause.Caption := 'Play';
+    btnPlayPause.Caption := 'Play';
 
   if FRadioPlaying or Assigned(FLoopback) or FWaitingForCapture then
     begin
@@ -1666,13 +1690,14 @@ begin
   // Preserve the checkbox toggle until the mouse click is dispatched.
   if not (csLButtonDown in btnPlayList.ControlState) then
     btnPlayList.Checked := FPlaylistPopupVisible or
-                           (FQueueIsPlaylist and FQueueActive and (FQueue.Count > 0));
+      (FQueueIsPlaylist and FQueueActive and (FQueue.Count > 0));
 end;
 
 
 procedure THEOSForm.SendHeos(Action: THeosAction;
                              const Url: string;
                              PositionMs: Int64);
+
 begin
 
   if Assigned(FHeos) and not FHeos.Finished then
@@ -1703,17 +1728,24 @@ end;
 
 
 procedure THEOSForm.HeosFinished(Sender: TObject);
+
 begin
 
   if FClosePending then
     begin
-      PostMessageW(Handle, WM_APP + $126, 0, 0);
+      PostMessageW(Handle,
+                   WM_APP + $126,
+                   0,
+                   0);
       Exit;
     end;
 
   UpdatePlaybackProgress();
   // Dispatch after OnTerminate returns; the request cannot be freed here.
-  PostMessageW(Handle, WM_APP + $126, 0, 0);
+  PostMessageW(Handle,
+               WM_APP + $126,
+               0,
+               0);
   if (FLastHeosAction = haGetState) then
     begin
       if (FHeos.ErrorText = '') then
@@ -1725,17 +1757,15 @@ begin
           // Keep the queue armed so a later confirmed Stop can advance it.
           memFLog.Lines.Add('! Playlist state: ' + FHeos.ErrorText);
         end
-      else
-        if (FHeos.PlayState = 'play') then
-          FQueueSawPlaying := True
-      else
-        if (FHeos.PlayState = 'stop') and FQueueSawPlaying and
-           (FStreamActions.Count = 0) and (FDesiredPlaybackState <> 'stop') then
-          FQueueNextPending := True;
+      else if (FHeos.PlayState = 'play') then
+        FQueueSawPlaying := True
+      else if (FHeos.PlayState = 'stop') and FQueueSawPlaying and
+        (FStreamActions.Count = 0) and (FDesiredPlaybackState <> 'stop') then
+        FQueueNextPending := True;
 
       UpdatePlaybackProgress();
       Exit;
-  end;
+    end;
 
   if (FHeos.ErrorText <> '') then
     begin
@@ -1764,18 +1794,18 @@ begin
     begin
 
       case FLastHeosAction of
-        haSeek:   begin
-                    FPlayedMs := FActiveSeekMs;
-                    FProgressTick := GetTickCount64;
-                    FSeekGuardUntil := FProgressTick + 2500;
-                  end;
+          haSeek: begin
+            FPlayedMs := FActiveSeekMs;
+            FProgressTick := GetTickCount64;
+            FSeekGuardUntil := FProgressTick + 2500;
+          end;
 
         haPlayUrl,
         haResume: FPlaybackState := 'play';
 
-        haPause:  FPlaybackState := 'pause';
+        haPause: FPlaybackState := 'pause';
 
-        haStop:   FPlaybackState := 'stop';
+        haStop: FPlaybackState := 'stop';
       end;
 
       if (FLastHeosAction = haPlayUrl) then
@@ -1793,21 +1823,29 @@ begin
 end;
 
 
-procedure THEOSForm.imgLogoMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure THEOSForm.imgLogoMouseDown(Sender: TObject;
+                                     Button: TMouseButton;
+                                     Shift: TShiftState;
+                                     X,
+                                     Y: Integer);
+
 begin
 
   // Drag window
   ReleaseCapture;
   SendMessageW(Handle,
-              WM_SYSCOMMAND,
-              SC_MOVE + HTCAPTION,
-              0);
+               WM_SYSCOMMAND,
+               SC_MOVE + HTCAPTION,
+               0);
 end;
 
 
 procedure THEOSForm.lblStreamInfoMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                           Button: TMouseButton;
+                                           Shift: TShiftState;
+                                           X,
+                                           Y: Integer);
+
 begin
 
   if (Button = mbRight) then
@@ -1846,29 +1884,28 @@ begin
           memFLog.Lines.Add('! Windows audio: ' + CaptureError);
 
           if Assigned(FHeos) and not FHeos.Finished then
-           begin
+            begin
               FHeos.OnTerminate := nil;
               FHeos.Terminate;
               FHeos.WaitFor;
               FreeAndNil(FHeos);
-           end;
+            end;
 
           StopLocalStream();
           lblStreamInfo.Caption := CaptureError;
         end
-      else
-       if FWaitingForCapture then
-         begin
-           FWaitingForCapture := False;
-           SendHeos(haPlayUrl,
-                    FAudioServer.Url);
-         end;
+      else if FWaitingForCapture then
+        begin
+          FWaitingForCapture := False;
+          SendHeos(haPlayUrl,
+                   FAudioServer.Url);
+        end;
     end;
 
   if Assigned(FAudioServer) and
-     Assigned(FHeos) and
-     FHeos.Finished and
-     (FHeos.ErrorText = '') then
+    Assigned(FHeos) and
+    FHeos.Finished and
+    (FHeos.ErrorText = '') then
     begin
       lblStreamInfo.Caption := FStreamDescription + ' | HTTP requests: ' + IntToStr(FAudioServer.Requests);
     end;
@@ -1899,8 +1936,8 @@ begin
     end;
 
   if (FStreamActions.Count = 0) and (FDesiredPlaybackState = '') and
-     Assigned(FAudioServer) and not Assigned(FLoopback) and
-     (not Assigned(FHeos) or FHeos.Finished) then
+    Assigned(FAudioServer) and not Assigned(FLoopback) and
+    (not Assigned(FHeos) or FHeos.Finished) then
     begin
       Inc(FQueuePollTicks);
 
@@ -1914,6 +1951,7 @@ end;
 
 
 procedure THEOSForm.tbVolumeDblClick(Sender: TObject);
+
 begin
 
   tbVolume.AnimateTrackBarToPosition(0,
@@ -1922,13 +1960,17 @@ end;
 
 
 procedure THEOSForm.FindHEOSDEviceClick(Sender: TObject);
+
 begin
 
-  BeginDiscovery(False, False);
+  BeginDiscovery(False,
+                 False);
 end;
 
 
-procedure THEOSForm.BeginDiscovery(Reconnect: Boolean; ReadAll: Boolean);
+procedure THEOSForm.BeginDiscovery(Reconnect: Boolean;
+                                   ReadAll: Boolean);
+
 begin
 
   if not edHost.Enabled or Assigned(FReceiverCheck) then
@@ -1955,6 +1997,7 @@ end;
 
 
 function THEOSForm.NewDiscovery(): THEOSDiscovery;
+
 begin
 
   Result := THEOSDiscovery.Create;
@@ -1962,9 +2005,11 @@ end;
 
 
 procedure THEOSForm.DiscoveryFinished(Sender: TObject);
+
 begin
 
-  ApplyDiscoveredDevices(FDiscovery.Devices, FDiscovery.ErrorText);
+  ApplyDiscoveredDevices(FDiscovery.Devices,
+                         FDiscovery.ErrorText);
 end;
 
 
@@ -2004,7 +2049,8 @@ begin
     BeginCapabilityRefresh()
   else
     begin
-      FCapabilities.SelectDevice(Trim(edHost.Text), FPreferredDeviceId);
+      FCapabilities.SelectDevice(Trim(edHost.Text),
+                                 FPreferredDeviceId);
       UpdateControlAvailability();
     end;
 
@@ -2058,7 +2104,7 @@ begin
 
       try
         P := btnPlayList.ClientToScreen(Types.Point(0,
-                                              btnPlayList.Height));
+                                                    btnPlayList.Height));
         pmPlaylists.Popup(P.X,
                           P.Y);
 
@@ -2083,6 +2129,7 @@ end;
 
 
 procedure THEOSForm.EnsurePlaylistManager();
+
 begin
 
   if not Assigned(FPlaylistDb) then
@@ -2099,7 +2146,7 @@ end;
 
 procedure THEOSForm.PlaylistPopup(Sender: TObject);
 var
-  Playlists: TList<TRDJPlaylistInfo>;
+  Playlists: TList < TRDJPlaylistInfo > ;
   I: Integer;
   Item: TMenuItem;
 
@@ -2209,7 +2256,9 @@ begin
 end;
 
 
-procedure THEOSForm.MainCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure THEOSForm.MainCloseQuery(Sender: TObject;
+                                   var CanClose: Boolean);
+
 begin
 
   CanClose := FCloseReady;
@@ -2250,6 +2299,7 @@ end;
 
 
 procedure THEOSForm.ProcessClose();
+
 begin
 
   if not FClosePending or FCloseReady then
@@ -2290,9 +2340,9 @@ begin
   StreamActionTimer.Enabled := False;
 
   PostMessageW(Handle,
-              WM_CLOSE,
-              0,
-              0);
+               WM_CLOSE,
+               0,
+               0);
 end;
 
 
@@ -2306,7 +2356,7 @@ begin
 
   StopLocalStream();
   FQueue.Clear();
-  FQueueIsPlaylist := Playlist.Count > 0;
+  FQueueIsPlaylist := (Playlist.Count > 0);
 
   for I := 0 to Playlist.Count - 1 do
     FQueue.Add(Playlist[I].Track.FullPath);
@@ -2341,7 +2391,7 @@ begin
     end;
 
   FQueue.Clear();
-  FQueueIsPlaylist := Playlist.Count > 0;
+  FQueueIsPlaylist := (Playlist.Count > 0);
 
   for I := 0 to Playlist.Count - 1 do
     FQueue.Add(Playlist[I].Track.FullPath);
@@ -2354,6 +2404,7 @@ end;
 
 
 procedure THEOSForm.PlayQueueIndex(Index: Integer);
+
 begin
 
   if (Index >= FQueue.Count) then
@@ -2412,6 +2463,7 @@ end;
 
 
 procedure THEOSForm.TrackClick(Sender: TObject);
+
 begin
 
   if Assigned(FHeos) and not FHeos.Finished then
@@ -2423,14 +2475,15 @@ end;
 
 function THEOSForm.ValidAddress(): Boolean;
 var
-  Parts: TArray<string>;
+  Parts: TArray < string > ;
   Part: string;
   Value, I: Integer;
 
 begin
 
   Result := False;
-  Parts := MfCastSplit(UTF8Decode(Trim(edHost.Text)),'.');
+  Parts := MfCastSplit(UTF8Decode(Trim(edHost.Text)),
+                       '.');
 
   if (Length(Parts) <> 4) then
     Exit;
@@ -2442,22 +2495,22 @@ begin
 
       for I := 1 to Length(Part) do
         if not CharInSet(Part[I],
-                         ['0'..'9']) then
+          ['0'..'9']) then
           Exit;
 
-        if not TryStrToInt(Part,
-                           Value) then
-          Exit;
+      if not TryStrToInt(Part,
+        Value) then
+        Exit;
 
-        if (Value < 0) or (Value > 255) then
-          Exit;
+      if (Value < 0) or (Value > 255) then
+        Exit;
     end;
   Result := True;
 end;
 
 
 procedure THEOSForm.StartRequest(const Commands: array of string;
-                                   const ExpectedPowerReply: string);
+                                 const ExpectedPowerReply: string);
 var
   Command: string;
 
@@ -2480,14 +2533,15 @@ begin
   FInputText := '?';
 
   FWorker := CreateReceiverRequest(Trim(edHost.Text),
-                                  Commands);
+                                   Commands);
   FWorker.OnTerminate := RequestFinished;
   edHost.Enabled := False;
   btnFindHEOSDevice.Enabled := False;
   cbxHEOSDevices.Enabled := False;
 
   FStatus.Caption := 'Contacting ' + Trim(edHost.Text) + ':23 ...';
-  memFLog.Lines.Add(FormatDateTime('hh:nn:ss', Now) + '  ' + FStatus.Caption);
+  memFLog.Lines.Add(FormatDateTime('hh:nn:ss',
+                                   Now) + '  ' + FStatus.Caption);
 
   for Command in Commands do
     memFLog.Lines.Add('> ' + Command);
@@ -2497,14 +2551,16 @@ end;
 
 
 function THEOSForm.VolumeCaption(HalfSteps: Integer): string;
+
 begin
 
   Result := IntToStr(HalfSteps div 2) + '.' +
-              IntToStr((HalfSteps mod 2) * 5) + '%';
+    IntToStr((HalfSteps mod 2) * 5) + '%';
 end;
 
 
 procedure THEOSForm.SetVolumeBusy(Busy: Boolean);
+
 begin
 
   edHost.Enabled := not Busy;
@@ -2518,6 +2574,7 @@ end;
 
 
 procedure THEOSForm.VolumeChange(Sender: TObject);
+
 begin
 
   if not FeatureAllowed(afVolume) or not FVolumeReady or FUpdatingVolume or (csLoading in ComponentState) then
@@ -2544,18 +2601,19 @@ begin
     lblBalance.Caption := 'Balance: Centre'
   else
     begin
-      if FDesiredBalance < 0 then
+      if (FDesiredBalance < 0) then
         Direction := 'Left'
       else
         Direction := 'Right';
 
-      lblBalance.Caption := 'Balance: ' + Direction + ' ' + IntToStr(Amount div 2) +  '.' + IntToStr((Amount mod 2) * 5) + ' dB';
+      lblBalance.Caption := 'Balance: ' + Direction + ' ' + IntToStr(Amount div 2) + '.' + IntToStr((Amount mod 2) * 5) + ' dB';
     end;
 
 end;
 
 
 procedure THEOSForm.BalanceChange(Sender: TObject);
+
 begin
 
   if not FeatureAllowed(afBalance) or not FVolumeReady or FUpdatingBalance or (csLoading in ComponentState) then
@@ -2570,6 +2628,7 @@ end;
 
 
 procedure THEOSForm.BalanceDblClick(Sender: TObject);
+
 begin
 
   tbBalance.AnimateTrackBarToPosition(0,
@@ -2580,6 +2639,7 @@ end;
 procedure THEOSForm.UpdateToneDisplay();
 var
   Available: Boolean;
+
 
   function ToneCaption(const Name: string;
                        Value: Integer): string;
@@ -2606,13 +2666,11 @@ begin
     lblTreble.Caption := ToneCaption('',
                                      tbTreble.Position);
 
-    Available := (FPowerText = 'On') and
-                  not FMainZonePending and
-                  not (FZoneRequest and (FZoneRequestKind = 1)) and
-                  FToneKnown and not
-                  ContainsText(FToneMode,
-                               'DIRECT') and not
-                  FDynamicEq;
+    Available := (FPowerText = 'On') and not FMainZonePending and not (FZoneRequest and (FZoneRequestKind = 1)) and
+      FToneKnown and not
+      ContainsText(FToneMode,
+                   'DIRECT') and not
+      FDynamicEq;
 
     chkTone.Enabled := Available;
     tbBass.Enabled := Available and FToneEnabled and not (FTonePending and not FDesiredToneEnabled);
@@ -2620,29 +2678,24 @@ begin
 
     if (FPowerText <> 'On') then
       lblToneStatus.Caption := 'Activate Main Zone to adjust tone.'
-    else
-      if ContainsText(FToneMode,
-                      'DIRECT') then
-        lblToneStatus.Caption := 'Tone is unavailable in Direct / Pure Direct mode.'
-      else
-        if FDynamicEq then
-          lblToneStatus.Caption := 'Tone is unavailable while Dynamic EQ is on.'
-      else
-        if not FToneKnown then
-          begin
-            if (FToneReadAttempts >= 3) and not FToneReadPending and not FToneRequest then
-              lblToneStatus.Caption := 'Tone settings could not be read. Click Read status to retry.'
-            else
-              if (GetTickCount64 < FToneReadReadyAt) then
-                lblToneStatus.Caption := 'Waiting for receiver tone settings ...'
-              else
-                lblToneStatus.Caption := 'Reading receiver tone settings ...';
-          end
+    else if ContainsText(FToneMode,
+      'DIRECT') then
+      lblToneStatus.Caption := 'Tone is unavailable in Direct / Pure Direct mode.'
+    else if FDynamicEq then
+      lblToneStatus.Caption := 'Tone is unavailable while Dynamic EQ is on.'
+    else if not FToneKnown then
+      begin
+        if (FToneReadAttempts >= 3) and not FToneReadPending and not FToneRequest then
+          lblToneStatus.Caption := 'Tone settings could not be read. Click Read status to retry.'
+        else if (GetTickCount64 < FToneReadReadyAt) then
+          lblToneStatus.Caption := 'Waiting for receiver tone settings ...'
         else
-          if not FToneEnabled then
-            lblToneStatus.Caption := 'Enable Tone to adjust bass and treble.'
-          else
-            lblToneStatus.Caption := 'Bass / treble: -6 to +6 dB.' + #13 + 'Double-click for 0 dB.';
+          lblToneStatus.Caption := 'Reading receiver tone settings ...';
+      end
+    else if not FToneEnabled then
+      lblToneStatus.Caption := 'Enable Tone to adjust bass and treble.'
+    else
+      lblToneStatus.Caption := 'Bass / treble: -6 to +6 dB.' + #13 + 'Double-click for 0 dB.';
 
   finally
     FUpdatingTone := False;
@@ -2652,13 +2705,14 @@ end;
 
 
 procedure THEOSForm.ToneClick(Sender: TObject);
+
 begin
 
   if not FeatureAllowed(afTone) or FUpdatingTone or not FVolumeReady then
     Exit;
 
   if (FPowerText <> 'On') or not FToneKnown or FMainZonePending or
-     (FZoneRequest and (FZoneRequestKind = 1)) then
+    (FZoneRequest and (FZoneRequestKind = 1)) then
     begin
       UpdateToneDisplay();
       Exit;
@@ -2679,19 +2733,20 @@ end;
 
 
 procedure THEOSForm.ToneChange(Sender: TObject);
+
 begin
 
   if not FeatureAllowed(afTone) or
-     ((Sender = tbBass) and not
-     FeatureAllowed(afBass)) or
-     ((Sender = tbTreble) and not
-     FeatureAllowed(afTreble)) or
-     FUpdatingTone or not
-     FVolumeReady or (csLoading in ComponentState) then
+    ((Sender = tbBass) and not
+    FeatureAllowed(afBass)) or
+    ((Sender = tbTreble) and not
+    FeatureAllowed(afTreble)) or
+    FUpdatingTone or not
+    FVolumeReady or (csLoading in ComponentState) then
     Exit;
 
   if (FPowerText <> 'On') or not FToneKnown or FMainZonePending or
-     (FZoneRequest and (FZoneRequestKind = 1)) then
+    (FZoneRequest and (FZoneRequestKind = 1)) then
     Exit;
 
   if (Sender = tbBass) then
@@ -2714,6 +2769,7 @@ end;
 
 
 procedure THEOSForm.ToneDblClick(Sender: TObject);
+
 begin
 
   if (Sender = tbBass) then
@@ -2725,7 +2781,7 @@ end;
 
 procedure THEOSForm.StartToneRequest();
 var
-  Commands: TList<string>;
+  Commands: TList < string > ;
   Command: string;
   WriteRequest: Boolean;
 
@@ -2752,7 +2808,7 @@ begin
   if not WriteRequest then
     Inc(FToneReadAttempts);
 
-  Commands := TList<string>.Create;
+  Commands := (TList < string > .Create);
   try
     if WriteRequest and FTonePending then
       if FDesiredToneEnabled then
@@ -2777,12 +2833,12 @@ begin
     FreeAndNil(FWorker);
     FExpectedPowerReply := '';
     FWorker := CreateReceiverRequest(Trim(edHost.Text),
-                                    Commands.ToArray,
-                                    23,
-                                    False,
-                                    False,
-                                    False,
-                                    True);
+                                     Commands.ToArray,
+                                     23,
+                                     False,
+                                     False,
+                                     False,
+                                     True);
 
     FToneRequest := True;
     if WriteRequest then
@@ -2815,7 +2871,7 @@ var
   LeftCommand: string;
   RightCommand: string;
 
-  //Helper
+//Helper
   function ChannelValue(HalfSteps: Integer): string;
   begin
     if (HalfSteps < 76) then
@@ -2845,11 +2901,11 @@ begin
     begin
       Inc(FStartupBalanceReadAttempts);
       FWorker := CreateReceiverRequest(Trim(edHost.Text),
-                                      ['SI?',
-                                      'CV?'],
-                                      23,
-                                      False,
-                                      True);
+                                       ['SI?',
+        'CV?'],
+                                       23,
+                                       False,
+                                       True);
 
       FStatus.Caption := 'Reading front channel levels ...';
       memFLog.Lines.Add('> SI?');
@@ -2872,8 +2928,8 @@ begin
 
       FWorker := CreateReceiverRequest(Trim(edHost.Text),
                                        [LeftCommand,
-                                       RightCommand,
-                                       'CV?'],
+        RightCommand,
+        'CV?'],
                                        23,
                                        False,
                                        True);
@@ -2893,67 +2949,68 @@ end;
 
 
 function THEOSForm.ReceiverActionsPending(): Boolean;
+
 begin
 
   Result := FVolumePending or
-            FVolumeReadPending or
-            FBalancePending or
-            FBalanceReadPending or
-            FMainZonePending or
-            FZone2Pending or
-            FZoneReadPending or
-            FTonePending or
-            FBassPending or
-            FTreblePending or
-            FToneReadPending;
+    FVolumeReadPending or
+    FBalancePending or
+    FBalanceReadPending or
+    FMainZonePending or
+    FZone2Pending or
+    FZoneReadPending or
+    FTonePending or
+    FBassPending or
+    FTreblePending or
+    FToneReadPending;
 end;
 
 
 procedure THEOSForm.UpdateZoneButtons();
+
 begin
 
   if FMainZonePending then
     btnMainZone.Checked := FMainZoneDesired
+  else if FZoneRequest and (FZoneRequestKind = 1) then
+    btnMainZone.Checked := FZoneRequestTarget
   else
-    if FZoneRequest and (FZoneRequestKind = 1) then
-      btnMainZone.Checked := FZoneRequestTarget
-    else
-      btnMainZone.Checked := FPowerText = 'On';
+    btnMainZone.Checked := (FPowerText = 'On');
 
   if FZone2Pending then
     btnZone2.Checked := FZone2Desired
+  else if FZoneRequest and (FZoneRequestKind = 2) then
+    btnZone2.Checked := FZoneRequestTarget
   else
-    if FZoneRequest and (FZoneRequestKind = 2) then
-      btnZone2.Checked := FZoneRequestTarget
-    else
-      btnZone2.Checked := FZone2PowerText = 'On';
+    btnZone2.Checked := (FZone2PowerText = 'On');
 end;
 
 
 procedure THEOSForm.ZoneClick(Sender: TObject);
+
 begin
 
-  if Sender = btnMainZone then
+  if (Sender = btnMainZone) then
     QueueZoneChange(True,
                     btnMainZone.Checked)
-  else
-    if (Sender = btnZone2) then
-      QueueZoneChange(False,
-                      btnZone2.Checked);
+  else if (Sender = btnZone2) then
+    QueueZoneChange(False,
+                    btnZone2.Checked);
 end;
 
 
 procedure THEOSForm.RetryStartupZoneRead();
+
 begin
 
   if (((FPowerText = '?') and
-      FeatureAllowed(afMainZone)) or
-      ((FZone2PowerText = '?') and
-      FeatureAllowed(afZone2))) and
-     (FStartupZoneReadAttempts < 3) then
+    FeatureAllowed(afMainZone)) or
+    ((FZone2PowerText = '?') and
+    FeatureAllowed(afZone2))) and
+    (FStartupZoneReadAttempts < 3) then
     begin
       FZoneReadPending := True;
-      if FVolumeText = '?' then
+      if (FVolumeText = '?') then
         FVolumeReadPending := True;
       VolumeTimer.Enabled := True;
     end;
@@ -2962,10 +3019,11 @@ end;
 
 procedure THEOSForm.QueueZoneChange(MainZone: Boolean;
                                     Active: Boolean);
+
 begin
 
   if (MainZone and not FeatureAllowed(afMainZone)) or
-     (not MainZone and not FeatureAllowed(afZone2)) then
+    (not MainZone and not FeatureAllowed(afZone2)) then
     Exit;
 
   if MainZone then
@@ -3002,7 +3060,7 @@ end;
 procedure THEOSForm.StartZoneRequest();
 var
   Command: string;
-  Commands: TArray<string>;
+  Commands: TArray < string > ;
 
 begin
 
@@ -3020,31 +3078,30 @@ begin
       else
         Command := 'ZMOFF';
     end
-  else
-    if FZone2Pending then
-      begin
-        FZone2Pending := False;
-        FZoneRequestKind := 2;
-        FZoneRequestTarget := FZone2Desired;
+  else if FZone2Pending then
+    begin
+      FZone2Pending := False;
+      FZoneRequestKind := 2;
+      FZoneRequestTarget := FZone2Desired;
 
-        if FZoneRequestTarget then
-          Command := 'Z2ON'
-        else
-          Command := 'Z2OFF';
-      end;
+      if FZoneRequestTarget then
+        Command := 'Z2ON'
+      else
+        Command := 'Z2OFF';
+    end;
 
   FZoneReadPending := False;
 
   if (Command = '') then
     begin
       Inc(FStartupZoneReadAttempts);
-      Commands := TArray<string>.Create('ZM?',
-                                        'Z2?');
+      Commands := (TArray < string > .Create('ZM?',
+                                             'Z2?'));
     end
   else
-    Commands := TArray<string>.Create(Command,
-                                      'ZM?',
-                                      'Z2?');
+    Commands := (TArray < string > .Create(Command,
+                                           'ZM?',
+                                           'Z2?'));
 
   FreeAndNil(FWorker);
   FExpectedPowerReply := Command;
@@ -3143,7 +3200,7 @@ begin
 
       FWorker := CreateReceiverRequest(Trim(edHost.Text),
                                        [Command,
-                                       'MV?'],
+        'MV?'],
                                        23,
                                        True);
 
@@ -3157,8 +3214,8 @@ begin
           Inc(FStartupZoneReadAttempts);
           FWorker := CreateReceiverRequest(Trim(edHost.Text),
                                            ['ZM?',
-                                            'Z2?',
-                                            'MV?'],
+            'Z2?',
+            'MV?'],
                                            23,
                                            True,
                                            False,
@@ -3172,9 +3229,9 @@ begin
       else
         begin
           FWorker := CreateReceiverRequest(Trim(edHost.Text),
-                                          ['MV?'],
-                                          23,
-                                          True);
+                                           ['MV?'],
+                                           23,
+                                           True);
 
           FStatus.Caption := 'Reading receiver volume ...';
         end;
@@ -3200,55 +3257,55 @@ begin
     Exit;
 
   case TComponent(Sender).Tag of
-    0: begin
-         BeginReceiverCheck(True);
-         Exit;
-       end;
-    1: begin
-         QueueZoneChange(True,
-                         True);
-         Exit;
-       end;
-    2: begin
-         QueueZoneChange(True,
-                         False);
-         Exit;
-       end;
-    5: begin
-         if (Sender = btnMute) and not btnMute.Checked then
-           Command := 'MUOFF'
-         else
-           Command := 'MUON';
-       end;
+      0: begin
+        BeginReceiverCheck(True);
+        Exit;
+      end;
+      1: begin
+        QueueZoneChange(True,
+                        True);
+        Exit;
+      end;
+      2: begin
+        QueueZoneChange(True,
+                        False);
+        Exit;
+      end;
+      5: begin
+        if (Sender = btnMute) and not btnMute.Checked then
+          Command := 'MUOFF'
+        else
+          Command := 'MUON';
+      end;
     6: Command := 'MUOFF';
-    8: begin
-         QueueZoneChange(False,
-                         True);
-         Exit;
-       end;
-    9: begin
-         QueueZoneChange(False,
-                         False);
-         Exit;
-       end;
-    7: begin
-         if (FSource.ItemIndex < Low(SourceCommands)) or (FSource.ItemIndex > High(SourceCommands)) then
-           Exit;
+      8: begin
+        QueueZoneChange(False,
+                        True);
+        Exit;
+      end;
+      9: begin
+        QueueZoneChange(False,
+                        False);
+        Exit;
+      end;
+      7: begin
+        if (FSource.ItemIndex < Low(SourceCommands)) or (FSource.ItemIndex > High(SourceCommands)) then
+          Exit;
 
-         Command := SourceCommands[FSource.ItemIndex];
-         FQueueActive := False;
-         FQueueNextPending := False;
-       end;
-  else
-    Exit;
+        Command := SourceCommands[FSource.ItemIndex];
+        FQueueActive := False;
+        FQueueNextPending := False;
+      end;
+    else
+      Exit;
   end;
 
   StartRequest([Command,
-                'ZM?',
-                'Z2?',
-                'MV?',
-                'MU?',
-                'SI?']);
+    'ZM?',
+    'Z2?',
+    'MV?',
+    'MU?',
+    'SI?']);
 end;
 
 
@@ -3271,7 +3328,7 @@ begin
     end;
 
   if (FWorker.ErrorText = '') and PowerConfirmed and
-     (lblStreamInfo.Caption = 'Receiver available. Reading settings ...') then
+    (lblStreamInfo.Caption = 'Receiver available. Reading settings ...') then
     lblStreamInfo.Caption := 'Receiver settings where received successfully.';
 
   RetryStartupZoneRead();
@@ -3293,10 +3350,8 @@ begin
 
           // Missing write replies leave delivery uncertain. Reconcile using
           // reads only, with a bounded delay while the receiver becomes ready.
-          if (FPowerText = 'On') and FeatureAllowed(afTone) and
-             not FMainZonePending and not ContainsText(FToneMode,
-                                                       'DIRECT') and
-             not FDynamicEq and (FToneReadAttempts < 3) then
+          if (FPowerText = 'On') and FeatureAllowed(afTone) and not FMainZonePending and not ContainsText(FToneMode,
+            'DIRECT') and not FDynamicEq and (FToneReadAttempts < 3) then
             begin
               FToneReadPending := True;
               FToneReadReadyAt := GetTickCount64 + 1000;
@@ -3337,14 +3392,13 @@ begin
           FStatus.Caption := FWorker.ErrorText;
           memFLog.Lines.Add('! Zones: ' + FWorker.ErrorText);
         end
+      else if not PowerConfirmed then
+        begin
+          FStatus.Caption := 'Receiver did not confirm the requested zone change.';
+          memFLog.Lines.Add('! Zone change not confirmed: ' + FExpectedPowerReply);
+        end
       else
-        if not PowerConfirmed then
-          begin
-            FStatus.Caption := 'Receiver did not confirm the requested zone change.';
-            memFLog.Lines.Add('! Zone change not confirmed: ' + FExpectedPowerReply);
-          end
-        else
-          FStatus.Caption := 'Receiver zone states updated.';
+        FStatus.Caption := 'Receiver zone states updated.';
 
       VolumeTimer.Enabled := ReceiverActionsPending();
       Exit;
@@ -3438,15 +3492,14 @@ begin
       FStatus.Caption := FWorker.ErrorText;
       memFLog.Lines.Add('! ' + FWorker.ErrorText);
     end
+  else if not PowerConfirmed then
+    begin
+      FStatus.Caption := 'Receiver replied, but the requested power change was not confirmed. Click Read status to check.';
+      memFLog.Lines.Add('! Power change not confirmed: ' + FExpectedPowerReply);
+    end
   else
-    if not PowerConfirmed then
-      begin
-        FStatus.Caption := 'Receiver replied, but the requested power change was not confirmed. Click Read status to check.';
-        memFLog.Lines.Add('! Power change not confirmed: ' + FExpectedPowerReply);
-      end
-    else
-      FStatus.Caption := 'Reply received at ' + FormatDateTime('hh:nn:ss',
-                                                               Now) + '. Values below reflect receiver replies; click Read status to refresh.';
+    FStatus.Caption := 'Reply received at ' + FormatDateTime('hh:nn:ss',
+                                                             Now) + '. Values below reflect receiver replies; click Read status to refresh.';
   pnlPlay.Enabled := True;
   edHost.Enabled := True;
   btnFindHEOSDevice.Enabled := not Assigned(FDiscovery) or FDiscovery.Finished;
@@ -3454,16 +3507,20 @@ begin
 end;
 
 
-procedure THEOSForm.Panel3MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure THEOSForm.Panel3MouseDown(Sender: TObject;
+                                    Button: TMouseButton;
+                                    Shift: TShiftState;
+                                    X,
+                                    Y: Integer);
+
 begin
 
   // Drag window
   ReleaseCapture;
   SendMessageW(Handle,
-              WM_SYSCOMMAND,
-              SC_MOVE + HTCAPTION,
-              0);
+               WM_SYSCOMMAND,
+               SC_MOVE + HTCAPTION,
+               0);
 end;
 
 
@@ -3478,7 +3535,7 @@ begin
   if (Line = 'PSTONE CTRL ON') or (Line = 'PSTONE CTRL OFF') then
     begin
       FToneKnown := True;
-      FToneEnabled := Line = 'PSTONE CTRL ON';
+      FToneEnabled := (Line = 'PSTONE CTRL ON');
       UpdateToneDisplay();
       Exit;
     end;
@@ -3495,9 +3552,8 @@ begin
                 if not FBassPending then
                   tbBass.Position := Value - 50;
               end
-            else
-              if not FTreblePending then
-                tbTreble.Position := Value - 50;
+            else if not FTreblePending then
+              tbTreble.Position := Value - 50;
 
           finally
             FUpdatingTone := False;
@@ -3511,43 +3567,46 @@ begin
 
   if StartsText('MS', Line) then
     begin
-      FToneMode := Copy(Line, 3, MaxInt);
+      FToneMode := Copy(Line,
+                        3,
+                        MaxInt);
       UpdateToneDisplay();
       Exit;
     end;
 
   if (Line = 'PSDYNEQ ON') or (Line = 'PSDYNEQ OFF') then
     begin
-      FDynamicEq := Line = 'PSDYNEQ ON';
+      FDynamicEq := (Line = 'PSDYNEQ ON');
       UpdateToneDisplay();
       Exit;
     end;
 
   if (Copy(Line,
-           1,
-           5) = 'CVFL ') or (Copy(Line,
-                                  1,
-                                  5) = 'CVFR ') then
+    1,
+    5) = 'CVFL ') or (Copy(Line,
+                           1,
+                           5) = 'CVFR ') then
     begin
-      Raw := Copy(Line, 6, MaxInt);
+      Raw := Copy(Line,
+                  6,
+                  MaxInt);
 
       if not TryStrToInt(Raw, Value) then
         Exit;
 
-      if Length(Raw) = 2 then
+      if (Length(Raw) = 2) then
         HalfSteps := Value * 2
+      else if (Length(Raw) = 3) and (Value mod 5 = 0) then
+        HalfSteps := Value div 5
       else
-        if (Length(Raw) = 3) and (Value mod 5 = 0) then
-          HalfSteps := Value div 5
-        else
-          Exit;
+        Exit;
 
       if (HalfSteps < 76) or (HalfSteps > 124) then
         Exit;
 
-      if Copy(Line,
-              1,
-              5) = 'CVFL ' then
+      if (Copy(Line,
+        1,
+        5) = 'CVFL ') then
         begin
           FBalanceReplyLeft := HalfSteps;
           FBalanceLeftReceived := True;
@@ -3577,43 +3636,40 @@ begin
       FPowerText := 'On';
       UpdateToneDisplay();
     end
-  else
-    if (Line = 'ZMOFF') then
-      begin
-        FPowerText := 'Standby';
-        FToneKnown := False;
-        FTonePending := False;
-        FBassPending := False;
-        FTreblePending := False;
-        FToneReadPending := False;
-        FToneReadAttempts := 0;
-        FToneReadReadyAt := 0;
-        UpdateToneDisplay();
-      end;
+  else if (Line = 'ZMOFF') then
+    begin
+      FPowerText := 'Standby';
+      FToneKnown := False;
+      FTonePending := False;
+      FBassPending := False;
+      FTreblePending := False;
+      FToneReadPending := False;
+      FToneReadAttempts := 0;
+      FToneReadReadyAt := 0;
+      UpdateToneDisplay();
+    end;
 
   if (Line = 'Z2ON') then
     FZone2PowerText := 'On'
-  else
-    if (Line = 'Z2OFF') then
-      FZone2PowerText := 'Standby';
+  else if (Line = 'Z2OFF') then
+    FZone2PowerText := 'Standby';
 
   if (Line = 'MUON') then
     begin
       FMuteText := 'On';
       btnMute.Checked := True;
     end
-  else
-    if (Line = 'MUOFF') then
-      begin
-        FMuteText := 'Off';
-        btnMute.Checked := False;
-      end;
+  else if (Line = 'MUOFF') then
+    begin
+      FMuteText := 'Off';
+      btnMute.Checked := False;
+    end;
 
   if StartsText('SI', Line) then
     begin
       if (FInputText <> Copy(Line,
-                             3,
-                             MaxInt)) then
+        3,
+        MaxInt)) then
         begin
           FToneKnown := False;
           FTonePending := False;
@@ -3644,18 +3700,20 @@ begin
 
   if StartsText('MVMAX ', Line) then
     begin
-      Raw := Trim(Copy(Line, 7, MaxInt));
+      Raw := Trim(Copy(Line,
+                       7,
+                       MaxInt));
 
       if ((Length(Raw) = 2) or (Length(Raw) = 3)) and
-         TryStrToInt(Raw, Value) then
+        TryStrToInt(Raw,
+                    Value) then
         begin
           if (Length(Raw) = 2) then
             HalfSteps := Value * 2
+          else if (Value mod 5 = 0) then
+            HalfSteps := Value div 5
           else
-            if (Value mod 5 = 0) then
-              HalfSteps := Value div 5
-            else
-              Exit;
+            Exit;
 
           if (HalfSteps <= 0) or (HalfSteps > 196) then
             Exit;
@@ -3674,8 +3732,8 @@ begin
     end;
 
   if StartsText('MV',
-                Line) and (not StartsText('MVMAX',
-                                          Line)) then
+    Line) and (not StartsText('MVMAX',
+                              Line)) then
     begin
 
       Raw := Copy(Line,
@@ -3683,7 +3741,7 @@ begin
                   MaxInt);
 
       if ((Length(Raw) = 2) or (Length(Raw) = 3)) and TryStrToInt(Raw,
-                                                                  Value) then
+        Value) then
         begin
           if (Length(Raw) = 3) then
             begin
@@ -3723,18 +3781,21 @@ begin
 
   if not ValidAddress then
     begin
-      begin FStatus.Caption := 'Enter a valid receiver IPv4 address first.'; memFLog.Lines.Add(FStatus.Caption); end;
+      begin
+        FStatus.Caption := 'Enter a valid receiver IPv4 address first.';
+        memFLog.Lines.Add(FStatus.Caption);
+      end;
       Exit;
     end;
 
   URL := 'http://' + Trim(edHost.Text);
 
   if (ShellExecuteW(Handle,
-                   'open',
-                   PChar(URL),
-                   nil,
-                   nil,
-                   SW_SHOWNORMAL) <= 32) then
+    'open',
+    PChar(URL),
+    nil,
+    nil,
+    SW_SHOWNORMAL) <= 32) then
     begin
       FStatus.Caption := 'Windows could not open the browser. Open ' + URL + ' manually.';
       memFLog.Lines.Add(FStatus.Caption);
@@ -3753,9 +3814,9 @@ begin
   Text := Trim(ComboBox1.Text);
 
   if SameText(Copy(Text,
-                   Length(Text) - 3,
-                   4),
-              'Kbps') then
+    Length(Text) - 3,
+    4),
+    'Kbps') then
     Text := Trim(Copy(Text,
                       1,
                       Length(Text) - 4));
@@ -3768,12 +3829,11 @@ begin
   Result := Settings.BitrateKbps in [96, 128, 160, 192];
 
   if SameText(Trim(ComboBox2.Text),
-                   'Stereo') then
+    'Stereo') then
     Settings.Channels := 2
-  else
-    if SameText(Trim(ComboBox2.Text),
-                     'Mono') then
-      Settings.Channels := 1
+  else if SameText(Trim(ComboBox2.Text),
+    'Mono') then
+    Settings.Channels := 1
   else
     Result := False;
 end;
@@ -3787,12 +3847,13 @@ begin
 
   // The existing combo boxes allow typing. Save complete valid choices only.
   if not Assigned(FLoopback) and not FWaitingForCapture and
-     TryReadAacSettings(Settings) then
+    TryReadAacSettings(Settings) then
     SaveReceiverSettings();
 end;
 
 
 procedure THEOSForm.SettingsClick(Sender: TObject);
+
 begin
 
   pnlPlay.Visible := False;
@@ -3802,6 +3863,7 @@ end;
 
 
 procedure THEOSForm.PlayerClick(Sender: TObject);
+
 begin
 
   pnlSettings.Visible := False;
@@ -3830,6 +3892,7 @@ end;
 
 
 procedure THEOSForm.QueueModeClick(Sender: TObject);
+
 begin
 
   if (Sender = btnShuffle) and btnShuffle.Checked then
@@ -3840,6 +3903,7 @@ end;
 
 
 procedure THEOSForm.StreamClick(Sender: TObject);
+
 begin
 
   StartStreamAction(TComponent(Sender).Tag);
@@ -3847,6 +3911,7 @@ end;
 
 
 procedure THEOSForm.btnCloseClick(Sender: TObject);
+
 begin
 
   Close();
@@ -3854,6 +3919,7 @@ end;
 
 
 procedure THEOSForm.btnMinimizeClick(Sender: TObject);
+
 begin
 
   WindowState := wsMinimized;
@@ -3861,6 +3927,7 @@ end;
 
 
 procedure THEOSForm.btnStreamWinAudioClick(Sender: TObject);
+
 begin
 
   if Assigned(FLoopback) or FWaitingForCapture then
@@ -3895,23 +3962,21 @@ begin
                                                                                          FQueue[FQueueIndex]);
   if SameTrack and (RequestedPlaybackState() = 'play') then
     StartStreamAction(2)
-  else
-    if SameTrack and (RequestedPlaybackState() = 'pause') then
-      StartStreamAction(3)
-    else
-      if FileExists(FSelectedFile) then
+  else if SameTrack and (RequestedPlaybackState() = 'pause') then
+    StartStreamAction(3)
+  else if FileExists(FSelectedFile) then
+    begin
+      if not QueueSelection then
         begin
-          if not QueueSelection then
-            begin
-              FQueue.Clear;
-              FQueueIsPlaylist := False;
-              FQueue.Add(FSelectedFile);
-              FQueueIndex := 0;
-            end;
-          PlayQueueIndex(FQueueIndex);
-        end
-      else
-        StartStreamAction(0);
+          FQueue.Clear;
+          FQueueIsPlaylist := False;
+          FQueue.Add(FSelectedFile);
+          FQueueIndex := 0;
+        end;
+      PlayQueueIndex(FQueueIndex);
+    end
+  else
+    StartStreamAction(0);
 end;
 
 
@@ -3943,16 +4008,16 @@ begin
     end;
 
   case Action of
-    0:    begin
-            FDesiredPlaybackState := 'play';
-            FDesiredPlaybackFile := Command.FileName;
-          end;
+      0: begin
+        FDesiredPlaybackState := 'play';
+        FDesiredPlaybackFile := Command.FileName;
+      end;
 
     1, 3: FDesiredPlaybackState := 'play';
 
-    2:    FDesiredPlaybackState := 'pause';
+    2: FDesiredPlaybackState := 'pause';
 
-    4:    FDesiredPlaybackState := 'stop';
+    4: FDesiredPlaybackState := 'stop';
   end;
 
   FStreamActions.Add(Command);
@@ -3963,6 +4028,7 @@ end;
 
 
 function THEOSForm.RequestedPlaybackState(): string;
+
 begin
 
   if (FDesiredPlaybackState <> '') then
@@ -3973,6 +4039,7 @@ end;
 
 
 procedure THEOSForm.StreamActionsReady(var Message: TLMessage);
+
 begin
 
   ProcessStreamActions();
@@ -3980,6 +4047,7 @@ end;
 
 
 procedure THEOSForm.StreamActionTick(Sender: TObject);
+
 begin
 
   ProcessStreamActions();
@@ -4059,7 +4127,7 @@ begin
           if (Command.Action = 5) then
             begin
               if CanSeekPlayback() and SameFileName(Command.FileName,
-                                                    FPlaybackFile) and (Command.Receiver = FStreamReceiver) then
+                FPlaybackFile) and (Command.Receiver = FStreamReceiver) then
                 SendHeos(haSeek,
                          '',
                          Command.PositionMs);
@@ -4096,6 +4164,7 @@ var
   AudioSettings: TDenonAudioSettings;
   ErrorText: string;
 
+
   procedure FailStream(const Text: string);
   begin
 
@@ -4131,10 +4200,10 @@ begin
 
           3: SendHeos(haResume);
 
-          4: begin
-               StopLocalStream;
-               SendHeos(haStop);
-             end;
+            4: begin
+              StopLocalStream;
+              SendHeos(haStop);
+            end;
         end;
         Exit;
       end;
@@ -4184,7 +4253,10 @@ begin
                                             FSelectedFile,
                                             Action = 1);
     if not FAudioServer.Initialized then
-      begin FailStream(FAudioServer.LastError()); Exit; end;
+      begin
+        FailStream(FAudioServer.LastError());
+        Exit;
+      end;
     FAudioServer.Start;
     memFLog.Lines.Add('Stream URL: ' + FAudioServer.Url);
 
@@ -4223,6 +4295,7 @@ end;
 
 
 procedure THEOSForm.RadioClick(Sender: TObject);
+
 begin
 
   FOpenRadioPending := True;
@@ -4238,7 +4311,8 @@ begin
       if IPv4Valid(Trim(edHost.Text)) then
         BeginReceiverCheck()
       else
-        BeginDiscovery(True, False);
+        BeginDiscovery(True,
+                       False);
       Exit;
     end;
 
@@ -4301,6 +4375,7 @@ end;
 procedure THEOSForm.RadioPlayback(Sender: TObject;
                                   const StationName: string;
                                   Playing: Boolean);
+
 begin
 
   if FClosePending then
@@ -4358,8 +4433,8 @@ begin
 
     try
       if not TryLoadHeosIni(FReceiverSettingsFile,
-                            Settings,
-                            ErrorText) then
+        Settings,
+        ErrorText) then
         begin
           memFLog.Lines.Add('! Receiver settings: ' + ErrorText);
           Exit;
@@ -4379,13 +4454,13 @@ begin
         96: ComboBox1.ItemIndex := 0;
         128: ComboBox1.ItemIndex := 1;
         160: ComboBox1.ItemIndex := 2;
-      else
-        ComboBox1.ItemIndex := 3;
+        else
+          ComboBox1.ItemIndex := 3;
       end;
 
       if (Settings.ReadInteger('AAC',
-                               'Channels',
-                               2) = 1) then
+        'Channels',
+        2) = 1) then
         ComboBox2.ItemIndex := 1
       else
         ComboBox2.ItemIndex := 0;
@@ -4426,18 +4501,29 @@ begin
 
     try
       if not TryLoadHeosIni(FReceiverSettingsFile, Settings, ErrorText) then
-        begin memFLog.Lines.Add('! Receiver settings: ' + ErrorText); Exit; end;
+        begin
+          memFLog.Lines.Add('! Receiver settings: ' + ErrorText);
+          Exit;
+        end;
 
       // Audio preferences can be saved before a receiver is connected.
       if FReceiverVerified then
         begin
-          Settings.WriteString('Receiver', 'Host', FVerifiedHost);
-          Settings.WriteString('Receiver', 'DeviceId', FPreferredDeviceId);
+          Settings.WriteString('Receiver',
+                               'Host',
+                               FVerifiedHost);
+          Settings.WriteString('Receiver',
+                               'DeviceId',
+                               FPreferredDeviceId);
         end;
       if TryReadAacSettings(AudioSettings) then
         begin
-          Settings.WriteInteger('AAC', 'BitrateKbps', AudioSettings.BitrateKbps);
-          Settings.WriteInteger('AAC', 'Channels', AudioSettings.Channels);
+          Settings.WriteInteger('AAC',
+                                'BitrateKbps',
+                                AudioSettings.BitrateKbps);
+          Settings.WriteInteger('AAC',
+                                'Channels',
+                                AudioSettings.Channels);
         end;
       if not TrySaveHeosIni(FReceiverSettingsFile, Settings, ErrorText) then
         memFLog.Lines.Add('! Receiver settings: ' + ErrorText);
@@ -4452,12 +4538,12 @@ end;
 
 
 procedure THEOSForm.ContinuePendingRadio();
+
 begin
 
   if FOpenRadioPending and FReceiverVerified and
-     (FVerifiedHost = Trim(edHost.Text)) and
-     not Assigned(FReceiverCheck) and
-     (not Assigned(FDiscovery) or FDiscoveryComplete) then
+    (FVerifiedHost = Trim(edHost.Text)) and not Assigned(FReceiverCheck) and
+    (not Assigned(FDiscovery) or FDiscoveryComplete) then
     begin
       FOpenRadioPending := False;
       RadioClick(nil);
@@ -4465,8 +4551,8 @@ begin
 end;
 
 
-procedure THEOSForm.ApplyDiscoveredDevices(const Devices: TArray<THEOSDevice>;
-                                            const ErrorText: string);
+procedure THEOSForm.ApplyDiscoveredDevices(const Devices: TArray < THEOSDevice > ;
+                                           const ErrorText: string);
 var
   I: Integer;
   Selected: Integer;
@@ -4490,13 +4576,12 @@ begin
           if SameText(FDevices[I].DeviceId, FPreferredDeviceId) then
             Selected := I;
         end
-      else
-        if (FDevices[I].Address = Trim(edHost.Text)) then
-          Selected := I;
+      else if (FDevices[I].Address = Trim(edHost.Text)) then
+        Selected := I;
     end;
   if (Selected < 0) and (Length(FDevices) = 1) and (FPreferredDeviceId = '') then
     Selected := 0;
-  cbxHEOSDevices.Visible := Length(FDevices) > 0;
+  cbxHEOSDevices.Visible := (Length(FDevices) > 0);
   cbxHEOSDevices.ItemIndex := Selected;
   btnFindHEOSDevice.Caption := 'Find HEOS';
   btnFindHEOSDevice.Enabled := True;
@@ -4509,11 +4594,10 @@ begin
   FVerifiedHost := '';
   if (ErrorText <> '') then
     FStatus.Caption := 'Discovery: ' + ErrorText
+  else if (Length(FDevices) = 0) then
+    FStatus.Caption := 'No HEOS device found. Check power, Network Control and the local network, then click Find HEOS.'
   else
-    if (Length(FDevices) = 0) then
-      FStatus.Caption := 'No HEOS device found. Check power, Network Control and the local network, then click Find HEOS.'
-    else
-      FStatus.Caption := 'Select your HEOS receiver from the device list. The saved device was not uniquely identified.';
+    FStatus.Caption := 'Select your HEOS receiver from the device list. The saved device was not uniquely identified.';
 
   lblStreamInfo.Caption := FStatus.Caption;
   memFLog.Lines.Add(FStatus.Caption);
@@ -4525,9 +4609,8 @@ end;
 
 {$WARN SYMBOL_PLATFORM OFF}
 
-function GetTickCount64;  external Kernel32Lib name 'GetTickCount64' ;
+function GetTickCount64; external Kernel32Lib name 'GetTickCount64';
 
 {$WARN SYMBOL_PLATFORM ON}
 
 end.
-

@@ -69,7 +69,7 @@ interface
 
 uses
   MfGpuCapture.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   {D3D11}
   WinApi.DirectX.D3D11,
@@ -81,6 +81,7 @@ uses
 
 type
   TPreviewRenderer = class
+
   private
 
     FDevice: ID3D11Device;
@@ -122,6 +123,7 @@ implementation
 
 constructor TPreviewRenderer.Create(const ADevice: ID3D11Device;
                                     const AContext: ID3D11DeviceContext);
+
 begin
 
   inherited Create;
@@ -140,6 +142,7 @@ end;
 
 
 destructor TPreviewRenderer.Destroy();
+
 begin
 
   ReleaseSwapChain;
@@ -151,6 +154,7 @@ end;
 
 
 procedure TPreviewRenderer.ReleaseSwapChain();
+
 begin
 
   FRenderTargetView := nil;
@@ -160,8 +164,8 @@ end;
 
 procedure TPreviewRenderer.CreateRenderTarget();
 var
-  hr   : HResult;
-  back : ID3D11Texture2D;
+  hr: HResult;
+  back: ID3D11Texture2D;
 
 begin
 
@@ -170,12 +174,14 @@ begin
   hr := FSwapChain.GetBuffer(0,
                              ID3D11Texture2D,
                              back);
-  CheckHR(hr, 'Preview: GetBuffer');
+  CheckHR(hr,
+          'Preview: GetBuffer');
 
   hr := FDevice.CreateRenderTargetView(back,
                                        nil,
                                        @FRenderTargetView);
-  CheckHR(hr, 'Preview: CreateRenderTargetView');
+  CheckHR(hr,
+          'Preview: CreateRenderTargetView');
 end;
 
 
@@ -201,14 +207,17 @@ begin
 
   hr := FDevice.QueryInterface(IDXGIDevice,
                                dxgiDev);
-  CheckHR(hr, 'Preview: QI IDXGIDevice');
+  CheckHR(hr,
+          'Preview: QI IDXGIDevice');
 
   hr := dxgiDev.GetAdapter(adapter);
-  CheckHR(hr, 'Preview: GetAdapter');
+  CheckHR(hr,
+          'Preview: GetAdapter');
 
   hr := adapter.GetParent(IDXGIFactory,
                           Pointer(factory));
-  CheckHR(hr, 'Preview: GetParent IDXGIFactory');
+  CheckHR(hr,
+          'Preview: GetParent IDXGIFactory');
 
   ZeroMemory(@sd,
              SizeOf(sd));
@@ -230,7 +239,8 @@ begin
   hr := factory.CreateSwapChain(FDevice,
                                 sd,
                                 FSwapChain);
-  CheckHR(hr, 'Preview: CreateSwapChain');
+  CheckHR(hr,
+          'Preview: CreateSwapChain');
 
   CreateRenderTarget();
 end;
@@ -240,6 +250,7 @@ procedure TPreviewRenderer.CreateSwapChainForHWND(hWnd: HWND;
                                                   Width,
                                                   Height: UINT;
                                                   SampleRate: UINT32);
+
 begin
 
   CreateSwapChainInternal(hWnd,
@@ -260,17 +271,17 @@ var
 begin
 
   if (FDevice = nil) or
-     (FContext = nil) or
-     (SrcTex = nil) then
+    (FContext = nil) or
+    (SrcTex = nil) then
     Exit;
 
   SrcTex.GetDesc(d);
 
   // Auto-create / auto-resize swapchain to match the real capture texture size.
   if (FSwapChain = nil) or
-     (FHWND = 0) or
-     (d.Width <> FWidth) or
-     (d.Height <> FHeight) then
+    (FHWND = 0) or
+    (d.Width <> FWidth) or
+    (d.Height <> FHeight) then
     begin
       if (FHWND <> 0) then
         CreateSwapChainInternal(FHWND,
@@ -287,7 +298,8 @@ begin
   hr := FSwapChain.GetBuffer(0,
                              ID3D11Texture2D,
                              backBuf);
-  CheckHR(hr, 'Preview: GetBuffer');
+  CheckHR(hr,
+          'Preview: GetBuffer');
 
   // Requires matching size+format (now guaranteed by auto-resize)
   ctx.CopyResource(backBuf,
@@ -295,8 +307,8 @@ begin
 
   hr := FSwapChain.Present(1,
                            0);
-  CheckHR(hr, 'Preview: Present');
+  CheckHR(hr,
+          'Preview: Present');
 end;
 
 end.
-

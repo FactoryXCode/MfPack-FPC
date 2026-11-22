@@ -86,20 +86,21 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 const
 
-  DXGI_CREATE_FACTORY_DEBUG           = $1;
+  DXGI_CREATE_FACTORY_DEBUG = $1;
 
-  function CreateDXGIFactory2(Flags: UINT;
-                              const riid: TGuid;
-                              var ppFactory: pointer): HResult; stdcall;
+function CreateDXGIFactory2(Flags: UINT;
+                            const riid: TGuid;
+                            var ppFactory: pointer): HResult; stdcall;
 
-  function DXGIGetDebugInterface1(Flags: UINT;
-                                  const riid: TGuid;
-                                  var pDebug: pointer): HResult; stdcall;
+function DXGIGetDebugInterface1(Flags: UINT;
+                                const riid: TGuid;
+                                var pDebug: pointer): HResult; stdcall;
 
 // Enums =======================================================================
 
@@ -111,30 +112,33 @@ type
   //------------------------------------------------------------------------------
   PDXGI_MULTIPLANE_OVERLAY_YCbCr_FLAGS = ^DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAGS;
   DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAGS = DWord;
+
 const
   DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAG_NOMINAL_RANGE = DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAGS($1);  // 16 - 235 vs. 0 - 255
-  DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAG_BT709         = DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAGS($2);  // BT.709 vs. BT.601
-  DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAG_xvYCC         = DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAGS($4);   // xvYCC vs. conventional YCbCr
+  DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAG_BT709 = DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAGS($2);  // BT.709 vs. BT.601
+  DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAG_xvYCC = DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAGS($4);   // xvYCC vs. conventional YCbCr
 
 type
   PDxgiFramePresentationMode = ^DXGI_FRAME_PRESENTATION_MODE;
   DXGI_FRAME_PRESENTATION_MODE = DWord;
-  DxgiFramePresentationMode                        = DXGI_FRAME_PRESENTATION_MODE;
+  DxgiFramePresentationMode = DXGI_FRAME_PRESENTATION_MODE;
+
 const
-  DXGI_FRAME_PRESENTATION_MODE_COMPOSED            = DXGI_FRAME_PRESENTATION_MODE(0);
-  DXGI_FRAME_PRESENTATION_MODE_OVERLAY             = DXGI_FRAME_PRESENTATION_MODE(1);
-  DXGI_FRAME_PRESENTATION_MODE_NONE                = DXGI_FRAME_PRESENTATION_MODE(2);
+  DXGI_FRAME_PRESENTATION_MODE_COMPOSED = DXGI_FRAME_PRESENTATION_MODE(0);
+  DXGI_FRAME_PRESENTATION_MODE_OVERLAY = DXGI_FRAME_PRESENTATION_MODE(1);
+  DXGI_FRAME_PRESENTATION_MODE_NONE = DXGI_FRAME_PRESENTATION_MODE(2);
   DXGI_FRAME_PRESENTATION_MODE_COMPOSITION_FAILURE = DXGI_FRAME_PRESENTATION_MODE(3);
 
 type
   PDXGI_OVERLAY_SUPPORT_FLAG = ^DXGI_OVERLAY_SUPPORT_FLAG;
   DXGI_OVERLAY_SUPPORT_FLAG = DWord;
+
 const
-  DXGI_OVERLAY_SUPPORT_FLAG_DIRECT  = DXGI_OVERLAY_SUPPORT_FLAG($1);
+  DXGI_OVERLAY_SUPPORT_FLAG_DIRECT = DXGI_OVERLAY_SUPPORT_FLAG($1);
   DXGI_OVERLAY_SUPPORT_FLAG_SCALING = DXGI_OVERLAY_SUPPORT_FLAG($2);
 
 
-// =============================================================================
+  // =============================================================================
 
 type
 
@@ -142,11 +146,12 @@ type
   // ======================
   //
   IDXGIDevice3 = interface(IDXGIDevice2)
-  ['{6007896c-3244-4afd-bf18-a6d3beda5023}']
+    ['{6007896c-3244-4afd-bf18-a6d3beda5023}']
 
     procedure Trim(); stdcall;
 
   end;
+
   IID_IDXGIDevice3 = IDXGIDevice3;
 
   //+-----------------------------------------------------------------------------
@@ -156,6 +161,7 @@ type
   //
   //------------------------------------------------------------------------------
   PDXGI_MATRIX_3X2_F = ^DXGI_MATRIX_3X2_F;
+
   DXGI_MATRIX_3X2_F = record
     _11: Single;
     _12: Single;
@@ -170,7 +176,7 @@ type
   // =========================
   //
   IDXGISwapChain2 = interface(IDXGISwapChain1)
-  ['{a8be2ac4-199f-4946-b331-79599fb98de7}']
+    ['{a8be2ac4-199f-4946-b331-79599fb98de7}']
 
     function SetSourceSize(Width: UINT;
                            Height: UINT): HResult; stdcall;
@@ -189,6 +195,7 @@ type
     function GetMatrixTransform(out pMatrix: DXGI_MATRIX_3X2_F): HResult; stdcall;
 
   end;
+
   IID_IDXGISwapChain2 = IDXGISwapChain2;
 
 
@@ -196,11 +203,12 @@ type
   // ======================
   //
   IDXGIOutput2 = interface(IDXGIOutput1)
-  ['{595e39d1-2724-4663-99b1-da969de28364}']
+    ['{595e39d1-2724-4663-99b1-da969de28364}']
 
     function SupportsOverlays(): BOOL; stdcall;
 
   end;
+
   IID_IDXGIOutput2 = IDXGIOutput2;
 
 
@@ -208,11 +216,12 @@ type
   // =======================
   //
   IDXGIFactory3 = interface(IDXGIFactory2)
-  ['{25483823-cd46-4c7d-86ca-47aa95b837bd}']
+    ['{25483823-cd46-4c7d-86ca-47aa95b837bd}']
 
     function GetCreationFlags(): UINT; stdcall;
 
   end;
+
   IID_IDXGIFactory3 = IDXGIFactory3;
 
 
@@ -222,6 +231,7 @@ type
   //
   //------------------------------------------------------------------------------
   PDXGI_DECODE_SWAP_CHAIN_DESC = ^DXGI_DECODE_SWAP_CHAIN_DESC;
+
   DXGI_DECODE_SWAP_CHAIN_DESC = record
     Flags: UINT;
   end;
@@ -231,7 +241,7 @@ type
   // ==============================
   //
   IDXGIDecodeSwapChain = interface(IUnknown)
-  ['{2633066b-4514-4c7a-8fd8-12ea98059d18}']
+    ['{2633066b-4514-4c7a-8fd8-12ea98059d18}']
 
     function PresentBuffer(BufferToPresent: UINT;
                            SyncInterval: UINT;
@@ -257,6 +267,7 @@ type
     function GetColorSpace(ColorSpace: DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAGS): HResult; stdcall;
 
   end;
+
   IID_IDXGIDecodeSwapChain = IDXGIDecodeSwapChain;
 
 
@@ -264,22 +275,23 @@ type
   // ===========================
   //
   IDXGIFactoryMedia = interface(IUnknown)
-  ['{41e7d1f2-a591-4f7b-a2e5-fa9c843e1c12}']
+    ['{41e7d1f2-a591-4f7b-a2e5-fa9c843e1c12}']
 
     function CreateSwapChainForCompositionSurfaceHandle({in} pDevice: IUnknown;
-                                                        {in} hSurface: THandle;
-                                                        {in} pDesc: DXGI_SWAP_CHAIN_DESC1;
-                                                        {in} pRestrictToOutput: IDXGIOutput;
-                                                         out ppSwapChain: IDXGISwapChain1): HResult; stdcall;
+    {in} hSurface: THandle;
+    {in} pDesc: DXGI_SWAP_CHAIN_DESC1;
+    {in} pRestrictToOutput: IDXGIOutput;
+                                                        out ppSwapChain: IDXGISwapChain1): HResult; stdcall;
 
     function CreateDecodeSwapChainForCompositionSurfaceHandle({in} pDevice: IUnknown;
-                                                              {in} hSurface: THandle;
-                                                              {in} pDesc: DXGI_DECODE_SWAP_CHAIN_DESC;
-                                                              {in} pYuvDecodeBuffers: IDXGIResource;
-                                                              {in} pRestrictToOutput: IDXGIOutput;
+    {in} hSurface: THandle;
+    {in} pDesc: DXGI_DECODE_SWAP_CHAIN_DESC;
+    {in} pYuvDecodeBuffers: IDXGIResource;
+    {in} pRestrictToOutput: IDXGIOutput;
                                                               out ppSwapChain: IDXGIDecodeSwapChain): HResult; stdcall;
 
   end;
+
   IID_IDXGIFactoryMedia = IDXGIFactoryMedia;
 
   //+-----------------------------------------------------------------------------
@@ -289,6 +301,7 @@ type
   //------------------------------------------------------------------------------
 
   PDxgiFrameStatisticsMedia = ^DXGI_FRAME_STATISTICS_MEDIA;
+
   DXGI_FRAME_STATISTICS_MEDIA = record
     PresentCount: UINT;
     PresentRefreshCount: UINT;
@@ -305,7 +318,7 @@ type
   // =============================
   //
   IDXGISwapChainMedia = interface(IUnknown)
-  ['{dd95b90b-f05f-4f6a-bd65-25bfb264bd84}']
+    ['{dd95b90b-f05f-4f6a-bd65-25bfb264bd84}']
 
     function GetFrameStatisticsMedia(out pStats: DXGI_FRAME_STATISTICS_MEDIA): HResult; stdcall;
 
@@ -316,6 +329,7 @@ type
                                          out pClosestLargerPresentDuration: UINT): HResult; stdcall;
 
   end;
+
   IID_IDXGISwapChainMedia = IDXGISwapChainMedia;
 
 
@@ -323,13 +337,14 @@ type
   // ======================
   //
   IDXGIOutput3 = interface(IDXGIOutput2)
-  ['{8a6bb301-7e7e-41F4-a8e0-5b32f7f99b18}']
+    ['{8a6bb301-7e7e-41F4-a8e0-5b32f7f99b18}']
 
     function CheckOverlaySupport({in} EnumFormat: DXGI_FORMAT;
-                                 {in} pConcernedDevice: IUnknown;
+    {in} pConcernedDevice: IUnknown;
                                  out pFlags: UINT): HResult; stdcall;
 
   end;
+
   IID_IDXGIOutput3 = IDXGIOutput3;
 
 
@@ -342,9 +357,9 @@ implementation
 const
   DXGI1_3Lib = 'Dxgi.dll';
 
-  function CreateDXGIFactory2; external DXGI1_3Lib name 'CreateDXGIFactory2' ;
-  function DXGIGetDebugInterface1; external DXGI1_3Lib name 'DXGIGetDebugInterface1' ;
+function CreateDXGIFactory2; external DXGI1_3Lib name 'CreateDXGIFactory2';
+function DXGIGetDebugInterface1; external DXGI1_3Lib name 'DXGIGetDebugInterface1';
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

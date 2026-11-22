@@ -107,7 +107,8 @@ type
     FOutputBitmap: TBitmap;
 
     procedure DrawTestFrame();
-    procedure CheckHr(const AOperation: string; const AHr: HResult);
+    procedure CheckHr(const AOperation: string;
+                      const AHr: HResult);
     function CreateVideoType(out AMediaType: IMFMediaType): HResult;
 
     function CreateSampleFromBitmap(const ABitmap: TBitmap;
@@ -127,7 +128,7 @@ implementation
 uses
   MfGrayscaleMFT;
 
-{$R *.lfm}
+  {$R *.lfm}
 
 const
   FRAME_WIDTH = 400;
@@ -136,14 +137,17 @@ const
 
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+
 begin
 
   FSourceBitmap := TBitmap.Create;
   FOutputBitmap := TBitmap.Create;
   FSourceBitmap.PixelFormat := Graphics.pf32bit;
   FOutputBitmap.PixelFormat := Graphics.pf32bit;
-  FSourceBitmap.SetSize(FRAME_WIDTH, FRAME_HEIGHT);
-  FOutputBitmap.SetSize(FRAME_WIDTH, FRAME_HEIGHT);
+  FSourceBitmap.SetSize(FRAME_WIDTH,
+                        FRAME_HEIGHT);
+  FOutputBitmap.SetSize(FRAME_WIDTH,
+                        FRAME_HEIGHT);
   DrawTestFrame;
   imgSource.Picture.Assign(FSourceBitmap);
   imgOutput.Picture.Assign(FOutputBitmap);
@@ -152,6 +156,7 @@ end;
 
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
+
 begin
 
   FOutputBitmap.Free;
@@ -161,7 +166,13 @@ end;
 
 procedure TfrmMain.DrawTestFrame;
 const
-  COLORS: array[0..6] of TColor = (clRed, $000080FF, clYellow, clLime, clAqua, clBlue, clFuchsia);
+  COLORS: array[0..6] of TColor = (clRed,
+                                   $000080FF,
+                                   clYellow,
+                                   clLime,
+                                   clAqua,
+                                   clBlue,
+                                   clFuchsia);
 var
   I: Integer;
   LeftEdge: Integer;
@@ -174,7 +185,9 @@ begin
       LeftEdge := (I * FRAME_WIDTH) div Length(COLORS);
       RightEdge := ((I + 1) * FRAME_WIDTH) div Length(COLORS);
       FSourceBitmap.Canvas.Brush.Color := COLORS[I];
-      FSourceBitmap.Canvas.FillRect(Rect(LeftEdge, 0, RightEdge,
+      FSourceBitmap.Canvas.FillRect(Rect(LeftEdge,
+                                         0,
+                                         RightEdge,
                                          FRAME_HEIGHT));
     end;
 
@@ -200,7 +213,9 @@ begin
 end;
 
 
-procedure TfrmMain.CheckHr(const AOperation: string; const AHr: HResult);
+procedure TfrmMain.CheckHr(const AOperation: string;
+                           const AHr: HResult);
+
 begin
 
   if FAILED(AHr) then
@@ -213,6 +228,7 @@ end;
 
 
 function TfrmMain.CreateVideoType(out AMediaType: IMFMediaType): HResult;
+
 begin
 
   AMediaType := nil;
@@ -388,9 +404,9 @@ begin
           CreateVideoType(MediaType));
 
   CheckHr('Test input type',
-           Transform.SetInputType(0,
-                                  MediaType,
-                                  MFT_SET_TYPE_TEST_ONLY));
+          Transform.SetInputType(0,
+                                 MediaType,
+                                 MFT_SET_TYPE_TEST_ONLY));
 
   CheckHr('Set input type',
           Transform.SetInputType(0,
@@ -423,10 +439,10 @@ begin
   OutputStatus := 0;
 
   CheckHr('ProcessOutput',
-           Transform.ProcessOutput(0,
-                                   1,
-                                   @OutputData,
-                                   OutputStatus));
+          Transform.ProcessOutput(0,
+                                  1,
+                                  @OutputData,
+                                  OutputStatus));
 
 
   if not Assigned(OutputData.pSample) then
@@ -444,6 +460,7 @@ end;
 
 
 procedure TfrmMain.btnProcessClick(Sender: TObject);
+
 begin
 
   try

@@ -66,7 +66,7 @@ interface
 
 uses
   MfCapturePlatform,
-{Vcl}
+  {Vcl}
   Dialogs,
   WinApi.WinApiTypes,
   WinApi.WinError,
@@ -76,14 +76,15 @@ uses
   WinApi.MediaFoundationApi.MfError;
 
 
-//-------------------------------------------------------------------
-//  VideoBufferLock class
-//
-//  Locks a video buffer that might or might not support IMF2DBuffer.
-//
-//-------------------------------------------------------------------
+  //-------------------------------------------------------------------
+  //  VideoBufferLock class
+  //
+  //  Locks a video buffer that might or might not support IMF2DBuffer.
+  //
+  //-------------------------------------------------------------------
 type
   TVideoBufferLock = class(TObject)
+
   private
     //
     m_pBuffer: IMFMediaBuffer;
@@ -97,10 +98,10 @@ type
 
     procedure UnlockBuffer();
     function LockBuffer(lDefaultStride: LONG;     // Minimum stride (with no padding).
-                        dwHeightInPixels: DWORD;  // Height of the image, in pixels.
-                        var ppbScanLine0: PByte;  // Receives a pointer to the start of scan line 0.
-                        var plStride: LONG        // Receives the actual stride.
-                        ): HRESULT;
+      dwHeightInPixels: DWORD;  // Height of the image, in pixels.
+      var ppbScanLine0: PByte;  // Receives a pointer to the start of scan line 0.
+      var plStride: LONG        // Receives the actual stride.
+      ): HRESULT;
   end;
 
 
@@ -109,9 +110,10 @@ implementation
 
 constructor TVideoBufferLock.Create(const pBuffer: IMFMediaBuffer);
 var
-  hr : HRESULT;
+  hr: HRESULT;
 
 begin
+
   inherited Create();
   m_bLocked := False;
   m_p2DBuffer := Nil;
@@ -127,7 +129,9 @@ end;
 
 
 destructor TVideoBufferLock.Destroy();
+
 begin
+
   UnlockBuffer(); // Unlock the buffer
   m_pBuffer := Nil;
   m_p2DBuffer := Nil;
@@ -146,14 +150,15 @@ end;
 //-------------------------------------------------------------------
 
 function TVideoBufferLock.LockBuffer(lDefaultStride: LONG;     // Minimum stride (with no padding).
-                                     dwHeightInPixels: DWORD;  // Height of the image, in pixels.
-                                     var ppbScanLine0: PByte;  // Receives a pointer to the start of scan line 0.
-                                     var plStride: LONG): HRESULT;
+  dwHeightInPixels: DWORD;  // Height of the image, in pixels.
+  var ppbScanLine0: PByte;  // Receives a pointer to the start of scan line 0.
+  var plStride: LONG): HRESULT;
 var
   hr: HRESULT;
   pData: PByte;  // Any use of PByte require {$POINTERMATH ON)
 
 begin
+
   New(pData);
 
   // Use the 2-D version if available.
@@ -172,20 +177,20 @@ begin
       if SUCCEEDED(hr) then
         begin
           plStride := lDefaultStride;
-            if (lDefaultStride < 0) then
-              begin
-                // Bottom-up orientation. Return a pointer to the start of the
-                // last row *in memory* which is the top row of the image.
-                {$WARNINGS OFF}
-                ppbScanLine0^ := pData^ + abs(lDefaultStride) * (dwHeightInPixels - 1);
-                {$WARNINGS ON}
-               end
-            else
-              begin
-                // Top-down orientation.
-                // Return a pointer to the start of the buffer.
-                ppbScanLine0 := pData;
-              end;
+          if (lDefaultStride < 0) then
+            begin
+              // Bottom-up orientation. Return a pointer to the start of the
+              // last row *in memory* which is the top row of the image.
+              {$WARNINGS OFF}
+              ppbScanLine0^ := pData^ + abs(lDefaultStride) * (dwHeightInPixels - 1);
+              {$WARNINGS ON}
+            end
+          else
+            begin
+              // Top-down orientation.
+              // Return a pointer to the start of the buffer.
+              ppbScanLine0 := pData;
+            end;
         end;
     end;
 
@@ -207,6 +212,7 @@ var
   hr: HResult;  //Debug
 
 begin
+
   hr := S_OK;
 
   if m_bLocked then

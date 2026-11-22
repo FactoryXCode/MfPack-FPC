@@ -145,8 +145,9 @@ type
 
     procedure FormCreate(Sender: TObject);
     procedure btnEnumerateClick(Sender: TObject);
-    procedure lvTransformsSelectItem(Sender: TObject; Item: TListItem;
-      Selected: Boolean);
+    procedure lvTransformsSelectItem(Sender: TObject;
+                                     Item: TListItem;
+                                     Selected: Boolean);
     procedure btnCopyDetailsClick(Sender: TObject);
     procedure btnInspectClick(Sender: TObject);
     procedure btnCapabilityProbeClick(Sender: TObject);
@@ -169,7 +170,9 @@ type
                                  const AKey: TGUID): TStringArray;
 
     function HasRegisteredType(const AAttributes: IMFAttributes;
-                               const AKey, AMajorType, ASubtype: TGUID): Boolean;
+                               const AKey,
+                               AMajorType,
+                               ASubtype: TGUID): Boolean;
 
     function ActivationIdentity(const AActivate: IMFActivate): string;
     function DescribeRegisteredType(const AType: MFT_REGISTER_TYPE_INFO): string;
@@ -180,10 +183,11 @@ type
     function LoadAdapters(): Boolean;
 
     procedure AddTransform(const AActivate: IMFActivate;
-                           const AAdapterName, AAdapterLuid: string);
+                           const AAdapterName,
+                           AAdapterLuid: string);
 
     function EnumerateHardwarePerAdapter(const ACategory: TGUID;
-                                        const AFlags: UINT32): Integer;
+                                         const AFlags: UINT32): Integer;
 
     function EnumerateNormally(const ACategory: TGUID;
                                const AFlags: UINT32): Integer;
@@ -206,7 +210,8 @@ type
     procedure InspectTransform(const AIndex: Integer);
 
     function TestHevcProfile(const ATransform: IMFTransform;
-                             const AInputStreamId, AOutputStreamId: DWORD;
+                             const AInputStreamId,
+                             AOutputStreamId: DWORD;
                              const AInputSubtype: TGUID;
                              const AProfile: UINT32;
                              out AOutputHr: HResult;
@@ -230,6 +235,7 @@ implementation
 {$R *.lfm}
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+
 begin
 
   cbCategory.Items.Add('Video decoders');
@@ -258,8 +264,10 @@ begin
   EnumerateTransforms();
 end;
 
+
 function TfrmMain.SelectedCategory(out ACategory: TGUID;
                                    out AName: string): Boolean;
+
 begin
 
   Result := True;
@@ -278,13 +286,14 @@ begin
     9: ACategory := MFT_CATEGORY_MULTIPLEXER;
     10: ACategory := MFT_CATEGORY_ENCRYPTOR;
     11: ACategory := MFT_CATEGORY_OTHER;
-  else
-    Result := False;
+    else
+      Result := False;
   end;
 end;
 
 
 function TfrmMain.SelectedFlags(): UINT32;
+
 begin
 
   case cbScope.ItemIndex of
@@ -294,8 +303,8 @@ begin
     4: Result := MFT_ENUM_FLAG_FIELDOFUSE;
     5: Result := MFT_ENUM_FLAG_LOCALMFT;
     6: Result := MFT_ENUM_FLAG_TRANSCODE_ONLY;
-  else
-    Result := MFT_ENUM_FLAG_ALL;
+    else
+      Result := MFT_ENUM_FLAG_ALL;
   end;
 
   if chkSortAndFilter.Checked then
@@ -335,15 +344,15 @@ begin
   Length := 0;
 
   if Assigned(AAttributes) and
-     SUCCEEDED(AAttributes.GetAllocatedString(AKey,
-                                              Value,
-                                              Length)) then
-    try
-      if Assigned(Value) then
-        Result := string(Value);
-    finally
-      CoTaskMemFree(Value);
-    end;
+    SUCCEEDED(AAttributes.GetAllocatedString(AKey,
+                                             Value,
+                                             Length)) then
+  try
+    if Assigned(Value) then
+      Result := string(Value);
+  finally
+    CoTaskMemFree(Value);
+  end;
 end;
 
 
@@ -362,9 +371,9 @@ begin
   C4 := Byte((AValue shr 24) and $FF);
 
   if (C1 >= 32) and (C1 <= 126) and
-     (C2 >= 32) and (C2 <= 126) and
-     (C3 >= 32) and (C3 <= 126) and
-     (C4 >= 32) and (C4 <= 126) then
+    (C2 >= 32) and (C2 <= 126) and
+    (C3 >= 32) and (C3 <= 126) and
+    (C4 >= 32) and (C4 <= 126) then
     Result := Char(C1) + Char(C2) + Char(C3) + Char(C4)
   else
     Result := '';
@@ -372,6 +381,7 @@ end;
 
 
 function TfrmMain.LuidToString(const ALuid: LUID): string;
+
 begin
 
   Result := Format('0x%.8x:%.8x',
@@ -397,7 +407,8 @@ begin
   Factory := nil;
   FactoryPointer := nil;
 
-  Hr := CreateDXGIFactory1(IID_IDXGIFactory1, FactoryPointer);
+  Hr := CreateDXGIFactory1(IID_IDXGIFactory1,
+                           FactoryPointer);
   if FAILED(Hr) then
     Exit;
 
@@ -422,7 +433,8 @@ begin
       if SUCCEEDED(Adapter.GetDesc1(Desc)) then
         begin
           ItemIndex := Length(FAdapters);
-          SetLength(FAdapters, ItemIndex + 1);
+          SetLength(FAdapters,
+                    ItemIndex + 1);
           FAdapters[ItemIndex].Name := string(PWideChar(@Desc.Description[0]));
           FAdapters[ItemIndex].AdapterLuid := Desc.AdapterLuid;
           FAdapters[ItemIndex].IsSoftware := ((Desc.Flags and DXGI_ADAPTER_FLAG_SOFTWARE) <> 0);
@@ -435,23 +447,30 @@ end;
 
 
 function TfrmMain.MajorTypeName(const AGuid: TGUID): string;
+
 begin
 
   if IsEqualGUID(AGuid,
-                 MFMediaType_Video) then
+    MFMediaType_Video) then
     Result := 'Video'
+  else if IsEqualGUID(AGuid,
+    MFMediaType_Audio) then
+    Result := 'Audio'
   else
-    if IsEqualGUID(AGuid,
-                   MFMediaType_Audio) then
-      Result := 'Audio'
-    else
-      Result := GUIDToString(AGuid);
+    Result := GUIDToString(AGuid);
 end;
 
 
 function TfrmMain.SubtypeName(const AGuid: TGUID): string;
 const
-  MediaSubtypeD4: array[0..7] of Byte = ($80, $00, $00, $AA, $00, $38, $9B, $71);
+  MediaSubtypeD4: array[0..7] of Byte = ($80,
+                                         $00,
+                                         $00,
+                                         $AA,
+                                         $00,
+                                         $38,
+                                         $9B,
+                                         $71);
 
 var
   I: Integer;
@@ -481,8 +500,9 @@ begin
         $0029: Result := 'RGB8';
         $0055: Result := 'MP3';
         $00FF: Result := 'AAC';
-      else
-        Result := Format('format tag 0x%.4x', [AGuid.D1]);
+        else
+          Result := Format('format tag 0x%.4x',
+                           [AGuid.D1]);
       end;
     end
   else
@@ -491,11 +511,12 @@ end;
 
 
 function TfrmMain.DescribeRegisteredType(const AType: MFT_REGISTER_TYPE_INFO): string;
+
 begin
 
   Result := MajorTypeName(AType.guidMajorType) + ' / ' +
-            SubtypeName(AType.guidSubtype) + '  ' +
-            GUIDToString(AType.guidSubtype);
+    SubtypeName(AType.guidSubtype) + '  ' +
+    GUIDToString(AType.guidSubtype);
 end;
 
 
@@ -516,9 +537,9 @@ begin
   BlobSize := 0;
 
   if not Assigned(AAttributes) or
-     FAILED(AAttributes.GetBlobSize(AKey,
-                                    BlobSize)) or
-     (BlobSize = 0) then
+    FAILED(AAttributes.GetBlobSize(AKey,
+                                   BlobSize)) or
+    (BlobSize = 0) then
     Exit;
 
   if ((BlobSize mod SizeOf(MFT_REGISTER_TYPE_INFO)) <> 0) then
@@ -528,10 +549,8 @@ begin
             BlobSize);
   ActualSize := 0;
 
-  if FAILED(AAttributes.GetBlob(AKey,
-                                @Blob[0],
-                                BlobSize,
-                                @ActualSize)) then
+  if FAILED(AAttributes.GetBlob(AKey, @Blob[0],
+    BlobSize, @ActualSize)) then
     Exit;
 
   Count := ActualSize div SizeOf(MFT_REGISTER_TYPE_INFO);
@@ -565,19 +584,18 @@ begin
   BlobSize := 0;
 
   if not Assigned(AAttributes) or
-     FAILED(AAttributes.GetBlobSize(AKey, BlobSize)) or
-     (BlobSize = 0) or
-     ((BlobSize mod SizeOf(MFT_REGISTER_TYPE_INFO)) <> 0) then
+    FAILED(AAttributes.GetBlobSize(AKey,
+                                   BlobSize)) or
+    (BlobSize = 0) or
+    ((BlobSize mod SizeOf(MFT_REGISTER_TYPE_INFO)) <> 0) then
     Exit;
 
   SetLength(Blob,
             BlobSize);
   ActualSize := 0;
 
-  if FAILED(AAttributes.GetBlob(AKey,
-                                @Blob[0],
-                                BlobSize,
-                                @ActualSize)) then
+  if FAILED(AAttributes.GetBlob(AKey, @Blob[0],
+    BlobSize, @ActualSize)) then
     Exit;
 
   Count := ActualSize div SizeOf(MFT_REGISTER_TYPE_INFO);
@@ -586,9 +604,9 @@ begin
     begin
       TypeInfo := PMFT_REGISTER_TYPE_INFO(NativeUInt(@Blob[0]) + NativeUInt(I * SizeOf(MFT_REGISTER_TYPE_INFO)));
       if IsEqualGUID(TypeInfo^.guidMajorType,
-                     AMajorType) and
-         IsEqualGUID(TypeInfo^.guidSubtype,
-                     ASubtype) then
+        AMajorType) and
+        IsEqualGUID(TypeInfo^.guidSubtype,
+                    ASubtype) then
         Exit(True);
     end;
 end;
@@ -610,7 +628,7 @@ begin
            0);
 
   if FAILED(AActivate.GetGUID(MFT_TRANSFORM_CLSID_Attribute,
-                              ClassId)) then
+    ClassId)) then
     Exit;
 
   Result := GUIDToString(ClassId);
@@ -625,7 +643,8 @@ end;
 
 
 procedure TfrmMain.AddTransform(const AActivate: IMFActivate;
-                                const AAdapterName, AAdapterLuid: string);
+                                const AAdapterName,
+                                AAdapterLuid: string);
 var
   EntryIndex: Integer;
   Item: TListItem;
@@ -654,7 +673,7 @@ begin
   // Keep the category used for this enumeration with the entry. The user can
   // change the category combo box before selecting an already listed MFT.
   FEntries[EntryIndex].IsVideoCategory := (cbCategory.ItemIndex >= 0) and
-                                          (cbCategory.ItemIndex <= 4);
+    (cbCategory.ItemIndex <= 4);
   FEntries[EntryIndex].Activate := AActivate;
   FEntries[EntryIndex].AdapterName := AAdapterName;
   FEntries[EntryIndex].AdapterLuid := AAdapterLuid;
@@ -812,7 +831,7 @@ begin
           begin
             lblStatus.Caption := Format('MFTEnum2 failed for %s: %s',
                                         [FAdapters[AdapterIndex].Name,
-                                         HResultText(Hr)]);
+              HResultText(Hr)]);
             Exit(-1);
           end;
         FAdapters[AdapterIndex].RawMftCount := Count;
@@ -874,34 +893,36 @@ begin
 
   if SUCCEEDED(AMediaType.GetGUID(MF_MT_SUBTYPE, Subtype)) then
     Result := Result + ' / ' + SubtypeName(Subtype) + '  ' +
-              GUIDToString(Subtype)
+      GUIDToString(Subtype)
   else
     Result := Result + ' / (subtype not set)';
 
   PackedValue := 0;
 
   if IsEqualGUID(MajorType,
-                 MFMediaType_Video) and
-     SUCCEEDED(AMediaType.GetUINT64(MF_MT_FRAME_SIZE,
-                                    PackedValue)) then
+    MFMediaType_Video) and
+    SUCCEEDED(AMediaType.GetUINT64(MF_MT_FRAME_SIZE,
+                                   PackedValue)) then
     begin
       Value1 := UINT32(PackedValue shr 32);
       Value2 := UINT32(PackedValue and $FFFFFFFF);
-      Result := Result + Format('  %dx%d', [Value1, Value2]);
+      Result := Result + Format('  %dx%d',
+                                [Value1, Value2]);
     end;
 
   PackedValue := 0;
   if IsEqualGUID(MajorType, MFMediaType_Video) and SUCCEEDED(AMediaType.GetUINT64(MF_MT_FRAME_RATE,
-                                                                                  PackedValue)) then
+    PackedValue)) then
     begin
       Value1 := UINT32(PackedValue shr 32);
       Value2 := UINT32(PackedValue and $FFFFFFFF);
       if (Value2 <> 0) then
-        Result := Result + Format('  %d/%d fps', [Value1, Value2]);
+        Result := Result + Format('  %d/%d fps',
+                                  [Value1, Value2]);
     end;
 
   if IsEqualGUID(MajorType,
-                 MFMediaType_Audio) then
+    MFMediaType_Audio) then
     begin
       Channels := 0;
       SampleRate := 0;
@@ -916,7 +937,7 @@ begin
 
       if (Channels <> 0) then
         Result := Result + Format('  %d channel(s)',
-                                 [Channels]);
+                                  [Channels]);
 
       if (SampleRate <> 0) then
         Result := Result + Format('  %d Hz',
@@ -929,9 +950,11 @@ end;
 
 
 function TfrmMain.InputStreamFlagsText(const AFlags: DWORD): string;
+
 begin
 
-  Result := Format('0x%.8x', [AFlags]);
+  Result := Format('0x%.8x',
+                   [AFlags]);
 
   if ((AFlags and MFT_INPUT_STREAM_WHOLE_SAMPLES) <> 0) then
     Result := Result + ' WHOLE_SAMPLES';
@@ -960,6 +983,7 @@ end;
 
 
 function TfrmMain.OutputStreamFlagsText(const AFlags: DWORD): string;
+
 begin
 
   Result := Format('0x%.8x',
@@ -995,7 +1019,8 @@ end;
 
 
 function TfrmMain.GetStreamIds(const ATransform: IMFTransform;
-                               const AInputCount, AOutputCount: DWORD;
+                               const AInputCount,
+                               AOutputCount: DWORD;
                                out AInputIds: TDwordArray;
                                out AOutputIds: TDwordArray): HResult;
 var
@@ -1024,7 +1049,7 @@ begin
                                     InputPointer,
                                     AOutputCount,
                                     OutputPointer);
-  if Result = E_NOTIMPL then
+  if (Result = E_NOTIMPL) then
     begin
       for I := 0 to Integer(AInputCount) - 1 do
         AInputIds[I] := I;
@@ -1073,7 +1098,7 @@ begin
       if (Hr = MF_E_TRANSFORM_TYPE_NOT_SET) then
         begin
           ALines.Add('      Runtime types require the opposite stream type ' +
-                     'to be selected first.');
+            'to be selected first.');
           ALines.Add('      ' + HResultText(Hr));
           Exit;
         end;
@@ -1098,9 +1123,8 @@ begin
 
   if (Count = 0) then
     ALines.Add('      (no runtime types returned)')
-  else
-    if (Count = MAX_RUNTIME_TYPES) then
-      ALines.Add('      (list stopped at the 256-type safety limit)');
+  else if (Count = MAX_RUNTIME_TYPES) then
+    ALines.Add('      (list stopped at the 256-type safety limit)');
 end;
 
 
@@ -1131,13 +1155,14 @@ begin
 
   try
     memDetails.Lines.Add('');
-    memDetails.Lines.Add(StringOfChar('=', 72));
+    memDetails.Lines.Add(StringOfChar('=',
+                                      72));
     memDetails.Lines.Add('Activated IMFTransform inspection');
-    memDetails.Lines.Add(StringOfChar('=', 72));
+    memDetails.Lines.Add(StringOfChar('=',
+                                      72));
     memDetails.Lines.Add('Media types are not set during this inspection.');
 
-    if (AIndex < 0) or (AIndex >= Length(FEntries)) or
-       not Assigned(FEntries[AIndex].Activate) then
+    if (AIndex < 0) or (AIndex >= Length(FEntries)) or not Assigned(FEntries[AIndex].Activate) then
       begin
         memDetails.Lines.Add('Activation object is not available.');
         Exit;
@@ -1163,7 +1188,8 @@ begin
           Attributes.GetUINT32(MF_TRANSFORM_ASYNC,
                                AsyncValue);
           memDetails.Lines.Add(Format('Asynchronous MFT: %s',
-            [BoolToStr(AsyncValue <> 0, True)]));
+                                      [BoolToStr(AsyncValue <> 0,
+                                                 True)]));
 
           if (AsyncValue <> 0) then
             begin
@@ -1172,17 +1198,16 @@ begin
               memDetails.Lines.Add('Async unlock: ' + HResultText(UnlockHr));
             end;
         end
+      else if (Hr = E_NOTIMPL) then
+        begin
+          // GetAttributes is optional for software MFTs. An absent store
+          // does not mean that activation or stream inspection failed.
+          memDetails.Lines.Add('GetAttributes: no attribute store (optional).');
+          memDetails.Lines.Add('  ' + HResultText(Hr));
+          memDetails.Lines.Add('Asynchronous MFT: unknown (no attributes).');
+        end
       else
-        if Hr = E_NOTIMPL then
-          begin
-            // GetAttributes is optional for software MFTs. An absent store
-            // does not mean that activation or stream inspection failed.
-            memDetails.Lines.Add('GetAttributes: no attribute store (optional).');
-            memDetails.Lines.Add('  ' + HResultText(Hr));
-            memDetails.Lines.Add('Asynchronous MFT: unknown (no attributes).');
-          end
-        else
-          memDetails.Lines.Add('GetAttributes failed: ' + HResultText(Hr));
+        memDetails.Lines.Add('GetAttributes failed: ' + HResultText(Hr));
 
       InputMinimum := 0;
       InputMaximum := 0;
@@ -1195,7 +1220,7 @@ begin
                                       OutputMaximum);
       if SUCCEEDED(Hr) then
         memDetails.Lines.Add(Format('Stream limits: input %d..%d, output %d..%d',
-                                     [InputMinimum, InputMaximum, OutputMinimum, OutputMaximum]))
+                                    [InputMinimum, InputMaximum, OutputMinimum, OutputMaximum]))
       else
         memDetails.Lines.Add('GetStreamLimits failed: ' + HResultText(Hr));
 
@@ -1226,7 +1251,8 @@ begin
       for I := 0 to Length(InputIds) - 1 do
         begin
           memDetails.Lines.Add('');
-          memDetails.Lines.Add(Format('Input stream %d', [InputIds[I]]));
+          memDetails.Lines.Add(Format('Input stream %d',
+                                      [InputIds[I]]));
 
           FillChar(InputInfo,
                    SizeOf(InputInfo),
@@ -1239,13 +1265,13 @@ begin
               memDetails.Lines.Add('  Flags: ' + InputStreamFlagsText(InputInfo.dwFlags));
               memDetails.Lines.Add(Format('  Buffer: size=%d, lookahead=%d, alignment=%d, latency=%d',
                                           [InputInfo.cbSize,
-                                           InputInfo.cbMaxLookahead,
-                                           InputInfo.cbAlignment,
-                                           InputInfo.hnsMaxLatency]));
+                InputInfo.cbMaxLookahead,
+                InputInfo.cbAlignment,
+                InputInfo.hnsMaxLatency]));
             end
           else
             begin
-              if Hr = MF_E_TRANSFORM_TYPE_NOT_SET then
+              if (Hr = MF_E_TRANSFORM_TYPE_NOT_SET) then
                 memDetails.Lines.Add('  GetInputStreamInfo: type required.')
               else
                 memDetails.Lines.Add('  GetInputStreamInfo failed:');
@@ -1262,7 +1288,8 @@ begin
       for I := 0 to Length(OutputIds) - 1 do
         begin
           memDetails.Lines.Add('');
-          memDetails.Lines.Add(Format('Output stream %d', [OutputIds[I]]));
+          memDetails.Lines.Add(Format('Output stream %d',
+                                      [OutputIds[I]]));
 
           FillChar(OutputInfo,
                    SizeOf(OutputInfo),
@@ -1278,7 +1305,7 @@ begin
             end
           else
             begin
-              if Hr = MF_E_TRANSFORM_TYPE_NOT_SET then
+              if (Hr = MF_E_TRANSFORM_TYPE_NOT_SET) then
                 memDetails.Lines.Add('  GetOutputStreamInfo: type required.')
               else
                 memDetails.Lines.Add('  GetOutputStreamInfo failed:');
@@ -1307,8 +1334,10 @@ begin
   end;
 end;
 
+
 function TfrmMain.TestHevcProfile(const ATransform: IMFTransform;
-                                  const AInputStreamId, AOutputStreamId: DWORD;
+                                  const AInputStreamId,
+                                  AOutputStreamId: DWORD;
                                   const AInputSubtype: TGUID;
                                   const AProfile: UINT32;
                                   out AOutputHr: HResult;
@@ -1451,6 +1480,7 @@ begin
   end;
 end;
 
+
 procedure TfrmMain.ProbeActivation(const AEntry: TMftEntry;
                                    const ACategoryIndex: Integer;
                                    const ALines: TStrings);
@@ -1482,8 +1512,9 @@ begin
                     [Length(AEntry.InputTypes), Length(AEntry.OutputTypes)]));
 
   for I := 0 to Length(AEntry.InputTypes) - 1 do
-    ALines.Add(Format('    In %d: %s', [I,
-                                        AEntry.InputTypes[I]]));
+    ALines.Add(Format('    In %d: %s',
+                      [I,
+      AEntry.InputTypes[I]]));
 
   for I := 0 to Length(AEntry.OutputTypes) - 1 do
     ALines.Add(Format('    Out %d: %s',
@@ -1518,9 +1549,11 @@ begin
       end;
 
     ALines.Add(Format('  Asynchronous: %s',
-                      [BoolToStr(AsyncValue <> 0, True)]));
+                      [BoolToStr(AsyncValue <> 0,
+                                 True)]));
     ALines.Add(Format('  D3D11-aware: %s',
-                      [BoolToStr(D3d11Aware <> 0, True)]));
+                      [BoolToStr(D3d11Aware <> 0,
+                                 True)]));
 
     if (D3d11Aware <> 0) then
       ALines.Add('  Same-adapter zero-copy candidate: Yes')
@@ -1577,27 +1610,27 @@ begin
     // generic probe. HEVC encoding is the first one; other codecs retain the
     // complete generic activation and type report above.
     if (ACategoryIndex = 1) and
-       (Length(InputIds) > 0) and (Length(OutputIds) > 0) and
-       HasRegisteredType(AEntry.Activate,
-                         MFT_OUTPUT_TYPES_Attributes,
-                         MFMediaType_Video,
-                         MFVideoFormat_HEVC) then
+      (Length(InputIds) > 0) and (Length(OutputIds) > 0) and
+      HasRegisteredType(AEntry.Activate,
+                        MFT_OUTPUT_TYPES_Attributes,
+                        MFMediaType_Video,
+                        MFVideoFormat_HEVC) then
       begin
         ALines.Add('  Format-specific strategy: HEVC encoder');
 
         ALines.Add(Format('    Registered NV12 input: %s',
                           [BoolToStr(HasRegisteredType(AEntry.Activate,
-                           MFT_INPUT_TYPES_Attributes,
-                           MFMediaType_Video,
-                           MFVideoFormat_NV12),
-                           True)]));
+                                                       MFT_INPUT_TYPES_Attributes,
+                                                       MFMediaType_Video,
+                                                       MFVideoFormat_NV12),
+                                     True)]));
 
         ALines.Add(Format('    Registered P010 input: %s',
-          [BoolToStr(HasRegisteredType(AEntry.Activate,
-                                       MFT_INPUT_TYPES_Attributes,
-                                       MFMediaType_Video,
-                                       MFVideoFormat_P010),
-                                       True)]));
+                          [BoolToStr(HasRegisteredType(AEntry.Activate,
+                                                       MFT_INPUT_TYPES_Attributes,
+                                                       MFMediaType_Video,
+                                                       MFVideoFormat_P010),
+                                     True)]));
 
         MainSupported := TestHevcProfile(Transform,
                                          InputIds[0],
@@ -1608,7 +1641,8 @@ begin
                                          InputHr);
 
         ALines.Add(Format('    Main / NV12 1080p30: %s',
-                          [BoolToStr(MainSupported, True)]));
+                          [BoolToStr(MainSupported,
+                                     True)]));
 
         if not MainSupported then
           begin
@@ -1624,7 +1658,8 @@ begin
                                            OutputHr,
                                            InputHr);
         ALines.Add(Format('    Main10 / P010 1080p30: %s',
-                          [BoolToStr(Main10Supported, True)]));
+                          [BoolToStr(Main10Supported,
+                                     True)]));
 
         if not Main10Supported then
           begin
@@ -1655,22 +1690,23 @@ var
 begin
 
   if not SelectedCategory(Category,
-                          CategoryName) then
+    CategoryName) then
     Exit;
 
   // Re-enumerate with the current category, scope, and sort/filter choices so
   // the bulk report always describes exactly what is visible in the list.
   EnumerateTransforms();
   HardwareVideo := (cbScope.ItemIndex = 3) and
-                   (cbCategory.ItemIndex >= 0) and
-                   (cbCategory.ItemIndex <= 4);
+    (cbCategory.ItemIndex >= 0) and
+    (cbCategory.ItemIndex <= 4);
 
   memDetails.Lines.BeginUpdate;
 
   try
     memDetails.Clear;
     memDetails.Lines.Add('MFT capability probe');
-    memDetails.Lines.Add(StringOfChar('=', 72));
+    memDetails.Lines.Add(StringOfChar('=',
+                                      72));
     memDetails.Lines.Add('Category: ' + CategoryName);
     memDetails.Lines.Add('Scope: ' + cbScope.Text);
     memDetails.Lines.Add(Format('Unique transforms selected: %d',
@@ -1709,7 +1745,8 @@ begin
         memDetails.Lines.Add(Format('Transform %d of %d',
                                     [I + 1, Length(FEntries)]));
 
-        memDetails.Lines.Add(StringOfChar('-', 72));
+        memDetails.Lines.Add(StringOfChar('-',
+                                          72));
 
         ProbeActivation(FEntries[I],
                         cbCategory.ItemIndex,
@@ -1717,7 +1754,7 @@ begin
         memDetails.Lines.Add('');
       end;
 
-    if Length(FEntries) = 0 then
+    if (Length(FEntries) = 0) then
       memDetails.Lines.Add('No transforms matched the selected category and scope.');
 
     lblStatus.Caption := Format('Capability probe completed: %d transform(s).',
@@ -1738,7 +1775,7 @@ var
 begin
 
   if not SelectedCategory(Category,
-                          CategoryName) then
+    CategoryName) then
     Exit;
 
   lvTransforms.Items.BeginUpdate();
@@ -1756,15 +1793,15 @@ begin
     // adapter. Audio and other categories are not DXGI-adapter resources and
     // continue to use the system-wide MFTEnumEx path.
     if (cbScope.ItemIndex = 3) and
-       (cbCategory.ItemIndex >= 0) and
-       (cbCategory.ItemIndex <= 4) then
+      (cbCategory.ItemIndex >= 0) and
+      (cbCategory.ItemIndex <= 4) then
       Count := EnumerateHardwarePerAdapter(Category,
                                            Flags)
     else
       Count := EnumerateNormally(Category,
                                  Flags);
 
-    if Count < 0 then
+    if (Count < 0) then
       Exit;
 
     lblStatus.Caption := Format('%d transform(s) in %s.',
@@ -1832,7 +1869,7 @@ begin
     else
       for I := 0 to Length(FEntries[AIndex].InputTypes) - 1 do
         memDetails.Lines.Add(Format('  %d. %s',
-                                   [I + 1, FEntries[AIndex].InputTypes[I]]));
+                                    [I + 1, FEntries[AIndex].InputTypes[I]]));
 
     memDetails.Lines.Add('');
     memDetails.Lines.Add('Registered output types');
@@ -1842,7 +1879,7 @@ begin
     else
       for I := 0 to Length(FEntries[AIndex].OutputTypes) - 1 do
         memDetails.Lines.Add(Format('  %d. %s',
-                                   [I + 1, FEntries[AIndex].OutputTypes[I]]));
+                                    [I + 1, FEntries[AIndex].OutputTypes[I]]));
 
     memDetails.Lines.Add('');
     memDetails.Lines.Add('Note');
@@ -1856,6 +1893,7 @@ end;
 
 
 procedure TfrmMain.btnEnumerateClick(Sender: TObject);
+
 begin
 
   EnumerateTransforms();
@@ -1865,6 +1903,7 @@ end;
 procedure TfrmMain.lvTransformsSelectItem(Sender: TObject;
                                           Item: TListItem;
                                           Selected: Boolean);
+
 begin
 
   if Selected and Assigned(Item) then
@@ -1872,13 +1911,13 @@ begin
       btnInspect.Enabled := True;
       ShowDetails(Item.Index);
     end
-  else
-    if (lvTransforms.Selected = nil) then
-      btnInspect.Enabled := False;
+  else if (lvTransforms.Selected = nil) then
+    btnInspect.Enabled := False;
 end;
 
 
 procedure TfrmMain.btnInspectClick(Sender: TObject);
+
 begin
 
   if Assigned(lvTransforms.Selected) then
@@ -1887,6 +1926,7 @@ end;
 
 
 procedure TfrmMain.btnCapabilityProbeClick(Sender: TObject);
+
 begin
 
   ProbeSelectedCategory();
@@ -1894,6 +1934,7 @@ end;
 
 
 procedure TfrmMain.btnCopyDetailsClick(Sender: TObject);
+
 begin
 
   Clipboard.AsText := memDetails.Text;

@@ -73,7 +73,7 @@ unit WinApi.DirectX.D2D1_1Helper;
 interface
 
 uses
-  
+
   {WinApi}
   Windows,
   WinApi.WinApiTypes,
@@ -91,7 +91,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 type
@@ -99,12 +100,14 @@ type
   //Matrix4x3F as D2D1_MATRIX_4X3_F;
   // In Delphi you can't inherid from a record
   Matrix4x3F = record helper for D2D_MATRIX_4X3_F
+
   public
     procedure Init();
   end;
 
 
   Matrix4x4F = record helper for D2D_MATRIX_4X4_F
+
   public
     procedure Init(); inline;
 
@@ -113,8 +116,8 @@ type
                          z: Single): D2D_MATRIX_4X4_F; inline;
 
     function Scale(x: Single;
-                       y: Single;
-                       z: Single): D2D_MATRIX_4X4_F; inline;
+                   y: Single;
+                   z: Single): D2D_MATRIX_4X4_F; inline;
 
     function RotationX(degreeX: Single): D2D_MATRIX_4X4_F; inline;
 
@@ -157,6 +160,7 @@ type
   end;
 
   Matrix5x4F = record helper for D2D_MATRIX_5X4_F
+
   public
     procedure Init(); inline;
 
@@ -278,15 +282,17 @@ function SetDpiCompensatedEffectInput(deviceContext: ID2D1DeviceContext;
                                       borderMode: D2D1_BORDER_MODE = D2D1_BORDER_MODE_HARD): HRESULT;
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
 
 
 procedure Matrix4x3F.Init();
+
 begin
+
   struct._11 := 1;
   struct._12 := 0;
   struct._13 := 0;
@@ -303,27 +309,29 @@ begin
   struct._42 := 0;
   struct._43 := 0;
 
-  m[0,0] := struct._11;
-  m[0,1] := struct._12;
-  m[0,2] := struct._13;
+  m[0, 0] := struct._11;
+  m[0, 1] := struct._12;
+  m[0, 2] := struct._13;
 
-  m[1,0] := struct._21;
-  m[1,1] := struct._22;
-  m[1,2] := struct._23;
+  m[1, 0] := struct._21;
+  m[1, 1] := struct._22;
+  m[1, 2] := struct._23;
 
-  m[2,0] := struct._31;
-  m[2,1] := struct._32;
-  m[2,2] := struct._33;
+  m[2, 0] := struct._31;
+  m[2, 1] := struct._32;
+  m[2, 2] := struct._33;
 
-  m[3,0] := struct._41;
-  m[3,1] := struct._42;
-  m[3,2] := struct._43;
+  m[3, 0] := struct._41;
+  m[3, 1] := struct._42;
+  m[3, 2] := struct._43;
 
 end;
 
 
 procedure Matrix4x4f.Init();
+
 begin
+
   struct._11 := 1;
   struct._12 := 0;
   struct._13 := 0;
@@ -344,25 +352,25 @@ begin
   struct._43 := 0;
   struct._44 := 1;
 
-  m[0,0] := struct._11;
-  m[0,1] := struct._12;
-  m[0,2] := struct._13;
-  m[0,3] := struct._14;
+  m[0, 0] := struct._11;
+  m[0, 1] := struct._12;
+  m[0, 2] := struct._13;
+  m[0, 3] := struct._14;
 
-  m[1,0] := struct._21;
-  m[1,1] := struct._22;
-  m[1,2] := struct._23;
-  m[1,3] := struct._24;
+  m[1, 0] := struct._21;
+  m[1, 1] := struct._22;
+  m[1, 2] := struct._23;
+  m[1, 3] := struct._24;
 
-  m[2,0] := struct._31;
-  m[2,1] := struct._32;
-  m[2,2] := struct._33;
-  m[2,3] := struct._34;
+  m[2, 0] := struct._31;
+  m[2, 1] := struct._32;
+  m[2, 2] := struct._33;
+  m[2, 3] := struct._34;
 
-  m[3,0] := struct._41;
-  m[3,1] := struct._42;
-  m[3,2] := struct._43;
-  m[3,3] := struct._44;
+  m[3, 0] := struct._41;
+  m[3, 1] := struct._42;
+  m[3, 2] := struct._43;
+  m[3, 3] := struct._44;
 
 end;
 
@@ -370,7 +378,9 @@ end;
 function Matrix4x4f.Translation(x: Single;
                                 y: Single;
                                 z: Single): D2D_MATRIX_4X4_F;
+
 begin
+
   struct._11 := 1.0;
   struct._12 := 0.0;
   struct._13 := 0.0;
@@ -391,34 +401,36 @@ begin
   struct._43 := z;
   struct._44 := 1.0;
 
-  m[0,0] := struct._11;
-  m[0,1] := struct._12;
-  m[0,2] := struct._13;
-  m[0,3] := struct._14;
+  m[0, 0] := struct._11;
+  m[0, 1] := struct._12;
+  m[0, 2] := struct._13;
+  m[0, 3] := struct._14;
 
-  m[1,0] := struct._21;
-  m[1,1] := struct._22;
-  m[1,2] := struct._23;
-  m[1,3] := struct._24;
+  m[1, 0] := struct._21;
+  m[1, 1] := struct._22;
+  m[1, 2] := struct._23;
+  m[1, 3] := struct._24;
 
-  m[2,0] := struct._31;
-  m[2,1] := struct._32;
-  m[2,2] := struct._33;
-  m[2,3] := struct._34;
+  m[2, 0] := struct._31;
+  m[2, 1] := struct._32;
+  m[2, 2] := struct._33;
+  m[2, 3] := struct._34;
 
-  m[3,0] := struct._41;
-  m[3,1] := struct._42;
-  m[3,2] := struct._43;
-  m[3,3] := struct._44;
+  m[3, 0] := struct._41;
+  m[3, 1] := struct._42;
+  m[3, 2] := struct._43;
+  m[3, 3] := struct._44;
 
   Result := Self;
 end;
 
 
 function Matrix4x4f.Scale(x: Single;
-                         y: Single;
-                         z: Single): D2D_MATRIX_4X4_F;
+                          y: Single;
+                          z: Single): D2D_MATRIX_4X4_F;
+
 begin
+
   struct._11 := x;
   struct._12 := 0.0;
   struct._13 := 0.0;
@@ -439,25 +451,25 @@ begin
   struct._43 := 0.0;
   struct._44 := 1.0;
 
-  m[0,0] := struct._11;
-  m[0,1] := struct._12;
-  m[0,2] := struct._13;
-  m[0,3] := struct._14;
+  m[0, 0] := struct._11;
+  m[0, 1] := struct._12;
+  m[0, 2] := struct._13;
+  m[0, 3] := struct._14;
 
-  m[1,0] := struct._21;
-  m[1,1] := struct._22;
-  m[1,2] := struct._23;
-  m[1,3] := struct._24;
+  m[1, 0] := struct._21;
+  m[1, 1] := struct._22;
+  m[1, 2] := struct._23;
+  m[1, 3] := struct._24;
 
-  m[2,0] := struct._31;
-  m[2,1] := struct._32;
-  m[2,2] := struct._33;
-  m[2,3] := struct._34;
+  m[2, 0] := struct._31;
+  m[2, 1] := struct._32;
+  m[2, 2] := struct._33;
+  m[2, 3] := struct._34;
 
-  m[3,0] := struct._41;
-  m[3,1] := struct._42;
-  m[3,2] := struct._43;
-  m[3,3] := struct._44;
+  m[3, 0] := struct._41;
+  m[3, 1] := struct._42;
+  m[3, 2] := struct._43;
+  m[3, 3] := struct._44;
 
   Result := Self;
 end;
@@ -470,6 +482,7 @@ var
   cosAngle: Single;
 
 begin
+
   // angleInRadian := degreeX * (Pi / 180.0);  // same as DegToRad(degreeX)
   angleInRadian := DegToRad(degreeX);
 
@@ -499,25 +512,25 @@ begin
   struct._43 := 0;
   struct._44 := 1;
 
-  m[0,0] := struct._11;
-  m[0,1] := struct._12;
-  m[0,2] := struct._13;
-  m[0,3] := struct._14;
+  m[0, 0] := struct._11;
+  m[0, 1] := struct._12;
+  m[0, 2] := struct._13;
+  m[0, 3] := struct._14;
 
-  m[1,0] := struct._21;
-  m[1,1] := struct._22;
-  m[1,2] := struct._23;
-  m[1,3] := struct._24;
+  m[1, 0] := struct._21;
+  m[1, 1] := struct._22;
+  m[1, 2] := struct._23;
+  m[1, 3] := struct._24;
 
-  m[2,0] := struct._31;
-  m[2,1] := struct._32;
-  m[2,2] := struct._33;
-  m[2,3] := struct._34;
+  m[2, 0] := struct._31;
+  m[2, 1] := struct._32;
+  m[2, 2] := struct._33;
+  m[2, 3] := struct._34;
 
-  m[3,0] := struct._41;
-  m[3,1] := struct._42;
-  m[3,2] := struct._43;
-  m[3,3] := struct._44;
+  m[3, 0] := struct._41;
+  m[3, 1] := struct._42;
+  m[3, 2] := struct._43;
+  m[3, 3] := struct._44;
 
   Result := Self;
 end;
@@ -530,6 +543,7 @@ var
   cosAngle: Single;
 
 begin
+
   // angleInRadian := degreeZ * (Pi / 180.0); same as DegToRad(degreeZ)
   angleInRadian := DegToRad(degreeZ);
 
@@ -559,25 +573,25 @@ begin
   struct._43 := 0;
   struct._44 := 1;
 
-  m[0,0] := struct._11;
-  m[0,1] := struct._12;
-  m[0,2] := struct._13;
-  m[0,3] := struct._14;
+  m[0, 0] := struct._11;
+  m[0, 1] := struct._12;
+  m[0, 2] := struct._13;
+  m[0, 3] := struct._14;
 
-  m[1,0] := struct._21;
-  m[1,1] := struct._22;
-  m[1,2] := struct._23;
-  m[1,3] := struct._24;
+  m[1, 0] := struct._21;
+  m[1, 1] := struct._22;
+  m[1, 2] := struct._23;
+  m[1, 3] := struct._24;
 
-  m[2,0] := struct._31;
-  m[2,1] := struct._32;
-  m[2,2] := struct._33;
-  m[2,3] := struct._34;
+  m[2, 0] := struct._31;
+  m[2, 1] := struct._32;
+  m[2, 2] := struct._33;
+  m[2, 3] := struct._34;
 
-  m[3,0] := struct._41;
-  m[3,1] := struct._42;
-  m[3,2] := struct._43;
-  m[3,3] := struct._44;
+  m[3, 0] := struct._41;
+  m[3, 1] := struct._42;
+  m[3, 2] := struct._43;
+  m[3, 3] := struct._44;
 
   Result := Self;
 end;
@@ -595,6 +609,7 @@ var
   oneMinusCosAngle: Single;
 
 begin
+
   // Normalize the vector represented by x, y, and z
   magnitude := D2D1Vec3Length(x,
                               y,
@@ -626,7 +641,7 @@ begin
 
   struct._31 := y * sinAngle + oneMinusCosAngle * z * x;
   struct._32 := -x * sinAngle + oneMinusCosAngle * z * y;
-  struct._33 := 1             + oneMinusCosAngle * (z * z - 1) ;
+  struct._33 := 1 + oneMinusCosAngle * (z * z - 1);
   struct._34 := 0;
 
   struct._41 := 0;
@@ -634,25 +649,25 @@ begin
   struct._43 := 0;
   struct._44 := 1;
 
-  m[0,0] := struct._11;
-  m[0,1] := struct._12;
-  m[0,2] := struct._13;
-  m[0,3] := struct._14;
+  m[0, 0] := struct._11;
+  m[0, 1] := struct._12;
+  m[0, 2] := struct._13;
+  m[0, 3] := struct._14;
 
-  m[1,0] := struct._21;
-  m[1,1] := struct._22;
-  m[1,2] := struct._23;
-  m[1,3] := struct._24;
+  m[1, 0] := struct._21;
+  m[1, 1] := struct._22;
+  m[1, 2] := struct._23;
+  m[1, 3] := struct._24;
 
-  m[2,0] := struct._31;
-  m[2,1] := struct._32;
-  m[2,2] := struct._33;
-  m[2,3] := struct._34;
+  m[2, 0] := struct._31;
+  m[2, 1] := struct._32;
+  m[2, 2] := struct._33;
+  m[2, 3] := struct._34;
 
-  m[3,0] := struct._41;
-  m[3,1] := struct._42;
-  m[3,2] := struct._43;
-  m[3,3] := struct._44;
+  m[3, 0] := struct._41;
+  m[3, 1] := struct._42;
+  m[3, 2] := struct._43;
+  m[3, 3] := struct._44;
 
 
   Result := Self;
@@ -690,25 +705,25 @@ begin
   struct._43 := 0;
   struct._44 := 1;
 
-  m[0,0] := struct._11;
-  m[0,1] := struct._12;
-  m[0,2] := struct._13;
-  m[0,3] := struct._14;
+  m[0, 0] := struct._11;
+  m[0, 1] := struct._12;
+  m[0, 2] := struct._13;
+  m[0, 3] := struct._14;
 
-  m[1,0] := struct._21;
-  m[1,1] := struct._22;
-  m[1,2] := struct._23;
-  m[1,3] := struct._24;
+  m[1, 0] := struct._21;
+  m[1, 1] := struct._22;
+  m[1, 2] := struct._23;
+  m[1, 3] := struct._24;
 
-  m[2,0] := struct._31;
-  m[2,1] := struct._32;
-  m[2,2] := struct._33;
-  m[2,3] := struct._34;
+  m[2, 0] := struct._31;
+  m[2, 1] := struct._32;
+  m[2, 2] := struct._33;
+  m[2, 3] := struct._34;
 
-  m[3,0] := struct._41;
-  m[3,1] := struct._42;
-  m[3,2] := struct._43;
-  m[3,3] := struct._44;
+  m[3, 0] := struct._41;
+  m[3, 1] := struct._42;
+  m[3, 2] := struct._43;
+  m[3, 3] := struct._44;
 
   Result := Self;
 end;
@@ -745,25 +760,25 @@ begin
   struct._43 := 0;
   struct._44 := 1;
 
-  m[0,0] := struct._11;
-  m[0,1] := struct._12;
-  m[0,2] := struct._13;
-  m[0,3] := struct._14;
+  m[0, 0] := struct._11;
+  m[0, 1] := struct._12;
+  m[0, 2] := struct._13;
+  m[0, 3] := struct._14;
 
-  m[1,0] := struct._21;
-  m[1,1] := struct._22;
-  m[1,2] := struct._23;
-  m[1,3] := struct._24;
+  m[1, 0] := struct._21;
+  m[1, 1] := struct._22;
+  m[1, 2] := struct._23;
+  m[1, 3] := struct._24;
 
-  m[2,0] := struct._31;
-  m[2,1] := struct._32;
-  m[2,2] := struct._33;
-  m[2,3] := struct._34;
+  m[2, 0] := struct._31;
+  m[2, 1] := struct._32;
+  m[2, 2] := struct._33;
+  m[2, 3] := struct._34;
 
-  m[3,0] := struct._41;
-  m[3,1] := struct._42;
-  m[3,2] := struct._43;
-  m[3,3] := struct._44;
+  m[3, 0] := struct._41;
+  m[3, 1] := struct._42;
+  m[3, 2] := struct._43;
+  m[3, 3] := struct._44;
 
   Result := Self;
 end;
@@ -774,6 +789,7 @@ var
   proj: Single;
 
 begin
+
   proj := 0;
 
   if (depth > 0) then
@@ -799,83 +815,85 @@ begin
   struct._43 := 0;
   struct._44 := 1;
 
-  m[0,0] := struct._11;
-  m[0,1] := struct._12;
-  m[0,2] := struct._13;
-  m[0,3] := struct._14;
+  m[0, 0] := struct._11;
+  m[0, 1] := struct._12;
+  m[0, 2] := struct._13;
+  m[0, 3] := struct._14;
 
-  m[1,0] := struct._21;
-  m[1,1] := struct._22;
-  m[1,2] := struct._23;
-  m[1,3] := struct._24;
+  m[1, 0] := struct._21;
+  m[1, 1] := struct._22;
+  m[1, 2] := struct._23;
+  m[1, 3] := struct._24;
 
-  m[2,0] := struct._31;
-  m[2,1] := struct._32;
-  m[2,2] := struct._33;
-  m[2,3] := struct._34;
+  m[2, 0] := struct._31;
+  m[2, 1] := struct._32;
+  m[2, 2] := struct._33;
+  m[2, 3] := struct._34;
 
-  m[3,0] := struct._41;
-  m[3,1] := struct._42;
-  m[3,2] := struct._43;
-  m[3,3] := struct._44;
+  m[3, 0] := struct._41;
+  m[3, 1] := struct._42;
+  m[3, 2] := struct._43;
+  m[3, 3] := struct._44;
 
   Result := Self;
 end;
 
 
 function Matrix4x4F.ReinterpretBaseType(const pMatrix: D2D1_MATRIX_4X4_F): D2D_MATRIX_4X4_F;
+
 begin
+
   Result := D2D_MATRIX_4X4_F(pMatrix);
 end;
 
 
 function Matrix4x4F.IsIdentity(): Boolean;
+
 begin
+
   Result := False;
 
-  if ( struct._11 = 1.0 ) and
-            ( struct._12 = 0.0 ) and
-            ( struct._13 = 0.0 ) and
-            ( struct._14 = 0.0 ) and
+  if (struct._11 = 1.0) and
+    (struct._12 = 0.0) and
+    (struct._13 = 0.0) and
+    (struct._14 = 0.0) and
 
-            ( struct._21 = 0.0 ) and
-            ( struct._22 = 1.0 ) and
-            ( struct._23 = 0.0 ) and
-            ( struct._24 = 0.0 ) and
+    (struct._21 = 0.0) and
+    (struct._22 = 1.0) and
+    (struct._23 = 0.0) and
+    (struct._24 = 0.0) and
 
-            ( struct._31 = 0.0 ) and
-            ( struct._32 = 0.0 ) and
-            ( struct._33 = 1.0 ) and
-            ( struct._34 = 0.0 ) and
+    (struct._31 = 0.0) and
+    (struct._32 = 0.0) and
+    (struct._33 = 1.0) and
+    (struct._34 = 0.0) and
 
-            ( struct._41 = 0.0 ) and
-            ( struct._42 = 0.0 ) and
-            ( struct._43 = 0.0 ) and
-            ( struct._44 = 1.0) then
+    (struct._41 = 0.0) and
+    (struct._42 = 0.0) and
+    (struct._43 = 0.0) and
+    (struct._44 = 1.0) then
 
-            Result := True
-  else if
+    Result := True
+  else if (m[0, 0] = 1.0) and
+    (m[0, 1] = 0.0) and
+    (m[0, 2] = 0.0) and
+    (m[0, 3] = 0.0) and
 
-            (m[0,0] = 1.0) and
-            (m[0,1] = 0.0) and
-            (m[0,2] = 0.0) and
-            (m[0,3] = 0.0) and
+    (m[1, 0] = 0.0) and
+    (m[1, 1] = 1.0) and
+    (m[1, 2] = 0.0) and
+    (m[1, 3] = 0.0) and
 
-            (m[1,0] = 0.0) and
-            (m[1,1] = 1.0) and
-            (m[1,2] = 0.0) and
-            (m[1,3] = 0.0) and
+    (m[2, 0] = 0.0) and
+    (m[2, 1] = 0.0) and
+    (m[2, 2] = 1.0) and
+    (m[2, 3] = 0.0) and
 
-            (m[2,0] = 0.0) and
-            (m[2,1] = 0.0) and
-            (m[2,2] = 1.0) and
-            (m[2,3] = 0.0) and
-
-            (m[3,0] = 0.0) and
-            (m[3,1] = 0.0) and
-            (m[3,2] = 0.0) and
-            (m[3,3] = 1.0) then
-            Result := True;
+    (m[3, 0] = 0.0) and
+    (m[3, 1] = 0.0) and
+    (m[3, 2] = 0.0) and
+    (m[3, 3] = 1.0) then
+    Result := True;
 
 end;
 
@@ -887,6 +905,7 @@ var
   cosAngle: Single;
 
 begin
+
   // angleInRadian := degreeY * (Pi / 180.0); // same as DegToRad(degreeY)
   angleInRadian := DegToRad(degreeY);
 
@@ -917,25 +936,25 @@ begin
   struct._44 := 1;
 
 
-  m[0,0] := cosAngle;
-  m[0,1] := 0.0;
-  m[0,2] := -sinAngle;
-  m[0,3] := 0.0;
+  m[0, 0] := cosAngle;
+  m[0, 1] := 0.0;
+  m[0, 2] := -sinAngle;
+  m[0, 3] := 0.0;
 
-  m[1,0] := 0.0;
-  m[1,1] := 1.0;
-  m[1,2] := 0.0;
-  m[1,3] := 0.0;
+  m[1, 0] := 0.0;
+  m[1, 1] := 1.0;
+  m[1, 2] := 0.0;
+  m[1, 3] := 0.0;
 
-  m[2,0] := sinAngle;
-  m[2,1] := 0.0;
-  m[2,2] := cosAngle;
-  m[2,3] := 0.0;
+  m[2, 0] := sinAngle;
+  m[2, 1] := 0.0;
+  m[2, 2] := cosAngle;
+  m[2, 3] := 0.0;
 
-  m[3,0] := 0.0;
-  m[3,1] := 0.0;
-  m[3,2] := 0.0;
-  m[3,3] := 1.0;
+  m[3, 0] := 0.0;
+  m[3, 1] := 0.0;
+  m[3, 2] := 0.0;
+  m[3, 3] := 1.0;
 
   Result := Self;
 end;
@@ -949,6 +968,7 @@ var
   minor4: Single;
 
 begin
+
   if (pUnion = 0) then
     begin
       minor1 := struct._41 * (struct._12 * (struct._23 * struct._34 - struct._33 * struct._24) - struct._13 * (struct._22 * struct._34 - struct._24 * struct._32) + struct._14 * (struct._22 * struct._33 - struct._23 * struct._32));
@@ -958,10 +978,10 @@ begin
     end
   else
     begin
-      minor1 := m[3,0] * (m[0,1] * (m[1,2] * m[2,3] - m[2,2] * m[1,3]) - m[0,2] * (m[1,1] * m[2,3] - m[1,3] * m[2,1]) + m[0,3] * (m[1,1] * m[2,2] - m[1,2] * m[2,1]));
-      minor2 := m[3,1] * (m[0,0] * (m[1,2] * m[2,3] - m[2,2] * m[1,3]) - m[0,2] * (m[1,0] * m[2,3] - m[1,3] * m[2,0]) + m[0,3] * (m[1,0] * m[2,2] - m[1,2] * m[2,0]));
-      minor3 := m[3,2] * (m[0,0] * (m[1,1] * m[2,3] - m[2,1] * m[1,3]) - m[0,1] * (m[1,0] * m[2,3] - m[1,3] * m[2,0]) + m[0,3] * (m[1,0] * m[2,1] - m[1,1] * m[2,0]));
-      minor4 := m[3,3] * (m[0,0] * (m[1,1] * m[2,2] - m[2,1] * m[1,2]) - m[0,1] * (m[1,0] * m[2,2] - m[1,2] * m[2,0]) + m[0,2] * (m[1,0] * m[2,1] - m[1,1] * m[2,0]));
+      minor1 := m[3, 0] * (m[0, 1] * (m[1, 2] * m[2, 3] - m[2, 2] * m[1, 3]) - m[0, 2] * (m[1, 1] * m[2, 3] - m[1, 3] * m[2, 1]) + m[0, 3] * (m[1, 1] * m[2, 2] - m[1, 2] * m[2, 1]));
+      minor2 := m[3, 1] * (m[0, 0] * (m[1, 2] * m[2, 3] - m[2, 2] * m[1, 3]) - m[0, 2] * (m[1, 0] * m[2, 3] - m[1, 3] * m[2, 0]) + m[0, 3] * (m[1, 0] * m[2, 2] - m[1, 2] * m[2, 0]));
+      minor3 := m[3, 2] * (m[0, 0] * (m[1, 1] * m[2, 3] - m[2, 1] * m[1, 3]) - m[0, 1] * (m[1, 0] * m[2, 3] - m[1, 3] * m[2, 0]) + m[0, 3] * (m[1, 0] * m[2, 1] - m[1, 1] * m[2, 0]));
+      minor4 := m[3, 3] * (m[0, 0] * (m[1, 1] * m[2, 2] - m[2, 1] * m[1, 2]) - m[0, 1] * (m[1, 0] * m[2, 2] - m[1, 2] * m[2, 0]) + m[0, 2] * (m[1, 0] * m[2, 1] - m[1, 1] * m[2, 0]));
     end;
 
   Result := -minor1 + minor2 - minor3 + minor4;
@@ -973,7 +993,9 @@ procedure Matrix4x4f.SetProduct(var a: D2D_MATRIX_4X4_F;
                                 var b: D2D_MATRIX_4X4_F);
 var
   value: D2D_MATRIX_4X4_F;
+
 begin
+
   value.struct._11 := a.struct._11 * b.struct._11 + a.struct._12 * b.struct._21 + a.struct._13 * b.struct._31 + a.struct._14 * b.struct._41;
   value.struct._12 := a.struct._11 * b.struct._12 + a.struct._12 * b.struct._22 + a.struct._13 * b.struct._32 + a.struct._14 * b.struct._42;
   value.struct._13 := a.struct._11 * b.struct._13 + a.struct._12 * b.struct._23 + a.struct._13 * b.struct._33 + a.struct._14 * b.struct._43;
@@ -1000,14 +1022,18 @@ end;
 
 
 function Matrix4x4f.product(matrix: D2D_MATRIX_4X4_F): D2D_MATRIX_4X4_F;
+
 begin
+
   result.SetProduct(Self,
                     matrix);
 end;
 
 
 procedure Matrix5x4f.Init();
+
 begin
+
   struct._11 := 1.0;
   struct._12 := 0.0;
   struct._13 := 0.0;
@@ -1033,30 +1059,30 @@ begin
   struct._53 := 0.0;
   struct._54 := 0.0;
 
-  m[0,0] := struct._11;
-  m[0,1] := struct._12;
-  m[0,2] := struct._13;
-  m[0,3] := struct._14;
+  m[0, 0] := struct._11;
+  m[0, 1] := struct._12;
+  m[0, 2] := struct._13;
+  m[0, 3] := struct._14;
 
-  m[1,0] := struct._21;
-  m[1,1] := struct._22;
-  m[1,2] := struct._23;
-  m[1,3] := struct._24;
+  m[1, 0] := struct._21;
+  m[1, 1] := struct._22;
+  m[1, 2] := struct._23;
+  m[1, 3] := struct._24;
 
-  m[2,0] := struct._31;
-  m[2,1] := struct._32;
-  m[2,2] := struct._33;
-  m[2,3] := struct._34;
+  m[2, 0] := struct._31;
+  m[2, 1] := struct._32;
+  m[2, 2] := struct._33;
+  m[2, 3] := struct._34;
 
-  m[3,0] := struct._41;
-  m[3,1] := struct._42;
-  m[3,2] := struct._43;
-  m[3,3] := struct._44;
+  m[3, 0] := struct._41;
+  m[3, 1] := struct._42;
+  m[3, 2] := struct._43;
+  m[3, 3] := struct._44;
 
-  m[4,0] := struct._51;
-  m[4,1] := struct._52;
-  m[4,2] := struct._53;
-  m[4,3] := struct._54;
+  m[4, 0] := struct._51;
+  m[4, 1] := struct._52;
+  m[4, 2] := struct._53;
+  m[4, 3] := struct._54;
 
 end;
 
@@ -1065,7 +1091,9 @@ end;
 function ConvertColorSpace(sourceColorSpace: D2D1_COLOR_SPACE;
                            destinationColorSpace: D2D1_COLOR_SPACE;
                            color: D2D1_COLOR_F): D2D1_COLOR_F;
+
 begin
+
   Result := D2D1ConvertColorSpace(sourceColorSpace,
                                   destinationColorSpace,
                                   @color);
@@ -1079,7 +1107,9 @@ function DrawingStateDescription1(transform: D2D1_MATRIX_3X2_F;
                                   tag2: D2D1_TAG = 0;
                                   primitiveBlend: D2D1_PRIMITIVE_BLEND = D2D1_PRIMITIVE_BLEND_SOURCE_OVER;
                                   unitMode: D2D1_UNIT_MODE = D2D1_UNIT_MODE_DIPS): D2D1_DRAWING_STATE_DESCRIPTION1; overload;
+
 begin
+
   Result.antialiasMode := antialiasMode;
   Result.textAntialiasMode := textAntialiasMode;
   Result.tag1 := tag1;
@@ -1096,7 +1126,9 @@ function DrawingStateDescription1(antialiasMode: D2D1_ANTIALIAS_MODE = D2D1_ANTI
                                   tag2: D2D1_TAG = 0;
                                   primitiveBlend: D2D1_PRIMITIVE_BLEND = D2D1_PRIMITIVE_BLEND_SOURCE_OVER;
                                   unitMode: D2D1_UNIT_MODE = D2D1_UNIT_MODE_DIPS): D2D1_DRAWING_STATE_DESCRIPTION1; overload;
+
 begin
+
   Result.antialiasMode := antialiasMode;
   Result.textAntialiasMode := textAntialiasMode;
   Result.tag1 := tag1;
@@ -1110,7 +1142,9 @@ end;
 function DrawingStateDescription1(desc: D2D1_DRAWING_STATE_DESCRIPTION;
                                   primitiveBlend: D2D1_PRIMITIVE_BLEND = D2D1_PRIMITIVE_BLEND_SOURCE_OVER;
                                   unitMode: D2D1_UNIT_MODE = D2D1_UNIT_MODE_DIPS): D2D1_DRAWING_STATE_DESCRIPTION1; overload;
+
 begin
+
   Result.antialiasMode := desc.antialiasMode;
   Result.textAntialiasMode := desc.textAntialiasMode;
   Result.tag1 := desc.tag1;
@@ -1126,7 +1160,9 @@ function BitmapProperties1(_pixelFormat: D2D1_PIXEL_FORMAT;
                            dpiX: Single = 96.0;
                            dpiY: Single = 96.0;
                            colorContext: ID2D1ColorContext = Nil): D2D1_BITMAP_PROPERTIES1; overload;
+
 begin
+
   Result.bitmapOptions := bitmapOptions;
   Result.colorContext := colorContext;
   Result.dpiX := dpiX;
@@ -1139,7 +1175,9 @@ function BitmapProperties1(bitmapOptions: D2D1_BITMAP_OPTIONS = D2D1_BITMAP_OPTI
                            dpiX: Single = 96.0;
                            dpiY: Single = 96.0;
                            colorContext: ID2D1ColorContext = Nil): D2D1_BITMAP_PROPERTIES1; overload;
+
 begin
+
   Result.bitmapOptions := bitmapOptions;
   Result.colorContext := colorContext;
   Result.dpiX := dpiX;
@@ -1155,7 +1193,9 @@ function LayerParameters1(contentBounds: D2D1_RECT_F;
                           opacity: Single = 1.0;
                           opacityBrush: ID2D1Brush = Nil;
                           layerOptions: D2D1_LAYER_OPTIONS1 = D2D1_LAYER_OPTIONS1_NONE): D2D1_LAYER_PARAMETERS1; overload;
+
 begin
+
   Result.contentBounds := contentBounds;
   Result.geometricMask := geometricMask;
   Result.maskAntialiasMode := maskAntialiasMode;
@@ -1171,7 +1211,9 @@ function LayerParameters1(geometricMask: ID2D1Geometry = Nil;
                           opacity: Single = 1.0;
                           opacityBrush: ID2D1Brush = Nil;
                           layerOptions: D2D1_LAYER_OPTIONS1 = D2D1_LAYER_OPTIONS1_NONE): D2D1_LAYER_PARAMETERS1; overload;
+
 begin
+
   Result.contentBounds := InfiniteRect();
   Result.geometricMask := geometricMask;
   Result.maskAntialiasMode := maskAntialiasMode;
@@ -1190,7 +1232,9 @@ function StrokeStyleProperties1(startCap: D2D1_CAP_STYLE = D2D1_CAP_STYLE_FLAT;
                                 dashStyle: D2D1_DASH_STYLE = D2D1_DASH_STYLE_SOLID;
                                 dashOffset: Single = 0.0;
                                 transformType: D2D1_STROKE_TRANSFORM_TYPE = D2D1_STROKE_TRANSFORM_TYPE_NORMAL): D2D1_STROKE_STYLE_PROPERTIES1;
+
 begin
+
   Result.startCap := startCap;
   Result.endCap := endCap;
   Result.dashCap := dashCap;
@@ -1206,7 +1250,9 @@ function ImageBrushProperties(sourceRectangle: D2D1_RECT_F;
                               extendModeX: D2D1_EXTEND_MODE = D2D1_EXTEND_MODE_CLAMP;
                               extendModeY: D2D1_EXTEND_MODE = D2D1_EXTEND_MODE_CLAMP;
                               interpolationMode: D2D1_INTERPOLATION_MODE = D2D1_INTERPOLATION_MODE_LINEAR): D2D1_IMAGE_BRUSH_PROPERTIES;
+
 begin
+
   Result.extendModeX := extendModeX;
   Result.extendModeY := extendModeY;
   Result.interpolationMode := interpolationMode;
@@ -1217,7 +1263,9 @@ end;
 function BitmapBrushProperties1(extendModeX: D2D1_EXTEND_MODE = D2D1_EXTEND_MODE_CLAMP;
                                 extendModeY: D2D1_EXTEND_MODE = D2D1_EXTEND_MODE_CLAMP;
                                 interpolationMode: D2D1_INTERPOLATION_MODE = D2D1_INTERPOLATION_MODE_LINEAR): D2D1_BITMAP_BRUSH_PROPERTIES1;
+
 begin
+
   Result.extendModeX := extendModeX;
   Result.extendModeY := extendModeY;
   Result.interpolationMode := interpolationMode;
@@ -1227,7 +1275,9 @@ end;
 function PrintControlProperties(fontSubsetMode: D2D1_PRINT_FONT_SUBSET_MODE = D2D1_PRINT_FONT_SUBSET_MODE_DEFAULT;
                                 rasterDpi: Single = 150.0;
                                 colorSpace: D2D1_COLOR_SPACE = D2D1_COLOR_SPACE_SRGB): D2D1_PRINT_CONTROL_PROPERTIES;
+
 begin
+
   Result.fontSubset := fontSubsetMode;
   Result.rasterDPI := rasterDpi;
   Result.colorSpace := colorSpace;
@@ -1236,7 +1286,9 @@ end;
 
 function RenderingControls(bufferPrecision: D2D1_BUFFER_PRECISION;
                            tileSize: D2D1_SIZE_U): D2D1_RENDERING_CONTROLS;
+
 begin
+
   Result.bufferPrecision := bufferPrecision;
   Result.tileSize := tileSize;
 end;
@@ -1245,7 +1297,9 @@ end;
 function EffectInputDescription(effect: ID2D1Effect;
                                 inputIndex: UINT32;
                                 inputRectangle: D2D1_RECT_F): D2D1_EFFECT_INPUT_DESCRIPTION;
+
 begin
+
   Result.effect := effect;
   Result.inputIndex := inputIndex;
   Result.inputRectangle := inputRectangle;
@@ -1255,7 +1309,9 @@ end;
 function CreationProperties(threadingMode: D2D1_THREADING_MODE;
                             debugLevel: D2D1_DEBUG_LEVEL;
                             options: D2D1_DEVICE_CONTEXT_OPTIONS): D2D1_CREATION_PROPERTIES;
+
 begin
+
   Result.threadingMode := threadingMode;
   Result.debugLevel := debugLevel;
   Result.options := options;
@@ -1264,7 +1320,9 @@ end;
 
 function Vector2F(x: Single = 0.0;
                   y: Single = 0.0): D2D1_VECTOR_2F;
+
 begin
+
   Result.x := x;
   Result.y := y;
 end;
@@ -1273,7 +1331,9 @@ end;
 function Vector3F(x: Single = 0.0;
                   y: Single = 0.0;
                   z: Single = 0.0): D2D1_VECTOR_3F;
+
 begin
+
   Result.x := x;
   Result.y := y;
   Result.z := z;
@@ -1284,7 +1344,9 @@ function Vector4F(x: Single = 0.0;
                   y: Single = 0.0;
                   z: Single = 0.0;
                   w: Single = 0.0): D2D1_VECTOR_4F;
+
 begin
+
   Result.x := x;
   Result.y := y;
   Result.z := z;
@@ -1294,7 +1356,9 @@ end;
 
 function Point2L(x: INT32 = 0;
                  y: INT32 = 0): D2D1_POINT_2L;
+
 begin
+
   Result.x := x;
   Result.y := y;
 end;
@@ -1304,7 +1368,9 @@ function RectL(left: INT32 = 0;
                top: INT32 = 0;
                right: INT32 = 0;
                bottom: INT32 = 0): D2D1_RECT_L;
+
 begin
+
   Result.left := left;
   Result.top := top;
   Result.right := right;
@@ -1324,28 +1390,30 @@ var
   dpiCompensationEffect: ID2D1Effect;
   bitmapDpi: D2D1_POINT_2F;
 
-procedure SetInputEffect(index: UINT32;
-                         inputEffect: ID2D1Effect = nil;
-                         invalidate: BOOL = TRUE);
-var
-  output: ID2D1Image;
 
-begin
+  procedure SetInputEffect(index: UINT32;
+                           inputEffect: ID2D1Effect = nil;
+                           invalidate: BOOL = TRUE);
+  var
+    output: ID2D1Image;
 
-  if Assigned(inputEffect) then
-    inputEffect.GetOutput(output);
+  begin
 
-  effect.SetInput(index,
-                  output,
-                  invalidate);
-end;
+    if Assigned(inputEffect) then
+      inputEffect.GetOutput(output);
+
+    effect.SetInput(index,
+                    output,
+                    invalidate);
+  end;
 
 begin
 
   if not Assigned(inputBitmap) then
     begin
       effect.SetInput(inputIndex,
-                      Nil, TRUE);
+                      Nil,
+                      TRUE);
       Result := S_OK;
       Exit;
     end;
@@ -1356,7 +1424,8 @@ begin
   if SUCCEEDED(hr) then
     begin
       dpiCompensationEffect.SetInput(0,
-                                     inputBitmap, TRUE);
+                                     inputBitmap,
+                                     TRUE);
       inputBitmap.GetDpi(@bitmapDpi.x,
                          @bitmapDpi.y);
       hr := dpiCompensationEffect.SetValue(Ord(D2D1_DPICOMPENSATION_PROP_INPUT_DPI),
@@ -1389,6 +1458,6 @@ end;
 
 
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

@@ -69,7 +69,7 @@ interface
 
 uses
   MfEncodeAudio.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinApiTypes,
   {System}
@@ -93,34 +93,34 @@ const
   //                                         fps       Usage
   //                                         ===       ===================================================================================
   FrameRateArray: array [0..16] of Single = (8,        // Primitive animations.
-                                             10,       // Primitive animations.
-                                             12,       // Primitive animations.
-                                             15,       // Primitive animations.
-                                             16,       // Animations.
-                                             18,       // Animations.
-                                             23.976,   // Television / movies (intended color).
-                                             24,       // Television / movies (intended b&w).
-                                             25,       // European television standard.
-                                             29.97,    // North American traditional television standard to support b&w TV.
-                                             30,       // North American standard and live TV.
-                                             45,       // Rarely used.
-                                             48,       // Rarely used.
-                                             60,       // Games, sports, action footage and fast movements (limited slow motion purpose).
-                                             90,       // Rarely used. Games, sports, action footage and fast movements (slow motion purpose).
-                                             120,      // Games, sports, action footage and fast movements (slow motion purpose).
-                                             240);     // Extremely slow motion footage and creating slow motion videos.
+    10,       // Primitive animations.
+    12,       // Primitive animations.
+    15,       // Primitive animations.
+    16,       // Animations.
+    18,       // Animations.
+    23.976,   // Television / movies (intended color).
+    24,       // Television / movies (intended b&w).
+    25,       // European television standard.
+    29.97,    // North American traditional television standard to support b&w TV.
+    30,       // North American standard and live TV.
+    45,       // Rarely used.
+    48,       // Rarely used.
+    60,       // Games, sports, action footage and fast movements (limited slow motion purpose).
+    90,       // Rarely used. Games, sports, action footage and fast movements (slow motion purpose).
+    120,      // Games, sports, action footage and fast movements (slow motion purpose).
+    240);     // Extremely slow motion footage and creating slow motion videos.
 
-  // Now uses Direct2D for resizing. Better quality and much faster than version 3.1.4
-  procedure ResizeBitmap(aBitmap: TBitmap;
-                         toWidth: Integer;
-                         toHeight: Integer);
+// Now uses Direct2D for resizing. Better quality and much faster than version 3.1.4
+procedure ResizeBitmap(aBitmap: TBitmap;
+                       toWidth: Integer;
+                       toHeight: Integer);
 
-  // Calculates nanoseconds to milliseconds.
-  function NsecToMsec(nSec: Int64): Int64; inline;
+// Calculates nanoseconds to milliseconds.
+function NsecToMsec(nSec: Int64): Int64; inline;
 
-  // Calculates frame duration in 100 nanoseconds units.
-  function CalcFrameDuration(aLatency: UINT32;
-                             aFrameRate: Double): HNSTIME;
+// Calculates frame duration in 100 nanoseconds units.
+function CalcFrameDuration(aLatency: UINT32;
+                           aFrameRate: Double): HNSTIME;
 
 
 implementation
@@ -151,41 +151,64 @@ var
   Bounds: TRect;
   Pixels: TBytes;
   Row: Integer;
+
 begin
+
   if (NewWidth <= 0) or (NewHeight <= 0) or
-     (Source.Width <= 0) or (Source.Height <= 0) then
+    (Source.Width <= 0) or (Source.Height <= 0) then
     raise EArgumentException.Create('Bitmap dimensions must be positive');
   Source.PixelFormat := Graphics.pf32bit;
   Target.PixelFormat := Graphics.pf32bit;
-  Target.SetSize(NewWidth,NewHeight);
-  SetLength(Pixels,Source.Width * Source.Height * 4);
+  Target.SetSize(NewWidth,
+                 NewHeight);
+  SetLength(Pixels,
+            Source.Width * Source.Height * 4);
   for Row := 0 to Source.Height - 1 do
-    Move(Source.ScanLine[Row]^,Pixels[Row * Source.Width * 4],Source.Width * 4);
+    Move(Source.ScanLine[Row]^,
+         Pixels[Row * Source.Width * 4],
+         Source.Width * 4);
 
-  OleCheck(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED,ID2D1Factory,nil,Factory));
+  OleCheck(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED,
+                             ID2D1Factory,
+                             nil,
+                             Factory));
   Properties := Default(D2D1_RENDER_TARGET_PROPERTIES);
   Properties._pixelFormat.Format := DXGI_FORMAT_B8G8R8A8_UNORM;
   Properties._pixelFormat.alphaMode := D2D1_ALPHA_MODE_IGNORE;
   Properties.dpiX := 96;
   Properties.dpiY := 96;
-  OleCheck(Factory.CreateDCRenderTarget(@Properties,RenderTarget));
-  Bounds := Rect(0,0,NewWidth,NewHeight);
+  OleCheck(Factory.CreateDCRenderTarget(@Properties,
+                                        RenderTarget));
+  Bounds := Rect(0,
+                 0,
+                 NewWidth,
+                 NewHeight);
   Target.Canvas.Changing();
-  OleCheck(RenderTarget.BindDC(Target.Canvas.Handle,@Bounds));
+  OleCheck(RenderTarget.BindDC(Target.Canvas.Handle,
+                               @Bounds));
   BitmapProperties := Default(D2D1_BITMAP_PROPERTIES);
   BitmapProperties._pixelFormat := Properties._pixelFormat;
   BitmapProperties.dpiX := 96;
   BitmapProperties.dpiY := 96;
   BitmapSize.Width := Source.Width;
   BitmapSize.Height := Source.Height;
-  OleCheck(RenderTarget.CreateBitmap(BitmapSize,@Pixels[0],Source.Width * 4,@BitmapProperties,Bitmap));
+  OleCheck(RenderTarget.CreateBitmap(BitmapSize,
+                                     @Pixels[0],
+                                     Source.Width * 4,
+                                     @BitmapProperties,
+                                     Bitmap));
   Destination.Left := 0;
   Destination.Top := 0;
   Destination.Right := NewWidth;
   Destination.Bottom := NewHeight;
   RenderTarget.BeginDraw();
-  RenderTarget.DrawBitmap(Bitmap,@Destination,1,D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,nil);
-  OleCheck(RenderTarget.EndDraw(nil,nil));
+  RenderTarget.DrawBitmap(Bitmap,
+                          @Destination,
+                          1,
+                          D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
+                          nil);
+  OleCheck(RenderTarget.EndDraw(nil,
+                                nil));
   Target.Canvas.Changed();
 end;
 
@@ -197,6 +220,7 @@ var
   bTmp: TBitmap;
 
 begin
+
   if (aBitmap.PixelFormat <> Graphics.pf32bit) then
     aBitmap.PixelFormat := Graphics.pf32bit;
   // Create a temporary bitmap
@@ -215,7 +239,9 @@ end;
 
 //
 function NsecToMsec(nSec: Int64): Int64; inline;
+
 begin
+
   Result := Round(nSec / 1000000);
 end;
 
@@ -227,6 +253,7 @@ const
   msec = (1000 * 1000); // One millisecond = 1,000,000 nano seconds
 
 begin
+
   Result := Round(aLatency * msec / aFrameRate);
 end;
 

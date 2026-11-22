@@ -102,576 +102,584 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$PACKRECORDS C} // Win64
+  {$PACKRECORDS C}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
 
-// This unit was translated from ShObjIdl_core.h.
-// External include-file contents are intentionally not expanded.
+  // This unit was translated from ShObjIdl_core.h.
+  // External include-file contents are intentionally not expanded.
 
 const
   SEE_MASK_NOASYNC = $00000100;
   SEE_MASK_NOZONECHECKS = $00800000;
 
-// Keep the following as normal constants. They are #define values in ShObjIdl_core.h, not C enum members:
+  // Keep the following as normal constants. They are #define values in ShObjIdl_core.h, not C enum members:
 
-//  and GUID/string constants.
+  //  and GUID/string constants.
 
   // QueryContextMenu uFlags
-  CMF_NORMAL                          = $00000000;
-  CMF_DEFAULTONLY                     = $00000001;
-  CMF_VERBSONLY                       = $00000002;
-  CMF_EXPLORE                         = $00000004;
-  CMF_NOVERBS                         = $00000008;
-  CMF_CANRENAME                       = $00000010;
-  CMF_NODEFAULT                       = $00000020;
+  CMF_NORMAL = $00000000;
+  CMF_DEFAULTONLY = $00000001;
+  CMF_VERBSONLY = $00000002;
+  CMF_EXPLORE = $00000004;
+  CMF_NOVERBS = $00000008;
+  CMF_CANRENAME = $00000010;
+  CMF_NODEFAULT = $00000020;
 
-  CMF_INCLUDESTATIC                   = $00000040;
-  CMF_ITEMMENU                        = $00000080;
-  CMF_EXTENDEDVERBS                   = $00000100;
-  CMF_DISABLEDVERBS                   = $00000200;
-  CMF_ASYNCVERBSTATE                  = $00000400;
-  CMF_OPTIMIZEFORINVOKE               = $00000800;
-  CMF_SYNCCASCADEMENU                 = $00001000;
-  CMF_DONOTPICKDEFAULT                = $00002000;
-  CMF_RESERVED                        = $FFFF0000;
+  CMF_INCLUDESTATIC = $00000040;
+  CMF_ITEMMENU = $00000080;
+  CMF_EXTENDEDVERBS = $00000100;
+  CMF_DISABLEDVERBS = $00000200;
+  CMF_ASYNCVERBSTATE = $00000400;
+  CMF_OPTIMIZEFORINVOKE = $00000800;
+  CMF_SYNCCASCADEMENU = $00001000;
+  CMF_DONOTPICKDEFAULT = $00002000;
+  CMF_RESERVED = $FFFF0000;
 
   // GetCommandString uFlags
-  GCS_VERBA                           = $00000000;  // canonical verb
-  GCS_HELPTEXTA                       = $00000001;  // help text (for status bar)
-  GCS_VALIDATEA                       = $00000002;  // validate command exists
-  GCS_VERBW                           = $00000004;  // canonical verb (unicode)
-  GCS_HELPTEXTW                       = $00000005;  // help text (unicode version)
-  GCS_VALIDATEW                       = $00000006;  // validate command exists (unicode)
-  GCS_VERBICONW                       = $00000014;  // icon string (unicode)
-  GCS_UNICODE                         = $00000004;  // for bit testing - Unicode string
+  GCS_VERBA = $00000000;  // canonical verb
+  GCS_HELPTEXTA = $00000001;  // help text (for status bar)
+  GCS_VALIDATEA = $00000002;  // validate command exists
+  GCS_VERBW = $00000004;  // canonical verb (unicode)
+  GCS_HELPTEXTW = $00000005;  // help text (unicode version)
+  GCS_VALIDATEW = $00000006;  // validate command exists (unicode)
+  GCS_VERBICONW = $00000014;  // icon string (unicode)
+  GCS_UNICODE = $00000004;  // for bit testing - Unicode string
 
-{$IFDEF UNICODE}
-  GCS_VERB                            = GCS_VERBW;
-  GCS_HELPTEXT                        = GCS_HELPTEXTW;
-  GCS_VALIDATE                        = GCS_VALIDATEW;
-{$ELSE}
-  GCS_VERB                            = GCS_VERBA;
-  GCS_HELPTEXT                        = GCS_HELPTEXTA;
-  GCS_VALIDATE                        = GCS_VALIDATEA;
-{$ENDIF}
+  {$IFDEF UNICODE}
+  GCS_VERB = GCS_VERBW;
+  GCS_HELPTEXT = GCS_HELPTEXTW;
+  GCS_VALIDATE = GCS_VALIDATEW;
+  {$ELSE}
+  GCS_VERB = GCS_VERBA;
+  GCS_HELPTEXT = GCS_HELPTEXTA;
+  GCS_VALIDATE = GCS_VALIDATEA;
+  {$ENDIF}
 
-  CMDSTR_NEWFOLDERA                   = 'NewFolder';
-  CMDSTR_VIEWLISTA                    = 'ViewList';
-  CMDSTR_VIEWDETAILSA                 = 'ViewDetails';
-  CMDSTR_NEWFOLDERW                   = 'NewFolder';
-  CMDSTR_VIEWLISTW                    = 'ViewList';
-  CMDSTR_VIEWDETAILSW                 = 'ViewDetails';
+  CMDSTR_NEWFOLDERA = 'NewFolder';
+  CMDSTR_VIEWLISTA = 'ViewList';
+  CMDSTR_VIEWDETAILSA = 'ViewDetails';
+  CMDSTR_NEWFOLDERW = 'NewFolder';
+  CMDSTR_VIEWLISTW = 'ViewList';
+  CMDSTR_VIEWDETAILSW = 'ViewDetails';
 
-{$IFDEF UNICODE}
-  CMDSTR_NEWFOLDER                    = CMDSTR_NEWFOLDERW;
-  CMDSTR_VIEWLIST                     = CMDSTR_VIEWLISTW;
-  CMDSTR_VIEWDETAILS                  = CMDSTR_VIEWDETAILSW;
-{$ELSE}
-  CMDSTR_NEWFOLDER                    = CMDSTR_NEWFOLDERA;
-  CMDSTR_VIEWLIST                     = CMDSTR_VIEWLISTA;
-  CMDSTR_VIEWDETAILS                  = CMDSTR_VIEWDETAILSA;
-{$ENDIF}
+  {$IFDEF UNICODE}
+  CMDSTR_NEWFOLDER = CMDSTR_NEWFOLDERW;
+  CMDSTR_VIEWLIST = CMDSTR_VIEWLISTW;
+  CMDSTR_VIEWDETAILS = CMDSTR_VIEWDETAILSW;
+  {$ELSE}
+  CMDSTR_NEWFOLDER = CMDSTR_NEWFOLDERA;
+  CMDSTR_VIEWLIST = CMDSTR_VIEWLISTA;
+  CMDSTR_VIEWDETAILS = CMDSTR_VIEWDETAILSA;
+  {$ENDIF}
 
-  CMIC_MASK_HOTKEY                    = SEE_MASK_HOTKEY;
-  CMIC_MASK_ICON                      = SEE_MASK_ICON;
-  CMIC_MASK_FLAG_NO_UI                = SEE_MASK_FLAG_NO_UI;
-  CMIC_MASK_UNICODE                   = SEE_MASK_UNICODE;
-  CMIC_MASK_NO_CONSOLE                = SEE_MASK_NO_CONSOLE;
-//#if (NTDDI_VERSION < NTDDI_VISTA)
-  CMIC_MASK_HASLINKNAME               = $00010000; // SEE_MASK_HASLINKNAME
-  CMIC_MASK_HASTITLE                  = $00080000; // SEE_MASK_HASTITLE
-//#endif  // NTDDI_VISTA
-  CMIC_MASK_FLAG_SEP_VDM              = $00020000; // SEE_MASK_FLAG_SEPVDM
-  CMIC_MASK_ASYNCOK                   = SEE_MASK_ASYNCOK;
-//#if (NTDDI_VERSION >= NTDDI_VISTA)
-  CMIC_MASK_NOASYNC                   = SEE_MASK_NOASYNC;
-//#endif
-  CMIC_MASK_SHIFT_DOWN                = $10000000;
-  CMIC_MASK_CONTROL_DOWN              = $40000000;
-  CMIC_MASK_FLAG_LOG_USAGE            = SEE_MASK_FLAG_LOG_USAGE;
-  CMIC_MASK_NOZONECHECKS              = SEE_MASK_NOZONECHECKS;
-  CMIC_MASK_PTINVOKE                  = $20000000;
+  CMIC_MASK_HOTKEY = SEE_MASK_HOTKEY;
+  CMIC_MASK_ICON = SEE_MASK_ICON;
+  CMIC_MASK_FLAG_NO_UI = SEE_MASK_FLAG_NO_UI;
+  CMIC_MASK_UNICODE = SEE_MASK_UNICODE;
+  CMIC_MASK_NO_CONSOLE = SEE_MASK_NO_CONSOLE;
+  //#if (NTDDI_VERSION < NTDDI_VISTA)
+  CMIC_MASK_HASLINKNAME = $00010000; // SEE_MASK_HASLINKNAME
+  CMIC_MASK_HASTITLE = $00080000; // SEE_MASK_HASTITLE
+  //#endif  // NTDDI_VISTA
+  CMIC_MASK_FLAG_SEP_VDM = $00020000; // SEE_MASK_FLAG_SEPVDM
+  CMIC_MASK_ASYNCOK = SEE_MASK_ASYNCOK;
+  //#if (NTDDI_VERSION >= NTDDI_VISTA)
+  CMIC_MASK_NOASYNC = SEE_MASK_NOASYNC;
+  //#endif
+  CMIC_MASK_SHIFT_DOWN = $10000000;
+  CMIC_MASK_CONTROL_DOWN = $40000000;
+  CMIC_MASK_FLAG_LOG_USAGE = SEE_MASK_FLAG_LOG_USAGE;
+  CMIC_MASK_NOZONECHECKS = SEE_MASK_NOZONECHECKS;
+  CMIC_MASK_PTINVOKE = $20000000;
 
   // IPersistFolder
-  IRTIR_TASK_NOT_RUNNING              = 0;
-  IRTIR_TASK_RUNNING                  = 1;
-  IRTIR_TASK_SUSPENDED                = 2;
-  IRTIR_TASK_PENDING                  = 3;
-  IRTIR_TASK_FINISHED                 = 4;
+  IRTIR_TASK_NOT_RUNNING = 0;
+  IRTIR_TASK_RUNNING = 1;
+  IRTIR_TASK_SUSPENDED = 2;
+  IRTIR_TASK_PENDING = 3;
+  IRTIR_TASK_FINISHED = 4;
 
   // IShellTaskScheduler
-  TOID_NULL                           : TGUID = '{00000000-0000-0000-0000-000000000000}'; // GUID_NULL;
-  ITSAT_DEFAULT_LPARAM                = DWORD_PTR(- 1);
-  ITSAT_DEFAULT_PRIORITY              = $10000000;
-  ITSAT_MAX_PRIORITY                  = $7FFFFFFF;
-  ITSAT_MIN_PRIORITY                  = $00000000;
-  ITSSFLAG_COMPLETE_ON_DESTROY        = $0000;  // wait for the current task to complete before deleting the scheduler
-  ITSSFLAG_KILL_ON_DESTROY            = $0001;  // kill the current task (if there is one) when the task scheduler is deleted
-  ITSSFLAG_FLAGS_MASK                 = $0003;
+  TOID_NULL: TGUID = '{00000000-0000-0000-0000-000000000000}'; // GUID_NULL;
+  ITSAT_DEFAULT_LPARAM = DWORD_PTR(-1);
+  ITSAT_DEFAULT_PRIORITY = $10000000;
+  ITSAT_MAX_PRIORITY = $7FFFFFFF;
+  ITSAT_MIN_PRIORITY = $00000000;
+  ITSSFLAG_COMPLETE_ON_DESTROY = $0000;  // wait for the current task to complete before deleting the scheduler
+  ITSSFLAG_KILL_ON_DESTROY = $0001;  // kill the current task (if there is one) when the task scheduler is deleted
+  ITSSFLAG_FLAGS_MASK = $0003;
   ITSS_THREAD_DESTROY_DEFAULT_TIMEOUT = (10 * 1000);  // default milliseconds until a sleeping worker thread is released
-  ITSS_THREAD_TERMINATE_TIMEOUT       = (INFINITE);  // set sleeping worker threads to never be released
-  ITSS_THREAD_TIMEOUT_NO_CHANGE       = (INFINITE - 1);  // no change to the thread timeout
+  ITSS_THREAD_TERMINATE_TIMEOUT = (INFINITE);  // set sleeping worker threads to never be released
+  ITSS_THREAD_TIMEOUT_NO_CHANGE = (INFINITE - 1);  // no change to the thread timeout
 
   // IEnumFullIDList
-  SHCIDS_ALLFIELDS                    = $80000000;
-  SHCIDS_CANONICALONLY                = $10000000;
-  SHCIDS_BITMASK                      = $FFFF0000;
-  SHCIDS_COLUMNMASK                   = $0000FFFF;
-  SFGAO_CANCOPY                       = DROPEFFECT_COPY;  // Objects can be copied    (0x1)
-  SFGAO_CANMOVE                       = DROPEFFECT_MOVE;  // Objects can be moved     (0x2)
-  SFGAO_CANLINK                       = DROPEFFECT_LINK;  // Objects can be linked    (0x4)
-  SFGAO_STORAGE                       = $00000008;  // supports BindToObject(IID_IStorage)
-  SFGAO_CANRENAME                     = $00000010;  // Objects can be renamed
-  SFGAO_CANDELETE                     = $00000020;  // Objects can be deleted
-  SFGAO_HASPROPSHEET                  = $00000040;  // Objects have property sheets
-  SFGAO_DROPTARGET                    = $00000100;  // Objects are drop target
-  SFGAO_CAPABILITYMASK                = $00000177;
-  SFGAO_PLACEHOLDER                   = $00000800;  // File or folder is not fully present and recalled on open or access
-  SFGAO_SYSTEM                        = $00001000;  // System object
-  SFGAO_ENCRYPTED                     = $00002000;  // Object is encrypted (use alt color)
-  SFGAO_ISSLOW                        = $00004000;  // 'Slow' object
-  SFGAO_GHOSTED                       = $00008000;  // Ghosted icon
-  SFGAO_LINK                          = $00010000;  // Shortcut (link)
-  SFGAO_SHARE                         = $00020000;  // Shared
-  SFGAO_READONLY                      = $00040000;  // Read-only
-  SFGAO_HIDDEN                        = $00080000;  // Hidden object
-  SFGAO_DISPLAYATTRMASK               = $000FC000;
-  SFGAO_FILESYSANCESTOR               = $10000000;  // May contain children with SFGAO_FILESYSTEM
-  SFGAO_FOLDER                        = $20000000;  // Support BindToObject(IID_IShellFolder)
-  SFGAO_FILESYSTEM                    = $40000000;  // Is a win32 file system object (file/folder/root)
-  SFGAO_HASSUBFOLDER                  = $80000000;  // May contain children with SFGAO_FOLDER (may be slow)
-  SFGAO_CONTENTSMASK                  = $80000000;
-  SFGAO_VALIDATE                      = $01000000;  // Invalidate cached information (may be slow)
-  SFGAO_REMOVABLE                     = $02000000;  // Is this removeable media?
-  SFGAO_COMPRESSED                    = $04000000;  // Object is compressed (use alt color)
-  SFGAO_BROWSABLE                     = $08000000;  // Supports IShellFolder, but only implements CreateViewObject() (non-folder view)
-  SFGAO_NONENUMERATED                 = $00100000;  // Is a non-enumerated object (should be hidden)
-  SFGAO_NEWCONTENT                    = $00200000;  // Should show bold in explorer tree
-  SFGAO_CANMONIKER                    = $00400000;  // Obsolete
-  SFGAO_HASSTORAGE                    = $00400000;  // Obsolete
-  SFGAO_STREAM                        = $00400000;  // Supports BindToObject(IID_IStream)
-  SFGAO_STORAGEANCESTOR               = $00800000;  // May contain children with SFGAO_STORAGE or SFGAO_STREAM
-  SFGAO_STORAGECAPMASK                = $70C50008;  // For determining storage capabilities, ie for open/save semantics
-  SFGAO_PKEYSFGAOMASK                 = $81044000;  // Attributes that are masked out for PKEY_SFGAOFlags because they are considered to cause slow calculations or lack context (SFGAO_VALIDATE | SFGAO_ISSLOW | SFGAO_HASSUBFOLDER and others)
+  SHCIDS_ALLFIELDS = $80000000;
+  SHCIDS_CANONICALONLY = $10000000;
+  SHCIDS_BITMASK = $FFFF0000;
+  SHCIDS_COLUMNMASK = $0000FFFF;
+  SFGAO_CANCOPY = DROPEFFECT_COPY;  // Objects can be copied    (0x1)
+  SFGAO_CANMOVE = DROPEFFECT_MOVE;  // Objects can be moved     (0x2)
+  SFGAO_CANLINK = DROPEFFECT_LINK;  // Objects can be linked    (0x4)
+  SFGAO_STORAGE = $00000008;  // supports BindToObject(IID_IStorage)
+  SFGAO_CANRENAME = $00000010;  // Objects can be renamed
+  SFGAO_CANDELETE = $00000020;  // Objects can be deleted
+  SFGAO_HASPROPSHEET = $00000040;  // Objects have property sheets
+  SFGAO_DROPTARGET = $00000100;  // Objects are drop target
+  SFGAO_CAPABILITYMASK = $00000177;
+  SFGAO_PLACEHOLDER = $00000800;  // File or folder is not fully present and recalled on open or access
+  SFGAO_SYSTEM = $00001000;  // System object
+  SFGAO_ENCRYPTED = $00002000;  // Object is encrypted (use alt color)
+  SFGAO_ISSLOW = $00004000;  // 'Slow' object
+  SFGAO_GHOSTED = $00008000;  // Ghosted icon
+  SFGAO_LINK = $00010000;  // Shortcut (link)
+  SFGAO_SHARE = $00020000;  // Shared
+  SFGAO_READONLY = $00040000;  // Read-only
+  SFGAO_HIDDEN = $00080000;  // Hidden object
+  SFGAO_DISPLAYATTRMASK = $000FC000;
+  SFGAO_FILESYSANCESTOR = $10000000;  // May contain children with SFGAO_FILESYSTEM
+  SFGAO_FOLDER = $20000000;  // Support BindToObject(IID_IShellFolder)
+  SFGAO_FILESYSTEM = $40000000;  // Is a win32 file system object (file/folder/root)
+  SFGAO_HASSUBFOLDER = $80000000;  // May contain children with SFGAO_FOLDER (may be slow)
+  SFGAO_CONTENTSMASK = $80000000;
+  SFGAO_VALIDATE = $01000000;  // Invalidate cached information (may be slow)
+  SFGAO_REMOVABLE = $02000000;  // Is this removeable media?
+  SFGAO_COMPRESSED = $04000000;  // Object is compressed (use alt color)
+  SFGAO_BROWSABLE = $08000000;  // Supports IShellFolder, but only implements CreateViewObject() (non-folder view)
+  SFGAO_NONENUMERATED = $00100000;  // Is a non-enumerated object (should be hidden)
+  SFGAO_NEWCONTENT = $00200000;  // Should show bold in explorer tree
+  SFGAO_CANMONIKER = $00400000;  // Obsolete
+  SFGAO_HASSTORAGE = $00400000;  // Obsolete
+  SFGAO_STREAM = $00400000;  // Supports BindToObject(IID_IStream)
+  SFGAO_STORAGEANCESTOR = $00800000;  // May contain children with SFGAO_STORAGE or SFGAO_STREAM
+  SFGAO_STORAGECAPMASK = $70C50008;  // For determining storage capabilities, ie for open/save semantics
+  SFGAO_PKEYSFGAOMASK = $81044000;  // Attributes that are masked out for PKEY_SFGAOFlags because they are considered to cause slow calculations or lack context (SFGAO_VALIDATE | SFGAO_ISSLOW | SFGAO_HASSUBFOLDER and others)
 
   // IPreviewHandlerVisuals
-  CDBOSC_SETFOCUS                     = $00000000;
-  CDBOSC_KILLFOCUS                    = $00000001;
-  CDBOSC_SELCHANGE                    = $00000002;
-  CDBOSC_RENAME                       = $00000003;
-  CDBOSC_STATECHANGE                  = $00000004;
+  CDBOSC_SETFOCUS = $00000000;
+  CDBOSC_KILLFOCUS = $00000001;
+  CDBOSC_SELCHANGE = $00000002;
+  CDBOSC_RENAME = $00000003;
+  CDBOSC_STATECHANGE = $00000004;
 
   // ICommDlgBrowser
-//#if (NTDDI_VERSION >= NTDDI_WIN2K)
-  CDB2N_CONTEXTMENU_DONE              = $00000001;
-  CDB2N_CONTEXTMENU_START             = $00000002;
-  CDB2GVF_SHOWALLFILES                = $00000001;
-//#if (NTDDI_VERSION >= NTDDI_VISTA)
-  CDB2GVF_ISFILESAVE                  = $00000002;  // is file save, else file open
-  CDB2GVF_ALLOWPREVIEWPANE            = $00000004;
-  CDB2GVF_NOSELECTVERB                = $00000008;
-  CDB2GVF_NOINCLUDEITEM               = $00000010;
-  CDB2GVF_ISFOLDERPICKER              = $00000020;
-  CDB2GVF_ADDSHIELD                   = $00000040;  // when CDB2GVF_NOSELECTVERB is not specified this flag controls the display of a LUA shield on the Select menu item
-//#endif  // NTDDI_VISTA
+  //#if (NTDDI_VERSION >= NTDDI_WIN2K)
+  CDB2N_CONTEXTMENU_DONE = $00000001;
+  CDB2N_CONTEXTMENU_START = $00000002;
+  CDB2GVF_SHOWALLFILES = $00000001;
+  //#if (NTDDI_VERSION >= NTDDI_VISTA)
+  CDB2GVF_ISFILESAVE = $00000002;  // is file save, else file open
+  CDB2GVF_ALLOWPREVIEWPANE = $00000004;
+  CDB2GVF_NOSELECTVERB = $00000008;
+  CDB2GVF_NOINCLUDEITEM = $00000010;
+  CDB2GVF_ISFOLDERPICKER = $00000020;
+  CDB2GVF_ADDSHIELD = $00000040;  // when CDB2GVF_NOSELECTVERB is not specified this flag controls the display of a LUA shield on the Select menu item
+  //#endif  // NTDDI_VISTA
 
   // IShellIconVtbl
-  SBSP_DEFBROWSER                     = $0000;
-  SBSP_SAMEBROWSER                    = $0001;
-  SBSP_NEWBROWSER                     = $0002;
-  SBSP_DEFMODE                        = $0000;
-  SBSP_OPENMODE                       = $0010;
-  SBSP_EXPLOREMODE                    = $0020;
-  SBSP_HELPMODE                       = $0040;
-  SBSP_NOTRANSFERHIST                 = $0080;
-  SBSP_ABSOLUTE                       = $0000;
-  SBSP_RELATIVE                       = $1000;
-  SBSP_PARENT                         = $2000;
-  SBSP_NAVIGATEBACK                   = $4000;
-  SBSP_NAVIGATEFORWARD                = $8000;
-  SBSP_ALLOW_AUTONAVIGATE             = $00010000;
-//#if (NTDDI_VERSION >= NTDDI_VISTA)
-  SBSP_KEEPSAMETEMPLATE               = $00020000;
-  SBSP_KEEPWORDWHEELTEXT              = $00040000;
-  SBSP_ACTIVATE_NOFOCUS               = $00080000;
-  SBSP_CREATENOHISTORY                = $00100000;
-  SBSP_PLAYNOSOUND                    = $00200000;
-//#endif  // (NTDDI_VERSION >= NTDDI_VISTA)
-//#if (_WIN32_IE >= _WIN32_IE_IE60SP2)
-  SBSP_CALLERUNTRUSTED                = $00800000;
-  SBSP_TRUSTFIRSTDOWNLOAD             = $01000000;
-  SBSP_UNTRUSTEDFORDOWNLOAD           = $02000000;
-//#endif  // _WIN32_IE_IE60SP2
-  SBSP_NOAUTOSELECT                   = $04000000;
-  SBSP_WRITENOHISTORY                 = $08000000;
-//#if (_WIN32_IE >= _WIN32_IE_IE60SP2)
-  SBSP_TRUSTEDFORACTIVEX              = $10000000;
-//#endif  // _WIN32_IE_IE60SP2
-//#if (_WIN32_IE >= _WIN32_IE_IE70)
-  SBSP_FEEDNAVIGATION                 = $20000000;
-//#endif  // _WIN32_IE_IE70
-  SBSP_REDIRECT                       = $40000000;
-  SBSP_INITIATEDBYHLINKFRAME          = $80000000;
-  FCW_STATUS                          = $0001;
-  FCW_TOOLBAR                         = $0002;
-  FCW_TREE                            = $0003;
-  FCW_INTERNETBAR                     = $0006;
-  FCW_PROGRESS                        = $0008;
-//#if (_WIN32_IE >= 0x0700)
-//#endif
-  FCT_MERGE                           = $0001;
-  FCT_CONFIGABLE                      = $0002;
-  FCT_ADDTOEND                        = $0004;
-//#ifdef _NEVER_
+  SBSP_DEFBROWSER = $0000;
+  SBSP_SAMEBROWSER = $0001;
+  SBSP_NEWBROWSER = $0002;
+  SBSP_DEFMODE = $0000;
+  SBSP_OPENMODE = $0010;
+  SBSP_EXPLOREMODE = $0020;
+  SBSP_HELPMODE = $0040;
+  SBSP_NOTRANSFERHIST = $0080;
+  SBSP_ABSOLUTE = $0000;
+  SBSP_RELATIVE = $1000;
+  SBSP_PARENT = $2000;
+  SBSP_NAVIGATEBACK = $4000;
+  SBSP_NAVIGATEFORWARD = $8000;
+  SBSP_ALLOW_AUTONAVIGATE = $00010000;
+  //#if (NTDDI_VERSION >= NTDDI_VISTA)
+  SBSP_KEEPSAMETEMPLATE = $00020000;
+  SBSP_KEEPWORDWHEELTEXT = $00040000;
+  SBSP_ACTIVATE_NOFOCUS = $00080000;
+  SBSP_CREATENOHISTORY = $00100000;
+  SBSP_PLAYNOSOUND = $00200000;
+  //#endif  // (NTDDI_VERSION >= NTDDI_VISTA)
+  //#if (_WIN32_IE >= _WIN32_IE_IE60SP2)
+  SBSP_CALLERUNTRUSTED = $00800000;
+  SBSP_TRUSTFIRSTDOWNLOAD = $01000000;
+  SBSP_UNTRUSTEDFORDOWNLOAD = $02000000;
+  //#endif  // _WIN32_IE_IE60SP2
+  SBSP_NOAUTOSELECT = $04000000;
+  SBSP_WRITENOHISTORY = $08000000;
+  //#if (_WIN32_IE >= _WIN32_IE_IE60SP2)
+  SBSP_TRUSTEDFORACTIVEX = $10000000;
+  //#endif  // _WIN32_IE_IE60SP2
+  //#if (_WIN32_IE >= _WIN32_IE_IE70)
+  SBSP_FEEDNAVIGATION = $20000000;
+  //#endif  // _WIN32_IE_IE70
+  SBSP_REDIRECT = $40000000;
+  SBSP_INITIATEDBYHLINKFRAME = $80000000;
+  FCW_STATUS = $0001;
+  FCW_TOOLBAR = $0002;
+  FCW_TREE = $0003;
+  FCW_INTERNETBAR = $0006;
+  FCW_PROGRESS = $0008;
+  //#if (_WIN32_IE >= 0x0700)
+  //#endif
+  FCT_MERGE = $0001;
+  FCT_CONFIGABLE = $0002;
+  FCT_ADDTOEND = $0004;
+  //#ifdef _NEVER_
 
   // IActionProgress
-  ARCONTENT_AUTORUNINF                = $00000002;  // That's the one we have today, and always had
-  ARCONTENT_AUDIOCD                   = $00000004;  // Audio CD (not MP3 and the like, the stuff you buy at the store)
-  ARCONTENT_DVDMOVIE                  = $00000008;  // DVD Movie (not MPEGs, the stuff you buy at the store)
-  ARCONTENT_BLANKCD                   = $00000010;  // Blank CD-R/CD-RW)
-  ARCONTENT_BLANKDVD                  = $00000020;  // Blank DVD-R/DVD-RW
-  ARCONTENT_UNKNOWNCONTENT            = $00000040;  // Whatever files.  Mean that it's formatted.
-  ARCONTENT_AUTOPLAYPIX               = $00000080;  // Any files classified by shell as image. (jpg, bmp, etc.)
-  ARCONTENT_AUTOPLAYMUSIC             = $00000100;  // Any files classified by shell as music. (wma, mp3, etc.)
-  ARCONTENT_AUTOPLAYVIDEO             = $00000200;  // Any files classified by shell as video. (mpg, avi, etc.)
-//#if (NTDDI_VERSION >= NTDDI_VISTA)
-  ARCONTENT_VCD                       = $00000400;  // VCD format
-  ARCONTENT_SVCD                      = $00000800;  // Super-VCD format
-  ARCONTENT_DVDAUDIO                  = $00001000;  // DVD-Audio
-  ARCONTENT_BLANKBD                   = $00002000;  // Blank BD-R/BD-RW
-  ARCONTENT_BLURAY                    = $00004000;  // Blu-ray Disc
-  ARCONTENT_CAMERASTORAGE             = $00008000;  // Camera Storage
-  ARCONTENT_CUSTOMEVENT               = $00010000;  // Custom Event
-  ARCONTENT_NONE                      = $00000000;  // Empty (but formatted)
-  ARCONTENT_MASK                      = $0001FFFE;  // Bits that denote valid content types
-  ARCONTENT_PHASE_UNKNOWN             = $00000000;  // We can be in any phase.  This is XP behavior.
-  ARCONTENT_PHASE_PRESNIFF            = $10000000;  // These are contents we know w/o scanning the media for complete data (e.g. Audio track, DVD Movie).
-  ARCONTENT_PHASE_SNIFFING            = $20000000;  // We are in the middle of searching the media.  There could be more contents to be found than currently reported.
-  ARCONTENT_PHASE_FINAL               = $40000000;  // We have finished searching; contents we report are final.
-  ARCONTENT_PHASE_MASK                = $70000000;  // Bits that denote what phase we are in the Autoplay process.
-//#endif  // NTDDI_VISTA
+  ARCONTENT_AUTORUNINF = $00000002;  // That's the one we have today, and always had
+  ARCONTENT_AUDIOCD = $00000004;  // Audio CD (not MP3 and the like, the stuff you buy at the store)
+  ARCONTENT_DVDMOVIE = $00000008;  // DVD Movie (not MPEGs, the stuff you buy at the store)
+  ARCONTENT_BLANKCD = $00000010;  // Blank CD-R/CD-RW)
+  ARCONTENT_BLANKDVD = $00000020;  // Blank DVD-R/DVD-RW
+  ARCONTENT_UNKNOWNCONTENT = $00000040;  // Whatever files.  Mean that it's formatted.
+  ARCONTENT_AUTOPLAYPIX = $00000080;  // Any files classified by shell as image. (jpg, bmp, etc.)
+  ARCONTENT_AUTOPLAYMUSIC = $00000100;  // Any files classified by shell as music. (wma, mp3, etc.)
+  ARCONTENT_AUTOPLAYVIDEO = $00000200;  // Any files classified by shell as video. (mpg, avi, etc.)
+  //#if (NTDDI_VERSION >= NTDDI_VISTA)
+  ARCONTENT_VCD = $00000400;  // VCD format
+  ARCONTENT_SVCD = $00000800;  // Super-VCD format
+  ARCONTENT_DVDAUDIO = $00001000;  // DVD-Audio
+  ARCONTENT_BLANKBD = $00002000;  // Blank BD-R/BD-RW
+  ARCONTENT_BLURAY = $00004000;  // Blu-ray Disc
+  ARCONTENT_CAMERASTORAGE = $00008000;  // Camera Storage
+  ARCONTENT_CUSTOMEVENT = $00010000;  // Custom Event
+  ARCONTENT_NONE = $00000000;  // Empty (but formatted)
+  ARCONTENT_MASK = $0001FFFE;  // Bits that denote valid content types
+  ARCONTENT_PHASE_UNKNOWN = $00000000;  // We can be in any phase.  This is XP behavior.
+  ARCONTENT_PHASE_PRESNIFF = $10000000;  // These are contents we know w/o scanning the media for complete data (e.g. Audio track, DVD Movie).
+  ARCONTENT_PHASE_SNIFFING = $20000000;  // We are in the middle of searching the media.  There could be more contents to be found than currently reported.
+  ARCONTENT_PHASE_FINAL = $40000000;  // We have finished searching; contents we report are final.
+  ARCONTENT_PHASE_MASK = $70000000;  // Bits that denote what phase we are in the Autoplay process.
+  //#endif  // NTDDI_VISTA
 
   // IExtractImage
-  IEI_PRIORITY_MAX                    = ITSAT_MAX_PRIORITY;
-  IEI_PRIORITY_MIN                    = ITSAT_MIN_PRIORITY;
-  IEIT_PRIORITY_NORMAL                = ITSAT_DEFAULT_PRIORITY;
-  IEIFLAG_ASYNC                       = $0001;  // (deprecated) ask the extractor if it supports ASYNC extract (free threaded)
-  IEIFLAG_CACHE                       = $0002;  // returned from the extractor if it does NOT cache the thumbnail
-  IEIFLAG_ASPECT                      = $0004;  // passed to the extractor to beg it to render to the aspect ratio of the supplied rect
-  IEIFLAG_OFFLINE                     = $0008;  // if the extractor shouldn't hit the net to get any content neede for the rendering
-  IEIFLAG_GLEAM                       = $0010;  // does the image have a gleam ? this will be returned if it does
-  IEIFLAG_SCREEN                      = $0020;  // render as if for the screen  (this is exlusive with IEIFLAG_ASPECT )
-  IEIFLAG_ORIGSIZE                    = $0040;  // render to the approx size passed, but crop if neccessary
-  IEIFLAG_NOSTAMP                     = $0080;  // returned from the extractor if it does NOT want an icon stamp on the thumbnail
-  IEIFLAG_NOBORDER                    = $0100;  // returned from the extractor if it does NOT want an a border around the thumbnail
-  IEIFLAG_QUALITY                     = $0200;  // passed to the Extract method to indicate that a slower, higher quality image is desired, re-compute the thumbnail
-  IEIFLAG_REFRESH                     = $0400;  // returned from the extractor if it would like to have Refresh Thumbnail available
+  IEI_PRIORITY_MAX = ITSAT_MAX_PRIORITY;
+  IEI_PRIORITY_MIN = ITSAT_MIN_PRIORITY;
+  IEIT_PRIORITY_NORMAL = ITSAT_DEFAULT_PRIORITY;
+  IEIFLAG_ASYNC = $0001;  // (deprecated) ask the extractor if it supports ASYNC extract (free threaded)
+  IEIFLAG_CACHE = $0002;  // returned from the extractor if it does NOT cache the thumbnail
+  IEIFLAG_ASPECT = $0004;  // passed to the extractor to beg it to render to the aspect ratio of the supplied rect
+  IEIFLAG_OFFLINE = $0008;  // if the extractor shouldn't hit the net to get any content neede for the rendering
+  IEIFLAG_GLEAM = $0010;  // does the image have a gleam ? this will be returned if it does
+  IEIFLAG_SCREEN = $0020;  // render as if for the screen  (this is exlusive with IEIFLAG_ASPECT )
+  IEIFLAG_ORIGSIZE = $0040;  // render to the approx size passed, but crop if neccessary
+  IEIFLAG_NOSTAMP = $0080;  // returned from the extractor if it does NOT want an icon stamp on the thumbnail
+  IEIFLAG_NOBORDER = $0100;  // returned from the extractor if it does NOT want an a border around the thumbnail
+  IEIFLAG_QUALITY = $0200;  // passed to the Extract method to indicate that a slower, higher quality image is desired, re-compute the thumbnail
+  IEIFLAG_REFRESH = $0400;  // returned from the extractor if it would like to have Refresh Thumbnail available
 
   // IDeskBand
-  DBIM_MINSIZE                        = $0001;
-  DBIM_MAXSIZE                        = $0002;
-  DBIM_INTEGRAL                       = $0004;
-  DBIM_ACTUAL                         = $0008;
-  DBIM_TITLE                          = $0010;
-  DBIM_MODEFLAGS                      = $0020;
-  DBIM_BKCOLOR                        = $0040;
+  DBIM_MINSIZE = $0001;
+  DBIM_MAXSIZE = $0002;
+  DBIM_INTEGRAL = $0004;
+  DBIM_ACTUAL = $0008;
+  DBIM_TITLE = $0010;
+  DBIM_MODEFLAGS = $0020;
+  DBIM_BKCOLOR = $0040;
 
-  DBIMF_NORMAL                        = $0000;
-  DBIMF_FIXED                         = $0001;
-  DBIMF_FIXEDBMP                      = $0004;  // a fixed background bitmap (if supported)
-  DBIMF_VARIABLEHEIGHT                = $0008;
-  DBIMF_UNDELETEABLE                  = $0010;
-  DBIMF_DEBOSSED                      = $0020;
-  DBIMF_BKCOLOR                       = $0040;
-  DBIMF_USECHEVRON                    = $0080;
-  DBIMF_BREAK                         = $0100;
-  DBIMF_ADDTOFRONT                    = $0200;
-  DBIMF_TOPALIGN                      = $0400;
-//#if (NTDDI_VERSION >= NTDDI_VISTA)
-  DBIMF_NOGRIPPER                     = $0800;
-  DBIMF_ALWAYSGRIPPER                 = $1000;
-  DBIMF_NOMARGINS                     = $2000;
-//#endif  // NTDDI_VISTA
-  DBIF_VIEWMODE_NORMAL                = $0000;
-  DBIF_VIEWMODE_VERTICAL              = $0001;
-  DBIF_VIEWMODE_FLOATING              = $0002;
-  DBIF_VIEWMODE_TRANSPARENT           = $0004;
+  DBIMF_NORMAL = $0000;
+  DBIMF_FIXED = $0001;
+  DBIMF_FIXEDBMP = $0004;  // a fixed background bitmap (if supported)
+  DBIMF_VARIABLEHEIGHT = $0008;
+  DBIMF_UNDELETEABLE = $0010;
+  DBIMF_DEBOSSED = $0020;
+  DBIMF_BKCOLOR = $0040;
+  DBIMF_USECHEVRON = $0080;
+  DBIMF_BREAK = $0100;
+  DBIMF_ADDTOFRONT = $0200;
+  DBIMF_TOPALIGN = $0400;
+  //#if (NTDDI_VERSION >= NTDDI_VISTA)
+  DBIMF_NOGRIPPER = $0800;
+  DBIMF_ALWAYSGRIPPER = $1000;
+  DBIMF_NOMARGINS = $2000;
+  //#endif  // NTDDI_VISTA
+  DBIF_VIEWMODE_NORMAL = $0000;
+  DBIF_VIEWMODE_VERTICAL = $0001;
+  DBIF_VIEWMODE_FLOATING = $0002;
+  DBIF_VIEWMODE_TRANSPARENT = $0004;
 
   // IFileOperation
-  FOFX_NOSKIPJUNCTIONS                = $00010000;  // Don't avoid binding to junctions (like Task folder, Recycle-Bin)
-  FOFX_PREFERHARDLINK                 = $00020000;  // Create hard link if possible
-  FOFX_SHOWELEVATIONPROMPT            = $00040000;  // Show elevation prompts when error UI is disabled (use with FOF_NOERRORUI)
-  FOFX_RECYCLEONDELETE                = $00080000;  // Recycle when deleting, rather than permanently deleting
-  FOFX_EARLYFAILURE                   = $00100000;  // Fail operation as soon as a single error occurs rather than trying to process other items (applies only when using FOF_NOERRORUI)
-  FOFX_PRESERVEFILEEXTENSIONS         = $00200000;  // Rename collisions preserve file extns (use with FOF_RENAMEONCOLLISION)
-  FOFX_KEEPNEWERFILE                  = $00400000;  // Keep newer file on naming conflicts
-  FOFX_NOCOPYHOOKS                    = $00800000;  // Don't use copy hooks
-  FOFX_NOMINIMIZEBOX                  = $01000000;  // Don't allow minimizing the progress dialog
-  FOFX_MOVEACLSACROSSVOLUMES          = $02000000;  // Copy security information when performing a cross-volume move operation
-  FOFX_DONTDISPLAYSOURCEPATH          = $04000000;  // Don't display the path of source file in progress dialog
-  FOFX_DONTDISPLAYDESTPATH            = $08000000;  // Don't display the path of destination file in progress dialog
-  FOFX_REQUIREELEVATION               = $10000000;  // User expects the elevation; don't show a dialog to confirm
-  FOFX_ADDUNDORECORD                  = $20000000;  // This is a user-invoked operation, and should be placed on the undo stack.  This flag is preferred to FOF_ALLOWUNDO
-  FOFX_COPYASDOWNLOAD                 = $40000000;  // Show Downloading instead of Copying
-  FOFX_DONTDISPLAYLOCATIONS           = $80000000;  // Hides the locations line in the progress dialog
+  FOFX_NOSKIPJUNCTIONS = $00010000;  // Don't avoid binding to junctions (like Task folder, Recycle-Bin)
+  FOFX_PREFERHARDLINK = $00020000;  // Create hard link if possible
+  FOFX_SHOWELEVATIONPROMPT = $00040000;  // Show elevation prompts when error UI is disabled (use with FOF_NOERRORUI)
+  FOFX_RECYCLEONDELETE = $00080000;  // Recycle when deleting, rather than permanently deleting
+  FOFX_EARLYFAILURE = $00100000;  // Fail operation as soon as a single error occurs rather than trying to process other items (applies only when using FOF_NOERRORUI)
+  FOFX_PRESERVEFILEEXTENSIONS = $00200000;  // Rename collisions preserve file extns (use with FOF_RENAMEONCOLLISION)
+  FOFX_KEEPNEWERFILE = $00400000;  // Keep newer file on naming conflicts
+  FOFX_NOCOPYHOOKS = $00800000;  // Don't use copy hooks
+  FOFX_NOMINIMIZEBOX = $01000000;  // Don't allow minimizing the progress dialog
+  FOFX_MOVEACLSACROSSVOLUMES = $02000000;  // Copy security information when performing a cross-volume move operation
+  FOFX_DONTDISPLAYSOURCEPATH = $04000000;  // Don't display the path of source file in progress dialog
+  FOFX_DONTDISPLAYDESTPATH = $08000000;  // Don't display the path of destination file in progress dialog
+  FOFX_REQUIREELEVATION = $10000000;  // User expects the elevation; don't show a dialog to confirm
+  FOFX_ADDUNDORECORD = $20000000;  // This is a user-invoked operation, and should be placed on the undo stack.  This flag is preferred to FOF_ALLOWUNDO
+  FOFX_COPYASDOWNLOAD = $40000000;  // Show Downloading instead of Copying
+  FOFX_DONTDISPLAYLOCATIONS = $80000000;  // Hides the locations line in the progress dialog
 
   // IBandSite
-  BSIM_STATE                          = $00000001;
-  BSIM_STYLE                          = $00000002;
-  BSSF_VISIBLE                        = $00000001;
-  BSSF_NOTITLE                        = $00000002;
-  BSSF_UNDELETEABLE                   = $00001000;
-  BSIS_AUTOGRIPPER                    = $00000000;
-  BSIS_NOGRIPPER                      = $00000001;
-  BSIS_ALWAYSGRIPPER                  = $00000002;
-  BSIS_LEFTALIGN                      = $00000004;
-  BSIS_SINGLECLICK                    = $00000008;
-  BSIS_NOCONTEXTMENU                  = $00000010;
-  BSIS_NODROPTARGET                   = $00000020;
-  BSIS_NOCAPTION                      = $00000040;
-  BSIS_PREFERNOLINEBREAK              = $00000080;
-  BSIS_LOCKED                         = $00000100;
-//#if (_WIN32_IE >= _WIN32_IE_IE70)
-  BSIS_PRESERVEORDERDURINGLAYOUT      = $00000200;
-  BSIS_FIXEDORDER                     = $00000400;
-//#endif  // _WIN32_IE_IE70
-  SID_SBandSite                       : TGUID = '{4CF504B0-DE96-11D0-8B3F-00A0C911E8E5}'; // IID_IBandSite
-  CGID_BandSite                       : TGUID = '{4CF504B0-DE96-11D0-8B3F-00A0C911E8E5}'; // IID_IBandSite
+  BSIM_STATE = $00000001;
+  BSIM_STYLE = $00000002;
+  BSSF_VISIBLE = $00000001;
+  BSSF_NOTITLE = $00000002;
+  BSSF_UNDELETEABLE = $00001000;
+  BSIS_AUTOGRIPPER = $00000000;
+  BSIS_NOGRIPPER = $00000001;
+  BSIS_ALWAYSGRIPPER = $00000002;
+  BSIS_LEFTALIGN = $00000004;
+  BSIS_SINGLECLICK = $00000008;
+  BSIS_NOCONTEXTMENU = $00000010;
+  BSIS_NODROPTARGET = $00000020;
+  BSIS_NOCAPTION = $00000040;
+  BSIS_PREFERNOLINEBREAK = $00000080;
+  BSIS_LOCKED = $00000100;
+  //#if (_WIN32_IE >= _WIN32_IE_IE70)
+  BSIS_PRESERVEORDERDURINGLAYOUT = $00000200;
+  BSIS_FIXEDORDER = $00000400;
+  //#endif  // _WIN32_IE_IE70
+  SID_SBandSite: TGUID = '{4CF504B0-DE96-11D0-8B3F-00A0C911E8E5}'; // IID_IBandSite
+  CGID_BandSite: TGUID = '{4CF504B0-DE96-11D0-8B3F-00A0C911E8E5}'; // IID_IBandSite
 
   // IFileIsInUse
-  OF_CAP_CANSWITCHTO                  = $0001;
-  OF_CAP_CANCLOSE                     = $0002;
+  OF_CAP_CANSWITCHTO = $0001;
+  OF_CAP_CANCLOSE = $0002;
 
   // IShellMenuCallback
   // Mask
-  SMDM_SHELLFOLDER                    = $00000001;  // This is for an item in the band
-  SMDM_HMENU                          = $00000002;  // This is for the Band itself
-  SMDM_TOOLBAR                        = $00000004;  // Plain toolbar, not associated with a shell folder or hmenu
+  SMDM_SHELLFOLDER = $00000001;  // This is for an item in the band
+  SMDM_HMENU = $00000002;  // This is for the Band itself
+  SMDM_TOOLBAR = $00000004;  // Plain toolbar, not associated with a shell folder or hmenu
 
-  SMC_INITMENU                        = $00000001;  // The callback is called to init a menuband
-  SMC_CREATE                          = $00000002;
-  SMC_EXITMENU                        = $00000003;  // The callback is called when menu is collapsing
-  SMC_GETINFO                         = $00000005;  // The callback is called to return DWORD values
-  SMC_GETSFINFO                       = $00000006;  // The callback is called to return DWORD values
-  SMC_GETOBJECT                       = $00000007;  // The callback is called to get some object
-  SMC_GETSFOBJECT                     = $00000008;  // The callback is called to get some object
-  SMC_SFEXEC                          = $00000009;  // The callback is called to execute an shell folder item
-  SMC_SFSELECTITEM                    = $0000000A;  // The callback is called when an item is selected
-  SMC_REFRESH                         = $00000010;  // Menus have completely refreshed. Reset your state.
-  SMC_DEMOTE                          = $00000011;  // Demote an item
-  SMC_PROMOTE                         = $00000012;  // Promote an item, wParam = SMINV_* flag
-  SMC_DEFAULTICON                     = $00000016;  // Returns Default icon location in wParam, index in lParam
-  SMC_NEWITEM                         = $00000017;  // Notifies item is not in the order stream.
-  SMC_CHEVRONEXPAND                   = $00000019;  // Notifies of a expansion via the chevron
-  SMC_DISPLAYCHEVRONTIP               = $0000002A;  // S_OK display, S_FALSE not.
-  SMC_SETSFOBJECT                     = $0000002D;  // Called to save the passed object
-  SMC_SHCHANGENOTIFY                  = $0000002E;  // Called when a Change notify is received. lParam points to SMCSHCHANGENOTIFYSTRUCT
-  SMC_CHEVRONGETTIP                   = $0000002F;  // Called to get the chevron tip text. wParam = Tip title, Lparam = TipText Both MAX_PATH
-  SMC_SFDDRESTRICTED                  = $00000030;  // Called requesting if it's ok to drop. wParam = IDropTarget.
-//#if (_WIN32_IE >= _WIN32_IE_IE70)
-  SMC_SFEXEC_MIDDLE                   = $00000031;  // Same as SFEXEC, but the middle mouse button caused the exec.
-  SMC_GETAUTOEXPANDSTATE              = $00000041;  // callback returns the default autoexpand state lParam = LPDWORD to recieve flags
-  SMC_AUTOEXPANDCHANGE                = $00000042;  // Notify that the menu is expanding/contracting
-  SMC_GETCONTEXTMENUMODIFIER          = $00000043;  // Used to add items to a context menu
-  SMC_GETBKCONTEXTMENU                = $00000044;  // used to get a context menu to display when user right clicks on the background
-  SMC_OPEN                            = $00000045;  // allows client to overwrite open/explore verb action on an item
+  SMC_INITMENU = $00000001;  // The callback is called to init a menuband
+  SMC_CREATE = $00000002;
+  SMC_EXITMENU = $00000003;  // The callback is called when menu is collapsing
+  SMC_GETINFO = $00000005;  // The callback is called to return DWORD values
+  SMC_GETSFINFO = $00000006;  // The callback is called to return DWORD values
+  SMC_GETOBJECT = $00000007;  // The callback is called to get some object
+  SMC_GETSFOBJECT = $00000008;  // The callback is called to get some object
+  SMC_SFEXEC = $00000009;  // The callback is called to execute an shell folder item
+  SMC_SFSELECTITEM = $0000000A;  // The callback is called when an item is selected
+  SMC_REFRESH = $00000010;  // Menus have completely refreshed. Reset your state.
+  SMC_DEMOTE = $00000011;  // Demote an item
+  SMC_PROMOTE = $00000012;  // Promote an item, wParam = SMINV_* flag
+  SMC_DEFAULTICON = $00000016;  // Returns Default icon location in wParam, index in lParam
+  SMC_NEWITEM = $00000017;  // Notifies item is not in the order stream.
+  SMC_CHEVRONEXPAND = $00000019;  // Notifies of a expansion via the chevron
+  SMC_DISPLAYCHEVRONTIP = $0000002A;  // S_OK display, S_FALSE not.
+  SMC_SETSFOBJECT = $0000002D;  // Called to save the passed object
+  SMC_SHCHANGENOTIFY = $0000002E;  // Called when a Change notify is received. lParam points to SMCSHCHANGENOTIFYSTRUCT
+  SMC_CHEVRONGETTIP = $0000002F;  // Called to get the chevron tip text. wParam = Tip title, Lparam = TipText Both MAX_PATH
+  SMC_SFDDRESTRICTED = $00000030;  // Called requesting if it's ok to drop. wParam = IDropTarget.
+  //#if (_WIN32_IE >= _WIN32_IE_IE70)
+  SMC_SFEXEC_MIDDLE = $00000031;  // Same as SFEXEC, but the middle mouse button caused the exec.
+  SMC_GETAUTOEXPANDSTATE = $00000041;  // callback returns the default autoexpand state lParam = LPDWORD to recieve flags
+  SMC_AUTOEXPANDCHANGE = $00000042;  // Notify that the menu is expanding/contracting
+  SMC_GETCONTEXTMENUMODIFIER = $00000043;  // Used to add items to a context menu
+  SMC_GETBKCONTEXTMENU = $00000044;  // used to get a context menu to display when user right clicks on the background
+  SMC_OPEN = $00000045;  // allows client to overwrite open/explore verb action on an item
   // Flags for return value from SMC_GETAUTOEXPANDSTATE and SMC_AUTOEXPANDCHANGE:
-  SMAE_EXPANDED                       = $00000001;  // The menu is or should start expanded
-  SMAE_CONTRACTED                     = $00000002;  // The menu is or should start contracted
-                                            // SMAE_EXPANDED and SMAE_CONTRACTED are mutually exclusive
-  SMAE_USER                           = $00000004;  // Indicates that the menu expansion/contraction is a reflection
-                                            // of user choice
-  SMAE_VALID                          = $00000007;
-//#endif  // _WIN32_IE_IE70
+  SMAE_EXPANDED = $00000001;  // The menu is or should start expanded
+  SMAE_CONTRACTED = $00000002;  // The menu is or should start contracted
+  // SMAE_EXPANDED and SMAE_CONTRACTED are mutually exclusive
+  SMAE_USER = $00000004;  // Indicates that the menu expansion/contraction is a reflection
+  // of user choice
+  SMAE_VALID = $00000007;
+  //#endif  // _WIN32_IE_IE70
 
   // IShellMenu
-  SMINIT_DEFAULT                      = $00000000;  // No Options
-  SMINIT_RESTRICT_DRAGDROP            = $00000002;  // Don't allow Drag and Drop
-  SMINIT_TOPLEVEL                     = $00000004;  // This is the top band.
-  SMINIT_CACHED                       = $00000010;
-//#if (_WIN32_IE >= _WIN32_IE_IE70)
-  SMINIT_AUTOEXPAND                   = $00000100;  // automatically expand/contract menu band
-  SMINIT_AUTOTOOLTIP                  = $00000200;  // regular tooltip support
-  SMINIT_DROPONCONTAINER              = $00000400;  // allow drop on a container
-//#endif  // _WIN32_IE_IE70
-  SMINIT_VERTICAL                     = $10000000;  // This is a vertical menu
-  SMINIT_HORIZONTAL                   = $20000000;  // This is a horizontal menu    (does not inherit)
-  ANCESTORDEFAULT                     = UINT(- 1);
-  SMSET_TOP                           = $10000000;  // Bias this namespace to the top of the menu
-  SMSET_BOTTOM                        = $20000000;  // Bias this namespace to the bottom of the menu
-  SMSET_DONTOWN                       = $00000001;  // The Menuband doesn't own the non-ref counted object
-  SMINV_REFRESH                       = $00000001;
-  SMINV_ID                            = $00000008;
+  SMINIT_DEFAULT = $00000000;  // No Options
+  SMINIT_RESTRICT_DRAGDROP = $00000002;  // Don't allow Drag and Drop
+  SMINIT_TOPLEVEL = $00000004;  // This is the top band.
+  SMINIT_CACHED = $00000010;
+  //#if (_WIN32_IE >= _WIN32_IE_IE70)
+  SMINIT_AUTOEXPAND = $00000100;  // automatically expand/contract menu band
+  SMINIT_AUTOTOOLTIP = $00000200;  // regular tooltip support
+  SMINIT_DROPONCONTAINER = $00000400;  // allow drop on a container
+  //#endif  // _WIN32_IE_IE70
+  SMINIT_VERTICAL = $10000000;  // This is a vertical menu
+  SMINIT_HORIZONTAL = $20000000;  // This is a horizontal menu    (does not inherit)
+  ANCESTORDEFAULT = UINT(-1);
+  SMSET_TOP = $10000000;  // Bias this namespace to the top of the menu
+  SMSET_BOTTOM = $20000000;  // Bias this namespace to the bottom of the menu
+  SMSET_DONTOWN = $00000001;  // The Menuband doesn't own the non-ref counted object
+  SMINV_REFRESH = $00000001;
+  SMINV_ID = $00000008;
 
   // IBannerNotificationHandler
-  ISIOI_ICONFILE                      = $00000001;
-  ISIOI_ICONINDEX                     = $00000002;
+  ISIOI_ICONFILE = $00000001;
+  ISIOI_ICONINDEX = $00000002;
 
   // ITaskbarList3Vtbl
-  THBN_CLICKED                        = $1800;
+  THBN_CLICKED = $1800;
 
-  E_PREVIEWHANDLER_DRM_FAIL           = _HRESULT_TYPEDEF_ ($86420001);
-  E_PREVIEWHANDLER_NOAUTH             = _HRESULT_TYPEDEF_ ($86420002);
-  E_PREVIEWHANDLER_NOTFOUND           = _HRESULT_TYPEDEF_ ($86420003);
-  E_PREVIEWHANDLER_CORRUPT            = _HRESULT_TYPEDEF_ ($86420004);
+  E_PREVIEWHANDLER_DRM_FAIL = _HRESULT_TYPEDEF_($86420001);
+  E_PREVIEWHANDLER_NOAUTH = _HRESULT_TYPEDEF_($86420002);
+  E_PREVIEWHANDLER_NOTFOUND = _HRESULT_TYPEDEF_($86420003);
+  E_PREVIEWHANDLER_CORRUPT = _HRESULT_TYPEDEF_($86420004);
 
-// SID =========================================================================
+  // SID =========================================================================
 
-  SID_ExecuteCommandHost              : TGUID = '{4b6832a2-5f04-4c9d-b89d-727a15d103e7}';
-  SID_URLExecutionContext             : TGUID = '{FB5F8EBC-BBB6-4D10-A461-777291A09030}';
-  SID_LaunchTargetMonitor             : TGUID = '{8D547FA1-CC45-40C8-B7C1-D48C183F13F3}';
-  SID_LaunchSourceViewSizePreference  : TGUID = '{80605492-67d9-414f-af89-a1cdf1242bc1}';
-  SID_LaunchSourceAppUserModelId      : TGUID = '{2ce78010-74db-48bc-9c6a-10f372495723}';
-  SID_HandlerInfo                     : TGUID = '{997706EF-F880-453B-8118-39E1A2D2655A}';
-  SID_SHandlerActivationHost          : TGUID = '{35094a87-8bb1-4237-96c6-c417eebdb078}';
-  SID_AppActivationUIInfo             : TGUID = '{abad189d-9fa3-4278-b3ca-8ca448a88dcb}';
-  SID_ShellExecuteNamedPropertyStore  : TGUID = '{eb84ada2-00ff-4992-8324-ed5ce061cb29}';
-  SID_ShellTaskScheduler              : TGUID = '{6CCB7BE0-6807-11d0-B810-00C04FD706EC}';
-  SID_SFolderView                     : TGUID = '{cde725b0-ccc9-4519-917e-325d72fab4ce}';
-  SID_SExplorerBrowserFrame           : TGUID = '{000214F1-0000-0000-C000-000000000046}'; // IID_ICommDlgBrowser
+  SID_ExecuteCommandHost: TGUID = '{4b6832a2-5f04-4c9d-b89d-727a15d103e7}';
+  SID_URLExecutionContext: TGUID = '{FB5F8EBC-BBB6-4D10-A461-777291A09030}';
+  SID_LaunchTargetMonitor: TGUID = '{8D547FA1-CC45-40C8-B7C1-D48C183F13F3}';
+  SID_LaunchSourceViewSizePreference: TGUID = '{80605492-67d9-414f-af89-a1cdf1242bc1}';
+  SID_LaunchSourceAppUserModelId: TGUID = '{2ce78010-74db-48bc-9c6a-10f372495723}';
+  SID_HandlerInfo: TGUID = '{997706EF-F880-453B-8118-39E1A2D2655A}';
+  SID_SHandlerActivationHost: TGUID = '{35094a87-8bb1-4237-96c6-c417eebdb078}';
+  SID_AppActivationUIInfo: TGUID = '{abad189d-9fa3-4278-b3ca-8ca448a88dcb}';
+  SID_ShellExecuteNamedPropertyStore: TGUID = '{eb84ada2-00ff-4992-8324-ed5ce061cb29}';
+  SID_ShellTaskScheduler: TGUID = '{6CCB7BE0-6807-11d0-B810-00C04FD706EC}';
+  SID_SFolderView: TGUID = '{cde725b0-ccc9-4519-917e-325d72fab4ce}';
+  SID_SExplorerBrowserFrame: TGUID = '{000214F1-0000-0000-C000-000000000046}'; // IID_ICommDlgBrowser
 
-  SID_SProfferService                 : TGUID = '{cb728b20-f786-11ce-92ad-00aa00a74cd0}';
-  SID_SNewWindowManager               : TGUID = '{D2BC4C84-3F72-4a52-A604-7BCBF3982CBB}';
-  SID_ExecuteCreatingProcess          : TGUID = '{c2b937a9-3110-4398-8a56-f34c6342d244}';
-  SID_LaunchUIContextProvider         : TGUID = '{0d12c4c8-a3d9-4e24-94c1-0e20c5a956c4}';
-  SID_SNewMenuClient                  : TGUID = '{dcb07fdc-3bb5-451c-90be-966644fed7b0}';
-  SID_SNavigationPane                 : TGUID = '{028212A3-B627-47e9-8856-C14265554E4F}';
-  SID_ExplorerPaneVisibility          : TGUID = '{e07010ec-bc17-44c0-97b0-46c7c95b9edc}';
-
-
-// CLSID =======================================================================
-
-  CLSID_DesktopWallpaper              : TGUID = '{C2CF3110-460E-4FC1-B9D0-8A1C0C9CC4BD}';
-  CLSID_ShellDesktop                  : TGUID = '{00021400-0000-0000-C000-000000000046}';
-  CLSID_ShellFSFolder                 : TGUID = '{F3364BA0-65B9-11CE-A9BA-00AA004AE837}';
-  CLSID_NetworkPlaces                 : TGUID = '{208D2C60-3AEA-1069-A2D7-08002B30309D}';
-  CLSID_ShellLink                     : TGUID = '{00021401-0000-0000-C000-000000000046}';
-  CLSID_DriveSizeCategorizer          : TGUID = '{94357B53-CA29-4B78-83AE-E8FE7409134F}';
-  CLSID_DriveTypeCategorizer          : TGUID = '{B0A8F3CF-4333-4BAB-8873-1CCB1CADA48B}';
-  CLSID_FreeSpaceCategorizer          : TGUID = '{B5607793-24AC-44C7-82E2-831726AA6CB7}';
-  CLSID_SizeCategorizer               : TGUID = '{55D7B852-F6D1-42F2-AA75-8728A1B2D264}';
-  CLSID_PropertiesUI                  : TGUID = '{D912F8CF-0396-4915-884E-FB425D32943B}';
-  CLSID_UserNotification              : TGUID = '{0010890E-8789-413C-ADBC-48F5B511B3AF}';
-  CLSID_TaskbarList                   : TGUID = '{56FDF344-FD6D-11D0-958A-006097C9A090}';
-  CLSID_ShellItem                     : TGUID = '{9AC9FBE1-E0A2-4AD6-B4EE-E212013EA917}';
-  CLSID_NamespaceWalker               : TGUID = '{72EB61E0-8672-4303-9175-F2E4C68B2E7C}';
-  CLSID_FileOperation                 : TGUID = '{3AD05575-8857-4850-9277-11B85BDB8E09}';
-  CLSID_FileOpenDialog                : TGUID = '{DC1C5A9C-E88A-4DDE-A5A1-60F82A20AEF7}';
-  CLSID_FileSaveDialog                : TGUID = '{C0B4E2F3-BA21-4773-8DBA-335EC946EB8B}';
-  CLSID_KnownFolderManager            : TGUID = '{4DF0C730-DF9D-4AE3-9153-AA6B82E9795A}';
-  CLSID_SharingConfigurationManager   : TGUID = '{49F371E1-8C5C-4D9C-9A3B-54A6827F513C}';
-  CLSID_NetworkConnections            : TGUID = '{7007ACC7-3202-11D1-AAD2-00805FC1270E}';
-  CLSID_ScheduledTasks                : TGUID = '{D6277990-4C6A-11CF-8D87-00AA0060F5BF}';
-  CLSID_ApplicationAssociationRegistration : TGUID = '{591209C7-767B-42B2-9FBA-44EE4615F2C7}';
-  CLSID_SearchFolderItemFactory       : TGUID = '{14010E02-BBBD-41F0-88E3-EDA371216584}';
-  CLSID_OpenControlPanel              : TGUID = '{06622D85-6856-4460-8DE1-A81921B41C4B}';
-  CLSID_MailRecipient                 : TGUID = '{9E56BE60-C50F-11CF-9A2C-00A0C90A90CE}';
-  CLSID_NetworkExplorerFolder         : TGUID = '{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}';
-  CLSID_DestinationList               : TGUID = '{77F10CF0-3DB5-4966-B520-B7C54FD35ED6}';
-  CLSID_ApplicationDestinations       : TGUID = '{86C14003-4D6B-4EF3-A7B4-0506663B2E68}';
-  CLSID_ApplicationDocumentLists      : TGUID = '{86BEC222-30F2-47E0-9F25-60D11CD75C28}';
-  CLSID_HomeGroup                     : TGUID = '{DE77BA04-3C92-4D11-A1A5-42352A53E0E3}';
-  CLSID_ShellLibrary                  : TGUID = '{D9B3211D-E57F-4426-AAEF-30A806ADD397}';
-  CLSID_AppStartupLink                : TGUID = '{273EB5E7-88B0-4843-BFEF-E2C81D43AAE5}';
-  CLSID_EnumerableObjectCollection    : TGUID = '{2D3468C1-36A7-43B6-AC24-D3F02FD9607A}';
-  CLSID_FrameworkInputPane            : TGUID = '{D5120AA3-46BA-44C5-822D-CA8092C1FC72}';
-  CLSID_DefFolderMenu                 : TGUID = '{C63382BE-7933-48D0-9AC8-85FB46BE2FDD}';
-  CLSID_AppVisibility                 : TGUID = '{7E5FE3D9-985F-4908-91F9-EE19F9FD1514}';
-  CLSID_AppShellVerbHandler           : TGUID = '{4ED3A719-CEA8-4BD9-910D-E252F997AFC2}';
-  CLSID_ExecuteUnknown                : TGUID = '{E44E9428-BDBC-4987-A099-40DC8FD255E7}';
-  CLSID_PackageDebugSettings          : TGUID = '{B1AEC16F-2383-4852-B0E9-8F0B1DC66B4D}';
-  CLSID_SuspensionDependencyManager   : TGUID = '{6B273FC5-61FD-4918-95A2-C3B5E9D7F581}';
-  CLSID_ApplicationActivationManager  : TGUID = '{45BA127D-10A8-46EA-8AB7-56EA9078943C}';
-  CLSID_ApplicationDesignModeSettings : TGUID = '{958A6FB5-DCB2-4FAF-AAFD-7FB054AD1A3B}';
+  SID_SProfferService: TGUID = '{cb728b20-f786-11ce-92ad-00aa00a74cd0}';
+  SID_SNewWindowManager: TGUID = '{D2BC4C84-3F72-4a52-A604-7BCBF3982CBB}';
+  SID_ExecuteCreatingProcess: TGUID = '{c2b937a9-3110-4398-8a56-f34c6342d244}';
+  SID_LaunchUIContextProvider: TGUID = '{0d12c4c8-a3d9-4e24-94c1-0e20c5a956c4}';
+  SID_SNewMenuClient: TGUID = '{dcb07fdc-3bb5-451c-90be-966644fed7b0}';
+  SID_SNavigationPane: TGUID = '{028212A3-B627-47e9-8856-C14265554E4F}';
+  SID_ExplorerPaneVisibility: TGUID = '{e07010ec-bc17-44c0-97b0-46c7c95b9edc}';
 
 
-// ENUMS =======================================================================
+  // CLSID =======================================================================
+
+  CLSID_DesktopWallpaper: TGUID = '{C2CF3110-460E-4FC1-B9D0-8A1C0C9CC4BD}';
+  CLSID_ShellDesktop: TGUID = '{00021400-0000-0000-C000-000000000046}';
+  CLSID_ShellFSFolder: TGUID = '{F3364BA0-65B9-11CE-A9BA-00AA004AE837}';
+  CLSID_NetworkPlaces: TGUID = '{208D2C60-3AEA-1069-A2D7-08002B30309D}';
+  CLSID_ShellLink: TGUID = '{00021401-0000-0000-C000-000000000046}';
+  CLSID_DriveSizeCategorizer: TGUID = '{94357B53-CA29-4B78-83AE-E8FE7409134F}';
+  CLSID_DriveTypeCategorizer: TGUID = '{B0A8F3CF-4333-4BAB-8873-1CCB1CADA48B}';
+  CLSID_FreeSpaceCategorizer: TGUID = '{B5607793-24AC-44C7-82E2-831726AA6CB7}';
+  CLSID_SizeCategorizer: TGUID = '{55D7B852-F6D1-42F2-AA75-8728A1B2D264}';
+  CLSID_PropertiesUI: TGUID = '{D912F8CF-0396-4915-884E-FB425D32943B}';
+  CLSID_UserNotification: TGUID = '{0010890E-8789-413C-ADBC-48F5B511B3AF}';
+  CLSID_TaskbarList: TGUID = '{56FDF344-FD6D-11D0-958A-006097C9A090}';
+  CLSID_ShellItem: TGUID = '{9AC9FBE1-E0A2-4AD6-B4EE-E212013EA917}';
+  CLSID_NamespaceWalker: TGUID = '{72EB61E0-8672-4303-9175-F2E4C68B2E7C}';
+  CLSID_FileOperation: TGUID = '{3AD05575-8857-4850-9277-11B85BDB8E09}';
+  CLSID_FileOpenDialog: TGUID = '{DC1C5A9C-E88A-4DDE-A5A1-60F82A20AEF7}';
+  CLSID_FileSaveDialog: TGUID = '{C0B4E2F3-BA21-4773-8DBA-335EC946EB8B}';
+  CLSID_KnownFolderManager: TGUID = '{4DF0C730-DF9D-4AE3-9153-AA6B82E9795A}';
+  CLSID_SharingConfigurationManager: TGUID = '{49F371E1-8C5C-4D9C-9A3B-54A6827F513C}';
+  CLSID_NetworkConnections: TGUID = '{7007ACC7-3202-11D1-AAD2-00805FC1270E}';
+  CLSID_ScheduledTasks: TGUID = '{D6277990-4C6A-11CF-8D87-00AA0060F5BF}';
+  CLSID_ApplicationAssociationRegistration: TGUID = '{591209C7-767B-42B2-9FBA-44EE4615F2C7}';
+  CLSID_SearchFolderItemFactory: TGUID = '{14010E02-BBBD-41F0-88E3-EDA371216584}';
+  CLSID_OpenControlPanel: TGUID = '{06622D85-6856-4460-8DE1-A81921B41C4B}';
+  CLSID_MailRecipient: TGUID = '{9E56BE60-C50F-11CF-9A2C-00A0C90A90CE}';
+  CLSID_NetworkExplorerFolder: TGUID = '{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}';
+  CLSID_DestinationList: TGUID = '{77F10CF0-3DB5-4966-B520-B7C54FD35ED6}';
+  CLSID_ApplicationDestinations: TGUID = '{86C14003-4D6B-4EF3-A7B4-0506663B2E68}';
+  CLSID_ApplicationDocumentLists: TGUID = '{86BEC222-30F2-47E0-9F25-60D11CD75C28}';
+  CLSID_HomeGroup: TGUID = '{DE77BA04-3C92-4D11-A1A5-42352A53E0E3}';
+  CLSID_ShellLibrary: TGUID = '{D9B3211D-E57F-4426-AAEF-30A806ADD397}';
+  CLSID_AppStartupLink: TGUID = '{273EB5E7-88B0-4843-BFEF-E2C81D43AAE5}';
+  CLSID_EnumerableObjectCollection: TGUID = '{2D3468C1-36A7-43B6-AC24-D3F02FD9607A}';
+  CLSID_FrameworkInputPane: TGUID = '{D5120AA3-46BA-44C5-822D-CA8092C1FC72}';
+  CLSID_DefFolderMenu: TGUID = '{C63382BE-7933-48D0-9AC8-85FB46BE2FDD}';
+  CLSID_AppVisibility: TGUID = '{7E5FE3D9-985F-4908-91F9-EE19F9FD1514}';
+  CLSID_AppShellVerbHandler: TGUID = '{4ED3A719-CEA8-4BD9-910D-E252F997AFC2}';
+  CLSID_ExecuteUnknown: TGUID = '{E44E9428-BDBC-4987-A099-40DC8FD255E7}';
+  CLSID_PackageDebugSettings: TGUID = '{B1AEC16F-2383-4852-B0E9-8F0B1DC66B4D}';
+  CLSID_SuspensionDependencyManager: TGUID = '{6B273FC5-61FD-4918-95A2-C3B5E9D7F581}';
+  CLSID_ApplicationActivationManager: TGUID = '{45BA127D-10A8-46EA-8AB7-56EA9078943C}';
+  CLSID_ApplicationDesignModeSettings: TGUID = '{958A6FB5-DCB2-4FAF-AAFD-7FB054AD1A3B}';
+
+
+  // ENUMS =======================================================================
 
 type
   PKF_CATEGORY = ^KF_CATEGORY;
   KF_CATEGORY = type Integer;
+
 const
   KF_CATEGORY_VIRTUAL = KF_CATEGORY(1);
-  KF_CATEGORY_FIXED   = KF_CATEGORY(2);
-  KF_CATEGORY_COMMON  = KF_CATEGORY(3);
+  KF_CATEGORY_FIXED = KF_CATEGORY(2);
+  KF_CATEGORY_COMMON = KF_CATEGORY(3);
   KF_CATEGORY_PERUSER = KF_CATEGORY(4);
 
 type
   PKF_DEFINITION_FLAGS = ^KF_DEFINITION_FLAGS;
   KF_DEFINITION_FLAGS = type DWORD;
+
 const
   KFDF_LOCAL_REDIRECT_ONLY = KF_DEFINITION_FLAGS($2);
-  KFDF_ROAMABLE	           = KF_DEFINITION_FLAGS($4);
-  KFDF_PRECREATE           = KF_DEFINITION_FLAGS($8);
-  KFDF_STREAM	             = KF_DEFINITION_FLAGS($10);
-  KFDF_UBLISHEXPANDEDPATH	 = KF_DEFINITION_FLAGS($20);
-  KFDF_NO_REDIRECT_UI	     = KF_DEFINITION_FLAGS($40);
+  KFDF_ROAMABLE = KF_DEFINITION_FLAGS($4);
+  KFDF_PRECREATE = KF_DEFINITION_FLAGS($8);
+  KFDF_STREAM = KF_DEFINITION_FLAGS($10);
+  KFDF_UBLISHEXPANDEDPATH = KF_DEFINITION_FLAGS($20);
+  KFDF_NO_REDIRECT_UI = KF_DEFINITION_FLAGS($40);
 
 type
   PKF_REDIRECT_FLAGS = ^KF_REDIRECT_FLAGS;
   KF_REDIRECT_FLAGS = type DWORD;
+
 const
-  KF_REDIRECT_USER_EXCLUSIVE               	= KF_REDIRECT_FLAGS($1);
-  KF_REDIRECT_COPY_SOURCE_DACL	            = KF_REDIRECT_FLAGS($2);
-  KF_REDIRECT_OWNER_USER	                  = KF_REDIRECT_FLAGS($4);
-  KF_REDIRECT_SET_OWNER_EXPLICIT	          = KF_REDIRECT_FLAGS($8);
-  KF_REDIRECT_CHECK_ONLY        	          = KF_REDIRECT_FLAGS($10);
-  KF_REDIRECT_WITH_UI           	          = KF_REDIRECT_FLAGS($20);
-  KF_REDIRECT_UNPIN                        	= KF_REDIRECT_FLAGS($40);
-  KF_REDIRECT_PIN                          	= KF_REDIRECT_FLAGS($80);
-  KF_REDIRECT_COPY_CONTENTS	                = KF_REDIRECT_FLAGS($200);
-  KF_REDIRECT_DEL_SOURCE_CONTENTS         	= KF_REDIRECT_FLAGS($400);
-  KF_REDIRECT_EXCLUDE_ALL_KNOWN_SUBFOLDERS	= KF_REDIRECT_FLAGS($800);
+  KF_REDIRECT_USER_EXCLUSIVE = KF_REDIRECT_FLAGS($1);
+  KF_REDIRECT_COPY_SOURCE_DACL = KF_REDIRECT_FLAGS($2);
+  KF_REDIRECT_OWNER_USER = KF_REDIRECT_FLAGS($4);
+  KF_REDIRECT_SET_OWNER_EXPLICIT = KF_REDIRECT_FLAGS($8);
+  KF_REDIRECT_CHECK_ONLY = KF_REDIRECT_FLAGS($10);
+  KF_REDIRECT_WITH_UI = KF_REDIRECT_FLAGS($20);
+  KF_REDIRECT_UNPIN = KF_REDIRECT_FLAGS($40);
+  KF_REDIRECT_PIN = KF_REDIRECT_FLAGS($80);
+  KF_REDIRECT_COPY_CONTENTS = KF_REDIRECT_FLAGS($200);
+  KF_REDIRECT_DEL_SOURCE_CONTENTS = KF_REDIRECT_FLAGS($400);
+  KF_REDIRECT_EXCLUDE_ALL_KNOWN_SUBFOLDERS = KF_REDIRECT_FLAGS($800);
 
 type
   PKF_REDIRECTION_CAPABILITIES = ^KF_REDIRECTION_CAPABILITIES;
   KF_REDIRECTION_CAPABILITIES = type DWORD;
+
 const
-  KF_REDIRECTION_CAPABILITIES_ALLOW_ALL             	= KF_REDIRECTION_CAPABILITIES($ff);
-  KF_REDIRECTION_CAPABILITIES_REDIRECTABLE          	= KF_REDIRECTION_CAPABILITIES($1);
-  KF_REDIRECTION_CAPABILITIES_DENY_ALL              	= KF_REDIRECTION_CAPABILITIES($fff00);
-  KF_REDIRECTION_CAPABILITIES_DENY_POLICY_REDIRECTED	= KF_REDIRECTION_CAPABILITIES($100);
-  KF_REDIRECTION_CAPABILITIES_DENY_POLICY           	= KF_REDIRECTION_CAPABILITIES($200);
-  KF_REDIRECTION_CAPABILITIES_DENY_PERMISSIONS	      = KF_REDIRECTION_CAPABILITIES($400);
+  KF_REDIRECTION_CAPABILITIES_ALLOW_ALL = KF_REDIRECTION_CAPABILITIES($ff);
+  KF_REDIRECTION_CAPABILITIES_REDIRECTABLE = KF_REDIRECTION_CAPABILITIES($1);
+  KF_REDIRECTION_CAPABILITIES_DENY_ALL = KF_REDIRECTION_CAPABILITIES($fff00);
+  KF_REDIRECTION_CAPABILITIES_DENY_POLICY_REDIRECTED = KF_REDIRECTION_CAPABILITIES($100);
+  KF_REDIRECTION_CAPABILITIES_DENY_POLICY = KF_REDIRECTION_CAPABILITIES($200);
+  KF_REDIRECTION_CAPABILITIES_DENY_PERMISSIONS = KF_REDIRECTION_CAPABILITIES($400);
 
 type
   PFFFP_MODE = ^FFFP_MODE;
   FFFP_MODE = type DWORD;
+
 const
-  FFFP_EXACTMATCH         = FFFP_MODE(0);
+  FFFP_EXACTMATCH = FFFP_MODE(0);
   FFFP_NEARESTPARENTMATCH = FFFP_MODE((FFFP_EXACTMATCH + 1));
 
 type
   PSHGDNF = ^SHGDNF;
   _SHGDNF = type DWORD;
   SHGDNF = _SHGDNF;
+
 const
-  SHGDN_NORMAL        = _SHGDNF(0);
-  SHGDN_INFOLDER      = _SHGDNF($1);
-  SHGDN_FOREDITING    = _SHGDNF($1000);
+  SHGDN_NORMAL = _SHGDNF(0);
+  SHGDN_INFOLDER = _SHGDNF($1);
+  SHGDN_FOREDITING = _SHGDNF($1000);
   SHGDN_FORADDRESSBAR = _SHGDNF($4000);
-  SHGDN_FORPARSING    = _SHGDNF($8000);
+  SHGDN_FORPARSING = _SHGDNF($8000);
 
 type
   PSHCONTF = ^SHCONTF;
   _SHCONTF = DWORD;
   SHCONTF = _SHCONTF;
+
 const
   SHCONTF_CHECKING_FOR_CHILDREN = _SHCONTF($10);
-  SHCONTF_FOLDERS               = _SHCONTF($20);
-  SHCONTF_NONFOLDERS            = _SHCONTF($40);
-  SHCONTF_INCLUDEHIDDEN         = _SHCONTF($80);
-  SHCONTF_INIT_ON_FIRST_NEXT    = _SHCONTF($100);
-  SHCONTF_NETPRINTERSRCH        = _SHCONTF($200);
-  SHCONTF_SHAREABLE             = _SHCONTF($400);
-  SHCONTF_STORAGE               = _SHCONTF($800);
-  SHCONTF_NAVIGATION_ENUM       = _SHCONTF($1000);
-  SHCONTF_FASTITEMS             = _SHCONTF($2000);
-  SHCONTF_FLATLIST              = _SHCONTF($4000);
-  SHCONTF_ENABLE_ASYNC          = _SHCONTF($8000);
-  SHCONTF_INCLUDESUPERHIDDEN    = _SHCONTF($10000);
+  SHCONTF_FOLDERS = _SHCONTF($20);
+  SHCONTF_NONFOLDERS = _SHCONTF($40);
+  SHCONTF_INCLUDEHIDDEN = _SHCONTF($80);
+  SHCONTF_INIT_ON_FIRST_NEXT = _SHCONTF($100);
+  SHCONTF_NETPRINTERSRCH = _SHCONTF($200);
+  SHCONTF_SHAREABLE = _SHCONTF($400);
+  SHCONTF_STORAGE = _SHCONTF($800);
+  SHCONTF_NAVIGATION_ENUM = _SHCONTF($1000);
+  SHCONTF_FASTITEMS = _SHCONTF($2000);
+  SHCONTF_FLATLIST = _SHCONTF($4000);
+  SHCONTF_ENABLE_ASYNC = _SHCONTF($8000);
+  SHCONTF_INCLUDESUPERHIDDEN = _SHCONTF($10000);
 
 type
   PSFGAOF = ^SFGAOF;
@@ -681,55 +689,60 @@ type
   PSYNC_TRANSFER_STATUS = ^SYNC_TRANSFER_STATUS;
   _SYNC_TRANSFER_STATUS = type Integer;
   SYNC_TRANSFER_STATUS = _SYNC_TRANSFER_STATUS;
+
 const
-  STS_NONE                   = _SYNC_TRANSFER_STATUS(0);
-  STS_NEEDSUPLOAD            = _SYNC_TRANSFER_STATUS($1);
-  STS_NEEDSDOWNLOAD          = _SYNC_TRANSFER_STATUS($2);
-  STS_TRANSFERRING           = _SYNC_TRANSFER_STATUS($4);
-  STS_PAUSED                 = _SYNC_TRANSFER_STATUS($8);
-  STS_HASERROR               = _SYNC_TRANSFER_STATUS($10);
-  STS_FETCHING_METADATA      = _SYNC_TRANSFER_STATUS($20);
+  STS_NONE = _SYNC_TRANSFER_STATUS(0);
+  STS_NEEDSUPLOAD = _SYNC_TRANSFER_STATUS($1);
+  STS_NEEDSDOWNLOAD = _SYNC_TRANSFER_STATUS($2);
+  STS_TRANSFERRING = _SYNC_TRANSFER_STATUS($4);
+  STS_PAUSED = _SYNC_TRANSFER_STATUS($8);
+  STS_HASERROR = _SYNC_TRANSFER_STATUS($10);
+  STS_FETCHING_METADATA = _SYNC_TRANSFER_STATUS($20);
   STS_USER_REQUESTED_REFRESH = _SYNC_TRANSFER_STATUS($40);
-  STS_HASWARNING             = _SYNC_TRANSFER_STATUS($80);
-  STS_EXCLUDED               = _SYNC_TRANSFER_STATUS($100);
-  STS_INCOMPLETE             = _SYNC_TRANSFER_STATUS($200);
-  STS_PLACEHOLDER_IFEMPTY    = _SYNC_TRANSFER_STATUS($400);
+  STS_HASWARNING = _SYNC_TRANSFER_STATUS($80);
+  STS_EXCLUDED = _SYNC_TRANSFER_STATUS($100);
+  STS_INCOMPLETE = _SYNC_TRANSFER_STATUS($200);
+  STS_PLACEHOLDER_IFEMPTY = _SYNC_TRANSFER_STATUS($400);
 
 type
   PSTORAGE_PROVIDER_FILE_FLAGS = ^STORAGE_PROVIDER_FILE_FLAGS;
   _STORAGE_PROVIDER_FILE_FLAGS = type Integer;
   STORAGE_PROVIDER_FILE_FLAGS = _STORAGE_PROVIDER_FILE_FLAGS;
+
 const
-  SPFF_NONE                   = _STORAGE_PROVIDER_FILE_FLAGS(0);
-  SPFF_DOWNLOAD_BY_DEFAULT    = _STORAGE_PROVIDER_FILE_FLAGS($1);
+  SPFF_NONE = _STORAGE_PROVIDER_FILE_FLAGS(0);
+  SPFF_DOWNLOAD_BY_DEFAULT = _STORAGE_PROVIDER_FILE_FLAGS($1);
   SPFF_CREATED_ON_THIS_DEVICE = _STORAGE_PROVIDER_FILE_FLAGS($2);
 
 type
   PPLACEHOLDER_STATES = ^PLACEHOLDER_STATES;
   _PLACEHOLDER_STATES = type Integer;
   PLACEHOLDER_STATES = _PLACEHOLDER_STATES;
+
 const
-  PS_NONE                            = _PLACEHOLDER_STATES(0);
+  PS_NONE = _PLACEHOLDER_STATES(0);
   PS_MARKED_FOR_OFFLINE_AVAILABILITY = _PLACEHOLDER_STATES($1);
-  PS_FULL_PRIMARY_STREAM_AVAILABLE   = _PLACEHOLDER_STATES($2);
-  PS_CREATE_FILE_ACCESSIBLE          = _PLACEHOLDER_STATES($4);
-  PS_CLOUDFILE_PLACEHOLDER           = _PLACEHOLDER_STATES($8);
-  PS_DEFAULT                         = _PLACEHOLDER_STATES(PS_MARKED_FOR_OFFLINE_AVAILABILITY or PS_FULL_PRIMARY_STREAM_AVAILABLE or PS_CREATE_FILE_ACCESSIBLE);
-  PS_ALL                             = _PLACEHOLDER_STATES(PS_MARKED_FOR_OFFLINE_AVAILABILITY or PS_FULL_PRIMARY_STREAM_AVAILABLE or PS_CREATE_FILE_ACCESSIBLE or PS_CLOUDFILE_PLACEHOLDER);
+  PS_FULL_PRIMARY_STREAM_AVAILABLE = _PLACEHOLDER_STATES($2);
+  PS_CREATE_FILE_ACCESSIBLE = _PLACEHOLDER_STATES($4);
+  PS_CLOUDFILE_PLACEHOLDER = _PLACEHOLDER_STATES($8);
+  PS_DEFAULT = _PLACEHOLDER_STATES(PS_MARKED_FOR_OFFLINE_AVAILABILITY or PS_FULL_PRIMARY_STREAM_AVAILABLE or PS_CREATE_FILE_ACCESSIBLE);
+  PS_ALL = _PLACEHOLDER_STATES(PS_MARKED_FOR_OFFLINE_AVAILABILITY or PS_FULL_PRIMARY_STREAM_AVAILABLE or PS_CREATE_FILE_ACCESSIBLE or PS_CLOUDFILE_PLACEHOLDER);
 
 type
   PMERGE_UPDATE_STATUS = ^MERGE_UPDATE_STATUS;
   _MERGE_UPDATE_STATUS = type Integer;
   MERGE_UPDATE_STATUS = _MERGE_UPDATE_STATUS;
+
 const
-  MUS_COMPLETE        = _MERGE_UPDATE_STATUS(0);
+  MUS_COMPLETE = _MERGE_UPDATE_STATUS(0);
   MUS_USERINPUTNEEDED = _MERGE_UPDATE_STATUS(MUS_COMPLETE + 1);
-  MUS_FAILED          = _MERGE_UPDATE_STATUS(MUS_USERINPUTNEEDED + 1);
+  MUS_FAILED = _MERGE_UPDATE_STATUS(MUS_USERINPUTNEEDED + 1);
 
 type
   PFOLDER_ENUM_MODE = ^FOLDER_ENUM_MODE;
   _FOLDER_ENUM_MODE = type Integer;
   FOLDER_ENUM_MODE = _FOLDER_ENUM_MODE;
+
 const
   FEM_VIEWRESULT = _FOLDER_ENUM_MODE(0);
   FEM_NAVIGATION = _FOLDER_ENUM_MODE(1);
@@ -737,72 +750,76 @@ const
 type
   PFOLDERFLAGS = ^FOLDERFLAGS;
   FOLDERFLAGS = type Integer;
+
 const
-  FWF_NONE                = FOLDERFLAGS(0);
-  FWF_AUTOARRANGE         = FOLDERFLAGS($1);
-  FWF_ABBREVIATEDNAMES    = FOLDERFLAGS($2);
-  FWF_SNAPTOGRID          = FOLDERFLAGS($4);
-  FWF_OWNERDATA           = FOLDERFLAGS($8);
-  FWF_BESTFITWINDOW       = FOLDERFLAGS($10);
-  FWF_DESKTOP             = FOLDERFLAGS($20);
-  FWF_SINGLESEL           = FOLDERFLAGS($40);
-  FWF_NOSUBFOLDERS        = FOLDERFLAGS($80);
-  FWF_TRANSPARENT         = FOLDERFLAGS($100);
-  FWF_NOCLIENTEDGE        = FOLDERFLAGS($200);
-  FWF_NOSCROLL            = FOLDERFLAGS($400);
-  FWF_ALIGNLEFT           = FOLDERFLAGS($800);
-  FWF_NOICONS             = FOLDERFLAGS($1000);
-  FWF_SHOWSELALWAYS       = FOLDERFLAGS($2000);
-  FWF_NOVISIBLE           = FOLDERFLAGS($4000);
+  FWF_NONE = FOLDERFLAGS(0);
+  FWF_AUTOARRANGE = FOLDERFLAGS($1);
+  FWF_ABBREVIATEDNAMES = FOLDERFLAGS($2);
+  FWF_SNAPTOGRID = FOLDERFLAGS($4);
+  FWF_OWNERDATA = FOLDERFLAGS($8);
+  FWF_BESTFITWINDOW = FOLDERFLAGS($10);
+  FWF_DESKTOP = FOLDERFLAGS($20);
+  FWF_SINGLESEL = FOLDERFLAGS($40);
+  FWF_NOSUBFOLDERS = FOLDERFLAGS($80);
+  FWF_TRANSPARENT = FOLDERFLAGS($100);
+  FWF_NOCLIENTEDGE = FOLDERFLAGS($200);
+  FWF_NOSCROLL = FOLDERFLAGS($400);
+  FWF_ALIGNLEFT = FOLDERFLAGS($800);
+  FWF_NOICONS = FOLDERFLAGS($1000);
+  FWF_SHOWSELALWAYS = FOLDERFLAGS($2000);
+  FWF_NOVISIBLE = FOLDERFLAGS($4000);
   FWF_SINGLECLICKACTIVATE = FOLDERFLAGS($8000);
-  FWF_NOWEBVIEW           = FOLDERFLAGS($10000);
-  FWF_HIDEFILENAMES       = FOLDERFLAGS($20000);
-  FWF_CHECKSELECT         = FOLDERFLAGS($40000);
-  FWF_NOENUMREFRESH       = FOLDERFLAGS($80000);
-  FWF_NOGROUPING          = FOLDERFLAGS($100000);
-  FWF_FULLROWSELECT       = FOLDERFLAGS($200000);
-  FWF_NOFILTERS           = FOLDERFLAGS($400000);
-  FWF_NOCOLUMNHEADER      = FOLDERFLAGS($800000);
-  FWF_NOHEADERINALLVIEWS  = FOLDERFLAGS($1000000);
-  FWF_EXTENDEDTILES       = FOLDERFLAGS($2000000);
-  FWF_TRICHECKSELECT      = FOLDERFLAGS($4000000);
-  FWF_AUTOCHECKSELECT     = FOLDERFLAGS($8000000);
-  FWF_NOBROWSERVIEWSTATE  = FOLDERFLAGS($10000000);
-  FWF_SUBSETGROUPS        = FOLDERFLAGS($20000000);
-  FWF_USESEARCHFOLDER     = FOLDERFLAGS($40000000);
-  FWF_ALLOWRTLREADING     = FOLDERFLAGS($80000000);
+  FWF_NOWEBVIEW = FOLDERFLAGS($10000);
+  FWF_HIDEFILENAMES = FOLDERFLAGS($20000);
+  FWF_CHECKSELECT = FOLDERFLAGS($40000);
+  FWF_NOENUMREFRESH = FOLDERFLAGS($80000);
+  FWF_NOGROUPING = FOLDERFLAGS($100000);
+  FWF_FULLROWSELECT = FOLDERFLAGS($200000);
+  FWF_NOFILTERS = FOLDERFLAGS($400000);
+  FWF_NOCOLUMNHEADER = FOLDERFLAGS($800000);
+  FWF_NOHEADERINALLVIEWS = FOLDERFLAGS($1000000);
+  FWF_EXTENDEDTILES = FOLDERFLAGS($2000000);
+  FWF_TRICHECKSELECT = FOLDERFLAGS($4000000);
+  FWF_AUTOCHECKSELECT = FOLDERFLAGS($8000000);
+  FWF_NOBROWSERVIEWSTATE = FOLDERFLAGS($10000000);
+  FWF_SUBSETGROUPS = FOLDERFLAGS($20000000);
+  FWF_USESEARCHFOLDER = FOLDERFLAGS($40000000);
+  FWF_ALLOWRTLREADING = FOLDERFLAGS($80000000);
 
 type
   PFOLDERVIEWMODE = ^FOLDERVIEWMODE;
   FOLDERVIEWMODE = type Integer;
+
 const
-  FVM_AUTO       = FOLDERVIEWMODE(-1);
-  FVM_FIRST      = FOLDERVIEWMODE(1);
-  FVM_ICON       = FOLDERVIEWMODE(1);
-  FVM_SMALLICON  = FOLDERVIEWMODE(2);
-  FVM_LIST       = FOLDERVIEWMODE(3);
-  FVM_DETAILS    = FOLDERVIEWMODE(4);
-  FVM_THUMBNAIL  = FOLDERVIEWMODE(5);
-  FVM_TILE       = FOLDERVIEWMODE(6);
+  FVM_AUTO = FOLDERVIEWMODE(-1);
+  FVM_FIRST = FOLDERVIEWMODE(1);
+  FVM_ICON = FOLDERVIEWMODE(1);
+  FVM_SMALLICON = FOLDERVIEWMODE(2);
+  FVM_LIST = FOLDERVIEWMODE(3);
+  FVM_DETAILS = FOLDERVIEWMODE(4);
+  FVM_THUMBNAIL = FOLDERVIEWMODE(5);
+  FVM_TILE = FOLDERVIEWMODE(6);
   FVM_THUMBSTRIP = FOLDERVIEWMODE(7);
-  FVM_CONTENT    = FOLDERVIEWMODE(8);
-  FVM_LAST       = FOLDERVIEWMODE(8);
+  FVM_CONTENT = FOLDERVIEWMODE(8);
+  FVM_LAST = FOLDERVIEWMODE(8);
 
 type
   PFOLDERLOGICALVIEWMODE = ^FOLDERLOGICALVIEWMODE;
   FOLDERLOGICALVIEWMODE = type Integer;
+
 const
   FLVM_UNSPECIFIED = FOLDERLOGICALVIEWMODE(-1);
-  FLVM_FIRST       = FOLDERLOGICALVIEWMODE(1);
-  FLVM_DETAILS     = FOLDERLOGICALVIEWMODE(1);
-  FLVM_TILES       = FOLDERLOGICALVIEWMODE(2);
-  FLVM_ICONS       = FOLDERLOGICALVIEWMODE(3);
-  FLVM_LIST        = FOLDERLOGICALVIEWMODE(4);
-  FLVM_CONTENT     = FOLDERLOGICALVIEWMODE(5);
-  FLVM_LAST        = FOLDERLOGICALVIEWMODE(5);
+  FLVM_FIRST = FOLDERLOGICALVIEWMODE(1);
+  FLVM_DETAILS = FOLDERLOGICALVIEWMODE(1);
+  FLVM_TILES = FOLDERLOGICALVIEWMODE(2);
+  FLVM_ICONS = FOLDERLOGICALVIEWMODE(3);
+  FLVM_LIST = FOLDERLOGICALVIEWMODE(4);
+  FLVM_CONTENT = FOLDERLOGICALVIEWMODE(5);
+  FLVM_LAST = FOLDERLOGICALVIEWMODE(5);
 
 type
   SHELLVIEWID = type TGUID;
+
 const
   SV2GV_CURRENTVIEW = UINT(-1);
   SV2GV_DEFAULTVIEW = UINT(-2);
@@ -811,416 +828,453 @@ type
   PSVSIF = ^SVSIF;
   _SVSIF = type UINT;
   SVSIF = _SVSIF;
+
 const
-  SVSI_DESELECT       = _SVSIF(0);
-  SVSI_SELECT         = _SVSIF($1);
-  SVSI_EDIT           = _SVSIF($3);
+  SVSI_DESELECT = _SVSIF(0);
+  SVSI_SELECT = _SVSIF($1);
+  SVSI_EDIT = _SVSIF($3);
   SVSI_DESELECTOTHERS = _SVSIF($4);
-  SVSI_ENSUREVISIBLE  = _SVSIF($8);
-  SVSI_FOCUSED        = _SVSIF($10);
-  SVSI_TRANSLATEPT    = _SVSIF($20);
-  SVSI_SELECTIONMARK  = _SVSIF($40);
-  SVSI_POSITIONITEM   = _SVSIF($80);
-  SVSI_CHECK          = _SVSIF($100);
-  SVSI_CHECK2         = _SVSIF($200);
+  SVSI_ENSUREVISIBLE = _SVSIF($8);
+  SVSI_FOCUSED = _SVSIF($10);
+  SVSI_TRANSLATEPT = _SVSIF($20);
+  SVSI_SELECTIONMARK = _SVSIF($40);
+  SVSI_POSITIONITEM = _SVSIF($80);
+  SVSI_CHECK = _SVSIF($100);
+  SVSI_CHECK2 = _SVSIF($200);
   SVSI_KEYBOARDSELECT = _SVSIF($401);
-  SVSI_NOTAKEFOCUS    = _SVSIF($40000000);
-  SVSI_NOSTATECHANGE  = _SVSIF($80000000);
+  SVSI_NOTAKEFOCUS = _SVSIF($40000000);
+  SVSI_NOSTATECHANGE = _SVSIF($80000000);
 
 type
   PSVGIO = ^SVGIO;
   _SVGIO = type Integer;
   SVGIO = _SVGIO;
+
 const
-  SVGIO_BACKGROUND     = _SVGIO(0);
-  SVGIO_SELECTION      = _SVGIO($1);
-  SVGIO_ALLVIEW        = _SVGIO($2);
-  SVGIO_CHECKED        = _SVGIO($3);
-  SVGIO_TYPE_MASK      = _SVGIO($F);
+  SVGIO_BACKGROUND = _SVGIO(0);
+  SVGIO_SELECTION = _SVGIO($1);
+  SVGIO_ALLVIEW = _SVGIO($2);
+  SVGIO_CHECKED = _SVGIO($3);
+  SVGIO_TYPE_MASK = _SVGIO($F);
   SVGIO_FLAG_VIEWORDER = _SVGIO($80000000);
 
 type
   PSVUIA_STATUS = ^SVUIA_STATUS;
   SVUIA_STATUS = type Integer;
-const
-  SVUIA_DEACTIVATE       = SVUIA_STATUS(0);
-  SVUIA_ACTIVATE_NOFOCUS = SVUIA_STATUS(1);
-  SVUIA_ACTIVATE_FOCUS   = SVUIA_STATUS(2);
-  SVUIA_INPLACEACTIVATE  = SVUIA_STATUS(3);
 
-//  this is so that all the implementations still get the function pointer.
-//  and midl wont complain about the data type
+const
+  SVUIA_DEACTIVATE = SVUIA_STATUS(0);
+  SVUIA_ACTIVATE_NOFOCUS = SVUIA_STATUS(1);
+  SVUIA_ACTIVATE_FOCUS = SVUIA_STATUS(2);
+  SVUIA_INPLACEACTIVATE = SVUIA_STATUS(3);
+
+  //  this is so that all the implementations still get the function pointer.
+  //  and midl wont complain about the data type
 type
   LPFNSVADDPROPSHEETPAGE = function(hPage: HPROPSHEETPAGE;
-                                   lParam: LPARAM): BOOL; stdcall;
+                                    lParam: LPARAM): BOOL; stdcall;
 
 type
   SORTDIRECTION = type Integer;
+
 const
   SORT_DESCENDING = SORTDIRECTION(-1);
-  SORT_ASCENDING  = SORTDIRECTION(1);
+  SORT_ASCENDING = SORTDIRECTION(1);
 
 type
   PFVTEXTTYPE = ^FVTEXTTYPE;
   FVTEXTTYPE = type Integer;
+
 const
   FVST_EMPTYTEXT = FVTEXTTYPE(0);
 
 type
   PCM_MASK = ^CM_MASK;
   CM_MASK = type Integer;
+
 const
-  CM_MASK_WIDTH        = CM_MASK($1);
+  CM_MASK_WIDTH = CM_MASK($1);
   CM_MASK_DEFAULTWIDTH = CM_MASK($2);
-  CM_MASK_IDEALWIDTH   = CM_MASK($4);
-  CM_MASK_NAME         = CM_MASK($8);
-  CM_MASK_STATE        = CM_MASK($10);
+  CM_MASK_IDEALWIDTH = CM_MASK($4);
+  CM_MASK_NAME = CM_MASK($8);
+  CM_MASK_STATE = CM_MASK($10);
 
 type
   PCM_STATE = ^CM_STATE;
   CM_STATE = type Integer;
+
 const
-  CM_STATE_NONE                 = CM_STATE(0);
-  CM_STATE_VISIBLE              = CM_STATE($1);
-  CM_STATE_FIXEDWIDTH           = CM_STATE($2);
-  CM_STATE_NOSORTBYFOLDERNESS   = CM_STATE($4);
-  CM_STATE_ALWAYSVISIBLE        = CM_STATE($8);
+  CM_STATE_NONE = CM_STATE(0);
+  CM_STATE_VISIBLE = CM_STATE($1);
+  CM_STATE_FIXEDWIDTH = CM_STATE($2);
+  CM_STATE_NOSORTBYFOLDERNESS = CM_STATE($4);
+  CM_STATE_ALWAYSVISIBLE = CM_STATE($8);
 
 type
   PCM_ENUM_FLAGS = ^CM_ENUM_FLAGS;
   CM_ENUM_FLAGS = type Integer;
+
 const
-  CM_ENUM_ALL     = CM_ENUM_FLAGS($1);
+  CM_ENUM_ALL = CM_ENUM_FLAGS($1);
   CM_ENUM_VISIBLE = CM_ENUM_FLAGS($2);
 
 type
   PCM_SET_WIDTH_VALUE = ^CM_SET_WIDTH_VALUE;
   CM_SET_WIDTH_VALUE = type Integer;
+
 const
   CM_WIDTH_USEDEFAULT = CM_SET_WIDTH_VALUE(-1);
-  CM_WIDTH_AUTOSIZE   = CM_SET_WIDTH_VALUE(-2);
+  CM_WIDTH_AUTOSIZE = CM_SET_WIDTH_VALUE(-2);
 
 type
   PSIGDN = ^SIGDN;
   SIGDN = type Integer;
+
 const
-  SIGDN_NORMALDISPLAY               = SIGDN(0);
-  SIGDN_PARENTRELATIVEPARSING       = SIGDN($80018001);
-  SIGDN_DESKTOPABSOLUTEPARSING      = SIGDN($80028000);
-  SIGDN_PARENTRELATIVEEDITING       = SIGDN($80031001);
-  SIGDN_DESKTOPABSOLUTEEDITING      = SIGDN($8004C000);
-  SIGDN_FILESYSPATH                 = SIGDN($80058000);
-  SIGDN_URL                         = SIGDN($80068000);
+  SIGDN_NORMALDISPLAY = SIGDN(0);
+  SIGDN_PARENTRELATIVEPARSING = SIGDN($80018001);
+  SIGDN_DESKTOPABSOLUTEPARSING = SIGDN($80028000);
+  SIGDN_PARENTRELATIVEEDITING = SIGDN($80031001);
+  SIGDN_DESKTOPABSOLUTEEDITING = SIGDN($8004C000);
+  SIGDN_FILESYSPATH = SIGDN($80058000);
+  SIGDN_URL = SIGDN($80068000);
   SIGDN_PARENTRELATIVEFORADDRESSBAR = SIGDN($8007C001);
-  SIGDN_PARENTRELATIVE              = SIGDN($80080001);
-  SIGDN_PARENTRELATIVEFORUI         = SIGDN($80094001);
+  SIGDN_PARENTRELATIVE = SIGDN($80080001);
+  SIGDN_PARENTRELATIVEFORUI = SIGDN($80094001);
 
 type
   PSICHINTF = ^SICHINTF;
   _SICHINTF = type DWORD;
   SICHINTF = _SICHINTF;
+
 const
-  SICHINT_DISPLAY                         = _SICHINTF(0);
-  SICHINT_ALLFIELDS                       = _SICHINTF($80000000);
-  SICHINT_CANONICAL                       = _SICHINTF($10000000);
-  SICHINT_TEST_FILESYSPATH_IF_NOT_EQUAL   = _SICHINTF($20000000);
+  SICHINT_DISPLAY = _SICHINTF(0);
+  SICHINT_ALLFIELDS = _SICHINTF($80000000);
+  SICHINT_CANONICAL = _SICHINTF($10000000);
+  SICHINT_TEST_FILESYSPATH_IF_NOT_EQUAL = _SICHINTF($20000000);
 
 type
   PDATAOBJ_GET_ITEM_FLAGS = ^DATAOBJ_GET_ITEM_FLAGS;
   DATAOBJ_GET_ITEM_FLAGS = type Integer;
+
 const
-  DOGIF_DEFAULT       = DATAOBJ_GET_ITEM_FLAGS(0);
+  DOGIF_DEFAULT = DATAOBJ_GET_ITEM_FLAGS(0);
   DOGIF_TRAVERSE_LINK = DATAOBJ_GET_ITEM_FLAGS($1);
-  DOGIF_NO_HDROP      = DATAOBJ_GET_ITEM_FLAGS($2);
-  DOGIF_NO_URL        = DATAOBJ_GET_ITEM_FLAGS($4);
-  DOGIF_ONLY_IF_ONE   = DATAOBJ_GET_ITEM_FLAGS($8);
+  DOGIF_NO_HDROP = DATAOBJ_GET_ITEM_FLAGS($2);
+  DOGIF_NO_URL = DATAOBJ_GET_ITEM_FLAGS($4);
+  DOGIF_ONLY_IF_ONE = DATAOBJ_GET_ITEM_FLAGS($8);
 
 type
   PSIIGBF = ^SIIGBF;
   _SIIGBF = type Integer;
   SIIGBF = _SIIGBF;
+
 const
-  SIIGBF_RESIZETOFIT   = _SIIGBF(0);
-  SIIGBF_BIGGERSIZEOK  = _SIIGBF($1);
-  SIIGBF_MEMORYONLY    = _SIIGBF($2);
-  SIIGBF_ICONONLY      = _SIIGBF($4);
+  SIIGBF_RESIZETOFIT = _SIIGBF(0);
+  SIIGBF_BIGGERSIZEOK = _SIIGBF($1);
+  SIIGBF_MEMORYONLY = _SIIGBF($2);
+  SIIGBF_ICONONLY = _SIIGBF($4);
   SIIGBF_THUMBNAILONLY = _SIIGBF($8);
-  SIIGBF_INCACHEONLY   = _SIIGBF($10);
-  SIIGBF_CROPTOSQUARE  = _SIIGBF($20);
+  SIIGBF_INCACHEONLY = _SIIGBF($10);
+  SIIGBF_CROPTOSQUARE = _SIIGBF($20);
   SIIGBF_WIDETHUMBNAILS = _SIIGBF($40);
   SIIGBF_ICONBACKGROUND = _SIIGBF($80);
-  SIIGBF_SCALEUP       = _SIIGBF($100);
+  SIIGBF_SCALEUP = _SIIGBF($100);
 
 type
   PSTGOP = ^STGOP;
   STGOP = type Integer;
+
 const
-  STGOP_MOVE            = STGOP(1);
-  STGOP_COPY            = STGOP(2);
-  STGOP_SYNC            = STGOP(3);
-  STGOP_REMOVE          = STGOP(5);
-  STGOP_RENAME          = STGOP(6);
+  STGOP_MOVE = STGOP(1);
+  STGOP_COPY = STGOP(2);
+  STGOP_SYNC = STGOP(3);
+  STGOP_REMOVE = STGOP(5);
+  STGOP_RENAME = STGOP(6);
   STGOP_APPLYPROPERTIES = STGOP(8);
-  STGOP_NEW             = STGOP(10);
+  STGOP_NEW = STGOP(10);
 
 type
   PTRANSFER_SOURCE_FLAGS = ^TRANSFER_SOURCE_FLAGS;
   _TRANSFER_SOURCE_FLAGS = type DWORD;
   TRANSFER_SOURCE_FLAGS = _TRANSFER_SOURCE_FLAGS;
+
 const
-  TSF_NORMAL                     = _TRANSFER_SOURCE_FLAGS(0);
-  TSF_FAIL_EXIST                 = _TRANSFER_SOURCE_FLAGS(0);
-  TSF_RENAME_EXIST               = _TRANSFER_SOURCE_FLAGS($1);
-  TSF_OVERWRITE_EXIST            = _TRANSFER_SOURCE_FLAGS($2);
-  TSF_ALLOW_DECRYPTION           = _TRANSFER_SOURCE_FLAGS($4);
-  TSF_NO_SECURITY                = _TRANSFER_SOURCE_FLAGS($8);
-  TSF_COPY_CREATION_TIME         = _TRANSFER_SOURCE_FLAGS($10);
-  TSF_COPY_WRITE_TIME            = _TRANSFER_SOURCE_FLAGS($20);
-  TSF_USE_FULL_ACCESS            = _TRANSFER_SOURCE_FLAGS($40);
+  TSF_NORMAL = _TRANSFER_SOURCE_FLAGS(0);
+  TSF_FAIL_EXIST = _TRANSFER_SOURCE_FLAGS(0);
+  TSF_RENAME_EXIST = _TRANSFER_SOURCE_FLAGS($1);
+  TSF_OVERWRITE_EXIST = _TRANSFER_SOURCE_FLAGS($2);
+  TSF_ALLOW_DECRYPTION = _TRANSFER_SOURCE_FLAGS($4);
+  TSF_NO_SECURITY = _TRANSFER_SOURCE_FLAGS($8);
+  TSF_COPY_CREATION_TIME = _TRANSFER_SOURCE_FLAGS($10);
+  TSF_COPY_WRITE_TIME = _TRANSFER_SOURCE_FLAGS($20);
+  TSF_USE_FULL_ACCESS = _TRANSFER_SOURCE_FLAGS($40);
   TSF_DELETE_RECYCLE_IF_POSSIBLE = _TRANSFER_SOURCE_FLAGS($80);
-  TSF_COPY_HARD_LINK             = _TRANSFER_SOURCE_FLAGS($100);
-  TSF_COPY_LOCALIZED_NAME        = _TRANSFER_SOURCE_FLAGS($200);
-  TSF_MOVE_AS_COPY_DELETE        = _TRANSFER_SOURCE_FLAGS($400);
-  TSF_SUSPEND_SHELLEVENTS        = _TRANSFER_SOURCE_FLAGS($800);
+  TSF_COPY_HARD_LINK = _TRANSFER_SOURCE_FLAGS($100);
+  TSF_COPY_LOCALIZED_NAME = _TRANSFER_SOURCE_FLAGS($200);
+  TSF_MOVE_AS_COPY_DELETE = _TRANSFER_SOURCE_FLAGS($400);
+  TSF_SUSPEND_SHELLEVENTS = _TRANSFER_SOURCE_FLAGS($800);
 
 type
   PTRANSFER_ADVISE_STATE = ^TRANSFER_ADVISE_STATE;
   _TRANSFER_ADVISE_STATE = type DWORD;
   TRANSFER_ADVISE_STATE = _TRANSFER_ADVISE_STATE;
+
 const
-  TS_NONE          = _TRANSFER_ADVISE_STATE(0);
-  TS_PERFORMING    = _TRANSFER_ADVISE_STATE($1);
-  TS_PREPARING     = _TRANSFER_ADVISE_STATE($2);
+  TS_NONE = _TRANSFER_ADVISE_STATE(0);
+  TS_PERFORMING = _TRANSFER_ADVISE_STATE($1);
+  TS_PREPARING = _TRANSFER_ADVISE_STATE($2);
   TS_INDETERMINATE = _TRANSFER_ADVISE_STATE($4);
 
 type
   PSIATTRIBFLAGS = ^SIATTRIBFLAGS;
   SIATTRIBFLAGS = type Integer;
+
 const
-  SIATTRIBFLAGS_AND       = SIATTRIBFLAGS($1);
-  SIATTRIBFLAGS_OR        = SIATTRIBFLAGS($2);
+  SIATTRIBFLAGS_AND = SIATTRIBFLAGS($1);
+  SIATTRIBFLAGS_OR = SIATTRIBFLAGS($2);
   SIATTRIBFLAGS_APPCOMPAT = SIATTRIBFLAGS($3);
-  SIATTRIBFLAGS_MASK      = SIATTRIBFLAGS($3);
-  SIATTRIBFLAGS_ALLITEMS  = SIATTRIBFLAGS($4000);
+  SIATTRIBFLAGS_MASK = SIATTRIBFLAGS($3);
+  SIATTRIBFLAGS_ALLITEMS = SIATTRIBFLAGS($4000);
 
 type
   PPROPERTYUI_NAME_FLAGS = ^PROPERTYUI_NAME_FLAGS;
   _PROPERTYUI_NAME_FLAGS = type DWORD;
   PROPERTYUI_NAME_FLAGS = _PROPERTYUI_NAME_FLAGS;
+
 const
-  PUIFNF_DEFAULT  = _PROPERTYUI_NAME_FLAGS(0);
+  PUIFNF_DEFAULT = _PROPERTYUI_NAME_FLAGS(0);
   PUIFNF_MNEMONIC = _PROPERTYUI_NAME_FLAGS($1);
 
 type
   PPROPERTYUI_FLAGS = ^PROPERTYUI_FLAGS;
   _PROPERTYUI_FLAGS = type DWORD;
   PROPERTYUI_FLAGS = _PROPERTYUI_FLAGS;
+
 const
-  PUIF_DEFAULT          = _PROPERTYUI_FLAGS(0);
-  PUIF_RIGHTALIGN       = _PROPERTYUI_FLAGS($1);
+  PUIF_DEFAULT = _PROPERTYUI_FLAGS(0);
+  PUIF_RIGHTALIGN = _PROPERTYUI_FLAGS($1);
   PUIF_NOLABELININFOTIP = _PROPERTYUI_FLAGS($2);
 
 type
   PPROPERTYUI_FORMAT_FLAGS = ^PROPERTYUI_FORMAT_FLAGS;
   _PROPERTYUI_FORMAT_FLAGS = type DWORD;
   PROPERTYUI_FORMAT_FLAGS = _PROPERTYUI_FORMAT_FLAGS;
+
 const
-  PUIFFDF_DEFAULT      = _PROPERTYUI_FORMAT_FLAGS(0);
-  PUIFFDF_RIGHTTOLEFT  = _PROPERTYUI_FORMAT_FLAGS($1);
-  PUIFFDF_SHORTFORMAT  = _PROPERTYUI_FORMAT_FLAGS($2);
-  PUIFFDF_NOTIME       = _PROPERTYUI_FORMAT_FLAGS($4);
+  PUIFFDF_DEFAULT = _PROPERTYUI_FORMAT_FLAGS(0);
+  PUIFFDF_RIGHTTOLEFT = _PROPERTYUI_FORMAT_FLAGS($1);
+  PUIFFDF_SHORTFORMAT = _PROPERTYUI_FORMAT_FLAGS($2);
+  PUIFFDF_NOTIME = _PROPERTYUI_FORMAT_FLAGS($4);
   PUIFFDF_FRIENDLYDATE = _PROPERTYUI_FORMAT_FLAGS($8);
 
 type
   PCATEGORYINFO_FLAGS = ^CATEGORYINFO_FLAGS;
   CATEGORYINFO_FLAGS = type Integer;
+
 const
-  CATINFO_NORMAL          = CATEGORYINFO_FLAGS(0);
-  CATINFO_COLLAPSED       = CATEGORYINFO_FLAGS($1);
-  CATINFO_HIDDEN          = CATEGORYINFO_FLAGS($2);
-  CATINFO_EXPANDED        = CATEGORYINFO_FLAGS($4);
-  CATINFO_NOHEADER        = CATEGORYINFO_FLAGS($8);
-  CATINFO_NOTCOLLAPSIBLE  = CATEGORYINFO_FLAGS($10);
-  CATINFO_NOHEADERCOUNT   = CATEGORYINFO_FLAGS($20);
-  CATINFO_SUBSETTED       = CATEGORYINFO_FLAGS($40);
+  CATINFO_NORMAL = CATEGORYINFO_FLAGS(0);
+  CATINFO_COLLAPSED = CATEGORYINFO_FLAGS($1);
+  CATINFO_HIDDEN = CATEGORYINFO_FLAGS($2);
+  CATINFO_EXPANDED = CATEGORYINFO_FLAGS($4);
+  CATINFO_NOHEADER = CATEGORYINFO_FLAGS($8);
+  CATINFO_NOTCOLLAPSIBLE = CATEGORYINFO_FLAGS($10);
+  CATINFO_NOHEADERCOUNT = CATEGORYINFO_FLAGS($20);
+  CATINFO_SUBSETTED = CATEGORYINFO_FLAGS($40);
   CATINFO_SEPARATE_IMAGES = CATEGORYINFO_FLAGS($80);
-  CATINFO_SHOWEMPTY       = CATEGORYINFO_FLAGS($100);
+  CATINFO_SHOWEMPTY = CATEGORYINFO_FLAGS($100);
 
 type
   PCATSORT_FLAGS = ^CATSORT_FLAGS;
   CATSORT_FLAGS = type Integer;
+
 const
   CATSORT_DEFAULT = CATSORT_FLAGS(0);
-  CATSORT_NAME    = CATSORT_FLAGS($1);
+  CATSORT_NAME = CATSORT_FLAGS($1);
 
 type
   PSLR_FLAGS = ^SLR_FLAGS;
   SLR_FLAGS = type Integer;
+
 const
-  SLR_NONE                       = SLR_FLAGS(0);
-  SLR_NO_UI                      = SLR_FLAGS($1);
-  SLR_ANY_MATCH                  = SLR_FLAGS($2);
-  SLR_UPDATE                     = SLR_FLAGS($4);
-  SLR_NOUPDATE                   = SLR_FLAGS($8);
-  SLR_NOSEARCH                   = SLR_FLAGS($10);
-  SLR_NOTRACK                    = SLR_FLAGS($20);
-  SLR_NOLINKINFO                 = SLR_FLAGS($40);
-  SLR_INVOKE_MSI                 = SLR_FLAGS($80);
-  SLR_NO_UI_WITH_MSG_PUMP        = SLR_FLAGS($101);
-  SLR_OFFER_DELETE_WITHOUT_FILE  = SLR_FLAGS($200);
-  SLR_KNOWNFOLDER                = SLR_FLAGS($400);
-  SLR_MACHINE_IN_LOCAL_TARGET    = SLR_FLAGS($800);
-  SLR_UPDATE_MACHINE_AND_SID     = SLR_FLAGS($1000);
-  SLR_NO_OBJECT_ID               = SLR_FLAGS($2000);
+  SLR_NONE = SLR_FLAGS(0);
+  SLR_NO_UI = SLR_FLAGS($1);
+  SLR_ANY_MATCH = SLR_FLAGS($2);
+  SLR_UPDATE = SLR_FLAGS($4);
+  SLR_NOUPDATE = SLR_FLAGS($8);
+  SLR_NOSEARCH = SLR_FLAGS($10);
+  SLR_NOTRACK = SLR_FLAGS($20);
+  SLR_NOLINKINFO = SLR_FLAGS($40);
+  SLR_INVOKE_MSI = SLR_FLAGS($80);
+  SLR_NO_UI_WITH_MSG_PUMP = SLR_FLAGS($101);
+  SLR_OFFER_DELETE_WITHOUT_FILE = SLR_FLAGS($200);
+  SLR_KNOWNFOLDER = SLR_FLAGS($400);
+  SLR_MACHINE_IN_LOCAL_TARGET = SLR_FLAGS($800);
+  SLR_UPDATE_MACHINE_AND_SID = SLR_FLAGS($1000);
+  SLR_NO_OBJECT_ID = SLR_FLAGS($2000);
 
 type
   PSLGP_FLAGS = ^SLGP_FLAGS;
   SLGP_FLAGS = type Integer;
+
 const
-  SLGP_SHORTPATH        = SLGP_FLAGS($1);
-  SLGP_UNCPRIORITY      = SLGP_FLAGS($2);
-  SLGP_RAWPATH          = SLGP_FLAGS($4);
+  SLGP_SHORTPATH = SLGP_FLAGS($1);
+  SLGP_UNCPRIORITY = SLGP_FLAGS($2);
+  SLGP_RAWPATH = SLGP_FLAGS($4);
   SLGP_RELATIVEPRIORITY = SLGP_FLAGS($8);
 
 type
   PSPINITF = ^SPINITF;
   _SPINITF = type DWORD;
   SPINITF = _SPINITF;
+
 const
-  SPINITF_NORMAL     = _SPINITF(0);
-  SPINITF_MODAL      = _SPINITF($1);
+  SPINITF_NORMAL = _SPINITF(0);
+  SPINITF_MODAL = _SPINITF($1);
   SPINITF_NOMINIMIZE = _SPINITF($8);
 
 type
   PSPBEGINF = ^SPBEGINF;
   _SPBEGINF = type DWORD;
   SPBEGINF = _SPBEGINF;
+
 const
-  SPBEGINF_NORMAL          = _SPBEGINF(0);
-  SPBEGINF_AUTOTIME        = _SPBEGINF($2);
-  SPBEGINF_NOPROGRESSBAR   = _SPBEGINF($10);
+  SPBEGINF_NORMAL = _SPBEGINF(0);
+  SPBEGINF_AUTOTIME = _SPBEGINF($2);
+  SPBEGINF_NOPROGRESSBAR = _SPBEGINF($10);
   SPBEGINF_MARQUEEPROGRESS = _SPBEGINF($20);
-  SPBEGINF_NOCANCELBUTTON  = _SPBEGINF($40);
+  SPBEGINF_NOCANCELBUTTON = _SPBEGINF($40);
 
 type
   PSPACTION = ^SPACTION;
   _SPACTION = type Integer;
   SPACTION = _SPACTION;
+
 const
-  SPACTION_NONE               = SPACTION(0);
-  SPACTION_MOVING             = SPACTION(SPACTION_NONE + 1);
-  SPACTION_COPYING            = SPACTION(SPACTION_MOVING + 1);
-  SPACTION_RECYCLING          = SPACTION(SPACTION_COPYING + 1);
-  SPACTION_APPLYINGATTRIBS    = SPACTION(SPACTION_RECYCLING + 1);
-  SPACTION_DOWNLOADING        = SPACTION(SPACTION_APPLYINGATTRIBS + 1);
+  SPACTION_NONE = SPACTION(0);
+  SPACTION_MOVING = SPACTION(SPACTION_NONE + 1);
+  SPACTION_COPYING = SPACTION(SPACTION_MOVING + 1);
+  SPACTION_RECYCLING = SPACTION(SPACTION_COPYING + 1);
+  SPACTION_APPLYINGATTRIBS = SPACTION(SPACTION_RECYCLING + 1);
+  SPACTION_DOWNLOADING = SPACTION(SPACTION_APPLYINGATTRIBS + 1);
   SPACTION_SEARCHING_INTERNET = SPACTION(SPACTION_DOWNLOADING + 1);
-  SPACTION_CALCULATING        = SPACTION(SPACTION_SEARCHING_INTERNET + 1);
-  SPACTION_UPLOADING          = SPACTION(SPACTION_CALCULATING + 1);
-  SPACTION_SEARCHING_FILES    = SPACTION(SPACTION_UPLOADING + 1);
-  SPACTION_DELETING           = SPACTION(SPACTION_SEARCHING_FILES + 1);
-  SPACTION_RENAMING           = SPACTION(SPACTION_DELETING + 1);
-  SPACTION_FORMATTING         = SPACTION(SPACTION_RENAMING + 1);
-  SPACTION_COPY_MOVING        = SPACTION(SPACTION_FORMATTING + 1);
+  SPACTION_CALCULATING = SPACTION(SPACTION_SEARCHING_INTERNET + 1);
+  SPACTION_UPLOADING = SPACTION(SPACTION_CALCULATING + 1);
+  SPACTION_SEARCHING_FILES = SPACTION(SPACTION_UPLOADING + 1);
+  SPACTION_DELETING = SPACTION(SPACTION_SEARCHING_FILES + 1);
+  SPACTION_RENAMING = SPACTION(SPACTION_DELETING + 1);
+  SPACTION_FORMATTING = SPACTION(SPACTION_RENAMING + 1);
+  SPACTION_COPY_MOVING = SPACTION(SPACTION_FORMATTING + 1);
 
 type
   PSPTEXT = ^SPTEXT;
   SPTEXT = type Integer;
+
 const
   SPTEXT_ACTIONDESCRIPTION = SPTEXT(1);
-  SPTEXT_ACTIONDETAIL      = SPTEXT(SPTEXT_ACTIONDESCRIPTION + 1);
+  SPTEXT_ACTIONDETAIL = SPTEXT(SPTEXT_ACTIONDESCRIPTION + 1);
 
 type
   PEXPPS = ^EXPPS;
   EXPPS = UINT;
+
 const
   EXPPS_FILETYPES = EXPPS($1);
 
 type
   PTBPFLAG = ^TBPFLAG;
   TBPFLAG = type DWORD;
+
 const
-  TBPF_NOPROGRESS    = TBPFLAG(0);
+  TBPF_NOPROGRESS = TBPFLAG(0);
   TBPF_INDETERMINATE = TBPFLAG($1);
-  TBPF_NORMAL        = TBPFLAG($2);
-  TBPF_ERROR         = TBPFLAG($4);
-  TBPF_PAUSED        = TBPFLAG($8);
+  TBPF_NORMAL = TBPFLAG($2);
+  TBPF_ERROR = TBPFLAG($4);
+  TBPF_PAUSED = TBPFLAG($8);
 
 type
   POPPROGDLGF = ^OPPROGDLGF;
   _OPPROGDLGF = type DWORD;
   OPPROGDLGF = _OPPROGDLGF;
+
 const
-  OPPROGDLG_DEFAULT                 = _OPPROGDLGF(0);
-  OPPROGDLG_ENABLEPAUSE             = _OPPROGDLGF($80);
-  OPPROGDLG_ALLOWUNDO               = _OPPROGDLGF($100);
-  OPPROGDLG_DONTDISPLAYSOURCEPATH   = _OPPROGDLGF($200);
-  OPPROGDLG_DONTDISPLAYDESTPATH     = _OPPROGDLGF($400);
-  OPPROGDLG_NOMULTIDAYESTIMATES     = _OPPROGDLGF($800);
-  OPPROGDLG_DONTDISPLAYLOCATIONS    = _OPPROGDLGF($1000);
+  OPPROGDLG_DEFAULT = _OPPROGDLGF(0);
+  OPPROGDLG_ENABLEPAUSE = _OPPROGDLGF($80);
+  OPPROGDLG_ALLOWUNDO = _OPPROGDLGF($100);
+  OPPROGDLG_DONTDISPLAYSOURCEPATH = _OPPROGDLGF($200);
+  OPPROGDLG_DONTDISPLAYDESTPATH = _OPPROGDLGF($400);
+  OPPROGDLG_NOMULTIDAYESTIMATES = _OPPROGDLGF($800);
+  OPPROGDLG_DONTDISPLAYLOCATIONS = _OPPROGDLGF($1000);
 
 type
   PPDMODE = ^PDMODE;
   _PDMODE = type DWORD;
   PDMODE = _PDMODE;
+
 const
-  PDM_DEFAULT        = _PDMODE(0);
-  PDM_RUN            = _PDMODE($1);
-  PDM_PREFLIGHT      = _PDMODE($2);
-  PDM_UNDOING        = _PDMODE($4);
+  PDM_DEFAULT = _PDMODE(0);
+  PDM_RUN = _PDMODE($1);
+  PDM_PREFLIGHT = _PDMODE($2);
+  PDM_UNDOING = _PDMODE($4);
   PDM_ERRORSBLOCKING = _PDMODE($8);
-  PDM_INDETERMINATE  = _PDMODE($10);
+  PDM_INDETERMINATE = _PDMODE($10);
 
 type
   PPDOPSTATUS = ^PDOPSTATUS;
   PDOPSTATUS = type Integer;
+
 const
-  PDOPS_RUNNING   = PDOPSTATUS(1);
-  PDOPS_PAUSED    = PDOPSTATUS(2);
+  PDOPS_RUNNING = PDOPSTATUS(1);
+  PDOPS_PAUSED = PDOPSTATUS(2);
   PDOPS_CANCELLED = PDOPSTATUS(3);
-  PDOPS_STOPPED   = PDOPSTATUS(4);
-  PDOPS_ERRORS    = PDOPSTATUS(5);
+  PDOPS_STOPPED = PDOPSTATUS(4);
+  PDOPS_ERRORS = PDOPSTATUS(5);
 
 type
   PFILE_OPERATION_FLAGS2 = ^FILE_OPERATION_FLAGS2;
   FILE_OPERATION_FLAGS2 = type Integer;
+
 const
-  FOF2_NONE                    = FILE_OPERATION_FLAGS2(0);
+  FOF2_NONE = FILE_OPERATION_FLAGS2(0);
   FOF2_MERGEFOLDERSONCOLLISION = FILE_OPERATION_FLAGS2($1);
 
 type
   PNAMESPACEWALKFLAG = ^NAMESPACEWALKFLAG;
   NAMESPACEWALKFLAG = type Integer;
   NSWF = NAMESPACEWALKFLAG;
+
 const
-  NSWF_DEFAULT                         = NAMESPACEWALKFLAG(0);
-  NSWF_NONE_IMPLIES_ALL                = NAMESPACEWALKFLAG($1);
-  NSWF_ONE_IMPLIES_ALL                 = NAMESPACEWALKFLAG($2);
-  NSWF_DONT_TRAVERSE_LINKS             = NAMESPACEWALKFLAG($4);
-  NSWF_DONT_ACCUMULATE_RESULT          = NAMESPACEWALKFLAG($8);
-  NSWF_TRAVERSE_STREAM_JUNCTIONS       = NAMESPACEWALKFLAG($10);
-  NSWF_FILESYSTEM_ONLY                 = NAMESPACEWALKFLAG($20);
-  NSWF_SHOW_PROGRESS                   = NAMESPACEWALKFLAG($40);
-  NSWF_FLAG_VIEWORDER                  = NAMESPACEWALKFLAG($80);
-  NSWF_IGNORE_AUTOPLAY_HIDA            = NAMESPACEWALKFLAG($100);
-  NSWF_ASYNC                           = NAMESPACEWALKFLAG($200);
-  NSWF_DONT_RESOLVE_LINKS              = NAMESPACEWALKFLAG($400);
-  NSWF_ACCUMULATE_FOLDERS              = NAMESPACEWALKFLAG($800);
-  NSWF_DONT_SORT                       = NAMESPACEWALKFLAG($1000);
-  NSWF_USE_TRANSFER_MEDIUM             = NAMESPACEWALKFLAG($2000);
-  NSWF_DONT_TRAVERSE_STREAM_JUNCTIONS  = NAMESPACEWALKFLAG($4000);
-  NSWF_ANY_IMPLIES_ALL                 = NAMESPACEWALKFLAG($8000);
+  NSWF_DEFAULT = NAMESPACEWALKFLAG(0);
+  NSWF_NONE_IMPLIES_ALL = NAMESPACEWALKFLAG($1);
+  NSWF_ONE_IMPLIES_ALL = NAMESPACEWALKFLAG($2);
+  NSWF_DONT_TRAVERSE_LINKS = NAMESPACEWALKFLAG($4);
+  NSWF_DONT_ACCUMULATE_RESULT = NAMESPACEWALKFLAG($8);
+  NSWF_TRAVERSE_STREAM_JUNCTIONS = NAMESPACEWALKFLAG($10);
+  NSWF_FILESYSTEM_ONLY = NAMESPACEWALKFLAG($20);
+  NSWF_SHOW_PROGRESS = NAMESPACEWALKFLAG($40);
+  NSWF_FLAG_VIEWORDER = NAMESPACEWALKFLAG($80);
+  NSWF_IGNORE_AUTOPLAY_HIDA = NAMESPACEWALKFLAG($100);
+  NSWF_ASYNC = NAMESPACEWALKFLAG($200);
+  NSWF_DONT_RESOLVE_LINKS = NAMESPACEWALKFLAG($400);
+  NSWF_ACCUMULATE_FOLDERS = NAMESPACEWALKFLAG($800);
+  NSWF_DONT_SORT = NAMESPACEWALKFLAG($1000);
+  NSWF_USE_TRANSFER_MEDIUM = NAMESPACEWALKFLAG($2000);
+  NSWF_DONT_TRAVERSE_STREAM_JUNCTIONS = NAMESPACEWALKFLAG($4000);
+  NSWF_ANY_IMPLIES_ALL = NAMESPACEWALKFLAG($8000);
 
 type
   PBANDSITECID = ^tagBANDSITECID;
   tagBANDSITECID = type DWORD;
   BANDSITECID = tagBANDSITECID;
+
 const
-  BSID_BANDADDED    = tagBANDSITECID(0);
-  BSID_BANDREMOVED	= tagBANDSITECID((BSID_BANDADDED + 1));
+  BSID_BANDADDED = tagBANDSITECID(0);
+  BSID_BANDREMOVED = tagBANDSITECID((BSID_BANDADDED + 1));
 
 type
   PFILE_USAGE_TYPE = ^FILE_USAGE_TYPE;
   FILE_USAGE_TYPE = type Integer;
+
 const
   FUT_PLAYING = FILE_USAGE_TYPE(0);
   FUT_EDITING = FILE_USAGE_TYPE(FUT_PLAYING + 1);
@@ -1230,409 +1284,443 @@ type
   PFILEOPENDIALOGOPTIONS = ^_FILEOPENDIALOGOPTIONS;
   _FILEOPENDIALOGOPTIONS = type DWORD;
   FILEOPENDIALOGOPTIONS = _FILEOPENDIALOGOPTIONS;
+
 const
-  FOS_OVERWRITEPROMPT          = _FILEOPENDIALOGOPTIONS($00000002); // (on by default in the save dialog)
-  FOS_STRICTFILETYPES          = _FILEOPENDIALOGOPTIONS($00000004); // In the save dialog, only allow the user to choose a file that has
-                                                                    // one of the file extensions provided in SetFileTypes.
-  FOS_NOCHANGEDIR              = _FILEOPENDIALOGOPTIONS($00000008); // Don't change the current working directory
-  FOS_PICKFOLDERS              = _FILEOPENDIALOGOPTIONS($00000020); // Invoke the open dialog in folder picking mode.
-  FOS_FORCEFILESYSTEM          = _FILEOPENDIALOGOPTIONS($00000040); // Ensure that items returned are filesystem items.
-  FOS_ALLNONSTORAGEITEMS       = _FILEOPENDIALOGOPTIONS($00000080); // Allow choosing items that have no storage.
-  FOS_NOVALIDATE               = _FILEOPENDIALOGOPTIONS($00000100);
-  FOS_ALLOWMULTISELECT         = _FILEOPENDIALOGOPTIONS($00000200);
-  FOS_PATHMUSTEXIST            = _FILEOPENDIALOGOPTIONS($00000800); // (on by default)
-  FOS_FILEMUSTEXIST            = _FILEOPENDIALOGOPTIONS($00001000); // (on by default in the open dialog and folder picker)
-  FOS_CREATEPROMPT             = _FILEOPENDIALOGOPTIONS($00002000);
-  FOS_SHAREAWARE               = _FILEOPENDIALOGOPTIONS($00004000);
-  FOS_NOREADONLYRETURN         = _FILEOPENDIALOGOPTIONS($00008000); // (on by default in the save dialog)
-  FOS_NOTESTFILECREATE         = _FILEOPENDIALOGOPTIONS($00010000); // Avoid testing the creation of the chosen file in the save dialog
-                                                                    // (specifying this flag will circumvent some useful error handling, such as access denied)
-  FOS_HIDEMRUPLACES            = _FILEOPENDIALOGOPTIONS($00020000); // (not used in Win7)
-  FOS_HIDEPINNEDPLACES         = _FILEOPENDIALOGOPTIONS($00040000); // Don't display the standard namespace locations in the navigation pane.
-                                                                    // (generally used along with AddPlace)
-  FOS_NODEREFERENCELINKS       = _FILEOPENDIALOGOPTIONS($00100000); // Don't treat shortcuts as their target files.
+  FOS_OVERWRITEPROMPT = _FILEOPENDIALOGOPTIONS($00000002); // (on by default in the save dialog)
+  FOS_STRICTFILETYPES = _FILEOPENDIALOGOPTIONS($00000004); // In the save dialog, only allow the user to choose a file that has
+  // one of the file extensions provided in SetFileTypes.
+  FOS_NOCHANGEDIR = _FILEOPENDIALOGOPTIONS($00000008); // Don't change the current working directory
+  FOS_PICKFOLDERS = _FILEOPENDIALOGOPTIONS($00000020); // Invoke the open dialog in folder picking mode.
+  FOS_FORCEFILESYSTEM = _FILEOPENDIALOGOPTIONS($00000040); // Ensure that items returned are filesystem items.
+  FOS_ALLNONSTORAGEITEMS = _FILEOPENDIALOGOPTIONS($00000080); // Allow choosing items that have no storage.
+  FOS_NOVALIDATE = _FILEOPENDIALOGOPTIONS($00000100);
+  FOS_ALLOWMULTISELECT = _FILEOPENDIALOGOPTIONS($00000200);
+  FOS_PATHMUSTEXIST = _FILEOPENDIALOGOPTIONS($00000800); // (on by default)
+  FOS_FILEMUSTEXIST = _FILEOPENDIALOGOPTIONS($00001000); // (on by default in the open dialog and folder picker)
+  FOS_CREATEPROMPT = _FILEOPENDIALOGOPTIONS($00002000);
+  FOS_SHAREAWARE = _FILEOPENDIALOGOPTIONS($00004000);
+  FOS_NOREADONLYRETURN = _FILEOPENDIALOGOPTIONS($00008000); // (on by default in the save dialog)
+  FOS_NOTESTFILECREATE = _FILEOPENDIALOGOPTIONS($00010000); // Avoid testing the creation of the chosen file in the save dialog
+  // (specifying this flag will circumvent some useful error handling, such as access denied)
+  FOS_HIDEMRUPLACES = _FILEOPENDIALOGOPTIONS($00020000); // (not used in Win7)
+  FOS_HIDEPINNEDPLACES = _FILEOPENDIALOGOPTIONS($00040000); // Don't display the standard namespace locations in the navigation pane.
+  // (generally used along with AddPlace)
+  FOS_NODEREFERENCELINKS = _FILEOPENDIALOGOPTIONS($00100000); // Don't treat shortcuts as their target files.
   FOS_OKBUTTONNEEDSINTERACTION = _FILEOPENDIALOGOPTIONS($00200000); // Only enable the OK button if the user has done something in the view.
-  FOS_DONTADDTORECENT          = _FILEOPENDIALOGOPTIONS($02000000); // Don't add the chosen file to the recent documents list (SHAddToRecentDocs)
-  FOS_FORCESHOWHIDDEN          = _FILEOPENDIALOGOPTIONS($10000000); // Show all files including system and hidden files.
-  FOS_DEFAULTNOMINIMODE        = _FILEOPENDIALOGOPTIONS($20000000); // (not used in Win7)
-  FOS_FORCEPREVIEWPANEON       = _FILEOPENDIALOGOPTIONS($40000000);
-  FOS_SUPPORTSTREAMABLEITEMS   = _FILEOPENDIALOGOPTIONS($80000000); // Indicates the caller will use BHID_Stream to open contents, no need to download the file
+  FOS_DONTADDTORECENT = _FILEOPENDIALOGOPTIONS($02000000); // Don't add the chosen file to the recent documents list (SHAddToRecentDocs)
+  FOS_FORCESHOWHIDDEN = _FILEOPENDIALOGOPTIONS($10000000); // Show all files including system and hidden files.
+  FOS_DEFAULTNOMINIMODE = _FILEOPENDIALOGOPTIONS($20000000); // (not used in Win7)
+  FOS_FORCEPREVIEWPANEON = _FILEOPENDIALOGOPTIONS($40000000);
+  FOS_SUPPORTSTREAMABLEITEMS = _FILEOPENDIALOGOPTIONS($80000000); // Indicates the caller will use BHID_Stream to open contents, no need to download the file
 
 type
   PASSOCIATIONLEVEL = ^ASSOCIATIONLEVEL;
   ASSOCIATIONLEVEL = type DWORD;
+
 const
-  AL_MACHINE   = ASSOCIATIONLEVEL(0);
+  AL_MACHINE = ASSOCIATIONLEVEL(0);
   AL_EFFECTIVE = ASSOCIATIONLEVEL(1);
-  AL_USER      = ASSOCIATIONLEVEL(2);
+  AL_USER = ASSOCIATIONLEVEL(2);
 
 type
   PASSOCIATIONTYPE = ^ASSOCIATIONTYPE;
   ASSOCIATIONTYPE = type DWORD;
+
 const
-  AT_FILEEXTENSION   = ASSOCIATIONTYPE(0);
-  AT_URLPROTOCOL     = ASSOCIATIONTYPE(1);
+  AT_FILEEXTENSION = ASSOCIATIONTYPE(0);
+  AT_URLPROTOCOL = ASSOCIATIONTYPE(1);
   AT_STARTMENUCLIENT = ASSOCIATIONTYPE(2);
-  AT_MIMETYPE        = ASSOCIATIONTYPE(3);
+  AT_MIMETYPE = ASSOCIATIONTYPE(3);
 
 type
   PCDCONTROLSTATEF = ^CDCONTROLSTATEF;
   CDCONTROLSTATEF = type DWORD;
+
 const
-  CDCS_INACTIVE       = CDCONTROLSTATEF($00000000);
-  CDCS_ENABLED        = CDCONTROLSTATEF($00000001);
-  CDCS_VISIBLE        = CDCONTROLSTATEF($00000002);
+  CDCS_INACTIVE = CDCONTROLSTATEF($00000000);
+  CDCS_ENABLED = CDCONTROLSTATEF($00000001);
+  CDCS_VISIBLE = CDCONTROLSTATEF($00000002);
   CDCS_ENABLEDVISIBLE = CDCONTROLSTATEF($00000003);
 
 type
   PBROWSERFRAMEOPTIONS = ^BROWSERFRAMEOPTIONS;
   _BROWSERFRAMEOPTIONS = type DWORD;
   BROWSERFRAMEOPTIONS = _BROWSERFRAMEOPTIONS;
+
 const
-  BFO_NONE                             = _BROWSERFRAMEOPTIONS(0);
-  BFO_BROWSER_PERSIST_SETTINGS         = _BROWSERFRAMEOPTIONS($1);
+  BFO_NONE = _BROWSERFRAMEOPTIONS(0);
+  BFO_BROWSER_PERSIST_SETTINGS = _BROWSERFRAMEOPTIONS($1);
   BFO_RENAME_FOLDER_OPTIONS_TOINTERNET = _BROWSERFRAMEOPTIONS($2);
-  BFO_BOTH_OPTIONS                     = _BROWSERFRAMEOPTIONS($4);
-  BIF_PREFER_INTERNET_SHORTCUT         = _BROWSERFRAMEOPTIONS($8);
-  BFO_BROWSE_NO_IN_NEW_PROCESS         = _BROWSERFRAMEOPTIONS($10);
-  BFO_ENABLE_HYPERLINK_TRACKING        = _BROWSERFRAMEOPTIONS($20);
-  BFO_USE_IE_OFFLINE_SUPPORT           = _BROWSERFRAMEOPTIONS($40);
-  BFO_SUBSTITUE_INTERNET_START_PAGE    = _BROWSERFRAMEOPTIONS($80);
-  BFO_USE_IE_LOGOBANDING               = _BROWSERFRAMEOPTIONS($100);
-  BFO_ADD_IE_TOCAPTIONBAR              = _BROWSERFRAMEOPTIONS($200);
-  BFO_USE_DIALUP_REF                   = _BROWSERFRAMEOPTIONS($400);
-  BFO_USE_IE_TOOLBAR                   = _BROWSERFRAMEOPTIONS($800);
-  BFO_NO_PARENT_FOLDER_SUPPORT         = _BROWSERFRAMEOPTIONS($1000);
-  BFO_NO_REOPEN_NEXT_RESTART           = _BROWSERFRAMEOPTIONS($2000);
-  BFO_GO_HOME_PAGE                     = _BROWSERFRAMEOPTIONS($4000);
-  BFO_PREFER_IEPROCESS                 = _BROWSERFRAMEOPTIONS($8000);
-  BFO_SHOW_NAVIGATION_CANCELLED        = _BROWSERFRAMEOPTIONS($10000);
-  BFO_USE_IE_STATUSBAR                 = _BROWSERFRAMEOPTIONS($20000);
-  BFO_QUERY_ALL                        = _BROWSERFRAMEOPTIONS($FFFFFFFF);
+  BFO_BOTH_OPTIONS = _BROWSERFRAMEOPTIONS($4);
+  BIF_PREFER_INTERNET_SHORTCUT = _BROWSERFRAMEOPTIONS($8);
+  BFO_BROWSE_NO_IN_NEW_PROCESS = _BROWSERFRAMEOPTIONS($10);
+  BFO_ENABLE_HYPERLINK_TRACKING = _BROWSERFRAMEOPTIONS($20);
+  BFO_USE_IE_OFFLINE_SUPPORT = _BROWSERFRAMEOPTIONS($40);
+  BFO_SUBSTITUE_INTERNET_START_PAGE = _BROWSERFRAMEOPTIONS($80);
+  BFO_USE_IE_LOGOBANDING = _BROWSERFRAMEOPTIONS($100);
+  BFO_ADD_IE_TOCAPTIONBAR = _BROWSERFRAMEOPTIONS($200);
+  BFO_USE_DIALUP_REF = _BROWSERFRAMEOPTIONS($400);
+  BFO_USE_IE_TOOLBAR = _BROWSERFRAMEOPTIONS($800);
+  BFO_NO_PARENT_FOLDER_SUPPORT = _BROWSERFRAMEOPTIONS($1000);
+  BFO_NO_REOPEN_NEXT_RESTART = _BROWSERFRAMEOPTIONS($2000);
+  BFO_GO_HOME_PAGE = _BROWSERFRAMEOPTIONS($4000);
+  BFO_PREFER_IEPROCESS = _BROWSERFRAMEOPTIONS($8000);
+  BFO_SHOW_NAVIGATION_CANCELLED = _BROWSERFRAMEOPTIONS($10000);
+  BFO_USE_IE_STATUSBAR = _BROWSERFRAMEOPTIONS($20000);
+  BFO_QUERY_ALL = _BROWSERFRAMEOPTIONS($FFFFFFFF);
 
 type
   PMENUPOPUPSELECT = ^tagMENUPOPUPSELECT;
   tagMENUPOPUPSELECT = type DWORD;
   MENUPOPUPSELECT = tagMENUPOPUPSELECT;
+
 const
-  MPOS_EXECUTE	      = tagMENUPOPUPSELECT(0);
-  MPOS_FULLCANCEL    	= tagMENUPOPUPSELECT((MPOS_EXECUTE + 1));
-  MPOS_CANCELLEVEL	  = tagMENUPOPUPSELECT((MPOS_FULLCANCEL + 1));
-  MPOS_SELECTLEFT	    = tagMENUPOPUPSELECT((MPOS_CANCELLEVEL + 1));
-  MPOS_SELECTRIGHT	  = tagMENUPOPUPSELECT((MPOS_SELECTLEFT + 1));
-  MPOS_CHILDTRACKING	= tagMENUPOPUPSELECT((MPOS_SELECTRIGHT + 1));
+  MPOS_EXECUTE = tagMENUPOPUPSELECT(0);
+  MPOS_FULLCANCEL = tagMENUPOPUPSELECT((MPOS_EXECUTE + 1));
+  MPOS_CANCELLEVEL = tagMENUPOPUPSELECT((MPOS_FULLCANCEL + 1));
+  MPOS_SELECTLEFT = tagMENUPOPUPSELECT((MPOS_CANCELLEVEL + 1));
+  MPOS_SELECTRIGHT = tagMENUPOPUPSELECT((MPOS_SELECTLEFT + 1));
+  MPOS_CHILDTRACKING = tagMENUPOPUPSELECT((MPOS_SELECTRIGHT + 1));
 
 type
   PMP_POPUPFLAGS = ^MP_POPUPFLAGS;
   MP_POPUPFLAGS = type Integer;
+
 const
-  MPPF_SETFOCUS	     = MP_POPUPFLAGS($1);
+  MPPF_SETFOCUS = MP_POPUPFLAGS($1);
   MPPF_INITIALSELECT = MP_POPUPFLAGS($2);
-  MPPF_NOANIMATE	   = MP_POPUPFLAGS($4);
-  MPPF_KEYBOARD	     = MP_POPUPFLAGS($10);
-  MPPF_REPOSITION	   = MP_POPUPFLAGS($20);
-  MPPF_FORCEZORDER   = MP_POPUPFLAGS($40);
-  MPPF_FINALSELECT	 = MP_POPUPFLAGS($80);
-  MPPF_TOP	         = MP_POPUPFLAGS($20000000);
-  MPPF_LEFT	         = MP_POPUPFLAGS($40000000);
-  MPPF_RIGHT	       = MP_POPUPFLAGS($60000000);
-  MPPF_BOTTOM	       = MP_POPUPFLAGS($80000000);
-  MPPF_POS_MASK	     = MP_POPUPFLAGS($e0000000);
-  MPPF_ALIGN_LEFT	   = MP_POPUPFLAGS($2000000);
-  MPPF_ALIGN_RIGHT   = MP_POPUPFLAGS($4000000);
+  MPPF_NOANIMATE = MP_POPUPFLAGS($4);
+  MPPF_KEYBOARD = MP_POPUPFLAGS($10);
+  MPPF_REPOSITION = MP_POPUPFLAGS($20);
+  MPPF_FORCEZORDER = MP_POPUPFLAGS($40);
+  MPPF_FINALSELECT = MP_POPUPFLAGS($80);
+  MPPF_TOP = MP_POPUPFLAGS($20000000);
+  MPPF_LEFT = MP_POPUPFLAGS($40000000);
+  MPPF_RIGHT = MP_POPUPFLAGS($60000000);
+  MPPF_BOTTOM = MP_POPUPFLAGS($80000000);
+  MPPF_POS_MASK = MP_POPUPFLAGS($e0000000);
+  MPPF_ALIGN_LEFT = MP_POPUPFLAGS($2000000);
+  MPPF_ALIGN_RIGHT = MP_POPUPFLAGS($4000000);
 
 
 type
   PNWMF = ^NWMF;
   NWMF = type Integer;
+
 const
-  NWMF_UNLOADING        = NWMF($1);
-  NWMF_USERINITED       = NWMF($2);
-  NWMF_FIRST            = NWMF($4);
-  NWMF_OVERRIDEKEY      = NWMF($8);
-  NWMF_SHOWHELP         = NWMF($10);
-  NWMF_HTMLDIALOG       = NWMF($20);
-  NWMF_FROMDIALOGCHILD  = NWMF($40);
-  NWMF_USERREQUESTED    = NWMF($80);
-  NWMF_USERALLOWED      = NWMF($100);
-  NWMF_FORCEWINDOW      = NWMF($10000);
-  NWMF_FORCETAB         = NWMF($20000);
-  NWMF_SUGGESTWINDOW    = NWMF($40000);
-  NWMF_SUGGESTTAB       = NWMF($80000);
-  NWMF_INACTIVETAB      = NWMF($100000);
+  NWMF_UNLOADING = NWMF($1);
+  NWMF_USERINITED = NWMF($2);
+  NWMF_FIRST = NWMF($4);
+  NWMF_OVERRIDEKEY = NWMF($8);
+  NWMF_SHOWHELP = NWMF($10);
+  NWMF_HTMLDIALOG = NWMF($20);
+  NWMF_FROMDIALOGCHILD = NWMF($40);
+  NWMF_USERREQUESTED = NWMF($80);
+  NWMF_USERALLOWED = NWMF($100);
+  NWMF_FORCEWINDOW = NWMF($10000);
+  NWMF_FORCETAB = NWMF($20000);
+  NWMF_SUGGESTWINDOW = NWMF($40000);
+  NWMF_SUGGESTTAB = NWMF($80000);
+  NWMF_INACTIVETAB = NWMF($100000);
 
 type
   PATTACHMENT_PROMPT = ^ATTACHMENT_PROMPT;
   ATTACHMENT_PROMPT = type Integer;
+
 const
-  ATTACHMENT_PROMPT_NONE         = ATTACHMENT_PROMPT($0000);
-  ATTACHMENT_PROMPT_SAVE         = ATTACHMENT_PROMPT($0001);
-  ATTACHMENT_PROMPT_EXEC         = ATTACHMENT_PROMPT($0002);
+  ATTACHMENT_PROMPT_NONE = ATTACHMENT_PROMPT($0000);
+  ATTACHMENT_PROMPT_SAVE = ATTACHMENT_PROMPT($0001);
+  ATTACHMENT_PROMPT_EXEC = ATTACHMENT_PROMPT($0002);
   ATTACHMENT_PROMPT_EXEC_OR_SAVE = ATTACHMENT_PROMPT($0003);
 
 type
   PATTACHMENT_ACTION = ^ATTACHMENT_ACTION;
   ATTACHMENT_ACTION = type Integer;
+
 const
   ATTACHMENT_ACTION_CANCEL = ATTACHMENT_ACTION($0000);
-  ATTACHMENT_ACTION_SAVE   = ATTACHMENT_ACTION($0001);
-  ATTACHMENT_ACTION_EXEC   = ATTACHMENT_ACTION($0002);
+  ATTACHMENT_ACTION_SAVE = ATTACHMENT_ACTION($0001);
+  ATTACHMENT_ACTION_EXEC = ATTACHMENT_ACTION($0002);
 
 type
   PNSTCSTYLE = ^NSTCSTYLE;
   _NSTCSTYLE = type DWORD;
   NSTCSTYLE = _NSTCSTYLE;
+
 const
-  NSTCS_HASEXPANDOS              = _NSTCSTYLE($1);
-  NSTCS_HASLINES                 = _NSTCSTYLE($2);
-  NSTCS_SINGLECLICKEXPAND        = _NSTCSTYLE($4);
-  NSTCS_FULLROWSELECT            = _NSTCSTYLE($8);
-  NSTCS_SPRINGEXPAND             = _NSTCSTYLE($10);
-  NSTCS_HORIZONTALSCROLL         = _NSTCSTYLE($20);
-  NSTCS_ROOTHASEXPANDO           = _NSTCSTYLE($40);
-  NSTCS_SHOWSELECTIONALWAYS      = _NSTCSTYLE($80);
-  NSTCS_NOINFOTIP                = _NSTCSTYLE($200);
-  NSTCS_EVENHEIGHT               = _NSTCSTYLE($400);
-  NSTCS_NOREPLACEOPEN            = _NSTCSTYLE($800);
-  NSTCS_DISABLEDRAGDROP          = _NSTCSTYLE($1000);
-  NSTCS_NOORDERSTREAM            = _NSTCSTYLE($2000);
-  NSTCS_RICHTOOLTIP              = _NSTCSTYLE($4000);
-  NSTCS_BORDER                   = _NSTCSTYLE($8000);
-  NSTCS_NOEDITLABELS             = _NSTCSTYLE($10000);
-  NSTCS_TABSTOP                  = _NSTCSTYLE($20000);
-  NSTCS_FAVORITESMODE            = _NSTCSTYLE($80000);
-  NSTCS_AUTOHSCROLL              = _NSTCSTYLE($100000);
-  NSTCS_FADEINOUTEXPANDOS        = _NSTCSTYLE($200000);
-  NSTCS_EMPTYTEXT                = _NSTCSTYLE($400000);
-  NSTCS_CHECKBOXES               = _NSTCSTYLE($800000);
-  NSTCS_PARTIALCHECKBOXES        = _NSTCSTYLE($1000000);
-  NSTCS_EXCLUSIONCHECKBOXES      = _NSTCSTYLE($2000000);
-  NSTCS_DIMMEDCHECKBOXES         = _NSTCSTYLE($4000000);
-  NSTCS_NOINDENTCHECKS           = _NSTCSTYLE($8000000);
-  NSTCS_ALLOWJUNCTIONS           = _NSTCSTYLE($10000000);
-  NSTCS_SHOWTABSBUTTON           = _NSTCSTYLE($20000000);
-  NSTCS_SHOWDELETEBUTTON         = _NSTCSTYLE($40000000);
-  NSTCS_SHOWREFRESHBUTTON        = _NSTCSTYLE($80000000);
+  NSTCS_HASEXPANDOS = _NSTCSTYLE($1);
+  NSTCS_HASLINES = _NSTCSTYLE($2);
+  NSTCS_SINGLECLICKEXPAND = _NSTCSTYLE($4);
+  NSTCS_FULLROWSELECT = _NSTCSTYLE($8);
+  NSTCS_SPRINGEXPAND = _NSTCSTYLE($10);
+  NSTCS_HORIZONTALSCROLL = _NSTCSTYLE($20);
+  NSTCS_ROOTHASEXPANDO = _NSTCSTYLE($40);
+  NSTCS_SHOWSELECTIONALWAYS = _NSTCSTYLE($80);
+  NSTCS_NOINFOTIP = _NSTCSTYLE($200);
+  NSTCS_EVENHEIGHT = _NSTCSTYLE($400);
+  NSTCS_NOREPLACEOPEN = _NSTCSTYLE($800);
+  NSTCS_DISABLEDRAGDROP = _NSTCSTYLE($1000);
+  NSTCS_NOORDERSTREAM = _NSTCSTYLE($2000);
+  NSTCS_RICHTOOLTIP = _NSTCSTYLE($4000);
+  NSTCS_BORDER = _NSTCSTYLE($8000);
+  NSTCS_NOEDITLABELS = _NSTCSTYLE($10000);
+  NSTCS_TABSTOP = _NSTCSTYLE($20000);
+  NSTCS_FAVORITESMODE = _NSTCSTYLE($80000);
+  NSTCS_AUTOHSCROLL = _NSTCSTYLE($100000);
+  NSTCS_FADEINOUTEXPANDOS = _NSTCSTYLE($200000);
+  NSTCS_EMPTYTEXT = _NSTCSTYLE($400000);
+  NSTCS_CHECKBOXES = _NSTCSTYLE($800000);
+  NSTCS_PARTIALCHECKBOXES = _NSTCSTYLE($1000000);
+  NSTCS_EXCLUSIONCHECKBOXES = _NSTCSTYLE($2000000);
+  NSTCS_DIMMEDCHECKBOXES = _NSTCSTYLE($4000000);
+  NSTCS_NOINDENTCHECKS = _NSTCSTYLE($8000000);
+  NSTCS_ALLOWJUNCTIONS = _NSTCSTYLE($10000000);
+  NSTCS_SHOWTABSBUTTON = _NSTCSTYLE($20000000);
+  NSTCS_SHOWDELETEBUTTON = _NSTCSTYLE($40000000);
+  NSTCS_SHOWREFRESHBUTTON = _NSTCSTYLE($80000000);
 
 type
   PNSTCROOTSTYLE = ^NSTCROOTSTYLE;
   _NSTCROOTSTYLE = type DWORD;
   NSTCROOTSTYLE = _NSTCROOTSTYLE;
+
 const
-  NSTCRS_VISIBLE  = _NSTCROOTSTYLE(0);
-  NSTCRS_HIDDEN   = _NSTCROOTSTYLE($1);
+  NSTCRS_VISIBLE = _NSTCROOTSTYLE(0);
+  NSTCRS_HIDDEN = _NSTCROOTSTYLE($1);
   NSTCRS_EXPANDED = _NSTCROOTSTYLE($2);
 
 type
   PNSTCITEMSTATE = ^NSTCITEMSTATE;
   _NSTCITEMSTATE = type DWORD;
   NSTCITEMSTATE = _NSTCITEMSTATE;
+
 const
-  NSTCIS_NONE             = _NSTCITEMSTATE(0);
-  NSTCIS_SELECTED         = _NSTCITEMSTATE($1);
-  NSTCIS_EXPANDED         = _NSTCITEMSTATE($2);
-  NSTCIS_BOLD             = _NSTCITEMSTATE($4);
-  NSTCIS_DISABLED         = _NSTCITEMSTATE($8);
+  NSTCIS_NONE = _NSTCITEMSTATE(0);
+  NSTCIS_SELECTED = _NSTCITEMSTATE($1);
+  NSTCIS_EXPANDED = _NSTCITEMSTATE($2);
+  NSTCIS_BOLD = _NSTCITEMSTATE($4);
+  NSTCIS_DISABLED = _NSTCITEMSTATE($8);
   NSTCIS_SELECTEDNOEXPAND = _NSTCITEMSTATE($10);
 
 type
   PNSTCGNI = ^NSTCGNI;
   NSTCGNI = type DWORD;
+
 const
-    NSTCGNI_NEXT         = NSTCGNI(0);
-    NSTCGNI_NEXTVISIBLE  = NSTCGNI(1);
-    NSTCGNI_PREV         = NSTCGNI(2);
-    NSTCGNI_PREVVISIBLE  = NSTCGNI(3);
-    NSTCGNI_PARENT       = NSTCGNI(4);
-    NSTCGNI_CHILD        = NSTCGNI(5);
-    NSTCGNI_FIRSTVISIBLE = NSTCGNI(6);
-    NSTCGNI_LASTVISIBLE  = NSTCGNI(7);
+  NSTCGNI_NEXT = NSTCGNI(0);
+  NSTCGNI_NEXTVISIBLE = NSTCGNI(1);
+  NSTCGNI_PREV = NSTCGNI(2);
+  NSTCGNI_PREVVISIBLE = NSTCGNI(3);
+  NSTCGNI_PARENT = NSTCGNI(4);
+  NSTCGNI_CHILD = NSTCGNI(5);
+  NSTCGNI_FIRSTVISIBLE = NSTCGNI(6);
+  NSTCGNI_LASTVISIBLE = NSTCGNI(7);
 
 type
   PEXPLORERPANESTATE = ^EXPLORERPANESTATE;
   _EXPLORERPANESTATE = type DWORD;
   EXPLORERPANESTATE = _EXPLORERPANESTATE;
+
 const
-  EPS_DONTCARE    = _EXPLORERPANESTATE(0);
-  EPS_DEFAULT_ON  = _EXPLORERPANESTATE($1);
+  EPS_DONTCARE = _EXPLORERPANESTATE(0);
+  EPS_DEFAULT_ON = _EXPLORERPANESTATE($1);
   EPS_DEFAULT_OFF = _EXPLORERPANESTATE($2);
-  EPS_STATEMASK   = _EXPLORERPANESTATE($FFFF);
+  EPS_STATEMASK = _EXPLORERPANESTATE($FFFF);
   EPS_INITIALSTATE = _EXPLORERPANESTATE($10000);
-  EPS_FORCE       = _EXPLORERPANESTATE($20000);
+  EPS_FORCE = _EXPLORERPANESTATE($20000);
 
 type
   PEXPCMDSTATE = ^EXPCMDSTATE;
   _EXPCMDSTATE = type DWORD;
   EXPCMDSTATE = _EXPCMDSTATE;
+
 const
-  ECS_ENABLED    = _EXPCMDSTATE(0);
-  ECS_DISABLED   = _EXPCMDSTATE($1);
-  ECS_HIDDEN     = _EXPCMDSTATE($2);
-  ECS_CHECKBOX   = _EXPCMDSTATE($4);
-  ECS_CHECKED    = _EXPCMDSTATE($8);
+  ECS_ENABLED = _EXPCMDSTATE(0);
+  ECS_DISABLED = _EXPCMDSTATE($1);
+  ECS_HIDDEN = _EXPCMDSTATE($2);
+  ECS_CHECKBOX = _EXPCMDSTATE($4);
+  ECS_CHECKED = _EXPCMDSTATE($8);
   ECS_RADIOCHECK = _EXPCMDSTATE($10);
 
 type
   PKNOWNDESTCATEGORY = ^KNOWNDESTCATEGORY;
   KNOWNDESTCATEGORY = type Integer;
+
 const
-    KDC_FREQUENT = KNOWNDESTCATEGORY(1);
-    KDC_RECENT   = KNOWNDESTCATEGORY((KDC_FREQUENT + 1));
+  KDC_FREQUENT = KNOWNDESTCATEGORY(1);
+  KDC_RECENT = KNOWNDESTCATEGORY((KDC_FREQUENT + 1));
 
 type
   PCPVIEW = ^CPVIEW;
   CPVIEW = type DWORD;
+
 const
-  CPVIEW_CLASSIC  = CPVIEW(0);
+  CPVIEW_CLASSIC = CPVIEW(0);
   CPVIEW_ALLITEMS = CPVIEW(CPVIEW_CLASSIC);
   CPVIEW_CATEGORY = CPVIEW(1);
-  CPVIEW_HOME     = CPVIEW(CPVIEW_CATEGORY);
+  CPVIEW_HOME = CPVIEW(CPVIEW_CATEGORY);
 
 type
   PEXPCMDFLAGS = ^EXPCMDFLAGS;
   _EXPCMDFLAGS = type DWORD;
   EXPCMDFLAGS = _EXPCMDFLAGS;
+
 const
-  ECF_DEFAULT         = _EXPCMDFLAGS(0);
+  ECF_DEFAULT = _EXPCMDFLAGS(0);
   ECF_HASSUBCOMMANDS = _EXPCMDFLAGS($1);
   ECF_HASSPLITBUTTON = _EXPCMDFLAGS($2);
-  ECF_HIDELABEL      = _EXPCMDFLAGS($4);
-  ECF_ISSEPARATOR    = _EXPCMDFLAGS($8);
-  ECF_HASLUASHIELD   = _EXPCMDFLAGS($10);
+  ECF_HIDELABEL = _EXPCMDFLAGS($4);
+  ECF_ISSEPARATOR = _EXPCMDFLAGS($8);
+  ECF_HASLUASHIELD = _EXPCMDFLAGS($10);
   ECF_SEPARATORBEFORE = _EXPCMDFLAGS($20);
   ECF_SEPARATORAFTER = _EXPCMDFLAGS($40);
-  ECF_ISDROPDOWN     = _EXPCMDFLAGS($80);
-  ECF_TOGGLEABLE     = _EXPCMDFLAGS($100);
-  ECF_AUTOMENUICONS  = _EXPCMDFLAGS($200);
+  ECF_ISDROPDOWN = _EXPCMDFLAGS($80);
+  ECF_TOGGLEABLE = _EXPCMDFLAGS($100);
+  ECF_AUTOMENUICONS = _EXPCMDFLAGS($200);
 
 type
   PBANNER_NOTIFICATION_EVENT = ^BANNER_NOTIFICATION_EVENT;
   BANNER_NOTIFICATION_EVENT = type DWORD;
+
 const
-    BNE_Rendered       = BANNER_NOTIFICATION_EVENT(0);
-    BNE_Hovered        = BANNER_NOTIFICATION_EVENT(BNE_Rendered + 1);
-    BNE_Closed         = BANNER_NOTIFICATION_EVENT(BNE_Hovered + 1);
-    BNE_Dismissed      = BANNER_NOTIFICATION_EVENT(BNE_Closed + 1);
-    BNE_Button1Clicked = BANNER_NOTIFICATION_EVENT(BNE_Dismissed + 1);
-    BNE_Button2Clicked = BANNER_NOTIFICATION_EVENT(BNE_Button1Clicked + 1);
+  BNE_Rendered = BANNER_NOTIFICATION_EVENT(0);
+  BNE_Hovered = BANNER_NOTIFICATION_EVENT(BNE_Rendered + 1);
+  BNE_Closed = BANNER_NOTIFICATION_EVENT(BNE_Hovered + 1);
+  BNE_Dismissed = BANNER_NOTIFICATION_EVENT(BNE_Closed + 1);
+  BNE_Button1Clicked = BANNER_NOTIFICATION_EVENT(BNE_Dismissed + 1);
+  BNE_Button2Clicked = BANNER_NOTIFICATION_EVENT(BNE_Button1Clicked + 1);
 
 type
   PFDE_OVERWRITE_RESPONSE = ^FDE_OVERWRITE_RESPONSE;
   FDE_OVERWRITE_RESPONSE = type DWORD;
+
 const
   FDEOR_DEFAULT = FDE_OVERWRITE_RESPONSE(0); // The application has not handled the event, and the dialog should put up UI asking the user
-                                             // whether or not the file should be overwritten and be returned from the dialog
-  FDEOR_ACCEPT  = FDE_OVERWRITE_RESPONSE(1); // The application has decided that the file should be returned from the dialog
-  FDEOR_REFUSE  = FDE_OVERWRITE_RESPONSE(2); // The application has decided that the file should not be returned from the dialog
+  // whether or not the file should be overwritten and be returned from the dialog
+  FDEOR_ACCEPT = FDE_OVERWRITE_RESPONSE(1); // The application has decided that the file should be returned from the dialog
+  FDEOR_REFUSE = FDE_OVERWRITE_RESPONSE(2); // The application has decided that the file should not be returned from the dialog
 
 type
   PFDE_SHAREVIOLATION_RESPONSE = ^FDE_SHAREVIOLATION_RESPONSE;
   FDE_SHAREVIOLATION_RESPONSE = type DWORD;
+
 const
   FDESVR_DEFAULT = FDE_SHAREVIOLATION_RESPONSE(0); // The application has not handled the event.  The dialog will put up UI indicating the file
-                                                     // is in use, and a different file must be chosen.
-  FDESVR_ACCEPT  = FDE_SHAREVIOLATION_RESPONSE(1); // The application has decided that the file should be returned from the dialog
-  FDESVR_REFUSE  = FDE_SHAREVIOLATION_RESPONSE(2); // The application has decided that the file should not be returned from the dialog
+  // is in use, and a different file must be chosen.
+  FDESVR_ACCEPT = FDE_SHAREVIOLATION_RESPONSE(1); // The application has decided that the file should be returned from the dialog
+  FDESVR_REFUSE = FDE_SHAREVIOLATION_RESPONSE(2); // The application has decided that the file should not be returned from the dialog
 
 type
   PFDAP = ^FDAP;
   FDAP = type DWORD;
+
 const
   FDAP_BOTTOM = FDAP(0);                // The place is added to the bottom of the default list.
-  FDAP_TOP    = FDAP(1);                // The place is added to the top of the default list.
+  FDAP_TOP = FDAP(1);                // The place is added to the top of the default list.
 
 type
   PSHARE_ROLE = ^SHARE_ROLE;
   SHARE_ROLE = type Integer;
+
 const
-  SHARE_ROLE_INVALID     = SHARE_ROLE(- 1);
-  SHARE_ROLE_READER      = SHARE_ROLE(0);
+  SHARE_ROLE_INVALID = SHARE_ROLE(-1);
+  SHARE_ROLE_READER = SHARE_ROLE(0);
   SHARE_ROLE_CONTRIBUTOR = SHARE_ROLE(1);
-  SHARE_ROLE_CO_OWNER    = SHARE_ROLE(2);
-  SHARE_ROLE_OWNER       = SHARE_ROLE(3);
-  SHARE_ROLE_CUSTOM      = SHARE_ROLE(4);
-  SHARE_ROLE_MIXED       = SHARE_ROLE(5);
+  SHARE_ROLE_CO_OWNER = SHARE_ROLE(2);
+  SHARE_ROLE_OWNER = SHARE_ROLE(3);
+  SHARE_ROLE_CUSTOM = SHARE_ROLE(4);
+  SHARE_ROLE_MIXED = SHARE_ROLE(5);
 
 type
   PDEF_SHARE_ID = ^DEF_SHARE_ID;
   DEF_SHARE_ID = type DWORD;
+
 const
-  DEFSHAREID_USERS  = DEF_SHARE_ID(1);
+  DEFSHAREID_USERS = DEF_SHARE_ID(1);
   DEFSHAREID_PUBLIC = DEF_SHARE_ID(2);
 
 type
   PNMCII_FLAGS = ^NMCII_FLAGS;
   NMCII_FLAGS = type Integer;
+
 const
-  NMCII_NONE	  = NMCII_FLAGS($0);
-  NMCII_ITEMS	  = NMCII_FLAGS($1);
-  NMCII_FOLDERS	= NMCII_FLAGS($2);
+  NMCII_NONE = NMCII_FLAGS($0);
+  NMCII_ITEMS = NMCII_FLAGS($1);
+  NMCII_FOLDERS = NMCII_FLAGS($2);
 
 type
   PNMCSAEI_FLAGS = ^NMCSAEI_FLAGS;
   NMCSAEI_FLAGS = type Integer;
+
 const
-  NMCSAEI_SELECT	= NMCSAEI_FLAGS($0);
-  NMCSAEI_EDIT   	= NMCSAEI_FLAGS($1);
+  NMCSAEI_SELECT = NMCSAEI_FLAGS($0);
+  NMCSAEI_EDIT = NMCSAEI_FLAGS($1);
 
 type
   PNSTCFOLDERCAPABILITIES = ^NSTCFOLDERCAPABILITIES;
   NSTCFOLDERCAPABILITIES = type DWORD;
+
 const
-  NSTCFC_NONE                  = NSTCFOLDERCAPABILITIES($0);
-  NSTCFC_PINNEDITEMFILTERING   = NSTCFOLDERCAPABILITIES($1);
+  NSTCFC_NONE = NSTCFOLDERCAPABILITIES($0);
+  NSTCFC_PINNEDITEMFILTERING = NSTCFOLDERCAPABILITIES($1);
   NSTCFC_DELAY_REGISTER_NOTIFY = NSTCFOLDERCAPABILITIES($2);
 
 type
   PAPPDOCLISTTYPE = ^APPDOCLISTTYPE;
-  APPDOCLISTTYPE  = type DWORD;
+  APPDOCLISTTYPE = type DWORD;
+
 const
-  ADLT_RECENT   = APPDOCLISTTYPE(0);
+  ADLT_RECENT = APPDOCLISTTYPE(0);
   ADLT_FREQUENT = APPDOCLISTTYPE((ADLT_RECENT + 1));
 
 type
 
   PDESKTOP_SLIDESHOW_OPTIONS = ^DESKTOP_SLIDESHOW_OPTIONS;
   DESKTOP_SLIDESHOW_OPTIONS = type DWORD;
+
 const
   DSO_SHUFFLEIMAGES = DESKTOP_SLIDESHOW_OPTIONS($1);
 
 type
   PDESKTOP_SLIDESHOW_STATE = ^DESKTOP_SLIDESHOW_STATE;
   DESKTOP_SLIDESHOW_STATE = type DWORD;
+
 const
-  DSS_ENABLED                    = DESKTOP_SLIDESHOW_STATE($1);
-  DSS_SLIDESHOW                  = DESKTOP_SLIDESHOW_STATE($2);
+  DSS_ENABLED = DESKTOP_SLIDESHOW_STATE($1);
+  DSS_SLIDESHOW = DESKTOP_SLIDESHOW_STATE($2);
   DSS_DISABLED_BY_REMOTE_SESSION = DESKTOP_SLIDESHOW_STATE($4);
 
 type
   PDESKTOP_SLIDESHOW_DIRECTION = ^DESKTOP_SLIDESHOW_DIRECTION;
   DESKTOP_SLIDESHOW_DIRECTION = type DWORD;
+
 const
-  DSD_FORWARD  = DESKTOP_SLIDESHOW_DIRECTION(0);
+  DSD_FORWARD = DESKTOP_SLIDESHOW_DIRECTION(0);
   DSD_BACKWARD = DESKTOP_SLIDESHOW_DIRECTION(1);
 
 type
   PDESKTOP_WALLPAPER_POSITION = ^DESKTOP_WALLPAPER_POSITION;
   DESKTOP_WALLPAPER_POSITION = type DWORD;
+
 const
-  DWPOS_CENTER  = DESKTOP_WALLPAPER_POSITION(0);
-  DWPOS_TILE    = DESKTOP_WALLPAPER_POSITION(1);
+  DWPOS_CENTER = DESKTOP_WALLPAPER_POSITION(0);
+  DWPOS_TILE = DESKTOP_WALLPAPER_POSITION(1);
   DWPOS_STRETCH = DESKTOP_WALLPAPER_POSITION(2);
-  DWPOS_FIT     = DESKTOP_WALLPAPER_POSITION(3);
-  DWPOS_FILL    = DESKTOP_WALLPAPER_POSITION(4);
-  DWPOS_SPAN    = DESKTOP_WALLPAPER_POSITION(5);
+  DWPOS_FIT = DESKTOP_WALLPAPER_POSITION(3);
+  DWPOS_FILL = DESKTOP_WALLPAPER_POSITION(4);
+  DWPOS_SPAN = DESKTOP_WALLPAPER_POSITION(5);
 
 type
   PHOMEGROUPSHARINGCHOICES = ^HOMEGROUPSHARINGCHOICES;
   HOMEGROUPSHARINGCHOICES = type DWORD;
+
 const
-  HGSC_NONE             = HOMEGROUPSHARINGCHOICES(0);
-  HGSC_MUSICLIBRARY     = HOMEGROUPSHARINGCHOICES($1);
-  HGSC_PICTURESLIBRARY  = HOMEGROUPSHARINGCHOICES($2);
-  HGSC_VIDEOSLIBRARY    = HOMEGROUPSHARINGCHOICES($4);
+  HGSC_NONE = HOMEGROUPSHARINGCHOICES(0);
+  HGSC_MUSICLIBRARY = HOMEGROUPSHARINGCHOICES($1);
+  HGSC_PICTURESLIBRARY = HOMEGROUPSHARINGCHOICES($2);
+  HGSC_VIDEOSLIBRARY = HOMEGROUPSHARINGCHOICES($4);
   HGSC_DOCUMENTSLIBRARY = HOMEGROUPSHARINGCHOICES($8);
-  HGSC_PRINTERS         = HOMEGROUPSHARINGCHOICES($10);
+  HGSC_PRINTERS = HOMEGROUPSHARINGCHOICES($10);
 
 type
   PLIBRARYFOLDERFILTER = ^LIBRARYFOLDERFILTER;
@@ -1640,111 +1728,119 @@ type
 
 const
   LFF_FORCEFILESYSTEM = LIBRARYFOLDERFILTER(1);
-  LFF_STORAGEITEMS    = LIBRARYFOLDERFILTER(2);
-  LFF_ALLITEMS        = LIBRARYFOLDERFILTER(3);
+  LFF_STORAGEITEMS = LIBRARYFOLDERFILTER(2);
+  LFF_ALLITEMS = LIBRARYFOLDERFILTER(3);
 
 type
   PLIBRARYOPTIONFLAGS = ^LIBRARYOPTIONFLAGS;
   LIBRARYOPTIONFLAGS = type Integer;
 
 const
-  LOF_DEFAULT        = LIBRARYOPTIONFLAGS(0);
+  LOF_DEFAULT = LIBRARYOPTIONFLAGS(0);
   LOF_PINNEDTONAVPANE = LIBRARYOPTIONFLAGS($1);
-  LOF_MASK_ALL      = LIBRARYOPTIONFLAGS($1);
+  LOF_MASK_ALL = LIBRARYOPTIONFLAGS($1);
 
 type
   PDEFAULTSAVEFOLDERTYPE = ^DEFAULTSAVEFOLDERTYPE;
   DEFAULTSAVEFOLDERTYPE = type Integer;
 
 const
-  DSFT_DETECT  = DEFAULTSAVEFOLDERTYPE(1);
+  DSFT_DETECT = DEFAULTSAVEFOLDERTYPE(1);
   DSFT_PRIVATE = DEFAULTSAVEFOLDERTYPE(2);
-  DSFT_PUBLIC  = DEFAULTSAVEFOLDERTYPE(3);
+  DSFT_PUBLIC = DEFAULTSAVEFOLDERTYPE(3);
 
 type
   PLIBRARYSAVEFLAGS = ^LIBRARYSAVEFLAGS;
   LIBRARYSAVEFLAGS = type Integer;
 
 const
-  LSF_FAILIFTHERE      = LIBRARYSAVEFLAGS(0);
+  LSF_FAILIFTHERE = LIBRARYSAVEFLAGS(0);
   LSF_OVERRIDEEXISTING = LIBRARYSAVEFLAGS($1);
-  LSF_MAKEUNIQUENAME   = LIBRARYSAVEFLAGS($2);
+  LSF_MAKEUNIQUENAME = LIBRARYSAVEFLAGS($2);
 
 type
   PDEFAULT_FOLDER_MENU_RESTRICTIONS = ^DEFAULT_FOLDER_MENU_RESTRICTIONS;
   DEFAULT_FOLDER_MENU_RESTRICTIONS = type DWORD;
+
 const
-  DFMR_DEFAULT                        = DEFAULT_FOLDER_MENU_RESTRICTIONS(0);
-  DFMR_NO_STATIC_VERBS                = DEFAULT_FOLDER_MENU_RESTRICTIONS($8);
-  DFMR_STATIC_VERBS_ONLY              = DEFAULT_FOLDER_MENU_RESTRICTIONS($10);
-  DFMR_NO_RESOURCE_VERBS              = DEFAULT_FOLDER_MENU_RESTRICTIONS($20);
-  DFMR_OPTIN_HANDLERS_ONLY            = DEFAULT_FOLDER_MENU_RESTRICTIONS($40);
+  DFMR_DEFAULT = DEFAULT_FOLDER_MENU_RESTRICTIONS(0);
+  DFMR_NO_STATIC_VERBS = DEFAULT_FOLDER_MENU_RESTRICTIONS($8);
+  DFMR_STATIC_VERBS_ONLY = DEFAULT_FOLDER_MENU_RESTRICTIONS($10);
+  DFMR_NO_RESOURCE_VERBS = DEFAULT_FOLDER_MENU_RESTRICTIONS($20);
+  DFMR_OPTIN_HANDLERS_ONLY = DEFAULT_FOLDER_MENU_RESTRICTIONS($40);
   DFMR_RESOURCE_AND_FOLDER_VERBS_ONLY = DEFAULT_FOLDER_MENU_RESTRICTIONS($80);
-  DFMR_USE_SPECIFIED_HANDLERS         = DEFAULT_FOLDER_MENU_RESTRICTIONS($100);
-  DFMR_USE_SPECIFIED_VERBS            = DEFAULT_FOLDER_MENU_RESTRICTIONS($200);
-  DFMR_NO_ASYNC_VERBS                 = DEFAULT_FOLDER_MENU_RESTRICTIONS($400);
-  DFMR_NO_NATIVECPU_VERBS             = DEFAULT_FOLDER_MENU_RESTRICTIONS($800);
-  DFMR_NO_NONWOW_VERBS                = DEFAULT_FOLDER_MENU_RESTRICTIONS($1000);
+  DFMR_USE_SPECIFIED_HANDLERS = DEFAULT_FOLDER_MENU_RESTRICTIONS($100);
+  DFMR_USE_SPECIFIED_VERBS = DEFAULT_FOLDER_MENU_RESTRICTIONS($200);
+  DFMR_NO_ASYNC_VERBS = DEFAULT_FOLDER_MENU_RESTRICTIONS($400);
+  DFMR_NO_NATIVECPU_VERBS = DEFAULT_FOLDER_MENU_RESTRICTIONS($800);
+  DFMR_NO_NONWOW_VERBS = DEFAULT_FOLDER_MENU_RESTRICTIONS($1000);
 
 type
   PACTIVATEOPTIONS = ^ACTIVATEOPTIONS;
   ACTIVATEOPTIONS = type Integer;
+
 const
-  AO_NONE            = ACTIVATEOPTIONS(0);
-  AO_DESIGNMODE      = ACTIVATEOPTIONS($1);
-  AO_NOERRORUI       = ACTIVATEOPTIONS($2);
-  AO_NOSPLASHSCREEN  = ACTIVATEOPTIONS($4);
-  AO_PRELAUNCH       = ACTIVATEOPTIONS($02000000);
+  AO_NONE = ACTIVATEOPTIONS(0);
+  AO_DESIGNMODE = ACTIVATEOPTIONS($1);
+  AO_NOERRORUI = ACTIVATEOPTIONS($2);
+  AO_NOSPLASHSCREEN = ACTIVATEOPTIONS($4);
+  AO_PRELAUNCH = ACTIVATEOPTIONS($02000000);
 
 type
   PMONITOR_APP_VISIBILITY = ^MONITOR_APP_VISIBILITY;
   MONITOR_APP_VISIBILITY = Integer;
+
 const
-  MAV_UNKNOWN        = MONITOR_APP_VISIBILITY(0);
+  MAV_UNKNOWN = MONITOR_APP_VISIBILITY(0);
   MAV_NO_APP_VISIBLE = MONITOR_APP_VISIBILITY(1);
-  MAV_APP_VISIBLE    = MONITOR_APP_VISIBILITY(2);
+  MAV_APP_VISIBLE = MONITOR_APP_VISIBILITY(2);
 
 type
   PPACKAGE_EXECUTION_STATE = ^PACKAGE_EXECUTION_STATE;
   PACKAGE_EXECUTION_STATE = type Integer;
+
 const
-  PES_UNKNOWN     = PACKAGE_EXECUTION_STATE(0);
-  PES_RUNNING     = PACKAGE_EXECUTION_STATE(1);
-  PES_SUSPENDING  = PACKAGE_EXECUTION_STATE(2);
-  PES_SUSPENDED   = PACKAGE_EXECUTION_STATE(3);
-  PES_TERMINATED  = PACKAGE_EXECUTION_STATE(4);
+  PES_UNKNOWN = PACKAGE_EXECUTION_STATE(0);
+  PES_RUNNING = PACKAGE_EXECUTION_STATE(1);
+  PES_SUSPENDING = PACKAGE_EXECUTION_STATE(2);
+  PES_SUSPENDED = PACKAGE_EXECUTION_STATE(3);
+  PES_TERMINATED = PACKAGE_EXECUTION_STATE(4);
 
 type
   PAHE_TYPE = ^AHE_TYPE;
   AHE_TYPE = type Integer;
+
 const
-  AHE_DESKTOP   = AHE_TYPE(0);
+  AHE_DESKTOP = AHE_TYPE(0);
   AHE_IMMERSIVE = AHE_TYPE(1);
 
 type
   PEC_HOST_UI_MODE = ^EC_HOST_UI_MODE;
   EC_HOST_UI_MODE = type Integer;
+
 const
-  ECHUIM_DESKTOP         = EC_HOST_UI_MODE(0);
-  ECHUIM_IMMERSIVE       = EC_HOST_UI_MODE(1);
+  ECHUIM_DESKTOP = EC_HOST_UI_MODE(0);
+  ECHUIM_IMMERSIVE = EC_HOST_UI_MODE(1);
   ECHUIM_SYSTEM_LAUNCHER = EC_HOST_UI_MODE(2);
 
 type
   PAPPLICATION_VIEW_STATE = ^APPLICATION_VIEW_STATE;
   APPLICATION_VIEW_STATE = type Integer;
+
 const
   AVS_FULLSCREEN_LANDSCAPE = APPLICATION_VIEW_STATE(0);
-  AVS_FILLED               = APPLICATION_VIEW_STATE(1);
-  AVS_SNAPPED              = APPLICATION_VIEW_STATE(2);
-  AVS_FULLSCREEN_PORTRAIT  = APPLICATION_VIEW_STATE(3);
+  AVS_FILLED = APPLICATION_VIEW_STATE(1);
+  AVS_SNAPPED = APPLICATION_VIEW_STATE(2);
+  AVS_FULLSCREEN_PORTRAIT = APPLICATION_VIEW_STATE(3);
 
 type
   PEDGE_GESTURE_KIND = ^EDGE_GESTURE_KIND;
   EDGE_GESTURE_KIND = type Integer;
+
 const
-  EGK_TOUCH    = EDGE_GESTURE_KIND(0);
+  EGK_TOUCH = EDGE_GESTURE_KIND(0);
   EGK_KEYBOARD = EDGE_GESTURE_KIND(1);
-  EGK_MOUSE    = EDGE_GESTURE_KIND(2);
+  EGK_MOUSE = EDGE_GESTURE_KIND(2);
 
 type
   PNATIVE_DISPLAY_ORIENTATION = ^NATIVE_DISPLAY_ORIENTATION;
@@ -1753,86 +1849,95 @@ type
 const
   NDO_LANDSCAPE = NATIVE_DISPLAY_ORIENTATION(0);
 
-  NDO_PORTRAIT  = NATIVE_DISPLAY_ORIENTATION(1);
+  NDO_PORTRAIT = NATIVE_DISPLAY_ORIENTATION(1);
 
 
 
 type
   PAPPLICATION_VIEW_ORIENTATION = ^APPLICATION_VIEW_ORIENTATION;
   APPLICATION_VIEW_ORIENTATION = type Integer;
+
 const
   AVO_LANDSCAPE = APPLICATION_VIEW_ORIENTATION(0);
-  AVO_PORTRAIT  = APPLICATION_VIEW_ORIENTATION(1);
+  AVO_PORTRAIT = APPLICATION_VIEW_ORIENTATION(1);
 
 type
   PADJACENT_DISPLAY_EDGES = ^ADJACENT_DISPLAY_EDGES;
   ADJACENT_DISPLAY_EDGES = type Integer;
+
 const
-  ADE_NONE  = ADJACENT_DISPLAY_EDGES(0);
-  ADE_LEFT  = ADJACENT_DISPLAY_EDGES($1);
+  ADE_NONE = ADJACENT_DISPLAY_EDGES(0);
+  ADE_LEFT = ADJACENT_DISPLAY_EDGES($1);
   ADE_RIGHT = ADJACENT_DISPLAY_EDGES($2);
 
 type
   PAPPLICATION_VIEW_MIN_WIDTH = ^APPLICATION_VIEW_MIN_WIDTH;
   APPLICATION_VIEW_MIN_WIDTH = type Integer;
+
 const
   AVMW_DEFAULT = APPLICATION_VIEW_MIN_WIDTH(0);
-  AVMW_320     = APPLICATION_VIEW_MIN_WIDTH(1);
-  AVMW_500     = APPLICATION_VIEW_MIN_WIDTH(2);
+  AVMW_320 = APPLICATION_VIEW_MIN_WIDTH(1);
+  AVMW_500 = APPLICATION_VIEW_MIN_WIDTH(2);
 
 type
   APPLICATION_VIEW_SIZE_PREFERENCE = type Integer;
+
 const
-  AVSP_CUSTOM      = APPLICATION_VIEW_SIZE_PREFERENCE(6);
-  AVSP_DEFAULT     = APPLICATION_VIEW_SIZE_PREFERENCE(0);
-  AVSP_USE_LESS    = APPLICATION_VIEW_SIZE_PREFERENCE(1);
-  AVSP_USE_HALF    = APPLICATION_VIEW_SIZE_PREFERENCE(2);
-  AVSP_USE_MORE    = APPLICATION_VIEW_SIZE_PREFERENCE(3);
+  AVSP_CUSTOM = APPLICATION_VIEW_SIZE_PREFERENCE(6);
+  AVSP_DEFAULT = APPLICATION_VIEW_SIZE_PREFERENCE(0);
+  AVSP_USE_LESS = APPLICATION_VIEW_SIZE_PREFERENCE(1);
+  AVSP_USE_HALF = APPLICATION_VIEW_SIZE_PREFERENCE(2);
+  AVSP_USE_MORE = APPLICATION_VIEW_SIZE_PREFERENCE(3);
   AVSP_USE_MINIMUM = APPLICATION_VIEW_SIZE_PREFERENCE(4);
-  AVSP_USE_NONE    = APPLICATION_VIEW_SIZE_PREFERENCE(5);
+  AVSP_USE_NONE = APPLICATION_VIEW_SIZE_PREFERENCE(5);
 
 type
   FLYOUT_PLACEMENT = type Integer;
+
 const
   FP_DEFAULT = FLYOUT_PLACEMENT(0);
-  FP_ABOVE   = FLYOUT_PLACEMENT(1);
-  FP_BELOW   = FLYOUT_PLACEMENT(2);
-  FP_LEFT    = FLYOUT_PLACEMENT(3);
-  FP_RIGHT   = FLYOUT_PLACEMENT(4);
+  FP_ABOVE = FLYOUT_PLACEMENT(1);
+  FP_BELOW = FLYOUT_PLACEMENT(2);
+  FP_LEFT = FLYOUT_PLACEMENT(3);
+  FP_RIGHT = FLYOUT_PLACEMENT(4);
 
 type
   SORT_ORDER_TYPE = type Integer;
+
 const
-  SOT_DEFAULT            = SORT_ORDER_TYPE(0);
-  SOT_IGNORE_FOLDERNESS  = SORT_ORDER_TYPE(1);
+  SOT_DEFAULT = SORT_ORDER_TYPE(0);
+  SOT_IGNORE_FOLDERNESS = SORT_ORDER_TYPE(1);
 
 type
   PLIBRARYMANAGEDIALOGOPTIONS = ^LIBRARYMANAGEDIALOGOPTIONS;
   LIBRARYMANAGEDIALOGOPTIONS = type Integer;
+
 const
-  LMD_DEFAULT                          = LIBRARYMANAGEDIALOGOPTIONS($00000000);
+  LMD_DEFAULT = LIBRARYMANAGEDIALOGOPTIONS($00000000);
   LMD_ALLOWUNINDEXABLENETWORKLOCATIONS = LIBRARYMANAGEDIALOGOPTIONS($00000001);  // The caller of SHShowManageLibraryUI does not want to show any warning dialogs about network locations that cannot be indexed
 
 
 type
   ASSOC_FILTER = type Integer;
+
 const
-  ASSOC_FILTER_NONE        = ASSOC_FILTER($0000);
+  ASSOC_FILTER_NONE = ASSOC_FILTER($0000);
   ASSOC_FILTER_RECOMMENDED = ASSOC_FILTER($0001);
 
 
 type
   // IAssocHandlerInvoker
   AHTYPE = type Integer;
+
 const
-  AHTYPE_UNDEFINED         = AHTYPE($0000);
-  AHTYPE_USER_APPLICATION  = AHTYPE($0008);
-  AHTYPE_ANY_APPLICATION   = AHTYPE($0010);
-  AHTYPE_MACHINEDEFAULT    = AHTYPE($0020);
-  AHTYPE_PROGID            = AHTYPE($0040);
-  AHTYPE_APPLICATION       = AHTYPE($0080);
+  AHTYPE_UNDEFINED = AHTYPE($0000);
+  AHTYPE_USER_APPLICATION = AHTYPE($0008);
+  AHTYPE_ANY_APPLICATION = AHTYPE($0010);
+  AHTYPE_MACHINEDEFAULT = AHTYPE($0020);
+  AHTYPE_PROGID = AHTYPE($0040);
+  AHTYPE_APPLICATION = AHTYPE($0080);
   AHTYPE_CLASS_APPLICATION = AHTYPE($0100);
-  AHTYPE_ANY_PROGID        = AHTYPE($0200);
+  AHTYPE_ANY_PROGID = AHTYPE($0200);
 
 
 type
@@ -1841,11 +1946,12 @@ type
 
 
 
-// Records =====================================================================
+  // Records =====================================================================
 
 type
   // IBandSite
   PBANDSITEINFO = ^BANDSITEINFO;
+
   tagBANDSITEINFO = record
     dwMask: DWORD;
     dwState: DWORD;
@@ -1926,12 +2032,12 @@ type
   // ==================
   EXTRASEARCH = record
     case Byte of
-      0:(
+      0: (
         guidSearch: TGUID;
         wszFriendlyName: array[0..80 - 1] of WideChar;
         wszUrl: array[0..2084 - 1] of WideChar
-        );
-      1:(_Alignment: DWORD);
+      );
+      1: (_Alignment: DWORD);
   end;
   PEXTRASEARCH = ^EXTRASEARCH;
 
@@ -1971,11 +2077,11 @@ type
   // ==========================
   SHELL_ITEM_RESOURCE = record
     case Byte of
-      0:(
+      0: (
         guidType: TGUID;
         szName: array[0..260 - 1] of WideChar
-        );
-      1:(_Alignment: DWORD);
+      );
+      1: (_Alignment: DWORD);
   end;
   PSHELL_ITEM_RESOURCE = ^SHELL_ITEM_RESOURCE;
 
@@ -2016,57 +2122,62 @@ type
 
 type
   PTHUMBBUTTONFLAGS = ^THUMBBUTTONFLAGS;
-  THUMBBUTTONFLAGS      = UINT;
+  THUMBBUTTONFLAGS = UINT;
+
 const
-  THBF_ENABLED        = THUMBBUTTONFLAGS(0);
-  THBF_DISABLED       = THUMBBUTTONFLAGS($1);
+  THBF_ENABLED = THUMBBUTTONFLAGS(0);
+  THBF_DISABLED = THUMBBUTTONFLAGS($1);
   THBF_DISMISSONCLICK = THUMBBUTTONFLAGS($2);
-  THBF_NOBACKGROUND   = THUMBBUTTONFLAGS($4);
-  THBF_HIDDEN         = THUMBBUTTONFLAGS($8);
+  THBF_NOBACKGROUND = THUMBBUTTONFLAGS($4);
+  THBF_HIDDEN = THUMBBUTTONFLAGS($8);
   THBF_NONINTERACTIVE = THUMBBUTTONFLAGS($10);
 
 type
   // DEFINE_ENUM_FLAG_OPERATORS(THUMBBUTTONFLAGS)
   PTHUMBBUTTONMASK = ^THUMBBUTTONMASK;
-  THUMBBUTTONMASK =  UINT;
+  THUMBBUTTONMASK = UINT;
+
 const
-  THB_BITMAP  = THUMBBUTTONMASK($1);
-  THB_ICON    = THUMBBUTTONMASK($2);
+  THB_BITMAP = THUMBBUTTONMASK($1);
+  THB_ICON = THUMBBUTTONMASK($2);
   THB_TOOLTIP = THUMBBUTTONMASK($4);
-  THB_FLAGS   = THUMBBUTTONMASK($8);
+  THB_FLAGS = THUMBBUTTONMASK($8);
 
 type
   PSTPFLAG = ^STPFLAG;
   STPFLAG = DWORD;
-const
-  STPF_NONE                      = STPFLAG(0);
-  STPF_USEAPPTHUMBNAILALWAYS     = STPFLAG($1);
-  STPF_USEAPPTHUMBNAILWHENACTIVE = STPFLAG($2);
-  STPF_USEAPPPEEKALWAYS          = STPFLAG($4);
-  STPF_USEAPPPEEKWHENACTIVE      = STPFLAG($8);
 
-//obsolete?
+const
+  STPF_NONE = STPFLAG(0);
+  STPF_USEAPPTHUMBNAILALWAYS = STPFLAG($1);
+  STPF_USEAPPTHUMBNAILWHENACTIVE = STPFLAG($2);
+  STPF_USEAPPPEEKALWAYS = STPFLAG($4);
+  STPF_USEAPPPEEKWHENACTIVE = STPFLAG($8);
+
+  //obsolete?
 type
   PEXPLORER_BROWSER_OPTIONS = ^EXPLORER_BROWSER_OPTIONS;
   EXPLORER_BROWSER_OPTIONS = DWORD;
+
 const
-  EBO_NONE               = EXPLORER_BROWSER_OPTIONS(0);
-  EBO_NAVIGATEONCE       = EXPLORER_BROWSER_OPTIONS($1);
-  EBO_SHOWFRAMES         = EXPLORER_BROWSER_OPTIONS($2);
-  EBO_ALWAYSNAVIGATE     = EXPLORER_BROWSER_OPTIONS($4);
-  EBO_NOTRAVELLOG        = EXPLORER_BROWSER_OPTIONS($8);
-  EBO_NOWRAPPERWINDOW    = EXPLORER_BROWSER_OPTIONS($10);
+  EBO_NONE = EXPLORER_BROWSER_OPTIONS(0);
+  EBO_NAVIGATEONCE = EXPLORER_BROWSER_OPTIONS($1);
+  EBO_SHOWFRAMES = EXPLORER_BROWSER_OPTIONS($2);
+  EBO_ALWAYSNAVIGATE = EXPLORER_BROWSER_OPTIONS($4);
+  EBO_NOTRAVELLOG = EXPLORER_BROWSER_OPTIONS($8);
+  EBO_NOWRAPPERWINDOW = EXPLORER_BROWSER_OPTIONS($10);
   EBO_HTMLSHAREPOINTVIEW = EXPLORER_BROWSER_OPTIONS($20);
-  EBO_NOBORDER           = EXPLORER_BROWSER_OPTIONS($40);
+  EBO_NOBORDER = EXPLORER_BROWSER_OPTIONS($40);
   EBO_NOPERSISTVIEWSTATE = EXPLORER_BROWSER_OPTIONS($80);
 
 type
   PEXPLORER_BROWSER_FILL_FLAGS = ^EXPLORER_BROWSER_FILL_FLAGS;
-  EXPLORER_BROWSER_FILL_FLAGS =  DWORD;
+  EXPLORER_BROWSER_FILL_FLAGS = DWORD;
+
 const
-  EBF_NONE                 = EXPLORER_BROWSER_FILL_FLAGS(0);
+  EBF_NONE = EXPLORER_BROWSER_FILL_FLAGS(0);
   EBF_SELECTFROMDATAOBJECT = EXPLORER_BROWSER_FILL_FLAGS($100);
-  EBF_NODROPTARGET         = EXPLORER_BROWSER_FILL_FLAGS($200);
+  EBF_NODROPTARGET = EXPLORER_BROWSER_FILL_FLAGS($200);
 
 
 type
@@ -2406,19 +2517,20 @@ type
     ['{000214E4-0000-0000-C000-000000000046}']
 
     function QueryContextMenu(hmenu: HMENU;
-                     indexMenu: UINT;
-                     idCmdFirst: UINT;
-                     idCmdLast: UINT;
-                     uFlags: UINT): HRESULT; stdcall;
+                              indexMenu: UINT;
+                              idCmdFirst: UINT;
+                              idCmdLast: UINT;
+                              uFlags: UINT): HRESULT; stdcall;
 
     function InvokeCommand(pici: PCMINVOKECOMMANDINFO): HRESULT; stdcall;
 
     function GetCommandString(idCmd: UINT_PTR;
-                     uType: UINT;
-                     pReserved: PUINT;
-                     pszName: PAnsiChar;
-                     cchMax: UINT): HRESULT; stdcall;
+                              uType: UINT;
+                              pReserved: PUINT;
+                              pszName: PAnsiChar;
+                              cchMax: UINT): HRESULT; stdcall;
   end;
+
   IID_IContextMenu = IContextMenu;
 
   // Interface IContextMenu2
@@ -2428,9 +2540,10 @@ type
     ['{000214F4-0000-0000-C000-000000000046}']
 
     function HandleMenuMsg(uMsg: UINT;
-                     wParam: WPARAM;
-                     lParam: LPARAM): HRESULT; stdcall;
+                           wParam: WPARAM;
+                           lParam: LPARAM): HRESULT; stdcall;
   end;
+
   IID_IContextMenu2 = IContextMenu2;
 
   // Interface IContextMenu3
@@ -2444,6 +2557,7 @@ type
                             lParam: LPARAM;
                             plResult: PLRESULT): HRESULT; stdcall;
   end;
+
   IID_IContextMenu3 = IContextMenu3;
 
   // Interface IStaticVerbProvider
@@ -2455,6 +2569,7 @@ type
     function IsVerbSupported(verbName: LPCWSTR;
                              out result: BOOL): HRESULT; stdcall;
   end;
+
   IID_IStaticVerbProvider = IStaticVerbProvider;
 
   // Interface IExecuteCommand
@@ -2477,6 +2592,7 @@ type
 
     function Execute: HRESULT; stdcall;
   end;
+
   IID_IExecuteCommand = IExecuteCommand;
 
   // Interface IPersistFolder
@@ -2487,6 +2603,7 @@ type
 
     function Initialize(pidl: PCIDLIST_ABSOLUTE): HRESULT; stdcall;
   end;
+
   IID_IPersistFolder = IPersistFolder;
 
 
@@ -2506,6 +2623,7 @@ type
 
     function IsRunning: ULONG; stdcall;
   end;
+
   IID_IRunnableTask = IRunnableTask;
 
 
@@ -2521,14 +2639,15 @@ type
                      dwPriority: DWORD): HRESULT; stdcall;
 
     function RemoveTasks(rtoid: REFTASKOWNERID;
-                     lParam: DWORD_PTR;
-                     bWaitIfRunning: BOOL): HRESULT; stdcall;
+                         lParam: DWORD_PTR;
+                         bWaitIfRunning: BOOL): HRESULT; stdcall;
 
     function CountTasks(rtoid: REFTASKOWNERID): UINT; stdcall;
 
     function Status(dwReleaseStatus: DWORD;
-                     dwThreadTimeout: DWORD): HRESULT; stdcall;
+                    dwThreadTimeout: DWORD): HRESULT; stdcall;
   end;
+
   IID_IShellTaskScheduler = IShellTaskScheduler;
 
 
@@ -2540,6 +2659,7 @@ type
 
     function GetCurFolder(out ppidl: PIDLIST_ABSOLUTE): HRESULT; stdcall;
   end;
+
   IID_IPersistFolder2 = IPersistFolder2;
 
 
@@ -2555,6 +2675,7 @@ type
 
     function GetFolderTargetInfo(ppfti: PPERSIST_FOLDER_TARGET_INFO): HRESULT; stdcall;
   end;
+
   IID_IPersistFolder3 = IPersistFolder3;
 
 
@@ -2568,6 +2689,7 @@ type
 
     function GetIDList(out ppidl: PIDLIST_ABSOLUTE): HRESULT; stdcall;
   end;
+
   IID_IPersistIDList = IPersistIDList;
 
   // Interface IEnumIDList
@@ -2586,6 +2708,7 @@ type
 
     function Clone(out ppenum: IEnumIDList): HRESULT; stdcall;
   end;
+
   IID_IEnumIDList = IEnumIDList;
 
   // Interface IEnumFullIDList
@@ -2604,6 +2727,7 @@ type
 
     function Clone(out ppenum: IEnumFullIDList): HRESULT; stdcall;
   end;
+
   IID_IEnumFullIDList = IEnumFullIDList;
 
   // Interface IFileSyncMergeHandler
@@ -2619,6 +2743,7 @@ type
     function ShowResolveConflictUIAsync(localFilePath: LPCWSTR;
                                         monitorToDisplayOn: HMONITOR): HRESULT; stdcall;
   end;
+
   IID_IFileSyncMergeHandler = IFileSyncMergeHandler;
 
   // Interface IObjectWithFolderEnumMode
@@ -2631,6 +2756,7 @@ type
 
     function GetMode(out pfeMode: FOLDER_ENUM_MODE): HRESULT; stdcall;
   end;
+
   IID_IObjectWithFolderEnumMode = IObjectWithFolderEnumMode;
 
   // Interface IParseAndCreateItem
@@ -2644,6 +2770,7 @@ type
     function GetItem(const riid: REFIID;
                      out ppv: Pointer): HRESULT; stdcall;
   end;
+
   IID_IParseAndCreateItem = IParseAndCreateItem;
 
 
@@ -2742,6 +2869,7 @@ type
                        out ppidlOut: PITEMID_CHILD): HRESULT; stdcall;
 
   end;
+
   IID_IShellFolder = IShellFolder;
 
 
@@ -2780,6 +2908,7 @@ type
 
     function Clone(out ppenum: IEnumExtraSearch): HRESULT; stdcall;
   end;
+
   IID_IEnumExtraSearch = IEnumExtraSearch;
 
 
@@ -2816,6 +2945,7 @@ type
     function MapColumnToSCID(iColumn: UINT;
                              out pscid: SHCOLUMNID): HRESULT; stdcall;
   end;
+
   IID_IShellFolder2 = IShellFolder2;
 
 
@@ -2856,6 +2986,7 @@ type
                            const riid: TGUID;
                            out ppv): HRESULT; stdcall;
   end;
+
   IID_IShellView = IShellView;
 
 
@@ -2876,6 +3007,7 @@ type
                                    uFlags: UINT;
                                    ppt: PPOINT): HRESULT; stdcall;
   end;
+
   IID_IShellView2 = IShellView2;
 
   // Interface IFolderView
@@ -2922,6 +3054,7 @@ type
                                     apt: PPoint;
                                     dwFlags: DWORD): HRESULT; stdcall;
   end;
+
   IID_IFolderView = IFolderView;
 
   // Interface IFolderView2
@@ -3017,6 +3150,7 @@ type
 
     function DoRename(): HRESULT; stdcall;
   end;
+
   IID_IFolderView2 = IFolderView2;
 
   // Interface IFolderViewSettings
@@ -3047,6 +3181,7 @@ type
 
     function GetGroupSubsetCount(out pcVisibleRows: UINT): HRESULT; stdcall;
   end;
+
   IID_IFolderViewSettings = IFolderViewSettings;
 
 
@@ -3062,6 +3197,7 @@ type
                         pszResName: LPCWSTR;
                         pszProvider: LPCWSTR): HRESULT; stdcall;
   end;
+
   IID_IInitializeNetworkFolder = IInitializeNetworkFolder;
 
 
@@ -3081,6 +3217,7 @@ type
                          providerMaxLength: UINT;
                          provider: LPWSTR): HRESULT; stdcall;
   end;
+
   IID_INetworkFolderInternal = INetworkFolderInternal;
 
 
@@ -3096,6 +3233,7 @@ type
 
     function SetTextColor(color: COLORREF): HRESULT; stdcall;
   end;
+
   IID_IPreviewHandlerVisuals = IPreviewHandlerVisuals;
 
 
@@ -3113,6 +3251,7 @@ type
     function IncludeObject(ppshv: IShellView;
                            pidl: PCUITEMID_CHILD): HRESULT; stdcall;
   end;
+
   IID_ICommDlgBrowser = ICommDlgBrowser;
 
 
@@ -3131,6 +3270,7 @@ type
 
     function GetViewFlags(out pdwFlags: DWORD): HRESULT; stdcall;
   end;
+
   IID_ICommDlgBrowser2 = ICommDlgBrowser2;
 
 
@@ -3158,6 +3298,7 @@ type
     function SetColumns(rgkeyOrder: PPROPERTYKEY;
                         cVisible: UINT): HRESULT; stdcall;
   end;
+
   IID_IColumnManager = IColumnManager;
 
 
@@ -3169,6 +3310,7 @@ type
 
     function SetFilter(punk: IUnknown): HRESULT; stdcall;
   end;
+
   IID_IFolderFilterSite = IFolderFilterSite;
 
 
@@ -3187,6 +3329,7 @@ type
                           out phwnd: HWND;
                           pgrfFlags: PDWORD): HRESULT; stdcall;
   end;
+
   IID_IFolderFilter = IFolderFilter;
 
 
@@ -3200,6 +3343,7 @@ type
                              fSetFocus: BOOL): HRESULT; stdcall;
 
   end;
+
   IID_IInputObjectSite = IInputObjectSite;
 
 
@@ -3221,6 +3365,7 @@ type
     // Returns S_OK if the message was processed (eaten).
     function TranslateAcceleratorIO(pMsg: PMSG): HRESULT; stdcall;
   end;
+
   IID_IInputObject = IInputObject;
 
 
@@ -3232,6 +3377,7 @@ type
 
     function TranslateAcceleratorGlobal(pMsg: PMSG): HRESULT; stdcall;
   end;
+
   IID_IInputObject2 = IInputObject2;
 
 
@@ -3242,9 +3388,10 @@ type
     ['{000214E5-0000-0000-C000-000000000046}']
 
     function GetIconOf(pidl: PCUITEMID_CHILD;
-                     flags: UINT;
-                     out pIconIndex: int): HRESULT; stdcall;
+                       flags: UINT;
+                       out pIconIndex: int): HRESULT; stdcall;
   end;
+
   IID_IShellIcon = IShellIcon;
 
 
@@ -3295,6 +3442,7 @@ type
                              nButtons: UINT;
                              uFlags: UINT): HRESULT; stdcall;
   end;
+
   IID_IShellBrowser = IShellBrowser;
 
 
@@ -3310,6 +3458,7 @@ type
 
     function RevokeService(cookie: DWORD): HRESULT; stdcall;
   end;
+
   IID_IProfferService = IProfferService;
 
 
@@ -3322,6 +3471,7 @@ type
     function GetServiceIds(out serviceIdCount: ULONG;
                            out serviceIds: PGUID): HRESULT; stdcall;
   end;
+
   IID_IGetServiceIds = IGetServiceIds;
 
 
@@ -3348,6 +3498,7 @@ type
                      hint: SICHINTF;
                      out piOrder: Integer): HRESULT; stdcall;
   end;
+
   IID_IShellItem = IShellItem;
 
 
@@ -3402,6 +3553,7 @@ type
     function GetBool(const key: PROPERTYKEY;
                      out pf: BOOL): HRESULT; stdcall;
   end;
+
   IID_IShellItem2 = IShellItem2;
 
 
@@ -3415,6 +3567,7 @@ type
                       flags: SIIGBF;
                       out phbm: HBITMAP): HRESULT; stdcall;
   end;
+
   IID_IShellItemImageFactory = IShellItemImageFactory;
 
 
@@ -3434,6 +3587,7 @@ type
 
     function Clone(out ppenum: IEnumShellItems): HRESULT; stdcall;
   end;
+
   IID_IEnumShellItems = IEnumShellItems;
 
 
@@ -3472,6 +3626,7 @@ type
                              const pkey: PROPERTYKEY;
                              hrError: HRESULT): HRESULT; stdcall;
   end;
+
   IID_ITransferAdviseSink = ITransferAdviseSink;
 
 
@@ -3529,6 +3684,7 @@ type
 
     function LeaveFolder(psiChildFolderDest: IShellItem): HRESULT; stdcall;
   end;
+
   IID_ITransferSource = ITransferSource;
 
   // Interface IEnumResources
@@ -3547,6 +3703,7 @@ type
 
     function Clone(out ppenumr: IEnumResources): HRESULT; stdcall;
   end;
+
   IID_IEnumResources = IEnumResources;
 
 
@@ -3585,6 +3742,7 @@ type
 
     function MarkForDelete(): HRESULT; stdcall;
   end;
+
   IID_IShellItemResources = IShellItemResources;
 
 
@@ -3608,6 +3766,7 @@ type
                         const riidResources: TGUID;
                         out ppvResources): HRESULT; stdcall;
   end;
+
   IID_ITransferDestination = ITransferDestination;
 
 
@@ -3684,6 +3843,7 @@ type
 
     function ResumeTimer(): HRESULT; stdcall;
   end;
+
   IID_IFileOperationProgressSink = IFileOperationProgressSink;
 
 
@@ -3717,6 +3877,7 @@ type
 
     function EnumItems(out ppenumShellItems: IEnumShellItems): HRESULT; stdcall;
   end;
+
   IID_IShellItemArray = IShellItemArray;
 
 
@@ -3729,6 +3890,7 @@ type
     function Initialize(psi: IShellItem;
                         grfMode: DWORD): HRESULT; stdcall;
   end;
+
   IID_IInitializeWithItem = IInitializeWithItem;
 
 
@@ -3743,6 +3905,7 @@ type
     function GetSelection(const riid: REFIID;
                           out ppv): HRESULT; stdcall;
   end;
+
   IID_IObjectWithSelection = IObjectWithSelection;
 
 
@@ -3754,6 +3917,7 @@ type
 
     function RemoveBackReferences(): HRESULT; stdcall;
   end;
+
   IID_IObjectWithBackReferences = IObjectWithBackReferences;
 
 
@@ -3805,6 +3969,7 @@ type
                          cch: DWORD;
                          out puHelpID: UINT): HRESULT; stdcall;
   end;
+
   IID_IPropertyUI = IPropertyUI;
 
 
@@ -3832,6 +3997,7 @@ type
                             const riid: TGUID;
                             out ppv): HRESULT; stdcall;
   end;
+
   IID_ICategoryProvider = ICategoryProvider;
 
 
@@ -3855,6 +4021,7 @@ type
                              dwCategoryId1: DWORD;
                              dwCategoryId2: DWORD): HRESULT; stdcall;
   end;
+
   IID_ICategorizer = ICategorizer;
 
 
@@ -3880,6 +4047,7 @@ type
 
     function Show(fShow: BOOL): HRESULT; stdcall;
   end;
+
   IID_IDropTargetHelper = IDropTargetHelper;
 
 
@@ -3896,6 +4064,7 @@ type
                                   ppt: PPOINT;
                                   pDataObject: IDataObject): HRESULT; stdcall;
   end;
+
   IID_IDragSourceHelper = IDragSourceHelper;
 
 
@@ -3952,6 +4121,7 @@ type
 
     function SetPath(pszFile: LPCSTR): HRESULT; stdcall;
   end;
+
   IID_IShellLinkA = IShellLinkA;
 
 
@@ -4008,6 +4178,7 @@ type
 
     function SetPath(pszFile: LPCWSTR): HRESULT; stdcall;
   end;
+
   IID_IShellLinkW = IShellLinkW;
 
 
@@ -4020,7 +4191,7 @@ type
     function AddDataBlock(pDataBlock: Pointer): HRESULT; stdcall;
 
     function CopyDataBlock(dwSig: DWORD;
-                     out ppDataBlock: Pointer): HRESULT; stdcall;
+                           out ppDataBlock: Pointer): HRESULT; stdcall;
 
     function RemoveDataBlock(dwSig: DWORD): HRESULT; stdcall;
 
@@ -4028,6 +4199,7 @@ type
 
     function SetFlags(dwFlags: DWORD): HRESULT; stdcall;
   end;
+
   IID_IShellLinkDataList = IShellLinkDataList;
 
 
@@ -4041,6 +4213,7 @@ type
                               hwnd: HWND;
                               fFlags: DWORD): HRESULT; stdcall;
   end;
+
   IID_IResolveShellLink = IResolveShellLink;
 
 
@@ -4051,11 +4224,12 @@ type
     ['{49FF1172-EADC-446D-9285-156453A6431C}']
 
     function Initialize(flags: SPINITF;
-                     pszTitle: LPCWSTR;
-                     pszCancel: LPCWSTR): HRESULT; stdcall;
+                        pszTitle: LPCWSTR;
+                        pszCancel: LPCWSTR): HRESULT; stdcall;
 
     function Stop: HRESULT; stdcall;
   end;
+
   IID_IActionProgressDialog = IActionProgressDialog;
 
 
@@ -4066,14 +4240,14 @@ type
     ['{49FF1173-EADC-446D-9285-156453A6431C}']
 
     function Begin_(action: SPACTION;
-                     flags: SPBEGINF): HRESULT; stdcall;
+                    flags: SPBEGINF): HRESULT; stdcall;
 
     function UpdateProgress(ulCompleted: ULONGLONG;
-                     ulTotal: ULONGLONG): HRESULT; stdcall;
+                            ulTotal: ULONGLONG): HRESULT; stdcall;
 
     function UpdateText(sptext: SPTEXT;
-                     pszText: LPCWSTR;
-                     fMayCompact: BOOL): HRESULT; stdcall;
+                        pszText: LPCWSTR;
+                        fMayCompact: BOOL): HRESULT; stdcall;
 
     function QueryCancel(out pfCancelled: BOOL): HRESULT; stdcall;
 
@@ -4081,6 +4255,7 @@ type
 
     function _End(): HRESULT; stdcall;
   end;
+
   IID_IActionProgress = IActionProgress;
 
 
@@ -4094,6 +4269,7 @@ type
                         pdtobj: IDataObject;
                         hkeyProgID: HKEY): HRESULT; stdcall;
   end;
+
   IID_IShellExtInit = IShellExtInit;
 
 
@@ -4110,6 +4286,7 @@ type
                          pfnReplaceWith: LPFNSVADDPROPSHEETPAGE;
                          lParam: LPARAM): HRESULT; stdcall;
   end;
+
   IID_IShellPropSheetExt = IShellPropSheetExt;
 
 
@@ -4122,6 +4299,7 @@ type
     function Initialize(pszMachine: LPCWSTR;
                         bEnumerating: BOOL): HRESULT; stdcall;
   end;
+
   IID_IRemoteComputer = IRemoteComputer;
 
 
@@ -4133,6 +4311,7 @@ type
 
     function QueryContinue(): HRESULT; stdcall;
   end;
+
   IID_IQueryContinue = IQueryContinue;
 
 
@@ -4144,6 +4323,7 @@ type
 
     function GetCancelEvent(phEvent: PHANDLE): HRESULT; stdcall;
   end;
+
   IID_IObjectWithCancelEvent = IObjectWithCancelEvent;
 
 
@@ -4169,6 +4349,7 @@ type
 
     function PlaySound(pszSoundName: LPCWSTR): HRESULT; stdcall;
   end;
+
   IID_IUserNotification = IUserNotification;
 
 
@@ -4184,6 +4365,7 @@ type
     function GetMaxLength(pszName: LPCWSTR;
                           out piMaxNameLen: Int): HRESULT; stdcall;
   end;
+
   IID_IItemNameLimits = IItemNameLimits;
 
 
@@ -4221,6 +4403,7 @@ type
 
     function GetIDList(out ppidl: PIDLIST_ABSOLUTE): HRESULT; stdcall;
   end;
+
   IID_ISearchFolderItemFactory = ISearchFolderItemFactory;
 
 
@@ -4239,6 +4422,7 @@ type
 
     function Extract(out phBmpThumbnail: HBITMAP): HRESULT; stdcall;
   end;
+
   IID_IExtractImage = IExtractImage;
 
 
@@ -4250,6 +4434,7 @@ type
 
     function GetDateStamp(out pDateStamp: FILETIME): HRESULT; stdcall;
   end;
+
   IID_IExtractImage2 = IExtractImage2;
 
 
@@ -4264,6 +4449,7 @@ type
                                  const riid: REFIID;
                                  out ppv): HRESULT; stdcall;
   end;
+
   IID_IThumbnailHandlerFactory = IThumbnailHandlerFactory;
 
 
@@ -4281,6 +4467,7 @@ type
                               out ppsf: IShellFolder;
                               out ppidlChild: PITEMID_CHILD): HRESULT; stdcall;
   end;
+
   IID_IParentAndItem = IParentAndItem;
 
 
@@ -4298,6 +4485,7 @@ type
                             punkToolbarSite: IUnknown;
                             fReserved: BOOL): HRESULT; stdcall;
   end;
+
   IID_IDockingWindow = IDockingWindow;
 
 
@@ -4309,8 +4497,9 @@ type
 
     function GetBandInfo(dwBandID: DWORD;
                          dwViewMode: DWORD;
-               {in_out}  pdbi: PDESKBANDINFO): HRESULT; stdcall;
+    {in_out}  pdbi: PDESKBANDINFO): HRESULT; stdcall;
   end;
+
   IID_IDeskBand = IDeskBand;
 
 
@@ -4324,6 +4513,7 @@ type
                                  dwViewMode: DWORD;
                                  out pnWidth: Int): HRESULT; stdcall;
   end;
+
   IID_IDeskBandInfo = IDeskBandInfo;
 
 
@@ -4343,6 +4533,7 @@ type
 
     function SetActiveAlt(hwnd: HWND): HRESULT; stdcall;
   end;
+
   IID_ITaskbarList = ITaskbarList;
 
 
@@ -4355,6 +4546,7 @@ type
     function MarkFullscreenWindow(hwnd: HWND;
                                   fFullscreen: BOOL): HRESULT; stdcall;
   end;
+
   IID_ITaskbarList2 = ITaskbarList2;
 
 
@@ -4404,6 +4596,7 @@ type
     function SetThumbnailClip(hwnd: HWND;
                               prcClip: PRECT): HRESULT; stdcall;
   end;
+
   IID_ITaskbarList3 = ITaskbarList3;
 
 
@@ -4416,6 +4609,7 @@ type
     function SetTabProperties(hwndTab: HWND;
                               stpFlags: STPFLAG): HRESULT; stdcall;
   end;
+
   IID_ITaskbarList4 = ITaskbarList4;
 
 
@@ -4433,6 +4627,7 @@ type
 
     function OnNavigationFailed(pidlFolder: PCIDLIST_ABSOLUTE): HRESULT; stdcall;
   end;
+
   IID_IExplorerBrowserEvents = IExplorerBrowserEvents;
 
 
@@ -4480,6 +4675,7 @@ type
     function GetCurrentView(const riid: TGUID;
                             out ppv): HRESULT; stdcall;
   end;
+
   IID_IExplorerBrowser = IExplorerBrowser;
 
 
@@ -4500,6 +4696,7 @@ type
 
     function Clone(out ppenum: IEnumObjects): HRESULT; stdcall;
   end;
+
   IID_IEnumObjects = IEnumObjects;
 
 
@@ -4540,6 +4737,7 @@ type
 
     function GetOperationStatus(out popstatus: PDOPSTATUS): HRESULT; stdcall;
   end;
+
   IID_IOperationsProgressDialog = IOperationsProgressDialog;
 
 
@@ -4555,6 +4753,7 @@ type
     function GetCancelInformation(pdwThreadID: PDWORD;
                                   puMsgCancel: PUINT): HRESULT; stdcall;
   end;
+
   IID_IIOCancelInformation = IIOCancelInformation;
 
 
@@ -4621,6 +4820,7 @@ type
 
     function GetAnyOperationsAborted(out pfAnyOperationsAborted: BOOL): HRESULT; stdcall;
   end;
+
   IID_IFileOperation = IFileOperation;
 
 
@@ -4632,6 +4832,7 @@ type
 
     function SetOperationFlags2(operationFlags2: FILE_OPERATION_FLAGS2): HRESULT; stdcall;
   end;
+
   IID_IFileOperation2 = IFileOperation2;
 
 
@@ -4645,6 +4846,7 @@ type
                          const riid: TGUID;
                          out ppvOut): HRESULT; stdcall;
   end;
+
   IID_IObjectProvider = IObjectProvider;
 
 
@@ -4666,6 +4868,7 @@ type
     function InitializeProgressDialog(out ppszTitle: LPWSTR;
                                       out ppszCancel: LPWSTR): HRESULT; stdcall;
   end;
+
   IID_INamespaceWalkCB = INamespaceWalkCB;
 
 
@@ -4677,6 +4880,7 @@ type
 
     function WalkComplete(hr: HRESULT): HRESULT; stdcall;
   end;
+
   IID_INamespaceWalkCB2 = INamespaceWalkCB2;
 
 
@@ -4694,6 +4898,7 @@ type
     function GetIDArrayResult(out pcItems: UINT;
                               out prgpidl: PPIDLIST_ABSOLUTE): HRESULT; stdcall;
   end;
+
   IID_INamespaceWalk = INamespaceWalk;
 
 
@@ -4728,6 +4933,7 @@ type
 
     function GetBandSiteInfo(var pbsinfo: BANDSITEINFO): HRESULT; stdcall;
   end;
+
   IID_IBandSite = IBandSite;
 
 
@@ -4739,6 +4945,7 @@ type
 
     function Show(hwndOwner: HWND): HRESULT; stdcall;
   end;
+
   IID_IModalWindow = IModalWindow;
 
 
@@ -4752,6 +4959,7 @@ type
                                 fFlags: UINT;
                                 pt: POINT): HRESULT; stdcall;
   end;
+
   IID_IContextMenuSite = IContextMenuSite;
 
 
@@ -4766,6 +4974,7 @@ type
     function TranslateMenuMessage(pmsg: PMSG;
                                   plRet: PLRESULT): HRESULT; stdcall;
   end;
+
   IID_IMenuBand = IMenuBand;
 
 
@@ -4779,6 +4988,7 @@ type
 
     function SetCheckState(bCheck: BOOL): HRESULT; stdcall;
   end;
+
   IID_IRegTreeItem = IRegTreeItem;
 
 
@@ -4794,6 +5004,7 @@ type
 
     function OnPosRectChangeDB(prc: PRECT): HRESULT; stdcall;
   end;
+
   IID_IDeskBar = IDeskBar;
 
 
@@ -4812,6 +5023,7 @@ type
     function SetSubMenu(pmp: IMenuPopup;
                         fSet: BOOL): HRESULT; stdcall;
   end;
+
   IID_IMenuPopup = IMenuPopup;
 
 
@@ -4831,6 +5043,7 @@ type
 
     function CloseFile(): HRESULT; stdcall;
   end;
+
   IID_IFileIsInUse = IFileIsInUse;
 
 
@@ -4859,6 +5072,7 @@ type
                          psi: IShellItem;
                          out pResponse: FDE_OVERWRITE_RESPONSE): HRESULT; stdcall;
   end;
+
   IID_IFileDialogEvents = IFileDialogEvents;
 
 
@@ -4917,6 +5131,7 @@ type
 
     function SetFilter(pFilter: IShellItemFilter): HRESULT; stdcall;
   end;
+
   IID_IFileDialog = IFileDialog;
 
 
@@ -4940,6 +5155,7 @@ type
                              hwnd: HWND;
                              pSink: IFileOperationProgressSink): HRESULT; stdcall;
   end;
+
   IID_IFileSaveDialog = IFileSaveDialog;
 
 
@@ -4953,6 +5169,7 @@ type
 
     function GetSelectedItems(out ppsai: IShellItemArray): HRESULT; stdcall;
   end;
+
   IID_IFileOpenDialog = IFileOpenDialog;
 
 
@@ -5058,6 +5275,7 @@ type
                                 dwIDItem: DWORD;
                                 pszLabel: LPCWSTR): HRESULT; stdcall;
   end;
+
   IID_IFileDialogCustomize = IFileDialogCustomize;
 
 
@@ -5090,6 +5308,7 @@ type
 
     function ClearUserAssociations(): HRESULT; stdcall;
   end;
+
   IID_IApplicationAssociationRegistration = IApplicationAssociationRegistration;
 
 
@@ -5101,6 +5320,7 @@ type
 
     function SetItemAlloc(pmalloc: IMalloc): HRESULT; stdcall;
   end;
+
   IID_IDelegateFolder = IDelegateFolder;
 
 
@@ -5113,6 +5333,7 @@ type
     function GetFrameOptions(dwMask: BROWSERFRAMEOPTIONS;
                              pdwOptions: PBROWSERFRAMEOPTIONS): HRESULT; stdcall;
   end;
+
   IID_IBrowserFrameOptions = IBrowserFrameOptions;
 
 
@@ -5130,6 +5351,7 @@ type
                                dwFlags: DWORD;
                                dwUserActionTime: DWORD): HRESULT; stdcall;
   end;
+
   IID_INewWindowManager = INewWindowManager;
 
 
@@ -5237,6 +5459,7 @@ type
     //      * requires SetClientGuid() to be called first
     function ClearClientState(): HRESULT; stdcall;
   end;
+
   IID_IAttachmentExecute = IAttachmentExecute;
 
 
@@ -5250,6 +5473,7 @@ type
 
     function SaveWithUINoVirusCheck(hwnd: HWND): HRESULT; stdcall;
   end;
+
   IID_IAttachmentExecute2 = IAttachmentExecute2;
 
 
@@ -5264,6 +5488,7 @@ type
                         wParam: WPARAM;
                         lParam: LPARAM): HRESULT; stdcall;
   end;
+
   IID_IShellMenuCallback = IShellMenuCallback;
 
 
@@ -5309,6 +5534,7 @@ type
     function SetMenuToolbar(punk: IUnknown;
                             dwFlags: DWORD): HRESULT; stdcall;
   end;
+
   IID_IShellMenu = IShellMenu;
 
 
@@ -5341,6 +5567,7 @@ type
 
     function GetFolderDefinition(out pKFD: KNOWNFOLDER_DEFINITION): HRESULT; stdcall;
   end;
+
   IID_IKnownFolder = IKnownFolder;
 
 
@@ -5385,6 +5612,7 @@ type
                       const pExclusion: PKNOWNFOLDERID;
                       out ppszError: LPWSTR): HRESULT; stdcall;
   end;
+
   IID_IKnownFolderManager = IKnownFolderManager;
 
 
@@ -5410,6 +5638,7 @@ type
 
     function ArePrintersShared(): HRESULT; stdcall;
   end;
+
   IID_ISharingConfigurationManager = ISharingConfigurationManager;
 
 
@@ -5423,6 +5652,7 @@ type
 
     function GetItem(out ppsi: IShellItem): HRESULT; stdcall;
   end;
+
   IID_IRelatedItem = IRelatedItem;
 
 
@@ -5432,6 +5662,7 @@ type
   IIdentityName = interface(IRelatedItem)
     ['{7D903FCA-D6F9-4810-8332-946C0177E247}']
   end;
+
   IID_IIdentityName = IIdentityName;
 
 
@@ -5441,6 +5672,7 @@ type
   IDelegateItem = interface(IRelatedItem)
     ['{3C5A1C94-C951-4CB7-BB6D-3B93F30CCE93}']
   end;
+
   IID_IDelegateItem = IDelegateItem;
 
 
@@ -5450,6 +5682,7 @@ type
   ICurrentItem = interface(IRelatedItem)
     ['{240A7174-D653-4A1D-A6D3-D4943CFBFE3D}']
   end;
+
   IID_ICurrentItem = ICurrentItem;
 
 
@@ -5459,6 +5692,7 @@ type
   ITransferMediumItem = interface(IRelatedItem)
     ['{77F295D5-2D6F-4E19-B8AE-322F3E721AB5}']
   end;
+
   IID_ITransferMediumItem = ITransferMediumItem;
 
 
@@ -5468,6 +5702,7 @@ type
   IDisplayItem = interface(IRelatedItem)
     ['{C6FD5997-9F6B-4888-8703-94E80E8CDE3F}']
   end;
+
   IID_IDisplayItem = IDisplayItem;
 
 
@@ -5477,6 +5712,7 @@ type
   IViewStateIdentityItem = interface(IRelatedItem)
     ['{9D264146-A94F-4195-9F9F-3BB12CE0C955}']
   end;
+
   IID_IViewStateIdentityItem = IViewStateIdentityItem;
 
 
@@ -5486,6 +5722,7 @@ type
   IPreviewItem = interface(IRelatedItem)
     ['{36149969-0A8F-49C8-8B00-4AECB20222FB}']
   end;
+
   IID_IPreviewItem = IPreviewItem;
 
 
@@ -5497,6 +5734,7 @@ type
 
     function GetDestinationStream(out ppstm: IStream): HRESULT; stdcall;
   end;
+
   IID_IDestinationStreamFactory = IDestinationStreamFactory;
 
 
@@ -5519,8 +5757,9 @@ type
     function SetTitle(pszTitle: LPCWSTR): HRESULT; stdcall;
 
     function SetEnvironmentVariable(pszName: LPCWSTR;
-                     pszValue: LPCWSTR): HRESULT; stdcall;
+                                    pszValue: LPCWSTR): HRESULT; stdcall;
   end;
+
   IID_ICreateProcessInputs = ICreateProcessInputs;
 
 
@@ -5532,6 +5771,7 @@ type
 
     function OnCreating(pcpi: ICreateProcessInputs): HRESULT; stdcall;
   end;
+
   IID_ICreatingProcess = ICreatingProcess;
 
 
@@ -5545,6 +5785,7 @@ type
 
     function SetTabGroupingPreference(value: DWORD): HRESULT; stdcall;
   end;
+
   IID_ILaunchUIContext = ILaunchUIContext;
 
 
@@ -5556,6 +5797,7 @@ type
 
     function UpdateContext(context: ILaunchUIContext): HRESULT; stdcall;
   end;
+
   IID_ILaunchUIContextProvider = ILaunchUIContextProvider;
 
 
@@ -5570,6 +5812,7 @@ type
     function SelectAndEditItem(pidlItem: PCIDLIST_ABSOLUTE;
                                flags: NMCSAEI_FLAGS): HRESULT; stdcall;
   end;
+
   IID_INewMenuClient = INewMenuClient;
 
 
@@ -5581,6 +5824,7 @@ type
 
     function Initialize(pbc: IBindCtx): HRESULT; stdcall;
   end;
+
   IID_IInitializeWithBindCtx = IInitializeWithBindCtx;
 
 
@@ -5595,6 +5839,7 @@ type
     function GetEnumFlagsForItem(psi: IShellItem;
                                  out pgrfFlags: SHCONTF): HRESULT; stdcall;
   end;
+
   IID_IShellItemFilter = IShellItemFilter;
 
 
@@ -5662,6 +5907,7 @@ type
 
     function CollapseAll(): HRESULT; stdcall;
   end;
+
   IID_INameSpaceTreeControl = INameSpaceTreeControl;
 
 
@@ -5672,8 +5918,9 @@ type
     ['{E9701183-E6B3-4FF2-8568-813615FEC7BE}']
 
     function GetFolderCapabilities(nfcMask: NSTCFOLDERCAPABILITIES;
-                             {out} pnfcValue: PNSTCFOLDERCAPABILITIES): HRESULT; stdcall;
+    {out} pnfcValue: PNSTCFOLDERCAPABILITIES): HRESULT; stdcall;
   end;
+
   IID_INameSpaceTreeControllFolderCapabilities = INameSpaceTreeControlFolderCapabilities;
 
 
@@ -5698,6 +5945,7 @@ type
 
     function TranslateAccelerator(pmsg: PMSG): HRESULT; stdcall;
   end;
+
   IID_IPreviewHandler = IPreviewHandler;
 
 
@@ -5711,6 +5959,7 @@ type
 
     function TranslateAccelerator(pmsg: PMSG): HRESULT; stdcall;
   end;
+
   IID_IPreviewHandlerFrame = IPreviewHandlerFrame;
 
 
@@ -5723,6 +5972,7 @@ type
     function GetPaneState(const ep: TGUID;
                           out peps: EXPLORERPANESTATE): HRESULT; stdcall;
   end;
+
   IID_IExplorerPaneVisibility = IExplorerPaneVisibility;
 
 
@@ -5739,6 +5989,7 @@ type
                       wParam: WPARAM;
                       lParam: LPARAM): HRESULT; stdcall;
   end;
+
   IID_IContextMenuCB = IContextMenuCB;
 
 
@@ -5753,17 +6004,18 @@ type
     function SetKey(hkey: HKEY): HRESULT; stdcall;
 
     function SetNormalIcon(pszFile: LPCWSTR;
-                     iIcon: Integer): HRESULT; stdcall;
+                           iIcon: Integer): HRESULT; stdcall;
 
     function SetOpenIcon(pszFile: LPCWSTR;
-                     iIcon: Integer): HRESULT; stdcall;
+                         iIcon: Integer): HRESULT; stdcall;
 
     function SetShortcutIcon(pszFile: LPCWSTR;
-                     iIcon: Integer): HRESULT; stdcall;
+                             iIcon: Integer): HRESULT; stdcall;
 
     function SetDefaultIcon(pszFile: LPCWSTR;
-                     iIcon: Integer): HRESULT; stdcall;
+                            iIcon: Integer): HRESULT; stdcall;
   end;
+
   IID_IDefaultExtractIconInit = IDefaultExtractIconInit;
 
 
@@ -5795,6 +6047,7 @@ type
 
     function EnumSubCommands(out ppEnum: IEnumExplorerCommand): HRESULT; stdcall;
   end;
+
   IID_IExplorerCommand = IExplorerCommand;
 
 
@@ -5808,6 +6061,7 @@ type
                       fOkToBeSlow: BOOL;
                       out pCmdState: EXPCMDSTATE): HRESULT; stdcall;
   end;
+
   IID_IExplorerCommandState = IExplorerCommandState;
 
 
@@ -5820,6 +6074,7 @@ type
     function Initialize(pszCommandName: LPCWSTR;
                         ppb: IPropertyBag): HRESULT; stdcall;
   end;
+
   IID_IInitializeCommand = IInitializeCommand;
 
 
@@ -5839,6 +6094,7 @@ type
 
     function Clone(out ppenum: IEnumExplorerCommand): HRESULT; stdcall;
   end;
+
   IID_IEnumExplorerCommand = IEnumExplorerCommand;
 
 
@@ -5856,6 +6112,7 @@ type
                         const riid: TGUID;
                         out ppv): HRESULT; stdcall;
   end;
+
   IID_IExplorerCommandProvider = IExplorerCommandProvider;
 
 
@@ -5875,6 +6132,7 @@ type
 
     function GetCurrentView(out pView: CPVIEW): HRESULT; stdcall;
   end;
+
   IID_IOpenControlPanel = IOpenControlPanel;
 
 
@@ -5888,6 +6146,7 @@ type
 
     function GetFindData(out pfd: WIN32_FIND_DATAW): HRESULT; stdcall;
   end;
+
   IID_IFileSystemBindData = IFileSystemBindData;
 
 
@@ -5905,6 +6164,7 @@ type
 
     function GetJunctionCLSID(out pclsid: CLSID): HRESULT; stdcall;
   end;
+
   IID_IFileSystemBindData2 = IFileSystemBindData2;
 
 
@@ -5936,6 +6196,7 @@ type
 
     function AbortList(): HRESULT; stdcall;
   end;
+
   IID_ICustomDestinationList = ICustomDestinationList;
 
 
@@ -5951,6 +6212,7 @@ type
 
     function RemoveAllDestinations(): HRESULT; stdcall;
   end;
+
   IID_IApplicationDestinations = IApplicationDestinations;
 
 
@@ -5967,6 +6229,7 @@ type
                      const riid: TGUID;
                      out ppv): HRESULT; stdcall;
   end;
+
   IID_IApplicationDocumentLists = IApplicationDocumentLists;
 
 
@@ -5980,6 +6243,7 @@ type
 
     function GetAppID(out ppszAppID: LPWSTR): HRESULT; stdcall;
   end;
+
   IID_IObjectWithAppUserModelID = IObjectWithAppUserModelID;
 
 
@@ -5991,6 +6255,7 @@ type
 
     function GetPackageFullName(out packageFullName: LPWSTR): HRESULT; stdcall;
   end;
+
   IID_IObjectWithPackageFullName = IObjectWithPackageFullName;
 
 
@@ -6004,6 +6269,7 @@ type
 
     function GetProgID(out ppszProgID: LPWSTR): HRESULT; stdcall;
   end;
+
   IID_IObjectWithProgID = IObjectWithProgID;
 
 
@@ -6017,6 +6283,7 @@ type
                     pidlIn: PCUITEMID_CHILD;
                     out ppidlOut: PITEMID_CHILD): HRESULT; stdcall;
   end;
+
   IID_IUpdateIDList = IUpdateIDList;
 
 
@@ -6065,6 +6332,7 @@ type
 
     function Enable(enable: BOOL): HRESULT; stdcall;
   end;
+
   IID_IDesktopWallpaper = IDesktopWallpaper;
 
 
@@ -6077,8 +6345,9 @@ type
     function IsMember(member: PBOOL): HRESULT; stdcall;
 
     function ShowSharingWizard(owner: HWND;
-                     sharingchoices: PHOMEGROUPSHARINGCHOICES): HRESULT; stdcall;
+                               sharingchoices: PHOMEGROUPSHARINGCHOICES): HRESULT; stdcall;
   end;
+
   IID_IHomeGroup = IHomeGroup;
 
 
@@ -6090,6 +6359,7 @@ type
 
     function Initialize(pps: IPropertyStore): HRESULT; stdcall;
   end;
+
   IID_IInitializeWithPropertyStore = IInitializeWithPropertyStore;
 
 
@@ -6106,6 +6376,7 @@ type
                         const riid: TGUID;
                         out ppv): HRESULT; stdcall;
   end;
+
   IID_IOpenSearchSource = IOpenSearchSource;
 
 
@@ -6166,6 +6437,7 @@ type
                                lsf: LIBRARYSAVEFLAGS;
                                out ppsiSavedTo: IShellItem): HRESULT; stdcall;
   end;
+
   IID_IShellLibrary = IShellLibrary;
 
 
@@ -6192,6 +6464,7 @@ type
 
     function SetHandlerClsid(const rclsid: TGUID): HRESULT; stdcall;
   end;
+
   IID_IDefaultFolderMenuInitialize = IDefaultFolderMenuInitialize;
 
 
@@ -6215,6 +6488,7 @@ type
                                  itemArray: IShellItemArray;
                                  out processId: DWORD): HRESULT; stdcall;
   end;
+
   IID_IApplicationActivationManager = IApplicationActivationManager;
 
 
@@ -6234,6 +6508,7 @@ type
                                  const desktopId: TGUID): HRESULT; stdcall;
 
   end;
+
   IID_IVirtualDesktopManager = IVirtualDesktopManager;
 
 
@@ -6247,6 +6522,7 @@ type
 
     function Invoke: HRESULT; stdcall;
   end;
+
   IID_IAssocHandlerInvoker = IAssocHandlerInvoker;
 
 
@@ -6272,6 +6548,7 @@ type
     function CreateInvoker(pdo: IDataObject;
                            out ppInvoker: IAssocHandlerInvoker): HRESULT; stdcall;
   end;
+
   IID_IAssocHandler = IAssocHandler;
 
 
@@ -6282,9 +6559,10 @@ type
     ['{973810AE-9599-4B88-9E4D-6EE98C9552DA}']
 
     function Next(celt: ULONG;
-                     out rgelt: IAssocHandler;
-                     pceltFetched: PULONG): HRESULT; stdcall;
+                  out rgelt: IAssocHandler;
+                  pceltFetched: PULONG): HRESULT; stdcall;
   end;
+
   IID_IEnumAssocHandlers = IEnumAssocHandlers;
 
 
@@ -6298,6 +6576,7 @@ type
 
     function SetDataObject(dataObject: IDataObject): HRESULT; stdcall;
   end;
+
   IID_IDataObjectProvider = IDataObjectProvider;
 
 
@@ -6313,6 +6592,7 @@ type
 
     function ShowShareUIForWindow(appWindow: HWND): HRESULT; stdcall;
   end;
+
   IID_IDataTransferManagerInterop = IDataTransferManagerInterop;
 
 
@@ -6327,6 +6607,7 @@ type
 
     function Hiding(fEnsureFocusedElementInView: BOOL): HRESULT; stdcall;
   end;
+
   IID_IFrameworkInputPaneHandler = IFrameworkInputPaneHandler;
 
 
@@ -6349,6 +6630,7 @@ type
     function Location(out prcInputPaneScreenLocation: TRECT): HRESULT; stdcall;
 
   end;
+
   IID_IFrameworkInputPane = IFrameworkInputPane;
 
 
@@ -6364,6 +6646,7 @@ type
 
     function LauncherVisibilityChange(currentVisibleState: BOOL): HRESULT; stdcall;
   end;
+
   IID_IAppVisibilityEvents = IAppVisibilityEvents;
 
 
@@ -6383,6 +6666,7 @@ type
 
     function Unadvise(dwCookie: DWORD): HRESULT; stdcall;
   end;
+
   IID_IAppVisibility = IAppVisibility;
 
 
@@ -6395,6 +6679,7 @@ type
     function OnStateChanged(pszPackageFullName: LPCWSTR;
                             pesNewState: PACKAGE_EXECUTION_STATE): HRESULT; stdcall;
   end;
+
   IID_IPackageExecutionStateChangeNotification =
     IPackageExecutionStateChangeNotification;
 
@@ -6444,6 +6729,7 @@ type
 
     function UnregisterForPackageStateChanges(dwCookie: DWORD): HRESULT; stdcall;
   end;
+
   IID_IPackageDebugSettings = IPackageDebugSettings;
 
 
@@ -6456,8 +6742,9 @@ type
     function EnumerateApps(packageFullName: LPCWSTR;
                            appCount: PULONG;
                            out appUserModelIds: PLPWSTR;
-                          out appDisplayNames: PLPWSTR): HRESULT; stdcall;
+                           out appDisplayNames: PLPWSTR): HRESULT; stdcall;
   end;
+
   IID_IPackageDebugSettings2 = IPackageDebugSettings2;
 
 
@@ -6473,6 +6760,7 @@ type
 
     function UngroupChildFromParent(childProcessHandle: THANDLE): HRESULT; stdcall;
   end;
+
   IID_ISuspensionDependencyManager = ISuspensionDependencyManager;
 
 
@@ -6484,6 +6772,7 @@ type
 
     function GetValue(out pahe: AHE_TYPE): HRESULT; stdcall;
   end;
+
   IID_IExecuteCommandApplicationHostEnvironment = IExecuteCommandApplicationHostEnvironment;
 
 
@@ -6495,6 +6784,7 @@ type
 
     function GetUIMode(out pUIMode: EC_HOST_UI_MODE): HRESULT; stdcall;
   end;
+
   IID_IExecuteCommandHost = IExecuteCommandHost;
 
 
@@ -6519,6 +6809,7 @@ type
 
     function TriggerEdgeGesture(edgeGestureKind: EDGE_GESTURE_KIND): HRESULT; stdcall;
   end;
+
   IID_IApplicationDesignModeSettings = IApplicationDesignModeSettings;
 
 
@@ -6545,6 +6836,7 @@ type
                                            out viewOrientation: APPLICATION_VIEW_ORIENTATION): HRESULT; stdcall;
 
   end;
+
   IID_IApplicationDesignModeSettings2 = IApplicationDesignModeSettings2;
 
 
@@ -6556,6 +6848,7 @@ type
 
     function GetMonitor(out monitor: HMONITOR): HRESULT; stdcall;
   end;
+
   IID_ILaunchTargetMonitor = ILaunchTargetMonitor;
 
 
@@ -6570,6 +6863,7 @@ type
     function GetSourceViewSizePreference(out sourceSizeAfterLaunch: APPLICATION_VIEW_SIZE_PREFERENCE): HRESULT; stdcall;
 
   end;
+
   IID_ILaunchSourceViewSizePreference = ILaunchSourceViewSizePreference;
 
 
@@ -6582,6 +6876,7 @@ type
     function GetTargetViewSizePreference(out targetSizeOnLaunch: APPLICATION_VIEW_SIZE_PREFERENCE): HRESULT; stdcall;
 
   end;
+
   IID_ILaunchTargetViewSizePreference = ILaunchTargetViewSizePreference;
 
 
@@ -6595,6 +6890,7 @@ type
       out launchingApp: LPWSTR): HRESULT; stdcall;
 
   end;
+
   IID_ILaunchSourceAppUserModelId = ILaunchSourceAppUserModelId;
 
 
@@ -6606,6 +6902,7 @@ type
 
     function Initialize(_hwnd: HWND): HRESULT; stdcall;
   end;
+
   IID_IInitializeWithWindow = IInitializeWithWindow;
 
 
@@ -6622,6 +6919,7 @@ type
     function GetApplicationIconReference(out value: LPWSTR): HRESULT; stdcall;
 
   end;
+
   IID_IHandlerInfo = IHandlerInfo;
 
 
@@ -6633,6 +6931,7 @@ type
 
     function GetApplicationId(out value: LPWSTR): HRESULT; stdcall;
   end;
+
   IID_IHandlerInfo2 = IHandlerInfo2;
 
 
@@ -6651,6 +6950,7 @@ type
                                  handlerInfo: IHandlerInfo): HRESULT; stdcall;
 
   end;
+
   IID_IHandlerActivationHost = IHandlerActivationHost;
 
 
@@ -6671,6 +6971,7 @@ type
     function GetKeyState(out value: DWORD): HRESULT; stdcall;
 
   end;
+
   IID_IAppActivationUIInfo = IAppActivationUIInfo;
 
 
@@ -6686,6 +6987,7 @@ type
                                       preferredPlacement: FLYOUT_PLACEMENT): HRESULT; stdcall;
 
   end;
+
   IID_IContactManagerInterop = IContactManagerInterop;
 
 
@@ -6706,6 +7008,7 @@ type
     function GetPriority(out pPriority: Integer): HRESULT; stdcall;
 
   end;
+
   IID_IShellIconOverlayIdentifier = IShellIconOverlayIdentifier;
 
 
@@ -6718,6 +7021,7 @@ type
     function OnBannerEvent(const notification: BANNER_NOTIFICATION): HRESULT; stdcall;
 
   end;
+
   IID_IBannerNotificationHandler = IBannerNotificationHandler;
 
 
@@ -6735,6 +7039,7 @@ type
     function GetSortType(out AType: SORT_ORDER_TYPE): HRESULT; stdcall;
 
   end;
+
   IID_ISortColumnArray = ISortColumnArray;
 
 
@@ -6758,19 +7063,20 @@ type
     function RemoveKey(const key: PROPERTYKEY): HRESULT; stdcall;
 
   end;
+
   IID_IPropertyKeyStore = IPropertyKeyStore;
 
 
 
-// Type aliases that depend on translated interfaces
-// ================================================
-//
+  // Type aliases that depend on translated interfaces
+  // ================================================
+  //
 type
   IShellLink = IShellLinkW;
 
-// Constant aliases that depend on translated interface IIDs
-// ========================================================
-//
+  // Constant aliases that depend on translated interface IIDs
+  // ========================================================
+  //
 const
 
   CGID_DeskBand = IID_IDeskBand;
@@ -6861,7 +7167,8 @@ function SHCreateShellItemArrayFromShellItem(psi: IShellItem;
                                              const riid: REFIID;
                                              out ppv: Pointer): HRESULT; stdcall;
 
-function SHCreateAssociationRegistration(const riid: REFIID;out ppv: Pointer): HRESULT; stdcall;
+function SHCreateAssociationRegistration(const riid: REFIID;
+                                         out ppv: Pointer): HRESULT; stdcall;
 
 function SHCreateDefaultExtractIcon(const riid: REFIID;
                                     out ppv): HRESULT; stdcall;
@@ -6895,9 +7202,9 @@ function SHAssocEnumHandlersForProtocolByApplication(protocol: LPCWSTR;
                                                      out enumHandlers: Pointer): HRESULT; stdcall;
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
 
@@ -6930,6 +7237,7 @@ end;
 
 procedure FreeIDListArrayFull(ppidls: Pointer;
                               cItems: UINT);
+
 begin
 
   FreeIDListArray(ppidls,
@@ -6939,6 +7247,7 @@ end;
 
 procedure FreeIDListArrayChild(ppidls: Pointer;
                                cItems: UINT);
+
 begin
 
   FreeIDListArray(ppidls,
@@ -6947,36 +7256,35 @@ end;
 
 
 
-function SHSimpleIDListFromPath;            external Shell32Lib name 'SHSimpleIDListFromPath' ;
-function SHCreateItemFromIDList;            external Shell32Lib name 'SHCreateItemFromIDList' ;
-function SHCreateItemFromParsingName;       external Shell32Lib name 'SHCreateItemFromParsingName' ;
-function SHCreateItemWithParent;            external Shell32Lib name 'SHCreateItemWithParent' ;
-function SHCreateItemFromRelativeName;      external Shell32Lib name 'SHCreateItemFromRelativeName' ;
-function SHCreateItemInKnownFolder;         external Shell32Lib name 'SHCreateItemInKnownFolder' ;
-function SHGetIDListFromObject;             external Shell32Lib name 'SHGetIDListFromObject' ;
-function SHGetItemFromObject;               external Shell32Lib name 'SHGetItemFromObject' ;
-function SHGetPropertyStoreFromIDList;      external Shell32Lib name 'SHGetPropertyStoreFromIDList' ;
-function SHGetPropertyStoreFromParsingName; external Shell32Lib name 'SHGetPropertyStoreFromParsingName' ;
-function SHGetNameFromIDList;               external Shell32Lib name 'SHGetNameFromIDList' ;
-function SHGetItemFromDataObject;           external Shell32Lib name 'SHGetItemFromDataObject' ;
-function SHCreateShellItemArray;            external Shell32Lib name 'SHCreateShellItemArray' ;
-function SHCreateShellItemArrayFromDataObject; external Shell32Lib name 'SHCreateShellItemArrayFromDataObject' ;
-function SHCreateShellItemArrayFromIDLists; external Shell32Lib name 'SHCreateShellItemArrayFromIDLists' ;
-function SHCreateShellItemArrayFromShellItem; external Shell32Lib name 'SHCreateShellItemArrayFromShellItem' ;
-function SHCreateAssociationRegistration;   external Shell32Lib name 'SHCreateAssociationRegistration' ;
-function SHCreateDefaultExtractIcon;        external Shell32Lib name 'SHCreateDefaultExtractIcon' ;
-function SetCurrentProcessExplicitAppUserModelID; external Shell32Lib name 'SetCurrentProcessExplicitAppUserModelID' ;
-function GetCurrentProcessExplicitAppUserModelID; external Shell32Lib name 'GetCurrentProcessExplicitAppUserModelID' ;
-function SHGetTemporaryPropertyForItem;     external Shell32Lib name 'SHGetTemporaryPropertyForItem' ;
-function SHSetTemporaryPropertyForItem;     external Shell32Lib name 'SHSetTemporaryPropertyForItem' ;
-function SHShowManageLibraryUI;             external Shell32Lib name 'SHShowManageLibraryUI' ;
-function SHResolveLibrary;                  external Shell32Lib name 'SHResolveLibrary' ;
-function SHAssocEnumHandlers;               external Shell32Lib name 'SHAssocEnumHandlers' ;
-function SHAssocEnumHandlersForProtocolByApplication; external Shell32Lib name 'SHAssocEnumHandlersForProtocolByApplication' ;
+function SHSimpleIDListFromPath; external Shell32Lib name 'SHSimpleIDListFromPath';
+function SHCreateItemFromIDList; external Shell32Lib name 'SHCreateItemFromIDList';
+function SHCreateItemFromParsingName; external Shell32Lib name 'SHCreateItemFromParsingName';
+function SHCreateItemWithParent; external Shell32Lib name 'SHCreateItemWithParent';
+function SHCreateItemFromRelativeName; external Shell32Lib name 'SHCreateItemFromRelativeName';
+function SHCreateItemInKnownFolder; external Shell32Lib name 'SHCreateItemInKnownFolder';
+function SHGetIDListFromObject; external Shell32Lib name 'SHGetIDListFromObject';
+function SHGetItemFromObject; external Shell32Lib name 'SHGetItemFromObject';
+function SHGetPropertyStoreFromIDList; external Shell32Lib name 'SHGetPropertyStoreFromIDList';
+function SHGetPropertyStoreFromParsingName; external Shell32Lib name 'SHGetPropertyStoreFromParsingName';
+function SHGetNameFromIDList; external Shell32Lib name 'SHGetNameFromIDList';
+function SHGetItemFromDataObject; external Shell32Lib name 'SHGetItemFromDataObject';
+function SHCreateShellItemArray; external Shell32Lib name 'SHCreateShellItemArray';
+function SHCreateShellItemArrayFromDataObject; external Shell32Lib name 'SHCreateShellItemArrayFromDataObject';
+function SHCreateShellItemArrayFromIDLists; external Shell32Lib name 'SHCreateShellItemArrayFromIDLists';
+function SHCreateShellItemArrayFromShellItem; external Shell32Lib name 'SHCreateShellItemArrayFromShellItem';
+function SHCreateAssociationRegistration; external Shell32Lib name 'SHCreateAssociationRegistration';
+function SHCreateDefaultExtractIcon; external Shell32Lib name 'SHCreateDefaultExtractIcon';
+function SetCurrentProcessExplicitAppUserModelID; external Shell32Lib name 'SetCurrentProcessExplicitAppUserModelID';
+function GetCurrentProcessExplicitAppUserModelID; external Shell32Lib name 'GetCurrentProcessExplicitAppUserModelID';
+function SHGetTemporaryPropertyForItem; external Shell32Lib name 'SHGetTemporaryPropertyForItem';
+function SHSetTemporaryPropertyForItem; external Shell32Lib name 'SHSetTemporaryPropertyForItem';
+function SHShowManageLibraryUI; external Shell32Lib name 'SHShowManageLibraryUI';
+function SHResolveLibrary; external Shell32Lib name 'SHResolveLibrary';
+function SHAssocEnumHandlers; external Shell32Lib name 'SHAssocEnumHandlers';
+function SHAssocEnumHandlersForProtocolByApplication; external Shell32Lib name 'SHAssocEnumHandlersForProtocolByApplication';
 
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 
 end.
-

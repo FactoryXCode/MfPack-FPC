@@ -66,13 +66,13 @@ unit Transcoder;
 
 interface
 
-  // Undefine this when not needed!
-  {$DEFINE SAVE_DEBUG_REPORT}
-  {$DEFINE SHOW_IN_MESSAGES_IDE}
+// Undefine this when not needed!
+{$DEFINE SAVE_DEBUG_REPORT}
+{$DEFINE SHOW_IN_MESSAGES_IDE}
 
 uses
   MfCaptureSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -98,11 +98,12 @@ uses
 
 const
   WM_PROGRESSNOTIFY = WM_USER + 1;
-  WM_STATUSNOTIFY   = WM_USER + 2;
+  WM_STATUSNOTIFY = WM_USER + 2;
 
 type
 
   TTranscoder = class(TObject)
+
   private
     rcHandle: HWnd;         // Handle of the windows that receives the messages.
     pCont: TStreamContentsArray;  // Array with audio and video information.
@@ -154,7 +155,9 @@ implementation
 //  Transcoder constructor
 //-------------------------------------------------------------------
 constructor TTranscoder.Create(clHandle: HWnd);
+
 begin
+
   inherited Create();
 
   // A Delphi Forms Application will initialize Com by default.
@@ -163,9 +166,10 @@ begin
   if FAILED(MFStartup(MF_VERSION, 0)) then
     begin
       MessageBoxW(0,
-                 LPCWSTR(format('Your computer does not support this Media Foundation API version %d.',[MF_VERSION])),
-                 LPCWSTR('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  LPCWSTR(format('Your computer does not support this Media Foundation API version %d.',
+                                 [MF_VERSION])),
+                  LPCWSTR('MFStartup Failure!'),
+                  MB_ICONSTOP);
       Abort();
     end;
 
@@ -180,7 +184,9 @@ end;
 //  Transcoder destructor
 //-------------------------------------------------------------------
 destructor TTranscoder.Destroy();
+
 begin
+
   // Shutdown the mediasource and session to release all their objects.
   Shutdown();
   // Shutdown Media Foundation.
@@ -309,7 +315,8 @@ begin
                                        pAudioType);
   if FAILED(hr) then
     begin
-      DebugMsg('No suitable transform was found to encode or decode the content.', hr);
+      DebugMsg('No suitable transform was found to encode or decode the content.',
+               hr);
       Result := hr;
       Exit;
     end;
@@ -361,6 +368,7 @@ label
   done;
 
 begin
+
   {$IFDEF DEBUG}
   assert(m_pProfile <> nil);
   {$ENDIF}
@@ -371,7 +379,7 @@ begin
 
   // Configure the video stream
   if IsEqualGUID(aVideoMediaFmt,
-                 GUID_NULL) then
+    GUID_NULL) then
     begin
       // Create empty attribute store.
       hr := MFCreateAttributes(pVideoAttrs,
@@ -412,17 +420,17 @@ begin
   // So, when for example the source is 1080p the resolutions have to be within the limits of this format.
   // In other words: You can't resize a 1080p format to 4k.
   if SUCCEEDED(hr) then
-   // if (FVideoStandardsCheat.SelectedResolution.iWidth <= pCont[arIndex].video_FrameSizeWidth) and
-   //    (FVideoStandardsCheat.SelectedResolution.iHeight <= pCont[arIndex].video_FrameSizeHeigth) then
-      hr := MFSetAttributeSize(pVideoAttrs,
-                               MF_MT_FRAME_SIZE,
-                               FVideoStandardsCheat.SelectedResolution.iWidth,
-                               FVideoStandardsCheat.SelectedResolution.iHeight);
-   // else
-   //   hr := MFSetAttributeSize(pVideoAttrs,
-   //                            MF_MT_FRAME_SIZE,
-   //                            pCont[arIndex].video_FrameSizeWidth,
-   //                            pCont[arIndex].video_FrameSizeHeigth);
+    // if (FVideoStandardsCheat.SelectedResolution.iWidth <= pCont[arIndex].video_FrameSizeWidth) and
+    //    (FVideoStandardsCheat.SelectedResolution.iHeight <= pCont[arIndex].video_FrameSizeHeigth) then
+    hr := MFSetAttributeSize(pVideoAttrs,
+                             MF_MT_FRAME_SIZE,
+                             FVideoStandardsCheat.SelectedResolution.iWidth,
+                             FVideoStandardsCheat.SelectedResolution.iHeight);
+  // else
+  //   hr := MFSetAttributeSize(pVideoAttrs,
+  //                            MF_MT_FRAME_SIZE,
+  //                            pCont[arIndex].video_FrameSizeWidth,
+  //                            pCont[arIndex].video_FrameSizeHeigth);
 
   // Set the pixel aspect ratio.
   if SUCCEEDED(hr) then
@@ -438,11 +446,11 @@ begin
                                 2500000);
 
 
-done:
+  done:
 
-  // Set the attribute store on the transcode profile.
-  if SUCCEEDED(hr) then
-    hr := m_pProfile.SetVideoAttributes(pVideoAttrs);
+    // Set the attribute store on the transcode profile.
+    if SUCCEEDED(hr) then
+      hr := m_pProfile.SetVideoAttributes(pVideoAttrs);
 
   Result := hr;
 end;
@@ -464,6 +472,7 @@ var
   pContainerAttrs: IMFAttributes;
 
 begin
+
   {$IFDEF DEBUG}
   assert(m_pProfile <> nil);
   {$ENDIF}
@@ -510,7 +519,7 @@ begin
   assert(m_pProfile <> nil);
   {$ENDIF}
 
-  if aURL = '' then
+  if (aURL = '') then
     begin
       Result := E_INVALIDARG;
       Exit;
@@ -520,7 +529,7 @@ begin
   hr := MFCreateTranscodeTopology(m_pSource,
                                   LPCWSTR(aURL),
                                   m_pProfile,
-                                  m_pTopology );
+                                  m_pTopology);
 
   // Set the topology on the media session.
   if SUCCEEDED(hr) then
@@ -549,7 +558,7 @@ end;
 //  getting media session events.
 //-------------------------------------------------------------------
 
-  function TTranscoder.Transcode(): HResult;
+function TTranscoder.Transcode(): HResult;
 var
   hr: HResult;
   hrStatus: HResult;  // Event status
@@ -597,7 +606,7 @@ begin
         Break;
 
       if FAILED(hr) then
-        if hr = MF_E_NO_EVENTS_AVAILABLE then
+        if (hr = MF_E_NO_EVENTS_AVAILABLE) then
           begin
             // continue will skip the rest of this loop, so we have to get the progress update before
             // the eventype will be handled.
@@ -621,39 +630,40 @@ begin
 
       if FAILED(hrStatus) then
         begin
-          SendStatusNotify(LPCWSTR(Format('Failed. %d error condition triggered this event.', [hrStatus])));
+          SendStatusNotify(LPCWSTR(Format('Failed. %d error condition triggered this event.',
+                                          [hrStatus])));
 
           hr := hrStatus;
           Break;
         end;
 
       case meType of
-        MESessionTopologySet: begin
-                                hr := Start();
-                                if SUCCEEDED(hr) then
-                                  begin
-                                   // We use SendMessage to display messages in the mainform's StatusBar.
-                                   SendStatusNotify(LPCWSTR('Ready for rendering.'));
-                                  end;
-                              end;
+          MESessionTopologySet: begin
+            hr := Start();
+            if SUCCEEDED(hr) then
+              begin
+                // We use SendMessage to display messages in the mainform's StatusBar.
+                SendStatusNotify(LPCWSTR('Ready for rendering.'));
+              end;
+          end;
 
-        MESessionStarted: begin
-                            startUpdateProcessing := True;
-                            SendStatusNotify(LPCWSTR('Rendering is in progress...'));
-                           end;
+          MESessionStarted: begin
+            startUpdateProcessing := True;
+            SendStatusNotify(LPCWSTR('Rendering is in progress...'));
+          end;
 
-        MESessionEnded: begin
-                          startUpdateProcessing := False;
-                          hr := m_pSession.Close();
-                          if SUCCEEDED(hr) then
-                            begin
-                              SendStatusNotify(LPCWSTR('Finished rendering.'));
-                            end;
-                        end;
+          MESessionEnded: begin
+            startUpdateProcessing := False;
+            hr := m_pSession.Close();
+            if SUCCEEDED(hr) then
+              begin
+                SendStatusNotify(LPCWSTR('Finished rendering.'));
+              end;
+          end;
 
-        MESessionClosed: begin
-                           SendStatusNotify(LPCWSTR('Output file has been succesfully created.'));
-                         end;
+          MESessionClosed: begin
+            SendStatusNotify(LPCWSTR('Output file has been succesfully created.'));
+          end;
       end;
 
       HandleMessages(GetCurrentThread());
@@ -675,7 +685,9 @@ end;
 
 
 function TTranscoder.Stop(): Boolean;
+
 begin
+
   Shutdown();
   Result := True;
 end;
@@ -694,6 +706,7 @@ var
   pClock: IMFClock;
 
 begin
+
   {$IFDEF DEBUG}
   assert(m_pSession <> nil);
   {$ENDIF}
@@ -721,7 +734,7 @@ begin
                                     m_pClock);
       if FAILED(hr) then
         SendStatusNotify(LPCWSTR('Could not find a presentation clock!'));
-     end;
+    end;
 
   PropVariantInit(varStart);
 
@@ -747,13 +760,14 @@ var
   hr: HResult;
 
 begin
+
   hr := S_OK;
 
   // Shut down the media source
   if Assigned(m_pSource) then
     begin
       hr := m_pSource.Stop;
-      if hr <> MF_E_SHUTDOWN then
+      if (hr <> MF_E_SHUTDOWN) then
         hr := m_pSource.Shutdown();
     end;
 
@@ -765,15 +779,15 @@ begin
           hr := m_pSession.Stop();
           if Succeeded(hr) then
             hr := m_pSession.Close;
-          if hr <> MF_E_SHUTDOWN then
+          if (hr <> MF_E_SHUTDOWN) then
             hr := m_pSession.Shutdown();
         end;
     end;
 
-  if hr <> S_OK then
+  if (hr <> S_OK) then
     // On this, nothing special is going on, just continue with no error, unless otherwise.
     // Set the result as aborted.
-    if hr = MF_E_SHUTDOWN then
+    if (hr = MF_E_SHUTDOWN) then
       hr := E_ABORT
     else
       SendStatusNotify(LPCWSTR('Failed to close the session...'));
@@ -785,12 +799,14 @@ end;
 function TTranscoder.GetMediaFromContArray(const mitype: TMediaTypes): Integer;
 var
   I: Integer;
+
 begin
+
   Result := -1;
   if Assigned(pCont) then
-    if Length(pCont) > 0 then
-      for I := 0 to Length(pCont)-1 do
-        if pCont[I].idStreamMediaType = mitype then
+    if (Length(pCont) > 0) then
+      for I := 0 to Length(pCont) - 1 do
+        if (pCont[I].idStreamMediaType = mitype) then
           begin
             Result := I;
             Break;
@@ -799,7 +815,9 @@ end;
 
 
 procedure TTranscoder.SendStatusNotify(aStatusMsg: LPCWSTR);
+
 begin
+
   SendMessage(rcHandle,
               WM_STATUSNOTIFY,
               WPARAM(0),

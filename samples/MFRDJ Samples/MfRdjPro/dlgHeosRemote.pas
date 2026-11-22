@@ -64,12 +64,13 @@ unit dlgHeosRemote;
 
 interface
 
-uses MfCastText,
-Rdj.Platform,
-LMessages,
+uses
+  MfCastText,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   Classes,
   SysUtils,
   IniFiles,
@@ -90,11 +91,13 @@ LMessages,
   HEOSDiscovery,
   // Controls
   HEOSButton,
-  HEOSTrackBar, MPxpButton;
+  HEOSTrackBar,
+  MPxpButton;
 
 type
 
   TReceiverAvailabilityProbe = class(TThread)
+
   private
 
     FHost: string;
@@ -199,15 +202,25 @@ type
     procedure ToneClick(Sender: TObject);
     procedure ToneChange(Sender: TObject);
     procedure ToneDblClick(Sender: TObject);
-    procedure MainCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure MainCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure btnMinimizeClick(Sender: TObject);
     procedure btnExitClick(Sender: TObject);
-    procedure Panel3MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure lblAppTitleMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure imgLogoMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure Panel3MouseDown(Sender: TObject;
+                              Button: TMouseButton;
+                              Shift: TShiftState;
+                              X,
+                              Y: Integer);
+    procedure lblAppTitleMouseDown(Sender: TObject;
+                                   Button: TMouseButton;
+                                   Shift: TShiftState;
+                                   X,
+                                   Y: Integer);
+    procedure imgLogoMouseDown(Sender: TObject;
+                               Button: TMouseButton;
+                               Shift: TShiftState;
+                               X,
+                               Y: Integer);
 
   private
     FAudioSettingsFile: string;
@@ -270,7 +283,7 @@ type
     FMuteText: string;
     FInputText: string;
     FDiscovery: THEOSDiscovery;
-    FDevices: TArray<THEOSDevice>;
+    FDevices: TArray < THEOSDevice > ;
     FMasterOutput: TRdjHeosOutput;
     FMasterWaiting: Boolean;
     FMasterDesired: Boolean;
@@ -289,7 +302,8 @@ type
     procedure DiscoveryFinished(Sender: TObject);
     procedure BeginReceiverCheck(ReadAll: Boolean = False;
                                  Discover: Boolean = True);
-    procedure BeginDiscovery(Reconnect: Boolean; ReadAll: Boolean);
+    procedure BeginDiscovery(Reconnect: Boolean;
+                             ReadAll: Boolean);
     procedure CompleteReceiverCheck();
     procedure ProcessMasterStream();
     procedure SendHeos(Action: THeosAction;
@@ -326,7 +340,7 @@ type
     property OnVisibilityChanged: TNotifyEvent read FOnVisibilityChanged write FOnVisibilityChanged;
   end;
 
-  function GetTickCount64(): UInt64; stdcall;
+function GetTickCount64(): UInt64; stdcall;
 
 var
   HeosRemoteFrm: TRdjHeosRemoteForm;
@@ -360,7 +374,9 @@ const
                                            'SITUNER',
                                            'SINET');
 
+
 constructor TReceiverAvailabilityProbe.Create(const Host: string);
+
 begin
 
   inherited Create(True);
@@ -370,16 +386,18 @@ end;
 
 
 procedure TReceiverAvailabilityProbe.Execute();
+
 begin
 
   FAvailable := ProbeReceiver(FHost,
-                               23,
-                               2000,
-                               FErrorText);
+                              23,
+                              2000,
+                              FErrorText);
 end;
 
 
 procedure TRdjHeosRemoteForm.FormShow(Sender: TObject);
+
 begin
 
   SetWindowLong(Handle,
@@ -400,6 +418,7 @@ end;
 
 procedure TRdjHeosRemoteForm.BeginReceiverCheck(ReadAll: Boolean;
                                                 Discover: Boolean);
+
 begin
 
   if Assigned(FReceiverCheck) then
@@ -408,8 +427,7 @@ begin
   if Assigned(FWorker) and not FWorker.Finished then
     Exit;
 
-  if Assigned(FDiscovery) and not FDiscovery.Finished and
-     not FDiscoveryComplete then
+  if Assigned(FDiscovery) and not FDiscovery.Finished and not FDiscoveryComplete then
     Exit;
 
   FReceiverCheckReadAll := ReadAll;
@@ -464,8 +482,8 @@ begin
       VolumeTimer.Enabled := False;
 
       FStatus.Caption := 'Receiver unavailable at ' + Host + ':23. ' +
-                         'Status read skipped. Check power, IP and Network Control; ' +
-                         'click Read status to retry.';
+        'Status read skipped. Check power, IP and Network Control; ' +
+        'click Read status to retry.';
 
       lblStreamInfo.Caption := FStatus.Caption;
       memFLog.Lines.Add('! ' + FStatus.Caption + ' ' + ErrorText);
@@ -491,6 +509,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.tbVolumeDblClick(Sender: TObject);
+
 begin
 
   tbVolume.AnimateTrackBarToPosition(0,
@@ -499,6 +518,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.FindHEOSDEviceClick(Sender: TObject);
+
 begin
 
   BeginDiscovery(False,
@@ -506,7 +526,9 @@ begin
 end;
 
 
-procedure TRdjHeosRemoteForm.BeginDiscovery(Reconnect: Boolean; ReadAll: Boolean);
+procedure TRdjHeosRemoteForm.BeginDiscovery(Reconnect: Boolean;
+                                            ReadAll: Boolean);
+
 begin
 
   if not edHost.Enabled or Assigned(FReceiverCheck) then
@@ -569,7 +591,7 @@ begin
   if (ReceiverCount = 1) then
     Selected := ReceiverIndex;
 
-  cbxHEOSDevices.Visible := Length(FDevices) > 0;
+  cbxHEOSDevices.Visible := (Length(FDevices) > 0);
   cbxHEOSDevices.ItemIndex := Selected;
   btnFindHEOSDevice.Caption := 'Find HEOS';
   btnFindHEOSDevice.Enabled := True;
@@ -583,14 +605,12 @@ begin
 
   if (FDiscovery.ErrorText <> '') then
     FStatus.Caption := 'Discovery: ' + FDiscovery.ErrorText
+  else if (Length(FDevices) = 0) then
+    FStatus.Caption := 'No HEOS device replied. Check power, Network Control and the local network; enter the IP or click Read status to retry.'
+  else if (ReceiverCount = 0) then
+    FStatus.Caption := 'HEOS devices found, but AVR control is unavailable. Check receiver Network Control and power.'
   else
-    if (Length(FDevices) = 0) then
-      FStatus.Caption := 'No HEOS device replied. Check power, Network Control and the local network; enter the IP or click Read status to retry.'
-    else
-      if (ReceiverCount = 0) then
-        FStatus.Caption := 'HEOS devices found, but AVR control is unavailable. Check receiver Network Control and power.'
-      else
-        FStatus.Caption := 'Several HEOS receivers found. Select the receiver in the list above.';
+    FStatus.Caption := 'Several HEOS receivers found. Select the receiver in the list above.';
 
   lblStreamInfo.Caption := FStatus.Caption;
   memFLog.Lines.Add(FStatus.Caption);
@@ -636,34 +656,42 @@ end;
 
 
 procedure TRdjHeosRemoteForm.imgLogoMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                              Button: TMouseButton;
+                                              Shift: TShiftState;
+                                              X,
+                                              Y: Integer);
+
 begin
 
   // Drag window
   ReleaseCapture;
   SendMessageW(Handle,
-              WM_SYSCOMMAND,
-              SC_MOVE + HTCAPTION,
-              0);
+               WM_SYSCOMMAND,
+               SC_MOVE + HTCAPTION,
+               0);
 end;
 
 
 procedure TRdjHeosRemoteForm.lblAppTitleMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                                  Button: TMouseButton;
+                                                  Shift: TShiftState;
+                                                  X,
+                                                  Y: Integer);
+
 begin
 
   // Drag window
   ReleaseCapture;
   SendMessageW(Handle,
-              WM_SYSCOMMAND,
-              SC_MOVE + HTCAPTION,
-              0);
+               WM_SYSCOMMAND,
+               SC_MOVE + HTCAPTION,
+               0);
 end;
 
 
 function TRdjHeosRemoteForm.ValidAddress(): Boolean;
 var
-  Parts: TArray<string>;
+  Parts: TArray < string > ;
   Part: string;
   Value: Integer;
   I: Integer;
@@ -671,7 +699,8 @@ var
 begin
 
   Result := False;
-  Parts := MfCastSplit(UTF8Decode(Trim(edHost.Text)),'.');
+  Parts := MfCastSplit(UTF8Decode(Trim(edHost.Text)),
+                       '.');
 
   if (Length(Parts) <> 4) then
     Exit;
@@ -683,15 +712,15 @@ begin
 
       for I := 1 to Length(Part) do
         if not CharInSet(Part[I],
-                         ['0'..'9']) then
+          ['0'..'9']) then
           Exit;
 
-        if not TryStrToInt(Part,
-                           Value) then
-          Exit;
+      if not TryStrToInt(Part,
+        Value) then
+        Exit;
 
-        if (Value < 0) or (Value > 255) then
-          Exit;
+      if (Value < 0) or (Value > 255) then
+        Exit;
     end;
   Result := True;
 end;
@@ -739,6 +768,7 @@ end;
 
 
 function TRdjHeosRemoteForm.VolumeCaption(HalfSteps: Integer): string;
+
 begin
 
   Result := IntToStr(HalfSteps div 2) + '.' + IntToStr((HalfSteps mod 2) * 5) + '%';
@@ -746,6 +776,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.SetVolumeBusy(Busy: Boolean);
+
 begin
 
   edHost.Enabled := not Busy;
@@ -758,6 +789,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.VolumeChange(Sender: TObject);
+
 begin
 
   if not FVolumeReady or FUpdatingVolume or (csLoading in ComponentState) then
@@ -790,13 +822,14 @@ begin
         Direction := 'Right';
 
       lblBalance.Caption := 'Balance: ' + Direction + ' ' + IntToStr(Amount div 2) +
-                              '.' + IntToStr((Amount mod 2) * 5) + ' dB';
+        '.' + IntToStr((Amount mod 2) * 5) + ' dB';
     end;
 
 end;
 
 
 procedure TRdjHeosRemoteForm.BalanceChange(Sender: TObject);
+
 begin
 
   if not FVolumeReady or FUpdatingBalance or (csLoading in ComponentState) then
@@ -811,6 +844,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.BalanceDblClick(Sender: TObject);
+
 begin
 
   tbBalance.AnimateTrackBarToPosition(0,
@@ -821,6 +855,7 @@ end;
 procedure TRdjHeosRemoteForm.UpdateToneDisplay();
 var
   Available: Boolean;
+
 
   function ToneCaption(const Name: string;
                        Value: Integer): string;
@@ -849,33 +884,28 @@ begin
                                      tbTreble.Position);
 
     Available := (FPowerText = 'On') and
-                  FToneKnown and not
-                  ContainsText(FToneMode,
-                               'DIRECT') and not
-                  FDynamicEq;
+      FToneKnown and not
+      ContainsText(FToneMode,
+                   'DIRECT') and not
+      FDynamicEq;
 
     btnTone.Enabled := Available;
-    tbBass.Enabled := Available and FToneEnabled and
-                        not (FTonePending and not FDesiredToneEnabled);
+    tbBass.Enabled := Available and FToneEnabled and not (FTonePending and not FDesiredToneEnabled);
     tbTreble.Enabled := tbBass.Enabled;
 
     if (FPowerText <> 'On') then
       lblToneStatus.Caption := 'Activate Main Zone to adjust tone.'
+    else if ContainsText(FToneMode,
+      'DIRECT') then
+      lblToneStatus.Caption := 'Tone is unavailable in Direct / Pure Direct mode.'
+    else if FDynamicEq then
+      lblToneStatus.Caption := 'Tone is unavailable while Dynamic EQ is on.'
+    else if not FToneKnown then
+      lblToneStatus.Caption := 'Reading receiver tone settings ...'
+    else if not FToneEnabled then
+      lblToneStatus.Caption := 'Enable Tone to adjust bass and treble.'
     else
-      if ContainsText(FToneMode,
-                      'DIRECT') then
-        lblToneStatus.Caption := 'Tone is unavailable in Direct / Pure Direct mode.'
-      else
-        if FDynamicEq then
-          lblToneStatus.Caption := 'Tone is unavailable while Dynamic EQ is on.'
-      else
-        if not FToneKnown then
-          lblToneStatus.Caption := 'Reading receiver tone settings ...'
-        else
-          if not FToneEnabled then
-            lblToneStatus.Caption := 'Enable Tone to adjust bass and treble.'
-          else
-            lblToneStatus.Caption := 'Bass / treble: -6 to +6 dB. Double-click for 0 dB.';
+      lblToneStatus.Caption := 'Bass / treble: -6 to +6 dB. Double-click for 0 dB.';
 
   finally
     FUpdatingTone := False;
@@ -884,6 +914,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.ToneClick(Sender: TObject);
+
 begin
 
   if FUpdatingTone or not FVolumeReady then
@@ -904,6 +935,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.ToneChange(Sender: TObject);
+
 begin
 
   if FUpdatingTone or not FVolumeReady or (csLoading in ComponentState) then
@@ -914,14 +946,13 @@ begin
       FDesiredBass := tbBass.Position;
       FBassPending := True;
     end
+  else if (Sender = tbTreble) then
+    begin
+      FDesiredTreble := tbTreble.Position;
+      FTreblePending := True;
+    end
   else
-    if (Sender = tbTreble) then
-      begin
-        FDesiredTreble := tbTreble.Position;
-        FTreblePending := True;
-      end
-    else
-      Exit;
+    Exit;
 
   UpdateToneDisplay();
   VolumeTimer.Enabled := False;
@@ -930,24 +961,24 @@ end;
 
 
 procedure TRdjHeosRemoteForm.ToneDblClick(Sender: TObject);
+
 begin
 
   if (Sender = tbBass) then
     tbBass.Position := 0
-  else
-    if (Sender = tbTreble) then
+  else if (Sender = tbTreble) then
     tbTreble.Position := 0;
 end;
 
 
 procedure TRdjHeosRemoteForm.StartToneRequest();
 var
-  Commands: TList<string>;
+  Commands: TList < string > ;
   Command: string;
 
 begin
 
-  Commands := TList<string>.Create;
+  Commands := (TList < string > .Create);
   try
     if FTonePending then
       if FDesiredToneEnabled then
@@ -1007,7 +1038,7 @@ var
   LeftCommand: string;
   RightCommand: string;
 
-  //Helper
+//Helper
   function ChannelValue(HalfSteps: Integer): string;
   begin
     if (HalfSteps < 76) then
@@ -1038,7 +1069,7 @@ begin
       Inc(FStartupBalanceReadAttempts);
       FWorker := TDenonRequest.Create(Trim(edHost.Text),
                                       ['SI?',
-                                      'CV?'],
+        'CV?'],
                                       23,
                                       False,
                                       True);
@@ -1064,8 +1095,8 @@ begin
 
       FWorker := TDenonRequest.Create(Trim(edHost.Text),
                                       [LeftCommand,
-                                       RightCommand,
-                                       'CV?'],
+        RightCommand,
+        'CV?'],
                                       23,
                                       False,
                                       True);
@@ -1085,61 +1116,62 @@ end;
 
 
 function TRdjHeosRemoteForm.ReceiverActionsPending(): Boolean;
+
 begin
 
   Result := FVolumePending or
-            FVolumeReadPending or
-            FBalancePending or
-            FBalanceReadPending or
-            FMainZonePending or
-            FZone2Pending or
-            FZoneReadPending or
-            FTonePending or
-            FBassPending or
-            FTreblePending or
-            FToneReadPending;
+    FVolumeReadPending or
+    FBalancePending or
+    FBalanceReadPending or
+    FMainZonePending or
+    FZone2Pending or
+    FZoneReadPending or
+    FTonePending or
+    FBassPending or
+    FTreblePending or
+    FToneReadPending;
 end;
 
 
 procedure TRdjHeosRemoteForm.UpdateZoneButtons();
+
 begin
 
   if FMainZonePending then
     btnMainZone.Checked := FMainZoneDesired
+  else if FZoneRequest and (FZoneRequestKind = 1) then
+    btnMainZone.Checked := FZoneRequestTarget
   else
-    if FZoneRequest and (FZoneRequestKind = 1) then
-      btnMainZone.Checked := FZoneRequestTarget
-    else
-      btnMainZone.Checked := FPowerText = 'On';
+    btnMainZone.Checked := (FPowerText = 'On');
 
   if FZone2Pending then
     btnZone2.Checked := FZone2Desired
+  else if FZoneRequest and (FZoneRequestKind = 2) then
+    btnZone2.Checked := FZoneRequestTarget
   else
-    if FZoneRequest and (FZoneRequestKind = 2) then
-      btnZone2.Checked := FZoneRequestTarget
-    else
-      btnZone2.Checked := FZone2PowerText = 'On';
+    btnZone2.Checked := (FZone2PowerText = 'On');
 end;
 
 
 procedure TRdjHeosRemoteForm.ZoneClick(Sender: TObject);
+
 begin
 
   if (Sender = btnMainZone) then
     QueueZoneChange(True,
                     btnMainZone.Checked)
-  else
-    if (Sender = btnZone2) then
-      QueueZoneChange(False,
-                      btnZone2.Checked);
+  else if (Sender = btnZone2) then
+    QueueZoneChange(False,
+                    btnZone2.Checked);
 end;
 
 
 procedure TRdjHeosRemoteForm.RetryStartupZoneRead();
+
 begin
 
   if ((FPowerText = '?') or (FZone2PowerText = '?')) and
-     (FStartupZoneReadAttempts < 3) then
+    (FStartupZoneReadAttempts < 3) then
     begin
       FZoneReadPending := True;
 
@@ -1151,7 +1183,9 @@ begin
 end;
 
 
-procedure TRdjHeosRemoteForm.QueueZoneChange(MainZone: Boolean; Active: Boolean);
+procedure TRdjHeosRemoteForm.QueueZoneChange(MainZone: Boolean;
+                                             Active: Boolean);
+
 begin
 
   if MainZone then
@@ -1175,7 +1209,7 @@ end;
 procedure TRdjHeosRemoteForm.StartZoneRequest();
 var
   Command: string;
-  Commands: TArray<string>;
+  Commands: TArray < string > ;
 
 begin
 
@@ -1192,31 +1226,30 @@ begin
       else
         Command := 'ZMOFF';
     end
-  else
-    if FZone2Pending then
-      begin
-        FZone2Pending := False;
-        FZoneRequestKind := 2;
-        FZoneRequestTarget := FZone2Desired;
+  else if FZone2Pending then
+    begin
+      FZone2Pending := False;
+      FZoneRequestKind := 2;
+      FZoneRequestTarget := FZone2Desired;
 
-        if FZoneRequestTarget then
-          Command := 'Z2ON'
-        else
-          Command := 'Z2OFF';
-      end;
+      if FZoneRequestTarget then
+        Command := 'Z2ON'
+      else
+        Command := 'Z2OFF';
+    end;
 
   FZoneReadPending := False;
 
   if (Command = '') then
     begin
       Inc(FStartupZoneReadAttempts);
-      Commands := TArray<string>.Create('ZM?',
-                                        'Z2?');
+      Commands := (TArray < string > .Create('ZM?',
+                                             'Z2?'));
     end
   else
-    Commands := TArray<string>.Create(Command,
-                                      'ZM?',
-                                      'Z2?');
+    Commands := (TArray < string > .Create(Command,
+                                           'ZM?',
+                                           'Z2?'));
 
   FreeAndNil(FWorker);
   FExpectedPowerReply := Command;
@@ -1313,7 +1346,7 @@ begin
 
       FWorker := TDenonRequest.Create(Trim(edHost.Text),
                                       [Command,
-                                      'MV?'],
+        'MV?'],
                                       23,
                                       True);
 
@@ -1327,8 +1360,8 @@ begin
           Inc(FStartupZoneReadAttempts);
           FWorker := TDenonRequest.Create(Trim(edHost.Text),
                                           ['ZM?',
-                                           'Z2?',
-                                           'MV?'],
+            'Z2?',
+            'MV?'],
                                           23,
                                           True,
                                           False,
@@ -1370,53 +1403,53 @@ begin
     Exit;
 
   case TComponent(Sender).Tag of
-    0: begin
-         BeginReceiverCheck(True);
-         Exit;
-       end;
-    1: begin
-         QueueZoneChange(True,
-                         True);
-         Exit;
-       end;
-    2: begin
-         QueueZoneChange(True,
-                         False);
-         Exit;
-       end;
-    5: begin
-         if (Sender = btnMute) and not btnMute.Checked then
-           Command := 'MUOFF'
-         else
-           Command := 'MUON';
-       end;
+      0: begin
+        BeginReceiverCheck(True);
+        Exit;
+      end;
+      1: begin
+        QueueZoneChange(True,
+                        True);
+        Exit;
+      end;
+      2: begin
+        QueueZoneChange(True,
+                        False);
+        Exit;
+      end;
+      5: begin
+        if (Sender = btnMute) and not btnMute.Checked then
+          Command := 'MUOFF'
+        else
+          Command := 'MUON';
+      end;
     6: Command := 'MUOFF';
-    8: begin
-         QueueZoneChange(False,
-                         True);
-         Exit;
-       end;
-    9: begin
-         QueueZoneChange(False,
-                         False);
-         Exit;
-       end;
-    7: begin
-         if (FSource.ItemIndex < Low(SourceCommands)) or (FSource.ItemIndex > High(SourceCommands)) then
-           Exit;
+      8: begin
+        QueueZoneChange(False,
+                        True);
+        Exit;
+      end;
+      9: begin
+        QueueZoneChange(False,
+                        False);
+        Exit;
+      end;
+      7: begin
+        if (FSource.ItemIndex < Low(SourceCommands)) or (FSource.ItemIndex > High(SourceCommands)) then
+          Exit;
 
-         Command := SourceCommands[FSource.ItemIndex];
-       end;
-  else
-    Exit;
+        Command := SourceCommands[FSource.ItemIndex];
+      end;
+    else
+      Exit;
   end;
 
   StartRequest([Command,
-                'ZM?',
-                'Z2?',
-                'MV?',
-                'MU?',
-                'SI?']);
+    'ZM?',
+    'Z2?',
+    'MV?',
+    'MU?',
+    'SI?']);
 end;
 
 
@@ -1466,14 +1499,13 @@ begin
           FStatus.Caption := FWorker.ErrorText;
           memFLog.Lines.Add('! Zones: ' + FWorker.ErrorText);
         end
+      else if not PowerConfirmed then
+        begin
+          FStatus.Caption := 'Receiver did not confirm the requested zone change.';
+          memFLog.Lines.Add('! Zone change not confirmed: ' + FExpectedPowerReply);
+        end
       else
-        if not PowerConfirmed then
-          begin
-            FStatus.Caption := 'Receiver did not confirm the requested zone change.';
-            memFLog.Lines.Add('! Zone change not confirmed: ' + FExpectedPowerReply);
-          end
-        else
-          FStatus.Caption := 'Receiver zone states updated.';
+        FStatus.Caption := 'Receiver zone states updated.';
 
       VolumeTimer.Enabled := ReceiverActionsPending();
       Exit;
@@ -1562,15 +1594,14 @@ begin
       FStatus.Caption := FWorker.ErrorText;
       memFLog.Lines.Add('! ' + FWorker.ErrorText);
     end
+  else if not PowerConfirmed then
+    begin
+      FStatus.Caption := 'Receiver replied, but the requested power change was not confirmed. Click Read status to check.';
+      memFLog.Lines.Add('! Power change not confirmed: ' + FExpectedPowerReply);
+    end
   else
-    if not PowerConfirmed then
-      begin
-        FStatus.Caption := 'Receiver replied, but the requested power change was not confirmed. Click Read status to check.';
-        memFLog.Lines.Add('! Power change not confirmed: ' + FExpectedPowerReply);
-      end
-    else
-      FStatus.Caption := 'Reply received at ' + FormatDateTime('hh:nn:ss',
-                                                               Now) + '. Values below reflect receiver replies; click Read status to refresh.';
+    FStatus.Caption := 'Reply received at ' + FormatDateTime('hh:nn:ss',
+                                                             Now) + '. Values below reflect receiver replies; click Read status to refresh.';
   pnlPlay.Enabled := True;
   edHost.Enabled := True;
   btnFindHEOSDevice.Enabled := not Assigned(FDiscovery) or FDiscovery.Finished;
@@ -1579,15 +1610,19 @@ end;
 
 
 procedure TRdjHeosRemoteForm.Panel3MouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                             Button: TMouseButton;
+                                             Shift: TShiftState;
+                                             X,
+                                             Y: Integer);
+
 begin
 
   // Drag window
   ReleaseCapture;
   SendMessageW(Handle,
-              WM_SYSCOMMAND,
-              SC_MOVE + HTCAPTION,
-              0);
+               WM_SYSCOMMAND,
+               SC_MOVE + HTCAPTION,
+               0);
 end;
 
 
@@ -1602,30 +1637,29 @@ begin
   if (Line = 'PSTONE CTRL ON') or (Line = 'PSTONE CTRL OFF') then
     begin
       FToneKnown := True;
-      FToneEnabled := Line = 'PSTONE CTRL ON';
+      FToneEnabled := (Line = 'PSTONE CTRL ON');
       UpdateToneDisplay();
       Exit;
     end;
 
   if StartsText('PSBAS ',
-                Line) or StartsText('PSTRE ',
-                                    Line) then
+    Line) or StartsText('PSTRE ',
+                        Line) then
     begin
       if TryStrToInt(Copy(Line,
-                          7,
-                          MaxInt), Value) and (Value >= 44) and (Value <= 56) then
+        7,
+        MaxInt), Value) and (Value >= 44) and (Value <= 56) then
         begin
           FUpdatingTone := True;
 
           try
             if StartsText('PSBAS ',
-                          Line) then
+              Line) then
               begin
                 if not FBassPending then
                   tbBass.Position := Value - 50;
               end
-            else
-              if not FTreblePending then
+            else if not FTreblePending then
               tbTreble.Position := Value - 50;
 
           finally
@@ -1638,23 +1672,25 @@ begin
 
   if StartsText('MS', Line) then
     begin
-      FToneMode := Copy(Line, 3, MaxInt);
+      FToneMode := Copy(Line,
+                        3,
+                        MaxInt);
       UpdateToneDisplay();
       Exit;
     end;
 
   if (Line = 'PSDYNEQ ON') or (Line = 'PSDYNEQ OFF') then
     begin
-      FDynamicEq := Line = 'PSDYNEQ ON';
+      FDynamicEq := (Line = 'PSDYNEQ ON');
       UpdateToneDisplay();
       Exit;
     end;
 
   if (Copy(Line,
-           1,
-           5) = 'CVFL ') or (Copy(Line,
-                                  1,
-                                  5) = 'CVFR ') then
+    1,
+    5) = 'CVFL ') or (Copy(Line,
+                           1,
+                           5) = 'CVFR ') then
     begin
       Raw := Copy(Line,
                   6,
@@ -1663,20 +1699,19 @@ begin
       if not TryStrToInt(Raw, Value) then
         Exit;
 
-      if Length(Raw) = 2 then
+      if (Length(Raw) = 2) then
         HalfSteps := Value * 2
+      else if (Length(Raw) = 3) and (Value mod 5 = 0) then
+        HalfSteps := Value div 5
       else
-        if (Length(Raw) = 3) and (Value mod 5 = 0) then
-          HalfSteps := Value div 5
-        else
-          Exit;
+        Exit;
 
       if (HalfSteps < 76) or (HalfSteps > 124) then
         Exit;
 
-      if Copy(Line,
-              1,
-              5) = 'CVFL ' then
+      if (Copy(Line,
+        1,
+        5) = 'CVFL ') then
         begin
           FBalanceReplyLeft := HalfSteps;
           FBalanceLeftReceived := True;
@@ -1700,36 +1735,33 @@ begin
       FPowerText := 'On';
       UpdateToneDisplay();
     end
-  else
-    if (Line = 'ZMOFF') then
-      begin
-        FPowerText := 'Standby';
-        UpdateToneDisplay();
-      end;
+  else if (Line = 'ZMOFF') then
+    begin
+      FPowerText := 'Standby';
+      UpdateToneDisplay();
+    end;
 
   if (Line = 'Z2ON') then
     FZone2PowerText := 'On'
-  else
-    if (Line = 'Z2OFF') then
-      FZone2PowerText := 'Standby';
+  else if (Line = 'Z2OFF') then
+    FZone2PowerText := 'Standby';
 
   if (Line = 'MUON') then
     begin
       FMuteText := 'On';
       btnMute.Checked := True;
     end
-  else
-    if (Line = 'MUOFF') then
-      begin
-        FMuteText := 'Off';
-        btnMute.Checked := False;
-      end;
+  else if (Line = 'MUOFF') then
+    begin
+      FMuteText := 'Off';
+      btnMute.Checked := False;
+    end;
 
   if StartsText('SI', Line) then
     begin
       if (FInputText <> Copy(Line,
-                             3,
-                             MaxInt)) then
+        3,
+        MaxInt)) then
         begin
           FToneKnown := False;
           FTonePending := False;
@@ -1739,7 +1771,9 @@ begin
           VolumeTimer.Enabled := True;
           UpdateToneDisplay();
         end;
-      FInputText := Copy(Line, 3, MaxInt);
+      FInputText := Copy(Line,
+                         3,
+                         MaxInt);
 
       if FBalanceKnown and (FInputText <> FBalanceBaseInput) then
         begin
@@ -1753,18 +1787,20 @@ begin
 
   if StartsText('MVMAX ', Line) then
     begin
-      Raw := Trim(Copy(Line, 7, MaxInt));
+      Raw := Trim(Copy(Line,
+                       7,
+                       MaxInt));
 
       if ((Length(Raw) = 2) or (Length(Raw) = 3)) and
-         TryStrToInt(Raw, Value) then
+        TryStrToInt(Raw,
+                    Value) then
         begin
           if (Length(Raw) = 2) then
             HalfSteps := Value * 2
+          else if (Value mod 5 = 0) then
+            HalfSteps := Value div 5
           else
-            if (Value mod 5 = 0) then
-              HalfSteps := Value div 5
-            else
-              Exit;
+            Exit;
 
           if (HalfSteps <= 0) or (HalfSteps > 196) then
             Exit;
@@ -1786,8 +1822,8 @@ begin
     end;
 
   if StartsText('MV',
-                Line) and (not StartsText('MVMAX',
-                                          Line)) then
+    Line) and (not StartsText('MVMAX',
+                              Line)) then
     begin
 
       Raw := Copy(Line,
@@ -1795,7 +1831,7 @@ begin
                   MaxInt);
 
       if ((Length(Raw) = 2) or (Length(Raw) = 3)) and TryStrToInt(Raw,
-                                                                  Value) then
+        Value) then
         begin
           if (Length(Raw) = 3) then
             begin
@@ -1844,16 +1880,20 @@ begin
   URL := 'http://' + Trim(edHost.Text);
 
   if (ShellExecuteW(Handle,
-                   'open',
-                   PChar(URL),
-                   nil,
-                   nil,
-                   SW_SHOWNORMAL) <= 32) then
-    begin FStatus.Caption := 'Windows could not open the browser. Open ' + URL + ' manually.'; memFLog.Lines.Add(FStatus.Caption); end;
+    'open',
+    PChar(URL),
+    nil,
+    nil,
+    SW_SHOWNORMAL) <= 32) then
+    begin
+      FStatus.Caption := 'Windows could not open the browser. Open ' + URL + ' manually.';
+      memFLog.Lines.Add(FStatus.Caption);
+    end;
 end;
 
 
 procedure TRdjHeosRemoteForm.SettingsClick(Sender: TObject);
+
 begin
 
   pnlPlay.Visible := False;
@@ -1863,6 +1903,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.PlayerClick(Sender: TObject);
+
 begin
 
   pnlSettings.Visible := False;
@@ -1872,6 +1913,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.FormCreate(Sender: TObject);
+
 begin
 
   PlayerClick(Self);
@@ -1890,6 +1932,7 @@ end;
 
 
 destructor TRdjHeosRemoteForm.Destroy();
+
 begin
 
   StreamTimer.Enabled := False;
@@ -1932,6 +1975,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.BindOutput(AOutput: TRdjHeosOutput);
+
 begin
 
   FMasterOutput := AOutput;
@@ -1952,9 +1996,9 @@ begin
   Text := Trim(cbxAacBitrate.Text);
 
   if SameText(Copy(Text,
-                   Length(Text) - 3,
-                   4),
-              'Kbps') then
+    Length(Text) - 3,
+    4),
+    'Kbps') then
     Text := Trim(Copy(Text,
                       1,
                       Length(Text) - 4));
@@ -1968,14 +2012,13 @@ begin
   Result := BitrateKbps in [96, 128, 160, 192];
 
   if SameText(Trim(cbxAacChannels.Text),
-                   'Stereo') then
+    'Stereo') then
     Channels := 2
+  else if SameText(Trim(cbxAacChannels.Text),
+    'Mono') then
+    Channels := 1
   else
-    if SameText(Trim(cbxAacChannels.Text),
-                'Mono') then
-      Channels := 1
-    else
-      Result := False;
+    Result := False;
 end;
 
 
@@ -1992,8 +2035,8 @@ begin
 
   try
     if not TryLoadHeosIni(AFileName,
-                          Ini,
-                          ErrorText) then
+      Ini,
+      ErrorText) then
       memFLog.Lines.Add('! HEOS settings: ' + ErrorText);
 
     case Ini.ReadInteger('HEOS',
@@ -2002,15 +2045,15 @@ begin
       96: Index := 0;
       128: Index := 1;
       160: Index := 2;
-    else
-      Index := 3;
+      else
+        Index := 3;
     end;
 
     cbxAacBitrate.ItemIndex := Index;
 
     if (Ini.ReadInteger('HEOS',
-                        'AacChannels',
-                        2) = 1) then
+      'AacChannels',
+      2) = 1) then
       cbxAacChannels.ItemIndex := 1
     else
       cbxAacChannels.ItemIndex := 0;
@@ -2039,20 +2082,24 @@ begin
 
   try
     if not TryLoadHeosIni(FAudioSettingsFile,
-                          Ini,
-                          ErrorText) then
+      Ini,
+      ErrorText) then
       begin
         memFLog.Lines.Add('! HEOS settings: ' + ErrorText);
         Exit;
       end;
 
-    Ini.WriteInteger('HEOS', 'AacBitrateKbps', BitrateKbps);
-    Ini.WriteInteger('HEOS', 'AacChannels', Channels);
+    Ini.WriteInteger('HEOS',
+                     'AacBitrateKbps',
+                     BitrateKbps);
+    Ini.WriteInteger('HEOS',
+                     'AacChannels',
+                     Channels);
 
     if not TrySaveHeosIni(FAudioSettingsFile,
-                          Ini,
-                          ErrorText,
-                          TEncoding.Unicode) then
+      Ini,
+      ErrorText,
+      TEncoding.Unicode) then
       memFLog.Lines.Add('! HEOS settings: ' + ErrorText);
 
   finally
@@ -2062,6 +2109,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.FormHidden(Sender: TObject);
+
 begin
 
   if Assigned(FOnVisibilityChanged) then
@@ -2069,7 +2117,9 @@ begin
 end;
 
 
-procedure TRdjHeosRemoteForm.MainCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TRdjHeosRemoteForm.MainCloseQuery(Sender: TObject;
+                                            var CanClose: Boolean);
+
 begin
 
   CanClose := False;
@@ -2078,6 +2128,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.btnExitClick(Sender: TObject);
+
 begin
 
   Close();
@@ -2085,6 +2136,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.btnMinimizeClick(Sender: TObject);
+
 begin
 
   WindowState := wsMinimized;
@@ -2092,6 +2144,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.btnStreamRdjAudioClick(Sender: TObject);
+
 begin
 
   FMasterDesired := not FMasterDesired;
@@ -2110,11 +2163,15 @@ begin
 end;
 
 
-procedure TRdjHeosRemoteForm.SendHeos(Action: THeosAction; const Url: string);
+procedure TRdjHeosRemoteForm.SendHeos(Action: THeosAction;
+                                      const Url: string);
+
 begin
 
   FLastHeosAction := Action;
-  FHeos := THeosRequest.Create(FStreamReceiver, Action, Url);
+  FHeos := THeosRequest.Create(FStreamReceiver,
+                               Action,
+                               Url);
 
   if (Action = haPlayUrl) then
     FMasterIssued := True;
@@ -2131,20 +2188,21 @@ var
   Channels: Integer;
   Text: string;
 
+
   procedure FailStream(const Text: string);
-    begin
+  begin
 
-      FMasterDesired := False;
-      FMasterWaiting := False;
-      FMasterConfirmed := False;
-      FMasterStopPending := FMasterIssued;
+    FMasterDesired := False;
+    FMasterWaiting := False;
+    FMasterConfirmed := False;
+    FMasterStopPending := FMasterIssued;
 
-      if Assigned(FMasterOutput) then
-        FMasterOutput.Stop();
+    if Assigned(FMasterOutput) then
+      FMasterOutput.Stop();
 
-      memFLog.Lines.Add('! Masterdeck: ' + Text);
-      lblStreamInfo.Caption := Text;
-    end;
+    memFLog.Lines.Add('! Masterdeck: ' + Text);
+    lblStreamInfo.Caption := Text;
+  end;
 
 
 begin
@@ -2206,7 +2264,10 @@ begin
       Exit;
 
     if not Assigned(FMasterOutput) then
-      begin FailStream('The RDJ Masterdeck output is not attached.'); Exit; end;
+      begin
+        FailStream('The RDJ Masterdeck output is not attached.');
+        Exit;
+      end;
 
     if not FMasterOutput.Active() then
       begin
@@ -2217,14 +2278,14 @@ begin
           end;
 
         if not TryStrToInt(StreamPortEdit.Text,
-                           Port) or (Port < 1024) or (Port > 65535) then
+          Port) or (Port < 1024) or (Port > 65535) then
           begin
             FailStream('Choose a streaming port between 1024 and 65535.');
             Exit;
           end;
 
         if not TryReadAudioSettings(BitrateKbps,
-                                    Channels) then
+          Channels) then
           begin
             FailStream('Choose a supported AAC bitrate and Mono or Stereo channels.');
             Exit;
@@ -2233,10 +2294,10 @@ begin
         FStreamReceiver := Trim(edHost.Text);
 
         if Failed(FMasterOutput.Start(FStreamReceiver,
-                            Port,
-                            Trim(PcAddressEdit.Text),
-                            BitrateKbps,
-                            Channels)) then
+          Port,
+          Trim(PcAddressEdit.Text),
+          BitrateKbps,
+          Channels)) then
           begin
             FailStream(FMasterOutput.ErrorText());
             Exit;
@@ -2257,7 +2318,7 @@ begin
         Exit;
       end;
 
-   if FMasterWaiting and FMasterOutput.Ready() then
+    if FMasterWaiting and FMasterOutput.Ready() then
       begin
         FMasterWaiting := False;
         memFLog.Lines.Add('Masterdeck URL: ' + FMasterOutput.Url());
@@ -2279,6 +2340,7 @@ end;
 
 
 procedure TRdjHeosRemoteForm.UpdateStreamButtons();
+
 begin
 
   btnStreamRdjAudio.Enabled := Assigned(FMasterOutput);
@@ -2298,11 +2360,11 @@ begin
   ProcessMasterStream();
   UpdateStreamButtons();
   if FMasterConfirmed and Assigned(FMasterOutput) and FMasterOutput.Active() and
-     (FMasterOutput.Requests() > 0) then
+    (FMasterOutput.Requests() > 0) then
     begin
       Seconds := (GetTickCount64() - FStreamStartedTick) div 1000;
       lblElapsed.Caption := Format('Elapsed: %.2d:%.2d:%.2d',
-                                    [Seconds div 3600, (Seconds div 60) mod 60, Seconds mod 60]);
+                                   [Seconds div 3600, (Seconds div 60) mod 60, Seconds mod 60]);
     end;
 end;
 
@@ -2310,7 +2372,7 @@ end;
 
 {$WARN SYMBOL_PLATFORM OFF}
 
-function GetTickCount64; external Kernel32Lib name 'GetTickCount64' ;
+function GetTickCount64; external Kernel32Lib name 'GetTickCount64';
 
 {$WARN SYMBOL_PLATFORM ON}
 

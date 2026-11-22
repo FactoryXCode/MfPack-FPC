@@ -4,7 +4,8 @@ unit MfPlayerSample.Platform;
 
 interface
 
-uses Windows;
+uses
+  Windows;
 
 function MfPlayerSetWindowText(Window: HWND;
                                const Value: UnicodeString): BOOL;
@@ -13,22 +14,24 @@ function MfPlayerSetWindowText(Window: HWND;
 implementation
 
 uses
-  
+
   {System}
   SysUtils;
-  
+
 
 function MfPlayerSetWindowText(Window: HWND;
                                const Value: UnicodeString): BOOL;
+
 begin
+
   Result := Windows.SetWindowTextW(Window,
                                    PWideChar(Value));
 end;
 
 
 initialization
-  
+
   SetMultiByteConversionCodePage(CP_UTF8);
   SetMultiByteRTLFileSystemCodePage(CP_UTF8);
-  
+
 end.

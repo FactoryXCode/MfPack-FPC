@@ -72,13 +72,14 @@ unit WinApi.WinMM.JoyStickApi;
 {$I MfPack.Fpc.inc}
 
 
-  {$PACKENUM 4}
+{$PACKENUM 4}
 
-  {$IFDEF WIN32}
+{$IFDEF WIN32}
     {$ALIGN 1}
-  {$ELSE}
-    {$ALIGN 8} // Win64
-  {$ENDIF}
+{$ELSE}
+{$ALIGN 8}
+// Win64
+{$ENDIF}
 
 
 interface
@@ -99,97 +100,97 @@ uses
   { joystick error return values }
 
 const
-  JOYERR_NOERROR                      = (0);  { no error }
-  JOYERR_PARMS                        = (JOYERR_BASE + 5);  { bad parameters }
-  JOYERR_NOCANDO                      = (JOYERR_BASE + 6);  { request not completed }
-  JOYERR_UNPLUGGED                    = (JOYERR_BASE + 7);  { joystick is unplugged }
+  JOYERR_NOERROR = (0);  { no error }
+  JOYERR_PARMS = (JOYERR_BASE + 5);  { bad parameters }
+  JOYERR_NOCANDO = (JOYERR_BASE + 6);  { request not completed }
+  JOYERR_UNPLUGGED = (JOYERR_BASE + 7);  { joystick is unplugged }
 
   { constants used with JOYINFO and JOYINFOEX structures and MM_JOY* messages }
-  JOY_BUTTON1                         = $0001;
-  JOY_BUTTON2                         = $0002;
-  JOY_BUTTON3                         = $0004;
-  JOY_BUTTON4                         = $0008;
-  JOY_BUTTON1CHG                      = $0100;
-  JOY_BUTTON2CHG                      = $0200;
-  JOY_BUTTON3CHG                      = $0400;
-  JOY_BUTTON4CHG                      = $0800;
+  JOY_BUTTON1 = $0001;
+  JOY_BUTTON2 = $0002;
+  JOY_BUTTON3 = $0004;
+  JOY_BUTTON4 = $0008;
+  JOY_BUTTON1CHG = $0100;
+  JOY_BUTTON2CHG = $0200;
+  JOY_BUTTON3CHG = $0400;
+  JOY_BUTTON4CHG = $0800;
 
   { constants used with JOYINFOEX }
-  JOY_BUTTON5                         = $00000010;
-  JOY_BUTTON6                         = $00000020;
-  JOY_BUTTON7                         = $00000040;
-  JOY_BUTTON8                         = $00000080;
-  JOY_BUTTON9                         = $00000100;
-  JOY_BUTTON10                        = $00000200;
-  JOY_BUTTON11                        = $00000400;
-  JOY_BUTTON12                        = $00000800;
-  JOY_BUTTON13                        = $00001000;
-  JOY_BUTTON14                        = $00002000;
-  JOY_BUTTON15                        = $00004000;
-  JOY_BUTTON16                        = $00008000;
-  JOY_BUTTON17                        = $00010000;
-  JOY_BUTTON18                        = $00020000;
-  JOY_BUTTON19                        = $00040000;
-  JOY_BUTTON20                        = $00080000;
-  JOY_BUTTON21                        = $00100000;
-  JOY_BUTTON22                        = $00200000;
-  JOY_BUTTON23                        = $00400000;
-  JOY_BUTTON24                        = $00800000;
-  JOY_BUTTON25                        = $01000000;
-  JOY_BUTTON26                        = $02000000;
-  JOY_BUTTON27                        = $04000000;
-  JOY_BUTTON28                        = $08000000;
-  JOY_BUTTON29                        = $10000000;
-  JOY_BUTTON30                        = $20000000;
-  JOY_BUTTON31                        = $40000000;
-  JOY_BUTTON32                        = $80000000;
+  JOY_BUTTON5 = $00000010;
+  JOY_BUTTON6 = $00000020;
+  JOY_BUTTON7 = $00000040;
+  JOY_BUTTON8 = $00000080;
+  JOY_BUTTON9 = $00000100;
+  JOY_BUTTON10 = $00000200;
+  JOY_BUTTON11 = $00000400;
+  JOY_BUTTON12 = $00000800;
+  JOY_BUTTON13 = $00001000;
+  JOY_BUTTON14 = $00002000;
+  JOY_BUTTON15 = $00004000;
+  JOY_BUTTON16 = $00008000;
+  JOY_BUTTON17 = $00010000;
+  JOY_BUTTON18 = $00020000;
+  JOY_BUTTON19 = $00040000;
+  JOY_BUTTON20 = $00080000;
+  JOY_BUTTON21 = $00100000;
+  JOY_BUTTON22 = $00200000;
+  JOY_BUTTON23 = $00400000;
+  JOY_BUTTON24 = $00800000;
+  JOY_BUTTON25 = $01000000;
+  JOY_BUTTON26 = $02000000;
+  JOY_BUTTON27 = $04000000;
+  JOY_BUTTON28 = $08000000;
+  JOY_BUTTON29 = $10000000;
+  JOY_BUTTON30 = $20000000;
+  JOY_BUTTON31 = $40000000;
+  JOY_BUTTON32 = $80000000;
 
   { constants used with JOYINFOEX structure }
-  JOY_POVCENTERED                     = WORD (- 1);
-  JOY_POVFORWARD                      = 0;
-  JOY_POVRIGHT                        = 9000;
-  JOY_POVBACKWARD                     = 18000;
-  JOY_POVLEFT                         = 27000;
-  JOY_RETURNX                         = $00000001;
-  JOY_RETURNY                         = $00000002;
-  JOY_RETURNZ                         = $00000004;
-  JOY_RETURNR                         = $00000008;
-  JOY_RETURNU                         = $00000010;  { axis 5 }
-  JOY_RETURNV                         = $00000020;  { axis 6 }
-  JOY_RETURNPOV                       = $00000040;
-  JOY_RETURNBUTTONS                   = $00000080;
-  JOY_RETURNRAWDATA                   = $00000100;
-  JOY_RETURNPOVCTS                    = $00000200;
-  JOY_RETURNCENTERED                  = $00000400;
-  JOY_USEDEADZONE                     = $00000800;
-  JOY_RETURNALL                       = (JOY_RETURNX OR JOY_RETURNY OR JOY_RETURNZ OR
-                                         JOY_RETURNR OR JOY_RETURNU OR JOY_RETURNV OR
-                                         JOY_RETURNPOV OR JOY_RETURNBUTTONS);
-  JOY_CAL_READALWAYS                  = $00010000;
-  JOY_CAL_READXYONLY                  = $00020000;
-  JOY_CAL_READ3                       = $00040000;
-  JOY_CAL_READ4                       = $00080000;
-  JOY_CAL_READXONLY                   = $00100000;
-  JOY_CAL_READYONLY                   = $00200000;
-  JOY_CAL_READ5                       = $00400000;
-  JOY_CAL_READ6                       = $00800000;
-  JOY_CAL_READZONLY                   = $01000000;
-  JOY_CAL_READRONLY                   = $02000000;
-  JOY_CAL_READUONLY                   = $04000000;
-  JOY_CAL_READVONLY                   = $08000000;
+  JOY_POVCENTERED = WORD(-1);
+  JOY_POVFORWARD = 0;
+  JOY_POVRIGHT = 9000;
+  JOY_POVBACKWARD = 18000;
+  JOY_POVLEFT = 27000;
+  JOY_RETURNX = $00000001;
+  JOY_RETURNY = $00000002;
+  JOY_RETURNZ = $00000004;
+  JOY_RETURNR = $00000008;
+  JOY_RETURNU = $00000010;  { axis 5 }
+  JOY_RETURNV = $00000020;  { axis 6 }
+  JOY_RETURNPOV = $00000040;
+  JOY_RETURNBUTTONS = $00000080;
+  JOY_RETURNRAWDATA = $00000100;
+  JOY_RETURNPOVCTS = $00000200;
+  JOY_RETURNCENTERED = $00000400;
+  JOY_USEDEADZONE = $00000800;
+  JOY_RETURNALL = (JOY_RETURNX OR JOY_RETURNY OR JOY_RETURNZ OR
+    JOY_RETURNR OR JOY_RETURNU OR JOY_RETURNV OR
+    JOY_RETURNPOV OR JOY_RETURNBUTTONS);
+  JOY_CAL_READALWAYS = $00010000;
+  JOY_CAL_READXYONLY = $00020000;
+  JOY_CAL_READ3 = $00040000;
+  JOY_CAL_READ4 = $00080000;
+  JOY_CAL_READXONLY = $00100000;
+  JOY_CAL_READYONLY = $00200000;
+  JOY_CAL_READ5 = $00400000;
+  JOY_CAL_READ6 = $00800000;
+  JOY_CAL_READZONLY = $01000000;
+  JOY_CAL_READRONLY = $02000000;
+  JOY_CAL_READUONLY = $04000000;
+  JOY_CAL_READVONLY = $08000000;
 
   { joystick ID constants }
-  JOYSTICKID1                         = 0;
-  JOYSTICKID2                         = 1;
+  JOYSTICKID1 = 0;
+  JOYSTICKID2 = 1;
 
   { joystick driver capabilites }
-  JOYCAPS_HASZ                        = $0001;
-  JOYCAPS_HASR                        = $0002;
-  JOYCAPS_HASU                        = $0004;
-  JOYCAPS_HASV                        = $0008;
-  JOYCAPS_HASPOV                      = $0010;
-  JOYCAPS_POV4DIR                     = $0020;
-  JOYCAPS_POVCTS                      = $0040;
+  JOYCAPS_HASZ = $0001;
+  JOYCAPS_HASR = $0002;
+  JOYCAPS_HASU = $0004;
+  JOYCAPS_HASV = $0008;
+  JOYCAPS_HASPOV = $0010;
+  JOYCAPS_POV4DIR = $0020;
+  JOYCAPS_POVCTS = $0040;
 
 
 
@@ -198,6 +199,7 @@ const
 type
 
   PJOYCAPSA = ^tagJOYCAPSA;
+
   tagJOYCAPSA = record
     wMid: WORD;                                                   { manufacturer ID }
     wPid: WORD;                                                   { product ID }
@@ -229,6 +231,7 @@ type
   LPJOYCAPSA = ^tagJOYCAPSA;
 
   PJOYCAPSW = ^tagJOYCAPSW;
+
   tagJOYCAPSW = record
     wMid: WORD;                                                   { manufacturer ID }
     wPid: WORD;                                                   { product ID }
@@ -267,6 +270,7 @@ type
 
 
   PJOYCAPS2A = ^tagJOYCAPS2A;
+
   tagJOYCAPS2A = record
     wMid: WORD;                                                   { manufacturer ID }
     wPid: WORD;                                                   { product ID }
@@ -301,6 +305,7 @@ type
   LPJOYCAPS2A = ^tagJOYCAPS2A;
 
   PJOYCAPS2W = ^tagJOYCAPS2W;
+
   tagJOYCAPS2W = record
     wMid: WORD;                                                   { manufacturer ID }
     wPid: WORD;                                                   { product ID }
@@ -344,6 +349,7 @@ type
   { joystick information data structure }
 
   PJOYINFO = ^joyinfo_tag;
+
   joyinfo_tag = record
     wXpos: UINT;                     { x position }
     wYpos: UINT;                     { y position }
@@ -356,6 +362,7 @@ type
 
 
   PJOYINFOEX = ^joyinfoex_tag;
+
   joyinfoex_tag = record
     dwSize: DWORD;                   { size of structure }
     dwFlags: DWORD;                  { flags to indicate what to return }
@@ -378,45 +385,45 @@ type
 
   { joystick function prototypes }
 
-  function joyGetPosEx(uJoyID: UINT;
-                       pji: LPJOYINFOEX): MMRESULT; stdcall;
+function joyGetPosEx(uJoyID: UINT;
+                     pji: LPJOYINFOEX): MMRESULT; stdcall;
 
-  function joyGetNumDevs(): UINT; stdcall;
+function joyGetNumDevs(): UINT; stdcall;
 
-  function joyGetDevCapsA(uJoyID: UINT_PTR;
-                          pjc: LPJOYCAPSA;
-                          cbjc: UINT): MMRESULT; stdcall;
+function joyGetDevCapsA(uJoyID: UINT_PTR;
+                        pjc: LPJOYCAPSA;
+                        cbjc: UINT): MMRESULT; stdcall;
 
-  function joyGetDevCapsW(uJoyID: UINT_PTR;
-                          pjc: LPJOYCAPSW;
-                          cbjc: UINT): MMRESULT; stdcall;
-  { Delphi }
-  function joyGetDevCaps(uJoyID: UINT_PTR;
-                         pjc: LPJOYCAPSW;
-                         cbjc: UINT): MMRESULT; stdcall;
+function joyGetDevCapsW(uJoyID: UINT_PTR;
+                        pjc: LPJOYCAPSW;
+                        cbjc: UINT): MMRESULT; stdcall;
+{ Delphi }
+function joyGetDevCaps(uJoyID: UINT_PTR;
+                       pjc: LPJOYCAPSW;
+                       cbjc: UINT): MMRESULT; stdcall;
 
-  function joyGetPos(uJoyID: UINT;
-                     pji: LPJOYINFO): MMRESULT; stdcall;
+function joyGetPos(uJoyID: UINT;
+                   pji: LPJOYINFO): MMRESULT; stdcall;
 
-  function joyGetThreshold(uJoyID: UINT;
-                           puThreshold: PUINT): MMRESULT; stdcall;
+function joyGetThreshold(uJoyID: UINT;
+                         puThreshold: PUINT): MMRESULT; stdcall;
 
-  function joyReleaseCapture(uJoyID: UINT): MMRESULT; stdcall;
+function joyReleaseCapture(uJoyID: UINT): MMRESULT; stdcall;
 
-  function joySetCapture(hwnd: HWND;
-                         uJoyID: UINT;
-                         uPeriod: UINT;
-                         fChanged: BOOL): MMRESULT; stdcall;
+function joySetCapture(hwnd: HWND;
+                       uJoyID: UINT;
+                       uPeriod: UINT;
+                       fChanged: BOOL): MMRESULT; stdcall;
 
-  function joySetThreshold(uJoyID: UINT;
-                           uThreshold: UINT): MMRESULT; stdcall;
+function joySetThreshold(uJoyID: UINT;
+                         uThreshold: UINT): MMRESULT; stdcall;
 
-  function joyConfigChanged(dwFlags: DWORD): MMRESULT; stdcall;
+function joyConfigChanged(dwFlags: DWORD): MMRESULT; stdcall;
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
 
@@ -424,20 +431,20 @@ const
   JoyStickApiLib = 'winmm.dll';
 
 
-function joyGetPosEx;    external JoyStickApiLib name 'joyGetPosEx';
-function joyGetNumDevs;  external JoyStickApiLib name 'joyGetNumDevs';
+function joyGetPosEx; external JoyStickApiLib name 'joyGetPosEx';
+function joyGetNumDevs; external JoyStickApiLib name 'joyGetNumDevs';
 
-function joyGetDevCapsA;  external JoyStickApiLib name 'joyGetDevCapsA';
-function joyGetDevCapsW;  external JoyStickApiLib name 'joyGetDevCapsW';
-function joyGetDevCaps;   external JoyStickApiLib name 'joyGetDevCapsW';
+function joyGetDevCapsA; external JoyStickApiLib name 'joyGetDevCapsA';
+function joyGetDevCapsW; external JoyStickApiLib name 'joyGetDevCapsW';
+function joyGetDevCaps; external JoyStickApiLib name 'joyGetDevCapsW';
 
-function joyGetPos;         external JoyStickApiLib name 'joyGetPos';
-function joyGetThreshold;   external JoyStickApiLib name 'joyGetThreshold';
+function joyGetPos; external JoyStickApiLib name 'joyGetPos';
+function joyGetThreshold; external JoyStickApiLib name 'joyGetThreshold';
 function joyReleaseCapture; external JoyStickApiLib name 'joyReleaseCapture';
-function joySetCapture;     external JoyStickApiLib name 'joySetCapture';
-function joySetThreshold;   external JoyStickApiLib name 'joySetThreshold';
-function joyConfigChanged;  external JoyStickApiLib name 'joyConfigChanged';
+function joySetCapture; external JoyStickApiLib name 'joySetCapture';
+function joySetThreshold; external JoyStickApiLib name 'joySetThreshold';
+function joyConfigChanged; external JoyStickApiLib name 'joyConfigChanged';
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

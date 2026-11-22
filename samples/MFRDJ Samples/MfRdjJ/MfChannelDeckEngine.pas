@@ -4,12 +4,13 @@
 
 interface
 
-uses Rdj.Dispatch,
-Rdj.Platform,
-LMessages,
+uses
+  Rdj.Dispatch,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{ WinApi }
+  { WinApi }
   Windows,
   WinApi.WinError,
   Messages,
@@ -43,7 +44,7 @@ LMessages,
 
 const
   REFTIMES_PER_SEC = 10000000;
-  HNS_PER_100MS    = 1000000;
+  HNS_PER_100MS = 1000000;
   DEFAULT_CACHE_BYTES = 256 * 1024;
 
 type
@@ -92,9 +93,11 @@ type
 
 
   TMfChannelDeckEngine = class(TComponent)
+
   private
     FDispatch: TRdjDispatcher;
     procedure DispatchEvent(Event: TRdjEvent);
+
   private
 
     FShuttingDown: LongBool;
@@ -139,7 +142,7 @@ type
     FBpmLastAnalyzeTick: UInt64;
     FBpmLastNotifyTick: UInt64;
     FBpmLastReported: Double;
-    FBpmEnvelopeHistory: TArray<Single>;
+    FBpmEnvelopeHistory: TArray < Single > ;
     FBpmBassPrevIn: Single;
     FBpmBassHpState: Single;
     FBpmBassLpState: Single;
@@ -168,9 +171,11 @@ type
     function CanUseEngine(): Boolean;
 
     procedure SetState(const NewState: TDeviceState);
-    procedure RaiseError(const Msg: string; const Hr: HRESULT);
+    procedure RaiseError(const Msg: string;
+                         const Hr: HRESULT);
     procedure RaiseReady();
-    procedure RaiseProcessed(const Position100ns: Int64; const RawPosition: UInt64);
+    procedure RaiseProcessed(const Position100ns: Int64;
+                             const RawPosition: UInt64);
     procedure RaiseEnded();
 
     procedure ResetSourceState();
@@ -180,7 +185,8 @@ type
     function GetBytesPerFrame(): Integer;
     function EnsureCacheCapacity(const ARequired: Integer): Boolean;
     procedure ClearCache();
-    function PopCacheBytes(pDest: PByte; const ABytesRequested: Integer): Integer;
+    function PopCacheBytes(pDest: PByte;
+                           const ABytesRequested: Integer): Integer;
     procedure DropCacheBytes(const ABytesToDrop: Integer);
     function BuildOutputType(out AOutType: IMFMediaType): HRESULT;
     function LoadFileInternal(const AudioFile: UnicodeString): HRESULT;
@@ -264,19 +270,43 @@ implementation
 uses
   RDJ_Common;
 
+
 procedure TMfChannelDeckEngine.DispatchEvent(Event: TRdjEvent);
+
 begin
- if FShuttingDown or FDestroying then Exit;
- case Event.Kind of
- 1: if Assigned(FOnStateChanged) then FOnStateChanged(Self,TDeviceState(Event.I0));
- 2: if Assigned(FOnError) then FOnError(Self,HRESULT(DWORD(Event.U0)),Event.Text);
- 3: if Assigned(FOnReady) then FOnReady(Self);
- 5: if Assigned(FOnEnded) then FOnEnded(Self);
- 6: if Assigned(FOnBpmAnalyzed) then FOnBpmAnalyzed(Self,Event.D0);
- 4: if Assigned(FOnProcessed) then FOnProcessed(Self,Event.I0,Event.U0);
- 7: if Assigned(FOnDeckTick) then FOnDeckTick(Self,Event.I0,Event.D0,Event.D1);
- 8: if Assigned(FOnBeat) then FOnBeat(Self,Event.I0,Event.I1,Event.D0);
- end;
+
+  if FShuttingDown or FDestroying then
+    Exit;
+  case Event.Kind of
+    1: if Assigned(FOnStateChanged) then
+        FOnStateChanged(Self,
+                        TDeviceState(Event.I0));
+    2: if Assigned(FOnError) then
+        FOnError(Self,
+                 HRESULT(DWORD(Event.U0)),
+                 Event.Text);
+    3: if Assigned(FOnReady) then
+        FOnReady(Self);
+    5: if Assigned(FOnEnded) then
+        FOnEnded(Self);
+    6: if Assigned(FOnBpmAnalyzed) then
+        FOnBpmAnalyzed(Self,
+                       Event.D0);
+    4: if Assigned(FOnProcessed) then
+        FOnProcessed(Self,
+                     Event.I0,
+                     Event.U0);
+    7: if Assigned(FOnDeckTick) then
+        FOnDeckTick(Self,
+                    Event.I0,
+                    Event.D0,
+                    Event.D1);
+    8: if Assigned(FOnBeat) then
+        FOnBeat(Self,
+                Event.I0,
+                Event.I1,
+                Event.D0);
+  end;
 end;
 
 
@@ -287,7 +317,9 @@ type
   TSingleDynArray = array of Single;
 
 
-function PtrSingleOffset(const P: PSingle; const Index: Integer): PSingle; inline;
+function PtrSingleOffset(const P: PSingle;
+                         const Index: Integer): PSingle; inline;
+
 begin
 
   Result := PSingle(NativeUInt(P) + NativeUInt(Index * SizeOf(Single)));
@@ -375,10 +407,10 @@ begin
 
   for I := 2 to ACount - 3 do
     Tmp[I] := (AEnvelope[I - 2] +
-               AEnvelope[I - 1] +
-               AEnvelope[I] +
-               AEnvelope[I + 1] +
-               AEnvelope[I + 2]) / 5.0;
+      AEnvelope[I - 1] +
+      AEnvelope[I] +
+      AEnvelope[I + 1] +
+      AEnvelope[I + 2]) / 5.0;
 
   Tmp[ACount - 2] := (AEnvelope[ACount - 3] + AEnvelope[ACount - 2] + AEnvelope[ACount - 1]) / 3.0;
   Tmp[ACount - 1] := AEnvelope[ACount - 1];
@@ -526,8 +558,8 @@ var
 begin
 
   if (ABuffer = nil) or
-     (AFrames <= 0) or
-     (AChannels <= 0) then
+    (AFrames <= 0) or
+    (AChannels <= 0) then
     Exit;
 
   if (Abs(AGainLinear - 1.0) < 1E-6) then
@@ -556,7 +588,7 @@ var
 begin
 
   inherited Create(AOwner);
-  FDispatch:=TRdjDispatcher.Create;
+  FDispatch := TRdjDispatcher.Create;
 
   FLock := SyncObjs.TCriticalSection.Create;
   FAudioRack := TMfWasApiEffectsRack.Create(Self);
@@ -625,6 +657,7 @@ end;
 
 
 destructor TMfChannelDeckEngine.Destroy();
+
 begin
 
   FDestroying := True;
@@ -668,6 +701,7 @@ end;
 
 
 procedure TMfChannelDeckEngine.ClearEventHandlers();
+
 begin
 
   FOnStateChanged := nil;
@@ -683,11 +717,12 @@ end;
 
 
 function TMfChannelDeckEngine.CanUseEngine(): Boolean;
+
 begin
 
   Result := Assigned(FLock) and
-            (not FShuttingDown) and
-            (not FDestroying);
+    (not FShuttingDown) and
+    (not FDestroying);
 end;
 
 
@@ -707,12 +742,15 @@ begin
   StateCopy := NewState;
 
   if Assigned(FOnStateChanged) then
-    FDispatch.Post(DispatchEvent,1,Ord(StateCopy));
+    FDispatch.Post(DispatchEvent,
+                   1,
+                   Ord(StateCopy));
 end;
 
 
 procedure TMfChannelDeckEngine.RaiseError(const Msg: string;
                                           const Hr: HRESULT);
+
 begin
 
   if FDestroying then
@@ -721,36 +759,52 @@ begin
   SetState(dsError);
 
   if Assigned(FOnError) then
-    FDispatch.Post(DispatchEvent,2,0,DWORD(Hr),0,0,0,Msg);
+    FDispatch.Post(DispatchEvent,
+                   2,
+                   0,
+                   DWORD(Hr),
+                   0,
+                   0,
+                   0,
+                   Msg);
 end;
 
 
 procedure TMfChannelDeckEngine.RaiseReady;
+
 begin
 
   if Assigned(FOnReady) then
-    FDispatch.Post(DispatchEvent,3);
+    FDispatch.Post(DispatchEvent,
+                   3);
 end;
 
 
 procedure TMfChannelDeckEngine.RaiseProcessed(const Position100ns: Int64;
                                               const RawPosition: UInt64);
+
 begin
 
   if Assigned(FOnProcessed) then
-    FDispatch.Post(DispatchEvent,4,Position100ns,RawPosition);
+    FDispatch.Post(DispatchEvent,
+                   4,
+                   Position100ns,
+                   RawPosition);
 end;
 
 
 procedure TMfChannelDeckEngine.RaiseEnded();
+
 begin
 
   if Assigned(FOnEnded) then
-    FDispatch.Post(DispatchEvent,5);
+    FDispatch.Post(DispatchEvent,
+                   5);
 end;
 
 
 procedure TMfChannelDeckEngine.ResetSourceState();
+
 begin
 
   FSourceReader := nil;
@@ -765,6 +819,7 @@ end;
 
 
 procedure TMfChannelDeckEngine.FreeWaveFormat();
+
 begin
 
   if Assigned(FSourceWfx) then
@@ -778,6 +833,7 @@ end;
 
 
 function TMfChannelDeckEngine.GetBytesPerFrame(): Integer;
+
 begin
 
   try
@@ -794,6 +850,7 @@ end;
 
 
 procedure TMfChannelDeckEngine.ClearCache();
+
 begin
 
   FCacheStart := 0;
@@ -819,7 +876,7 @@ begin
   while (NewSize < ARequired) do
     begin
 
-      if NewSize > (MaxInt div 2) then
+      if (NewSize > (MaxInt div 2)) then
         begin
 
           NewSize := ARequired;
@@ -842,6 +899,7 @@ end;
 
 function TMfChannelDeckEngine.PopCacheBytes(pDest: PByte;
                                             const ABytesRequested: Integer): Integer;
+
 begin
 
   Result := Min(ABytesRequested,
@@ -855,25 +913,27 @@ begin
          pDest^,
          Result);
 
-  Inc(FCacheStart, Result);
-  Dec(FCacheUsed, Result);
+  Inc(FCacheStart,
+      Result);
+  Dec(FCacheUsed,
+      Result);
 
   if (FCacheUsed = 0) then
     FCacheStart := 0
-  else
-    if FCacheStart > (Length(FCache) div 2) then
-      begin
+  else if (FCacheStart > (Length(FCache) div 2)) then
+    begin
 
-        Move(FCache[FCacheStart],
-             FCache[0],
-             FCacheUsed);
+      Move(FCache[FCacheStart],
+           FCache[0],
+           FCacheUsed);
 
-        FCacheStart := 0;
-      end;
+      FCacheStart := 0;
+    end;
 end;
 
 
 procedure TMfChannelDeckEngine.DropCacheBytes(const ABytesToDrop: Integer);
+
 begin
 
   if (ABytesToDrop <= 0) then
@@ -885,6 +945,7 @@ end;
 
 
 function TMfChannelDeckEngine.GetPosition100nsLocked(): Int64;
+
 begin
 
   Result := 0;
@@ -895,6 +956,7 @@ end;
 
 
 function TMfChannelDeckEngine.GetPosition100ns(): Int64;
+
 begin
 
   Result := 0;
@@ -916,6 +978,7 @@ end;
 
 procedure TMfChannelDeckEngine.SetOutputFormat(const ASampleRate: DWORD;
                                                const AChannels: Word);
+
 begin
 
   if (ASampleRate <> 0) then
@@ -927,6 +990,7 @@ end;
 
 function TMfChannelDeckEngine.SetVolumes(pVolLeft: Single;
                                          pVolRight: Single): HRESULT;
+
 begin
 
   FVolLeft := EnsureRange(pVolLeft,
@@ -955,9 +1019,8 @@ begin
 
   if (NewTempo < -16) then
     NewTempo := -16
-  else
-    if (NewTempo > 16) then
-      NewTempo := 16;
+  else if (NewTempo > 16) then
+    NewTempo := 16;
 
   if (FTempo = NewTempo) then
     Exit;
@@ -975,6 +1038,7 @@ end;
 
 
 function TMfChannelDeckEngine.GetTempoFactor(): Double;
+
 begin
 
   Result := FTempoFactor;
@@ -997,9 +1061,8 @@ begin
 
   if (NewFactor < 0.10) then
     NewFactor := 0.10
-  else
-    if (NewFactor > 4.00) then
-      NewFactor := 4.00;
+  else if (NewFactor > 4.00) then
+    NewFactor := 4.00;
 
   FTempoFactor := NewFactor;
 
@@ -1007,9 +1070,8 @@ begin
 
   if (NewTempo < -16) then
     NewTempo := -16
-  else
-    if (NewTempo > 16) then
-      NewTempo := 16;
+  else if (NewTempo > 16) then
+    NewTempo := 16;
 
   FTempo := NewTempo;
   FTempoFactor := 1.0 + (FTempo / 100.0);
@@ -1063,9 +1125,8 @@ begin
 
   if (DeltaPhase > 0.5) then
     DeltaPhase := DeltaPhase - 1.0
-  else
-    if (DeltaPhase < -0.5) then
-      DeltaPhase := DeltaPhase + 1.0;
+  else if (DeltaPhase < -0.5) then
+    DeltaPhase := DeltaPhase + 1.0;
 
   NewPos := Round(CurPos + (DeltaPhase * BeatLen));
   if (NewPos < 0) then
@@ -1076,18 +1137,23 @@ end;
 
 
 function TMfChannelDeckEngine.AnalyzeBpmFromFile(const AFileName: string): HRESULT;
+
 begin
 
   Result := S_FALSE;
 end;
+
 
 function TMfChannelDeckEngine.AnalyzeBpmAsync(): HRESULT;
+
 begin
 
   Result := S_FALSE;
 end;
 
+
 function TMfChannelDeckEngine.BuildOutputType(out AOutType: IMFMediaType): HRESULT;
+
 begin
 
   AOutType := nil;
@@ -1096,27 +1162,33 @@ begin
   if FAILED(Result) then
     Exit;
 
-  Result := AOutType.SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
+  Result := AOutType.SetGUID(MF_MT_MAJOR_TYPE,
+                             MFMediaType_Audio);
   if FAILED(Result) then
     Exit;
 
-  Result := AOutType.SetGUID(MF_MT_SUBTYPE, MFAudioFormat_Float);
+  Result := AOutType.SetGUID(MF_MT_SUBTYPE,
+                             MFAudioFormat_Float);
   if FAILED(Result) then
     Exit;
 
-  Result := AOutType.SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, 32);
+  Result := AOutType.SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
+                               32);
   if FAILED(Result) then
     Exit;
 
-  Result := AOutType.SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, FOutputSampleRate);
+  Result := AOutType.SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,
+                               FOutputSampleRate);
   if FAILED(Result) then
     Exit;
 
-  Result := AOutType.SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, FOutputChannels);
+  Result := AOutType.SetUINT32(MF_MT_AUDIO_NUM_CHANNELS,
+                               FOutputChannels);
   if FAILED(Result) then
     Exit;
 
-  Result := AOutType.SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT, FOutputChannels * SizeOf(Single));
+  Result := AOutType.SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,
+                               FOutputChannels * SizeOf(Single));
   if FAILED(Result) then
     Exit;
 
@@ -1125,7 +1197,8 @@ begin
   if FAILED(Result) then
     Exit;
 
-  Result := AOutType.SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT, 1);
+  Result := AOutType.SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT,
+                               1);
 end;
 
 
@@ -1235,7 +1308,9 @@ end;
 
 
 function TMfChannelDeckEngine.OpenFile(const audiofile: UnicodeString): HRESULT;
+
 begin
+
   if not CanUseEngine() then
     Exit(E_ABORT);
 
@@ -1254,10 +1329,11 @@ begin
     Result := LoadFileInternal(audiofile);
 
     if FAILED(Result) then
-    begin
-      RaiseError('LoadFileInternal failed', Result);
-      Exit;
-    end;
+      begin
+        RaiseError('LoadFileInternal failed',
+                   Result);
+        Exit;
+      end;
 
     FFileName := audiofile;
     FTrackBpm := 0.0;
@@ -1280,6 +1356,7 @@ end;
 
 
 function TMfChannelDeckEngine.Start(): HRESULT;
+
 begin
 
   if not CanUseEngine() then
@@ -1306,6 +1383,7 @@ end;
 
 
 function TMfChannelDeckEngine.Stop(): HRESULT;
+
 begin
 
   if not Assigned(FLock) then
@@ -1336,6 +1414,7 @@ end;
 
 
 function TMfChannelDeckEngine.Pause(): HRESULT;
+
 begin
 
   if not CanUseEngine() then
@@ -1373,11 +1452,10 @@ begin
 
     if (Pos100ns <= 0) then
       Target := 0
+    else if (FDuration100ns > 0) and (Pos100ns > FDuration100ns) then
+      Target := FDuration100ns
     else
-      if (FDuration100ns > 0) and (Pos100ns > FDuration100ns) then
-        Target := FDuration100ns
-      else
-        Target := Pos100ns;
+      Target := Pos100ns;
 
     FPendingSeek := True;
     FPendingSeek100ns := Target;
@@ -1407,7 +1485,7 @@ begin
   if not FPendingSeek then
     Exit(S_OK);
 
-  if FSourceReader = nil then
+  if (FSourceReader = nil) then
     Exit(E_UNEXPECTED);
 
   PropVariantInit(V);
@@ -1450,6 +1528,7 @@ end;
 
 // BPM -------------------------------------------------------------------------
 function TMfChannelDeckEngine.GetCurrentBpm(): Double;
+
 begin
 
   Result := FCurrentBpm;
@@ -1457,6 +1536,7 @@ end;
 
 
 function TMfChannelDeckEngine.GetBeatLength100ns: Double;
+
 begin
 
   if (FCurrentBpm <= 0.0) then
@@ -1509,11 +1589,12 @@ end;
 
 
 procedure TMfChannelDeckEngine.SetTrackBpm(const Value: Double);
+
 begin
 
   if SameValue(FTrackBpm,
-               Value,
-               0.0001) then
+    Value,
+    0.0001) then
     Exit;
 
   FTrackBpm := Value;
@@ -1524,6 +1605,7 @@ end;
 
 
 procedure TMfChannelDeckEngine.UpdateCurrentBpm();
+
 begin
 
   if (FTrackBpm <= 0.0) then
@@ -1534,6 +1616,7 @@ end;
 
 
 procedure TMfChannelDeckEngine.ResetLiveBpmTracker();
+
 begin
 
   FBpmEnvAccum := 0.0;
@@ -1549,10 +1632,11 @@ begin
   FBpmBassEnv := 0.0;
   FBpmBassPrevEnv := 0.0;
 
-  if Length(FBpmEnvelopeHistory) = 0 then
+  if (Length(FBpmEnvelopeHistory) = 0) then
     SetLength(FBpmEnvelopeHistory,
               800);
 end;
+
 
 procedure TMfChannelDeckEngine.AnalyzeLiveBpm(const Position100ns: Int64);
 const
@@ -1568,6 +1652,7 @@ var
   NewTrackBpm: Double;
   OldBeatPos: Double;
   NewBeatLen: Double;
+
 begin
 
   if (FBpmEnvFilled < 400) then
@@ -1592,10 +1677,10 @@ begin
 
   DummyOffset := 0;
   if not DetectBpmFromEnvelope(Env,
-                               Count,
-                               BPM_ENV_RATE,
-                               DetectedCurrentBpm,
-                               DummyOffset) then
+    Count,
+    BPM_ENV_RATE,
+    DetectedCurrentBpm,
+    DummyOffset) then
     Exit;
 
   if (DetectedCurrentBpm <= 0.0) or (FTempoFactor <= 0.0) then
@@ -1634,14 +1719,19 @@ begin
   FLastTick100ns := 0;
 
   if Assigned(FOnBpmAnalyzed) and
-     ((FBpmLastReported <= 0.0) or
-      (Abs(FCurrentBpm - FBpmLastReported) >= 0.2) or
-      ((GetTickCount64 - FBpmLastNotifyTick) >= 3000)) then
+    ((FBpmLastReported <= 0.0) or
+    (Abs(FCurrentBpm - FBpmLastReported) >= 0.2) or
+    ((GetTickCount64 - FBpmLastNotifyTick) >= 3000)) then
     begin
       FBpmLastReported := FCurrentBpm;
       FBpmLastNotifyTick := GetTickCount64;
 
-      FDispatch.Post(DispatchEvent,6,0,0,0,FCurrentBpm);
+      FDispatch.Post(DispatchEvent,
+                     6,
+                     0,
+                     0,
+                     0,
+                     FCurrentBpm);
     end;
 end;
 
@@ -1676,6 +1766,7 @@ var
   Rectified: Double;
   EnvTarget: Double;
   OnsetValue: Double;
+
 begin
 
   if (pData = nil) or (Frames <= 0) or (Channels <= 0) or (SampleRate <= 0) then
@@ -1719,7 +1810,7 @@ begin
       Rectified := Abs(BandValue);
       EnvTarget := Rectified;
 
-      if EnvTarget > FBpmBassEnv then
+      if (EnvTarget > FBpmBassEnv) then
         FBpmBassEnv := FBpmBassEnv + (AttackCoeff * (EnvTarget - FBpmBassEnv))
       else
         FBpmBassEnv := FBpmBassEnv + (ReleaseCoeff * (EnvTarget - FBpmBassEnv));
@@ -1736,7 +1827,7 @@ begin
 
       if (FBpmEnvSampleCount >= SamplesPerBin) then
         begin
-          if Length(FBpmEnvelopeHistory) > 0 then
+          if (Length(FBpmEnvelopeHistory) > 0) then
             begin
               FBpmEnvelopeHistory[FBpmEnvWritePos] := FBpmEnvAccum / FBpmEnvSampleCount;
               Inc(FBpmEnvWritePos);
@@ -1937,14 +2028,14 @@ begin
       end;
 
     if (FState <> dsPlay) or
-       (FSourceReader = nil) or
-       (FSourceWfx = nil) then
-    begin
+      (FSourceReader = nil) or
+      (FSourceWfx = nil) then
+      begin
 
-      Flags := AUDCLNT_BUFFERFLAGS_SILENT;
-      Result := S_OK;
-      Exit;
-    end;
+        Flags := AUDCLNT_BUFFERFLAGS_SILENT;
+        Result := S_OK;
+        Exit;
+      end;
 
     Channels := FSourceWfx.nChannels;
     OutputChannels := Channels;
@@ -2011,9 +2102,8 @@ begin
 
         if (Frac < 0.0) then
           Frac := 0.0
-        else
-          if (Frac > 1.0) then
-            Frac := 1.0;
+        else if (Frac > 1.0) then
+          Frac := 1.0;
 
         for Ch := 0 to Channels - 1 do
           begin
@@ -2071,7 +2161,13 @@ begin
 
         if Assigned(FOnDeckTick) then
           begin
-            FDispatch.Post(DispatchEvent,7,Position100ns,0,0,CurrentBpm,BeatPhase);
+            FDispatch.Post(DispatchEvent,
+                           7,
+                           Position100ns,
+                           0,
+                           0,
+                           CurrentBpm,
+                           BeatPhase);
           end;
       end;
 
@@ -2082,7 +2178,12 @@ begin
 
         if Assigned(FOnBeat) then
           begin
-            FDispatch.Post(DispatchEvent,8,Position100ns,0,BeatIndex,CurrentBpm);
+            FDispatch.Post(DispatchEvent,
+                           8,
+                           Position100ns,
+                           0,
+                           BeatIndex,
+                           CurrentBpm);
           end;
       end;
 
@@ -2129,7 +2230,7 @@ begin
   try
 
     if ((Flags and AUDCLNT_BUFFERFLAGS_SILENT) = 0) and
-       Assigned(NotifyWfx) then
+      Assigned(NotifyWfx) then
       FeedLiveBpmTracker(OutBuffer,
                          Frames,
                          OutputChannels,

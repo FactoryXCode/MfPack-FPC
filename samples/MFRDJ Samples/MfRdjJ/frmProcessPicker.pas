@@ -65,11 +65,12 @@ unit frmProcessPicker;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WiAapi}
+  {WiAapi}
   Windows,
   Messages,
   {System}
@@ -129,8 +130,12 @@ type
     procedure edtSearchProcessChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure lvAppsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
-    procedure lvChildrenSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+    procedure lvAppsSelectItem(Sender: TObject;
+                               Item: TListItem;
+                               Selected: Boolean);
+    procedure lvChildrenSelectItem(Sender: TObject;
+                                   Item: TListItem;
+                                   Selected: Boolean);
     procedure lvAppsDblClick(Sender: TObject);
     procedure lvChildrenDblClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -139,8 +144,8 @@ type
 
     FSelectedPID: DWORD;
     FSelectedProcName: string;
-    FGroups: TObjectList<TProcessGroupItem>;
-    FFilteredGroups: TList<TProcessGroupItem>;
+    FGroups: TObjectList < TProcessGroupItem > ;
+    FFilteredGroups: TList < TProcessGroupItem > ;
     FSelectedGroup: TProcessGroupItem;
     FSelectedChild: TProcessChildItem;
     procedure ConfigureListViews;
@@ -152,7 +157,8 @@ type
     procedure UpdateSelectedOutput;
     procedure UpdateInfoLabel;
     procedure SetSelectionMode(const AWholeTree: Boolean);
-    function GroupMatchesSearch(const AGroup: TProcessGroupItem; const AText: string): Boolean;
+    function GroupMatchesSearch(const AGroup: TProcessGroupItem;
+                                const AText: string): Boolean;
     function GroupPassesFilters(const AGroup: TProcessGroupItem): Boolean;
     function ChildPassesFilters(const AChild: TProcessChildItem): Boolean;
     function AudioStateToText(const AState: TProcessAudioState): string;
@@ -162,7 +168,8 @@ type
     function FormatGroupCaption(const AGroup: TProcessGroupItem): string;
     function FormatChildCaption(const AChild: TProcessChildItem): string;
     function ChildAudioStateText(const AChild: TProcessChildItem): string;
-    procedure RestoreSelection(const APrevPID: DWORD; const APrevWholeTree: Boolean);
+    procedure RestoreSelection(const APrevPID: DWORD;
+                               const APrevWholeTree: Boolean);
 
   published
 
@@ -179,10 +186,11 @@ implementation
 {$R *.lfm}
 
 procedure TdlgProcessPicker.FormCreate(Sender: TObject);
+
 begin
 
-  FGroups := TObjectList<TProcessGroupItem>.Create(True);
-  FFilteredGroups := TList<TProcessGroupItem>.Create;
+  FGroups := (TObjectList < TProcessGroupItem > .Create(True));
+  FFilteredGroups := (TList < TProcessGroupItem > .Create);
 
   ConfigureListViews();
   BuildColumns();
@@ -198,6 +206,7 @@ end;
 
 
 procedure TdlgProcessPicker.FormDestroy(Sender: TObject);
+
 begin
 
   FFilteredGroups.Free;
@@ -206,6 +215,7 @@ end;
 
 
 procedure TdlgProcessPicker.FormShow(Sender: TObject);
+
 begin
 
   ApplyDarkWindowFrame(Handle);
@@ -213,6 +223,7 @@ end;
 
 
 procedure TdlgProcessPicker.ConfigureListViews;
+
 begin
 
   lvApps.ViewStyle := vsReport;
@@ -236,6 +247,7 @@ end;
 
 
 procedure TdlgProcessPicker.BuildColumns;
+
 begin
 
   lvApps.Columns.BeginUpdate;
@@ -340,11 +352,13 @@ begin
 
   FGroups.Clear();
   BuildLiveProcessGroups(FGroups);
-  RestoreSelection(PrevPID, PrevWholeTree);
+  RestoreSelection(PrevPID,
+                   PrevWholeTree);
 end;
 
 
-procedure TdlgProcessPicker.RestoreSelection(const APrevPID: DWORD; const APrevWholeTree: Boolean);
+procedure TdlgProcessPicker.RestoreSelection(const APrevPID: DWORD;
+                                             const APrevWholeTree: Boolean);
 var
   I,
   J: Integer;
@@ -382,7 +396,7 @@ begin
             end;
 
           for J := 0 to FGroups[I].Children.Count - 1 do
-            if FGroups[I].Children[J].ProcessId = APrevPID then
+            if (FGroups[I].Children[J].ProcessId = APrevPID) then
               begin
 
                 FSelectedGroup := FGroups[I];
@@ -395,13 +409,14 @@ end;
 
 
 function TdlgProcessPicker.AudioStateToText(const AState: TProcessAudioState): string;
+
 begin
 
   case AState of
     pasActive: Result := 'Active';
     pasSilent: Result := 'Silent';
-  else
-    Result := 'Unknown';
+    else
+      Result := 'Unknown';
   end;
 end;
 
@@ -418,7 +433,9 @@ begin
   Result := IntToStr(Pct) + '%';
 end;
 
+
 function TdlgProcessPicker.GroupAllowsWholeTree(const AGroup: TProcessGroupItem): Boolean;
+
 begin
 
   Result := (AGroup = nil) or (AGroup.AudioChildCount <= 1);
@@ -426,8 +443,10 @@ end;
 
 
 function TdlgProcessPicker.GroupTreeStateText(const AGroup: TProcessGroupItem): string;
+
 begin
-  if AGroup = nil then
+
+  if (AGroup = nil) then
     Exit('');
 
   if GroupAllowsWholeTree(AGroup) then
@@ -436,48 +455,63 @@ begin
     Result := 'unsafe';
 end;
 
+
 function TdlgProcessPicker.FormatGroupCaption(const AGroup: TProcessGroupItem): string;
+
 begin
+
   Result := AGroup.DisplayName;
 
   if AGroup.IsBrowserLike and (AGroup.BrowserFamily <> '') then
     Result := Result + ' [' + AGroup.BrowserFamily + ']';
 
-  if AGroup.AudioChildCount > 1 then
-    Result := Result + Format(' (%d audio children)', [AGroup.AudioChildCount]);
+  if (AGroup.AudioChildCount > 1) then
+    Result := Result + Format(' (%d audio children)',
+                              [AGroup.AudioChildCount]);
 end;
 
+
 function TdlgProcessPicker.FormatChildCaption(const AChild: TProcessChildItem): string;
+
 begin
+
   Result := AChild.DisplayName;
 
   if AChild.IsBrowserLike and (AChild.BrowserFamily <> '') then
     Result := Result + ' [' + AChild.BrowserFamily + ']';
 
-  if AChild.SessionCount > 0 then
-    Result := Result + Format(' (%d session%s)', [AChild.SessionCount, IfThen(AChild.SessionCount = 1, '', 's')]);
+  if (AChild.SessionCount > 0) then
+    Result := Result + Format(' (%d session%s)',
+                              [AChild.SessionCount, IfThen(AChild.SessionCount = 1,
+                                                           '',
+                                                           's')]);
 
-  if Trim(AChild.RoleHint) <> '' then
+  if (Trim(AChild.RoleHint) <> '') then
     Result := Result + ' - ' + AChild.RoleHint;
 end;
 
+
 function TdlgProcessPicker.ChildAudioStateText(const AChild: TProcessChildItem): string;
+
 begin
-  if AChild = nil then
+
+  if (AChild = nil) then
     Exit('');
 
-  if AChild.SessionCount > 0 then
+  if (AChild.SessionCount > 0) then
     Result := Format('%s (%d session%s)',
                      [AudioStateToText(AChild.AudioState),
-                      AChild.SessionCount,
-                      IfThen(AChild.SessionCount = 1, '', 's')])
+      AChild.SessionCount,
+      IfThen(AChild.SessionCount = 1,
+             '',
+             's')])
   else
     Result := 'No audio session';
 end;
 
 
 function TdlgProcessPicker.GroupMatchesSearch(const AGroup: TProcessGroupItem;
-  const AText: string): Boolean;
+                                              const AText: string): Boolean;
 var
   SearchText: string;
   I: Integer;
@@ -488,20 +522,28 @@ begin
   if (SearchText = '') then
     Exit(True);
 
-  Result := (Pos(SearchText, LowerCase(AGroup.DisplayName)) > 0) or
-            (Pos(SearchText, LowerCase(AGroup.ExeName)) > 0) or
-            (Pos(SearchText, LowerCase(AGroup.ImagePath)) > 0) or
-            (Pos(SearchText, LowerCase(IntToStr(AGroup.RootProcessId))) > 0);
+  Result := (Pos(SearchText,
+                 LowerCase(AGroup.DisplayName)) > 0) or
+    (Pos(SearchText,
+         LowerCase(AGroup.ExeName)) > 0) or
+    (Pos(SearchText,
+         LowerCase(AGroup.ImagePath)) > 0) or
+    (Pos(SearchText,
+         LowerCase(IntToStr(AGroup.RootProcessId))) > 0);
 
   if Result then
     Exit;
 
   for I := 0 to AGroup.Children.Count - 1 do
     begin
-      Result := (Pos(SearchText, LowerCase(AGroup.Children[I].DisplayName)) > 0) or
-                (Pos(SearchText, LowerCase(AGroup.Children[I].ExeName)) > 0) or
-                (Pos(SearchText, LowerCase(AGroup.Children[I].ImagePath)) > 0) or
-                (Pos(SearchText, LowerCase(IntToStr(AGroup.Children[I].ProcessId))) > 0);
+      Result := (Pos(SearchText,
+                     LowerCase(AGroup.Children[I].DisplayName)) > 0) or
+        (Pos(SearchText,
+             LowerCase(AGroup.Children[I].ExeName)) > 0) or
+        (Pos(SearchText,
+             LowerCase(AGroup.Children[I].ImagePath)) > 0) or
+        (Pos(SearchText,
+             LowerCase(IntToStr(AGroup.Children[I].ProcessId))) > 0);
       if Result then
         Exit;
     end;
@@ -542,18 +584,19 @@ begin
       HasAudioInfo := (AGroup.AudioState <> pasUnknown);
       if not HasAudioInfo then
         for I := 0 to AGroup.Children.Count - 1 do
-          if AGroup.Children[I].AudioState <> pasUnknown then
+          if (AGroup.Children[I].AudioState <> pasUnknown) then
             begin
 
               HasAudioInfo := True;
               Break;
             end;
-       if not HasAudioInfo then
-         Exit(False);
+      if not HasAudioInfo then
+        Exit(False);
     end;
 
   if (not chkShowSysProcesses.Checked) and
-     ((AGroup.RootProcessId <= 4) or SameText(AGroup.ExeName, 'System')) then
+    ((AGroup.RootProcessId <= 4) or SameText(AGroup.ExeName,
+                                             'System')) then
     Exit(False);
 
   Result := True;
@@ -561,6 +604,7 @@ end;
 
 
 function TdlgProcessPicker.ChildPassesFilters(const AChild: TProcessChildItem): Boolean;
+
 begin
 
   Result := Assigned(AChild);
@@ -571,11 +615,12 @@ begin
     Exit(False);
 
   if chkAudioOnly.Checked and (AChild.SessionCount <= 0) and
-     (AChild.AudioState = pasUnknown) then
+    (AChild.AudioState = pasUnknown) then
     Exit(False);
 
   if (not chkShowSysProcesses.Checked) and
-     ((AChild.ProcessId <= 4) or SameText(AChild.ExeName, 'System')) then
+    ((AChild.ProcessId <= 4) or SameText(AChild.ExeName,
+                                         'System')) then
     Exit(False);
 
   Result := True;
@@ -682,7 +727,7 @@ begin
         Item.SubItems.Add(Child.ImagePath);
         Item.Data := Child;
 
-        if Child = FSelectedChild then
+        if (Child = FSelectedChild) then
           begin
             Item.Selected := True;
             KeepSelectedChild := True;
@@ -699,6 +744,7 @@ end;
 
 
 procedure TdlgProcessPicker.UpdateSelectedOutput;
+
 begin
 
   if chkWholeAppTree.Checked then
@@ -766,21 +812,21 @@ begin
     ModeText := 'selected only';
 
   if chkWholeAppTree.Checked and Assigned(FSelectedGroup) and
-     (not GroupAllowsWholeTree(FSelectedGroup)) then
+    (not GroupAllowsWholeTree(FSelectedGroup)) then
     begin
       Label1.Caption := Format('Selected: %s has %d audio child processes. Use selected only.',
                                [FSelectedGroup.DisplayName, FSelectedGroup.AudioChildCount]);
       Exit;
     end;
 
-  if FSelectedPID = 0 then
+  if (FSelectedPID = 0) then
     Label1.Caption := 'Selected: nothing'
   else if Assigned(FSelectedGroup) then
     Label1.Caption := Format('Selected: %s (PID %d, %s, tree %s)',
                              [FSelectedProcName,
-                              FSelectedPID,
-                              ModeText,
-                              GroupTreeStateText(FSelectedGroup)])
+      FSelectedPID,
+      ModeText,
+      GroupTreeStateText(FSelectedGroup)])
   else
     Label1.Caption := Format('Selected: %s (PID %d, %s)',
                              [FSelectedProcName, FSelectedPID, ModeText]);
@@ -788,10 +834,11 @@ end;
 
 
 procedure TdlgProcessPicker.SetSelectionMode(const AWholeTree: Boolean);
+
 begin
 
   if AWholeTree and Assigned(FSelectedGroup) and
-     (not GroupAllowsWholeTree(FSelectedGroup)) then
+    (not GroupAllowsWholeTree(FSelectedGroup)) then
     begin
       chkWholeAppTree.Checked := False;
       chkSelectedOnly.Checked := True;
@@ -811,7 +858,10 @@ begin
 end;
 
 
-procedure TdlgProcessPicker.lvAppsSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+procedure TdlgProcessPicker.lvAppsSelectItem(Sender: TObject;
+                                             Item: TListItem;
+                                             Selected: Boolean);
+
 begin
 
   if not Selected then
@@ -829,7 +879,10 @@ begin
 end;
 
 
-procedure TdlgProcessPicker.lvChildrenSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+procedure TdlgProcessPicker.lvChildrenSelectItem(Sender: TObject;
+                                                 Item: TListItem;
+                                                 Selected: Boolean);
+
 begin
 
   if not Selected then
@@ -843,6 +896,7 @@ end;
 
 
 procedure TdlgProcessPicker.lvAppsDblClick(Sender: TObject);
+
 begin
 
   if (lvApps.Selected <> nil) then
@@ -855,18 +909,20 @@ end;
 
 
 procedure TdlgProcessPicker.lvChildrenDblClick(Sender: TObject);
+
 begin
 
   if (lvChildren.Selected <> nil) then
-  begin
+    begin
 
-    SetSelectionMode(False);
-    ModalResult := mrOk;
-  end;
+      SetSelectionMode(False);
+      ModalResult := mrOk;
+    end;
 end;
 
 
 procedure TdlgProcessPicker.btnCancelClick(Sender: TObject);
+
 begin
 
   ModalResult := mrCancel;
@@ -874,6 +930,7 @@ end;
 
 
 procedure TdlgProcessPicker.btnOkClick(Sender: TObject);
+
 begin
 
   UpdateSelectedOutput;
@@ -891,6 +948,7 @@ end;
 
 
 procedure TdlgProcessPicker.btnRefreshClick(Sender: TObject);
+
 begin
 
   LoadLiveData();
@@ -899,6 +957,7 @@ end;
 
 
 procedure TdlgProcessPicker.chkActiveOnlyClick(Sender: TObject);
+
 begin
 
   ApplyFilters();
@@ -906,6 +965,7 @@ end;
 
 
 procedure TdlgProcessPicker.chkAudioOnlyClick(Sender: TObject);
+
 begin
 
   ApplyFilters();
@@ -913,6 +973,7 @@ end;
 
 
 procedure TdlgProcessPicker.chkSelectedOnlyClick(Sender: TObject);
+
 begin
 
   SetSelectionMode(False);
@@ -920,6 +981,7 @@ end;
 
 
 procedure TdlgProcessPicker.chkShowSysProcessesClick(Sender: TObject);
+
 begin
 
   ApplyFilters();
@@ -927,6 +989,7 @@ end;
 
 
 procedure TdlgProcessPicker.chkWholeAppTreeClick(Sender: TObject);
+
 begin
 
   SetSelectionMode(True);
@@ -934,6 +997,7 @@ end;
 
 
 procedure TdlgProcessPicker.edtSearchProcessChange(Sender: TObject);
+
 begin
 
   ApplyFilters();

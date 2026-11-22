@@ -64,11 +64,12 @@ unit MfMicrophoneFx;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{Winapi}
+  {Winapi}
   Windows,
   {System}
   SysUtils,
@@ -77,6 +78,7 @@ LMessages,
 type
 
   TMfMicrophoneFxHelper = record
+
   public
     class function ClampFloat(const AValue,
                               AMin,
@@ -88,6 +90,7 @@ type
 
 
   TMfSimpleMicCompressor = class
+
   private
     FEnabled: Boolean;
     FSampleRate: Single;
@@ -112,7 +115,7 @@ type
     procedure SetSampleRate(const ASampleRate: Single);
     procedure ProcessStereoInterleaved(ABuffer: PSingle;
                                        const AFrames: Integer);
-  //published
+    //published
 
     property Enabled: Boolean read FEnabled write FEnabled;
     property ThresholdDb: Single read FThresholdDb write FThresholdDb;
@@ -125,6 +128,7 @@ type
 
 
   TMfSimpleNoiseGate = class
+
   private
 
     FEnabled: Boolean;
@@ -150,7 +154,7 @@ type
     procedure SetSampleRate(const ASampleRate: Single);
     procedure ProcessStereoInterleaved(ABuffer: PSingle;
                                        const AFrames: Integer);
-  //published
+    //published
 
     property Enabled: Boolean read FEnabled write FEnabled;
     property ThresholdDb: Single read FThresholdDb write FThresholdDb;
@@ -163,6 +167,7 @@ type
 
 
   TMfSpringEcho = class
+
   private
 
     FEnabled: Boolean;
@@ -200,7 +205,8 @@ type
                                 var AState: Single): Single;
     function ProcessToneHighPass(const AInput: Single;
                                  var AState,
-                                     APrevIn: Single): Single;
+                                 APrevIn: Single): Single;
+
   public
 
     constructor Create();
@@ -209,7 +215,7 @@ type
     procedure SetSampleRate(const ASampleRate: Integer);
     procedure ProcessStereoInterleaved(ABuffer: PSingle;
                                        const AFrames: Integer);
-  //published
+    //published
 
     property Enabled: Boolean read FEnabled write FEnabled;
     property Mix: Single read FMix write FMix;
@@ -230,6 +236,7 @@ implementation
 class function TMfMicrophoneFxHelper.ClampFloat(const AValue,
                                                 AMin,
                                                 AMax: Single): Single;
+
 begin
 
   if (AValue < AMin) then
@@ -243,6 +250,7 @@ end;
 
 
 class function TMfMicrophoneFxHelper.DbToLinear(const ADb: Single): Single;
+
 begin
 
   Result := Power(10.0,
@@ -257,11 +265,12 @@ const
 begin
 
   Result := 20.0 * Log10(Max(Abs(AValue),
-                         CMinLinear));
+                             CMinLinear));
 end;
 
 
 class function TMfMicrophoneFxHelper.DenormalKill(const AValue: Single): Single;
+
 begin
 
   if (Abs(AValue) < 1.0E-20) then
@@ -274,6 +283,7 @@ end;
 { TMfSimpleMicCompressor }
 
 constructor TMfSimpleMicCompressor.Create();
+
 begin
 
   inherited Create;
@@ -292,6 +302,7 @@ end;
 
 
 procedure TMfSimpleMicCompressor.Reset();
+
 begin
 
   FEnvelope := 0.0;
@@ -300,6 +311,7 @@ end;
 
 
 procedure TMfSimpleMicCompressor.SetSampleRate(const ASampleRate: Single);
+
 begin
 
   if (ASampleRate <= 1000.0) then
@@ -348,32 +360,34 @@ begin
 
       if (InDb <= (FThresholdDb - HalfKnee)) then
         GainReductionDb := 0.0
+      else if (InDb >= (FThresholdDb + HalfKnee)) then
+        begin
+
+          OverDb := InDb - FThresholdDb;
+          OutDb := FThresholdDb + (OverDb / Max(FRatio,
+                                                1.0));
+          GainReductionDb := OutDb - InDb;
+        end
       else
-        if (InDb >= (FThresholdDb + HalfKnee)) then
-          begin
+        begin
 
-            OverDb := InDb - FThresholdDb;
-            OutDb := FThresholdDb + (OverDb / Max(FRatio, 1.0));
-            GainReductionDb := OutDb - InDb;
-          end
-        else
-          begin
-
-            X := InDb - (FThresholdDb - HalfKnee);
-            GainReductionDb := (1.0 / Max(FRatio, 1.0) - 1.0) * Sqr(X) / Max(2.0 * FSoftKneeDb,
-                                                                                   1.0E-9);
-          end;
+          X := InDb - (FThresholdDb - HalfKnee);
+          GainReductionDb := (1.0 / Max(FRatio,
+                                        1.0) - 1.0) * Sqr(X) / Max(2.0 * FSoftKneeDb,
+                                                                   1.0E-9);
+        end;
     end
   else
     begin
 
-     if (InDb <= FThresholdDb) then
+      if (InDb <= FThresholdDb) then
         GainReductionDb := 0.0
       else
         begin
 
           OverDb := InDb - FThresholdDb;
-          OutDb := FThresholdDb + (OverDb / Max(FRatio, 1.0));
+          OutDb := FThresholdDb + (OverDb / Max(FRatio,
+                                                1.0));
           GainReductionDb := OutDb - InDb;
         end;
     end;
@@ -395,7 +409,7 @@ var
 begin
 
   if (ABuffer = nil) or
-     (AFrames <= 0) then
+    (AFrames <= 0) then
     Exit;
 
   FThresholdDb := TMfMicrophoneFxHelper.ClampFloat(FThresholdDb,
@@ -463,6 +477,7 @@ end;
 { TMfSimpleNoiseGate }
 
 constructor TMfSimpleNoiseGate.Create;
+
 begin
 
   inherited Create;
@@ -480,6 +495,7 @@ end;
 
 
 procedure TMfSimpleNoiseGate.Reset();
+
 begin
 
   FEnvelope := 0.0;
@@ -489,6 +505,7 @@ end;
 
 
 procedure TMfSimpleNoiseGate.SetSampleRate(const ASampleRate: Single);
+
 begin
 
   if (ASampleRate <= 1000.0) then
@@ -522,6 +539,7 @@ begin
     FHoldSamples := 0;
 end;
 
+
 procedure TMfSimpleNoiseGate.ProcessStereoInterleaved(ABuffer: PSingle;
                                                       const AFrames: Integer);
 var
@@ -534,10 +552,11 @@ var
   DesiredGain: Single;
   FloorLinear: Single;
   GateOpen: Boolean;
+
 begin
 
   if (ABuffer = nil) or
-     (AFrames <= 0) then
+    (AFrames <= 0) then
     Exit;
 
   FThresholdDb := TMfMicrophoneFxHelper.ClampFloat(FThresholdDb,
@@ -568,7 +587,8 @@ begin
       R := ABuffer^;
       Inc(ABuffer);
 
-      InputAbs := Max(Abs(L), Abs(R));
+      InputAbs := Max(Abs(L),
+                      Abs(R));
 
       if (InputAbs > FEnvelope) then
         DetectorCoeff := FAttackCoeff
@@ -580,7 +600,8 @@ begin
 
       if FEnabled then
         begin
-          InDb := TMfMicrophoneFxHelper.LinearToDb(Max(FEnvelope, 1.0E-12));
+          InDb := TMfMicrophoneFxHelper.LinearToDb(Max(FEnvelope,
+                                                       1.0E-12));
           GateOpen := (InDb >= FThresholdDb);
 
           if GateOpen then
@@ -631,6 +652,7 @@ end;
 { TMfSpringEcho }
 
 constructor TMfSpringEcho.Create();
+
 begin
 
   inherited Create;
@@ -650,6 +672,7 @@ end;
 
 
 procedure TMfSpringEcho.SetSampleRate(const ASampleRate: Integer);
+
 begin
 
   if (ASampleRate < 8000) then
@@ -670,8 +693,10 @@ begin
   BufferFrames := Max(FSampleRate * 3,
                       16384);
 
-  SetLength(FBufferL, BufferFrames);
-  SetLength(FBufferR, BufferFrames);
+  SetLength(FBufferL,
+            BufferFrames);
+  SetLength(FBufferR,
+            BufferFrames);
 
   FillChar(FBufferL[0],
            Length(FBufferL) * SizeOf(Single),
@@ -685,6 +710,7 @@ end;
 
 
 procedure TMfSpringEcho.Reset;
+
 begin
 
   FLowPassStateL := 0.0;
@@ -702,6 +728,7 @@ end;
 
 
 function TMfSpringEcho.GetDelaySamplesBase: Single;
+
 begin
 
   Result := (FDelayMs * 0.001) * FSampleRate;
@@ -731,10 +758,12 @@ begin
   Frac := AReadPos - Pos0;
 
   while (Pos0 < 0) do
-    Inc(Pos0, BufferLen);
+    Inc(Pos0,
+        BufferLen);
 
   while (Pos0 >= BufferLen) do
-    Dec(Pos0, BufferLen);
+    Dec(Pos0,
+        BufferLen);
 
   Pos1 := Pos0 + 1;
   if (Pos1 >= BufferLen) then
@@ -818,9 +847,9 @@ var
 begin
 
   if (ABuffer = nil) or
-     (AFrames <= 0) or
-     (Length(FBufferL) = 0) or
-     (Length(FBufferR) = 0) then
+    (AFrames <= 0) or
+    (Length(FBufferL) = 0) or
+    (Length(FBufferR) = 0) then
     Exit;
 
   FMix := TMfMicrophoneFxHelper.ClampFloat(FMix,
@@ -922,7 +951,8 @@ begin
       FBufferL[FWritePos] := FbL;
       FBufferR[FWritePos] := FbR;
 
-      Dec(ABuffer, 2);
+      Dec(ABuffer,
+          2);
       ABuffer^ := DryL * (1.0 - MixAmt) + WetL * MixAmt;
       Inc(ABuffer);
       ABuffer^ := DryR * (1.0 - MixAmt) + WetR * MixAmt;

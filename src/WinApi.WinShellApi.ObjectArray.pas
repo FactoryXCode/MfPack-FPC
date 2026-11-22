@@ -100,6 +100,7 @@ type
                    const riid: TGUID;
                    out ppv): HRESULT; stdcall;
   end;
+
   IID_IObjectArray = IObjectArray;
   {$EXTERNALSYM IID_IObjectArray}
 
@@ -121,10 +122,10 @@ type
 
     function Clear(): HRESULT; stdcall;
   end;
+
   IID_IObjectCollection = IObjectCollection;
   {$EXTERNALSYM IID_IObjectCollection}
 
 implementation
 
 end.
-

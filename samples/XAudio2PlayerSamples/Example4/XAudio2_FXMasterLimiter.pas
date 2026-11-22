@@ -68,7 +68,7 @@ interface
 
 uses
   MfEncodeAudio.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   Classes,
@@ -79,10 +79,10 @@ uses
   WinApi.DirectX.XAudio2.XAPO,
   WinApi.DirectX.XAudio2.XAPOFx;
 
-
 type
 
   TFxMasterLimiter = class(TObject)
+
   private
     pvMasterLimiterparams: FXMASTERINGLIMITER_PARAMETERS;
 
@@ -103,7 +103,9 @@ implementation
 
 
 constructor TFxMasterLimiter.Create();
+
 begin
+
   inherited;
 
   pvMasterLimiterparams.Release := FXMASTERINGLIMITER_DEFAULT_RELEASE;
@@ -112,7 +114,9 @@ end;
 
 
 destructor TFxMasterLimiter.Destroy();
+
 begin
+
   if Assigned(XAPOMasterLimiter) then
     XAPOMasterLimiter := nil;
   inherited;
@@ -124,6 +128,7 @@ var
   hr: HResult;
 
 begin
+
   // Remove previous XAPO.
   if Assigned(XAPOMasterLimiter) then
     XAPOMasterLimiter := nil;

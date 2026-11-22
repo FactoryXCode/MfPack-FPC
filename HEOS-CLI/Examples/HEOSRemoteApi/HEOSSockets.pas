@@ -64,12 +64,13 @@ unit HEOSSockets;
 
 interface
 
-uses MfCastText,
-Rdj.Platform,
-LMessages,
+uses
+  MfCastText,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinSock,
   {System}
@@ -80,6 +81,7 @@ type
   EDenonSocket = class(Exception);
 
   THEOSConnection = class
+
   private
     FSocket: TSocket;
     FReadBuffer: UTF8String;
@@ -99,33 +101,33 @@ type
     property Handle: TSocket read FSocket;
   end;
 
-  function SocketReady(S: TSocket;
-                       Writing: Boolean;
-                       TimeoutMs: Integer): Boolean;
+function SocketReady(S: TSocket;
+                     Writing: Boolean;
+                     TimeoutMs: Integer): Boolean;
 
-  procedure SendBytes(S: TSocket;
-                      Data: Pointer;
-                      Count: Integer);
+procedure SendBytes(S: TSocket;
+                    Data: Pointer;
+                    Count: Integer);
 
-  procedure SendText(S: TSocket;
-                     const Text: AnsiString);
+procedure SendText(S: TSocket;
+                   const Text: AnsiString);
 
-  function ReadHeader(S: TSocket): string;
+function ReadHeader(S: TSocket): string;
 
-  procedure SetSocketTimeout(S: TSocket;
-                             TimeoutMs: Integer);
+procedure SetSocketTimeout(S: TSocket;
+                           TimeoutMs: Integer);
 
-  function IPv4Valid(const Value: string): Boolean;
+function IPv4Valid(const Value: string): Boolean;
 
-  function ProbeReceiver(const Host: string;
-                            Port: Word;
-                            TimeoutMs: Integer;
-                            out ErrorText: string): Boolean;
+function ProbeReceiver(const Host: string;
+                       Port: Word;
+                       TimeoutMs: Integer;
+                       out ErrorText: string): Boolean;
 
-  function LocalAddressFor(const Receiver: string): string;
+function LocalAddressFor(const Receiver: string): string;
 
-  procedure SocketCheck(Code: Integer;
-                        const Operation: string);
+procedure SocketCheck(Code: Integer;
+                      const Operation: string);
 
 
 implementation
@@ -142,6 +144,7 @@ var
 
 procedure SocketCheck(Code: Integer;
                       const Operation: string);
+
 begin
 
   if (Code = SOCKET_ERROR) then
@@ -152,7 +155,7 @@ end;
 
 function IPv4Valid(const Value: string): Boolean;
 var
-  Parts: TArray<string>;
+  Parts: TArray < string > ;
   Part: string;
   I,
   N: Integer;
@@ -160,7 +163,8 @@ var
 begin
 
   Result := False;
-  Parts := MfCastSplit(Value,'.');
+  Parts := MfCastSplit(Value,
+                       '.');
 
   if (Length(Parts) <> 4) then
     Exit;
@@ -172,11 +176,11 @@ begin
 
       for I := 1 to Length(Part) do
         if not CharInSet(Part[I],
-                         ['0'..'9']) then
+          ['0'..'9']) then
           Exit;
 
       if not TryStrToInt(Part,
-                         N) then
+        N) then
         Exit;
 
       if (N < 0) or (N > 255) then
@@ -223,6 +227,7 @@ end;
 
 procedure SetSocketTimeout(S: TSocket;
                            TimeoutMs: Integer);
+
 begin
 
   SocketCheck(setsockopt(S,
@@ -235,8 +240,8 @@ end;
 
 
 constructor THEOSConnection.Create(const Host: string;
-                                    Port: Word;
-                                    TimeoutMs: Integer);
+                                   Port: Word;
+                                   TimeoutMs: Integer);
 var
   Addr: TSockAddrIn;
   Mode: u_long;
@@ -290,12 +295,13 @@ begin
       Error := WSAGetLastError;
 
       if (Error <> WSAEWOULDBLOCK) then
-        raise EDenonSocket.CreateFmt('Connect failed (Windows socket error %d)', [Error]);
+        raise EDenonSocket.CreateFmt('Connect failed (Windows socket error %d)',
+                                     [Error]);
 
       // Winsock reports failed nonblocking connects through exceptfds.
       FillChar(Writable,
-                 SizeOf(Writable),
-                 0);
+               SizeOf(Writable),
+               0);
 
       Writable.fd_count := 1;
       Writable.fd_array[0] := FSocket;
@@ -304,16 +310,16 @@ begin
       Timeout.tv_usec := (TimeoutMs mod 1000) * 1000;
 
       Code := select(0,
-                       nil,
-                       @Writable,
-                       @Failed,
-                       @Timeout);
+                     nil,
+                     @Writable,
+                     @Failed,
+                     @Timeout);
       SocketCheck(Code,
-                    'Wait for receiver connection');
+                  'Wait for receiver connection');
 
       if (Code = 0) then
         raise EDenonSocket.CreateFmt('Receiver connection timed out (%s:%d).',
-                                          [Host, Port]);
+                                     [Host, Port]);
 
       Error := 0;
       Len := SizeOf(Error);
@@ -327,11 +333,11 @@ begin
 
       if (Error <> 0) then
         raise EDenonSocket.CreateFmt('Receiver connection failed (%s:%d, Windows socket error %d).',
-                                          [Host, Port, Error]);
+                                     [Host, Port, Error]);
 
       if (Writable.fd_count = 0) or (Failed.fd_count <> 0) then
         raise EDenonSocket.CreateFmt('Receiver connection was not established (%s:%d).',
-                                          [Host, Port]);
+                                     [Host, Port]);
     end;
 
   Mode := 0;
@@ -344,13 +350,13 @@ begin
   // Verify connection state before exposing the socket to a caller.
   Len := SizeOf(Peer);
   if (getpeername(FSocket,
-                     Peer,
-                     Len) = SOCKET_ERROR) then
+    Peer,
+    Len) = SOCKET_ERROR) then
     begin
 
       Error := WSAGetLastError;
       raise EDenonSocket.CreateFmt('Receiver is not connected (%s:%d, Windows socket error %d).',
-                                        [Host, Port, Error]);
+                                   [Host, Port, Error]);
     end;
 
   SetSocketTimeout(FSocket,
@@ -359,6 +365,7 @@ end;
 
 
 destructor THEOSConnection.Destroy();
+
 begin
 
   if (FSocket <> INVALID_SOCKET) then
@@ -382,9 +389,9 @@ begin
   while (Count > 0) do
     begin
       Sent := WinSock.send(S,
-                                  P^,
-                                  Count,
-                                  0);
+                           P^,
+                           Count,
+                           0);
 
       SocketCheck(Sent,
                   'Send');
@@ -403,7 +410,9 @@ end;
 
 procedure SendText(S: TSocket;
                    const Text: AnsiString);
+
 begin
+
   if (Text <> '') then
     SendBytes(S,
               PAnsiChar(Text),
@@ -412,6 +421,7 @@ end;
 
 
 procedure THEOSConnection.Send(const Text: AnsiString);
+
 begin
 
   SendText(FSocket,
@@ -420,7 +430,7 @@ end;
 
 
 function THEOSConnection.ReadLine(Delimiter: AnsiChar;
-                                   TimeoutMs: Integer): string;
+                                  TimeoutMs: Integer): string;
 var
   Buffer: array[0..4095] of AnsiChar;
   Chunk: UTF8String;
@@ -435,14 +445,19 @@ begin
 
   while True do
     begin
-      P := Pos(UTF8String(Delimiter), FReadBuffer);
+      P := Pos(UTF8String(Delimiter),
+               FReadBuffer);
       if (P > 0) then
         begin
           if (P > 65537) then
             raise EDenonSocket.Create('Reply too long');
 
-          Result := string(Copy(FReadBuffer, 1, P - 1));
-          Delete(FReadBuffer, 1, P);
+          Result := string(Copy(FReadBuffer,
+                                1,
+                                P - 1));
+          Delete(FReadBuffer,
+                 1,
+                 P);
           Exit;
         end;
 
@@ -461,8 +476,8 @@ begin
         Remaining := 50;
 
       if not SocketReady(FSocket,
-                         False,
-                         Remaining) then
+        False,
+        Remaining) then
         Continue;
 
       N := recv(FSocket,
@@ -471,7 +486,7 @@ begin
                 0);
 
       SocketCheck(N,
-                   'Read');
+                  'Read');
       if (N = 0) then
         begin
           if (FReadBuffer <> '') then
@@ -479,7 +494,9 @@ begin
           raise EDenonSocket.Create('Receiver closed connection');
         end;
 
-      SetString(Chunk, PAnsiChar(@Buffer[0]), N);
+      SetString(Chunk,
+                PAnsiChar(@Buffer[0]),
+                N);
       FReadBuffer := FReadBuffer + Chunk;
     end;
 end;
@@ -500,8 +517,8 @@ begin
   while (Timer.ElapsedMilliseconds < 3000) do
     begin
       if not SocketReady(S,
-                         False,
-                         100) then
+        False,
+        100) then
         Continue;
 
       N := recv(S,
@@ -518,7 +535,7 @@ begin
       Data := Data + Ch;
 
       if (Pos(AnsiString(#13#10#13#10),
-                         Data) > 0) then
+        Data) > 0) then
         Exit(string(Data));
 
       if (Length(Data) > 16384) then
@@ -530,9 +547,9 @@ end;
 
 
 function ProbeReceiver(const Host: string;
-                          Port: Word;
-                          TimeoutMs: Integer;
-                          out ErrorText: string): Boolean;
+                       Port: Word;
+                       TimeoutMs: Integer;
+                       out ErrorText: string): Boolean;
 var
   S: TSocket;
   Address: TSockAddrIn;
@@ -557,12 +574,14 @@ begin
       Exit;
     end;
 
-  S := socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  S := socket(AF_INET,
+              SOCK_STREAM,
+              IPPROTO_TCP);
   if (S = INVALID_SOCKET) then
     begin
 
       ErrorText := Format('Cannot create receiver check socket (Windows socket error %d).',
-                            [WSAGetLastError]);
+                          [WSAGetLastError]);
       Exit;
     end;
 
@@ -573,16 +592,20 @@ begin
       begin
 
         ErrorText := Format('Cannot configure receiver check (Windows socket error %d).',
-                              [WSAGetLastError]);
+                            [WSAGetLastError]);
         Exit;
       end;
 
-    FillChar(Address, SizeOf(Address), 0);
+    FillChar(Address,
+             SizeOf(Address),
+             0);
     HostAnsi := AnsiString(Host);
     Address.sin_family := AF_INET;
     Address.sin_port := htons(Port);
     Address.sin_addr.S_addr := inet_addr(PAnsiChar(HostAnsi));
-    Code := connect(S, Address, SizeOf(Address));
+    Code := connect(S,
+                    Address,
+                    SizeOf(Address));
 
     if (Code = SOCKET_ERROR) then
       begin
@@ -591,17 +614,24 @@ begin
         if (Error <> WSAEWOULDBLOCK) then
           begin
 
-            ErrorText := Format('Connection failed (Windows socket error %d).', [Error]);
+            ErrorText := Format('Connection failed (Windows socket error %d).',
+                                [Error]);
             Exit;
           end;
 
-        FillChar(Writable, SizeOf(Writable), 0);
+        FillChar(Writable,
+                 SizeOf(Writable),
+                 0);
         Writable.fd_count := 1;
         Writable.fd_array[0] := S;
         Failed := Writable;
         Timeout.tv_sec := TimeoutMs div 1000;
         Timeout.tv_usec := (TimeoutMs mod 1000) * 1000;
-        Code := select(0, nil, @Writable, @Failed, @Timeout);
+        Code := select(0,
+                       nil,
+                       @Writable,
+                       @Failed,
+                       @Timeout);
 
         if (Code = 0) then
           begin
@@ -614,7 +644,7 @@ begin
           begin
 
             ErrorText := Format('Receiver check failed (Windows socket error %d).',
-                                  [WSAGetLastError]);
+                                [WSAGetLastError]);
             Exit;
           end;
 
@@ -627,7 +657,7 @@ begin
           begin
 
             ErrorText := Format('Receiver control port is unavailable (Windows socket error %d).',
-                                  [Error]);
+                                [Error]);
             Exit;
           end;
 
@@ -644,7 +674,7 @@ begin
       begin
 
         ErrorText := Format('Receiver is not connected (Windows socket error %d).',
-                              [WSAGetLastError]);
+                            [WSAGetLastError]);
         Exit;
       end;
 
@@ -658,7 +688,8 @@ end;
 
 function LocalAddressFor(const Receiver: string): string;
 var
-  S: TSocket; Addr,
+  S: TSocket;
+  Addr,
   Local: TSockAddrIn;
   Len: Integer;
   Host: AnsiString;
@@ -709,7 +740,7 @@ end;
 initialization
 
   if (WSAStartup($0202,
-                 WsaData) <> 0) then
+    WsaData) <> 0) then
     raise EDenonSocket.Create('Windows sockets could not initialize');
 
 finalization

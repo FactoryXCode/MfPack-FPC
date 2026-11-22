@@ -64,12 +64,13 @@ unit MfLoopbackDeckEngine;
 
 interface
 
-uses Rdj.Dispatch,
-Rdj.Platform,
-LMessages,
+uses
+  Rdj.Dispatch,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinApiTypes,
   WinApi.WinError,
@@ -116,9 +117,11 @@ type
                                      const CurrentBpm: Double) of object;
 
   TMfLoopbackDeckEngine = class
+
   private
     FDispatch: TRdjDispatcher;
     procedure DispatchEvent(Event: TRdjEvent);
+
   private
 
     FLoopback: TLoopbackCapture;
@@ -265,13 +268,26 @@ implementation
 uses
   RDJ_Common;
 
+
 procedure TMfLoopbackDeckEngine.DispatchEvent(Event: TRdjEvent);
+
 begin
- case Event.Kind of
- 1: if Assigned(FOnState) then FOnState(Self,TWasApiDeviceState(Event.I0));
- 7: if Assigned(FOnDeckTick) then FOnDeckTick(Self,Event.I0,Event.D0,Event.D1);
- 8: if Assigned(FOnBeat) then FOnBeat(Self,Event.I0,Event.I1,Event.D0);
- end;
+
+  case Event.Kind of
+    1: if Assigned(FOnState) then
+        FOnState(Self,
+                 TWasApiDeviceState(Event.I0));
+    7: if Assigned(FOnDeckTick) then
+        FOnDeckTick(Self,
+                    Event.I0,
+                    Event.D0,
+                    Event.D1);
+    8: if Assigned(FOnBeat) then
+        FOnBeat(Self,
+                Event.I0,
+                Event.I1,
+                Event.D0);
+  end;
 end;
 
 
@@ -296,14 +312,14 @@ begin
 
   for I := 2 to ACount - 3 do
     Tmp[I] := (AEnvelope[I - 2] +
-               AEnvelope[I - 1] +
-               AEnvelope[I] +
-               AEnvelope[I + 1] +
-               AEnvelope[I + 2]) / 5.0;
+      AEnvelope[I - 1] +
+      AEnvelope[I] +
+      AEnvelope[I + 1] +
+      AEnvelope[I + 2]) / 5.0;
 
   Tmp[ACount - 2] := (AEnvelope[ACount - 3] +
-                      AEnvelope[ACount - 2] +
-                      AEnvelope[ACount - 1]) / 3.0;
+    AEnvelope[ACount - 2] +
+    AEnvelope[ACount - 1]) / 3.0;
 
   Tmp[ACount - 1] := AEnvelope[ACount - 1];
 
@@ -314,6 +330,7 @@ end;
 
 
 function NormalizeDetectedBpm(const ABpm: Double): Double;
+
 begin
 
   Result := ABpm;
@@ -455,6 +472,7 @@ end;
 function NormalizeBeatOffsetToPosition(const AOffset100ns: Int64;
                                        const ABeatLength100ns: Double;
                                        const APosition100ns: Int64): Int64;
+
 begin
 
   Result := AOffset100ns;
@@ -469,9 +487,12 @@ begin
     Result := Round(Result + ABeatLength100ns);
 end;
 
+
 function WrapPhaseError100ns(const AError100ns: Int64;
-                               const ABeatLength100ns: Double): Double;
+                             const ABeatLength100ns: Double): Double;
+
 begin
+
   Result := AError100ns;
 
   if (ABeatLength100ns <= 0.0) then
@@ -484,8 +505,13 @@ begin
     Result := Result + ABeatLength100ns;
 end;
 
-function ClampDouble(const AValue, AMin, AMax: Double): Double;
+
+function ClampDouble(const AValue,
+                     AMin,
+                     AMax: Double): Double;
+
 begin
+
   Result := AValue;
   if (Result < AMin) then
     Result := AMin
@@ -506,8 +532,8 @@ var
 begin
 
   if (ABuffer = nil) or
-     (AFrames <= 0) or
-     (AChannels <= 0) then
+    (AFrames <= 0) or
+    (AChannels <= 0) then
     Exit;
 
   if (Abs(AGainLinear - 1.0) < 1E-6) then
@@ -528,10 +554,11 @@ end;
 { TMfLoopbackDeckEngine }
 
 constructor TMfLoopbackDeckEngine.Create();
+
 begin
 
   inherited Create();
-  FDispatch:=TRdjDispatcher.Create;
+  FDispatch := TRdjDispatcher.Create;
 
   FLoopback := nil;
   FAudioRack := TMfWasApiEffectsRack.Create(nil);
@@ -608,6 +635,7 @@ end;
 
 
 destructor TMfLoopbackDeckEngine.Destroy();
+
 begin
 
   Stop();
@@ -624,6 +652,7 @@ end;
 
 
 procedure TMfLoopbackDeckEngine.InitRing(const ASize: Integer);
+
 begin
 
   FRingSize := ASize;
@@ -634,6 +663,7 @@ end;
 
 
 procedure TMfLoopbackDeckEngine.ResetRing();
+
 begin
 
   FLock.Acquire();
@@ -651,6 +681,7 @@ end;
 
 
 procedure TMfLoopbackDeckEngine.ResetBeatDetector();
+
 begin
 
   FLock.Acquire();
@@ -673,6 +704,7 @@ begin
     FLock.Release();
   end;
 end;
+
 
 procedure TMfLoopbackDeckEngine.AppendEnvelopeBin(const AValue: Single);
 var
@@ -828,10 +860,10 @@ begin
                  EnvCount);
 
   if not DetectBpmFromEnvelope(EnvCopy,
-                               EnvCount,
-                               FEnvelopeRate,
-                               DetectedBpm,
-                               DetectedOffsetRel100ns) then
+    EnvCount,
+    FEnvelopeRate,
+    DetectedBpm,
+    DetectedOffsetRel100ns) then
     Exit;
 
   DetectedBpm := NormalizeDetectedBpm(DetectedBpm);
@@ -849,7 +881,7 @@ begin
 
     if (CurrentTrackBpm <= 0.0) then
       FTrackBpm := DetectedBpm
-    else if Abs(CurrentTrackBpm - DetectedBpm) <= 8.0 then
+    else if (Abs(CurrentTrackBpm - DetectedBpm) <= 8.0) then
       FTrackBpm := (CurrentTrackBpm * 0.88) + (DetectedBpm * 0.12)
     else
       FTrackBpm := DetectedBpm;
@@ -873,13 +905,13 @@ begin
                 // compare detected beat phase against the existing grid at the current position,
                 // wrap to nearest beat, then apply only a limited correction per analysis pass.
                 StableOffsetAtPos := NormalizeBeatOffsetToPosition(FBeatOffset100ns,
-                                                                              BeatLen100ns,
-                                                                              EndPosition100ns);
+                                                                   BeatLen100ns,
+                                                                   EndPosition100ns);
                 DetectedOffsetAtPos := NormalizeBeatOffsetToPosition(NewBeatOffset100ns,
-                                                                                BeatLen100ns,
-                                                                                EndPosition100ns);
+                                                                     BeatLen100ns,
+                                                                     EndPosition100ns);
                 PhaseError100ns := WrapPhaseError100ns(DetectedOffsetAtPos - StableOffsetAtPos,
-                                                                   BeatLen100ns);
+                                                       BeatLen100ns);
                 SnapDeadband100ns := BeatLen100ns * 0.03;
                 MaxAdjust100ns := BeatLen100ns * 0.10;
 
@@ -891,9 +923,9 @@ begin
                                                       MaxAdjust100ns);
 
                     FBeatOffset100ns := NormalizeBeatOffsetToPosition(
-                                          Round(FBeatOffset100ns + AppliedAdjust100ns),
-                                          BeatLen100ns,
-                                          EndPosition100ns);
+                      Round(FBeatOffset100ns + AppliedAdjust100ns),
+                                                                      BeatLen100ns,
+                                                                      EndPosition100ns);
                   end
                 else
                   FBeatOffset100ns := NormalizeBeatOffsetToPosition(FBeatOffset100ns,
@@ -914,9 +946,11 @@ begin
   end;
 end;
 
+
 function TMfLoopbackDeckEngine.PrepareProcess(const AProcessId: DWORD;
                                               const ACaptureMode: TMfLoopbackCaptureMode = lcmIncludeProcessTree;
                                               const AInitialBufferSize: REFERENCE_TIME = 0): HRESULT;
+
 begin
 
   Result := Stop();
@@ -955,6 +989,7 @@ end;
 
 
 function TMfLoopbackDeckEngine.Start(): HRESULT;
+
 begin
 
   if not Assigned(FLoopback) then
@@ -991,6 +1026,7 @@ end;
 
 
 function TMfLoopbackDeckEngine.Stop(): HRESULT;
+
 begin
 
   Result := S_OK;
@@ -1025,6 +1061,7 @@ end;
 
 
 procedure TMfLoopbackDeckEngine.EnsureConvertBuffer(const ByteCount: Integer);
+
 begin
 
   if (ByteCount > 0) and (Length(FConvertBuf) < ByteCount) then
@@ -1034,6 +1071,7 @@ end;
 
 
 procedure TMfLoopbackDeckEngine.EnsureSilentFloatBuffer(const ByteCount: Integer);
+
 begin
 
   if (ByteCount <= 0) then
@@ -1272,25 +1310,27 @@ end;
 
 
 function TMfLoopbackDeckEngine.IsPcm16Stereo(const pwfx: PWAVEFORMATEX): Boolean;
+
 begin
 
   Result := Assigned(pwfx) and
-            (pwfx.nChannels = 2) and
-            (pwfx.wBitsPerSample = 16) and
-            (pwfx.nBlockAlign = 4) and
-            (pwfx.wFormatTag = WAVE_FORMAT_PCM);
+    (pwfx.nChannels = 2) and
+    (pwfx.wBitsPerSample = 16) and
+    (pwfx.nBlockAlign = 4) and
+    (pwfx.wFormatTag = WAVE_FORMAT_PCM);
 end;
 
 
 function TMfLoopbackDeckEngine.IsFloat32Stereo(const pwfx: PWAVEFORMATEX): Boolean;
+
 begin
 
   Result := Assigned(pwfx) and
-            (pwfx.nChannels = 2) and
-            (pwfx.wBitsPerSample = 32) and
-            (pwfx.nBlockAlign = 8) and
-            ((pwfx.wFormatTag = WAVE_FORMAT_IEEE_FLOAT) or
-             (pwfx.wFormatTag = WAVE_FORMAT_EXTENSIBLE));
+    (pwfx.nChannels = 2) and
+    (pwfx.wBitsPerSample = 32) and
+    (pwfx.nBlockAlign = 8) and
+    ((pwfx.wFormatTag = WAVE_FORMAT_IEEE_FLOAT) or
+    (pwfx.wFormatTag = WAVE_FORMAT_EXTENSIBLE));
 end;
 
 
@@ -1299,6 +1339,7 @@ procedure TMfLoopbackDeckEngine.LoopbackCapturedPcm(Sender: TObject;
                                                     ByteCount: DWORD;
                                                     pwfx: PWAVEFORMATEX;
                                                     const CaptureFlags: DWORD);
+
 begin
 
   if (ByteCount = 0) then
@@ -1400,7 +1441,7 @@ begin
       end;
 
     FCurrentTempoFactor := FCurrentTempoFactor +
-                           ((FTargetTempoFactor - FCurrentTempoFactor) * 0.15);
+      ((FTargetTempoFactor - FCurrentTempoFactor) * 0.15);
 
     if (FCurrentTempoFactor < 0.10) then
       FCurrentTempoFactor := 0.10;
@@ -1417,15 +1458,15 @@ begin
         Frac := SrcPos - Index0;
 
         if not InternalPeekStereoFrame(Index0,
-                                       L0,
-                                       R0) then
+          L0,
+          R0) then
           Break;
 
         AnyAudio := True;
 
         if not InternalPeekStereoFrame(Index1,
-                                       L1,
-                                       R1) then
+          L1,
+          R1) then
           begin
 
             L1 := L0;
@@ -1491,7 +1532,7 @@ begin
                                   FSampleRate);
 
       EndPosition100ns := FPosition100ns +
-                          Round((FramesWritten * 10000000.0) / FSampleRate);
+        Round((FramesWritten * 10000000.0) / FSampleRate);
 
       ProcessBeatDetector(OutBuffer,
                           FramesWritten,
@@ -1506,6 +1547,7 @@ end;
 
 
 procedure TMfLoopbackDeckEngine.UpdateCurrentBpm();
+
 begin
 
   if (FTrackBpm > 0.0) then
@@ -1532,7 +1574,7 @@ begin
     Exit;
 
   LocalPosition100ns := FPosition100ns +
-                        Round((FramesWritten * 10000000.0) / FSampleRate);
+    Round((FramesWritten * 10000000.0) / FSampleRate);
 
   TickCb := nil;
   BeatCb := nil;
@@ -1585,14 +1627,26 @@ begin
   end;
 
   if Assigned(TickCb) then
-    FDispatch.Post(DispatchEvent,7,LocalPosition100ns,0,0,LocalCurrentBpm,BeatPhase);
+    FDispatch.Post(DispatchEvent,
+                   7,
+                   LocalPosition100ns,
+                   0,
+                   0,
+                   LocalCurrentBpm,
+                   BeatPhase);
 
   if FireBeat and Assigned(BeatCb) then
-    FDispatch.Post(DispatchEvent,8,LocalPosition100ns,0,BeatIndex,LocalCurrentBpm);
+    FDispatch.Post(DispatchEvent,
+                   8,
+                   LocalPosition100ns,
+                   0,
+                   BeatIndex,
+                   LocalCurrentBpm);
 end;
 
 
 procedure TMfLoopbackDeckEngine.SetTrackBpm(const AValue: Double);
+
 begin
 
   FLock.Acquire();
@@ -1639,6 +1693,7 @@ end;
 
 
 function TMfLoopbackDeckEngine.GetTempoPercent(): Single;
+
 begin
 
   Result := FTempoPercent;
@@ -1655,9 +1710,8 @@ begin
 
   if (NewTempo < -8.0) then
     NewTempo := -8.0
-  else
-    if (NewTempo > 8.0) then
-      NewTempo := 8.0;
+  else if (NewTempo > 8.0) then
+    NewTempo := 8.0;
 
   FLock.Acquire();
 
@@ -1680,6 +1734,7 @@ end;
 
 
 function TMfLoopbackDeckEngine.GetCurrentBpm(): Double;
+
 begin
 
   FLock.Acquire();
@@ -1695,6 +1750,7 @@ end;
 
 
 function TMfLoopbackDeckEngine.GetTempoFactor(): Double;
+
 begin
 
   Result := FTargetTempoFactor;
@@ -1702,14 +1758,18 @@ end;
 
 
 procedure TMfLoopbackDeckEngine.DoState();
+
 begin
 
   if Assigned(FOnState) then
-    FDispatch.Post(DispatchEvent,1,Ord(FState));
+    FDispatch.Post(DispatchEvent,
+                   1,
+                   Ord(FState));
 end;
 
 
 procedure TMfLoopbackDeckEngine.SetState(const AState: TWasApiDeviceState);
+
 begin
 
   if (FState = AState) then
@@ -1718,4 +1778,5 @@ begin
   FState := AState;
   DoState();
 end;
+
 end.

@@ -88,24 +88,27 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
-// Enums =======================================================================
+  // Enums =======================================================================
 
 type
   PDXGI_OUTDUPL_FLAG = ^DXGI_OUTDUPL_FLAG;
   DXGI_OUTDUPL_FLAG = DWord;
+
 const
   DXGI_OUTDUPL_COMPOSITED_UI_CAPTURE_ONLY = DXGI_OUTDUPL_FLAG(1);
 
 type
   PDXGI_HDR_METADATA_TYPE = ^DXGI_HDR_METADATA_TYPE;
   DXGI_HDR_METADATA_TYPE = DWord;
+
 const
-  DXGI_HDR_METADATA_TYPE_NONE      = DXGI_HDR_METADATA_TYPE(0);
-  DXGI_HDR_METADATA_TYPE_HDR10     = DXGI_HDR_METADATA_TYPE(1);
+  DXGI_HDR_METADATA_TYPE_NONE = DXGI_HDR_METADATA_TYPE(0);
+  DXGI_HDR_METADATA_TYPE_HDR10 = DXGI_HDR_METADATA_TYPE(1);
   DXGI_HDR_METADATA_TYPE_HDR10PLUS = DXGI_HDR_METADATA_TYPE(2);
 
 type
@@ -115,6 +118,7 @@ type
   PDXGI_OFFER_RESOURCE_FLAGS = ^_DXGI_OFFER_RESOURCE_FLAGS;
   _DXGI_OFFER_RESOURCE_FLAGS = DWord;
   DXGI_OFFER_RESOURCE_FLAGS = _DXGI_OFFER_RESOURCE_FLAGS;
+
 const
   DXGI_OFFER_RESOURCE_FLAG_ALLOW_DECOMMIT = DXGI_OFFER_RESOURCE_FLAGS($1);
 
@@ -122,9 +126,10 @@ type
   PDXGI_RECLAIM_RESOURCE_RESULTS = ^_DXGI_RECLAIM_RESOURCE_RESULTS;
   _DXGI_RECLAIM_RESOURCE_RESULTS = DWord;
   DXGI_RECLAIM_RESOURCE_RESULTS = _DXGI_RECLAIM_RESOURCE_RESULTS;
+
 const
-  DXGI_RECLAIM_RESOURCE_RESULT_OK            = DXGI_RECLAIM_RESOURCE_RESULTS(0);
-  DXGI_RECLAIM_RESOURCE_RESULT_DISCARDED     = DXGI_RECLAIM_RESOURCE_RESULTS(1);
+  DXGI_RECLAIM_RESOURCE_RESULT_OK = DXGI_RECLAIM_RESOURCE_RESULTS(0);
+  DXGI_RECLAIM_RESOURCE_RESULT_DISCARDED = DXGI_RECLAIM_RESOURCE_RESULTS(1);
   DXGI_RECLAIM_RESOURCE_RESULT_NOT_COMMITTED = DXGI_RECLAIM_RESOURCE_RESULTS(2);
 
 type
@@ -133,10 +138,11 @@ type
   //------------------------------------------------------------------------------
   PDXGI_FEATURE = ^DXGI_FEATURE;
   DXGI_FEATURE = DWord;
+
 const
   DXGI_FEATURE_PRESENT_ALLOW_TEARING = DXGI_FEATURE(0);
 
-// =============================================================================
+  // =============================================================================
 
 type
 
@@ -144,7 +150,7 @@ type
   // ======================
   //
   IDXGIOutput5 = interface(IDXGIOutput4)
-  ['{80A07424-AB52-42EB-833C-0C42FD282D98}']
+    ['{80A07424-AB52-42EB-833C-0C42FD282D98}']
 
     function DuplicateOutput1(pDevice: IUnknown;
                               Flags: UINT;
@@ -153,6 +159,7 @@ type
                               out ppOutputDuplication: IDXGIOutputDuplication): HResult; stdcall;
 
   end;
+
   IID_IDXGIOutput5 = IDXGIOutput5;
 
 
@@ -163,6 +170,7 @@ type
   //------------------------------------------------------------------------------
 
   PDXGI_HDR_METADATA_HDR10 = ^DXGI_HDR_METADATA_HDR10;
+
   DXGI_HDR_METADATA_HDR10 = record
     // Color gamut
     RedPrimary: array[0..1] of UINT16;
@@ -177,6 +185,7 @@ type
   end;
 
   PDXGI_HDR_METADATA_HDR10PLUS = ^DXGI_HDR_METADATA_HDR10PLUS;
+
   DXGI_HDR_METADATA_HDR10PLUS = record
     Data: array[0..71] of Byte;
   end;
@@ -186,13 +195,14 @@ type
   // =========================
   //
   IDXGISwapChain4 = interface(IDXGISwapChain3)
-  ['{3D585D5A-BD4A-489E-B1F4-3DBCB6452FFB}']
+    ['{3D585D5A-BD4A-489E-B1F4-3DBCB6452FFB}']
 
     function SetHDRMetaData(_Type: DXGI_HDR_METADATA_TYPE;
                             Size: UINT;
                             pMetaData: Pointer): HResult; stdcall;
 
   end;
+
   IID_IDXGISwapChain4 = IDXGISwapChain4;
 
 
@@ -200,18 +210,19 @@ type
   // ======================
   //
   IDXGIDevice4 = interface(IDXGIDevice3)
-  ['{95B4F95F-D8DA-4CA4-9EE6-3B76D5968A10}']
+    ['{95B4F95F-D8DA-4CA4-9EE6-3B76D5968A10}']
 
     function OfferResources1(NumResources: UINT;
                              ppResources: IDXGIResource; // An array of pointers to IDXGIResource interfaces for the resources to offer.
-                             Priority: DXGI_OFFER_RESOURCE_PRIORITY;
+      Priority: DXGI_OFFER_RESOURCE_PRIORITY;
                              Flags: UINT): HResult; stdcall;
 
     function ReclaimResources1(NumResources: UINT;
                                ppResources: IDXGIResource; // An array of pointers to IDXGIResource interfaces for the resources to reclaim.
-                               out pResults: PDXGI_RECLAIM_RESOURCE_RESULTS): HResult; stdcall; // A pointer to an array that receives DXGI_RECLAIM_RESOURCE_RESULTS values.
+      out pResults: PDXGI_RECLAIM_RESOURCE_RESULTS): HResult; stdcall; // A pointer to an array that receives DXGI_RECLAIM_RESOURCE_RESULTS values.
 
   end;
+
   IID_IDXGIDevice4 = IDXGIDevice4;
 
 
@@ -219,13 +230,14 @@ type
   // =======================
   //
   IDXGIFactory5 = interface(IDXGIFactory4)
-  ['{7632e1f5-ee65-4dca-87fd-84cd75f8838d}']
+    ['{7632e1f5-ee65-4dca-87fd-84cd75f8838d}']
 
     function CheckFeatureSupport(Feature: DXGI_FEATURE;
-                                pFeatureSupportData: Pointer;
-                                FeatureSupportDataSize: UINT): HResult; stdcall;
+                                 pFeatureSupportData: Pointer;
+                                 FeatureSupportDataSize: UINT): HResult; stdcall;
 
   end;
+
   IID_IDXGIFactory5 = IDXGIFactory5;
 
   //--------------------------------------------------------------------------------------------------------
@@ -237,6 +249,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

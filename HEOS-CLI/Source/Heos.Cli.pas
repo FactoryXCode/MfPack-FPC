@@ -66,9 +66,10 @@ unit Heos.Cli;
 
 interface
 
-uses Heos.Fpc.Text,
-Heos.Fpc.Platform,
-{System}
+uses
+  Heos.Fpc.Text,
+  Heos.Fpc.Platform,
+  {System}
   Classes,
   SysUtils,
   Heos.Fpc.JSON,
@@ -109,9 +110,10 @@ type
   end;
 
   THeosCommand = record
+
   private
     FPath: string;
-    FParameters: TArray<THeosParameter>;
+    FParameters: TArray < THeosParameter > ;
 
   public
 
@@ -128,9 +130,10 @@ type
 
 
   THeosMessage = class
+
   private
     FRoot: TJSONObject;
-    FFields: TDictionary<string, string>;
+    FFields: TDictionary < string, string > ;
     FCommand: string;
     FResult: string;
     FMessage: string;
@@ -149,9 +152,9 @@ type
     destructor Destroy(); override;
     class function Parse(const Json: string): THeosMessage; static;
     function Parameter(const Name: string;
-                         const Default: string = ''): string;
+                       const Default: string = ''): string;
     function IntegerParameter(const Name: string;
-                                Default: Int64 = 0): Int64;
+                              Default: Int64 = 0): Int64;
     property Command: string read FCommand;
     property ResultText: string read FResult;
     property MessageText: string read FMessage;
@@ -164,7 +167,7 @@ type
   end;
 
   THeosMessageEvent = procedure(Sender: TObject;
-                                 Message: THeosMessage) of object;
+                                Message: THeosMessage) of object;
 
   THeosClient = class;
 
@@ -174,6 +177,7 @@ type
   end;
 
   THeosWorker = class(TThread)
+
   private
     FOwner: THeosClient;
     FConnection: THeosConnection;
@@ -191,7 +195,7 @@ type
     function ReadFrame(TimeoutMs: Integer): string;
     function ExtractFrame(): string;
     function Exchange(const Command: THeosCommand;
-                        Id: UInt64): THeosMessage;
+                      Id: UInt64): THeosMessage;
 
   protected
     procedure Execute(); override;
@@ -201,6 +205,7 @@ type
   end;
 
   THeosClient = class
+
   private
     FHost: string;
     FPort: Word;
@@ -208,8 +213,8 @@ type
     FConnectTimeoutMs: Integer;
     FLock: SyncObjs.TCriticalSection;
     FWake: TEvent;
-    FPending: TQueue<THeosPending>;
-    FMessages: TQueue<THeosMessage>;
+    FPending: TQueue < THeosPending > ;
+    FMessages: TQueue < THeosMessage > ;
     FWorker: THeosWorker;
     FNextId: UInt64;
     FGeneration: Cardinal;
@@ -231,8 +236,8 @@ type
 
   public
     constructor Create(const Host: string;
-                         Port: Word = 1255;
-                         ConnectTimeoutMs: Integer = 2500);
+                       Port: Word = 1255;
+                       ConnectTimeoutMs: Integer = 2500);
     destructor Destroy(); override;
     function Enqueue(const Command: THeosCommand): UInt64;
     function Connect(): UInt64;
@@ -251,19 +256,18 @@ type
     property OnConnection: THeosMessageEvent read FOnConnection write FOnConnection;
   end;
 
-  function HeosEncode(const Value: string): string;
-  function HeosDecode(const Value: string): string;
+function HeosEncode(const Value: string): string;
+function HeosDecode(const Value: string): string;
 
-  function HeosParameter(const Name: string;
-                          const Value: string;
-                          Encoded: Boolean = False): THeosParameter;
+function HeosParameter(const Name: string;
+                       const Value: string;
+                       Encoded: Boolean = False): THeosParameter;
 
-  function GetTickCount64(): UInt64; stdcall;
+function GetTickCount64(): UInt64; stdcall;
 
 implementation
 
 uses
-
   Windows,
   WinSock,
   StrUtils,
@@ -278,7 +282,7 @@ const
 
 
 function JsonText(Json: TJSONObject;
-                    const Name: string): string;
+                  const Name: string): string;
 var
   Value: TJSONValue;
 
@@ -333,9 +337,9 @@ begin
   while (I <= Length(Input)) do
     begin
       if (Input[I] = '%') and (I + 2 <= Length(Input)) and TryStrToInt('$' + string(Copy(Input,
-                                                                                         I + 1,
-                                                                                         2)),
-                                                                       Number) then
+        I + 1,
+        2)),
+        Number) then
         begin
           Bytes[N] := Byte(Number);
           Inc(I,
@@ -357,13 +361,13 @@ end;
 
 
 function ValidName(const Value: string;
-                     AllowSlash: Boolean): Boolean;
+                   AllowSlash: Boolean): Boolean;
 var
   Item: Char;
 
 begin
 
-  Result := Value <> '';
+  Result := (Value <> '');
 
   for Item in Value do
     if not CharInSet(Item, ['a'..'z', 'A'..'Z', '0'..'9', '_']) and not (AllowSlash and (Item = '/')) then
@@ -374,6 +378,7 @@ end;
 function HeosParameter(const Name: string;
                        const Value: string;
                        Encoded: Boolean): THeosParameter;
+
 begin
 
   Result.Name := Name;
@@ -383,6 +388,7 @@ end;
 
 
 class function THeosCommand.Create(const Path: string): THeosCommand;
+
 begin
 
   if not ValidName(Path, True) or (Pos('/', Path) <= 1) or (Path[Length(Path)] = '/') then
@@ -405,11 +411,11 @@ begin
     raise EArgumentException.Create('Invalid HEOS parameter name');
 
   if Encoded and ((Pos(#13,
-                       Value) > 0) or (Pos(#10,
-                                           Value) > 0) or
-                 (Pos('&',
-                      Value) > 0) or (Pos('=',
-                                          Value) > 0)) then
+    Value) > 0) or (Pos(#10,
+                        Value) > 0) or
+    (Pos('&',
+         Value) > 0) or (Pos('=',
+                             Value) > 0)) then
     raise EArgumentException.Create('Encoded HEOS values contain unescaped delimiters');
 
   Count := Length(FParameters);
@@ -434,7 +440,7 @@ begin
 
   for Item in FParameters do
     if SameText(Item.Name,
-                Name) then
+      Name) then
       begin
         Result := Item.Value;
 
@@ -453,8 +459,8 @@ var
 begin
 
   if not ValidName(FPath,
-                   True) or (Pos('/',
-                                 FPath) <= 1) then
+    True) or (Pos('/',
+                  FPath) <= 1) then
     raise EArgumentException.Create('Empty or invalid HEOS command');
 
   Result := 'heos://' + FPath;
@@ -477,15 +483,18 @@ end;
 
 
 constructor THeosMessage.Create();
+
 begin
 
   inherited;
 
-  FFields := TDictionary<string, string>.Create;
+  FFields := (TDictionary < string,
+              string > .Create);
 end;
 
 
 destructor THeosMessage.Destroy();
+
 begin
 
   FRoot.Free;
@@ -511,14 +520,22 @@ begin
     if not (Value is TJSONObject) then
       begin
         Value.Free;
-        begin Result.Kind := hmError; Result.LocalError := 'HEOS response is not a JSON object'; Exit; end;
+        begin
+          Result.Kind := hmError;
+          Result.LocalError := 'HEOS response is not a JSON object';
+          Exit;
+        end;
       end;
 
     Result.FRoot := TJSONObject(Value);
     Value := Result.FRoot.GetValue('heos');
 
     if not (Value is TJSONObject) then
-      begin Result.Kind := hmError; Result.LocalError := 'HEOS response has no valid header'; Exit; end;
+      begin
+        Result.Kind := hmError;
+        Result.LocalError := 'HEOS response has no valid header';
+        Exit;
+      end;
 
     Header := TJSONObject(Value);
 
@@ -532,42 +549,54 @@ begin
                                 'message');
 
     if (Result.FCommand = '') then
-      begin Result.Kind := hmError; Result.LocalError := 'HEOS response has no command'; Exit; end;
-
-    for Part in MfCastSplit(Result.FMessage,'&') do
       begin
-        P := Pos('=', Part);
+        Result.Kind := hmError;
+        Result.LocalError := 'HEOS response has no command';
+        Exit;
+      end;
+
+    for Part in MfCastSplit(Result.FMessage,
+                            '&') do
+      begin
+        P := Pos('=',
+                 Part);
 
         if (P > 0) then
           Result.FFields.AddOrSetValue(HeosDecode(Copy(Part,
-                                                  1,
-                                                  P - 1)),
+                                                       1,
+                                                       P - 1)),
                                        HeosDecode(Copy(Part,
-                                                  P + 1,
-                                                  MaxInt)));
+                                                       P + 1,
+                                                       MaxInt)));
       end;
 
     Result.Kind := hmReply;
 
     if StartsText('event/',
-                  Result.FCommand) then
+      Result.FCommand) then
       Result.Kind := hmEvent
-    else
-      if (Result.FResult <> 'success') and (Result.FResult <> 'fail') then
-        begin Result.Kind := hmError; Result.LocalError := 'HEOS response has no valid result'; Exit; end
-      else
-        if (Pos('command under process',
-                LowerCase(Result.FMessage)) > 0) then
-          Result.Kind := hmProgress;
+    else if (Result.FResult <> 'success') and (Result.FResult <> 'fail') then
+      begin
+        Result.Kind := hmError;
+        Result.LocalError := 'HEOS response has no valid result';
+        Exit;
+      end
+    else if (Pos('command under process',
+      LowerCase(Result.FMessage)) > 0) then
+      Result.Kind := hmProgress;
 
   except
     on E: Exception do
-      begin Result.Kind := hmError; Result.LocalError := E.Message; end;
+      begin
+        Result.Kind := hmError;
+        Result.LocalError := E.Message;
+      end;
   end;
 end;
 
 
 function THeosMessage.GetPayload(): TJSONValue;
+
 begin
 
   Result := nil;
@@ -577,6 +606,7 @@ end;
 
 
 function THeosMessage.GetSuccess(): Boolean;
+
 begin
 
   Result := (LocalError = '') and ((FResult = 'success') or (Kind = hmEvent));
@@ -585,25 +615,28 @@ end;
 
 function THeosMessage.Parameter(const Name: string;
                                 const Default: string): string;
+
 begin
 
   if not FFields.TryGetValue(Name,
-                             Result) then
+    Result) then
     Result := Default;
 end;
 
 
 function THeosMessage.IntegerParameter(const Name: string;
                                        Default: Int64): Int64;
+
 begin
 
   if not TryStrToInt64(Parameter(Name),
-                       Result) then
+    Result) then
     Result := Default;
 end;
 
 
 function THeosMessage.GetErrorId(): Integer;
+
 begin
 
   Result := IntegerParameter('eid');
@@ -611,11 +644,13 @@ end;
 
 
 function THeosMessage.GetErrorText(): string;
+
 begin
 
   Result := LocalError;
   if (Result = '') and (FResult = 'fail') then
-    Result := Parameter('text', FMessage);
+    Result := Parameter('text',
+                        FMessage);
 end;
 
 
@@ -650,6 +685,7 @@ end;
 constructor THeosClient.Create(const Host: string;
                                Port: Word;
                                ConnectTimeoutMs: Integer);
+
 begin
 
   inherited Create;
@@ -671,8 +707,8 @@ begin
                          False,
                          '');
 
-  FPending := TQueue<THeosPending>.Create;
-  FMessages := TQueue<THeosMessage>.Create;
+  FPending := (TQueue < THeosPending > .Create);
+  FMessages := (TQueue < THeosMessage > .Create);
   FWorker := THeosWorker.Create(Self);
   FWorker.Start();
 end;
@@ -709,6 +745,7 @@ end;
 
 
 procedure THeosClient.SetTimeoutMs(Value: Integer);
+
 begin
 
   if (Value < 100) or (Value > 300000) then
@@ -761,6 +798,7 @@ end;
 
 
 function THeosClient.Connect(): UInt64;
+
 begin
 
   Result := Enqueue(THeosCommand.Create('system/heart_beat'));
@@ -799,6 +837,7 @@ end;
 
 
 function THeosClient.Generation(): Cardinal;
+
 begin
 
   FLock.Acquire;
@@ -812,13 +851,14 @@ end;
 
 
 procedure THeosClient.Post(Message: THeosMessage);
+
 begin
 
   FLock.Acquire;
 
   try
     if (FMessages.Count >= MaximumNotifications) and
-       ((Message.RequestId = 0) or (Message.Kind in [hmEvent, hmProgress])) then
+      ((Message.RequestId = 0) or (Message.Kind in [hmEvent, hmProgress])) then
       begin
         Inc(FDroppedNotifications);
         Message.Free;
@@ -843,7 +883,7 @@ begin
   FLock.Acquire;
 
   try
-    Changed := FConnected <> Value;
+    Changed := (FConnected <> Value);
     FConnected := Value;
 
   finally
@@ -866,6 +906,7 @@ end;
 
 
 function THeosClient.GetConnected(): Boolean;
+
 begin
 
   FLock.Acquire;
@@ -879,6 +920,7 @@ end;
 
 
 function THeosClient.GetDroppedNotifications(): UInt64;
+
 begin
 
   FLock.Acquire;
@@ -893,6 +935,7 @@ end;
 
 
 function THeosClient.HasPending(): Boolean;
+
 begin
 
   FLock.Acquire;
@@ -907,6 +950,7 @@ end;
 
 
 function THeosClient.Pop(out Pending: THeosPending): Boolean;
+
 begin
 
   FLock.Acquire;
@@ -924,6 +968,7 @@ end;
 
 
 function THeosClient.TakeMessage(out Message: THeosMessage): Boolean;
+
 begin
 
   Message := nil;
@@ -978,6 +1023,7 @@ end;
 
 
 constructor THeosWorker.Create(Owner: THeosClient);
+
 begin
 
   inherited Create(True);
@@ -988,6 +1034,7 @@ end;
 
 
 procedure THeosWorker.CloseConnection();
+
 begin
 
   FreeAndNil(FConnection);
@@ -997,6 +1044,7 @@ end;
 
 
 function THeosWorker.Cancelled(): Boolean;
+
 begin
 
   Result := Terminated or (FGeneration <> FOwner.Generation());
@@ -1012,11 +1060,14 @@ begin
 
   Result := False;
   if not THeosConnection.TryConnect(FOwner.FHost, FOwner.FPort,
-                                    FOwner.FConnectTimeoutMs, FConnection, FError) then
+    FOwner.FConnectTimeoutMs, FConnection, FError) then
     Exit;
 
   if Cancelled() then
-    begin FError := 'HEOS connection cancelled'; Exit; end;
+    begin
+      FError := 'HEOS connection cancelled';
+      Exit;
+    end;
 
   FOwner.SetConnected(True);
   FLastActivity := GetTickCount64;
@@ -1031,9 +1082,13 @@ begin
                         0);
 
       try
-        if not Assigned(Reply) then Exit;
+        if not Assigned(Reply) then
+          Exit;
         if not Reply.Success then
-          begin FError := 'HEOS event subscription could not be restored: ' + Reply.ErrorText; Exit; end;
+          begin
+            FError := 'HEOS event subscription could not be restored: ' + Reply.ErrorText;
+            Exit;
+          end;
 
       finally
         Reply.Free;
@@ -1060,13 +1115,18 @@ begin
     Inc(I);
 
   if (I > 1) then
-    Delete(FBuffer, 1, I - 1);
+    Delete(FBuffer,
+           1,
+           I - 1);
 
   if (FBuffer = '') then
     Exit;
 
   if (FBuffer[1] <> '{') then
-    begin FError := 'Invalid HEOS JSON frame'; Exit; end;
+    begin
+      FError := 'Invalid HEOS JSON frame';
+      Exit;
+    end;
 
   Depth := 0;
   InString := False;
@@ -1080,43 +1140,44 @@ begin
         begin
           if Escaped then
             Escaped := False
-          else
-            if (Item = '\') then
-              Escaped := True
-            else
-              if (Item = '"') then
-                InString := False;
+          else if (Item = '\') then
+            Escaped := True
+          else if (Item = '"') then
+            InString := False;
         end
-      else
-       if (Item = '"') then
+      else if (Item = '"') then
         InString := True
-       else
-         if (Item = '{') or (Item = '[') then
-           Inc(Depth)
-         else
-           if (Item = '}') or (Item = ']') then
-             begin
-               Dec(Depth);
+      else if (Item = '{') or (Item = '[') then
+        Inc(Depth)
+      else if (Item = '}') or (Item = ']') then
+        begin
+          Dec(Depth);
 
-               if (Depth = 0) then
-                 begin
-                   if (I > MaximumFrameBytes) then
-                     begin FError := 'HEOS JSON frame exceeds 16 MB'; Exit; end;
+          if (Depth = 0) then
+            begin
+              if (I > MaximumFrameBytes) then
+                begin
+                  FError := 'HEOS JSON frame exceeds 16 MB';
+                  Exit;
+                end;
 
-                   Result := UTF8ToString(Copy(FBuffer,
-                                               1,
-                                               I));
+              Result := UTF8ToString(Copy(FBuffer,
+                                          1,
+                                          I));
 
-                   Delete(FBuffer,
-                          1,
-                          I);
-                   Exit;
-                 end;
-             end;
+              Delete(FBuffer,
+                     1,
+                     I);
+              Exit;
+            end;
+        end;
     end;
 
   if (Length(FBuffer) > MaximumFrameBytes) then
-    begin FError := 'HEOS JSON frame exceeds 16 MB'; Exit; end;
+    begin
+      FError := 'HEOS JSON frame exceeds 16 MB';
+      Exit;
+    end;
 end;
 
 
@@ -1133,19 +1194,28 @@ begin
   if (Result <> '') or (FError <> '') or Cancelled() then
     Exit;
 
-  if not TrySocketReady(FConnection.Handle, False, TimeoutMs, Ready, FError) then Exit;
-  if not Ready then Exit;
+  if not TrySocketReady(FConnection.Handle, False, TimeoutMs, Ready, FError) then
+    Exit;
+  if not Ready then
+    Exit;
 
   Count := recv(FConnection.Handle,
                 Buffer,
                 SizeOf(Buffer),
                 0);
 
-  if Count = SOCKET_ERROR then
-    begin FError := Format('HEOS read failed (Windows socket error %d)', [WSAGetLastError]); Exit; end;
+  if (Count = SOCKET_ERROR) then
+    begin
+      FError := Format('HEOS read failed (Windows socket error %d)',
+                       [WSAGetLastError]);
+      Exit;
+    end;
 
   if (Count = 0) then
-    begin FError := 'HEOS connection closed'; Exit; end;
+    begin
+      FError := 'HEOS connection closed';
+      Exit;
+    end;
 
   SetString(Chunk,
             PAnsiChar(@Buffer[0]),
@@ -1175,25 +1245,37 @@ begin
   end;
 
   if Cancelled() then
-    begin FError := 'HEOS request cancelled before transmission'; Exit; end;
+    begin
+      FError := 'HEOS request cancelled before transmission';
+      Exit;
+    end;
 
   FTransmissionAttempted := True;
-  if not FConnection.TrySend(UTF8Encode(Command.WireText()), FError) then Exit;
+  if not FConnection.TrySend(UTF8Encode(Command.WireText()), FError) then
+    Exit;
   Timer := TStopwatch.StartNew;
 
   while not Cancelled() do
     begin
       if (Timer.ElapsedMilliseconds >= Timeout) then
-        begin FError := 'HEOS request timed out; command was not replayed'; Exit; end;
+        begin
+          FError := 'HEOS request timed out; command was not replayed';
+          Exit;
+        end;
 
       Line := ReadFrame(50);
-      if (FError <> '') then Exit;
+      if (FError <> '') then
+        Exit;
       if (Line = '') then
         Continue;
 
       Message := THeosMessage.Parse(Line);
       if (Message.Kind = hmError) then
-        begin FError := Message.ErrorText; Message.Free; Exit; end;
+        begin
+          FError := Message.ErrorText;
+          Message.Free;
+          Exit;
+        end;
       FLastActivity := GetTickCount64;
 
       if (Message.Kind <> hmEvent) and SameText(Message.Command, Command.Path) then
@@ -1206,7 +1288,10 @@ begin
       FOwner.Post(Message);
     end;
 
-  begin FError := 'HEOS request cancelled'; Exit; end;
+  begin
+    FError := 'HEOS request cancelled';
+    Exit;
+  end;
 end;
 
 
@@ -1218,10 +1303,12 @@ var
   Active: Boolean;
   Command: THeosCommand;
 
+
   procedure ReportFailure();
   begin
     CloseConnection();
-    if Terminated then Exit;
+    if Terminated then
+      Exit;
     Message := THeosMessage.Create;
     Message.Kind := hmError;
     Message.LocalError := FError;
@@ -1243,18 +1330,21 @@ var
           FOwner.Post(Message);
         end;
     FRetryAt := GetTickCount64 + UInt64(FRetryDelay);
-    if FRetryDelay < 30000 then FRetryDelay := FRetryDelay * 2;
-    if FRetryDelay > 30000 then FRetryDelay := 30000;
+    if (FRetryDelay < 30000) then
+      FRetryDelay := FRetryDelay * 2;
+    if (FRetryDelay > 30000) then
+      FRetryDelay := 30000;
   end;
 
 begin
+
   try
     while not Terminated do
       begin
         Active := False;
         FError := '';
         FTransmissionAttempted := False;
-        if FGeneration <> FOwner.Generation() then
+        if (FGeneration <> FOwner.Generation()) then
           begin
             CloseConnection();
             FSubscribed := False;
@@ -1265,26 +1355,34 @@ begin
           if not Assigned(FConnection) then
             begin
               if (not FOwner.HasPending() and not FSubscribed) or (GetTickCount64 < FRetryAt) then
-                begin FOwner.FWake.WaitFor(50); Continue; end;
+                begin
+                  FOwner.FWake.WaitFor(50);
+                  Continue;
+                end;
               if not OpenConnection() then
-                begin ReportFailure(); Continue; end;
+                begin
+                  ReportFailure();
+                  Continue;
+                end;
             end;
           if FOwner.Pop(Pending) then
             begin
               Active := True;
-              Message := Exchange(Pending.Command, Pending.Id);
+              Message := Exchange(Pending.Command,
+                                  Pending.Id);
               if Assigned(Message) then
                 begin
                   if Message.Success and (Pending.Command.Path = 'system/register_for_change_events') then
-                    FSubscribed := Pending.Command.Parameter('enable') = 'on';
+                    FSubscribed := (Pending.Command.Parameter('enable') = 'on');
                   FOwner.Post(Message);
                   Active := False;
                 end;
             end
-          else if GetTickCount64 - FLastActivity >= 20000 then
+          else if (GetTickCount64 - FLastActivity >= 20000) then
             begin
               Command := THeosCommand.Create('system/heart_beat');
-              Message := Exchange(Command, 0);
+              Message := Exchange(Command,
+                                  0);
               Message.Free;
             end
           else
@@ -1293,16 +1391,19 @@ begin
               if (Line <> '') then
                 begin
                   Message := THeosMessage.Parse(Line);
-                  if Message.Kind = hmError then FError := Message.ErrorText;
+                  if (Message.Kind = hmError) then
+                    FError := Message.ErrorText;
                   FOwner.Post(Message);
                   FLastActivity := GetTickCount64;
                 end;
             end;
         except
           // Protect the worker from unexpected library failures as well.
-          on E: Exception do FError := E.Message;
+          on E: Exception do
+            FError := E.Message;
         end;
-        if FError <> '' then ReportFailure();
+        if (FError <> '') then
+          ReportFailure();
       end;
   finally
     CloseConnection();
@@ -1314,7 +1415,7 @@ end;
 
 {$WARN SYMBOL_PLATFORM OFF}
 
-function GetTickCount64; external Kernel32Lib name 'GetTickCount64' ;
+function GetTickCount64; external Kernel32Lib name 'GetTickCount64';
 
 {$WARN SYMBOL_PLATFORM ON}
 

@@ -68,7 +68,7 @@ interface
 uses
   LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -127,6 +127,7 @@ implementation
 
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+
 begin
 
   Caption := 'MfCustomMFT Sample 6 - Playback through the registered MFT DLL';
@@ -150,15 +151,16 @@ begin
   ClosePlayer(True);
 
   while PeekMessageW(Msg,
-                    Handle,
-                    WM_TOPOLOGY_PLAYER_EVENT,
-                    WM_TOPOLOGY_PLAYER_EVENT,
-                    PM_REMOVE) do
+      Handle,
+      WM_TOPOLOGY_PLAYER_EVENT,
+      WM_TOPOLOGY_PLAYER_EVENT,
+      PM_REMOVE) do
     TTopologyEventNotice(Pointer(Msg.LParam)).Free;
 end;
 
 
 procedure TfrmMain.ClosePlayer(const ADetachWindow: Boolean);
+
 begin
 
   FReady := False;
@@ -176,6 +178,7 @@ end;
 
 
 procedure TfrmMain.OpenVideo(const AFileName: string);
+
 begin
 
   ClosePlayer(False);
@@ -194,6 +197,7 @@ end;
 
 
 procedure TfrmMain.LogError(const E: Exception);
+
 begin
 
   lblState.Caption := 'Error';
@@ -265,6 +269,7 @@ end;
 
 
 procedure TfrmMain.btnOpenClick(Sender: TObject);
+
 begin
 
   if not dlgOpenVideo.Execute then
@@ -283,6 +288,7 @@ end;
 
 
 procedure TfrmMain.btnPlayPauseClick(Sender: TObject);
+
 begin
 
   if not FReady or not Assigned(FPlayer) then
@@ -301,6 +307,7 @@ end;
 
 
 procedure TfrmMain.btnStopClick(Sender: TObject);
+
 begin
 
   if not FReady or not Assigned(FPlayer) then
@@ -316,6 +323,7 @@ end;
 
 
 procedure TfrmMain.FormResize(Sender: TObject);
+
 begin
 
   if Assigned(FPlayer) then
@@ -325,6 +333,7 @@ end;
 
 
 procedure TfrmMain.FormPaint(Sender: TObject);
+
 begin
 
   if Assigned(FPlayer) then

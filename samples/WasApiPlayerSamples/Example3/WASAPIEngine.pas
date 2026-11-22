@@ -67,7 +67,7 @@ interface
 
 uses
   WasApiSample.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ComBaseApi,
   WinApi.WinApiTypes,
@@ -102,7 +102,6 @@ uses
   MfAudioHighMidLowTypes,
   MfAudioHighMidLowMFT;
 
-
 const
 
   REFTIMES_PER_SEC = 10000000;
@@ -121,7 +120,7 @@ type
                   dsError,
                   dsInitialized,
                   dsReady, // File decoded and engine initialized.
-                  dsPlay,
+    dsPlay,
                   dsPause,
                   dsStop);
 
@@ -150,8 +149,8 @@ type
                     ckSeek,
                     ckShutdown,
 
-                    // MFT High / Mid / Low.
-                    ckEQEnable,
+    // MFT High / Mid / Low.
+    ckEQEnable,
                     ckEQSetLowDb,
                     ckEQSetMidDb,
                     ckEQSetHighDb,
@@ -187,7 +186,6 @@ type
     EqHighShelfSlope: Single;
     EqRampMode: Integer; // Ord(TRampMode)
     EqRampTimeMs: Integer;
-
     class function LoadFile(const AFileName: string;
                             ADuration: Int64): TEngineCommand; static;
     class function Play(): TEngineCommand; static;
@@ -204,7 +202,6 @@ type
     class function EQSetHighDb(const AHighDb: Integer): TEngineCommand; static;
     class function EQSetRampMode(const ARampMode: Integer): TEngineCommand; static; // Ord(TRampMode)
     class function EQSetRampTimeMs(const AMs: Integer): TEngineCommand; static;
-
     class function EQSetMidMode(const AMidMode: Integer): TEngineCommand; static;
     class function EQSetMidQ(const AMidQ: Single): TEngineCommand; static;
     class function EQSetLowFreqHz(const Hz: Single): TEngineCommand; static;
@@ -212,13 +209,16 @@ type
     class function EQSetHighFreqHz(const Hz: Single): TEngineCommand; static;
     class function EQSetLowShelfSlope(const S: Single): TEngineCommand; static;
     class function EQSetHighShelfSlope(const S: Single): TEngineCommand; static;
-
     class function Shutdown(): TEngineCommand; static;
   end;
 
 
   // Forwarded
-  TEngineNotificationKind = (enState,enError,enReady,enProcessed,enEnded);
+  TEngineNotificationKind = (enState,
+                             enError,
+                             enReady,
+                             enProcessed,
+                             enEnded);
 
   TEngineNotification = record
     Kind: TEngineNotificationKind;
@@ -230,7 +230,7 @@ type
   end;
 
   IMfEngineNotifications = interface(IInterface)
-  ['{E845BFA7-DA0A-41D5-8F87-E680D6DAF561}']
+    ['{E845BFA7-DA0A-41D5-8F87-E680D6DAF561}']
     procedure Post(const Item: TEngineNotification);
     procedure Detach;
   end;
@@ -240,12 +240,15 @@ type
 
   // TWasApiEngine thread definition.
   TWasApiEngineThread = class(TThread)
+
   private
 
     FEngine: TWasApiEngine;
+
   protected
 
     procedure Execute; override;
+
   public
 
     constructor Create(AEngine: TWasApiEngine);
@@ -253,6 +256,7 @@ type
 
 
   TWasApiEngine = class(TObject)
+
   private
 
     // WASAPI
@@ -270,7 +274,7 @@ type
 
     pvSourceWfx: PWAVEFORMATEX;
     FSourceBytesPerSec: UInt32;
-    FSourceBlockAlign:  UInt32;
+    FSourceBlockAlign: UInt32;
 
     pvRenderWfx: PWAVEFORMATEX;
     FClientBlockAlign: Word;
@@ -301,7 +305,7 @@ type
     FThread: TWasApiEngineThread;
     FCmdEvent: THandle;
     FCmdCS: SyncObjs.TCriticalSection;
-    FCmdQueue: TQueue<TEngineCommand>;
+    FCmdQueue: TQueue < TEngineCommand > ;
     FTerminateEvent: THandle;
     FRequestStop: Boolean;
     FRequestPause: Boolean;
@@ -324,9 +328,11 @@ type
 
     procedure DeliverNotification(const Item: TEngineNotification);
     procedure SetState(const NewState: TDeviceState);
-    procedure RaiseError(const Msg: string; const Hr: HRESULT);
+    procedure RaiseError(const Msg: string;
+                         const Hr: HRESULT);
     procedure RaiseReady();
-    procedure RaiseProcessed(const Position100ns: Int64; const RawPosition: UInt64);
+    procedure RaiseProcessed(const Position100ns: Int64;
+                             const RawPosition: UInt64);
     procedure RaiseEnded();
 
     procedure EnqueueCommand(const Cmd: TEngineCommand);
@@ -412,10 +418,11 @@ uses
   Math;
 
 
-{ TEngineCommand }
+  { TEngineCommand }
 
 class function TEngineCommand.LoadFile(const AFileName: string;
                                        aDuration: Int64): TEngineCommand;
+
 begin
 
   // NOTE: Delphi does not guarantee record return values are zeroed.
@@ -432,6 +439,7 @@ end;
 
 
 class function TEngineCommand.Play(): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -441,6 +449,7 @@ end;
 
 
 class function TEngineCommand.Pause(): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -450,6 +459,7 @@ end;
 
 
 class function TEngineCommand.Stop(): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -459,6 +469,7 @@ end;
 
 
 class function TEngineCommand.Seek(const APos100ns: Int64): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -470,6 +481,7 @@ end;
 
 class function TEngineCommand.SetVolume(aLeft,
                                         aRight: Single): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -482,6 +494,7 @@ end;
 
 // EQ methods ------------------------------------------------------------------
 class function TEngineCommand.EQEnable(const AEnabled: Boolean): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -491,6 +504,7 @@ end;
 
 
 class function TEngineCommand.EQSetLowDb(const ALowDb: Integer): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -500,6 +514,7 @@ end;
 
 
 class function TEngineCommand.EQSetMidDb(const AMidDb: Integer): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -509,6 +524,7 @@ end;
 
 
 class function TEngineCommand.EQSetHighDb(const AHighDb: Integer): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -518,6 +534,7 @@ end;
 
 
 class function TEngineCommand.EQSetMidMode(const AMidMode: Integer): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -527,6 +544,7 @@ end;
 
 
 class function TEngineCommand.EQSetMidQ(const AMidQ: Single): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -536,6 +554,7 @@ end;
 
 
 class function TEngineCommand.EQSetLowFreqHz(const Hz: Single): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -545,6 +564,7 @@ end;
 
 
 class function TEngineCommand.EQSetMidFreqHz(const Hz: Single): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -554,6 +574,7 @@ end;
 
 
 class function TEngineCommand.EQSetHighFreqHz(const Hz: Single): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -563,6 +584,7 @@ end;
 
 
 class function TEngineCommand.EQSetLowShelfSlope(const S: Single): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -572,6 +594,7 @@ end;
 
 
 class function TEngineCommand.EQSetHighShelfSlope(const S: Single): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -581,6 +604,7 @@ end;
 
 
 class function TEngineCommand.EQSetRampMode(const ARampMode: Integer): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -590,6 +614,7 @@ end;
 
 
 class function TEngineCommand.EQSetRampTimeMs(const AMs: Integer): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -601,6 +626,7 @@ end;
 // -----------------------------------------------------------------------------
 
 class function TEngineCommand.Shutdown(): TEngineCommand;
+
 begin
 
   Result := Default(TEngineCommand);
@@ -612,13 +638,16 @@ end;
 { TWasApiEngineThread }
 
 type
-  TMfEngineNotifications = class(TInterfacedObject,IMfEngineNotifications)
+  TMfEngineNotifications = class(TInterfacedObject,
+                                 IMfEngineNotifications)
+
   private
     FOwner: TWasApiEngine;
     FLock: SyncObjs.TCriticalSection;
-    FItems: TQueue<TEngineNotification>;
+    FItems: TQueue < TEngineNotification > ;
     FQueued: Boolean;
     procedure DispatchQueued;
+
   public
     constructor Create(Owner: TWasApiEngine);
     destructor Destroy; override;
@@ -628,7 +657,9 @@ type
 
 
 constructor TWasApiEngineThread.Create(AEngine: TWasApiEngine);
+
 begin
+
   inherited Create(True);
 
   FreeOnTerminate := False;
@@ -645,8 +676,8 @@ var
 begin
 
   // Match the shared engine: native audio code requires masked FP exceptions.
-  SetExceptionMask([exInvalidOp,exDenormalized,exZeroDivide,
-                    exOverflow,exUnderflow,exPrecision]);
+  SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide,
+    exOverflow, exUnderflow, exPrecision]);
 
   CoInitializeEx(nil,
                  COINIT_MULTITHREADED);
@@ -654,66 +685,68 @@ begin
   try
     try
 
-    // This is done in Mainfrm in initialisation section, we could do it here,
-    // but, remove the declaration from Mainfrm / initialisation section.
-    //hr := MFStartup(MF_VERSION,
-    //                MFSTARTUP_FULL);
-    //
-    // mfStarted := SUCCEEDED(hr);
+      // This is done in Mainfrm in initialisation section, we could do it here,
+      // but, remove the declaration from Mainfrm / initialisation section.
+      //hr := MFStartup(MF_VERSION,
+      //                MFSTARTUP_FULL);
+      //
+      // mfStarted := SUCCEEDED(hr);
 
-    waitArray[0] := FEngine.FTerminateEvent;
-    waitArray[1] := FEngine.FCmdEvent;
+      waitArray[0] := FEngine.FTerminateEvent;
+      waitArray[1] := FEngine.FCmdEvent;
 
-    // Idle loop: wait for commands or terminate.
-    while not Terminated do
-      begin
+      // Idle loop: wait for commands or terminate.
+      while not Terminated do
+        begin
 
-        case WaitForMultipleObjects(2,
-                                    @waitArray,
-                                    False,
-                                    INFINITE) of
-          WAIT_OBJECT_0: // terminate
-            Break;
+          case WaitForMultipleObjects(2,
+                                      @waitArray,
+                                      False,
+                                      INFINITE) of
+            WAIT_OBJECT_0: // terminate
+              Break;
 
-          WAIT_OBJECT_0 + 1: // command
-            begin
+            WAIT_OBJECT_0 + 1: // command
+              begin
 
-              // drain queue
-              while FEngine.DequeueCommand(Cmd) do
-                begin
+                // drain queue
+                while FEngine.DequeueCommand(Cmd) do
+                  begin
 
-                  if (Cmd.Kind = ckShutdown) then
-                    begin
-                      Terminate();
-                      Break;
-                    end;
+                    if (Cmd.Kind = ckShutdown) then
+                      begin
+                        Terminate();
+                        Break;
+                      end;
 
-                  if (Cmd.Kind = ckPlay) then
-                    begin
+                    if (Cmd.Kind = ckPlay) then
+                      begin
 
-                      FEngine.FRequestStop := False;
-                      FEngine.FRequestPause := False;
+                        FEngine.FRequestStop := False;
+                        FEngine.FRequestPause := False;
 
-                      hr := FEngine.PlayAudioStreamInternal();
-                      if FAILED(hr) then
-                        begin
+                        hr := FEngine.PlayAudioStreamInternal();
+                        if FAILED(hr) then
+                          begin
 
-                          FEngine.SetState(dsError);
-                          FEngine.RaiseError('PlayAudioStream failed', hr);
-                        end;
-                    end
-                  else
-                    FEngine.ProcessControlCommand(Cmd);
-                end;
+                            FEngine.SetState(dsError);
+                            FEngine.RaiseError('PlayAudioStream failed',
+                                               hr);
+                          end;
+                      end
+                    else
+                      FEngine.ProcessControlCommand(Cmd);
+                  end;
 
-            end;
+              end;
+          end;
         end;
-      end;
     except
       on E: Exception do
         begin
           FEngine.SetState(dsError);
-          FEngine.RaiseError(E.ClassName + ': ' + E.Message,E_UNEXPECTED);
+          FEngine.RaiseError(E.ClassName + ': ' + E.Message,
+                             E_UNEXPECTED);
         end;
     end;
   finally
@@ -733,7 +766,9 @@ end;
 { TWasApiEngine }
 
 constructor TWasApiEngine.Create();
+
 begin
+
   inherited Create;
   FNotifications := TMfEngineNotifications.Create(Self);
 
@@ -761,18 +796,18 @@ begin
   pvSoundChannels := 0;
 
   FCmdCS := SyncObjs.TCriticalSection.Create;
-  FCmdQueue := TQueue<TEngineCommand>.Create;
+  FCmdQueue := (TQueue < TEngineCommand > .Create);
 
   // auto-reset for commands
   FCmdEvent := CreateEventW(nil,
-                           False,
-                           False,
-                           nil);
+                            False,
+                            False,
+                            nil);
   // manual-reset terminate
   FTerminateEvent := CreateEventW(nil,
-                                 True,
-                                 False,
-                                 nil);
+                                  True,
+                                  False,
+                                  nil);
 
   // Start worker thread immediately (engine owner)
   FThread := TWasApiEngineThread.Create(Self);
@@ -782,8 +817,11 @@ end;
 
 
 destructor TWasApiEngine.Destroy();
+
 begin
-  if FNotifications <> nil then FNotifications.Detach;
+
+  if (FNotifications <> nil) then
+    FNotifications.Detach;
 
   // Request thread shutdown
   if Assigned(FCmdCS) and Assigned(FCmdQueue) then
@@ -802,7 +840,7 @@ begin
   ResetAudioData(True);
 
   if (pvAudioSamplesReadyEvent <> 0) then
-     begin
+    begin
 
       CloseHandle(pvAudioSamplesReadyEvent);
       pvAudioSamplesReadyEvent := 0;
@@ -831,16 +869,20 @@ end;
 
 
 constructor TMfEngineNotifications.Create(Owner: TWasApiEngine);
+
 begin
+
   inherited Create;
   FOwner := Owner;
   FLock := SyncObjs.TCriticalSection.Create;
-  FItems := TQueue<TEngineNotification>.Create;
+  FItems := (TQueue < TEngineNotification > .Create);
 end;
 
 
 destructor TMfEngineNotifications.Destroy;
+
 begin
+
   FItems.Free;
   FLock.Free;
   inherited Destroy;
@@ -852,12 +894,14 @@ var
   KeepAlive: IInterface;
   Schedule: Boolean;
   Detached: Boolean;
+
 begin
+
   KeepAlive := Self;
   Schedule := False;
   FLock.Enter;
   try
-    if FOwner = nil then
+    if (FOwner = nil) then
       Exit;
     FItems.Enqueue(Item);
     if not FQueued then
@@ -872,22 +916,26 @@ begin
     begin
       // Queue can execute inline on the main thread. Never call a user handler
       // while holding the lock needed by a worker that destructor must join.
-      TThread.Queue(nil,DispatchQueued);
+      TThread.Queue(nil,
+                    DispatchQueued);
       FLock.Enter;
       try
-        Detached := FOwner = nil;
+        Detached := (FOwner = nil);
       finally
         FLock.Leave;
       end;
       // KeepAlive also protects the scheduling/Detach race until cancellation.
       if Detached then
-        TThread.RemoveQueuedEvents(nil,DispatchQueued);
+        TThread.RemoveQueuedEvents(nil,
+                                   DispatchQueued);
     end;
 end;
 
 
 procedure TMfEngineNotifications.Detach;
+
 begin
+
   FLock.Enter;
   try
     FOwner := nil;
@@ -896,7 +944,8 @@ begin
   finally
     FLock.Leave;
   end;
-  TThread.RemoveQueuedEvents(nil,DispatchQueued);
+  TThread.RemoveQueuedEvents(nil,
+                             DispatchQueued);
 end;
 
 
@@ -905,7 +954,9 @@ var
   KeepAlive: IInterface;
   Owner: TWasApiEngine;
   Item: TEngineNotification;
+
 begin
+
   KeepAlive := Self;
   while True do
     begin
@@ -928,18 +979,30 @@ end;
 
 
 procedure TWasApiEngine.DeliverNotification(const Item: TEngineNotification);
+
 begin
+
   case Item.Kind of
     enState:
-      if Assigned(FOnStateChanged) then FOnStateChanged(Self,Item.State);
+      if Assigned(FOnStateChanged) then
+        FOnStateChanged(Self,
+                        Item.State);
     enError:
-      if Assigned(FOnError) then FOnError(Self,Item.Text,Item.Error);
+      if Assigned(FOnError) then
+        FOnError(Self,
+                 Item.Text,
+                 Item.Error);
     enReady:
-      if Assigned(FOnReady) then FOnReady(Self);
+      if Assigned(FOnReady) then
+        FOnReady(Self);
     enProcessed:
-      if Assigned(FOnProcessed) then FOnProcessed(Self,Item.Position,Item.RawPosition);
+      if Assigned(FOnProcessed) then
+        FOnProcessed(Self,
+                     Item.Position,
+                     Item.RawPosition);
     enEnded:
-      if Assigned(FOnEnded) then FOnEnded(Self);
+      if Assigned(FOnEnded) then
+        FOnEnded(Self);
   end;
 end;
 
@@ -947,11 +1010,15 @@ end;
 procedure TWasApiEngine.SetState(const NewState: TDeviceState);
 var
   Item: TEngineNotification;
+
 begin
+
   pvDeviceState := NewState;
   if Assigned(FOnStateChanged) then
     begin
-      FillChar(Item,SizeOf(Item),0);
+      FillChar(Item,
+               SizeOf(Item),
+               0);
       Item.Kind := enState;
       Item.State := NewState;
       FNotifications.Post(Item);
@@ -959,14 +1026,19 @@ begin
 end;
 
 
-procedure TWasApiEngine.RaiseError(const Msg: string;const Hr: HRESULT);
+procedure TWasApiEngine.RaiseError(const Msg: string;
+                                   const Hr: HRESULT);
 var
   Item: TEngineNotification;
+
 begin
+
   pvErrStatus := Hr;
   if Assigned(FOnError) then
     begin
-      FillChar(Item,SizeOf(Item),0);
+      FillChar(Item,
+               SizeOf(Item),
+               0);
       Item.Kind := enError;
       Item.Text := Msg;
       Item.Error := Hr;
@@ -978,23 +1050,32 @@ end;
 procedure TWasApiEngine.RaiseReady;
 var
   Item: TEngineNotification;
+
 begin
+
   if Assigned(FOnReady) then
     begin
-      FillChar(Item,SizeOf(Item),0);
+      FillChar(Item,
+               SizeOf(Item),
+               0);
       Item.Kind := enReady;
       FNotifications.Post(Item);
     end;
 end;
 
 
-procedure TWasApiEngine.RaiseProcessed(const Position100ns: Int64;const RawPosition: UInt64);
+procedure TWasApiEngine.RaiseProcessed(const Position100ns: Int64;
+                                       const RawPosition: UInt64);
 var
   Item: TEngineNotification;
+
 begin
+
   if Assigned(FOnProcessed) then
     begin
-      FillChar(Item,SizeOf(Item),0);
+      FillChar(Item,
+               SizeOf(Item),
+               0);
       Item.Kind := enProcessed;
       Item.Position := Position100ns;
       Item.RawPosition := RawPosition;
@@ -1006,10 +1087,14 @@ end;
 procedure TWasApiEngine.RaiseEnded;
 var
   Item: TEngineNotification;
+
 begin
+
   if Assigned(FOnEnded) then
     begin
-      FillChar(Item,SizeOf(Item),0);
+      FillChar(Item,
+               SizeOf(Item),
+               0);
       Item.Kind := enEnded;
       FNotifications.Post(Item);
     end;
@@ -1017,6 +1102,7 @@ end;
 
 
 procedure TWasApiEngine.EnqueueCommand(const Cmd: TEngineCommand);
+
 begin
 
   FCmdCS.Enter();
@@ -1033,6 +1119,7 @@ end;
 
 
 function TWasApiEngine.DequeueCommand(out Cmd: TEngineCommand): Boolean;
+
 begin
 
   Result := False;
@@ -1077,7 +1164,8 @@ begin
           begin
 
             SetState(dsError);
-            RaiseError('LoadFile failed', hr);
+            RaiseError('LoadFile failed',
+                       hr);
           end;
       end;
 
@@ -1096,90 +1184,94 @@ begin
         FRequestPause := False;
       end;
 
-ckSeek:
-  begin
-    if (pvSourceWfx <> nil) and
-       (pvBytes <> nil) and
-       (pvBytesLength > 0) and
-       (pvSourceWfx.nAvgBytesPerSec <> 0) and
-       (pvSourceWfx.nBlockAlign <> 0) then
-    begin
-
-      // DEBUG:
-      //OutputDebugStringW(PChar(Format('ckSeek: Cmd.SeekPos100ns=%d  Dur=%d',
-      //                               [Cmd.SeekPos100ns, FDuration100ns])));
-
-      pos100ns := Cmd.SeekPos100ns;
-
-      if (pos100ns < 0) then
-        pos100ns := 0;
-
-      if (FDuration100ns > 0) and (pos100ns > FDuration100ns) then
-        pos100ns := FDuration100ns;
-
-      // IMPORTANT: 100ns -> bytes using SOURCE buffer format (pvBytes layout)
-      // Use source bytes/sec to avoid mismatch with WASAPI mix/render format.
-      newOffset := (UInt64(pos100ns) * UInt64(pvSourceWfx.nAvgBytesPerSec)) div UInt64(REFTIMES_PER_SEC);
-
-      // align to SOURCE block
-      newOffset := (newOffset div Int64(pvSourceWfx.nBlockAlign)) * Int64(pvSourceWfx.nBlockAlign);
-
-      // never seek to exact EOF (must be < pvBytesLength)
-      if (pvBytesLength > 0) and (newOffset >= UInt64(pvBytesLength)) then
+    ckSeek:
       begin
-        if (pvBytesLength > UInt32(pvSourceWfx.nBlockAlign)) then
-          newOffset := UInt64(pvBytesLength) - UInt64(pvSourceWfx.nBlockAlign)
-        else
-          newOffset := 0;
+        if (pvSourceWfx <> nil) and
+          (pvBytes <> nil) and
+          (pvBytesLength > 0) and
+          (pvSourceWfx.nAvgBytesPerSec <> 0) and
+          (pvSourceWfx.nBlockAlign <> 0) then
+          begin
+
+            // DEBUG:
+            //OutputDebugStringW(PChar(Format('ckSeek: Cmd.SeekPos100ns=%d  Dur=%d',
+            //                               [Cmd.SeekPos100ns, FDuration100ns])));
+
+            pos100ns := Cmd.SeekPos100ns;
+
+            if (pos100ns < 0) then
+              pos100ns := 0;
+
+            if (FDuration100ns > 0) and (pos100ns > FDuration100ns) then
+              pos100ns := FDuration100ns;
+
+            // IMPORTANT: 100ns -> bytes using SOURCE buffer format (pvBytes layout)
+            // Use source bytes/sec to avoid mismatch with WASAPI mix/render format.
+            newOffset := (UInt64(pos100ns) * UInt64(pvSourceWfx.nAvgBytesPerSec)) div UInt64(REFTIMES_PER_SEC);
+
+            // align to SOURCE block
+            newOffset := (newOffset div Int64(pvSourceWfx.nBlockAlign)) * Int64(pvSourceWfx.nBlockAlign);
+
+            // never seek to exact EOF (must be < pvBytesLength)
+            if (pvBytesLength > 0) and (newOffset >= UInt64(pvBytesLength)) then
+              begin
+                if (pvBytesLength > UInt32(pvSourceWfx.nBlockAlign)) then
+                  newOffset := UInt64(pvBytesLength) - UInt64(pvSourceWfx.nBlockAlign)
+                else
+                  newOffset := 0;
+              end;
+
+            // THIS is what makes FBasePos100ns meaningful:
+            FBasePos100ns := pos100ns;
+            FOffset := UInt32(newOffset);
+
+            // Restart clock position from zero at the new base.
+            if Assigned(pvAudioClient) then
+              begin
+                hr := pvAudioClient.Stop();
+                if SUCCEEDED(hr) then
+                  hr := pvAudioClient.Reset();
+
+                if FAILED(hr) then
+                  begin
+                    Self.SetState(dsError);
+                    Self.RaiseError('AudioClient Stop/Reset failed',
+                                    hr);
+                    Exit;
+                  end;
+              end;
+
+            // Flush EQ state on seek (recommended; avoids ringing/history)
+            if Assigned(FHighMidLowMFT) then
+              begin
+                hr := FHighMidLowMFT.ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH,
+                                                    0);
+                if FAILED(hr) then
+                  begin
+                    Self.SetState(dsError);
+                    Self.RaiseError('ProcessMessage MFT_MESSAGE_COMMAND_FLUSH failed',
+                                    hr);
+                    Exit;
+                  end;
+              end;
+
+            // Seek should resume playback unless you explicitly want a "scrub while paused" mode.
+            if Assigned(pvAudioClient) then
+              begin
+                if (pvDeviceState <> dsPlay) then
+                  SetState(dsPlay);
+
+                hr := pvAudioClient.Start();
+                if FAILED(hr) then
+                  begin
+                    Self.SetState(dsError);
+                    Self.RaiseError('AudioClient Start failed after seek',
+                                    hr);
+                    Exit;
+                  end;
+              end;
+          end;
       end;
-
-      // THIS is what makes FBasePos100ns meaningful:
-      FBasePos100ns := pos100ns;
-      FOffset := UInt32(newOffset);
-
-      // Restart clock position from zero at the new base.
-      if Assigned(pvAudioClient) then
-      begin
-        hr := pvAudioClient.Stop();
-        if SUCCEEDED(hr) then
-          hr := pvAudioClient.Reset();
-
-        if FAILED(hr) then
-        begin
-          Self.SetState(dsError);
-          Self.RaiseError('AudioClient Stop/Reset failed', hr);
-          Exit;
-        end;
-      end;
-
-      // Flush EQ state on seek (recommended; avoids ringing/history)
-      if Assigned(FHighMidLowMFT) then
-      begin
-        hr := FHighMidLowMFT.ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, 0);
-        if FAILED(hr) then
-        begin
-          Self.SetState(dsError);
-          Self.RaiseError('ProcessMessage MFT_MESSAGE_COMMAND_FLUSH failed', hr);
-          Exit;
-        end;
-      end;
-
-      // Seek should resume playback unless you explicitly want a "scrub while paused" mode.
-      if Assigned(pvAudioClient) then
-      begin
-        if (pvDeviceState <> dsPlay) then
-          SetState(dsPlay);
-
-        hr := pvAudioClient.Start();
-        if FAILED(hr) then
-        begin
-          Self.SetState(dsError);
-          Self.RaiseError('AudioClient Start failed after seek', hr);
-          Exit;
-        end;
-      end;
-    end;
-  end;
 
 
     ckSetVolume:
@@ -1308,6 +1400,7 @@ end;
 
 function TWasApiEngine.OpenFile(const audiofile: UnicodeString;
                                 fileDuration100ns: LONGLONG): HRESULT;
+
 begin
 
   EnqueueCommand(TEngineCommand.LoadFile(audiofile,
@@ -1317,6 +1410,7 @@ end;
 
 
 function TWasApiEngine.Start(): HResult;
+
 begin
 
   EnqueueCommand(TEngineCommand.Play);
@@ -1325,6 +1419,7 @@ end;
 
 
 function TWasApiEngine.Stop(): HResult;
+
 begin
 
   EnqueueCommand(TEngineCommand.Stop);
@@ -1333,6 +1428,7 @@ end;
 
 
 function TWasApiEngine.Pause(): HResult;
+
 begin
 
   EnqueueCommand(TEngineCommand.Pause);
@@ -1341,12 +1437,13 @@ end;
 
 
 function TWasApiEngine.SeekTo(const Pos100ns: Int64): HRESULT;
+
 begin
 
   // Seek is valid only after a file is loaded into pvBytes.
   if (pvBytes = nil) or
-     (pvBytesLength = 0) or
-     (pvSourceWfx = nil) then
+    (pvBytesLength = 0) or
+    (pvSourceWfx = nil) then
     Exit(E_FAIL);
 
   EnqueueCommand(TEngineCommand.Seek(Pos100ns));
@@ -1356,6 +1453,7 @@ end;
 
 function TWasApiEngine.SetVolumes(pVolLeft,
                                   pVolRight: Single): HResult;
+
 begin
 
   // This is expected to run on the engine thread.
@@ -1378,6 +1476,7 @@ end;
 
 
 procedure TWasApiEngine.EnableEQ(const AEnabled: Boolean);
+
 begin
 
   EnqueueCommand(TEngineCommand.EQEnable(AEnabled));
@@ -1385,6 +1484,7 @@ end;
 
 
 procedure TWasApiEngine.SetLowDb(const ALowDb: Integer);
+
 begin
 
   EnqueueCommand(TEngineCommand.EQSetLowDb(ALowDb));
@@ -1392,6 +1492,7 @@ end;
 
 
 procedure TWasApiEngine.SetMidDb(const AMidDb: Integer);
+
 begin
 
   EnqueueCommand(TEngineCommand.EQSetMidDb(AMidDb));
@@ -1399,6 +1500,7 @@ end;
 
 
 procedure TWasApiEngine.SetMidMode(const AMidMode: TMfMidMode);
+
 begin
 
   EnqueueCommand(TEngineCommand.EQSetMidMode(Ord(AMidMode)));
@@ -1406,6 +1508,7 @@ end;
 
 
 procedure TWasApiEngine.SetMidQ(const AMidQ: Single);
+
 begin
 
   EnqueueCommand(TEngineCommand.EQSetMidQ(AMidQ));
@@ -1413,6 +1516,7 @@ end;
 
 
 procedure TWasApiEngine.SetLowFreqHz(const Hz: Single);
+
 begin
 
   EnqueueCommand(TEngineCommand.EQSetLowFreqHz(Hz));
@@ -1420,6 +1524,7 @@ end;
 
 
 procedure TWasApiEngine.SetMidFreqHz(const Hz: Single);
+
 begin
 
   EnqueueCommand(TEngineCommand.EQSetMidFreqHz(Hz));
@@ -1427,6 +1532,7 @@ end;
 
 
 procedure TWasApiEngine.SetHighFreqHz(const Hz: Single);
+
 begin
 
   EnqueueCommand(TEngineCommand.EQSetHighFreqHz(Hz));
@@ -1434,6 +1540,7 @@ end;
 
 
 procedure TWasApiEngine.SetLowShelfSlope(const S: Single);
+
 begin
 
   EnqueueCommand(TEngineCommand.EQSetLowShelfSlope(S));
@@ -1441,6 +1548,7 @@ end;
 
 
 procedure TWasApiEngine.SetHighShelfSlope(const S: Single);
+
 begin
 
   EnqueueCommand(TEngineCommand.EQSetHighShelfSlope(S));
@@ -1448,6 +1556,7 @@ end;
 
 
 procedure TWasApiEngine.SetHighDb(const AHighDb: Integer);
+
 begin
 
   EnqueueCommand(TEngineCommand.EQSetHighDb(AHighDb));
@@ -1455,6 +1564,7 @@ end;
 
 
 procedure TWasApiEngine.SetRampMode(const Mode: TMfRampMode);
+
 begin
 
   // Mode is our MfAudioHighMidLowTypes ramp enum (Off/Fast/Smooth/Manual)
@@ -1463,6 +1573,7 @@ end;
 
 
 procedure TWasApiEngine.SetRampTimeMs(const Ms: Integer);
+
 begin
 
   EnqueueCommand(TEngineCommand.EQSetRampTimeMs(Ms));
@@ -1505,6 +1616,7 @@ end;
 
 
 procedure TWasApiEngine.ApplyEqTuningImmediate(const T: TEqTuning);
+
 begin
 
   if Assigned(FHighMidLowCtrl) then
@@ -1531,6 +1643,7 @@ end;
 
 
 procedure TWasApiEngine.ResetAudioData(pFreeSourceStream: Boolean);
+
 begin
 
   if pFreeSourceStream and (pvBytes <> nil) then
@@ -1596,7 +1709,7 @@ begin
     end;
 
   // Partial tail: copy remaining bytes, zero-fill rest.
-  if (UInt64(FOffset) + UInt64(bytesToCopy)) > UInt64(pvBytesLength) then
+  if ((UInt64(FOffset) + UInt64(bytesToCopy)) > UInt64(pvBytesLength)) then
     begin
 
       bytesToCopy := pvBytesLength - FOffset;
@@ -1651,6 +1764,7 @@ var
   nBits: UINT32;
   wantSubType: TGUID;
 
+
   function GetU32Attr(const mt: IMFMediaType;
                       const key: TGUID;
                       def: UINT32): UINT32;
@@ -1663,12 +1777,14 @@ var
     v := def;
     if (mt <> nil) then
       begin
-        r := mt.GetUINT32(key, v);
+        r := mt.GetUINT32(key,
+                          v);
         if FAILED(r) then
           v := def;
       end;
     Result := v;
   end;
+
 
   function TrySetReaderType(const aSubType: TGUID;
                             aBits: UINT32;
@@ -1746,7 +1862,7 @@ begin
                                 majorType);
   if SUCCEEDED(hr) then
     if not IsEqualGUID(MFMediaType_Audio,
-                       majorType) then
+      majorType) then
       Exit(MF_E_INVALID_FILE_FORMAT);
 
   hr := nativeMediaType.GetGUID(MF_MT_SUBTYPE,
@@ -1776,9 +1892,9 @@ begin
   wantSubType := subType;
 
   if not (IsEqualGUID(MFAudioFormat_Float,
-                      wantSubType) or
-          IsEqualGUID(MFAudioFormat_PCM,
-                      wantSubType)) then
+    wantSubType) or
+    IsEqualGUID(MFAudioFormat_PCM,
+                wantSubType)) then
     begin
 
       // Compressed -> decode to PCM
@@ -1840,10 +1956,10 @@ begin
 
   // Mix format (diagnostics only)
   if Assigned(pvRenderWfx) then
-  begin
-    CoTaskMemFree(pvRenderWfx);
-    pvRenderWfx := nil;
-  end;
+    begin
+      CoTaskMemFree(pvRenderWfx);
+      pvRenderWfx := nil;
+    end;
 
   hr := pvAudioClient.GetMixFormat(pvRenderWfx);
   if FAILED(hr) then
@@ -1875,7 +1991,7 @@ begin
                                           currentMediaType,
                                           0);
       if SUCCEEDED(eqHr) then
-         eqHr := FHighMidLowMFT.SetOutputType(0,
+        eqHr := FHighMidLowMFT.SetOutputType(0,
                                              currentMediaType,
                                              0);
 
@@ -1973,7 +2089,7 @@ begin
 
         buffer.Unlock();
       end;
-  end;
+    end;
 
   // Duration (100ns) based on decoded byte rate.
   FDuration100ns := 0;
@@ -1999,9 +2115,9 @@ begin
   // Create event.
   if (pvAudioSamplesReadyEvent = 0) then
     pvAudioSamplesReadyEvent := CreateEventW(nil,
-                                            False,
-                                            False,
-                                            nil);
+                                             False,
+                                             False,
+                                             nil);
 
   hr := CoCreateInstance(CLSID_MMDeviceEnumerator,
                          nil,
@@ -2069,8 +2185,8 @@ begin
 
   hr := pvAudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED,
                                  AUDCLNT_STREAMFLAGS_EVENTCALLBACK or
-                                 AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY or
-                                 AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM,
+    AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY or
+    AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM,
                                  hnsRequestedDuration,
                                  0,
                                  pwfx,
@@ -2118,29 +2234,29 @@ begin
     end;
 
   case pwfx.wBitsPerSample of
-    16: begin
+      16: begin
 
-          FSampleFormat := sfInt16;
-          FBytesPerSample := 2;
-        end;
+        FSampleFormat := sfInt16;
+        FBytesPerSample := 2;
+      end;
 
-    24: begin
+      24: begin
 
-          FSampleFormat := sfInt24;
-          FBytesPerSample := 3;
-        end;
+        FSampleFormat := sfInt24;
+        FBytesPerSample := 3;
+      end;
 
-    32: begin
+      32: begin
 
-          FSampleFormat := sfInt32;
-          FBytesPerSample := 4;
-        end;
-      else
-        begin
+        FSampleFormat := sfInt32;
+        FBytesPerSample := 4;
+      end;
+    else
+      begin
 
-          FSampleFormat := sfInt16;
-          FBytesPerSample := 2;
-        end;
+        FSampleFormat := sfInt16;
+        FBytesPerSample := 2;
+      end;
   end;
 
   Result := S_OK;
@@ -2166,8 +2282,8 @@ var
 begin
 
   if (pvAudioClient = nil) or
-     (pvRenderClient = nil) or
-     (pvAudioClock = nil) then
+    (pvRenderClient = nil) or
+    (pvAudioClock = nil) then
     Exit(E_POINTER);
 
   if (pvBytes = nil) or (pvBytesLength = 0) then
@@ -2179,7 +2295,7 @@ begin
 
   // Become MMCSS.
   pvMmcssHandle := AvSetMmThreadCharacteristicsW(PWideChar('Audio'),
-                                                @pvMmcssTaskIndex);
+                                                 @pvMmcssTaskIndex);
 
   // If we are resuming from Pause, keep the current byte offset.
   // Otherwise start from the beginning.
@@ -2203,7 +2319,8 @@ begin
   if FAILED(hr) then
     begin
 
-      RaiseError('IAudioClient.Start failed', hr);
+      RaiseError('IAudioClient.Start failed',
+                 hr);
       Exit(hr);
     end;
 
@@ -2212,11 +2329,11 @@ begin
   if FAILED(hr) then
     begin
 
-       pvAudioClient.Stop();
-       SetState(dsStop);
-       RaiseError('IAudioClock.GetFrequency failed',
-                  hr);
-       Exit(hr);
+      pvAudioClient.Stop();
+      SetState(dsStop);
+      RaiseError('IAudioClock.GetFrequency failed',
+                 hr);
+      Exit(hr);
     end;
 
   while (pvDeviceState = dsPlay) and (pvAudioClient <> nil) do
@@ -2288,9 +2405,9 @@ begin
               Break;
 
             // Decoding completion precedes endpoint playback completion.
-            if FOffset >= pvBytesLength then
+            if (FOffset >= pvBytesLength) then
               begin
-                if numFramesPadding = 0 then
+                if (numFramesPadding = 0) then
                   begin
                     SetState(dsStop);
                     RaiseEnded();
@@ -2365,12 +2482,12 @@ begin
 
             // The next audio event checks that the endpoint has drained.
           end;
-      else  // case
-        begin
+        else  // case
+          begin
 
-          hr := E_FAIL;
-          Break;
-        end;
+            hr := E_FAIL;
+            Break;
+          end;
 
       end; // Case waitResult.
     end;
@@ -2427,37 +2544,53 @@ begin
 
   // --- Create input sample ---
   hr := MFCreateSample(inSample);
-  if FAILED(hr) then Exit(hr);
+  if FAILED(hr) then
+    Exit(hr);
 
-  hr := MFCreateMemoryBuffer(ByteCount, inBuf);
-  if FAILED(hr) then Exit(hr);
+  hr := MFCreateMemoryBuffer(ByteCount,
+                             inBuf);
+  if FAILED(hr) then
+    Exit(hr);
 
-  hr := inBuf.Lock(pIn, nil, nil);
-  if FAILED(hr) then Exit(hr);
+  hr := inBuf.Lock(pIn,
+                   nil,
+                   nil);
+  if FAILED(hr) then
+    Exit(hr);
   try
-    Move(pData^, pIn^, ByteCount);
+    Move(pData^,
+         pIn^,
+         ByteCount);
   finally
     inBuf.Unlock;
   end;
 
   hr := inBuf.SetCurrentLength(ByteCount);
-  if FAILED(hr) then Exit(hr);
+  if FAILED(hr) then
+    Exit(hr);
 
   hr := inSample.AddBuffer(inBuf);
-  if FAILED(hr) then Exit(hr);
+  if FAILED(hr) then
+    Exit(hr);
 
   // --- Create output sample (MUST be provided!) ---
   hr := MFCreateSample(outSample);
-  if FAILED(hr) then Exit(hr);
+  if FAILED(hr) then
+    Exit(hr);
 
-  hr := MFCreateMemoryBuffer(ByteCount, outBuf);
-  if FAILED(hr) then Exit(hr);
+  hr := MFCreateMemoryBuffer(ByteCount,
+                             outBuf);
+  if FAILED(hr) then
+    Exit(hr);
 
   hr := outSample.AddBuffer(outBuf);
-  if FAILED(hr) then Exit(hr);
+  if FAILED(hr) then
+    Exit(hr);
 
   // --- Feed MFT ---
-  hr := FHighMidLowMFT.ProcessInput(0, inSample, 0);
+  hr := FHighMidLowMFT.ProcessInput(0,
+                                    inSample,
+                                    0);
 
   // If MFT is full (has pending input), drain once and retry.
   if (hr = MF_E_NOTACCEPTING) then

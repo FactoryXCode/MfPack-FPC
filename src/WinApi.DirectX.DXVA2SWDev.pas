@@ -88,7 +88,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
@@ -96,35 +97,38 @@ type
   PDXVA2_SampleFlags = ^DXVA2_SampleFlags;
   _DXVA2_SampleFlags = DWord;
   DXVA2_SampleFlags = _DXVA2_SampleFlags;
+
 const
-  DXVA2_SampleFlag_Palette_Changed     = DXVA2_SampleFlags($00000001);
-  DXVA2_SampleFlag_SrcRect_Changed     = DXVA2_SampleFlags($00000002);
-  DXVA2_SampleFlag_DstRect_Changed     = DXVA2_SampleFlags($00000004);
-  DXVA2_SampleFlag_ColorData_Changed   = DXVA2_SampleFlags($00000008);
+  DXVA2_SampleFlag_Palette_Changed = DXVA2_SampleFlags($00000001);
+  DXVA2_SampleFlag_SrcRect_Changed = DXVA2_SampleFlags($00000002);
+  DXVA2_SampleFlag_DstRect_Changed = DXVA2_SampleFlags($00000004);
+  DXVA2_SampleFlag_ColorData_Changed = DXVA2_SampleFlags($00000008);
   DXVA2_SampleFlag_PlanarAlpha_Changed = DXVA2_SampleFlags($00000010);
-  DXVA2_SampleFlag_RFF                 = DXVA2_SampleFlags($00010000);
-  DXVA2_SampleFlag_TFF                 = DXVA2_SampleFlags($00020000);
-  DXVA2_SampleFlag_RFF_TFF_Present     = DXVA2_SampleFlags($00040000);
-  DXVA2_SampleFlagsMask                = DXVA2_SampleFlags($FFFF001F);
+  DXVA2_SampleFlag_RFF = DXVA2_SampleFlags($00010000);
+  DXVA2_SampleFlag_TFF = DXVA2_SampleFlags($00020000);
+  DXVA2_SampleFlag_RFF_TFF_Present = DXVA2_SampleFlags($00040000);
+  DXVA2_SampleFlagsMask = DXVA2_SampleFlags($FFFF001F);
 
 
 type
   PDXVA2_DestinationFlags = ^DXVA2_DestinationFlags;
   _DXVA2_DestinationFlags = DWord;
   DXVA2_DestinationFlags = _DXVA2_DestinationFlags;
+
 const
   DXVA2_DestinationFlag_Background_Changed = DXVA2_DestinationFlags($00000001);
   DXVA2_DestinationFlag_TargetRect_Changed = DXVA2_DestinationFlags($00000002);
-  DXVA2_DestinationFlag_ColorData_Changed  = DXVA2_DestinationFlags($00000004);
-  DXVA2_DestinationFlag_Alpha_Changed      = DXVA2_DestinationFlags($00000008);
-  DXVA2_DestinationFlag_RFF                = DXVA2_DestinationFlags($00010000);
-  DXVA2_DestinationFlag_TFF                = DXVA2_DestinationFlags($00020000);
-  DXVA2_DestinationFlag_RFF_TFF_Present    = DXVA2_DestinationFlags($00040000);
-  DXVA2_DestinationFlagMask                = DXVA2_DestinationFlags($FFFF000F);
+  DXVA2_DestinationFlag_ColorData_Changed = DXVA2_DestinationFlags($00000004);
+  DXVA2_DestinationFlag_Alpha_Changed = DXVA2_DestinationFlags($00000008);
+  DXVA2_DestinationFlag_RFF = DXVA2_DestinationFlags($00010000);
+  DXVA2_DestinationFlag_TFF = DXVA2_DestinationFlags($00020000);
+  DXVA2_DestinationFlag_RFF_TFF_Present = DXVA2_DestinationFlags($00040000);
+  DXVA2_DestinationFlagMask = DXVA2_DestinationFlags($FFFF000F);
 
 type
 
   PDXVA2_VIDEOSAMPLE = ^DXVA2_VIDEOSAMPLE;
+
   _DXVA2_VIDEOSAMPLE = record
     Start: REFERENCE_TIME;
     _End: REFERENCE_TIME;
@@ -140,6 +144,7 @@ type
 
 
   PDXVA2_VIDEOPROCESSBLT = ^DXVA2_VIDEOPROCESSBLT;
+
   _DXVA2_VIDEOPROCESSBLT = record
     TargetFrame: REFERENCE_TIME;
     TargetRect: TRect;
@@ -159,7 +164,7 @@ type
   end;
   DXVA2_VIDEOPROCESSBLT = _DXVA2_VIDEOPROCESSBLT;
 
-// #if defined(_D3D9_H_) || defined(_d3d9P_H_)
+  // #if defined(_D3D9_H_) || defined(_d3d9P_H_)
 
   PDXVA2SW_GETVIDEOPROCESSORRENDERTARGETCOUNT = function(pVideoDesc: PDXVA2VideoDesc;
                                                          pCount: PUINT): HRESULT; stdcall;
@@ -214,21 +219,22 @@ type
 
 
   PDXVA2SW_CALLBACKS = ^DXVA2SW_CALLBACKS;
+
   _DXVA2SW_CALLBACKS = record
     Size: UINT;
-    GetVideoProcessorRenderTargetCount:    PDXVA2SW_GETVIDEOPROCESSORRENDERTARGETCOUNT;
-    GetVideoProcessorRenderTargets:        PDXVA2SW_GETVIDEOPROCESSORRENDERTARGETS;
-    GetVideoProcessorCaps:                 PDXVA2SW_GETVIDEOPROCESSORCAPS;
+    GetVideoProcessorRenderTargetCount: PDXVA2SW_GETVIDEOPROCESSORRENDERTARGETCOUNT;
+    GetVideoProcessorRenderTargets: PDXVA2SW_GETVIDEOPROCESSORRENDERTARGETS;
+    GetVideoProcessorCaps: PDXVA2SW_GETVIDEOPROCESSORCAPS;
     GetVideoProcessorSubStreamFormatCount: PDXVA2SW_GETVIDEOPROCESSORSUBSTREAMFORMATCOUNT;
-    GetVideoProcessorSubStreamFormats:     PDXVA2SW_GETVIDEOPROCESSORSUBSTREAMFORMATS;
-    GetProcAmpRange:                       PDXVA2SW_GETPROCAMPRANGE;
-    GetFilterPropertyRange:                PDXVA2SW_GETFILTERPROPERTYRANGE;
-    CreateVideoProcessDevice:              PDXVA2SW_CREATEVIDEOPROCESSDEVICE;
-    DestroyVideoProcessDevice:             PDXVA2SW_DESTROYVIDEOPROCESSDEVICE;
-    VideoProcessBeginFrame:                PDXVA2SW_VIDEOPROCESSBEGINFRAME;
-    VideoProcessEndFrame:                  PDXVA2SW_VIDEOPROCESSENDFRAME;
-    VideoProcessSetRenderTarget:           PDXVA2SW_VIDEOPROCESSSETRENDERTARGET;
-    VideoProcessBlt:                       PDXVA2SW_VIDEOPROCESSBLT;
+    GetVideoProcessorSubStreamFormats: PDXVA2SW_GETVIDEOPROCESSORSUBSTREAMFORMATS;
+    GetProcAmpRange: PDXVA2SW_GETPROCAMPRANGE;
+    GetFilterPropertyRange: PDXVA2SW_GETFILTERPROPERTYRANGE;
+    CreateVideoProcessDevice: PDXVA2SW_CREATEVIDEOPROCESSDEVICE;
+    DestroyVideoProcessDevice: PDXVA2SW_DESTROYVIDEOPROCESSDEVICE;
+    VideoProcessBeginFrame: PDXVA2SW_VIDEOPROCESSBEGINFRAME;
+    VideoProcessEndFrame: PDXVA2SW_VIDEOPROCESSENDFRAME;
+    VideoProcessSetRenderTarget: PDXVA2SW_VIDEOPROCESSSETRENDERTARGET;
+    VideoProcessBlt: PDXVA2SW_VIDEOPROCESSBLT;
   end;
   DXVA2SW_CALLBACKS = _DXVA2SW_CALLBACKS;
 
@@ -239,6 +245,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

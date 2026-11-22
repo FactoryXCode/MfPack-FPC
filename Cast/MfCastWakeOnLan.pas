@@ -84,17 +84,17 @@ type
     BroadcastAddress: string;
   end;
 
-  function MfCastBuildWakePacket(const AMacAddress: string;
-                                 out APacket: TBytes): Boolean;
+function MfCastBuildWakePacket(const AMacAddress: string;
+                               out APacket: TBytes): Boolean;
 
-  function MfCastGetWakeTarget(const ADevice: TMfCastDevice;
-                               out ATarget: TMfCastWakeTarget;
-                               const ACacheFileName: string = ''): Boolean;
+function MfCastGetWakeTarget(const ADevice: TMfCastDevice;
+                             out ATarget: TMfCastWakeTarget;
+                             const ACacheFileName: string = ''): Boolean;
 
-  procedure MfCastRememberWakeTarget(const ADevice: TMfCastDevice);
-  
-  function MfCastSendWakeOnLan(const ATarget: TMfCastWakeTarget;
-                               const APort: Word = 9): HRESULT;
+procedure MfCastRememberWakeTarget(const ADevice: TMfCastDevice);
+
+function MfCastSendWakeOnLan(const ATarget: TMfCastWakeTarget;
+                             const APort: Word = 9): HRESULT;
 
 
 implementation
@@ -108,23 +108,29 @@ uses
   JwaIpRtrMib,
   WinApi.WinError;
 
+
 function MfCastBuildWakePacket(const AMacAddress: string;
                                out APacket: TBytes): Boolean;
 var
   Text: string;
   Mac: array[0..5] of Byte;
-  I: Integer; 
+  I: Integer;
   Value: Integer;
   Nonzero: Boolean;
-  
+
 begin
-  
+
   Result := False;
   APacket := nil;
-  Text := StringReplace(StringReplace(Trim(AMacAddress), ':', '',
-                         [rfReplaceAll]), '-', '', [rfReplaceAll]);
+  Text := StringReplace(StringReplace(Trim(AMacAddress),
+                                      ':',
+                                      '',
+                                      [rfReplaceAll]),
+                        '-',
+                        '',
+                        [rfReplaceAll]);
 
-  if Length(Text) <> 12 then
+  if (Length(Text) <> 12) then
     Exit;
 
   Nonzero := False;
@@ -181,7 +187,8 @@ begin
   Result := 'Device-';
 
   for I := 0 to Length(Bytes) - 1 do
-    Result := Result + IntToHex(Bytes[I], 2);
+    Result := Result + IntToHex(Bytes[I],
+                                2);
 end;
 
 
@@ -203,10 +210,12 @@ begin
 end;
 
 
-function ReadMac(const AFileName, ASection: string): string;
+function ReadMac(const AFileName,
+                 ASection: string): string;
 var
 
   Buffer: array[0..63] of Char;
+
 begin
 
   Result := '';
@@ -217,11 +226,11 @@ begin
   SetString(Result,
             Buffer,
             GetPrivateProfileStringW(PChar(ASection),
-            'MacAddress',
-            '',
-            Buffer,
-            Length(Buffer),
-            PChar(AFileName)));
+                                     'MacAddress',
+                                     '',
+                                     Buffer,
+                                     Length(Buffer),
+                                     PChar(AFileName)));
 end;
 
 
@@ -245,21 +254,21 @@ begin
   ABroadcast := '';
 
   if (GetBestInterface(AAddress,
-                       AInterfaceIndex) <> NO_ERROR) then
+    AInterfaceIndex) <> NO_ERROR) then
     Exit;
 
   Size := 0;
 
   if (GetAdaptersInfo(nil,
-                      Size) <> ERROR_BUFFER_OVERFLOW) then
+    Size) <> ERROR_BUFFER_OVERFLOW) then
 
     Exit;
 
   SetLength(Buffer,
             Size);
 
-  if GetAdaptersInfo(PIP_ADAPTER_INFO(@Buffer[0]),
-                     Size) <> NO_ERROR then
+  if (GetAdaptersInfo(PIP_ADAPTER_INFO(@Buffer[0]),
+    Size) <> NO_ERROR) then
     Exit;
 
   Adapter := PIP_ADAPTER_INFO(@Buffer[0]);
@@ -275,8 +284,8 @@ begin
               Mask := DWORD(inet_addr(@Ip.IpMask.S[0]));
 
               if (LocalIp <> 0) and (LocalIp <> INADDR_NONE) and
-                 (Mask <> 0) and (Mask <> INADDR_NONE) and
-                 ((AAddress and Mask) = (LocalIp and Mask)) then
+                (Mask <> 0) and (Mask <> INADDR_NONE) and
+                ((AAddress and Mask) = (LocalIp and Mask)) then
                 begin
                   ALocal := string(AnsiString(PAnsiChar(@Ip.IpAddress.S[0])));
 
@@ -308,9 +317,9 @@ begin
   Result := '';
   Size := 0;
 
-  if GetIpNetTable(nil,
-                   Size,
-                   False) <> ERROR_INSUFFICIENT_BUFFER then
+  if (GetIpNetTable(nil,
+    Size,
+    False) <> ERROR_INSUFFICIENT_BUFFER) then
     Exit;
 
   SetLength(Buffer,
@@ -319,8 +328,8 @@ begin
   Table := PMIB_IPNETTABLE(@Buffer[0]);
 
   if (GetIpNetTable(Table,
-                    Size,
-                    False) <> NO_ERROR) then
+    Size,
+    False) <> NO_ERROR) then
     Exit;
 
   if (Table.dwNumEntries = 0) then
@@ -333,9 +342,10 @@ begin
         begin
           for J := 0 to 5 do
             begin
-              if J > 0 then
+              if (J > 0) then
                 Result := Result + ':';
-              Result := Result + IntToHex(Row.bPhysAddr[J], 2);
+              Result := Result + IntToHex(Row.bPhysAddr[J],
+                                          2);
             end;
           Exit;
         end;
@@ -369,9 +379,9 @@ begin
     Exit;
 
   if not FindNetwork(Address,
-                     InterfaceIndex,
-                     ATarget.LocalAddress,
-                     ATarget.BroadcastAddress) then
+    InterfaceIndex,
+    ATarget.LocalAddress,
+    ATarget.BroadcastAddress) then
     Exit;
 
   FileName := CacheFileName(ACacheFileName);
@@ -380,21 +390,22 @@ begin
                             InterfaceIndex);
 
   if MfCastBuildWakePacket(LearnedMac,
-                           Packet) then
+    Packet) then
     begin
       ATarget.MacAddress := LearnedMac;
 
       // Cache failure must never prevent discovery or ordinary playback.
       if (FileName <> '') and (Section <> '') and not SameText(ReadMac(FileName, Section), LearnedMac) then
-        try
-          if ForceDirectories(ExtractFilePath(FileName)) then
-            WritePrivateProfileStringW(PChar(Section),
-                                      'MacAddress',
-                                      PChar(LearnedMac),
-                                      PChar(FileName));
-        except
-          on E: Exception do ;
-        end;
+      try
+        if ForceDirectories(ExtractFilePath(FileName)) then
+          WritePrivateProfileStringW(PChar(Section),
+                                     'MacAddress',
+                                     PChar(LearnedMac),
+                                     PChar(FileName));
+      except
+        on E: Exception do
+    ;
+      end;
     end
   else
     ATarget.MacAddress := ReadMac(FileName,
@@ -437,7 +448,8 @@ begin
   if not MfCastBuildWakePacket(ATarget.MacAddress, Packet) or (APort = 0) then
     Exit(E_INVALIDARG);
 
-  ErrorCode := WSAStartup($0202, Wsa);
+  ErrorCode := WSAStartup($0202,
+                          Wsa);
 
   if (ErrorCode <> 0) then
     Exit(HRESULT_FROM_WIN32(ErrorCode));
@@ -453,11 +465,11 @@ begin
     try
       EnableBroadcast := 1;
 
-      if setsockopt(Sock,
-                    SOL_SOCKET,
-                    SO_BROADCAST,
-                    PAnsiChar(@EnableBroadcast),
-                    SizeOf(EnableBroadcast)) = SOCKET_ERROR then
+      if (setsockopt(Sock,
+        SOL_SOCKET,
+        SO_BROADCAST,
+        PAnsiChar(@EnableBroadcast),
+        SizeOf(EnableBroadcast)) = SOCKET_ERROR) then
         Exit(HRESULT_FROM_WIN32(WSAGetLastError()));
 
       FillChar(Local,
@@ -471,9 +483,9 @@ begin
       if (Local.sin_addr.S_addr = 0) or (DWORD(Local.sin_addr.S_addr) = INADDR_NONE) then
         Exit(E_INVALIDARG);
 
-      if bind(Sock,
-              TSockAddr(Local),
-              SizeOf(Local)) = SOCKET_ERROR then
+      if (bind(Sock,
+        TSockAddr(Local),
+        SizeOf(Local)) = SOCKET_ERROR) then
         Exit(HRESULT_FROM_WIN32(WSAGetLastError()));
 
       AnySent := False;
@@ -505,10 +517,10 @@ begin
                              Packet[0],
                              Length(Packet),
                              0,
-                              TSockAddr(Destination),
-                              SizeOf(Destination));
+                             TSockAddr(Destination),
+                             SizeOf(Destination));
 
-              if Sent = Length(Packet) then
+              if (Sent = Length(Packet)) then
                 AnySent := True
               else
                 ErrorCode := WSAGetLastError();

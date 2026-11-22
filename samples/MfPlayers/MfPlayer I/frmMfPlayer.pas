@@ -74,7 +74,7 @@ interface
 uses
   LMessages,
   MfPlayerSample.Platform,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -107,15 +107,16 @@ type
     muSeparator1: TMenuItem;
     muExit: TMenuItem;
     procedure muOpenClick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormClose(Sender: TObject;
+                        var Action: TCloseAction);
     procedure muExitClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    
+
   private
     { Private declarations }
 
-    procedure WMKEYDOWN (var msg: TLMessage); message WM_KEYDOWN;
+    procedure WMKEYDOWN(var msg: TLMessage); message WM_KEYDOWN;
 
   public
     { Public declarations }
@@ -137,13 +138,17 @@ uses
 
 
 procedure Tfrm_MfPlayer.muExitClick(Sender: TObject);
+
 begin
+
   Close();
 end;
 
 
 procedure Tfrm_MfPlayer.muOpenClick(Sender: TObject);
+
 begin
+
   if dlgOpenUrl.Execute then
     begin
       if Assigned(MfPlayer) then
@@ -153,8 +158,11 @@ begin
 end;
 
 
-procedure Tfrm_MfPlayer.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure Tfrm_MfPlayer.FormClose(Sender: TObject;
+                                  var Action: TCloseAction);
+
 begin
+
   if Assigned(MfPlayer) then
     begin
       MfPlayer.Free;
@@ -164,7 +172,9 @@ end;
 
 
 procedure Tfrm_MfPlayer.FormCreate(Sender: TObject);
+
 begin
+
   MfPlayer := TMfPlayer.Create(frm_MfPlayer.Handle,
                                frm_MfPlayer.Handle);
 
@@ -183,13 +193,13 @@ begin
 
   if Assigned(MfPlayer) then
     begin
-     crD.left:= 0;
-     crD.top:= 0;
-     crD.right:= frm_MfPlayer.ClientWidth;
-     crD.bottom:= frm_MfPlayer.ClientHeight;
+      crD.left := 0;
+      crD.top := 0;
+      crD.right := frm_MfPlayer.ClientWidth;
+      crD.bottom := frm_MfPlayer.ClientHeight;
 
-     pcrD:= @crD;
-       MfPlayer.ResizeVideo(pcrD);
+      pcrD := @crD;
+      MfPlayer.ResizeVideo(pcrD);
     end;
 end;
 
@@ -199,37 +209,38 @@ var
   bm: TBitmap;
 
 begin
+
   case Msg.WParam of
 
     VK_SPACE: if Assigned(MfPlayer) then
-                case MfPlayer.GetState of
-                  Started: MfPlayer.SendPlayerCommand(CmdPause);
-                  OpenPending: MfPlayer.SendPlayerCommand(CmdStartPlayBack);
-                  Stopped, Paused: MfPlayer.SendPlayerCommand(CmdStart);
-                end;
+        case MfPlayer.GetState of
+          Started: MfPlayer.SendPlayerCommand(CmdPause);
+          OpenPending: MfPlayer.SendPlayerCommand(CmdStartPlayBack);
+          Stopped, Paused: MfPlayer.SendPlayerCommand(CmdStart);
+        end;
 
     VK_ESCAPE: if Assigned(MfPlayer) then
-                 MfPlayer.SendPlayerCommand(CmdStop);
+        MfPlayer.SendPlayerCommand(CmdStop);
 
     VK_F12: muOpenClick(nil);
 
     VK_F11: Close();
 
     //take a snapshot and copy the bitmap to the clipboard
-    VK_F8: begin
-             bm:= TBitmap.Create;
-             MfPlayer.TakeSnapShot(bm);
-             Clipboard.Assign(bm);
-             FreeAndNil(bm);
-           end;
+      VK_F8: begin
+        bm := TBitmap.Create;
+        MfPlayer.TakeSnapShot(bm);
+        Clipboard.Assign(bm);
+        FreeAndNil(bm);
+      end;
 
-    VK_SUBTRACT: begin
-                   MfPlayer.SetVolume(MfPlayer.Volume - 0.1);
-                 end;
+      VK_SUBTRACT: begin
+        MfPlayer.SetVolume(MfPlayer.Volume - 0.1);
+      end;
 
-    VK_ADD: begin
-              MfPlayer.SetVolume(MfPlayer.Volume + 0.1);
-            end;
+      VK_ADD: begin
+        MfPlayer.SetVolume(MfPlayer.Volume + 0.1);
+      end;
   end;
 end;
 

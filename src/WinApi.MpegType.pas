@@ -83,23 +83,25 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
-//
-//  AM_MPEGSYSTEMTYPE defines the format block contents for
-//  data of type MEDIATYPE_MPEG1System when the format
-//  block GUID is FORMAT_MPEG1System
-//
-//  The format block consists of elements of type
-//  AM_MPEGSYSTEMTYPE up to the length of the format block
-//  Each format block is 8-byte aligned from the start of
-//  the format block
-//
+  //
+  //  AM_MPEGSYSTEMTYPE defines the format block contents for
+  //  data of type MEDIATYPE_MPEG1System when the format
+  //  block GUID is FORMAT_MPEG1System
+  //
+  //  The format block consists of elements of type
+  //  AM_MPEGSYSTEMTYPE up to the length of the format block
+  //  Each format block is 8-byte aligned from the start of
+  //  the format block
+  //
 
 type
 
   PAM_MPEGSTREAMTYPE = ^AM_MPEGSTREAMTYPE;
+
   tagAM_MPEGSTREAMTYPE = record
     dwStreamId: DWORD;               // Stream id of stream to process
     dwReserved: DWORD;               // 8-byte alignment
@@ -109,6 +111,7 @@ type
   AM_MPEGSTREAMTYPE = tagAM_MPEGSTREAMTYPE;
 
   PAM_MPEGSYSTEMTYPE = ^AM_MPEGSYSTEMTYPE;
+
   tagAM_MPEGSYSTEMTYPE = record
     dwBitRate: DWORD;                // Bits per second
     cStreams: DWORD;                 // Number of streams
@@ -133,14 +136,14 @@ type
   // Values for DualMode
 
 const
-  AM_MPEG_AUDIO_DUAL_MERGE            = 0;
-  AM_MPEG_AUDIO_DUAL_LEFT             = 1;
-  AM_MPEG_AUDIO_DUAL_RIGHT            = 2;
+  AM_MPEG_AUDIO_DUAL_MERGE = 0;
+  AM_MPEG_AUDIO_DUAL_LEFT = 1;
+  AM_MPEG_AUDIO_DUAL_RIGHT = 2;
 
 type
   IMpegAudioDecoder = interface(IUnknown)
-  ['{B45DD570-3C77-11D1-ABE1-00A0C905F375}']
-  (*** IMpegAudioDecoder methods ***)
+    ['{B45DD570-3C77-11D1-ABE1-00A0C905F375}']
+    (*** IMpegAudioDecoder methods ***)
     function get_FrequencyDivider(out pDivider: LongWord): HResult; stdcall;
 
     function put_FrequencyDivider(Divider: LongWord): HResult; stdcall;
@@ -168,6 +171,7 @@ type
     function get_AudioFormat(out lpFmt: MPEG1WaveFormat): HResult; stdcall;
 
   end;
+
   IID_IMpegAudioDecoder = IMpegAudioDecoder;
 
   // Additional Prototypes for ALL interfaces
@@ -176,6 +180,6 @@ type
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

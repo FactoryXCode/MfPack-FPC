@@ -64,11 +64,12 @@ unit dlgAudioDevices;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   {System}
@@ -105,9 +106,12 @@ type
     procedure btnOkClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormClose(Sender: TObject;
+                        var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
-    procedure sgDevicesSelectCell(Sender: TObject; ACol, ARow: Integer;
+    procedure sgDevicesSelectCell(Sender: TObject;
+                                  ACol,
+                                  ARow: Integer;
                                   var CanSelect: Boolean);
 
   private
@@ -149,6 +153,7 @@ const
 
 
 procedure TAudioDevicesDlg.btnCancelClick(Sender: TObject);
+
 begin
 
   prDataFlow := eDataFlow(-1);
@@ -160,6 +165,7 @@ end;
 
 
 procedure TAudioDevicesDlg.btnOkClick(Sender: TObject);
+
 begin
 
   if (sgDevices.Row > 0) and (sgDevices.Row < sgDevices.RowCount) then
@@ -208,18 +214,22 @@ end;
 
 procedure TAudioDevicesDlg.btnRefreshClick(Sender: TObject);
 
-  procedure DoList(aDevices: TEndPointDevice; idx: Integer);
-    begin
 
-      sgDevices.Cells[0, idx] := aDevices.DevInterfaceName;
-      sgDevices.Cells[1, idx] := aDevices.DeviceName;
-      sgDevices.Cells[2, idx] := aDevices.DeviceDesc;
-      sgDevices.Cells[3, idx] := aDevices.sState;
-      sgDevices.Cells[4, idx] := aDevices.pwszID;
-      sgDevices.Cells[5, idx] := aDevices.iID.ToString();
-    end;
+  procedure DoList(aDevices: TEndPointDevice;
+                   idx: Integer);
+  begin
 
-  procedure Populate(devices: TEndPointDeviceArray; StartAt: Integer);
+    sgDevices.Cells[0, idx] := aDevices.DevInterfaceName;
+    sgDevices.Cells[1, idx] := aDevices.DeviceName;
+    sgDevices.Cells[2, idx] := aDevices.DeviceDesc;
+    sgDevices.Cells[3, idx] := aDevices.sState;
+    sgDevices.Cells[4, idx] := aDevices.pwszID;
+    sgDevices.Cells[5, idx] := aDevices.iID.ToString();
+  end;
+
+
+  procedure Populate(devices: TEndPointDeviceArray;
+                     StartAt: Integer);
   var
     i: Integer;
     iAdd: Integer;
@@ -230,7 +240,8 @@ procedure TAudioDevicesDlg.btnRefreshClick(Sender: TObject);
 
     while (i <= Length(devices)) do
       begin
-        DoList(devices[i - 1], i);
+        DoList(devices[i - 1],
+               i);
         sgDevices.RowCount := sgDevices.RowCount + 1;
         Inc(i);
       end;
@@ -280,7 +291,8 @@ begin
       sgDevices.Cells[5, 1] := '0';
     end
   else
-    Populate(prDevices, 1);
+    Populate(prDevices,
+             1);
 
   {$IFDEF ConditionalExpressions}
     {$IF 0=1}
@@ -290,7 +302,9 @@ begin
 end;
 
 
-procedure TAudioDevicesDlg.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TAudioDevicesDlg.FormClose(Sender: TObject;
+                                     var Action: TCloseAction);
+
 begin
 
   Action := caHide;
@@ -298,6 +312,7 @@ end;
 
 
 procedure TAudioDevicesDlg.FormCreate(Sender: TObject);
+
 begin
 
   prEndPointDevice := nil;
@@ -310,6 +325,7 @@ end;
 
 
 procedure TAudioDevicesDlg.FormShow(Sender: TObject);
+
 begin
 
   //ApplyDarkWindowFrame(Handle);
@@ -318,6 +334,7 @@ end;
 
 
 procedure TAudioDevicesDlg.InitDeviceList();
+
 begin
 
   SetLength(prDevices,
@@ -345,12 +362,12 @@ begin
 
   // Calculate width of the stringgrid and dialog
   sgDevices.Width := sgDevices.ColWidths[0] +
-                     sgDevices.ColWidths[1] +
-                     sgDevices.ColWidths[2] +
-                     sgDevices.ColWidths[3] +
-                     sgDevices.ColWidths[4] +
-                     sgDevices.ColWidths[5] +
-                     (sgDevices.BorderWidth * 2) + 10 {scrollbar};
+    sgDevices.ColWidths[1] +
+    sgDevices.ColWidths[2] +
+    sgDevices.ColWidths[3] +
+    sgDevices.ColWidths[4] +
+    sgDevices.ColWidths[5] +
+    (sgDevices.BorderWidth * 2) + 10 {scrollbar};
   Width := sgDevices.Width + 60;
 
   // The header.
@@ -364,9 +381,13 @@ end;
 
 
 
-procedure TAudioDevicesDlg.sgDevicesSelectCell(Sender: TObject; ACol, ARow: Integer;
-  var CanSelect: Boolean);
+procedure TAudioDevicesDlg.sgDevicesSelectCell(Sender: TObject;
+                                               ACol,
+                                               ARow: Integer;
+                                               var CanSelect: Boolean);
+
 begin
+
   CanSelect := (ARow > 0);
   if CanSelect then
     prSelectedDeviceRow := ARow
@@ -375,4 +396,3 @@ begin
 end;
 
 end.
-

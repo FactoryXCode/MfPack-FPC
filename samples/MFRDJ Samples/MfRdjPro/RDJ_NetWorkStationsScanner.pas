@@ -63,11 +63,12 @@ unit RDJ_NetWorkStationsScanner;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ComBaseApi,
   WinApi.WinApiTypes,
@@ -94,6 +95,7 @@ type
   TDiscoveryEvent = procedure(const AStation: string) of object;
 
   TRDJNetworkStationsScanner = class(TObject)
+
   private
     class procedure AddUnique(AItems: TStrings;
                               const AValue: string); static;
@@ -110,6 +112,7 @@ type
   end;
 
   TNetworkDiscoveryThread = class(TThread)
+
   private
 
     FResultList: TStringList;
@@ -143,7 +146,7 @@ implementation
 
 const
 
-  NERR_Success          = 0;
+  NERR_Success = 0;
   FOLDERID_NetworkFolder: TGUID = '{D20BEEC4-5CA8-4905-AE3B-BF251EA09B53}';
 
 
@@ -156,23 +159,33 @@ begin
   StationName := Trim(AStationName);
 
   Result := (StationName = '') or
-            SameText(StationName,
-                     '\Microsoft Terminal Services') or
-            SameText(StationName,
-                     '\Microsoft Windows Network') or
-            SameText(StationName,
-                     '\Plan 9 Network Provider') or
-            SameText(StationName,
-                     '\Web Client Network') or
-            SameText(StationName,
-                     '\Network') or
-            SameText(StationName,
-                     '\Provider') or
-            CastStartsWith(StationName,'Provider\',True) or
-            CastStartsWith(StationName,'Layered\',True) or
-            CastStartsWith(StationName,'::{',True) or
-            CastStartsWith(StationName,'\\Provider\',True) or
-            CastStartsWith(StationName,'\\Layered\',True);
+    SameText(StationName,
+             '\Microsoft Terminal Services') or
+    SameText(StationName,
+             '\Microsoft Windows Network') or
+    SameText(StationName,
+             '\Plan 9 Network Provider') or
+    SameText(StationName,
+             '\Web Client Network') or
+    SameText(StationName,
+             '\Network') or
+    SameText(StationName,
+             '\Provider') or
+    CastStartsWith(StationName,
+                   'Provider\',
+                   True) or
+    CastStartsWith(StationName,
+                   'Layered\',
+                   True) or
+    CastStartsWith(StationName,
+                   '::{',
+                   True) or
+    CastStartsWith(StationName,
+                   '\\Provider\',
+                   True) or
+    CastStartsWith(StationName,
+                   '\\Layered\',
+                   True);
 end;
 
 
@@ -206,7 +219,7 @@ begin
               P,
               MaxInt);
 
-  while CastStartsWith(S,'\',False) do
+  while CastStartsWith(S, '\', False) do
     Delete(S,
            1,
            1);
@@ -241,10 +254,14 @@ begin
   if (Length(ComputerName) > 255) then
     Exit;
 
-  if CastStartsWith(ComputerName,'-',False) or
-     CastEndsWith(ComputerName,'-') or
-     CastStartsWith(ComputerName,'.',False) or
-     CastEndsWith(ComputerName,'.') then
+  if CastStartsWith(ComputerName, '-', False) or
+    CastEndsWith(ComputerName,
+                 '-') or
+    CastStartsWith(ComputerName,
+                   '.',
+                   False) or
+    CastEndsWith(ComputerName,
+                 '.') then
     Exit;
 
   for I := 1 to Length(ComputerName) do
@@ -253,12 +270,12 @@ begin
       C := ComputerName[I];
 
       if not CharInSet(C,
-                       ['A'..'Z',
-                        'a'..'z',
-                        '0'..'9',
-                        '-',
-                        '_',
-                        '.']) then
+        ['A'..'Z',
+        'a'..'z',
+        '0'..'9',
+        '-',
+        '_',
+        '.']) then
         Exit;
     end;
 
@@ -327,61 +344,61 @@ begin
                            @ResumeHandle);
 
     if (Status <> NERR_Success) and
-       (Status <> ERROR_MORE_DATA) then
+      (Status <> ERROR_MORE_DATA) then
       Exit;
 
-    try
+  try
 
-      if Assigned(Buffer) and
-         (EntriesRead > 0) then
-        begin
+    if Assigned(Buffer) and
+      (EntriesRead > 0) then
+      begin
 
-          I := 0;
+        I := 0;
 
-          while (I < EntriesRead) do
-            begin
+        while (I < EntriesRead) do
+          begin
 
-              ShareInfo := PSHARE_INFO_1(NativeUInt(Buffer) + (NativeUInt(I) * SizeOf(SHARE_INFO_1)));
+            ShareInfo := PSHARE_INFO_1(NativeUInt(Buffer) + (NativeUInt(I) * SizeOf(SHARE_INFO_1)));
 
-              ShareType := ShareInfo^.shi1_type and not STYPE_SPECIAL;
+            ShareType := ShareInfo^.shi1_type and not STYPE_SPECIAL;
 
-              if (ShareType = STYPE_DISKTREE) and
-                 (ShareInfo^.shi1_netname <> nil) then
-                begin
+            if (ShareType = STYPE_DISKTREE) and
+              (ShareInfo^.shi1_netname <> nil) then
+              begin
 
-                  ShareName := ShareInfo^.shi1_netname;
-                  ShareName := Trim(ShareName);
+                ShareName := ShareInfo^.shi1_netname;
+                ShareName := Trim(ShareName);
 
-                  if (ShareName <> '') and
-                     not CastEndsWith(ShareName,'$') then
-                    begin
+                if (ShareName <> '') and not CastEndsWith(ShareName, '$') then
+                  begin
 
-                      Result := True;
+                    Result := True;
 
-                      if Assigned(AItems) then
-                        TRDJNetworkStationsScanner.AddUnique(AItems,
-                                                             StationName + '\' + ShareName);
+                    if Assigned(AItems) then
+                      TRDJNetworkStationsScanner.AddUnique(AItems,
+                                                           StationName + '\' + ShareName);
 
-                      if AStopAfterFirst then
-                        Exit;
-                    end;
-                end;
+                    if AStopAfterFirst then
+                      Exit;
+                  end;
+              end;
 
-              Inc(I);
-            end;
-        end;
+            Inc(I);
+          end;
+      end;
 
-    finally
+  finally
 
-      if Assigned(Buffer) then
-        NetApiBufferFree(Buffer);
-    end;
+    if Assigned(Buffer) then
+      NetApiBufferFree(Buffer);
+  end;
 
   until (Status <> ERROR_MORE_DATA);
 end;
 
 
 function StationHasDiskShares(const AStationName: string): Boolean;
+
 begin
 
   Result := EnumerateDiskShares(AStationName,
@@ -392,6 +409,7 @@ end;
 
 class procedure TRDJNetworkStationsScanner.AddUnique(AItems: TStrings;
                                                      const AValue: string);
+
 begin
 
   if (AItems = nil) then
@@ -406,6 +424,7 @@ end;
 
 
 class function TRDJNetworkStationsScanner.NormalizeStationName(const AStation: string): string;
+
 begin
 
   Result := NormalizeNetworkStationName(AStation);
@@ -448,12 +467,13 @@ begin
   StationName := NormalizeStationName(AStation);
 
   Result := (StationName <> '') and
-            StationHasDiskShares(StationName);
+    StationHasDiskShares(StationName);
 end;
 
 
 class procedure TRDJNetworkStationsScanner.DiscoverStationShares(const AStation: string;
                                                                  AItems: TStrings);
+
 begin
 
   if (AItems = nil) then
@@ -468,6 +488,7 @@ end;
 
 
 constructor TNetworkDiscoveryThread.Create();
+
 begin
 
   inherited Create(True);
@@ -485,6 +506,7 @@ end;
 
 
 destructor TNetworkDiscoveryThread.Destroy();
+
 begin
 
   FCheckedStations.Free();
@@ -512,7 +534,7 @@ begin
     try
 
       if Succeeded(CoInitHr) or
-         (CoInitHr = RPC_E_CHANGED_MODE) then
+        (CoInitHr = RPC_E_CHANGED_MODE) then
         FindStations();
     finally
 
@@ -529,13 +551,17 @@ end;
 
 
 procedure TNetworkDiscoveryThread.FindStations();
+
 begin
+
   FResultList.Clear();
   FCheckedStations.Clear();
   FindStationsShellNetworkFolder();
 end;
 
+
 procedure TNetworkDiscoveryThread.AddStationToTarget(const AStationName: string);
+
 begin
 
   if (AStationName = '') then
@@ -555,7 +581,7 @@ begin
   StationName := NormalizeNetworkStationName(AStationName);
 
   if Terminated or (StationName = '') or
-     (FCheckedStations.IndexOf(StationName) >= 0) then
+    (FCheckedStations.IndexOf(StationName) >= 0) then
     Exit;
 
   // The shell can return both a friendly name and a parsing name for one PC.
@@ -576,11 +602,16 @@ end;
 
 
 procedure TNetworkDiscoveryThread.PublishStation();
+
 begin
-  if not Terminated then AddStationToTarget(FPendingStation);
+
+  if not Terminated then
+    AddStationToTarget(FPendingStation);
 end;
 
+
 procedure TNetworkDiscoveryThread.DoFinished();
+
 begin
 
   if Assigned(FOnFinished) then
@@ -610,7 +641,7 @@ begin
                              Pointer(NetworkFolder));
 
   if Failed(hr) or
-     (NetworkFolder = nil) then
+    (NetworkFolder = nil) then
     Exit;
 
   hr := NetworkFolder.BindToHandler(nil,
@@ -619,7 +650,7 @@ begin
                                     EnumItems);
 
   if Failed(hr) or
-     (EnumItems = nil) then
+    (EnumItems = nil) then
     Exit;
 
   while not Terminated do
@@ -633,43 +664,43 @@ begin
                            @Fetched);
 
       if (hr <> S_OK) or
-         (Fetched = 0) or
-         (Item = nil) then
+        (Fetched = 0) or
+        (Item = nil) then
         Break;
 
       NamePtr := nil;
 
       if Succeeded(Item.GetDisplayName(SIGDN_NORMALDISPLAY,
-                                        NamePtr)) then
-        try
+        NamePtr)) then
+      try
 
-          if (NamePtr <> nil) then
-            begin
+        if (NamePtr <> nil) then
+          begin
 
-              DisplayName := NamePtr;
-              AddStationName(DisplayName);
-            end;
-        finally
+            DisplayName := NamePtr;
+            AddStationName(DisplayName);
+          end;
+      finally
 
-          CoTaskMemFree(NamePtr);
-        end;
+        CoTaskMemFree(NamePtr);
+      end;
 
       NamePtr := nil;
 
       if Succeeded(Item.GetDisplayName(SIGDN_DESKTOPABSOLUTEPARSING,
-                                        NamePtr)) then
-        try
+        NamePtr)) then
+      try
 
-          if (NamePtr <> nil) then
-            begin
+        if (NamePtr <> nil) then
+          begin
 
-              DisplayName := NamePtr;
-              AddStationName(DisplayName);
-            end;
-        finally
+            DisplayName := NamePtr;
+            AddStationName(DisplayName);
+          end;
+      finally
 
-          CoTaskMemFree(NamePtr);
-        end;
+        CoTaskMemFree(NamePtr);
+      end;
     end;
 end;
 

@@ -79,7 +79,7 @@ interface
 
 uses
   MfSmallSamplesPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ActiveX.ObjBase,
   WinApi.ActiveX.PropIdl,
@@ -98,9 +98,13 @@ uses
   Helpers;
 
 type
-  TAudioClipCompleteEvent = procedure(Sender: TObject; Success: Boolean; HResultCode: HResult) of object;
+  TAudioClipCompleteEvent = procedure(Sender: TObject;
+                                      Success: Boolean;
+                                      HResultCode: HResult) of object;
 
-  TAudioClipClass = class(TInterfacedPersistent, IMFSourceReaderCallback)
+  TAudioClipClass = class(TInterfacedPersistent,
+                          IMFSourceReaderCallback)
+
   private
     FStatus: HResult;
     FCompleted: Boolean;
@@ -161,10 +165,12 @@ implementation
 uses
   Math;
 
-{ TAudioClipClass }
+  { TAudioClipClass }
 
 constructor TAudioClipClass.Create();
+
 begin
+
   inherited Create;
 
   FOutStreamIndex := DWORD($FFFFFFFF);
@@ -179,13 +185,19 @@ begin
 
   // Create CriticalSection
   FCritSec := TMFCritSec.Create;
-  FFlushEvent:=CreateEventW(nil,True,False,nil);
-  if FFlushEvent=0 then RaiseLastOSError;
+  FFlushEvent := CreateEventW(nil,
+                              True,
+                              False,
+                              nil);
+  if (FFlushEvent = 0) then
+    RaiseLastOSError;
 end;
 
 
 destructor TAudioClipClass.Destroy;
+
 begin
+
   // Release interfaces
   SafeRelease(FReader);
   SafeRelease(FSinkWriter);
@@ -200,25 +212,35 @@ begin
 
   FCritSec := nil;
 
-  if FFlushEvent<>0 then CloseHandle(FFlushEvent);
+  if (FFlushEvent <> 0) then
+    CloseHandle(FFlushEvent);
   inherited;
 end;
 
 
 procedure TAudioClipClass.SignalDone(const hr: HResult);
+
 begin
- if FCompleted then Exit;
- FCompleted:=True;FStatus:=hr;
- FDoneEvent.SetEvent;
+
+  if FCompleted then
+    Exit;
+  FCompleted := True;
+  FStatus := hr;
+  FDoneEvent.SetEvent;
 end;
 
 
 function TAudioClipClass.ReadDurationFromReader(): HRESULT;
-var DurationValue: Int64;
+var
+  DurationValue: Int64;
+
 begin
+
   // Uses helper from Helpers unit MfMetLib.pas (GetFileDuration)
-  Result := GetFileDuration(FReader,DurationValue);
-  if SUCCEEDED(Result) and (DurationValue>=0) then FDuration100ns:=UInt64(DurationValue);
+  Result := GetFileDuration(FReader,
+                            DurationValue);
+  if SUCCEEDED(Result) and (DurationValue >= 0) then
+    FDuration100ns := UInt64(DurationValue);
 end;
 
 // Write sample to sink writer.
@@ -235,7 +257,8 @@ begin
     Exit(E_FAIL);
 
   // Write the sample (this gives the sink writer the sample)
-  hr := sinkRef.WriteSample(FOutStreamIndex, pSample);
+  hr := sinkRef.WriteSample(FOutStreamIndex,
+                            pSample);
   if FAILED(hr) then
     Exit(hr);
 
@@ -248,7 +271,7 @@ end;
 // non responsive user interface.
 procedure TAudioClipClass.ReportProgressFromSample(pSample: IMFSample);
 var
-  hr : HResult;
+  hr: HResult;
   llTime: LONGLONG;
   stats: MF_SINK_WRITER_STATISTICS;
 
@@ -282,100 +305,226 @@ begin
 end;
 
 
-function TAudioClipClass.ExtractSoundClip(CancelHandle: THandle;OnComplete: TAudioClipCompleteEvent): HResult;
-var HR,FinalHR: HResult; Attributes: IMFAttributes; PCM,Actual: IMFMediaType;
-    OutputCreated: Boolean;
+function TAudioClipClass.ExtractSoundClip(CancelHandle: THandle;
+                                          OnComplete: TAudioClipCompleteEvent): HResult;
+var
+  HR, FinalHR: HResult;
+  Attributes: IMFAttributes;
+  PCM, Actual: IMFMediaType;
+  OutputCreated: Boolean;
+
 begin
- Result:=E_INVALIDARG;
- if (FSourceFile='') or (FOutputFile='') then Exit;
- if SameText(ExpandFileName(FSourceFile),ExpandFileName(FOutputFile)) then Exit;
- HR:=MFStartup(MF_VERSION);if FAILED(HR) then Exit(HR);
- OutputCreated:=False;FClosing:=False;FCompleted:=False;FStatus:=E_PENDING;
- FCancelHandle:=CancelHandle;FProgressBytes:=0;FProgressPercent:=0;FDuration100ns:=0;
- FDoneEvent.ResetEvent;
- try
-  HR:=MFCreateAttributes(Attributes,1);
-  if SUCCEEDED(HR) then HR:=Attributes.SetUnknown(MF_SOURCE_READER_ASYNC_CALLBACK,Self);
-  if SUCCEEDED(HR) then HR:=MFCreateSourceReaderFromURL(PWideChar(UnicodeString(FSourceFile)),Attributes,FReader);
-  if SUCCEEDED(HR) then HR:=FReader.SetStreamSelection(MF_SOURCE_READER_ALL_STREAMS,False);
-  if SUCCEEDED(HR) then HR:=FReader.SetStreamSelection(MF_SOURCE_READER_FIRST_AUDIO_STREAM,True);
-  if SUCCEEDED(HR) then HR:=MFCreateMediaType(PCM);
-  if SUCCEEDED(HR) then HR:=PCM.SetGUID(MF_MT_MAJOR_TYPE,MFMediaType_Audio);
-  if SUCCEEDED(HR) then HR:=PCM.SetGUID(MF_MT_SUBTYPE,MFAudioFormat_PCM);
-  if SUCCEEDED(HR) then HR:=PCM.SetUINT32(MF_MT_AUDIO_NUM_CHANNELS,2);
-  if SUCCEEDED(HR) then HR:=PCM.SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,44100);
-  if SUCCEEDED(HR) then HR:=PCM.SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,16);
-  if SUCCEEDED(HR) then HR:=PCM.SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,4);
-  if SUCCEEDED(HR) then HR:=PCM.SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,44100*4);
-  if SUCCEEDED(HR) then HR:=FReader.SetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM,0,PCM);
-  if SUCCEEDED(HR) then HR:=FReader.GetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM,@Actual);
-  if SUCCEEDED(HR) then begin
-   HR:=MFCreateSinkWriterFromURL(PWideChar(UnicodeString(FOutputFile)),nil,nil,FSinkWriter);
-   OutputCreated:=SUCCEEDED(HR);
+
+  Result := E_INVALIDARG;
+  if (FSourceFile = '') or (FOutputFile = '') then
+    Exit;
+  if SameText(ExpandFileName(FSourceFile), ExpandFileName(FOutputFile)) then
+    Exit;
+  HR := MFStartup(MF_VERSION);
+  if FAILED(HR) then
+    Exit(HR);
+  OutputCreated := False;
+  FClosing := False;
+  FCompleted := False;
+  FStatus := E_PENDING;
+  FCancelHandle := CancelHandle;
+  FProgressBytes := 0;
+  FProgressPercent := 0;
+  FDuration100ns := 0;
+  FDoneEvent.ResetEvent;
+  try
+    HR := MFCreateAttributes(Attributes,
+                             1);
+    if SUCCEEDED(HR) then
+      HR := Attributes.SetUnknown(MF_SOURCE_READER_ASYNC_CALLBACK,
+                                  Self);
+    if SUCCEEDED(HR) then
+      HR := MFCreateSourceReaderFromURL(PWideChar(UnicodeString(FSourceFile)),
+                                        Attributes,
+                                        FReader);
+    if SUCCEEDED(HR) then
+      HR := FReader.SetStreamSelection(MF_SOURCE_READER_ALL_STREAMS,
+                                       False);
+    if SUCCEEDED(HR) then
+      HR := FReader.SetStreamSelection(MF_SOURCE_READER_FIRST_AUDIO_STREAM,
+                                       True);
+    if SUCCEEDED(HR) then
+      HR := MFCreateMediaType(PCM);
+    if SUCCEEDED(HR) then
+      HR := PCM.SetGUID(MF_MT_MAJOR_TYPE,
+                        MFMediaType_Audio);
+    if SUCCEEDED(HR) then
+      HR := PCM.SetGUID(MF_MT_SUBTYPE,
+                        MFAudioFormat_PCM);
+    if SUCCEEDED(HR) then
+      HR := PCM.SetUINT32(MF_MT_AUDIO_NUM_CHANNELS,
+                          2);
+    if SUCCEEDED(HR) then
+      HR := PCM.SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,
+                          44100);
+    if SUCCEEDED(HR) then
+      HR := PCM.SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
+                          16);
+    if SUCCEEDED(HR) then
+      HR := PCM.SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,
+                          4);
+    if SUCCEEDED(HR) then
+      HR := PCM.SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
+                          44100 * 4);
+    if SUCCEEDED(HR) then
+      HR := FReader.SetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM,
+                                        0,
+                                        PCM);
+    if SUCCEEDED(HR) then
+      HR := FReader.GetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM,
+                                        @Actual);
+    if SUCCEEDED(HR) then
+      begin
+        HR := MFCreateSinkWriterFromURL(PWideChar(UnicodeString(FOutputFile)),
+                                        nil,
+                                        nil,
+                                        FSinkWriter);
+        OutputCreated := SUCCEEDED(HR);
+      end;
+    if SUCCEEDED(HR) then
+      HR := FSinkWriter.AddStream(Actual,
+                                  FOutStreamIndex);
+    if SUCCEEDED(HR) then
+      HR := FSinkWriter.SetInputMediaType(FOutStreamIndex,
+                                          Actual,
+                                          nil);
+    if SUCCEEDED(HR) then
+      HR := FSinkWriter.BeginWriting;
+    if SUCCEEDED(HR) then
+      begin
+        ReadDurationFromReader;
+        if (CancelHandle <> 0) and (WaitForSingleObject(CancelHandle, 0) = WAIT_OBJECT_0) then
+          HR := E_ABORT
+        else
+          HR := FReader.ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM,
+                                   0,
+                                   nil,
+                                   nil,
+                                   nil,
+                                   nil);
+      end;
+    if SUCCEEDED(HR) then
+      begin
+        while (FDoneEvent.WaitFor(50) <> wrSignaled) do
+          if (CancelHandle <> 0) and (WaitForSingleObject(CancelHandle, 0) = WAIT_OBJECT_0) then
+            begin
+              HR := E_ABORT;
+              Break;
+            end;
+        if SUCCEEDED(HR) then
+          HR := FStatus;
+      end;
+    FCritSec.Lock;
+    try
+      FClosing := True;
+    finally
+      FCritSec.Unlock;
+    end;
+    if (FReader <> nil) then
+      begin
+        ResetEvent(FFlushEvent);
+        if SUCCEEDED(FReader.Flush(MF_SOURCE_READER_ALL_STREAMS)) then
+          WaitForSingleObject(FFlushEvent,
+                              5000);
+      end;
+    FReader := nil;
+    if (FSinkWriter <> nil) then
+      begin
+        FinalHR := FSinkWriter.Finalize;
+        if SUCCEEDED(HR) then
+          HR := FinalHR;
+      end;
+    FSinkWriter := nil;
+    if FAILED(HR) and OutputCreated then
+      DeleteFileW(PWideChar(UnicodeString(FOutputFile)));
+    if SUCCEEDED(HR) then
+      FProgressPercent := 100;
+    Result := HR;
+  finally
+    Attributes := nil;
+    PCM := nil;
+    Actual := nil;
+    FReader := nil;
+    FSinkWriter := nil;
+    MFShutdown;
   end;
-  if SUCCEEDED(HR) then HR:=FSinkWriter.AddStream(Actual,FOutStreamIndex);
-  if SUCCEEDED(HR) then HR:=FSinkWriter.SetInputMediaType(FOutStreamIndex,Actual,nil);
-  if SUCCEEDED(HR) then HR:=FSinkWriter.BeginWriting;
-  if SUCCEEDED(HR) then begin
-   ReadDurationFromReader;
-   if (CancelHandle<>0) and (WaitForSingleObject(CancelHandle,0)=WAIT_OBJECT_0) then HR:=E_ABORT
-   else HR:=FReader.ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM,0,nil,nil,nil,nil);
-  end;
-  if SUCCEEDED(HR) then begin
-   while FDoneEvent.WaitFor(50)<>wrSignaled do
-    if (CancelHandle<>0) and (WaitForSingleObject(CancelHandle,0)=WAIT_OBJECT_0) then begin HR:=E_ABORT;Break;end;
-   if SUCCEEDED(HR) then HR:=FStatus;
-  end;
-  FCritSec.Lock;
-  try FClosing:=True;finally FCritSec.Unlock;end;
-  if FReader<>nil then begin
-   ResetEvent(FFlushEvent);
-   if SUCCEEDED(FReader.Flush(MF_SOURCE_READER_ALL_STREAMS)) then WaitForSingleObject(FFlushEvent,5000);
-  end;
-  FReader:=nil;
-  if FSinkWriter<>nil then begin
-   FinalHR:=FSinkWriter.Finalize;
-   if SUCCEEDED(HR) then HR:=FinalHR;
-  end;
-  FSinkWriter:=nil;
-  if FAILED(HR) and OutputCreated then DeleteFileW(PWideChar(UnicodeString(FOutputFile)));
-  if SUCCEEDED(HR) then FProgressPercent:=100;
-  Result:=HR;
- finally
-  Attributes:=nil;PCM:=nil;Actual:=nil;FReader:=nil;FSinkWriter:=nil;
-  MFShutdown;
- end;
- if Assigned(OnComplete) then OnComplete(Self,SUCCEEDED(Result),Result);
+  if Assigned(OnComplete) then
+    OnComplete(Self,
+               SUCCEEDED(Result),
+               Result);
 end;
 
 
 { IMFSourceReaderCallback }
 
-function TAudioClipClass.OnReadSample(hrStatus: HRESULT;dwStreamIndex,dwStreamFlags: DWORD;llTimestamp: LONGLONG;pSample: IMFSample): HResult;
-var HR: HResult;
+function TAudioClipClass.OnReadSample(hrStatus: HRESULT;
+                                      dwStreamIndex,
+                                      dwStreamFlags: DWORD;
+                                      llTimestamp: LONGLONG;
+                                      pSample: IMFSample): HResult;
+var
+  HR: HResult;
+
 begin
- Result:=S_OK;FCritSec.Lock;
- try
-  if FClosing or FCompleted then Exit;
-  HR:=hrStatus;
-  if SUCCEEDED(HR) and Assigned(pSample) then begin
-   HR:=WriteSampleToSink(pSample);
-   if SUCCEEDED(HR) then ReportProgressFromSample(pSample);
+
+  Result := S_OK;
+  FCritSec.Lock;
+  try
+    if FClosing or FCompleted then
+      Exit;
+    HR := hrStatus;
+    if SUCCEEDED(HR) and Assigned(pSample) then
+      begin
+        HR := WriteSampleToSink(pSample);
+        if SUCCEEDED(HR) then
+          ReportProgressFromSample(pSample);
+      end;
+    if FAILED(HR) then
+      begin
+        SignalDone(HR);
+        Exit;
+      end;
+    if ((dwStreamFlags and MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) <> 0) then
+      begin
+        SignalDone(E_FAIL);
+        Exit;
+      end;
+    if ((dwStreamFlags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0) then
+      begin
+        SignalDone(S_OK);
+        Exit;
+      end;
+    if (FSamplePriorityMS > 0) then
+      Sleep(FSamplePriorityMS);
+    if (FCancelHandle <> 0) and (WaitForSingleObject(FCancelHandle, 0) = WAIT_OBJECT_0) then
+      begin
+        SignalDone(E_ABORT);
+        Exit;
+      end;
+    HR := FReader.ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM,
+                             0,
+                             nil,
+                             nil,
+                             nil,
+                             nil);
+    if FAILED(HR) then
+      SignalDone(HR);
+  finally
+    FCritSec.Unlock;
   end;
-  if FAILED(HR) then begin SignalDone(HR);Exit;end;
-  if (dwStreamFlags and MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED)<>0 then begin SignalDone(E_FAIL);Exit;end;
-  if (dwStreamFlags and MF_SOURCE_READERF_ENDOFSTREAM)<>0 then begin SignalDone(S_OK);Exit;end;
-  if FSamplePriorityMS>0 then Sleep(FSamplePriorityMS);
-  if (FCancelHandle<>0) and (WaitForSingleObject(FCancelHandle,0)=WAIT_OBJECT_0) then begin SignalDone(E_ABORT);Exit;end;
-  HR:=FReader.ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM,0,nil,nil,nil,nil);
-  if FAILED(HR) then SignalDone(HR);
- finally FCritSec.Unlock;end;
 end;
 
 
 function TAudioClipClass.OnEvent(dwStreamIndex: DWORD;
                                  pEvent: IMFMediaEvent): HResult;
+
 begin
+
   // optional: inspect events
   Result := S_OK;
   pEvent := nil;
@@ -383,7 +532,12 @@ end;
 
 
 function TAudioClipClass.OnFlush(dwStreamIndex: DWORD): HResult;
-begin SetEvent(FFlushEvent);Result:=S_OK;end;
+
+begin
+
+  SetEvent(FFlushEvent);
+  Result := S_OK;
+end;
 
 
 end.

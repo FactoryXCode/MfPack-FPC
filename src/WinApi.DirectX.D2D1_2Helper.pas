@@ -72,43 +72,43 @@ unit WinApi.DirectX.D2D1_2Helper;
 
 interface
 
-  {$PACKENUM 4}
+{$PACKENUM 4}
 
-  {$IFDEF WIN32}
+{$IFDEF WIN32}
     {$ALIGN 1}
-  {$ELSE}
-    {$ALIGN 8} // Win64
-  {$ENDIF}
+{$ELSE}
+{$ALIGN 8}
+// Win64
+{$ENDIF}
 
 //#if NTDDI_VERSION >= NTDDI_WINBLUE
 
 uses
-  
+
   {WinApi.DirectX}
   WinApi.DirectX.D2D1,
   WinApi.DirectX.D2D1_2,
   WinApi.DirectX.D2D1Helper,
   WinApi.DirectX.DCommon;
 
-
-  function ComputeFlatteningTolerance(matrix: D2D1_MATRIX_3X2_F;
-                                      dpiX: Single = 96.0;
-                                      dpiY: Single = 96.0;
-                                      maxZoomFactor: Single = 1.0): Single; inline;
+function ComputeFlatteningTolerance(matrix: D2D1_MATRIX_3X2_F;
+                                    dpiX: Single = 96.0;
+                                    dpiY: Single = 96.0;
+                                    maxZoomFactor: Single = 1.0): Single; inline;
 
 //#if NTDDI_VERSION >= NTDDI_WINBLUE
 
-  // Computes the maximum factor by which a given transform can stretch any vector.
-  // See: https://docs.microsoft.com/en-us/windows/desktop/api/d2d1_2/nf-d2d1_2-d2d1computemaximumscalefactor
-  // Delphi Note: This function has been moved to D2D1_2.pas to prevent circular reference error.
-  //function D2D1ComputeMaximumScaleFactor(matrix: D2D1_MATRIX_3X2_F): Single; stdcall;
+// Computes the maximum factor by which a given transform can stretch any vector.
+// See: https://docs.microsoft.com/en-us/windows/desktop/api/d2d1_2/nf-d2d1_2-d2d1computemaximumscalefactor
+// Delphi Note: This function has been moved to D2D1_2.pas to prevent circular reference error.
+//function D2D1ComputeMaximumScaleFactor(matrix: D2D1_MATRIX_3X2_F): Single; stdcall;
 
 //#endif // #if NTDDI_VERSION >= NTDDI_WINBLUE
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
 
@@ -124,20 +124,21 @@ var
   y: Single;
 
 begin
+
   x := dpiX / 96.0;
   y := dpiY / 96.0;
 
-  dpiDependentTransform :=  matrix * D2D1_MATRIX_3X2_F.Scale(x,
-                                                             y,
-                                                             Point2F());
+  dpiDependentTransform := matrix * D2D1_MATRIX_3X2_F.Scale(x,
+                                                            y,
+                                                            Point2F());
   if (maxZoomFactor > 0) then
-        absMaxZoomFactor := maxZoomFactor
+    absMaxZoomFactor := maxZoomFactor
   else
-        absMaxZoomFactor := -maxZoomFactor;
+    absMaxZoomFactor := -maxZoomFactor;
 
   Result := D2D1_DEFAULT_FLATTENING_TOLERANCE / (absMaxZoomFactor * D2D1ComputeMaximumScaleFactor(dpiDependentTransform));
 end;
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

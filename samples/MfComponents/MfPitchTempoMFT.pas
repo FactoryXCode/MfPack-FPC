@@ -112,24 +112,23 @@ type
     WindowSize: Integer;       // 512/1024/2048/4096
     Overlap: Single;           // 0.25..0.75
     Mode: TPitchTempoMode;
-
     class function Defaults(): TPitchTempoSettings; static;
   end;
 
 const
 
   PITCH_TEMPO_DEFAULTS: TPitchTempoSettings = (Enabled: 1;
-                                               PitchSemitones: 0.0;
-                                               TempoPercent: 100.0;
-                                               PreserveFormants: LongBool(False);
-                                               WindowSize: 1024;
-                                               Overlap: 0.5;
-                                               Mode: ptmClean);
+    PitchSemitones: 0.0;
+    TempoPercent: 100.0;
+    PreserveFormants: LongBool(False);
+    WindowSize: 1024;
+    Overlap: 0.5;
+    Mode: ptmClean);
 
 type
 
   IMfPitchTempoMft = interface(IUnknown)
-  ['{9C7B6C9E-5F74-4E53-9B35-60F5E6B6D3A1}']
+    ['{9C7B6C9E-5F74-4E53-9B35-60F5E6B6D3A1}']
 
     procedure EnableFX(const AEnabled: Boolean); stdcall;
 
@@ -176,6 +175,7 @@ type
   // DSP core (not an MFT). Used internally by the MFT wrapper.
   // ---------------------------------------------------------------------------
   TMfPitchTempoDSP = class
+
   private
 
     FSampleRate: Integer;
@@ -249,7 +249,9 @@ type
   // --------------------------------------------------------------------------
   // MFT wrapper (uniform with other FX: Eq/Chorus/etc)
   // --------------------------------------------------------------------------
-  TMfPitchTempoMFT = class(TMfAudioEffectMFTBase, IMfPitchTempoMft)
+  TMfPitchTempoMFT = class(TMfAudioEffectMFTBase,
+                           IMfPitchTempoMft)
+
   private
 
     FCS: TCriticalSection;
@@ -288,6 +290,7 @@ implementation
 { TPitchTempoSettings }
 
 class function TPitchTempoSettings.Defaults(): TPitchTempoSettings;
+
 begin
 
   Result.Enabled := 1;
@@ -302,6 +305,7 @@ end;
 { TMfPitchTempoDSP }
 
 constructor TMfPitchTempoDSP.Create();
+
 begin
 
   inherited Create();
@@ -317,6 +321,7 @@ end;
 
 
 destructor TMfPitchTempoDSP.Destroy();
+
 begin
 
   inherited Destroy;
@@ -326,6 +331,7 @@ end;
 class function TMfPitchTempoDSP.ClampF(const V,
                                        AMin,
                                        AMax: Double): Double;
+
 begin
 
   if (V < AMin) then
@@ -339,6 +345,7 @@ end;
 
 procedure TMfPitchTempoDSP.SetFormat(const SampleRate,
                                      Channels: Integer);
+
 begin
 
   FSampleRate := SampleRate;
@@ -357,7 +364,7 @@ begin
 
   n := FWinSize;
   SetLength(FWindow,
-             n);
+            n);
 
   for i := 0 to n - 1 do
     begin
@@ -379,8 +386,8 @@ var
 begin
 
   if (FWinSize = WinSize) and
-     (Abs(FOverlap - Overlap) < 1e-9) and
-     (Length(FCh) = FChannels) then
+    (Abs(FOverlap - Overlap) < 1e-9) and
+    (Length(FCh) = FChannels) then
     Exit;
 
   FWinSize := WinSize;
@@ -423,7 +430,8 @@ begin
                 olaCap);
 
       FillChar(FCh[i].OLAWeight[0],
-               Length(FCh[i].OLAWeight) * SizeOf(Double), 0);
+               Length(FCh[i].OLAWeight) * SizeOf(Double),
+               0);
 
       FCh[i].OLAPos := 0;
 
@@ -496,13 +504,17 @@ end;
 
 
 procedure TMfPitchTempoDSP.ResetState();
+
 begin
 
   InternalReset();
 end;
 
 
-procedure TMfPitchTempoDSP.FIFO_Push(var Buf: array of Single; var Start, Count: Integer; const S: Single);
+procedure TMfPitchTempoDSP.FIFO_Push(var Buf: array of Single;
+                                     var Start,
+                                     Count: Integer;
+                                     const S: Single);
 var
   idx: Integer;
 
@@ -522,8 +534,10 @@ end;
 
 
 function TMfPitchTempoDSP.FIFO_Pop(var Buf: array of Single;
-                                   var Start, Count: Integer;
+                                   var Start,
+                                   Count: Integer;
                                    out S: Single): Boolean;
+
 begin
 
   if (Count <= 0) then
@@ -575,6 +589,7 @@ var
   wi,
   tr,
   ti: Double;
+
 
   procedure Swap(var X,
                  Y: TComplex);
@@ -660,11 +675,11 @@ begin
               A[i].Re := u.Re + tr;
               A[i].Im := u.Im + ti;
 
-             // Advance twiddle.
-             t.Re := wr;
-             t.Im := wi;
-             wr := t.Re * wpr - t.Im * wpi;
-             wi := t.Re * wpi + t.Im * wpr;
+              // Advance twiddle.
+              t.Re := wr;
+              t.Im := wi;
+              wr := t.Re * wpr - t.Im * wpi;
+              wi := t.Re * wpi + t.Im * wpr;
             end;
 
           Inc(k,
@@ -698,7 +713,7 @@ var
 
 begin
 
-  if Abs(PitchFactor - 1.0) < 1e-6 then
+  if (Abs(PitchFactor - 1.0) < 1e-6) then
     Exit;
 
   ch := @FCh[chIndex];
@@ -732,7 +747,8 @@ end;
 
 
 procedure TMfPitchTempoDSP.ProcessOneFrame(const chIndex: Integer;
-                                           const PitchFactor, TempoFactor: Double;
+                                           const PitchFactor,
+                                           TempoFactor: Double;
                                            const Mode: TPitchTempoMode);
 var
   N,
@@ -751,7 +767,7 @@ var
   hopS: Integer;
   phaseLock: Double;
 
-  // Helper.
+// Helper.
   procedure ConsumeIn(const n: Integer);
   var
     bLen,
@@ -764,16 +780,20 @@ var
     if (nn > ch^.InCount) then
       nn := ch^.InCount;
     ch^.InStart := (ch^.InStart + nn) mod bLen;
-    Dec(ch^.InCount, nn);
+    Dec(ch^.InCount,
+        nn);
   end;
+
 
   procedure PushOutSample(const s: Single);
   begin
 
     FIFO_Push(ch^.OutBuf,
               ch^.OutStart,
-              ch^.OutCount, s);
+              ch^.OutCount,
+              s);
   end;
+
 
   function ReadInSample(const idx: Integer): Single;
   begin
@@ -817,7 +837,8 @@ begin
       re := ch^.Spec[k].Re;
       im := ch^.Spec[k].Im;
       mag := Sqrt(re * re + im * im);
-      phase := ArcTan2(im, re);
+      phase := ArcTan2(im,
+                       re);
       ch^.Mag[k] := mag;
       ch^.Phase[k] := phase;
     end;
@@ -907,9 +928,9 @@ begin
 
   win := Settings.WindowSize;
   if (win <> 512) and
-     (win <> 1024) and
-     (win <> 2048) and
-     (win <> 4096) then
+    (win <> 1024) and
+    (win <> 2048) and
+    (win <> 4096) then
     win := 1024;
 
   ovl := ClampF(Settings.Overlap,
@@ -959,7 +980,8 @@ begin
           s := PSingle(PByte(pData) + (idx * SizeOf(Single)))^;
           FIFO_Push(FCh[ch].InBuf,
                     FCh[ch].InStart,
-                    FCh[ch].InCount, s);
+                    FCh[ch].InCount,
+                    s);
           Inc(idx);
         end;
     end;
@@ -970,7 +992,7 @@ begin
       it := 0;
 
       while (FCh[ch].OutCount < Frames) and (FCh[ch].InCount >= FWinSize) and (it < Max(64, Min(512, (Frames div Max(1,
-                                                                                                                     Round(FHopA * tempoFactor))) + 16))) do
+          Round(FHopA * tempoFactor))) + 16))) do
         begin
 
           ProcessOneFrame(ch,
@@ -984,29 +1006,32 @@ begin
   idx := 0;
 
   for i := 0 to Frames - 1 do
-  begin
-    for ch := 0 to FChannels - 1 do
-      begin
+    begin
+      for ch := 0 to FChannels - 1 do
+        begin
 
-        if not FIFO_Pop(FCh[ch].OutBuf,
-                        FCh[ch].OutStart,
-                        FCh[ch].OutCount,
-                        outS) then
-          outS := PSingle(PByte(pData) + (idx * SizeOf(Single)))^; // dry-pass on underflow
+          if not FIFO_Pop(FCh[ch].OutBuf,
+            FCh[ch].OutStart,
+            FCh[ch].OutCount,
+            outS) then
+            outS := PSingle(PByte(pData) + (idx * SizeOf(Single)))^; // dry-pass on underflow
 
-        // Prevent harsh clipping when pitching up.
-        if (outS > 1.0) then outS := 1.0 else
-          if (outS < -1.0) then outS := -1.0;
-        PSingle(PByte(pData) + (idx * SizeOf(Single)))^ := outS;
-      Inc(idx);
+          // Prevent harsh clipping when pitching up.
+          if (outS > 1.0) then
+            outS := 1.0
+          else if (outS < -1.0) then
+            outS := -1.0;
+          PSingle(PByte(pData) + (idx * SizeOf(Single)))^ := outS;
+          Inc(idx);
+        end;
     end;
-  end;
 end;
 
 
 { TMfPitchTempoMFT }
 
 constructor TMfPitchTempoMFT.Create();
+
 begin
 
   inherited Create();
@@ -1020,6 +1045,7 @@ end;
 
 
 destructor TMfPitchTempoMFT.Destroy();
+
 begin
 
   FreeAndNil(FDsp);
@@ -1030,11 +1056,12 @@ end;
 
 
 procedure TMfPitchTempoMFT.ApplyPendingSettings();
+
 begin
 
   if (InterlockedCompareExchange(FPendingDirty,
-                                0,
-                                0) = 0) then
+    0,
+    0) = 0) then
     Exit;
 
   FCS.Enter();
@@ -1042,7 +1069,7 @@ begin
   try
 
     if (InterlockedExchange(FPendingDirty,
-                           0) <> 0) then
+      0) <> 0) then
       FSettings := FPendingSettings;
   finally
 
@@ -1055,6 +1082,7 @@ procedure TMfPitchTempoMFT.ProcessAudioFloat32(pData: PSingle;
                                                Frames,
                                                Channels,
                                                SampleRate: Integer);
+
 begin
 
   ApplyPendingSettings();
@@ -1069,6 +1097,7 @@ end;
 
 
 procedure TMfPitchTempoMFT.EnableFX(const AEnabled: Boolean); stdcall;
+
 begin
 
   FCS.Enter();
@@ -1087,6 +1116,7 @@ end;
 
 
 procedure TMfPitchTempoMFT.SetSettings(const S: TPitchTempoSettings); stdcall;
+
 begin
 
   FCS.Enter();
@@ -1104,6 +1134,7 @@ end;
 
 
 function TMfPitchTempoMFT.GetSettings(out S: TPitchTempoSettings): HRESULT; stdcall;
+
 begin
 
   FCS.Enter();
@@ -1120,6 +1151,7 @@ end;
 
 
 procedure TMfPitchTempoMFT.ResetState(); stdcall;
+
 begin
 
   if (FDsp <> nil) then

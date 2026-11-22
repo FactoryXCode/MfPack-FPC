@@ -74,7 +74,7 @@ uses
   LMessages,
   LCLIntf,
   MfCaptureSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -102,28 +102,28 @@ uses
   {$TYPEINFO ON}
 
 type
-    // Capture engine states
-    TCeState = (Closing = 0,     // Application has closed the session, but is waiting for MESessionClosed.
-                Closed,          // No session.
-                Ready,           // Session was created, ready to open a file.
-                OpenPending,     // Session is opening a file.
-                Starting,        // Session initializing Start
-                Started,         // Session is playing a file.
-                Stopping,        // Session initializing Stop.
-                Stopped,         // Session is stopped (ready to play).
-                TopologyReady,   // Session topology has been set.
-                CaptureStarting, // Session initializing capturing
-                CaptureStarted,  // Session is capturing
-                CaptureStopping, // Session initializing stop capturing
-                CaptureStopped   // Session is capturing
-               );
+  // Capture engine states
+  TCeState = (Closing = 0,     // Application has closed the session, but is waiting for MESessionClosed.
+    Closed,          // No session.
+    Ready,           // Session was created, ready to open a file.
+    OpenPending,     // Session is opening a file.
+    Starting,        // Session initializing Start
+    Started,         // Session is playing a file.
+    Stopping,        // Session initializing Stop.
+    Stopped,         // Session is stopped (ready to play).
+    TopologyReady,   // Session topology has been set.
+    CaptureStarting, // Session initializing capturing
+    CaptureStarted,  // Session is capturing
+    CaptureStopping, // Session initializing stop capturing
+    CaptureStopped   // Session is capturing
+    );
 
-    TRequest = (reqNone = 0,
-                reqStartRecording,
-                reqStopRecording);
+  TRequest = (reqNone = 0,
+              reqStartRecording,
+              reqStopRecording);
 
-    TRedrawStatus = (rdStarted,
-                     rdStopped);
+  TRedrawStatus = (rdStarted,
+                   rdStopped);
 
 
 type
@@ -131,46 +131,49 @@ type
   // Note:
   // Applications should use the Media Session for playback.
 
-  TMfCaptureEngine = class(TInterfacedPersistent, IMFAsyncCallback)
+  TMfCaptureEngine = class(TInterfacedPersistent,
+                           IMFAsyncCallback)
+
   private
     FEventWindow: HWND;
     FEventClosing: Boolean;
     procedure MediaEventWindowProc(var Msg: TLMessage);
     procedure DiscardMediaEvents();
+
   private
 
-    stRedrawStatus     : TRedrawStatus;
-    m_bHasVideo        : LongBool;
+    stRedrawStatus: TRedrawStatus;
+    m_bHasVideo: LongBool;
 
-    m_pwszSymbolicLink : PWideChar;
-    m_cchSymbolicLink  : UINT32;
-    m_pwszDeviceName   : PWideChar;
-    m_cchDeviceName    : UINT32;
+    m_pwszSymbolicLink: PWideChar;
+    m_cchSymbolicLink: UINT32;
+    m_pwszDeviceName: PWideChar;
+    m_cchDeviceName: UINT32;
 
-    m_State            : TCeState;
-    m_Request          : TRequest;
-    m_bPending         : LongBool;
+    m_State: TCeState;
+    m_Request: TRequest;
+    m_bPending: LongBool;
 
-    dwSessionCaps      : DWord;                     // MFSESSIONCAP_* (MfApi) = Session caps.
-    hCloseEvent        : THandle;                   // Event to wait on while closing.
-    m_dWaitResult      : DWord;                     // Wait, used by function
+    dwSessionCaps: DWord;                     // MFSESSIONCAP_* (MfApi) = Session caps.
+    hCloseEvent: THandle;                   // Event to wait on while closing.
+    m_dWaitResult: DWord;                     // Wait, used by function
 
     // Handles
-    m_hwndEvent:         HWND;                      // App window handle to receive events.
-    m_hwndVideo:         HWND;                      // Stored handle of videosurface.
-    m_hwnd_MainForm:     HWND;                      // Handle to the main form.
+    m_hwndEvent: HWND;                      // App window handle to receive events.
+    m_hwndVideo: HWND;                      // Stored handle of videosurface.
+    m_hwnd_MainForm: HWND;                      // Handle to the main form.
 
     // Colorkey needed to draw transparent on the videosurface.
     FBGColor: COLORREF;
 
-    FRotation : Integer;
+    FRotation: Integer;
 
     // interfaces
-    m_pSession:          IMFMediaSession;           // Media Session.
-    m_pSource:           IMFMediaSource;            // Media Source.
-    m_pVideoDisplay:     IMFVideoDisplayControl;    // Video control.
-    m_pActivate:         IMFActivate;               // The device Activate interface.
-    p_hdevnotify:        HDEVNOTIFY;                // Devicenotify pointer.
+    m_pSession: IMFMediaSession;           // Media Session.
+    m_pSource: IMFMediaSource;            // Media Source.
+    m_pVideoDisplay: IMFVideoDisplayControl;    // Video control.
+    m_pActivate: IMFActivate;               // The device Activate interface.
+    p_hdevnotify: HDEVNOTIFY;                // Devicenotify pointer.
 
     // Methods
     // Constructor is private. Use static CreateInstance method to instantiate.
@@ -196,7 +199,7 @@ type
     // Media event and session handlers
     //==================================
     // Event handler
-    function HandleEvent(pEventPtr: UINT_PTR ): HRESULT;
+    function HandleEvent(pEventPtr: UINT_PTR): HRESULT;
     //
     // Handler for MESessionTopologyStatus event
     function OnTopologyStatus(pEvent: IMFMediaEvent): HRESULT;
@@ -207,7 +210,8 @@ type
     // Handler for MESessionTopologySet event
     function OnTopologyReady(pEvent: IMFMediaEvent): HRESULT; virtual;
     // Override to handle additional session events.
-    function OnSessionEvent(pEvent: IMFMediaEvent; meType: DWord): HRESULT;
+    function OnSessionEvent(pEvent: IMFMediaEvent;
+                            meType: DWord): HRESULT;
     // Handler for MENewPresentation event.
     // This event is sent if the media source has a new presentation, which
     // requires a new topology.
@@ -242,8 +246,10 @@ type
     procedure SetVideoScreen(val: HWND);
     function GetVideoScreen(): HWND;
 
-    procedure SetRotation(AValue : Integer);
-    function SetStreamRotation(const ASource : IMFMediaSource; AStreamIndex : Integer; ARotation : Integer) : Boolean;
+    procedure SetRotation(AValue: Integer);
+    function SetStreamRotation(const ASource: IMFMediaSource;
+                               AStreamIndex: Integer;
+                               ARotation: Integer): Boolean;
 
     // Get the video Normalized Rectangle
     function GetVideoRectangle(): TRECT;
@@ -283,7 +289,7 @@ type
     function PrepareSession(): HRESULT;  // Prepares the session for recording
     function VideoDetected(): Boolean; // returns m_bHasVideo;
 
-    property Rotation : Integer read FRotation write SetRotation;
+    property Rotation: Integer read FRotation write SetRotation;
 
     property State: TCeState read m_State write m_State;
     property Request: TRequest read m_Request write m_Request;
@@ -296,7 +302,9 @@ var
   MfDeviceCapture: TMfCaptureEngine;
   FDevicePropertiesArray: TDevicePropertiesArray;
 
-  procedure ShowErrorMessage(hwnd: HWND; fmt: LPCWSTR; hrErr: HRESULT);
+procedure ShowErrorMessage(hwnd: HWND;
+                           fmt: LPCWSTR;
+                           hrErr: HRESULT);
 
 
 implementation
@@ -311,6 +319,7 @@ label
   Done;
 
 begin
+
   // Close the old session, if any.
   hr := CloseSession();
   if FAILED(hr) then
@@ -320,7 +329,8 @@ begin
 
   // Create the media session.
   FEventClosing := False;
-  if hCloseEvent = 0 then Initialize();
+  if (hCloseEvent = 0) then
+    Initialize();
   hr := MFCreateMediaSession(nil,
                              m_pSession);
   if FAILED(hr) then
@@ -334,8 +344,8 @@ begin
   if FAILED(hr) then
     goto done;
 
-done:
-  Result:= hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -349,8 +359,10 @@ label
   Done;
 
 begin
+
   FEventClosing := True;
-  if hCloseEvent <> 0 then ResetEvent(hCloseEvent);
+  if (hCloseEvent <> 0) then
+    ResetEvent(hCloseEvent);
   // The IMFMediaSession.Close method is asynchronous, but the
   // MfPlayer.CloseSession method waits on the MESessionClosed event.
   //
@@ -375,12 +387,13 @@ begin
   if FAILED(hr) then
     goto Done;
 
-  hr:= m_pSession.Close;
+  hr := m_pSession.Close;
   if FAILED(hr) then
     goto Done;
 
   // Wait for the close operation to complete
-  dwWaitResult := WaitForSingleObject(THandle(hCloseEvent), 1000);
+  dwWaitResult := WaitForSingleObject(THandle(hCloseEvent),
+                                      1000);
 
   if (dwWaitResult <> STATUS_WAIT_0) {Wait abandoned} then
     m_dWaitResult := dwWaitResult;
@@ -402,11 +415,12 @@ begin
   // Release the global interfaces
   SafeRelease(m_pSession);
   SafeRelease(m_pSource);
-  if Assigned(m_pActivate) then m_pActivate.ShutdownObject();
+  if Assigned(m_pActivate) then
+    m_pActivate.ShutdownObject();
   SafeRelease(m_pActivate);
 
-done:
-  DiscardMediaEvents();
+  done:
+    DiscardMediaEvents();
   State := Closed;
   Result := hr;
 end;
@@ -421,7 +435,8 @@ var
   hr: HRESULT;
 
 begin
-  hr:= S_OK;
+
+  hr := S_OK;
   // The application must call Shutdown because the media session holds a
   // reference count on the capture engine object. (This happens when capture engine calls
   // IMediaEventGenerator.BeginGetEvent on the media session.) As a result,
@@ -434,27 +449,27 @@ begin
   // Also, calling Shutdown twice is harmless.
   //       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-try
+  try
 
-  StopRecording();
-  hr := CloseSession();  // Close the session
+    StopRecording();
+    hr := CloseSession();  // Close the session
 
-  if (hCloseEvent <> 0) then
-    begin
-      if CloseHandle(THandle(hCloseEvent)) then
-        begin
-          hCloseEvent := 0;
-          hr := S_OK;
-        end
-      else
-        hr := E_FAIL;
-    end;
+    if (hCloseEvent <> 0) then
+      begin
+        if CloseHandle(THandle(hCloseEvent)) then
+          begin
+            hCloseEvent := 0;
+            hr := S_OK;
+          end
+        else
+          hr := E_FAIL;
+      end;
 
-  Result := hr;
-except
-  // Do nothing
-  Result := hr;
-end;
+    Result := hr;
+  except
+    // Do nothing
+    Result := hr;
+  end;
 end;
 
 
@@ -463,6 +478,7 @@ var
   h: THandle;
 
 begin
+
   if (hCloseEvent <> 0) then
     begin
       Result := MF_E_ALREADY_INITIALIZED;
@@ -470,9 +486,9 @@ begin
     end;
 
   h := CreateEventW(nil,
-                   False,
-                   False,
-                   nil);
+                    False,
+                    False,
+                    nil);
 
   hCloseEvent := h;
 
@@ -487,7 +503,9 @@ end;
 
 // Resets all vars and releases all interfaces
 procedure TMfCaptureEngine.Clear();
+
 begin
+
   // reset vars
   m_bHasVideo := False;
   CoTaskMemFree(m_pwszSymbolicLink);
@@ -495,7 +513,7 @@ begin
   m_pwszDeviceName := nil;
   m_pwszSymbolicLink := nil;
   m_cchSymbolicLink := 0;
-  m_State := Closed ;
+  m_State := Closed;
   m_Request := reqNone;
   dwSessionCaps := 0;
   m_dWaitResult := 0;
@@ -514,6 +532,7 @@ var
   hr: HRESULT;
 
 begin
+
   inherited Create();
   FEventWindow := LCLIntf.AllocateHWnd(MediaEventWindowProc);
 
@@ -531,10 +550,10 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(0,
-                 PWideChar('An error occured while trying to initialize.'),
-                 PWideChar('Error!'),
-                 MB_ICONEXCLAMATION);
-     end;
+                  PWideChar('An error occured while trying to initialize.'),
+                  PWideChar('Error!'),
+                  MB_ICONEXCLAMATION);
+    end;
 end;
 
 
@@ -545,6 +564,7 @@ var
   pCaptureEngine: TMfCaptureEngine;
 
 begin
+
   pCaptureEngine := TMfCaptureEngine.Create(hVideo,
                                             hMainForm);
 
@@ -563,10 +583,13 @@ end;
 
 //
 procedure TMfCaptureEngine.BeforeDestruction();
+
 begin
+
   ShutDownEngine();
   DiscardMediaEvents();
-  if FEventWindow <> 0 then LCLIntf.DeallocateHWnd(FEventWindow);
+  if (FEventWindow <> 0) then
+    LCLIntf.DeallocateHWnd(FEventWindow);
   Clear();
 
   // Unregister existing device
@@ -579,7 +602,9 @@ end;
 
 // The destructor
 destructor TMfCaptureEngine.Destroy;
+
 begin
+
   inherited Destroy;
 end;
 
@@ -593,7 +618,8 @@ var
   FVideoProcessor: IMFVideoProcessor;
 
 begin
-  hr:= S_OK;
+
+  hr := S_OK;
 
   if Not Assigned(m_pSession) then
     begin
@@ -601,48 +627,49 @@ begin
       Exit;
     end;
 
-try
+  try
 
-  if m_bPending then
-    begin
-      Request := reqStartRecording;
-      State := Starting;
-    end
-  else
-    begin
-      PropVariantInit(varStart);
-      varStart.vt := Word(VT_EMPTY);  //Slow when returning from pause!
-      hr := m_pSession.Start(GUID_NULL, varStart);
-      m_bPending := True;
-      hr := PropVariantClear(varStart);
-    end;
+    if m_bPending then
+      begin
+        Request := reqStartRecording;
+        State := Starting;
+      end
+    else
+      begin
+        PropVariantInit(varStart);
+        varStart.vt := Word(VT_EMPTY);  //Slow when returning from pause!
+        hr := m_pSession.Start(GUID_NULL,
+                               varStart);
+        m_bPending := True;
+        hr := PropVariantClear(varStart);
+      end;
 
-  if SUCCEEDED(hr) then
-    begin
-      // Note: StartRecording is an asynchronous operation. However, we
-      // can treat our state as being already started. If Start
-      // fails later, we'll get an MESessionStarted event with
-      // an error code, and we will update our state then.
+    if SUCCEEDED(hr) then
+      begin
+        // Note: StartRecording is an asynchronous operation. However, we
+        // can treat our state as being already started. If Start
+        // fails later, we'll get an MESessionStarted event with
+        // an error code, and we will update our state then.
 
-      Request := reqNone;
-      State := Started;
+        Request := reqNone;
+        State := Started;
 
-      // check if there is video present
-      if (HasVideo = true) then
-        begin
-          hr := (m_pSession as IMFGetService).GetService(MR_VIDEO_MIXER_SERVICE,
-                                                         IID_IMFVideoProcessor,
-                                                         Pointer(FVideoProcessor));
-          if SUCCEEDED(hr) then
-            hr := FVideoProcessor.GetBackgroundColor(FBGColor);
-        end
-      else
-        hr:= E_NOTIMPL;  // better is to implement a custom E_VIDEO_NOT_PRESENT or something like that.
-    end;
+        // check if there is video present
+        if (HasVideo = true) then
+          begin
+            hr := (m_pSession as IMFGetService).GetService(MR_VIDEO_MIXER_SERVICE,
+                                                           IID_IMFVideoProcessor,
+                                                           Pointer(FVideoProcessor));
+            if SUCCEEDED(hr) then
+              hr := FVideoProcessor.GetBackgroundColor(FBGColor);
+          end
+        else
+          hr := E_NOTIMPL;  // better is to implement a custom E_VIDEO_NOT_PRESENT or something like that.
+      end;
 
-finally
-  Result:= hr;
-end;
+  finally
+    Result := hr;
+  end;
 end;
 
 
@@ -709,7 +736,7 @@ begin
     end;
 
   // Get the event type.
-  hr:= pEvent.GetType(meType);
+  hr := pEvent.GetType(meType);
   if FAILED(hr) then
     goto done;
 
@@ -728,32 +755,33 @@ begin
   //===============
   case meType of
     // In this order when opening
-    MESessionTopologiesCleared      : hr := OnSessionTopologiesCleared(pEvent);
-    MESessionTopologySet            : hr := OnSessionTopologySet(pEvent);
+    MESessionTopologiesCleared: hr := OnSessionTopologiesCleared(pEvent);
+    MESessionTopologySet: hr := OnSessionTopologySet(pEvent);
     // Raised by the Media Session when a new presentation starts.
     // This event indicates when the presentation will start and the
     // offset between the presentation time and the source time.
-    MESessionNotifyPresentationTime : hr := S_OK;
-     // The session capabilities changed. Get the updated capabilities.
-    MESessionCapabilitiesChanged    : dwSessionCaps := MFGetAttributeUINT32(pEvent,
-                                                                            MF_EVENT_SESSIONCAPS,
-                                                                            dwSessionCaps);
+    MESessionNotifyPresentationTime: hr := S_OK;
+    // The session capabilities changed. Get the updated capabilities.
+    MESessionCapabilitiesChanged: dwSessionCaps := MFGetAttributeUINT32(pEvent,
+                                                                        MF_EVENT_SESSIONCAPS,
+                                                                        dwSessionCaps);
 
-    MESessionTopologyStatus: hr:= OnTopologyStatus(pEvent);
+    MESessionTopologyStatus: hr := OnTopologyStatus(pEvent);
 
     // From here the event sequences are mandatory
-    MENewPresentation      : hr := OnNewPresentation(pEvent);
-    MESessionStopped       : hr := OnSessionStop(pEvent);
-    MESessionStarted       : hr := OnSessionStart(pEvent);
-    MESessionClosed        : hr := S_OK;
-    MESessionEnded         : hr := S_OK;
+    MENewPresentation: hr := OnNewPresentation(pEvent);
+    MESessionStopped: hr := OnSessionStop(pEvent);
+    MESessionStarted: hr := OnSessionStart(pEvent);
+    MESessionClosed: hr := S_OK;
+    MESessionEnded: hr := S_OK;
 
-  else  // Undefined event, handle this by OnSessionEvent handler
-    hr := OnSessionEvent(pEvent, DWord(meType));
+    else  // Undefined event, handle this by OnSessionEvent handler
+      hr := OnSessionEvent(pEvent,
+                           DWord(meType));
   end;
 
-done:
-  Result:= hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -766,6 +794,7 @@ var
   hr: HRESULT;
 
 begin
+
   hr := pEvent.GetUINT32(MF_EVENT_TOPOLOGY_STATUS,
                          UINT32(Status));
   case Status of
@@ -786,13 +815,14 @@ var
   hr: HRESULT;
 
 begin
+
   hr := pEvent.GetUINT32(MF_EVENT_TOPOLOGY_STATUS,
                          UINT32(status));
   case status of
     MF_TOPOSTATUS_READY: OnTopologyReady(pEvent);
-    MF_TOPOSTATUS_ENDED: {} ;
-    MF_TOPOSTATUS_INVALID: {} ;
-    MF_TOPOSTATUS_STARTED_SOURCE: {} ;
+    MF_TOPOSTATUS_ENDED: {};
+    MF_TOPOSTATUS_INVALID: {};
+    MF_TOPOSTATUS_STARTED_SOURCE: {};
     else
       hr := E_UNEXPECTED; // possible error  -1072875802 ($C00D36E6) The requested attribute was not found.
   end;                    // this error can be ignored, because probably the topology is not completely set at this point.
@@ -803,7 +833,9 @@ end;
 function TMfCaptureEngine.OnSessionTopologiesCleared(pEvent: IMFMediaEvent): HRESULT;
 var
   hr: HRESULT;
+
 begin
+
   // Do here what you want, after the topology is cleared
   hr := S_OK;
   Result := hr;
@@ -819,6 +851,7 @@ label
   done;
 
 begin
+
   // release any previous instance of the m_pVideoDisplay interface
   m_pVideoDisplay := Nil;
 
@@ -848,9 +881,9 @@ begin
   if Assigned(m_pVideoDisplay) then
     ResizeVideo(Nil);
 
-// Since the topology is ready, you might start capturing, do calculations etc.
-//
-////////////////////////////////////////////////////////////////////////////////
+  // Since the topology is ready, you might start capturing, do calculations etc.
+  //
+  ////////////////////////////////////////////////////////////////////////////////
 
   // Obtain capabilities of the current session
   if SUCCEEDED(hr) then
@@ -859,7 +892,7 @@ begin
   if FAILED(hr) then
     dwSessionCaps := MFSESSIONCAP_START;
 
-  m_bPending:= True;
+  m_bPending := True;
   // START RECORDING
   // You can also implement an option for the user, starting playback directly after
   // a mediastream is loaded.
@@ -868,15 +901,18 @@ begin
 
   State := TopologyReady;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 
 end;
 
 
 // Override to handle additional session events.
-function TMfCaptureEngine.OnSessionEvent(pEvent: IMFMediaEvent; meType: DWord): HRESULT;
+function TMfCaptureEngine.OnSessionEvent(pEvent: IMFMediaEvent;
+                                         meType: DWord): HRESULT;
+
 begin
+
   //this is more or less a dummy for now
   //but feel free to add your own sessionevent handlers here
   Result := S_OK;
@@ -897,13 +933,14 @@ label
   done;
 
 begin
+
   dwSourceStreams := 0;
 
   // Get the presentation descriptor from the event.
   hr := GetEventObject(pEvent,
                        pPD);
-    if FAILED(hr) then
-      goto done;
+  if FAILED(hr) then
+    goto done;
 
   // Create a partial topology.
   hr := CreatePlaybackTopology(m_pSource,
@@ -911,8 +948,8 @@ begin
                                m_hwndVideo,
                                pTopology,
                                dwSourceStreams);
-    if FAILED(hr) then
-      goto done;
+  if FAILED(hr) then
+    goto done;
 
   // Set the topology on the media session.
   hr := m_pSession.SetTopology(MFSESSION_SETTOPOLOGY_IMMEDIATE,
@@ -920,8 +957,8 @@ begin
 
   State := OpenPending;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -930,14 +967,18 @@ end;
 //
 // request for Start event
 function TMfCaptureEngine.OnSessionStart(pEvent: IMFMediaEvent): HRESULT;
+
 begin
+
   UpdatePendingCommands(reqStartRecording);
   Result := S_OK;
 end;
 
 // request for Stop event
 function TMfCaptureEngine.OnSessionStop(pEvent: IMFMediaEvent): HRESULT;
+
 begin
+
   UpdatePendingCommands(reqStopRecording);
   Result := S_OK;
 end;
@@ -947,38 +988,39 @@ end;
 // This method executes any cached requests.
 function TMfCaptureEngine.UpdatePendingCommands(req: TRequest): HRESULT;
 var
-  hr : HRESULT;
+  hr: HRESULT;
 
 begin
+
   hr := S_OK;
 
-try
+  try
 
-  if (m_bPending) and (Request = req) then
-    begin
-      m_bPending := False;
-      // The current pending command has completed.
+    if (m_bPending) and (Request = req) then
+      begin
+        m_bPending := False;
+        // The current pending command has completed.
 
-      // Now look for seek requests.
-      if not m_bPending then
-        case req of
-          reqNone: ; // Nothing to do.
-          reqStartRecording: begin
-                               if SUCCEEDED(StartRecording()) then
-                                 State := Started;
-                             end;
-          reqStopRecording:  begin
-                               if SUCCEEDED(StopRecording()) then
-                                 State := Stopped;
-                             end;
-        end;
-      // Request is done
-      Request := reqNone;
-    end;
+        // Now look for seek requests.
+        if not m_bPending then
+          case req of
+            reqNone: ; // Nothing to do.
+              reqStartRecording: begin
+                if SUCCEEDED(StartRecording()) then
+                  State := Started;
+              end;
+              reqStopRecording: begin
+                if SUCCEEDED(StopRecording()) then
+                  State := Stopped;
+              end;
+          end;
+        // Request is done
+        Request := reqNone;
+      end;
 
-finally
-  Result := hr;
-end;
+  finally
+    Result := hr;
+  end;
 end;
 
 
@@ -987,34 +1029,44 @@ var
   Session: IMFMediaSession;
   Event: IMFMediaEvent;
   EventType: MediaEventType;
+
 begin
+
   Session := m_pSession;
-  if Session = nil then Exit(MF_E_SHUTDOWN);
-  Result := Session.EndGetEvent(pAsyncResult,Event);
-  if FAILED(Result) then Exit;
+  if (Session = nil) then
+    Exit(MF_E_SHUTDOWN);
+  Result := Session.EndGetEvent(pAsyncResult,
+                                Event);
+  if FAILED(Result) then
+    Exit;
   Result := Event.GetType(EventType);
-  if FAILED(Result) then Exit;
-  if EventType = MESessionClosed then
+  if FAILED(Result) then
+    Exit;
+  if (EventType = MESessionClosed) then
     begin
       SetEvent(hCloseEvent);
       Exit(S_OK);
     end;
   Event._AddRef();
-  if not PostMessage(FEventWindow,WM_APP + $4C1,0,LPARAM(Pointer(Event))) then
+  if not PostMessage(FEventWindow, WM_APP + $4C1, 0, LPARAM(Pointer(Event))) then
     Event._Release();
-  Result := Session.BeginGetEvent(Self as IMFAsyncCallback,nil);
+  Result := Session.BeginGetEvent(Self as IMFAsyncCallback,
+                                  nil);
 end;
+
 
 procedure TMfCaptureEngine.MediaEventWindowProc(var Msg: TLMessage);
 var
   Event: IMFMediaEvent;
   SavedMask: TFPUExceptionMask;
+
 begin
-  if Msg.Msg = WM_APP + $4C1 then
+
+  if (Msg.Msg = WM_APP + $4C1) then
     begin
       Pointer(Event) := Pointer(Msg.LParam);
       SavedMask := GetExceptionMask();
-      SetExceptionMask([exInvalidOp,exDenormalized,exZeroDivide,exOverflow,exUnderflow,exPrecision]);
+      SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
       try
         if not FEventClosing then
           HandleEvent(UINT_PTR(Pointer(Event)));
@@ -1025,24 +1077,33 @@ begin
       Msg.Result := 0;
     end
   else
-    Msg.Result := DefWindowProcW(FEventWindow,Msg.Msg,Msg.WParam,Msg.LParam);
+    Msg.Result := DefWindowProcW(FEventWindow,
+                                 Msg.Msg,
+                                 Msg.WParam,
+                                 Msg.LParam);
 end;
+
 
 procedure TMfCaptureEngine.DiscardMediaEvents();
 var
   Msg: TMsg;
   Event: IMFMediaEvent;
+
 begin
-  while PeekMessageW(Msg,FEventWindow,WM_APP + $4C1,WM_APP + $4C1,PM_REMOVE) do
+
+  while PeekMessageW(Msg, FEventWindow, WM_APP + $4C1, WM_APP + $4C1, PM_REMOVE) do
     begin
       Pointer(Event) := Pointer(Msg.LParam);
       Event := nil;
     end;
 end;
 
+
 function TMfCaptureEngine.GetParameters(out pdwFlags: DWord;
                                         out pdwQueue: DWord): HResult;
+
 begin
+
   Result := E_NOTIMPL;
 end;
 
@@ -1066,6 +1127,7 @@ var
   I: UINT32;
 
 begin
+
   hr := S_OK;
   count := 0;
   ppDevices := nil;
@@ -1086,82 +1148,83 @@ begin
   // 7. Prepare session for recording.
   //
 
-try
-  // Create a new session for the player.
-  hr := CreateSession();
+  try
+    // Create a new session for the player.
+    hr := CreateSession();
 
-  // Create an attribute store to hold the search criteria.
-  hr := MFCreateAttributes(pConfig,
-                           1);
+    // Create an attribute store to hold the search criteria.
+    hr := MFCreateAttributes(pConfig,
+                             1);
 
-  // Request video capture devices.
-  if SUCCEEDED(hr) then
-    begin
-      hr := pConfig.SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
-                            DeviceProperty.riid);
-    end;
+    // Request video capture devices.
+    if SUCCEEDED(hr) then
+      begin
+        hr := pConfig.SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
+                              DeviceProperty.riid);
+      end;
 
-  // Enumerate the devices again, because in the mean while a device could be
-  // disconnected.
-  if SUCCEEDED(hr) then
-    begin
-      hr := MFEnumDeviceSources(pConfig,
-                                ppDevices,
-                                count);
-    end;
+    // Enumerate the devices again, because in the mean while a device could be
+    // disconnected.
+    if SUCCEEDED(hr) then
+      begin
+        hr := MFEnumDeviceSources(pConfig,
+                                  ppDevices,
+                                  count);
+      end;
 
-{$POINTERMATH ON}
+    {$POINTERMATH ON}
 
-   // Create a media source from the selected device.
-  if SUCCEEDED(hr) then
-    begin
-      if (DeviceProperty.iDeviceIndex >= 0) and
-         (UINT32(DeviceProperty.iDeviceIndex) < count) then
-        begin
-          hr := ppDevices[DeviceProperty.iDeviceIndex].ActivateObject(IID_IMFMediaSource,
-                                                                      Pointer(pSource));
-          if SUCCEEDED(hr) then
-            begin
-              m_pActivate := ppDevices[DeviceProperty.iDeviceIndex];
-            end;
-        end
-      else
-        begin
-          hr := MF_E_NOT_FOUND;
-        end;
-    end;
+    // Create a media source from the selected device.
+    if SUCCEEDED(hr) then
+      begin
+        if (DeviceProperty.iDeviceIndex >= 0) and
+          (UINT32(DeviceProperty.iDeviceIndex) < count) then
+          begin
+            hr := ppDevices[DeviceProperty.iDeviceIndex].ActivateObject(IID_IMFMediaSource,
+                                                                        Pointer(pSource));
+            if SUCCEEDED(hr) then
+              begin
+                m_pActivate := ppDevices[DeviceProperty.iDeviceIndex];
+              end;
+          end
+        else
+          begin
+            hr := MF_E_NOT_FOUND;
+          end;
+      end;
 
-  // Get the symbolic link. This is needed to handle device-
-  // loss notifications. (See CheckCaptureDeviceLost.)
-  //
-  // Create a new media item for this media source, lookup by symboliclink.
-  if SUCCEEDED(hr) then
-    hr := CreateVideoCaptureDeviceBySymolicLink(DeviceProperty.lpSymbolicLink,
-                                                pSource);
-  if not RegisterForDeviceNotification(m_hwnd_MainForm,
-                                       p_hdevnotify) then
-  hr := GetLastError();
+    // Get the symbolic link. This is needed to handle device-
+    // loss notifications. (See CheckCaptureDeviceLost.)
+    //
+    // Create a new media item for this media source, lookup by symboliclink.
+    if SUCCEEDED(hr) then
+      hr := CreateVideoCaptureDeviceBySymolicLink(DeviceProperty.lpSymbolicLink,
+                                                  pSource);
+    if not RegisterForDeviceNotification(m_hwnd_MainForm,
+      p_hdevnotify) then
+      hr := GetLastError();
 
-finally
+  finally
 
-{$POINTERMATH OFF}
+    {$POINTERMATH OFF}
 
-  // Prepare the recording session
-  if SUCCEEDED(hr) then
-    begin
-      m_pSource := pSource;
-      hr := PrepareSession();
-    end;
+    // Prepare the recording session
+    if SUCCEEDED(hr) then
+      begin
+        m_pSource := pSource;
+        hr := PrepareSession();
+      end;
 
-  {$POINTERMATH ON}
-  if ppDevices <> nil then
-    begin
-      if count > 0 then
-        for I := 0 to count - 1 do ppDevices[I] := nil;
-      CoTaskMemFree(ppDevices);
-    end;
-  Result := hr;
-end;
+    {$POINTERMATH ON}
+    if (ppDevices <> nil) then
+      begin
+        if (count > 0) then
+          for I := 0 to count - 1 do
+            ppDevices[I] := nil;
+        CoTaskMemFree(ppDevices);
+      end;
+    Result := hr;
+  end;
 end;
 
 
@@ -1177,98 +1240,101 @@ label
   done;
 
 begin
+
   hr := S_OK;
   dwSourceStreams := 0;
 
-try
+  try
 
-  // After the session is prepared (function SetDevice)
-  // We need to build the topology and set it on the session,
-  // ========================================================
-  // 1. Create the topology.
-  // 2. Create the presentation descriptor.
-  // 3. Create the (partial) source topology.
-  // 4. Set the topology on the media session.
-  // 5. Start request [asynchronous - does not happen in this method, but in OnTopologySet]
-  //
+    // After the session is prepared (function SetDevice)
+    // We need to build the topology and set it on the session,
+    // ========================================================
+    // 1. Create the topology.
+    // 2. Create the presentation descriptor.
+    // 3. Create the (partial) source topology.
+    // 4. Set the topology on the media session.
+    // 5. Start request [asynchronous - does not happen in this method, but in OnTopologySet]
+    //
 
 
-  // Create a new topology.
-  hr := MFCreateTopology(pTopology);
-  if FAILED(hr) then
-    goto done;
+    // Create a new topology.
+    hr := MFCreateTopology(pTopology);
+    if FAILED(hr) then
+      goto done;
 
-  // Create the presentation descriptor for the media source
-  hr := m_pSource.CreatePresentationDescriptor(pSourcePD);
-  if FAILED(hr) then
-    goto done;
+    // Create the presentation descriptor for the media source
+    hr := m_pSource.CreatePresentationDescriptor(pSourcePD);
+    if FAILED(hr) then
+      goto done;
 
-  //Clear all of the presentations that are queued for playback in the Media Session.
-  hr := m_pSession.ClearTopologies();
+    //Clear all of the presentations that are queued for playback in the Media Session.
+    hr := m_pSession.ClearTopologies();
 
-  // Create a partial source topology, com branches, source nodes and sink nodes.
-  // playback topologies are always partial
-  hr := CreatePlaybackTopology(m_pSource,
-                               pSourcePD,
-                               m_hwndVideo,
-                               pTopology,
-                               dwSourceStreams);
+    // Create a partial source topology, com branches, source nodes and sink nodes.
+    // playback topologies are always partial
+    hr := CreatePlaybackTopology(m_pSource,
+                                 pSourcePD,
+                                 m_hwndVideo,
+                                 pTopology,
+                                 dwSourceStreams);
 
-  if FAILED(hr) then
-    goto done;
+    if FAILED(hr) then
+      goto done;
 
-  // Set the topology on the media session.
-  hr := m_pSession.SetTopology(MFSESSION_SETTOPOLOGY_IMMEDIATE,
-                               pTopology);
-  if FAILED(hr) then
-    goto done;
+    // Set the topology on the media session.
+    hr := m_pSession.SetTopology(MFSESSION_SETTOPOLOGY_IMMEDIATE,
+                                 pTopology);
+    if FAILED(hr) then
+      goto done;
 
-  // If SetTopology succeeds, the media session will queue an
-  // MESessionTopologySet event.
-  // This event is evaluated and fired in the OnTopologyStatus method
-  // When the method completes, MFPlay will call OnMediaPlayerEvent
-  // with the MFP_EVENT_TYPE_MEDIAITEM_CREATED event.
+    // If SetTopology succeeds, the media session will queue an
+    // MESessionTopologySet event.
+    // This event is evaluated and fired in the OnTopologyStatus method
+    // When the method completes, MFPlay will call OnMediaPlayerEvent
+    // with the MFP_EVENT_TYPE_MEDIAITEM_CREATED event.
 
-  // obtain capabilities of the current session
-  hr := m_pSession.GetSessionCapabilities(dwSessionCaps);
-  if FAILED(hr) then
-    dwSessionCaps := $0001;
+    // obtain capabilities of the current session
+    hr := m_pSession.GetSessionCapabilities(dwSessionCaps);
+    if FAILED(hr) then
+      dwSessionCaps := $0001;
 
-  SetStreamRotation(m_pSource, 0, FRotation);
+    SetStreamRotation(m_pSource,
+                      0,
+                      FRotation);
 
-  if SUCCEEDED(hr) then
-    begin
-      //
-      hr := GetSymbolicLink(m_pActivate,
-                            m_pwszSymbolicLink,
-                            m_cchSymbolicLink,
-                            MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK);
+    if SUCCEEDED(hr) then
+      begin
+        //
+        hr := GetSymbolicLink(m_pActivate,
+                              m_pwszSymbolicLink,
+                              m_cchSymbolicLink,
+                              MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK);
+        if FAILED(hr) then
+          goto done;
+
+        hr := GetDeviceName(m_pActivate,
+                            m_pwszDeviceName,
+                            m_cchDeviceName);
+        if FAILED(hr) then
+          goto done;
+
+        // Set state to "open pending"
+        State := OpenPending;
+        // Send a request to start capturing (this is fired in OnTopologyReady)
+        Request := reqStartRecording;
+      end;
+
+    done:
+
       if FAILED(hr) then
-        goto done;
+        begin
+          Clear();
+          Abort; // throw exception
+        end;
 
-      hr := GetDeviceName(m_pActivate,
-                          m_pwszDeviceName,
-                          m_cchDeviceName);
-      if FAILED(hr) then
-        goto done;
-
-      // Set state to "open pending"
-      State := OpenPending;
-      // Send a request to start capturing (this is fired in OnTopologyReady)
-      Request := reqStartRecording;
-    end;
-
-done:
-
-  if FAILED(hr) then
-    begin
-      Clear();
-      Abort; // throw exception
-    end;
-
-finally
-  Result := hr;
-end;
+  finally
+    Result := hr;
+  end;
 
 end;
 
@@ -1298,6 +1364,7 @@ label
   done;
 
 begin
+
   hr := S_OK;
   pbDeviceLost := False;
 
@@ -1327,15 +1394,15 @@ begin
   if Assigned(m_pwszSymbolicLink) then
     begin
       // Perform a lowercase comparison of strings.
-      if AnsiCompareText(pSymbolicLink, pDeviceName) = 0 then
+      if (AnsiCompareText(pSymbolicLink, pDeviceName) = 0) then
         begin
           pbDeviceLost := True;
           hr := ERROR_DEVICE_REMOVED;
         end;
     end;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -1344,7 +1411,9 @@ end;
 // Repaint the video window.
 // Call this method on WM_PAINT from the form where the video is playing on.
 function TMfCaptureEngine.UpdateVideo(): HRESULT;
+
 begin
+
   if Assigned(m_pVideoDisplay) then
     begin
       Result := m_pVideoDisplay.RepaintVideo();
@@ -1364,6 +1433,7 @@ var
   hr: HResult;  //debug purpose
 
 begin
+
   hr := E_NOINTERFACE;
 
   if Assigned(m_pVideoDisplay) then
@@ -1374,13 +1444,15 @@ begin
       // If dRect is empty; use the GetClientRect function
       if (dRect = Nil) then
         begin
-          Windows.GetClientRect(m_hwndVideo, rc);
+          Windows.GetClientRect(m_hwndVideo,
+                                rc);
           rcpdest := @rc;
         end
       else
         rcpDest := dRect;
 
-      hr := m_pVideoDisplay.SetVideoPosition(Nil, rcpdest);
+      hr := m_pVideoDisplay.SetVideoPosition(Nil,
+                                             rcpdest);
 
       if SUCCEEDED(hr) then
         // Set aspect ratio in conjunction with SetVideoPosition
@@ -1394,12 +1466,16 @@ end;
 
 // Reduces flickering
 procedure TMfCaptureEngine.SetRedraw();
+
 begin
 
   // Reduce flickering of controls when resizing.
   if (stRedrawStatus = rdStarted) then
     begin
-      SendMessage(m_hwnd_MainForm, WM_SETREDRAW, WPARAM(False), 0);
+      SendMessage(m_hwnd_MainForm,
+                  WM_SETREDRAW,
+                  WPARAM(False),
+                  0);
       stRedrawStatus := rdStopped;
     end
   else
@@ -1420,37 +1496,51 @@ end;
 
 // protected
 function TMfCaptureEngine.HasVideo(): BOOL;
+
 begin
-   Result := (m_pVideoDisplay <> Nil);
+
+  Result := (m_pVideoDisplay <> Nil);
 end;
 
 //public
 function TMfCaptureEngine.VideoDetected(): Boolean;
+
 begin
+
   m_bHasVideo := HasVideo();
   Result := m_bHasVideo;
 end;
 
-procedure TMfCaptureEngine.SetRotation(AValue : Integer);
+
+procedure TMfCaptureEngine.SetRotation(AValue: Integer);
+
 begin
-  if AValue <> FRotation then
-  begin
-    FRotation := AValue;
-    if Assigned(m_pSource) then
-      PrepareSession;
-  end;
+
+  if (AValue <> FRotation) then
+    begin
+      FRotation := AValue;
+      if Assigned(m_pSource) then
+        PrepareSession;
+    end;
 end;
 
-function TMfCaptureEngine.SetStreamRotation(const ASource : IMFMediaSource; AStreamIndex : Integer; ARotation : Integer) : Boolean;
+
+function TMfCaptureEngine.SetStreamRotation(const ASource: IMFMediaSource;
+                                            AStreamIndex: Integer;
+                                            ARotation: Integer): Boolean;
 var
-  pPD : IMFPresentationDescriptor;
-  pSD : IMFStreamDescriptor;
-  pHandler : IMFMediaTypeHandler;
-  pMediaType : IMFMediaType;
-  fSelected : BOOL;
+  pPD: IMFPresentationDescriptor;
+  pSD: IMFStreamDescriptor;
+  pHandler: IMFMediaTypeHandler;
+  pMediaType: IMFMediaType;
+  fSelected: BOOL;
+
 begin
+
   // Calls can be combined if no additional error handling is added at each stage.
-  Result := Succeeded(ASource.CreatePresentationDescriptor(pPD)) and Succeeded(pPD.GetStreamDescriptorByIndex(AStreamIndex, fSelected, pSD));
+  Result := Succeeded(ASource.CreatePresentationDescriptor(pPD)) and Succeeded(pPD.GetStreamDescriptorByIndex(AStreamIndex,
+                                                                                                              fSelected,
+                                                                                                              pSD));
 
   if Result then
     Result := Succeeded(pSD.GetMediaTypeHandler(pHandler));
@@ -1458,19 +1548,25 @@ begin
   if Result then
     Result := Succeeded(pHandler.GetCurrentMediaType(pMediaType));
 
-   if Result then
-    Result := Succeeded(pMediaType.SetUINT32(MF_MT_VIDEO_ROTATION, ARotation));
+  if Result then
+    Result := Succeeded(pMediaType.SetUINT32(MF_MT_VIDEO_ROTATION,
+                                             ARotation));
 end;
 
 // Sets the desired clipping window/control
 procedure TMfCaptureEngine.SetVideoScreen(val: HWND);
+
 begin
+
   if Assigned(m_pVideoDisplay) then
     m_pVideoDisplay.SetVideoWindow(val);
 end;
 
+
 function TMfCaptureEngine.GetVideoScreen(): HWND;
+
 begin
+
   if Assigned(m_pVideoDisplay) then
     m_pVideoDisplay.GetVideoWindow(Result);
 end;
@@ -1482,9 +1578,12 @@ var
   nrc: MFVideoNormalizedRect;
 
 begin
+
   // we don't need the normalized rect.
-  m_pVideoDisplay.GetVideoPosition(nrc, rc);
-  CopyTRectToTRect(rc, Result);
+  m_pVideoDisplay.GetVideoPosition(nrc,
+                                   rc);
+  CopyTRectToTRect(rc,
+                   Result);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1498,20 +1597,24 @@ end;
 //
 // Displays an error message.
 //-------------------------------------------------------------------
-procedure ShowErrorMessage(hwnd: HWND; fmt: LPCWSTR; hrErr: HResult);
+procedure ShowErrorMessage(hwnd: HWND;
+                           fmt: LPCWSTR;
+                           hrErr: HResult);
 var
   hr: HRESULT;
   msg: String;
 
 begin
+
   hr := S_OK;
-  Msg := SysUtils.format('%s  HResult = $%u', [fmt, hrErr]);
+  Msg := SysUtils.format('%s  HResult = $%u',
+                         [fmt, hrErr]);
 
   if SUCCEEDED(hr) then
     MessageBoxW(hwnd,
-               lpcwstr(msg),
-               lpcwstr('Error'),
-               MB_ICONERROR);
+                lpcwstr(msg),
+                lpcwstr('Error'),
+                MB_ICONERROR);
 end;
 
 
@@ -1520,14 +1623,16 @@ var
   hr: HResult;
 
 begin
-  hr := MFStartup(MF_VERSION, 0);
+
+  hr := MFStartup(MF_VERSION,
+                  0);
   if FAILED(hr) then
     begin
       MessageBoxW(0,
-                 lpcwstr('Your computer does not support this Media Foundation API version' +
-                         IntToStr(MF_VERSION) + '.'),
-                 lpcwstr('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  lpcwstr('Your computer does not support this Media Foundation API version' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
       Abort;
     end;
 end;

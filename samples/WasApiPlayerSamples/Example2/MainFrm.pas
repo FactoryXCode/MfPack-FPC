@@ -71,7 +71,7 @@ interface
 
 uses
   WasApiSample.Platform,
-{Winapi}
+  {Winapi}
   Windows,
   WinApi.WinApiTypes,
   {ActiveX}
@@ -146,18 +146,26 @@ type
     cbEnableEq: TCheckBox;
 
     procedure Open1Click(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure butPlayPauseClick(Sender: TObject);
     procedure butStopClick(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure trbVolumeLChange(Sender: TObject);
     procedure trbVolumeRChange(Sender: TObject);
     procedure butPauseClick(Sender: TObject);
-    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure pbProgressMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure pbProgressMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
+    procedure FormKeyUp(Sender: TObject;
+                        var Key: Word;
+                        Shift: TShiftState);
+    procedure pbProgressMouseUp(Sender: TObject;
+                                Button: TMouseButton;
+                                Shift: TShiftState;
+                                X,
+                                Y: Integer);
+    procedure pbProgressMouseMove(Sender: TObject;
+                                  Shift: TShiftState;
+                                  X,
+                                  Y: Integer);
     procedure tbBassChange(Sender: TObject);
     procedure tbTrebleChange(Sender: TObject);
     procedure cbxSetRampChange(Sender: TObject);
@@ -198,7 +206,8 @@ type
     /// <summary>Signals the rendering engine state.</summary>
     procedure OnEngineState(Sender: TObject;
                             const NewState: TDeviceState);
-public
+
+  public
     { Public declarations }
 
   end;
@@ -218,6 +227,7 @@ uses
 
 
 procedure TfrmMain.butPauseClick(Sender: TObject);
+
 begin
 
   // Play/Pause is handled by the Play button.
@@ -256,13 +266,13 @@ begin
         hr := fWasApiEngine.Start();
       end;
 
-  else
-    Exit;
+    else
+      Exit;
   end;
 
   if FAILED(hr) then
     stxtStatus.Caption := Format('Play/Pause failed for file: %s with Error: %d',
-                                [fFileName, hr]);
+                                 [fFileName, hr]);
 end;
 
 
@@ -278,10 +288,10 @@ begin
   hr := fWasApiEngine.Stop();
   if SUCCEEDED(hr) then
     stxtStatus.Caption := Format('Stopped: %s.',
-                                [fFileName])
+                                 [fFileName])
   else
     stxtStatus.Caption := Format('Stopped: %s failed with Error: %s',
-                                [fFileName, hr])
+                                 [fFileName, hr])
 
 end;
 
@@ -299,22 +309,22 @@ begin
     0: fWasApiEngine.SetRampMode(rmOff);
     1: fWasApiEngine.SetRampMode(rmFast);
     2: fWasApiEngine.SetRampMode(rmSmooth);
-    3: begin
+      3: begin
 
-         fWasApiEngine.SetRampMode(rmCustom);
+        fWasApiEngine.SetRampMode(rmCustom);
 
-         // show edit
-         edtRampMs.Enabled := True;
+        // show edit
+        edtRampMs.Enabled := True;
 
-         ms := StrToIntDef(Trim(edtRampMs.Text),
-                           30);
-         if (ms < 0) then
-           ms := 0;
-         if (ms > 2000) then
-           ms := 2000; // sensible clamp
+        ms := StrToIntDef(Trim(edtRampMs.Text),
+                          30);
+        if (ms < 0) then
+          ms := 0;
+        if (ms > 2000) then
+          ms := 2000; // sensible clamp
 
-         fWasApiEngine.SetRampTimeMs(ms);
-       end;
+        fWasApiEngine.SetRampTimeMs(ms);
+      end;
   end;
 
   // Disable edit when not manual.
@@ -325,13 +335,16 @@ end;
 
 
 procedure TfrmMain.Exit1Click(Sender: TObject);
+
 begin
 
   Close();
 end;
 
 
-procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfrmMain.FormCloseQuery(Sender: TObject;
+                                  var CanClose: Boolean);
+
 begin
 
   CanClose := False;
@@ -346,8 +359,9 @@ begin
 end;
 
 
-procedure TfrmMain.FormKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TfrmMain.FormKeyUp(Sender: TObject;
+                             var Key: Word;
+                             Shift: TShiftState);
 var
   iPos: Integer;
 
@@ -364,35 +378,36 @@ begin
     end;
 
   case Key of
-    VK_SPACE:   if Assigned(fWasApiEngine) then
-                  begin
-                    butPlayPauseClick(nil);
-                  end;
+    VK_SPACE: if Assigned(fWasApiEngine) then
+        begin
+          butPlayPauseClick(nil);
+        end;
 
-    VK_END:     if Assigned(fWasApiEngine) then
-                  begin
-                    butStopClick(nil);
-                  end;
+    VK_END: if Assigned(fWasApiEngine) then
+        begin
+          butStopClick(nil);
+        end;
 
-    VK_F10:     if Assigned(fWasApiEngine) then
-                  begin
-                    butPauseClick(nil);
-                  end;
+    VK_F10: if Assigned(fWasApiEngine) then
+        begin
+          butPauseClick(nil);
+        end;
 
-    VK_F12:     begin
-                  Open1Click(nil);
-                end;
+      VK_F12: begin
+        Open1Click(nil);
+      end;
 
-    VK_F8:      begin
-                  iPos := trbVolumeL.Position + trbVolumeR.Position div 2;
-                  trbVolumeL.Position := iPos;
-                  trbVolumeR.Position := iPos;
-                end;
+      VK_F8: begin
+        iPos := trbVolumeL.Position + trbVolumeR.Position div 2;
+        trbVolumeL.Position := iPos;
+        trbVolumeR.Position := iPos;
+      end;
   end;
 end;
 
 
 function TfrmMain.GetAudioFile(): string;
+
 begin
 
   Result := 'No audiofile selected.';
@@ -425,11 +440,12 @@ begin
 
   if FAILED(hr) then
     stxtStatus.Caption := Format('Adjusting volumes failed with error: %d.',
-                                [hr]);
+                                 [hr]);
 end;
 
 
 procedure TfrmMain.tbBassChange(Sender: TObject);
+
 begin
 
   // TrackBar.Position is integer -24..+24
@@ -443,6 +459,7 @@ end;
 
 
 procedure TfrmMain.tbTrebleChange(Sender: TObject);
+
 begin
 
   // TrackBar.Position is integer -24..+24
@@ -456,6 +473,7 @@ end;
 
 
 procedure TfrmMain.ResetEQ();
+
 begin
 
   tbBass.Position := 0;
@@ -483,7 +501,8 @@ var
 begin
 
   x := Slider / MaxDb;          // normalize to -1..+1
-  Result := Sign(x) * MaxDb * Power(Abs(x), Gamma);
+  Result := Sign(x) * MaxDb * Power(Abs(x),
+                                    Gamma);
 end;
 
 
@@ -500,10 +519,10 @@ begin
   SetVolumeChannels();
 
   vol := (MapRange((trbVolumeL.Position),
-                    trbVolumeL.Max,
-                    trbVolumeL.Min,
-                    MIN_VOLUME,
-                    MAX_VOLUME) / (MAX_VOLUME / 100));
+                   trbVolumeL.Max,
+                   trbVolumeL.Min,
+                   MIN_VOLUME,
+                   MAX_VOLUME) / (MAX_VOLUME / 100));
 
   lblLeftVolume.Caption := Format('%d',
                                   [Trunc(vol)]) + '%';
@@ -522,10 +541,10 @@ begin
   SetVolumeChannels();
 
   vol := (MapRange((trbVolumeR.Position),
-                    trbVolumeR.Max,
-                    trbVolumeR.Min,
-                    MIN_VOLUME,
-                    MAX_VOLUME) / (MAX_VOLUME / 100));
+                   trbVolumeR.Max,
+                   trbVolumeR.Min,
+                   MIN_VOLUME,
+                   MAX_VOLUME) / (MAX_VOLUME / 100));
 
   lblRightVolume.Caption := Format('%d',
                                    [Trunc(vol)]) + '%';
@@ -559,7 +578,8 @@ begin
     begin
 
       lblDuration.Caption := Format('Duration: %s',
-                                    [HnsTimeToStr(llAudioDuration, False)]);
+                                    [HnsTimeToStr(llAudioDuration,
+                                                  False)]);
 
       // Set progressbar max
       pbProgress.Max := llAudioDuration div 1000000;
@@ -596,11 +616,14 @@ begin
                                  llAudioDuration);
   if FAILED(hr) then
     stxtStatus.Caption := Format('Selected file: %s open file failed with error: %d.',
-                                [fFileName, hr]);
+                                 [fFileName, hr]);
 end;
 
 
-procedure TfrmMain.pbProgressMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+procedure TfrmMain.pbProgressMouseMove(Sender: TObject;
+                                       Shift: TShiftState;
+                                       X,
+                                       Y: Integer);
 var
   secPos: Integer;
   hnsPos: Int64;
@@ -618,23 +641,29 @@ begin
 
       if (secPos < 0) then
         secPos := 0
-      else
-        if (secPos > pbProgress.Max) then
-          secPos := pbProgress.Max;
+      else if (secPos > pbProgress.Max) then
+        secPos := pbProgress.Max;
 
       pbProgress.ShowHint := True;
-      pbProgress.Hint := Format('Position: %d s', [secPos]);
+      pbProgress.Hint := Format('Position: %d s',
+                                [secPos]);
 
-      lblBarPositionInSamples.Caption := Format('Position: %d s', [secPos]);
+      lblBarPositionInSamples.Caption := Format('Position: %d s',
+                                                [secPos]);
 
       hnsPos := Int64(secPos) * 10000000;
-      lblBarPositionInSTime.Caption := Format('Time: %s', [HnsTimeToStr(hnsPos, False)]);
+      lblBarPositionInSTime.Caption := Format('Time: %s',
+                                              [HnsTimeToStr(hnsPos,
+                                                            False)]);
     end;
 end;
 
 
-procedure TfrmMain.pbProgressMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TfrmMain.pbProgressMouseUp(Sender: TObject;
+                                     Button: TMouseButton;
+                                     Shift: TShiftState;
+                                     X,
+                                     Y: Integer);
 
 var
   hr: HResult;
@@ -654,9 +683,8 @@ begin
 
   if (X <= 0) then
     secPos := 0
-  else
-    if (X >= pbProgress.Width) then
-      secPos := pbProgress.Max
+  else if (X >= pbProgress.Width) then
+    secPos := pbProgress.Max
   else
     secPos := Trunc((X / pbProgress.Width) * pbProgress.Max); // seconds
 
@@ -776,10 +804,11 @@ end;
 
 
 procedure TfrmMain.OnAudioEnded(Sender: TObject);
+
 begin
 
   stxtStatus.Caption := Format('Stopped: %s',
-                              [fFileName]);
+                               [fFileName]);
 
   butPlayPause.Enabled := True;
   butPlayPause.Caption := 'Play';
@@ -787,16 +816,20 @@ begin
 end;
 
 
-procedure TfrmMain.OnEngineError(Sender: TObject; const Msg: string; const Hr: HRESULT);
+procedure TfrmMain.OnEngineError(Sender: TObject;
+                                 const Msg: string;
+                                 const Hr: HRESULT);
+
 begin
 
   stxtStatus.Caption := Format('%s (error 0x%.8x)',
-                              [Msg, Cardinal(Hr)]);
+                               [Msg, Cardinal(Hr)]);
 end;
 
 
 procedure TfrmMain.OnEngineState(Sender: TObject;
-                            const NewState: TDeviceState);
+                                 const NewState: TDeviceState);
+
 begin
 
   case NewState of
@@ -849,7 +882,8 @@ begin
         butPlayPause.Enabled := False;
         butPlayPause.Caption := 'Play';
         butStop.Enabled := False;
-        stxtStatus.Caption := Format('Yoo! we have an error: %d', [GetLastError()]);
+        stxtStatus.Caption := Format('Yoo! we have an error: %d',
+                                     [GetLastError()]);
       end;
 
   end;
@@ -862,14 +896,14 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_FULL)) then
-      begin
-        MessageBoxW(0,
-                   lpcwstr('Your computer does not support this Media Foundation API version ' +
-                           IntToStr(MF_VERSION) + '.'),
-                   lpcwstr('MFStartup Failure!'),
-                           MB_ICONSTOP);
-      end;
+    MFSTARTUP_FULL)) then
+    begin
+      MessageBoxW(0,
+                  lpcwstr('Your computer does not support this Media Foundation API version ' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
+    end;
 
 finalization
 

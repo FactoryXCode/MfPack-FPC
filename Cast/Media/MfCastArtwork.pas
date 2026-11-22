@@ -67,21 +67,27 @@ unit MfCastArtwork;
 interface
 
 uses
-  Windows, SysUtils;
+  Windows,
+  SysUtils;
 
 function MfCastLoadArtworkRgb32(const FileName: WideString;
-                                Width, Height: UINT32;
+                                Width,
+                                Height: UINT32;
                                 out Pixels: TBytes): HRESULT;
 
 implementation
 
 uses
   WinApi.ActiveX.ObjBase,
-  WinApi.ComBaseApi, WinApi.WinApiTypes, WinApi.WIC.WinCodec;
+  WinApi.ComBaseApi,
+  WinApi.WinApiTypes,
+  WinApi.WIC.WinCodec;
+
+
 function MfCastLoadArtworkRgb32(const FileName: WideString;
-                                               Width: UINT32;
-                                               Height: UINT32;
-                                               out Pixels: TBytes): HRESULT;
+                                Width: UINT32;
+                                Height: UINT32;
+                                out Pixels: TBytes): HRESULT;
 var
   factory: IWICImagingFactory;
   decoder: IWICBitmapDecoder;
@@ -111,7 +117,7 @@ begin
   converter := nil;
 
   if (FileName = '') or (Width = 0) or (Height = 0) or
-     (UInt64(Width) * UInt64(Height) > UInt64(MaxInt div 4)) then
+    (UInt64(Width) * UInt64(Height) > UInt64(MaxInt div 4)) then
     begin
       Result := E_INVALIDARG;
       Exit;
@@ -126,10 +132,10 @@ begin
     Exit;
 
   Result := factory.CreateDecoderFromFilename(PWideChar(FileName),
-                                               nil,
-                                               GENERIC_READ,
-                                               WICDecodeMetadataCacheOnLoad,
-                                               decoder);
+                                              nil,
+                                              GENERIC_READ,
+                                              WICDecodeMetadataCacheOnLoad,
+                                              decoder);
   if FAILED(Result) then
     Exit;
 
@@ -148,8 +154,8 @@ begin
       Exit;
     end;
 
-  if (UInt64(Width) * UInt64(sourceHeight)) <=
-     (UInt64(Height) * UInt64(sourceWidth)) then
+  if ((UInt64(Width) * UInt64(sourceHeight)) <=
+    (UInt64(Height) * UInt64(sourceWidth))) then
     begin
       scaledWidth := Width;
       scaledHeight := UINT((UInt64(sourceHeight) * UInt64(Width)) div sourceWidth);
@@ -160,9 +166,9 @@ begin
       scaledWidth := UINT((UInt64(sourceWidth) * UInt64(Height)) div sourceHeight);
     end;
 
-  if scaledWidth = 0 then
+  if (scaledWidth = 0) then
     scaledWidth := 1;
-  if scaledHeight = 0 then
+  if (scaledHeight = 0) then
     scaledHeight := 1;
 
   Result := factory.CreateBitmapScaler(scaler);

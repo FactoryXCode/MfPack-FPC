@@ -68,7 +68,7 @@ uses
   LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   messages,
   {System}
@@ -188,7 +188,8 @@ type
     procedure AddSubtitleChoice(const AChoice: TMfCastSubtitleChoice);
     procedure BuildSelectedSubtitle(out ASubtitle: TMfCastSubtitleAsset);
     procedure ApplySubtitleSelection();
-    procedure LogResult(const AOperation: string; const AHResult: HRESULT);
+    procedure LogResult(const AOperation: string;
+                        const AHResult: HRESULT);
     procedure UpdateControls();
 
     procedure WmCastDevices(var message: TLMessage); message WM_MFCAST_DEVICES;
@@ -210,6 +211,7 @@ implementation
 
 
 procedure TCastPlayerForm.FormCreate(Sender: TObject);
+
 begin
 
   FClosing := False;
@@ -251,11 +253,13 @@ end;
 
 
 procedure TCastPlayerForm.YouTubeModeChanged(Sender: TObject);
+
 begin
+
   if not Assigned(FYouTubeSourceResolver) then
     Exit;
 
-  if cbxYouTubeMode.ItemIndex = 1 then
+  if (cbxYouTubeMode.ItemIndex = 1) then
     FYouTubeSourceResolver.Mode := yrmBestQualityDownload
   else
     FYouTubeSourceResolver.Mode := yrmFastCombinedStream;
@@ -295,17 +299,17 @@ begin
     end;
 
   while PeekmessageW(message,
-                    Handle,
-                    WM_MFCAST_ERROR,
-                    WM_MFCAST_ERROR,
-                    PM_REMOVE) do
+      Handle,
+      WM_MFCAST_ERROR,
+      WM_MFCAST_ERROR,
+      PM_REMOVE) do
     TObject(message.wParam).Free();
 
   while PeekmessageW(message,
-                    Handle,
-                    WM_MFCAST_LOG,
-                    WM_MFCAST_LOG,
-                    PM_REMOVE) do
+      Handle,
+      WM_MFCAST_LOG,
+      WM_MFCAST_LOG,
+      PM_REMOVE) do
     TObject(message.wParam).Free();
 
   FreeAndNil(FCast);
@@ -313,47 +317,51 @@ end;
 
 
 procedure TCastPlayerForm.DeviceChanged(const ADevice: TMfCastDevice);
+
 begin
 
   if not FClosing then
     PostmessageW(Handle,
-                WM_MFCAST_DEVICES,
-                0,
-                0);
+                 WM_MFCAST_DEVICES,
+                 0,
+                 0);
 end;
 
 
 procedure TCastPlayerForm.DeviceRemoved(const ADeviceId: string);
+
 begin
 
   if not FClosing then
     PostmessageW(Handle,
-                WM_MFCAST_DEVICES,
-                0,
-                0);
+                 WM_MFCAST_DEVICES,
+                 0,
+                 0);
 end;
 
 
 procedure TCastPlayerForm.CastStateChanged(const AOldState: TMfCastState;
-                                                 const ANewState: TMfCastState);
+                                           const ANewState: TMfCastState);
+
 begin
 
   if not FClosing then
     PostmessageW(Handle,
-                WM_MFCAST_STATE,
-                Ord(ANewState),
-                0);
+                 WM_MFCAST_STATE,
+                 Ord(ANewState),
+                 0);
 end;
 
 
 procedure TCastPlayerForm.CastMediaStatus(const AStatus: TMfCastMediaStatus);
+
 begin
 
   if not FClosing then
     PostmessageW(Handle,
-                WM_MFCAST_STATUS,
-                WPARAM(AStatus.CurrentTime100ns div 10000000),
-                LPARAM(AStatus.Duration100ns div 10000000));
+                 WM_MFCAST_STATUS,
+                 WPARAM(AStatus.CurrentTime100ns div 10000000),
+                 LPARAM(AStatus.Duration100ns div 10000000));
 end;
 
 
@@ -375,9 +383,10 @@ end;
 
 
 procedure TCastPlayerForm.CastLog(Sender: TObject;
-                                        const ALevel: TMfCastLogLevel;
-                                        const ASource: string;
-                                        const Amessage: string);
+                                  const ALevel: TMfCastLogLevel;
+                                  const ASource: string;
+                                  const Amessage: string);
+
 begin
 
   // Error details arrive through OnError, which includes the structured stage
@@ -386,13 +395,13 @@ begin
     PostLogmessage(WM_MFCAST_LOG,
                    Format('[%s][%s] %s',
                           [MfCastLogLevelToString(ALevel),
-                           ASource,
-                           Amessage]));
+      ASource,
+      Amessage]));
 end;
 
 
 procedure TCastPlayerForm.PostLogmessage(const AWindowsmessage: Cardinal;
-                                               const AText: string);
+                                         const AText: string);
 var
   Logmessage: TMfCastUiLogMessage;
 
@@ -403,9 +412,9 @@ begin
 
   Logmessage := TMfCastUiLogMessage.Create(AText);
   if not PostmessageW(Handle,
-                     AWindowsmessage,
-                     WPARAM(Logmessage),
-                     0) then
+    AWindowsmessage,
+    WPARAM(Logmessage),
+    0) then
     Logmessage.Free();
 end;
 
@@ -439,9 +448,8 @@ begin
 
     if (OldIndex >= 0) and (OldIndex < cbxDevices.Items.Count) then
       cbxDevices.ItemIndex := OldIndex
-    else
-      if (cbxDevices.Items.Count > 0) then
-        cbxDevices.ItemIndex := 0;
+    else if (cbxDevices.Items.Count > 0) then
+      cbxDevices.ItemIndex := 0;
   finally
     cbxDevices.Items.EndUpdate();
   end;
@@ -450,9 +458,11 @@ end;
 
 
 procedure TCastPlayerForm.ClearSubtitleChoices();
+
 begin
 
-  SetLength(FSubtitleChoices, 0);
+  SetLength(FSubtitleChoices,
+            0);
   FSubtitleSourceName := '';
   cbxSubtitleLanguage.Items.Clear();
   cbxSubtitleLanguage.ItemIndex := -1;
@@ -472,7 +482,7 @@ begin
   if (ChoiceLanguage <> '') then
     for I := Low(FSubtitleChoices) to High(FSubtitleChoices) do
       if SameText(TLanguageTags.NormalizeLanguageTag(FSubtitleChoices[I].Language),
-                  ChoiceLanguage) then
+        ChoiceLanguage) then
         Exit;
 
   NewIndex := Length(FSubtitleChoices);
@@ -520,8 +530,7 @@ begin
     // later duplicates by language, so an embedded track cannot replace one.
     LanguageTags := TLanguageTags.Create();
     try
-      for ExtensionIndex := Low(SUBTITLE_EXTENSIONS) to
-                            High(SUBTITLE_EXTENSIONS) do
+      for ExtensionIndex := Low(SUBTITLE_EXTENSIONS) to High(SUBTITLE_EXTENSIONS) do
         begin
           Sidecars := LanguageTags.ReadFileTags(SourceName,
                                                 '',
@@ -529,7 +538,7 @@ begin
                                                 SUBTITLE_EXTENSIONS[ExtensionIndex]);
 
           for I := Low(Sidecars) to High(Sidecars) do
-            if Sidecars[I].sTTxtType <> UNKNOWN then
+            if (Sidecars[I].sTTxtType <> UNKNOWN) then
               begin
                 Choice.Source := cscsSidecar;
                 Choice.Language := Sidecars[I].sLanguageTag;
@@ -541,31 +550,34 @@ begin
                                                     Choice.StreamIndex);
                 FriendlyName := Trim(Sidecars[I].sFriendlyLanguageName);
 
-                if FriendlyName = '' then
+                if (FriendlyName = '') then
                   FriendlyName := Trim(Choice.Language);
 
-                if FriendlyName = '' then
+                if (FriendlyName = '') then
                   FriendlyName := ExtractFileName(Choice.SourceName);
 
                 Choice.DisplayName := FriendlyName + ' (sidecar)';
                 AddSubtitleChoice(Choice);
               end;
 
-          SetLength(Sidecars, 0);
+          SetLength(Sidecars,
+                    0);
         end;
 
-      SetLength(EmbeddedTracks, 0);
+      SetLength(EmbeddedTracks,
+                0);
       EmbeddedTrackNumber := 0;
       if SUCCEEDED(TMfEmbeddedSubtitleReader.EnumerateTracks(SourceName,
-                                                             EmbeddedTracks)) then
+        EmbeddedTracks)) then
         for I := Low(EmbeddedTracks) to High(EmbeddedTracks) do
           begin
             memLog.Lines.Add(Format('[DEBUG][Subtitles] Candidate stream=%d language="%s" name="%s" codec="%s" supported=%s.',
                                     [EmbeddedTracks[I].StreamIndex,
-                                     EmbeddedTracks[I].Language,
-                                     EmbeddedTracks[I].Name,
-                                     EmbeddedTracks[I].CodecId,
-                                     BoolToStr(EmbeddedTracks[I].Supported, True)]));
+              EmbeddedTracks[I].Language,
+              EmbeddedTracks[I].Name,
+              EmbeddedTracks[I].CodecId,
+              BoolToStr(EmbeddedTracks[I].Supported,
+                        True)]));
 
             if EmbeddedTracks[I].Supported then
               begin
@@ -576,10 +588,10 @@ begin
                 Choice.StreamIndex := EmbeddedTracks[I].StreamIndex;
                 Choice.HasStreamIndex := True;
 
-                if EmbeddedTracks[I].Source = essMatroska then
+                if (EmbeddedTracks[I].Source = essMatroska) then
                   Choice.TrackId := MfCastMakeTrackId(ctkSubtitle,
-                                                       ctsMatroska,
-                                                       Choice.StreamIndex)
+                                                      ctsMatroska,
+                                                      Choice.StreamIndex)
                 else
                   Choice.TrackId := MfCastMakeTrackId(ctkSubtitle,
                                                       ctsMediaFoundation,
@@ -589,9 +601,9 @@ begin
 
                 memLog.Lines.Add(Format('[DEBUG][Subtitles] Embedded track %d: stream=%d language="%s" name="%s".',
                                         [EmbeddedTrackNumber,
-                                         EmbeddedTracks[I].StreamIndex,
-                                         Choice.Language,
-                                         EmbeddedTracks[I].Name]));
+                  EmbeddedTracks[I].StreamIndex,
+                  Choice.Language,
+                  EmbeddedTracks[I].Name]));
 
                 FriendlyName := '';
 
@@ -614,11 +626,13 @@ begin
           end;
     finally
       LanguageTags.Free();
-      SetLength(Sidecars, 0);
-      SetLength(EmbeddedTracks, 0);
+      SetLength(Sidecars,
+                0);
+      SetLength(EmbeddedTracks,
+                0);
     end;
 
-    if cbxSubtitleLanguage.Items.Count > 0 then
+    if (cbxSubtitleLanguage.Items.Count > 0) then
       cbxSubtitleLanguage.ItemIndex := 0;
   finally
     cbxSubtitleLanguage.Items.EndUpdate();
@@ -638,12 +652,12 @@ begin
 
   ASubtitle.Reset();
   if chkEmbeddedSubtitles.Checked and
-     (cbxSubtitleLanguage.ItemIndex >= 0) and
-     (cbxSubtitleLanguage.ItemIndex < Length(FSubtitleChoices)) then
+    (cbxSubtitleLanguage.ItemIndex >= 0) and
+    (cbxSubtitleLanguage.ItemIndex < Length(FSubtitleChoices)) then
     begin
       Choice := FSubtitleChoices[cbxSubtitleLanguage.ItemIndex];
       ASubtitle.Enabled := True;
-      ASubtitle.Embedded := Choice.Source = cscsEmbedded;
+      ASubtitle.Embedded := (Choice.Source = cscsEmbedded);
       ASubtitle.Name := Choice.DisplayName;
       ASubtitle.Language := Choice.Language;
       ASubtitle.SourceName := Choice.SourceName;
@@ -661,15 +675,15 @@ var
 begin
 
   if (not Assigned(FCast)) or Assigned(FWorker) or
-     Assigned(FSubtitleWorker) or
-     (not (FCast.State in [csBuffering, csPlaying, csPaused])) then
+    Assigned(FSubtitleWorker) or
+    (not (FCast.State in [csBuffering, csPlaying, csPaused])) then
     Exit;
 
   BuildSelectedSubtitle(Subtitle);
   FSubtitleWorker := TMfCastSubtitleWorker.Create(FCast,
-                                             Subtitle,
-                                             Subtitle.Enabled,
-                                             Handle);
+                                                  Subtitle,
+                                                  Subtitle.Enabled,
+                                                  Handle);
   FSubtitleWorker.Start();
   if Subtitle.Enabled then
     memLog.Lines.Add('Switching subtitles in a worker thread...')
@@ -680,7 +694,8 @@ end;
 
 
 procedure TCastPlayerForm.LogResult(const AOperation: string;
-                                          const AHResult: HRESULT);
+                                    const AHResult: HRESULT);
+
 begin
 
   if FAILED(AHResult) then
@@ -700,13 +715,13 @@ begin
 
   Busy := Assigned(FWorker) or Assigned(FSubtitleWorker);
   Active := Assigned(FCast) and (not Busy) and
-            (FCast.State in [csConnected, csLaunchingReceiver, csBuffering, csPlaying, csPaused, csStopped]);
+    (FCast.State in [csConnected, csLaunchingReceiver, csBuffering, csPlaying, csPaused, csStopped]);
 
   btnCast.Enabled := (cbxDevices.ItemIndex >= 0) and
-                     (Trim(edtSource.Text) <> '') and
-                     (not Busy) and
-                     Assigned(FCast) and
-                     (FCast.State in [csIdle, csDiscovering, csStopped, csError]);
+    (Trim(edtSource.Text) <> '') and
+    (not Busy) and
+    Assigned(FCast) and
+    (FCast.State in [csIdle, csDiscovering, csStopped, csError]);
 
   btnPlay.Enabled := Active;
   btnPause.Enabled := Active;
@@ -718,14 +733,15 @@ begin
   chkMuted.Enabled := Active;
   chkEmbeddedSubtitles.Enabled := not Busy;
   cbxSubtitleLanguage.Enabled := chkEmbeddedSubtitles.Checked and
-                                 (cbxSubtitleLanguage.Items.Count > 0) and
-                                 (not Assigned(FWorker)) and
-                                 (not Assigned(FSubtitleWorker));
+    (cbxSubtitleLanguage.Items.Count > 0) and
+    (not Assigned(FWorker)) and
+    (not Assigned(FSubtitleWorker));
   cbxYouTubeMode.Enabled := not Busy;
 end;
 
 
 procedure TCastPlayerForm.WmCastDevices(var message: TLMessage);
+
 begin
 
   ReloadDevices();
@@ -773,22 +789,21 @@ begin
   if FSeekPositionPending then
     begin
       if (FSeekTargetSeconds >= 0) and
-         (Abs(PositionSeconds - FSeekTargetSeconds) <= 2) then
+        (Abs(PositionSeconds - FSeekTargetSeconds) <= 2) then
         begin
           FSeekPositionPending := False;
           FSeekTargetSeconds := -1;
           FSeekRequestTick := 0;
         end
+      else if (FSeekRequestTick = 0) or
+        ((GetTickCount() - FSeekRequestTick) < 20000) then
+        Exit
       else
-        if (FSeekRequestTick = 0) or
-           ((GetTickCount() - FSeekRequestTick) < 20000) then
-          Exit
-        else
-          begin
-            FSeekPositionPending := False;
-            FSeekTargetSeconds := -1;
-            FSeekRequestTick := 0;
-          end;
+        begin
+          FSeekPositionPending := False;
+          FSeekTargetSeconds := -1;
+          FSeekRequestTick := 0;
+        end;
     end;
 
   if (PositionSeconds > trkSeek.Max) then
@@ -834,7 +849,8 @@ begin
       FreeAndNil(FWorker);
     end;
   Hr := HRESULT(DWORD(message.WParam));
-  LogResult('Cast media', Hr);
+  LogResult('Cast media',
+            Hr);
   if SUCCEEDED(Hr) then
     begin
       // Apply the UI settings to a receiver that may have retained a muted
@@ -862,6 +878,7 @@ end;
 
 
 procedure TCastPlayerForm.WmCastSubtitleFinished(var message: TLMessage);
+
 begin
 
   if Assigned(FSubtitleWorker) then
@@ -881,6 +898,7 @@ end;
 
 
 procedure TCastPlayerForm.btnDiscoverClick(Sender: TObject);
+
 begin
 
   LogResult('Discovery',
@@ -889,6 +907,7 @@ end;
 
 
 procedure TCastPlayerForm.btnRefreshClick(Sender: TObject);
+
 begin
 
   LogResult('Discovery refresh',
@@ -897,6 +916,7 @@ end;
 
 
 procedure TCastPlayerForm.btnBrowseClick(Sender: TObject);
+
 begin
 
   if OpenDialog.Execute then
@@ -909,6 +929,7 @@ end;
 
 
 procedure TCastPlayerForm.btnBrowseArtworkClick(Sender: TObject);
+
 begin
 
   if ArtworkDialog.Execute then
@@ -925,17 +946,17 @@ var
 begin
 
   if (cbxDevices.ItemIndex < 0) or
-     (cbxDevices.ItemIndex >= Length(FDevices)) or
-     (Trim(edtSource.Text) = '') then
+    (cbxDevices.ItemIndex >= Length(FDevices)) or
+    (Trim(edtSource.Text) = '') then
     Exit;
 
   IsIndirectSource := Assigned(FSourceResolver) and
-                      FSourceResolver.CanResolve(Trim(edtSource.Text));
+    FSourceResolver.CanResolve(Trim(edtSource.Text));
   if IsIndirectSource then
     begin
       ClearSubtitleChoices();
       Subtitle.Reset();
-      if FYouTubeSourceResolver.Mode = yrmFastCombinedStream then
+      if (FYouTubeSourceResolver.Mode = yrmFastCombinedStream) then
         memLog.Lines.Add('Resolving the fast YouTube stream in a worker thread...')
       else
         memLog.Lines.Add('Resolving and downloading the best-quality YouTube media in a worker thread...');
@@ -956,10 +977,10 @@ begin
     end;
 
   FWorker := TMfCastFileWorker.Create(FCast,
-                                FDevices[cbxDevices.ItemIndex],
-                                Trim(edtSource.Text),
-                                Subtitle,
-                                Handle);
+                                      FDevices[cbxDevices.ItemIndex],
+                                      Trim(edtSource.Text),
+                                      Subtitle,
+                                      Handle);
   FWorker.Start();
   memLog.Lines.Add('Preparing and connecting in a worker thread...');
   UpdateControls;
@@ -971,12 +992,15 @@ var
   Hr: HRESULT;
 
 begin
+
   Hr := FCast.Play;
-  LogResult('Play', Hr);
+  LogResult('Play',
+            Hr);
 end;
 
 
 procedure TCastPlayerForm.btnPauseClick(Sender: TObject);
+
 begin
 
   LogResult('Pause',
@@ -985,6 +1009,7 @@ end;
 
 
 procedure TCastPlayerForm.btnStopClick(Sender: TObject);
+
 begin
 
   LogResult('Stop',
@@ -993,6 +1018,7 @@ end;
 
 
 procedure TCastPlayerForm.btnDisconnectClick(Sender: TObject);
+
 begin
 
   LogResult('Disconnect',
@@ -1012,7 +1038,8 @@ begin
   FSeekRequestTick := GetTickCount();
 
   Hr := FCast.Seek(FSeekTargetSeconds);
-  LogResult('Seek', Hr);
+  LogResult('Seek',
+            Hr);
 
   if FAILED(Hr) then
     begin
@@ -1024,6 +1051,7 @@ end;
 
 
 procedure TCastPlayerForm.trkSeekChange(Sender: TObject);
+
 begin
 
   if FUpdatingSeekPosition then
@@ -1036,6 +1064,7 @@ end;
 
 
 procedure TCastPlayerForm.trkVolumeChange(Sender: TObject);
+
 begin
 
   if trkVolume.Enabled then
@@ -1044,6 +1073,7 @@ end;
 
 
 procedure TCastPlayerForm.chkMutedClick(Sender: TObject);
+
 begin
 
   if chkMuted.Enabled then
@@ -1052,17 +1082,21 @@ end;
 
 
 procedure TCastPlayerForm.PreviewResize(Sender: TObject);
+
 begin
+
   if Assigned(FCast) then
     FCast.UpdatePreviewWindow();
 end;
 
 
 procedure TCastPlayerForm.SourceOrDeviceChanged(Sender: TObject);
+
 begin
 
   if (Sender = edtSource) and
-     (not SameText(FSubtitleSourceName, Trim(edtSource.Text))) then
+    (not SameText(FSubtitleSourceName,
+                  Trim(edtSource.Text))) then
     ClearSubtitleChoices();
 
   UpdateControls();
@@ -1070,6 +1104,7 @@ end;
 
 
 procedure TCastPlayerForm.SubtitleSelectionChanged(Sender: TObject);
+
 begin
 
   UpdateControls();

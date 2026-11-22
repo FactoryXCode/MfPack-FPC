@@ -97,7 +97,6 @@ uses
   {Application}
   AudioClipCore;
 
-
 type
   TfrmAudioClip = class(TForm)
     MainMenu1: TMainMenu;
@@ -122,7 +121,9 @@ type
     procedure Extractto1Click(Sender: TObject);
     procedure butExtractClick(Sender: TObject);
     procedure butCancelClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject;var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
+
   private
     FExtracting: Boolean;
     FClosePending: Boolean;
@@ -147,11 +148,12 @@ var
   iClipLen: integer;
 
 begin
+
   if TryStrToInt(Edit1.Text, iClipLen) then
     begin
 
       if (iClipLen <= 0) or (iClipLen > MaxInt div 1000) or
-         (wSourceFile = '') or (wTargetFile = '') then
+        (wSourceFile = '') or (wTargetFile = '') then
         begin
           ShowMessage('Choose source and target files and a positive clip length.');
           Exit;
@@ -165,9 +167,9 @@ begin
         butCancel.Enabled := True;
 
         if SUCCEEDED(ExtractSound(Self.Handle,
-                                  PWideChar(wSourceFile),
-                                  PWideChar(wTargetFile),
-                                  iClipLen * 1000)) then
+          PWideChar(wSourceFile),
+          PWideChar(wTargetFile),
+          iClipLen * 1000)) then
           begin
             if (bFlush = false) then
               ShowMessage('Clip extracted!')
@@ -180,7 +182,10 @@ begin
       finally
         FExtracting := False;
         if FClosePending then
-          PostMessage(Handle,WM_CLOSE,0,0);
+          PostMessage(Handle,
+                      WM_CLOSE,
+                      0,
+                      0);
         butExtract.Enabled := True;
         butCancel.Enabled := False;
         Open1.Enabled := True;
@@ -196,8 +201,11 @@ begin
 end;
 
 
-procedure TfrmAudioClip.FormCloseQuery(Sender: TObject;var CanClose: Boolean);
+procedure TfrmAudioClip.FormCloseQuery(Sender: TObject;
+                                       var CanClose: Boolean);
+
 begin
+
   CanClose := not FExtracting;
   if FExtracting then
     begin
@@ -208,13 +216,17 @@ end;
 
 
 procedure TfrmAudioClip.butCancelClick(Sender: TObject);
+
 begin
+
   FlushSourceReader(True);
 end;
 
 
 procedure TfrmAudioClip.Exit1Click(Sender: TObject);
+
 begin
+
   FlushSourceReader(True);
   Close();
 end;
@@ -225,8 +237,10 @@ var
   tmp: string;
 
 begin
+
   tmp := ExtractFileName(string(wSourceFile));
-  Savedialog1.FileName := UTF8Encode(ChangeFileExt(tmp,UnicodeString('.wav')));
+  Savedialog1.FileName := UTF8Encode(ChangeFileExt(tmp,
+                                                   UnicodeString('.wav')));
 
   if Savedialog1.execute then
     begin
@@ -238,7 +252,9 @@ end;
 
 
 procedure TfrmAudioClip.Open1Click(Sender: TObject);
+
 begin
+
   // Pick a file to extract the audio from
   ButExtract.Enabled := False;
 

@@ -74,7 +74,7 @@ uses
   WinApi.WinError,
   {System}
   Sysutils,
-    SyncObjs,
+  SyncObjs,
   Classes,
   {Vcl}
   Grids,
@@ -84,21 +84,21 @@ uses
   // Undefine this when not needed!
   {$DEFINE SHOW_IN_MESSAGES_IDE}
 
-  // Simple error message handler that reports by default in the IDE Messages screen or
-  // shows a messagedialog at runtime.
-  procedure ErrMsg(pErrMsg: string;
-                   pHr: HResult);
+// Simple error message handler that reports by default in the IDE Messages screen or
+// shows a messagedialog at runtime.
+procedure ErrMsg(pErrMsg: string;
+                 pHr: HResult);
 
-  procedure HandleThreadMessages(AThread: THandle;
-                                 AWait: Cardinal = 0);
+procedure HandleThreadMessages(AThread: THandle;
+                               AWait: Cardinal = 0);
 
-  function EventWait(EventObj: TMfLoopbackEvent;
-                     Period: Integer = 100): HResult;
+function EventWait(EventObj: TMfLoopbackEvent;
+                   Period: Integer = 100): HResult;
 
-  // Grid sorting methods (Author: Peter Below)
-  procedure SortStringgrid(Grid: TStringGrid;
-                           byColumn: LongInt;
-                           ascending: Boolean );
+// Grid sorting methods (Author: Peter Below)
+procedure SortStringgrid(Grid: TStringGrid;
+                         byColumn: LongInt;
+                         ascending: Boolean);
 
 
 implementation
@@ -111,15 +111,17 @@ uses
 // ErrMsg
 procedure ErrMsg(pErrMsg: string;
                  pHr: HResult);
+
 begin
-{$IFDEF SHOW_IN_MESSAGES_IDE}
+
+  {$IFDEF SHOW_IN_MESSAGES_IDE}
   OutputDebugStringW(StrToPWideChar(Format('Error: %s (hr = %d)',
-                                          [pErrMsg, pHr])))
-{$ELSE}
+                                           [pErrMsg, pHr])))
+  {$ELSE}
 
   ShowMessage(format('Error: %s (hr = %d)',
                      [pErrMsg, pHr]));
-{$ENDIF}
+  {$ENDIF}
 end;
 
 
@@ -131,18 +133,18 @@ var
 begin
 
   while (MsgWaitForMultipleObjects(1,
-                                   AThread,
-                                   False,
-                                   AWait,
-                                   QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
+      AThread,
+      False,
+      AWait,
+      QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
     begin
       PeekMessageW(oMsg,
-                  0,
-                  0,
-                  0,
-                  PM_REMOVE);
+                   0,
+                   0,
+                   0,
+                   PM_REMOVE);
 
-      if oMsg.Message = WM_QUIT then
+      if (oMsg.Message = WM_QUIT) then
         Exit;
 
       TranslateMessage(oMsg);
@@ -161,12 +163,12 @@ begin
   wrWaitResult := EventObj.WaitFor(Period);
 
   case wrWaitResult of
-    wrSignaled:    Result := S_OK;
-    wrTimeout:     Result := HRESULT_FROM_WIN32(ERROR_TIMEOUT);
-    wrAbandoned:   Result := HRESULT_FROM_WIN32(ERROR_TIMEOUT);
-    wrError:       Result := HRESULT_FROM_WIN32(EventObj.LastError);
-  else
-    Result := E_FAIL;
+    wrSignaled: Result := S_OK;
+    wrTimeout: Result := HRESULT_FROM_WIN32(ERROR_TIMEOUT);
+    wrAbandoned: Result := HRESULT_FROM_WIN32(ERROR_TIMEOUT);
+    wrError: Result := HRESULT_FROM_WIN32(EventObj.LastError);
+    else
+      Result := E_FAIL;
   end;
 end;
 
@@ -174,16 +176,18 @@ end;
 procedure SortStringgrid(Grid: TStringGrid;
                          byColumn: LongInt;
                          ascending: Boolean);
-  // Helpers
+// Helpers
+
   procedure ExchangeGridRows(i: Integer;
                              j: Integer);
   var
     k: Integer;
   begin
-    for k := 0 To Grid.ColCount -1 Do
+    for k := 0 To Grid.ColCount - 1 Do
       Grid.Cols[k].Exchange(i,
                             j);
   end;
+
 
   procedure QuickSort(L: Integer;
                       R: Integer);
@@ -198,10 +202,10 @@ procedure SortStringgrid(Grid: TStringGrid;
       P := Grid.Cells[byColumn, (L + R) shr 1];
       repeat
         while (CompareStr(Grid.Cells[byColumn, I],
-                          P) < 0) do
+            P) < 0) do
           Inc(I);
         while (CompareStr(Grid.Cells[byColumn, J],
-                          P) > 0) do
+            P) > 0) do
           Dec(J);
         if (I <= J) then
           begin
@@ -214,33 +218,37 @@ procedure SortStringgrid(Grid: TStringGrid;
       until (I > J);
 
       if (L < J) then
-        QuickSort(L, J);
+        QuickSort(L,
+                  J);
       L := I;
     until (I >= R);
   end;
+
 
   procedure InvertGrid();
   var
     i, j: Integer;
   begin
     i := Grid.Fixedrows;
-    j := Grid.Rowcount -1;
+    j := Grid.Rowcount - 1;
     while (i < j) do
       begin
-        ExchangeGridRows( I, J );
+        ExchangeGridRows(I,
+                         J);
         Inc(i);
         Dec(j);
       end; { While }
-   end;
+  end;
 
 begin
+
   Screen.Cursor := crHourglass;
   Grid.Perform(WM_SETREDRAW,
                0,
                0);
   try
     QuickSort(Grid.FixedRows,
-              Grid.Rowcount-1 );
+              Grid.Rowcount - 1);
     if not ascending Then
       InvertGrid();
   finally

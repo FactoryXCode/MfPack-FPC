@@ -68,7 +68,7 @@ interface
 
 uses
   WinApi.ComBaseApi,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -90,6 +90,7 @@ type
                              atekError);
 
   TAudioTopologyNotice = class
+
   public
     SessionNumber: Cardinal;
     Kind: TAudioTopologyEventKind;
@@ -101,22 +102,25 @@ type
   end;
 
   IAudioTopologyPlayer = interface
-  ['{C49EE2B9-2359-420D-8E4D-B7CCB898B0B3}']
+    ['{C49EE2B9-2359-420D-8E4D-B7CCB898B0B3}']
     procedure Open(const AFileName: string;
-                   const ADelayMs, AWetPercent: Cardinal);
+                   const ADelayMs,
+                   AWetPercent: Cardinal);
     procedure Start(const AFromBeginning: Boolean);
     procedure Pause();
     procedure Stop();
     procedure Seek(const APosition: Int64);
-    function GetTimeline(out APosition, ADuration: Int64;
+    function GetTimeline(out APosition,
+                         ADuration: Int64;
                          out ACanSeek: Boolean): Boolean;
-    procedure UpdateEffect(const ADelayMs, AWetPercent: Cardinal);
+    procedure UpdateEffect(const ADelayMs,
+                           AWetPercent: Cardinal);
     procedure Close(const ADetachWindow: Boolean);
   end;
 
 
-  function CreateAudioTopologyPlayer(const ANotifyWindow: HWND;
-                                     const ASessionNumber: Cardinal): IAudioTopologyPlayer;
+function CreateAudioTopologyPlayer(const ANotifyWindow: HWND;
+                                   const ASessionNumber: Cardinal): IAudioTopologyPlayer;
 
 
 implementation
@@ -136,6 +140,7 @@ type
   TAudioTopologyPlayer = class(TInterfacedObject,
                                IAudioTopologyPlayer,
                                IMFAsyncCallback)
+
   private
     FLock: TRTLCriticalSection;
     FNotifyWindow: HWND;
@@ -148,7 +153,8 @@ type
     FLastPosition: Int64;
     FCanSeek: Boolean;
 
-    procedure Check(const AOperation: string; const AHr: HResult);
+    procedure Check(const AOperation: string;
+                    const AHr: HResult);
     procedure PostNotice(const AKind: TAudioTopologyEventKind;
                          const AText: string);
     function CreateMediaSource(const AFileName: string;
@@ -158,10 +164,12 @@ type
                                  out ACanSeek: Boolean);
     function ActivateRegisteredTransform(out ATransform: IMFTransform): HResult;
     function CreatePlaybackTopology(const ASource: IMFMediaSource;
-                                    const ADelayMs, AWetPercent: Cardinal;
+                                    const ADelayMs,
+                                    AWetPercent: Cardinal;
                                     out ATopology: IMFTopology;
                                     out ATransform: IMFTransform): HResult;
-    function GetParameters(out pdwFlags, pdwQueue: DWORD): HResult; stdcall;
+    function GetParameters(out pdwFlags,
+                           pdwQueue: DWORD): HResult; stdcall;
     function Invoke(pAsyncResult: IMFAsyncResult): HResult; stdcall;
 
   public
@@ -171,14 +179,17 @@ type
     destructor Destroy(); override;
 
     procedure Open(const AFileName: string;
-                   const ADelayMs, AWetPercent: Cardinal);
+                   const ADelayMs,
+                   AWetPercent: Cardinal);
     procedure Start(const AFromBeginning: Boolean);
     procedure Pause();
     procedure Stop();
     procedure Seek(const APosition: Int64);
-    function GetTimeline(out APosition, ADuration: Int64;
+    function GetTimeline(out APosition,
+                         ADuration: Int64;
                          out ACanSeek: Boolean): Boolean;
-    procedure UpdateEffect(const ADelayMs, AWetPercent: Cardinal);
+    procedure UpdateEffect(const ADelayMs,
+                           AWetPercent: Cardinal);
     procedure Close(const ADetachWindow: Boolean);
   end;
 
@@ -186,6 +197,7 @@ type
 constructor TAudioTopologyNotice.Create(const ASessionNumber: Cardinal;
                                         const AKind: TAudioTopologyEventKind;
                                         const AText: string);
+
 begin
 
   inherited Create();
@@ -198,6 +210,7 @@ end;
 
 function CreateAudioTopologyPlayer(const ANotifyWindow: HWND;
                                    const ASessionNumber: Cardinal): IAudioTopologyPlayer;
+
 begin
 
   Result := TAudioTopologyPlayer.Create(ANotifyWindow,
@@ -207,6 +220,7 @@ end;
 
 constructor TAudioTopologyPlayer.Create(const ANotifyWindow: HWND;
                                         const ASessionNumber: Cardinal);
+
 begin
 
   inherited Create();
@@ -216,9 +230,9 @@ begin
   FSessionNumber := ASessionNumber;
 
   FClosedEvent := CreateEventW(nil,
-                              True,
-                              False,
-                              nil);
+                               True,
+                               False,
+                               nil);
 
   if (FClosedEvent = 0) then
     begin
@@ -229,6 +243,7 @@ end;
 
 
 destructor TAudioTopologyPlayer.Destroy();
+
 begin
 
   Close(True);
@@ -244,6 +259,7 @@ end;
 
 procedure TAudioTopologyPlayer.Check(const AOperation: string;
                                      const AHr: HResult);
+
 begin
 
   if FAILED(AHr) then
@@ -292,14 +308,14 @@ begin
   Characteristics := 0;
 
   if SUCCEEDED(ASource.GetCharacteristics(@Characteristics)) then
-    ACanSeek := (Characteristics and DWORD(MFMEDIASOURCE_CAN_SEEK)) <> 0;
+    ACanSeek := ((Characteristics and DWORD(MFMEDIASOURCE_CAN_SEEK)) <> 0);
 
   // Duration is optional. Without it the fixed-range slider has no useful
   // mapping from its thumb position to presentation time.
   if SUCCEEDED(ASource.CreatePresentationDescriptor(Presentation)) and
-     SUCCEEDED(Presentation.GetUINT64(MF_PD_DURATION,
-                                      DurationValue)) and
-     (DurationValue > 0) and (DurationValue <= UINT64(High(Int64))) then
+    SUCCEEDED(Presentation.GetUINT64(MF_PD_DURATION,
+                                     DurationValue)) and
+    (DurationValue > 0) and (DurationValue <= UINT64(High(Int64))) then
     ADuration := Int64(DurationValue)
   else
     ACanSeek := False;
@@ -339,9 +355,9 @@ begin
   try
     for I := 0 to Integer(Count) - 1 do
       if SUCCEEDED(Activates^[I].GetGUID(MFT_TRANSFORM_CLSID_Attribute,
-                                        CandidateClsid)) and
-         IsEqualGUID(CandidateClsid,
-                     CLSID_FactoryXAudioDelayMFT) then
+        CandidateClsid)) and
+        IsEqualGUID(CandidateClsid,
+                    CLSID_FactoryXAudioDelayMFT) then
         begin
           Found := True;
           Result := Activates^[I].ActivateObject(IID_IMFTransform,
@@ -366,7 +382,8 @@ end;
 
 
 function TAudioTopologyPlayer.CreatePlaybackTopology(const ASource: IMFMediaSource;
-                                                     const ADelayMs, AWetPercent: Cardinal;
+                                                     const ADelayMs,
+                                                     AWetPercent: Cardinal;
                                                      out ATopology: IMFTopology;
                                                      out ATransform: IMFTransform): HResult;
 var
@@ -418,18 +435,19 @@ begin
         Exit;
 
       if not Assigned(AudioStream) and IsEqualGUID(MajorType,
-                                                   MFMediaType_Audio) then
+        MFMediaType_Audio) then
         begin
           AudioStream := Stream;
           Result := Presentation.SelectStream(I);
         end
       else
         Result := Presentation.DeselectStream(I);
-    if FAILED(Result) then
-      Exit;
+      if FAILED(Result) then
+        Exit;
     end;
 
-  if not Assigned(AudioStream) then Exit(MF_E_INVALIDMEDIATYPE);
+  if not Assigned(AudioStream) then
+    Exit(MF_E_INVALIDMEDIATYPE);
 
   Result := MFCreateTopology(ATopology);
   if FAILED(Result) then
@@ -504,8 +522,10 @@ begin
                                           0);
 end;
 
+
 procedure TAudioTopologyPlayer.Open(const AFileName: string;
-                                    const ADelayMs, AWetPercent: Cardinal);
+                                    const ADelayMs,
+                                    AWetPercent: Cardinal);
 var
   hr: HResult;
   Source: IMFMediaSource;
@@ -598,15 +618,16 @@ begin
                                         AText);
 
   if not PostMessageW(WindowHandle,
-                     WM_AUDIO_TOPOLOGY_EVENT,
-                     0,
-                     LPARAM(Notice)) then
+    WM_AUDIO_TOPOLOGY_EVENT,
+    0,
+    LPARAM(Notice)) then
     Notice.Free;
 end;
 
 
 function TAudioTopologyPlayer.GetParameters(out pdwFlags,
                                             pdwQueue: DWORD): HResult;
+
 begin
 
   pdwFlags := 0;
@@ -673,14 +694,18 @@ begin
         TopologyStatus := 0;
 
         if SUCCEEDED((MediaEvent as IMFAttributes).GetUINT32(MF_EVENT_TOPOLOGY_STATUS, TopologyStatus)) and
-                     (TopologyStatus = UINT32(MF_TOPOSTATUS_READY)) then
+          (TopologyStatus = UINT32(MF_TOPOSTATUS_READY)) then
           PostNotice(atekReady,
                      'Audio delay topology is ready.');
       end;
-    MESessionStarted:    PostNotice(atekStarted, 'Playback started.');
-    MESessionPaused:     PostNotice(atekPaused, 'Playback paused.');
-    MESessionStopped:    PostNotice(atekStopped, 'Playback stopped.');
-    MEEndOfPresentation: PostNotice(atekEnded, 'End of presentation.');
+    MESessionStarted: PostNotice(atekStarted,
+                                 'Playback started.');
+    MESessionPaused: PostNotice(atekPaused,
+                                'Playback paused.');
+    MESessionStopped: PostNotice(atekStopped,
+                                 'Playback stopped.');
+    MEEndOfPresentation: PostNotice(atekEnded,
+                                    'End of presentation.');
   end;
 
   Result := S_OK;
@@ -752,7 +777,7 @@ begin
 
   if Assigned(Session) then
     Check('Pause Media Session',
-           Session.Pause());
+          Session.Pause());
 end;
 
 
@@ -796,7 +821,7 @@ begin
   end;
 
   if not Assigned(Session) or not CanSeek or
-     (APosition < 0) or (APosition > Duration) then
+    (APosition < 0) or (APosition > Duration) then
     raise Exception.Create('This audio source cannot seek to that position.');
 
   PropVariantInit(Position);
@@ -849,9 +874,9 @@ begin
     Exit;
 
   if SUCCEEDED(Session.GetClock(Clock)) and
-     SUCCEEDED(Clock.QueryInterface(IID_IMFPresentationClock,
-                                    PresentationClock)) and
-     SUCCEEDED(PresentationClock.GetTime(ClockTime)) then
+    SUCCEEDED(Clock.QueryInterface(IID_IMFPresentationClock,
+                                   PresentationClock)) and
+    SUCCEEDED(PresentationClock.GetTime(ClockTime)) then
     begin
       if (ClockTime < 0) then
         ClockTime := 0;
@@ -872,7 +897,7 @@ end;
 
 
 procedure TAudioTopologyPlayer.UpdateEffect(const ADelayMs,
-                                             AWetPercent: Cardinal);
+                                            AWetPercent: Cardinal);
 var
   Transform: IMFTransform;
   Control: IMfAudioDelayControl;

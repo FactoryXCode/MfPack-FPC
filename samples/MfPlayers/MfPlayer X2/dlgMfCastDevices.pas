@@ -25,7 +25,7 @@ interface
 uses
   LMessages,
   MfPlayerSample.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -44,8 +44,8 @@ uses
 
 const
   WM_MFCAST_DEVICE_ADD_OR_UPDATE = WM_APP + 410;
-  WM_MFCAST_DEVICE_REMOVE        = WM_APP + 411;
-  WM_MFCAST_DISCOVERY_ERROR      = WM_APP + 412;
+  WM_MFCAST_DEVICE_REMOVE = WM_APP + 411;
+  WM_MFCAST_DISCOVERY_ERROR = WM_APP + 412;
 
 type
   PMfCastDevice = ^TMfCastDevice;
@@ -62,13 +62,16 @@ type
     lblConnectionStatus: TEdit;
 
     procedure FormShow(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormClose(Sender: TObject;
+                        var Action: TCloseAction);
     procedure btnRefreshClick(Sender: TObject);
     procedure btnCastClick(Sender: TObject);
-    procedure lvCastDevicesSelectItem(Sender: TObject; Item: TListItem;
+    procedure lvCastDevicesSelectItem(Sender: TObject;
+                                      Item: TListItem;
                                       Selected: Boolean);
     procedure lvCastDevicesDblClick(Sender: TObject);
     procedure chkAutoRefreshClick(Sender: TObject);
+
   private
 
     FCast: TMfCast;
@@ -129,6 +132,7 @@ implementation
 
 function TCastDevicesDlg.Execute(const ACast: TMfCast;
                                  out ADevice: TMfCastDevice): Boolean;
+
 begin
 
   ADevice.Reset;
@@ -139,7 +143,9 @@ begin
     ADevice := FSelectedDevice;
 end;
 
+
 procedure TCastDevicesDlg.SetCast(const AValue: TMfCast);
+
 begin
 
   RestoreCallbacks();
@@ -148,6 +154,7 @@ end;
 
 
 procedure TCastDevicesDlg.InstallCallbacks();
+
 begin
 
   if FCallbacksInstalled or not Assigned(FCast) then
@@ -170,6 +177,7 @@ end;
 
 
 procedure TCastDevicesDlg.RestoreCallbacks();
+
 begin
 
   if FCallbacksInstalled and Assigned(FCast) then
@@ -187,6 +195,7 @@ end;
 
 
 procedure TCastDevicesDlg.FormShow(Sender: TObject);
+
 begin
 
   FSelectedDevice.Reset;
@@ -214,7 +223,9 @@ begin
 end;
 
 
-procedure TCastDevicesDlg.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TCastDevicesDlg.FormClose(Sender: TObject;
+                                    var Action: TCloseAction);
+
 begin
 
   if Assigned(FCast) then
@@ -237,19 +248,23 @@ begin
   hr := FCast.RefreshDiscovery;
 
   if FAILED(hr) then
-    SetStatus('ChromeCast discovery failed. HRESULT $' + IntToHex(DWORD(hr), 8))
+    SetStatus('ChromeCast discovery failed. HRESULT $' + IntToHex(DWORD(hr),
+                                                                  8))
   else
     UpdateDeviceCountStatus;
 end;
 
 
 procedure TCastDevicesDlg.btnRefreshClick(Sender: TObject);
+
 begin
+
   StartOrRefreshDiscovery;
 end;
 
 
 procedure TCastDevicesDlg.chkAutoRefreshClick(Sender: TObject);
+
 begin
 
   if not Assigned(FCast) then
@@ -284,6 +299,7 @@ end;
 
 
 procedure TCastDevicesDlg.lvCastDevicesDblClick(Sender: TObject);
+
 begin
 
   if btnCast.Enabled then
@@ -292,7 +308,9 @@ end;
 
 
 procedure TCastDevicesDlg.lvCastDevicesSelectItem(Sender: TObject;
-                                                  Item: TListItem; Selected: Boolean);
+                                                  Item: TListItem;
+                                                  Selected: Boolean);
+
 begin
 
   UpdateSelection();
@@ -300,6 +318,7 @@ end;
 
 
 procedure TCastDevicesDlg.UpdateSelection();
+
 begin
 
   btnCast.Enabled := Assigned(lvCastDevices.Selected);
@@ -307,6 +326,7 @@ end;
 
 
 procedure TCastDevicesDlg.ClearDevices();
+
 begin
 
   SetLength(FDevices,
@@ -317,6 +337,7 @@ end;
 
 
 function TCastDevicesDlg.DeviceIdentity(const ADevice: TMfCastDevice): string;
+
 begin
 
   Result := Trim(ADevice.Id);
@@ -333,6 +354,7 @@ end;
 
 
 function TCastDevicesDlg.FindDeviceIndex(const ADevice: TMfCastDevice): Integer;
+
 begin
 
   Result := FindDeviceIndexById(DeviceIdentity(ADevice));
@@ -350,14 +372,14 @@ begin
   for I := 0 to Length(FDevices) - 1 do
     begin
       if SameText(DeviceIdentity(FDevices[I]),
-                                 ADeviceId) or
-         ((FDevices[I].Id <> '') and
-         SameText(FDevices[I].Id,
-                  ADeviceId)) then
+        ADeviceId) or
+        ((FDevices[I].Id <> '') and
+        SameText(FDevices[I].Id,
+                 ADeviceId)) then
         begin
           Result := I;
           Exit;
-       end;
+        end;
     end;
 end;
 
@@ -373,7 +395,7 @@ begin
   if (AIndex < 0) or (AIndex >= Length(FDevices)) then
     Exit;
 
-  if AIndex < lvCastDevices.Items.Count then
+  if (AIndex < lvCastDevices.Items.Count) then
     Item := lvCastDevices.Items[AIndex]
   else
     Item := lvCastDevices.Items.Add;
@@ -386,7 +408,7 @@ begin
   if (DeviceName = '') then
     DeviceName := Trim(FDevices[AIndex].ServiceInstance);
 
-  if( DeviceName = '') then
+  if (DeviceName = '') then
     DeviceName := 'ChromeCast';
 
   DeviceModel := Trim(FDevices[AIndex].ModelName);
@@ -409,7 +431,7 @@ var
 
 begin
 
-  WasEmpty := Length(FDevices) = 0;
+  WasEmpty := (Length(FDevices) = 0);
   Index := FindDeviceIndex(ADevice);
 
   if (Index < 0) then
@@ -466,7 +488,7 @@ var
 
 begin
 
- if not Assigned(FCast) then
+  if not Assigned(FCast) then
     Exit;
 
   hr := FCast.GetDevices(Devices);
@@ -490,13 +512,14 @@ begin
   case Count of
     0: SetStatus('No ChromeCast devices found.');
     1: SetStatus('1 ChromeCast device found.');
-  else
-    SetStatus(IntToStr(Count) + ' ChromeCast devices found.');
+    else
+      SetStatus(IntToStr(Count) + ' ChromeCast devices found.');
   end;
 end;
 
 
 procedure TCastDevicesDlg.SetStatus(const AText: string);
+
 begin
 
   lblConnectionStatus.Text := AText;
@@ -512,7 +535,7 @@ begin
   if Assigned(FPreviousDeviceAdded) then
     FPreviousDeviceAdded(ADevice);
 
-  if GetCurrentThreadId = MainThreadID then
+  if (GetCurrentThreadId = MainThreadID) then
     AddOrUpdateDevice(ADevice)
   else
     begin
@@ -520,11 +543,11 @@ begin
       Device^ := ADevice;
 
       if not PostMessage(Handle,
-                         WM_MFCAST_DEVICE_ADD_OR_UPDATE,
-                         0,
-                         LPARAM(Device)) then
+        WM_MFCAST_DEVICE_ADD_OR_UPDATE,
+        0,
+        LPARAM(Device)) then
         Dispose(Device);
-  end;
+    end;
 end;
 
 
@@ -537,7 +560,7 @@ begin
   if Assigned(FPreviousDeviceUpdated) then
     FPreviousDeviceUpdated(ADevice);
 
-  if GetCurrentThreadId = MainThreadID then
+  if (GetCurrentThreadId = MainThreadID) then
     AddOrUpdateDevice(ADevice)
   else
     begin
@@ -545,11 +568,11 @@ begin
       Device^ := ADevice;
 
       if not PostMessage(Handle,
-                         WM_MFCAST_DEVICE_ADD_OR_UPDATE,
-                         0,
-                         LPARAM(Device)) then
-      Dispose(Device);
-  end;
+        WM_MFCAST_DEVICE_ADD_OR_UPDATE,
+        0,
+        LPARAM(Device)) then
+        Dispose(Device);
+    end;
 end;
 
 
@@ -570,32 +593,35 @@ begin
       DeviceId^ := ADeviceId;
 
       if not PostMessage(Handle,
-                         WM_MFCAST_DEVICE_REMOVE,
-                         0,
-                         LPARAM(DeviceId)) then
-      Dispose(DeviceId);
+        WM_MFCAST_DEVICE_REMOVE,
+        0,
+        LPARAM(DeviceId)) then
+        Dispose(DeviceId);
     end;
 end;
 
 
 procedure TCastDevicesDlg.ControllerStateChanged(const AOldState,
                                                  ANewState: TMfCastState);
+
 begin
 
   if Assigned(FPreviousStateChanged) then
-    FPreviousStateChanged(AOldState, ANewState);
+    FPreviousStateChanged(AOldState,
+                          ANewState);
 
   if (GetCurrentThreadId <> MainThreadID) then
     Exit;
 
   case ANewState of
     csDiscovering: SetStatus('Searching for ChromeCast devices...');
-    csIdle:        UpdateDeviceCountStatus;
+    csIdle: UpdateDeviceCountStatus;
   end;
 end;
 
 
 procedure TCastDevicesDlg.ControllerMediaStatus(const AStatus: TMfCastMediaStatus);
+
 begin
 
   if Assigned(FPreviousMediaStatus) then
@@ -617,7 +643,8 @@ begin
       if (AError.MessageText <> '') then
         SetStatus(AError.MessageText)
       else
-        SetStatus('ChromeCast error. HRESULT $' + IntToHex(DWORD(AError.HResult), 8));
+        SetStatus('ChromeCast error. HRESULT $' + IntToHex(DWORD(AError.HResult),
+                                                           8));
     end
   else
     begin
@@ -625,9 +652,9 @@ begin
       ErrorInfo^ := AError;
 
       if not PostMessage(Handle,
-                         WM_MFCAST_DISCOVERY_ERROR,
-                         0,
-                         LPARAM(ErrorInfo)) then
+        WM_MFCAST_DISCOVERY_ERROR,
+        0,
+        LPARAM(ErrorInfo)) then
         Dispose(ErrorInfo);
     end;
 end;
@@ -686,7 +713,8 @@ begin
     if (ErrorInfo^.MessageText <> '') then
       SetStatus(ErrorInfo^.MessageText)
     else
-      SetStatus('ChromeCast error. HRESULT $' + IntToHex(DWORD(ErrorInfo^.HResult), 8));
+      SetStatus('ChromeCast error. HRESULT $' + IntToHex(DWORD(ErrorInfo^.HResult),
+                                                         8));
   finally
     Dispose(ErrorInfo);
   end;

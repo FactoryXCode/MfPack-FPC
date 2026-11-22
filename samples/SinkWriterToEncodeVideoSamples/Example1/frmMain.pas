@@ -68,7 +68,7 @@ interface
 
 uses
   MfEncodeAudio.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -87,7 +87,6 @@ uses
   {Application}
   SinkWriterClass;
 
-
 type
   TMainForm = class(TForm)
     butExecute: TButton;
@@ -99,7 +98,8 @@ type
     procedure cbxOutputFormatCloseUp(Sender: TObject);
     procedure cbxEncodingFormatCloseUp(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure FormDestroy(Sender: TObject);
 
   private
@@ -123,14 +123,15 @@ implementation
 
 
 procedure TMainForm.butExecuteClick(Sender: TObject);
+
 begin
 
   cbxOutputFormatCloseUp(Self);
   cbxEncodingFormatCloseUp(Self);
 
   if SUCCEEDED(FSampleSinkWriter.RunSinkWriter(sExtension,
-                                               sEncodingFormat,
-                                               tgEncodingFormat)) then
+    sEncodingFormat,
+    tgEncodingFormat)) then
     lblInfo.Caption := 'File is succesfully created!'
   else
     lblInfo.Caption := 'Oops, something went wrong :-(';
@@ -141,29 +142,31 @@ end;
 // Note that this is a small list. To create more valid formats see:
 // See: https://github.com/MicrosoftDocs/win32/blob/docs/desktop-src/medfound/h-264-video-encoder.md
 procedure TMainForm.cbxEncodingFormatCloseUp(Sender: TObject);
+
 begin
+
   if (cbxEncodingFormat.Items.Count > 0) and (cbxEncodingFormat.ItemIndex > -1) then
     begin
       sEncodingFormat := cbxEncodingFormat.Items[cbxEncodingFormat.ItemIndex];
-      if sEncodingFormat = 'MFVideoFormat_H264' then
+      if (sEncodingFormat = 'MFVideoFormat_H264') then
         tgEncodingFormat := MFVideoFormat_H264
-      else if sEncodingFormat = 'MFVideoFormat_WMV3' then
+      else if (sEncodingFormat = 'MFVideoFormat_WMV3') then
         tgEncodingFormat := MFVideoFormat_WMV3
-      else if sEncodingFormat = 'MFVideoFormat_I420' then
+      else if (sEncodingFormat = 'MFVideoFormat_I420') then
         tgEncodingFormat := MFVideoFormat_I420
-      else if sEncodingFormat = 'MFVideoFormat_IYUV' then
+      else if (sEncodingFormat = 'MFVideoFormat_IYUV') then
         tgEncodingFormat := MFVideoFormat_IYUV
-      else if sEncodingFormat = 'MFVideoFormat_NV12' then
+      else if (sEncodingFormat = 'MFVideoFormat_NV12') then
         tgEncodingFormat := MFVideoFormat_NV12
-      else if sEncodingFormat = 'MFVideoFormat_YUY2' then
+      else if (sEncodingFormat = 'MFVideoFormat_YUY2') then
         tgEncodingFormat := MFVideoFormat_YUY2
-      else if sEncodingFormat = 'MFVideoFormat_YV12' then
+      else if (sEncodingFormat = 'MFVideoFormat_YV12') then
         tgEncodingFormat := MFVideoFormat_YV12
       else // default
         begin
           sExtension := 'mp4';
           tgEncodingFormat := MFVideoFormat_H264;
-          sEncodingFormat  := 'MFVideoFormat_H264';
+          sEncodingFormat := 'MFVideoFormat_H264';
         end;
       lblInfo.Caption := 'Click ''Execute'' to run the sample..'
     end;
@@ -171,6 +174,7 @@ end;
 
 
 procedure TMainForm.cbxOutputFormatCloseUp(Sender: TObject);
+
 begin
 
   if (cbxOutputFormat.ItemIndex > -1) then
@@ -178,18 +182,18 @@ begin
       sExtension := LowerCase(cbxOutputFormat.Items[cbxOutputFormat.ItemIndex]);
       cbxEncodingFormat.Clear;
       // populate the cbxEncodingFormat with supported formats when ouputformat is selected.
-      if sExtension = 'mp4' then
+      if (sExtension = 'mp4') then
         begin
           cbxEncodingFormat.Items.Append('MFVideoFormat_H264');
           cbxEncodingFormat.ItemIndex := 0;
         end
-      else if sExtension = 'wmv' then
+      else if (sExtension = 'wmv') then
         begin
 
           cbxEncodingFormat.Items.Append('MFVideoFormat_WMV3');
           cbxEncodingFormat.ItemIndex := 0;
         end
-      else if sExtension = 'avi' then
+      else if (sExtension = 'avi') then
         begin
           cbxEncodingFormat.Items.Append('MFVideoFormat_I420');
           cbxEncodingFormat.Items.Append('MFVideoFormat_IYUV');
@@ -201,27 +205,37 @@ begin
         begin
           sExtension := 'mp4';
           tgEncodingFormat := MFVideoFormat_H264;
-          sEncodingFormat  := 'MFVideoFormat_H264';
+          sEncodingFormat := 'MFVideoFormat_H264';
         end;
       cbxEncodingFormat.ItemIndex := 0;
       lblInfo.Caption := 'Click ''Execute'' to run the sample..'
     end;
 end;
 
-procedure TMainForm.FormCloseQuery(Sender: TObject;var CanClose: Boolean);
+
+procedure TMainForm.FormCloseQuery(Sender: TObject;
+                                   var CanClose: Boolean);
+
 begin
+
   CanClose := True;
 end;
 
+
 procedure TMainForm.FormDestroy(Sender: TObject);
+
 begin
+
   if Assigned(FSampleSinkWriter) then
     FreeAndNil(FSampleSinkWriter);
 
 end;
 
+
 procedure TMainForm.FormCreate(Sender: TObject);
+
 begin
+
   FSampleSinkWriter := TSampleSinkWriter.Create();
   cbxOutputFormat.ItemIndex := 0;
   cbxOutputFormatCloseUp(Self);
@@ -235,13 +249,13 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_LITE)) then
+    MFSTARTUP_LITE)) then
     begin
       MessageBoxW(0,
-                 lpcwstr('Your computer does not support this Media Foundation API version ' +
-                         IntToStr(MF_VERSION) + '.'),
-                 lpcwstr('MFStartup Failure!'),
-                         MB_ICONSTOP);
+                  lpcwstr('Your computer does not support this Media Foundation API version ' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
       Application.Terminate;
     end;
 

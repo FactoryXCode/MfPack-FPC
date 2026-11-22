@@ -112,6 +112,7 @@ type
 
 
   TMfPeakMeterEx = class(TGraphicControl)
+
   private
     { private fields }
 
@@ -269,9 +270,11 @@ implementation
 
 
 procedure Register;
+
 begin
 
-  RegisterComponents('MfPack Core Audio Samples', [TMfPeakMeterEx]);
+  RegisterComponents('MfPack Core Audio Samples',
+                     [TMfPeakMeterEx]);
 end;
 
 
@@ -283,6 +286,7 @@ label
   done;
 
 begin
+
   inherited Create(aOwner);
 
   hr := S_OK;
@@ -336,34 +340,35 @@ begin
 done:
   if ((csDesigning in ComponentState) = False) then
     if (FAILED(hr)) then
-      begin
-        MessageBoxW(0,
-                   LPCWSTR('An error occured in ' + Self.ClassName + #13 +
-                           'Error: ' + IntToStr(hr) + #13 +
-                           Self.ClassName + ' will be disabled.') ,
-                   LPCWSTR('Error'),
-                   MB_OK or MB_ICONSTOP);
-      end;
+        begin
+          MessageBoxW(0,
+                      LPCWSTR('An error occured in ' + Self.ClassName + #13 +
+                             'Error: ' + IntToStr(hr) + #13 +
+                             Self.ClassName + ' will be disabled.'),
+                      LPCWSTR('Error'),
+                      MB_OK or MB_ICONSTOP);
+        end;
 end;
 
 
 destructor TMfPeakMeterEx.Destroy;
+
 begin
 
   if Assigned(FTimer) then
-    begin
-      FTimer.Enabled := False;
-      FTimer.Free;
-    end;
+      begin
+        FTimer.Enabled := False;
+        FTimer.Free;
+      end;
 
   fBmp.Free;
 
   if (fGraphicsOnly = False) then
-    begin
-      SafeRelease(pEnumerator);
-      SafeRelease(pDevice);
-      SafeRelease(pMeterInfo);
-    end;
+      begin
+        SafeRelease(pEnumerator);
+        SafeRelease(pDevice);
+        SafeRelease(pMeterInfo);
+      end;
   // Destroy handle
   LCLIntf.DeallocateHWnd(fHWnd);
   inherited Destroy;
@@ -427,33 +432,37 @@ end;
 
 // Using a regular TTimer is less precise, but can do as well.
 procedure TMfPeakMeterEx.TimerTimer(sender: TObject);
+
 begin
+
   if (fSampleAllChannels = True) then
     pMeterInfo.GetPeakValue(sPeakValue)
   else
-    begin
+      begin
 
-      pMeterInfo.GetChannelsPeakValues(fChannelCount,
-                                       @afPeakValues[0]);
+        pMeterInfo.GetChannelsPeakValues(fChannelCount,
+                                         @afPeakValues[0]);
 
-      if (fChannelCount = 1) then
-        fMeterChannel := mcLeft;
+        if (fChannelCount = 1) then
+          fMeterChannel := mcLeft;
 
-      // Now split the array: The first array member = leftchannel,
-      // the second = rightchannel.
-      if (fMeterChannel = mcLeft) then
-        sPeakValue := afPeakValues[0]
-      else if (fMeterChannel = mcRight) and (fChannelCount = 2) then
-        sPeakValue := afPeakValues[1]
-      else
-        sPeakValue := afPeakValues[0]; // Fall back to default (mono = always left channel).
-    end;
+        // Now split the array: The first array member = leftchannel,
+        // the second = rightchannel.
+        if (fMeterChannel = mcLeft) then
+          sPeakValue := afPeakValues[0]
+        else if (fMeterChannel = mcRight) and (fChannelCount = 2) then
+          sPeakValue := afPeakValues[1]
+        else
+          sPeakValue := afPeakValues[0]; // Fall back to default (mono = always left channel).
+      end;
     Paint;
 end;
 
 
 procedure TMfPeakMeterEx.SetSafeTimerInterval(value: Cardinal);
+
 begin
+
   // If running, user can't change this value
   if (fPeakMeterRunning = True) then
     Exit;
@@ -466,7 +475,9 @@ end;
 
 
 procedure TMfPeakMeterEx.SetGraphicsOnly(value: Boolean);
+
 begin
+
   // If running, user can't change this value
   if (fGraphicsOnly <> value) and (fPeakMeterRunning = False) then
     fGraphicsOnly := value;
@@ -474,20 +485,25 @@ end;
 
 
 procedure TMfPeakMeterEx.SetDeviceDataFlow(value: EDataFlow);
+
 begin
+
   if (fDataFlow <> value) then
     fDataFlow := value;
 end;
 
 
 procedure TMfPeakMeterEx.SetDeviceRole(value: ERole);
+
 begin
+
   if (fRole <> value) then
     fRole := value;
 end;
 
 
 procedure TMfPeakMeterEx.SetEnabled(value: Boolean);
+
 begin
 
   if (fEnabled <> value) then
@@ -502,267 +518,321 @@ end;
 
 
 function TMfPeakMeterEx.CalculateX(X: Integer): Integer;
+
 begin
+
   Result := (Width - X) - 1;
 end;
 
 
 function TMfPeakMeterEx.CalculateY(Y: Integer): Integer;
+
 begin
+
   Result := (Height - Y) - 1;
 end;
 
 
 procedure TMfPeakMeterEx.SetBevelWidth(value: Byte);
+
 begin
+
   if (value <> fbevelwidth) then
-    begin
-      if (value = 0) then
-        value := 1;
-      if (value > (height div 3)) or (value > (width div 3)) then
-        value := 1;
-      fBevelWidth := value;
-      Paint;
-    end;
+      begin
+        if (value = 0) then
+          value := 1;
+        if (value > (height div 3)) or (value > (width div 3)) then
+          value := 1;
+        fBevelWidth := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterEx.SetBevelStyle(value: TPanelbevel);
+
 begin
+
   if (value <> fBevelStyle) then
-    begin
-      fBevelStyle := value;
-      Paint;
-    end;
+      begin
+        fBevelStyle := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterEx.SetGreenColorOn(value: TColor);
+
 begin
+
   if (value <> fColors[1,
                        True]) then
-    begin
-      fColors[1,
-              True] := value;
-      Paint;
-    end;
+      begin
+        fColors[1,
+                True] := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterEx.SetGreenMax(value: Integer);
+
 begin
+
   if (value <> fGreenMax) then
-    begin
-      fGreenMax := value;
-      Paint;
-    end;
+      begin
+        fGreenMax := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterEx.SetgreenLeds(value: Integer);
+
 begin
+
   if (value <> fGreenLeds) then
-    begin
-      fGreenLeds := value;
-      Paint;
-    end;
+      begin
+        fGreenLeds := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterEx.SetGreenColorOff(value: TColor);
+
 begin
+
   if (value <> fColors[1,
                        False]) then
-    begin
-      fColors[1,
-              False] := value;
-      Paint;
-    end;
+      begin
+        fColors[1,
+                False] := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterEx.SetYellowColorOn(value: TColor);
+
 begin
+
   if (value <> fColors[2, True]) then
-    begin
-      fColors[2,
-              True] := value;
-      Paint;
-    end;
+      begin
+        fColors[2,
+                True] := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterEx.SetYellowMax(value: Integer);
+
 begin
+
   if (value <> fYellowMax) then
-    begin
-      fYellowMax := value;
-      Paint;
-    end;
+      begin
+        fYellowMax := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterEx.SetYellowLeds(value: Integer);
+
 begin
+
   if (value <> fYellowLeds) then
-    begin
-      fYellowLeds := value;
-      Paint;
-    end;
+      begin
+        fYellowLeds := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterEx.SetYellowColorOff(value: TColor);
+
 begin
-  if value <> fColors[2,
-                      False] then
-    begin
-      fColors[2,
-              False] := value;
-      Paint;
-    end;
+
+  if (value <> fColors[2,
+                      False]) then
+      begin
+        fColors[2,
+                False] := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterEx.SetRedColorOn(value: TColor);
+
 begin
+
   if (value <> fColors[3,
                        True]) then
-    begin
-      fColors[3,
-              True] := value;
-      Paint;
-    end;
+      begin
+        fColors[3,
+                True] := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterEx.SetRedMax(value: Integer);
+
 begin
+
   if (value <> fRedMax) then
-    begin
-      fRedmax := value;
-      Paint;
-    end;
+      begin
+        fRedmax := value;
+        Paint;
+      end;
 end;
 
 
 procedure TMfPeakMeterEx.SetRedLeds(value: Integer);
+
 begin
+
 try
   if (value <> fRedLeds) then
-    begin
-      fRedLeds := value;
-      Paint;
-    end;
+      begin
+        fRedLeds := value;
+        Paint;
+      end;
 except
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterEx.SetRedColorOff(value: TColor);
+
 begin
+
 try
   if (value <> fcolors[3,
                        False]) then
-    begin
-        fColors[3,
-                False] := value;
-        Paint;
-    end;
+      begin
+          fColors[3,
+                  False] := value;
+          Paint;
+      end;
 except
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterEx.SetSingleLed(value: Boolean);
+
 begin
+
 try
   if (value <> fShowSingleLed) then
-    begin
-      fShowSingleLed := value;
-      Paint;
-    end;
+      begin
+        fShowSingleLed := value;
+        Paint;
+      end;
 except
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterEx.SetSeparatorSpacing(value: Integer);
+
 begin
+
 try
   if (value <> fSeparatorSpacing) then
-    begin
-      fSeparatorSpacing := value;
-      Paint;
-    end;
+      begin
+        fSeparatorSpacing := value;
+        Paint;
+      end;
 except
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterEx.SetSeparatorColor(value: TColor);
+
 begin
+
 try
   if (value <> fSeparatorColor) then
-    begin
-      fSeparatorColor := value;
-      Paint;
-    end;
+      begin
+        fSeparatorColor := value;
+        Paint;
+      end;
 except
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterEx.SetStyle(value: TMfPeakMeterExStyle);
+
 begin
+
 try
   if (value <> fstyle) then
-    begin
-      fStyle := value;
-      Paint;
-    end;
+      begin
+        fStyle := value;
+        Paint;
+      end;
 except
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterEx.SetDirection(value: TMfPeakMeterExdirection);
+
 begin
+
 try
   if (value <> fDirection) then
-    begin
-      fDirection := value;
-      Paint;
-    end;
+      begin
+        fDirection := value;
+        Paint;
+      end;
 except
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterEx.SetPeakValue(value: Single);
+
 begin
+
 try
   if (value <> sPeakValue) then
-    begin
-      sPeakValue := value;
-      CalculatePeakValue;
-      Paint;
-    end;
+      begin
+        sPeakValue := value;
+        CalculatePeakValue;
+        Paint;
+      end;
 except
-  on Exception do Exit;
+  on Exception do
+  Exit;
 end;
 end;
 
 
 procedure TMfPeakMeterEx.SetPeakMeterChannel(value: TMfPeakMeterExChannel);
+
 begin
+
   if (fMeterChannel <> value) then
     fMeterChannel := value;
 end;
@@ -770,7 +840,9 @@ end;
 
 // Calculates the peak value returned from a device (0.0 - 1.0) to an integer
 procedure TMfPeakMeterEx.CalculatePeakValue;
+
 begin
+
   if (fEnabled = False) and (fPeakMeterRunning = true) then
     iPeakValue := 0
   else
@@ -797,51 +869,51 @@ begin
     gr := 0;
 
   if (iPeakValue >= (fRedMax + gr + ye)) then
-    begin
-      Result := value;
-      Exit;
-    end;
+      begin
+        Result := value;
+        Exit;
+      end;
 
   // Calculate red led position
   if (iPeakValue > (ye + gr)) then
-    begin
-      if RedLeds = 0 then
-        begin
-          Result := value;
-          Exit;
-        end;
+      begin
+        if (RedLeds = 0) then
+            begin
+              Result := value;
+              Exit;
+            end;
 
-      num := (iPeakValue - ye - gr);
-      Result := Round((fRedLeds / fRedMax) * num) + fGreenLeds + fYellowLeds;
+        num := (iPeakValue - ye - gr);
+        Result := Round((fRedLeds / fRedMax) * num) + fGreenLeds + fYellowLeds;
 
-      if (Result = (fgreenLeds + fyellowLeds)) then
-        Result := Result + 1;
-      Exit;
-    end;
+        if (Result = (fgreenLeds + fyellowLeds)) then
+          Result := Result + 1;
+        Exit;
+      end;
 
   // Calculate yellow led position
   if (iPeakValue > (gr)) then
-    begin
-      if (YellowLeds = 0) then
-        begin
-          Result := value;
-          Exit;
-        end;
+      begin
+        if (YellowLeds = 0) then
+            begin
+              Result := value;
+              Exit;
+            end;
 
-      num := iPeakValue - gr;
-      Result := round((fYellowLeds / ye) * num) + fGreenLeds;
+        num := iPeakValue - gr;
+        Result := round((fYellowLeds / ye) * num) + fGreenLeds;
 
-      if (Result = fGreenLeds) then
-        Result := result + 1;
-      Exit;
-    end;
+        if (Result = fGreenLeds) then
+          Result := result + 1;
+        Exit;
+      end;
 
   // Calculate green led position
   if (gr = 0) then
-    begin
-      Result := 0;
-      Exit;
-    end;
+      begin
+        Result := 0;
+        Exit;
+      end;
 
   Result := Round((fGreenLeds / gr) * iPeakValue);
 end;
@@ -865,9 +937,9 @@ begin
     Msg.Result := 0
   else
     Msg.Result := DefWindowProcW(fHWnd,
-                                Msg.Msg,
-                                Msg.WParam,
-                                Msg.LParam);
+                                 Msg.Msg,
+                                 Msg.WParam,
+                                 Msg.LParam);
 end;
 
 
@@ -880,8 +952,8 @@ var
   ileds: Integer;
   ibarwidth: Integer;
   ibarheight: Integer;
-  inum : Integer;
-  bactivate : Boolean;
+  inum: Integer;
+  bactivate: Boolean;
   bcolor: Byte;
   ax: array [0..3] of Integer;
   ay: array [0..3] of Integer;
@@ -895,134 +967,134 @@ try
 
   // Initiate the x and y coordinates
   for i := Low(ax) to High(ax) do
-    begin
-      ax[i] := 0;
-      ay[i] := 0;
-    end;
+      begin
+        ax[i] := 0;
+        ay[i] := 0;
+      end;
 
 
   with fBmp.Canvas do
-    begin
-      Pen.Color := fSeparatorColor;
-      Pen.Width := 0;
-      Pen.Style := psSolid;
-      Brush.Color := fSeparatorColor;
-      Brush.Style := bsSolid;
-      Rectangle(0,
-                0,
-                Width,
-                Height);
-     end;
+      begin
+        Pen.Color := fSeparatorColor;
+        Pen.Width := 0;
+        Pen.Style := psSolid;
+        Brush.Color := fSeparatorColor;
+        Brush.Style := bsSolid;
+        Rectangle(0,
+                  0,
+                  Width,
+                  Height);
+       end;
 
   //Calculate the number of leds
   ileds := (fGreenLeds + fRedLeds + fYellowLeds);
 
   if (ileds > 0) then
-    begin
-      // Calculate the width
-      ibarwidth := (Width div ileds);
-      ibarheight := Height;
+      begin
+        // Calculate the width
+        ibarwidth := (Width div ileds);
+        ibarheight := Height;
 
-      if (fStyle = dsVertical) then
-        begin
-          ibarwidth := Height div ileds;
-          ibarheight := Width;
-        end;
-
-      if (ibarwidth > fSeparatorSpacing) then
-        begin
-          // Calculate the last led
-          inum := GetLastLedPos(ileds);
-          if (inum = 0) then
-            if (iPeakValue <> 0) then
-              inum := 1;
-
-          // Set colors
-          with fBmp.Canvas do
+        if (fStyle = dsVertical) then
             begin
-              Pen.Width := 0;
-              Pen.Style := psSolid;
-              Brush.Style := bsSolid;
+              ibarwidth := Height div ileds;
+              ibarheight := Width;
             end;
 
-          for ileds := 1 to ileds do
+        if (ibarwidth > fSeparatorSpacing) then
             begin
-              bactivate := true;
-              if (ileds < inum) then
-                if fShowSingleLed then
-                  bactivate := False;
+              // Calculate the last led
+              inum := GetLastLedPos(ileds);
+              if (inum = 0) then
+                if (iPeakValue <> 0) then
+                  inum := 1;
 
-              if (ileds > inum) then
-                bactivate := False;
-
-              bcolor := 1;
-              if (ileds > (GreenLeds + YellowLeds)) then
-                bcolor := 3
-              else if (ileds > GreenLeds) then
-                bcolor := 2;
-
-              fBmp.canvas.brush.color := fColors[bcolor, bactivate];
-              fBmp.canvas.pen.color := fColors[bcolor, bactivate];
-
-              // Calculate positions
-              case fStyle of
-                dsHorizontal: begin
-                                ax[0] := (ileds - 1) * ibarwidth;
-                                ax[1] := ileds * ibarwidth;
-                                ay[0] := 0;
-                                ay[1] := ibarheight - 1;
-                                // Brush
-                                ax[2] := ileds * ibarwidth - fSeparatorSpacing;
-                                ax[3] := ax[2] + fSeparatorSpacing + 1;
-                                ay[2] := 0;
-                                ay[3] := ibarheight - 1;
-
-                                if (fDirection = ddLeftUp) then
-                                  begin
-                                    for i := Low(ax) to High(ax) do
-                                      ax[i] := CalculateX(ax[i]);
-                                  end;
-                              end;
-
-                  dsVertical: begin
-                                ay[0] := (ileds - 1) * ibarwidth;
-                                ay[1] := ileds * ibarwidth;
-                                ax[0] := 0;
-                                ax[1] := ibarheight - 1;
-                                // Brush
-                                ay[2] := ileds * ibarwidth - fSeparatorSpacing;
-                                ay[3] := ay[2] + fSeparatorSpacing + 1;
-                                ax[2] := 0;
-                                ax[3] := ibarheight - 1;
-                                if (fDirection = ddLeftUp) then
-                                  begin
-                                    for i := Low(ay) to High(ay) do
-                                      ay[i] := CalculateY(ay[i]);
-                                  end;
-                              end;
-              end;  //case fStyle of
-
-            // Rectangle
-            fBmp.canvas.rectangle(ax[0],
-                                  ay[0],
-                                  ax[1],
-                                  ay[1]);
-
-            if (fSeparatorSpacing > 0) then
-              begin
-                with fBmp.canvas do
+              // Set colors
+              with fBmp.Canvas do
                   begin
-                    brush.color := fSeparatorColor;
-                    pen.color := fSeparatorColor;
-                    rectangle(ax[2],
-                              ay[2],
-                              ax[3],
-                              ay[3]);
-                 end;
-             end;
-        end; // for ileds
-      end; // if (ibarwidth > fsepwidth)
-    end; // if (ileds > 0)
+                    Pen.Width := 0;
+                    Pen.Style := psSolid;
+                    Brush.Style := bsSolid;
+                  end;
+
+              for ileds := 1 to ileds do
+                  begin
+                    bactivate := true;
+                    if (ileds < inum) then
+                      if fShowSingleLed then
+                        bactivate := False;
+
+                    if (ileds > inum) then
+                      bactivate := False;
+
+                    bcolor := 1;
+                    if (ileds > (GreenLeds + YellowLeds)) then
+                      bcolor := 3
+                    else if (ileds > GreenLeds) then
+                      bcolor := 2;
+
+                    fBmp.canvas.brush.color := fColors[bcolor, bactivate];
+                    fBmp.canvas.pen.color := fColors[bcolor, bactivate];
+
+                    // Calculate positions
+                    case fStyle of
+                        dsHorizontal: begin
+                                        ax[0] := (ileds - 1) * ibarwidth;
+                                        ax[1] := ileds * ibarwidth;
+                                        ay[0] := 0;
+                                        ay[1] := ibarheight - 1;
+                                        // Brush
+                                        ax[2] := ileds * ibarwidth - fSeparatorSpacing;
+                                        ax[3] := ax[2] + fSeparatorSpacing + 1;
+                                        ay[2] := 0;
+                                        ay[3] := ibarheight - 1;
+
+                                        if (fDirection = ddLeftUp) then
+                                            begin
+                                              for i := Low(ax) to High(ax) do
+                                                ax[i] := CalculateX(ax[i]);
+                                            end;
+                                      end;
+
+                          dsVertical: begin
+                                        ay[0] := (ileds - 1) * ibarwidth;
+                                        ay[1] := ileds * ibarwidth;
+                                        ax[0] := 0;
+                                        ax[1] := ibarheight - 1;
+                                        // Brush
+                                        ay[2] := ileds * ibarwidth - fSeparatorSpacing;
+                                        ay[3] := ay[2] + fSeparatorSpacing + 1;
+                                        ax[2] := 0;
+                                        ax[3] := ibarheight - 1;
+                                        if (fDirection = ddLeftUp) then
+                                            begin
+                                              for i := Low(ay) to High(ay) do
+                                                ay[i] := CalculateY(ay[i]);
+                                            end;
+                                      end;
+                    end;  //case fStyle of
+
+                  // Rectangle
+                  fBmp.canvas.rectangle(ax[0],
+                                        ay[0],
+                                        ax[1],
+                                        ay[1]);
+
+                  if (fSeparatorSpacing > 0) then
+                      begin
+                        with fBmp.canvas do
+                            begin
+                              brush.color := fSeparatorColor;
+                              pen.color := fSeparatorColor;
+                              rectangle(ax[2],
+                                        ay[2],
+                                        ax[3],
+                                        ay[3]);
+                           end;
+                     end;
+              end; // for ileds
+          end; // if (ibarwidth > fsepwidth)
+      end; // if (ileds > 0)
 
   tcBottom := clWhite;
   tcTop := clGray;
@@ -1035,52 +1107,55 @@ try
     bw := 1;
 
   if (bw > 0) then
-    begin
-      if (fBevelStyle = bvRaised) then
-        begin
-          tcBottom := clGray;
-          tcTop := clWhite;
-        end;
-
-      with fBmp.canvas do
-        begin
-          // Bottom right
-          Pen.Color := tcBottom;
-          for lp := 0 to bw - 1 do
+      begin
+        if (fBevelStyle = bvRaised) then
             begin
-              MoveTo(CalculateX(Width),
-                     CalculateY(lp));
-              LineTo(CalculateX(lp),
-                     CalculateY(lp));
-              LineTo(CalculateX(lp),
-                     CalculateY(Height));
+              tcBottom := clGray;
+              tcTop := clWhite;
             end;
 
-          // Top left
-          Pen.Color := tcTop;
-          for lp  := 0 to bw - 1 do
+        with fBmp.canvas do
             begin
-              MoveTo(Width,
-                     lp);
-              LineTo(lp,
-                     lp);
-              LineTo(lp,
-                     Height - bw);
+              // Bottom right
+              Pen.Color := tcBottom;
+              for lp := 0 to bw - 1 do
+                  begin
+                    MoveTo(CalculateX(Width),
+                           CalculateY(lp));
+                    LineTo(CalculateX(lp),
+                           CalculateY(lp));
+                    LineTo(CalculateX(lp),
+                           CalculateY(Height));
+                  end;
+
+              // Top left
+              Pen.Color := tcTop;
+              for lp := 0 to bw - 1 do
+                  begin
+                    MoveTo(Width,
+                           lp);
+                    LineTo(lp,
+                           lp);
+                    LineTo(lp,
+                           Height - bw);
+                  end;
             end;
-        end;
-    end;
+      end;
 
   canvas.draw(0,
               0,
               fBmp);
 except
-  on Exception do Exit;    // silent exception
+  on Exception do
+  Exit;    // silent exception
 end;
 end;
 
 
 procedure TMfPeakMeterEx.Paint;
+
 begin
+
   PaintBar;
   inherited
 end;

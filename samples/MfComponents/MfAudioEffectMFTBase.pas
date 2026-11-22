@@ -105,12 +105,12 @@ type
                        crmTempoSync);
 
   TMfChorusNoteDiv = (cnd1_1,    // whole
-                      cnd1_2,    // half
-                      cnd1_4,    // quarter
-                      cnd1_8,    // eighth
-                      cnd1_16,   // sixteenth
-                      cnd1_8T,   // eighth triplet
-                      cnd1_16T); // sixteenth triplet
+    cnd1_2,    // half
+    cnd1_4,    // quarter
+    cnd1_8,    // eighth
+    cnd1_16,   // sixteenth
+    cnd1_8T,   // eighth triplet
+    cnd1_16T); // sixteenth triplet
 
   TChorusSettings = record
     Enabled: Boolean;
@@ -138,10 +138,11 @@ type
 
   // Base class: 1-in/1-out audio MFT, internal float processing.
   // Output sample MUST be provided by the caller (matches your ProcessEQBuffer pattern).
-  TMfAudioEffectMFTBase = class(TInterfacedPersistent, IMFTransform)
+  TMfAudioEffectMFTBase = class(TInterfacedPersistent,
+                                IMFTransform)
 
-{$region 'IMFTransform implementation'}
-// IMFTransform implementation /////////////////////////////////////////////////
+    {$region 'IMFTransform implementation'}
+    // IMFTransform implementation /////////////////////////////////////////////////
     function GetStreamLimits(out pdwInputMinimum: DWORD;
                              out pdwInputMaximum: DWORD;
                              out pdwOutputMinimum: DWORD;
@@ -151,7 +152,7 @@ type
                             out pcOutputStreams: DWORD): HRESULT; stdcall;
 
     function GetStreamIDs(dwInputIDArraySize: DWORD;
-                          {out} pdwInputIDs: PDWORD;
+    {out} pdwInputIDs: PDWORD;
                           dwOutputIDArraySize: DWORD;
                           pdwOutputIDs: PDWORD): HResult; stdcall;
 
@@ -218,7 +219,7 @@ type
                            cOutputBufferCount: DWORD;
                            pOutputSamples: PMFT_OUTPUT_DATA_BUFFER;
                            out pdwStatus: DWORD): HRESULT; stdcall;
- {$endregion}
+    {$endregion}
 
   private
 
@@ -283,6 +284,7 @@ type
                                  Frames,
                                  Channels,
                                  SampleRate: Integer); virtual;
+
   public
 
     constructor Create();
@@ -301,6 +303,7 @@ implementation
 
 
 constructor TMfAudioEffectMFTBase.Create();
+
 begin
 
   inherited Create();
@@ -323,6 +326,7 @@ end;
 
 
 destructor TMfAudioEffectMFTBase.Destroy();
+
 begin
 
   ClearInput();
@@ -346,6 +350,7 @@ end;
 
 
 procedure TMfAudioEffectMFTBase.ClearInput();
+
 begin
 
   FInputSample := nil;
@@ -368,40 +373,42 @@ begin
     Exit;
 
   if FAILED(pType.GetGUID(MF_MT_MAJOR_TYPE,
-                          Major)) then
+    Major)) then
     Exit;
 
   if not IsEqualGUID(Major,
-         MFMediaType_Audio) then
+    MFMediaType_Audio) then
     Exit;
 
   if FAILED(pType.GetGUID(MF_MT_SUBTYPE,
-                          Sub)) then
+    Sub)) then
     Exit;
 
-  if FAILED(pType.GetUINT32(MF_MT_AUDIO_NUM_CHANNELS,Channels)) or
-     (Channels = 0) or (Channels > UINT32(MaxInt div 4)) or
-     FAILED(pType.GetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,Rate)) or
-     (Rate = 0) or (Rate > UINT32(MaxInt)) then
+  if FAILED(pType.GetUINT32(MF_MT_AUDIO_NUM_CHANNELS, Channels)) or
+    (Channels = 0) or (Channels > UINT32(MaxInt div 4)) or
+    FAILED(pType.GetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,
+                           Rate)) or
+    (Rate = 0) or (Rate > UINT32(MaxInt)) then
     Exit;
-  if IsEqualGUID(Sub,MFAudioFormat_Float) then
+  if IsEqualGUID(Sub, MFAudioFormat_Float) then
     begin
-      Result := SUCCEEDED(pType.GetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,Bits)) and (Bits = 32);
+      Result := SUCCEEDED(pType.GetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
+                                          Bits)) and (Bits = 32);
       Exit;
     end;
 
   if IsEqualGUID(Sub,
-                 MFAudioFormat_PCM) then
-  begin
+    MFAudioFormat_PCM) then
+    begin
 
-    if FAILED(pType.GetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
-                              Bits)) then
-      Exit;
+      if FAILED(pType.GetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
+        Bits)) then
+        Exit;
 
-    Result := Bits in [16,
-                       24,
-                       32];
-  end;
+      Result := Bits in [16,
+        24,
+        32];
+    end;
 end;
 
 
@@ -456,6 +463,7 @@ end;
 
 
 procedure TMfAudioEffectMFTBase.EnsureFloatScratch(NeededSamples: Integer);
+
 begin
 
   EnsureDynFloatBuf(FDynFloatBuf,
@@ -466,7 +474,8 @@ end;
 
 procedure TMfAudioEffectMFTBase.ConvertBytesToFloat(const InBytes: PByte;
                                                     OutF: PSingle;
-                                                     Samples: Integer);
+                                                    Samples: Integer);
+
 begin
 
   if FIsFloat then
@@ -488,18 +497,21 @@ begin
         32: Int32ToFloat(InBytes,
                          OutF,
                          Samples);
-      else
+        else
 
-        // Should never happen due to type validation.
-        FillChar(OutF^,
-                 NativeUInt(Samples) * SizeOf(Single),
-                 0);
+          // Should never happen due to type validation.
+          FillChar(OutF^,
+                   NativeUInt(Samples) * SizeOf(Single),
+                   0);
       end;
     end;
 end;
 
 
-procedure TMfAudioEffectMFTBase.ConvertFloatToBytes(const InF: PSingle; OutBytes: PByte; Samples: Integer);
+procedure TMfAudioEffectMFTBase.ConvertFloatToBytes(const InF: PSingle;
+                                                    OutBytes: PByte;
+                                                    Samples: Integer);
+
 begin
 
   if FIsFloat then
@@ -530,6 +542,7 @@ procedure TMfAudioEffectMFTBase.ProcessAudioFloat32(pData: PSingle;
                                                     Frames,
                                                     Channels,
                                                     SampleRate: Integer);
+
 begin
 
   // base no-op.
@@ -540,6 +553,7 @@ procedure TMfAudioEffectMFTBase.PostProcessFloat32(pData: PSingle;
                                                    Frames,
                                                    Channels,
                                                    SampleRate: Integer);
+
 begin
 
   if FTPEnabled then
@@ -550,6 +564,7 @@ end;
 
 
 procedure TMfAudioEffectMFTBase.SetTruePeakEnabled(const AEnabled: Boolean);
+
 begin
 
   FTPEnabled := AEnabled;
@@ -559,6 +574,7 @@ end;
 
 
 procedure TMfAudioEffectMFTBase.SetTruePeakCeilingDbTP(const CeilingDbTP: Single);
+
 begin
 
   // dBTP ceiling in linear (0..1)
@@ -570,11 +586,12 @@ end;
 
 
 procedure TMfAudioEffectMFTBase.SetTruePeakOversample(const Factor: Integer);
+
 begin
 
   if (Factor = 2) or
-     (Factor = 4) or
-     (Factor = 8) then
+    (Factor = 4) or
+    (Factor = 8) then
     FTPOversample := Factor
   else
     FTPOversample := 4;
@@ -638,12 +655,14 @@ var
   idx2,
   idx3: Integer;
 
+
   function ReadSample(const Idx: Integer): Single;
   begin
     Result := PSingle(PByte(x) + (Idx * SizeOf(Single)))^;
   end;
 
 begin
+
   Result := 0;
 
   if (x = nil) or (Frames <= 0) or (Channels <= 0) then
@@ -704,7 +723,7 @@ begin
           if (a > Result) then
             Result := a;
         end;
-  end;
+    end;
 end;
 
 
@@ -717,7 +736,7 @@ var
   // convert per-sample coeff to per-block coeff
   aAtk,
   aRel: Single;
-  
+
   p: PSingle;
   i,
   total: Integer;
@@ -785,6 +804,7 @@ function TMfAudioEffectMFTBase.GetStreamLimits(out pdwInputMinimum: DWORD;
                                                out pdwInputMaximum: DWORD;
                                                out pdwOutputMinimum: DWORD;
                                                out pdwOutputMaximum: DWORD): HRESULT;
+
 begin
 
   pdwInputMinimum := 1;
@@ -797,6 +817,7 @@ end;
 
 function TMfAudioEffectMFTBase.GetStreamCount(out pcInputStreams,
                                               pcOutputStreams: DWORD): HResult;
+
 begin
 
   pcInputStreams := 1;
@@ -809,6 +830,7 @@ function TMfAudioEffectMFTBase.GetStreamIDs(dwInputIDArraySize: DWORD;
                                             pdwInputIDs: PDWORD;
                                             dwOutputIDArraySize: DWORD;
                                             pdwOutputIDs: PDWORD): HResult;
+
 begin
 
   Result := E_NOTIMPL;
@@ -817,6 +839,7 @@ end;
 
 function TMfAudioEffectMFTBase.GetInputStreamInfo(const dwInputStreamID: DWORD;
                                                   out pStreamInfo: MFT_INPUT_STREAM_INFO): HRESULT;
+
 begin
 
   if (dwInputStreamID <> 0) then
@@ -832,6 +855,7 @@ end;
 
 function TMfAudioEffectMFTBase.GetOutputStreamInfo(const dwOutputStreamID: DWORD;
                                                    out pStreamInfo: MFT_OUTPUT_STREAM_INFO): HRESULT;
+
 begin
 
   if (dwOutputStreamID <> 0) then
@@ -846,6 +870,7 @@ end;
 
 
 function TMfAudioEffectMFTBase.GetAttributes(out pAttributes: IMFAttributes): HResult;
+
 begin
 
   pAttributes := nil;
@@ -855,6 +880,7 @@ end;
 
 function TMfAudioEffectMFTBase.GetInputStreamAttributes(const dwInputStreamID: DWORD;
                                                         out pAttributes: IMFAttributes): HRESULT;
+
 begin
 
   pAttributes := nil;
@@ -864,6 +890,7 @@ end;
 
 function TMfAudioEffectMFTBase.GetOutputStreamAttributes(const dwOutputStreamID: DWORD;
                                                          out pAttributes: IMFAttributes): HRESULT;
+
 begin
 
   pAttributes := nil;
@@ -872,13 +899,16 @@ end;
 
 
 function TMfAudioEffectMFTBase.DeleteInputStream(dwStreamID: DWORD): HResult;
+
 begin
 
   Result := E_NOTIMPL;
 end;
 
 
-function TMfAudioEffectMFTBase.AddInputStreams(cStreams: DWORD; adwStreamIDs: PDWORD): HResult;
+function TMfAudioEffectMFTBase.AddInputStreams(cStreams: DWORD;
+                                               adwStreamIDs: PDWORD): HResult;
+
 begin
 
   Result := E_NOTIMPL;
@@ -888,6 +918,7 @@ end;
 function TMfAudioEffectMFTBase.GetInputAvailableType(const dwInputStreamID: DWORD;
                                                      dwTypeIndex: DWORD;
                                                      out pType: IMFMediaType): HRESULT;
+
 begin
 
   pType := nil;
@@ -913,6 +944,7 @@ end;
 function TMfAudioEffectMFTBase.GetOutputAvailableType(const dwOutputStreamID: DWORD;
                                                       dwTypeIndex: DWORD;
                                                       out pType: IMFMediaType): HRESULT;
+
 begin
 
   Result := GetInputAvailableType(dwOutputStreamID,
@@ -921,7 +953,8 @@ begin
 end;
 
 
-function EffectAudioTypesMatch(A,B: IMFMediaType): Boolean;
+function EffectAudioTypesMatch(A,
+                               B: IMFMediaType): Boolean;
 var
   ASub: TGUID;
   BSub: TGUID;
@@ -929,69 +962,74 @@ var
   AValue: UINT32;
   BValue: UINT32;
   I: Integer;
+
 begin
+
   Result := True;
   if (A = nil) or (B = nil) then
     Exit;
   Result := False;
-  if FAILED(A.GetGUID(MF_MT_SUBTYPE,ASub)) or FAILED(B.GetGUID(MF_MT_SUBTYPE,BSub)) or
-     not IsEqualGUID(ASub,BSub) then
+  if FAILED(A.GetGUID(MF_MT_SUBTYPE, ASub)) or FAILED(B.GetGUID(MF_MT_SUBTYPE, BSub)) or not IsEqualGUID(ASub, BSub) then
     Exit;
   Keys[0] := MF_MT_AUDIO_BITS_PER_SAMPLE;
   Keys[1] := MF_MT_AUDIO_NUM_CHANNELS;
   Keys[2] := MF_MT_AUDIO_SAMPLES_PER_SECOND;
   for I := 0 to High(Keys) do
-    if FAILED(A.GetUINT32(Keys[I],AValue)) or FAILED(B.GetUINT32(Keys[I],BValue)) or
-       (AValue <> BValue) then
+    if FAILED(A.GetUINT32(Keys[I], AValue)) or FAILED(B.GetUINT32(Keys[I], BValue)) or
+      (AValue <> BValue) then
       Exit;
   Result := True;
 end;
 
 
 function TMfAudioEffectMFTBase.SetInputType(const dwInputStreamID: DWORD;
-                                          pType: IMFMediaType;
-                                          dwFlags: DWORD): HRESULT;
+                                            pType: IMFMediaType;
+                                            dwFlags: DWORD): HRESULT;
+
 begin
-  if dwInputStreamID <> 0 then
+
+  if (dwInputStreamID <> 0) then
     Exit(MF_E_INVALIDSTREAMNUMBER);
-  if (dwFlags and not DWORD(MFT_SET_TYPE_TEST_ONLY)) <> 0 then
+  if ((dwFlags and not DWORD(MFT_SET_TYPE_TEST_ONLY)) <> 0) then
     Exit(E_INVALIDARG);
   if (pType <> nil) and not IsTypeSupported(pType) then
     Exit(MF_E_INVALIDMEDIATYPE);
-  if (dwFlags and MFT_SET_TYPE_TEST_ONLY) <> 0 then
+  if ((dwFlags and MFT_SET_TYPE_TEST_ONLY) <> 0) then
     Exit(S_OK);
   if (pType <> nil) and FHaveInput then
     Exit(MF_E_TRANSFORM_CANNOT_CHANGE_MEDIATYPE_WHILE_PROCESSING);
   ClearInput;
-  if not EffectAudioTypesMatch(pType,FOutType) then
+  if not EffectAudioTypesMatch(pType, FOutType) then
     FOutType := nil;
   FInType := pType;
   Result := S_OK;
-  if pType <> nil then
+  if (pType <> nil) then
     Result := ParseAudioType(pType);
   FTPGain := 1.0;
 end;
 
 
 function TMfAudioEffectMFTBase.SetOutputType(dwOutputStreamID: DWORD;
-                                           pType: IMFMediaType;
-                                           dwFlags: DWORD): HRESULT;
+                                             pType: IMFMediaType;
+                                             dwFlags: DWORD): HRESULT;
+
 begin
-  if dwOutputStreamID <> 0 then
+
+  if (dwOutputStreamID <> 0) then
     Exit(MF_E_INVALIDSTREAMNUMBER);
-  if (dwFlags and not DWORD(MFT_SET_TYPE_TEST_ONLY)) <> 0 then
+  if ((dwFlags and not DWORD(MFT_SET_TYPE_TEST_ONLY)) <> 0) then
     Exit(E_INVALIDARG);
-  if (pType <> nil) and (not IsTypeSupported(pType) or not EffectAudioTypesMatch(FInType,pType)) then
+  if (pType <> nil) and (not IsTypeSupported(pType) or not EffectAudioTypesMatch(FInType, pType)) then
     Exit(MF_E_INVALIDMEDIATYPE);
-  if (dwFlags and MFT_SET_TYPE_TEST_ONLY) <> 0 then
+  if ((dwFlags and MFT_SET_TYPE_TEST_ONLY) <> 0) then
     Exit(S_OK);
   if (pType <> nil) and FHaveInput then
     Exit(MF_E_TRANSFORM_CANNOT_CHANGE_MEDIATYPE_WHILE_PROCESSING);
   FOutType := pType;
-  if pType = nil then
+  if (pType = nil) then
     ClearInput;
   Result := S_OK;
-  if pType <> nil then
+  if (pType <> nil) then
     Result := ParseAudioType(pType);
   FTPGain := 1.0;
 end;
@@ -999,10 +1037,14 @@ end;
 
 function TMfAudioEffectMFTBase.GetInputCurrentType(const dwInputStreamID: DWORD;
                                                    out pType: IMFMediaType): HRESULT;
+
 begin
+
   pType := nil;
-  if dwInputStreamID <> 0 then Exit(MF_E_INVALIDSTREAMNUMBER);
-  if FInType = nil then Exit(MF_E_TRANSFORM_TYPE_NOT_SET);
+  if (dwInputStreamID <> 0) then
+    Exit(MF_E_INVALIDSTREAMNUMBER);
+  if (FInType = nil) then
+    Exit(MF_E_TRANSFORM_TYPE_NOT_SET);
   pType := FInType;
   Result := S_OK;
 end;
@@ -1010,10 +1052,14 @@ end;
 
 function TMfAudioEffectMFTBase.GetOutputCurrentType(const dwOutputStreamID: DWORD;
                                                     out pType: IMFMediaType): HRESULT;
+
 begin
+
   pType := nil;
-  if dwOutputStreamID <> 0 then Exit(MF_E_INVALIDSTREAMNUMBER);
-  if FOutType = nil then Exit(MF_E_TRANSFORM_TYPE_NOT_SET);
+  if (dwOutputStreamID <> 0) then
+    Exit(MF_E_INVALIDSTREAMNUMBER);
+  if (FOutType = nil) then
+    Exit(MF_E_TRANSFORM_TYPE_NOT_SET);
   pType := FOutType;
   Result := S_OK;
 end;
@@ -1021,6 +1067,7 @@ end;
 
 function TMfAudioEffectMFTBase.GetInputStatus(const dwInputStreamID: DWORD;
                                               out pdwFlags: DWORD {MFT_INPUT_STATUS_ACCEPT_DATA}): HRESULT;
+
 begin
 
   if (dwInputStreamID <> 0) then
@@ -1034,6 +1081,7 @@ end;
 
 
 function TMfAudioEffectMFTBase.GetOutputStatus(out pdwFlags: DWORD): HResult;
+
 begin
 
   if FHaveInput then
@@ -1044,7 +1092,9 @@ begin
 end;
 
 
-function TMfAudioEffectMFTBase.SetOutputBounds(hnsLowerBound, hnsUpperBound: Int64): HResult;
+function TMfAudioEffectMFTBase.SetOutputBounds(hnsLowerBound,
+                                               hnsUpperBound: Int64): HResult;
+
 begin
 
   Result := E_NOTIMPL;
@@ -1053,13 +1103,16 @@ end;
 
 function TMfAudioEffectMFTBase.ProcessEvent(const dwInputStreamID: DWORD;
                                             pEvent: IMFMediaEvent): HRESULT;
+
 begin
 
   Result := E_NOTIMPL;
 end;
 
 
-function TMfAudioEffectMFTBase.ProcessMessage(eMessage: MFT_MESSAGE_TYPE; ulParam: ULONG_PTR): HResult;
+function TMfAudioEffectMFTBase.ProcessMessage(eMessage: MFT_MESSAGE_TYPE;
+                                              ulParam: ULONG_PTR): HResult;
+
 begin
 
   if (eMessage = MFT_MESSAGE_COMMAND_FLUSH) then
@@ -1071,6 +1124,7 @@ end;
 function TMfAudioEffectMFTBase.ProcessInput(const dwInputStreamID: DWORD;
                                             const pSample: IMFSample;
                                             dwFlags: DWORD = 0): HRESULT;
+
 begin
 
   if (dwInputStreamID <> 0) then
@@ -1092,6 +1146,7 @@ begin
   FHaveInput := True;
   Result := S_OK;
 end;
+
 
 function TMfAudioEffectMFTBase.ProcessOutput(dwFlags: DWORD;
                                              cOutputBufferCount: DWORD;
@@ -1123,7 +1178,7 @@ begin
   if (pOutputSamples^.pSample = nil) then
     Exit(E_INVALIDARG);
 
-  if pOutputSamples^.dwStreamID <> 0 then
+  if (pOutputSamples^.dwStreamID <> 0) then
     Exit(MF_E_INVALIDSTREAMNUMBER);
   if (FInType = nil) or (FOutType = nil) then
     Exit(MF_E_TRANSFORM_TYPE_NOT_SET);
@@ -1139,19 +1194,23 @@ begin
     Exit;
 
   if (cbIn > DWORD(MaxInt)) or (FChannels <= 0) or (FBytesPerSample <= 0) or
-     ((cbIn mod DWORD(FChannels * FBytesPerSample)) <> 0) then
+    ((cbIn mod DWORD(FChannels * FBytesPerSample)) <> 0) then
     Exit(E_INVALIDARG);
   Result := pOutputSamples^.pSample.ConvertToContiguousBuffer(@OutBuf);
-  if FAILED(Result) then Exit;
+  if FAILED(Result) then
+    Exit;
   Result := OutBuf.GetMaxLength(MaxOutput);
-  if FAILED(Result) then Exit;
-  if MaxOutput < cbIn then Exit(MF_E_BUFFERTOOSMALL);
+  if FAILED(Result) then
+    Exit;
+  if (MaxOutput < cbIn) then
+    Exit(MF_E_BUFFERTOOSMALL);
   frames := Integer(cbIn) div (FChannels * FBytesPerSample);
   if (frames <= 0) then
     begin
 
       Result := OutBuf.SetCurrentLength(0);
-      if SUCCEEDED(Result) then ClearInput;
+      if SUCCEEDED(Result) then
+        ClearInput;
       Exit;
     end;
 
@@ -1205,7 +1264,8 @@ begin
     OutBuf.Unlock();
   end;
 
-  if FAILED(Result) then Exit;
+  if FAILED(Result) then
+    Exit;
   pOutputSamples^.dwStatus := 0;
   pOutputSamples^.pEvents := nil;
 
@@ -1221,4 +1281,3 @@ begin
 end;
 
 end.
-

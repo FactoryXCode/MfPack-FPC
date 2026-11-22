@@ -90,6 +90,7 @@ type
                         tekError);
 
   TTopologyEventNotice = class
+
   public
     Session: Cardinal;
     Kind: TTopologyEventKind;
@@ -101,12 +102,13 @@ type
   end;
 
   ITopologyPlayer = interface
-  ['{02E1054F-C6A5-45B8-BAA1-F6CBAAD17131}']
+    ['{02E1054F-C6A5-45B8-BAA1-F6CBAAD17131}']
     procedure Open(const AFileName: string);
     procedure Start();
     procedure Pause();
     procedure Stop();
-    procedure ResizeVideo(const AWidth, AHeight: Integer);
+    procedure ResizeVideo(const AWidth,
+                          AHeight: Integer);
     procedure Repaint();
     procedure Close(const ADetachWindow: Boolean);
   end;
@@ -129,7 +131,10 @@ uses
   MfGrayscaleMFT;
 
 type
-  TTopologyPlayer = class(TInterfacedObject, ITopologyPlayer, IMFAsyncCallback)
+  TTopologyPlayer = class(TInterfacedObject,
+                          ITopologyPlayer,
+                          IMFAsyncCallback)
+
   private
     FLock: TRTLCriticalSection;
     FVideoWindow: HWND;
@@ -141,15 +146,18 @@ type
     FVideoDisplay: IMFVideoDisplayControl;
     FClosedEvent: THandle;
 
-    procedure Check(const AOperation: string; const AHr: HRESULT);
+    procedure Check(const AOperation: string;
+                    const AHr: HRESULT);
     function CreateMediaSource(const AFileName: string;
-      out ASource: IMFMediaSource): HRESULT;
+                               out ASource: IMFMediaSource): HRESULT;
     function CreatePlaybackTopology(const ASource: IMFMediaSource;
-      out ATopology: IMFTopology; out ATransform: IMFTransform): HRESULT;
+                                    out ATopology: IMFTopology;
+                                    out ATransform: IMFTransform): HRESULT;
     procedure PostNotice(const AKind: TTopologyEventKind;
-      const AText: string);
+                         const AText: string);
     procedure AcquireVideoDisplay(const ASession: IMFMediaSession);
-    function GetParameters(out pdwFlags, pdwQueue: DWORD): HRESULT; stdcall;
+    function GetParameters(out pdwFlags,
+                           pdwQueue: DWORD): HRESULT; stdcall;
     function Invoke(pAsyncResult: IMFAsyncResult): HRESULT; stdcall;
 
   public
@@ -176,6 +184,7 @@ type
 constructor TTopologyEventNotice.Create(const ASession: Cardinal;
                                         const AKind: TTopologyEventKind;
                                         const AText: string);
+
 begin
 
   inherited Create;
@@ -189,15 +198,19 @@ end;
 function CreateTopologyPlayer(const AVideoWindow: HWND;
                               const ANotifyWindow: HWND;
                               const ASession: Cardinal): ITopologyPlayer;
+
 begin
 
-  Result := TTopologyPlayer.Create(AVideoWindow, ANotifyWindow, ASession);
+  Result := TTopologyPlayer.Create(AVideoWindow,
+                                   ANotifyWindow,
+                                   ASession);
 end;
 
 
 constructor TTopologyPlayer.Create(const AVideoWindow: HWND;
                                    const ANotifyWindow: HWND;
                                    const ASession: Cardinal);
+
 begin
 
   inherited Create;
@@ -208,9 +221,9 @@ begin
   FSessionNumber := ASession;
 
   FClosedEvent := CreateEventW(nil,
-                              True,
-                              False,
-                              nil);
+                               True,
+                               False,
+                               nil);
 
   if (FClosedEvent = 0) then
     begin
@@ -221,6 +234,7 @@ end;
 
 
 destructor TTopologyPlayer.Destroy();
+
 begin
 
   Close(True);
@@ -236,6 +250,7 @@ end;
 
 procedure TTopologyPlayer.Check(const AOperation: string;
                                 const AHr: HRESULT);
+
 begin
 
   if FAILED(AHr) then
@@ -261,10 +276,10 @@ begin
 
   if SUCCEEDED(Result) then
     Result := Resolver.CreateObjectFromURL(PWideChar(AFileName),
-                                            DWORD(MF_RESOLUTION_MEDIASOURCE),
-                                            nil,
-                                            ObjectType,
-                                            SourceObject);
+                                           DWORD(MF_RESOLUTION_MEDIASOURCE),
+                                           nil,
+                                           ObjectType,
+                                           SourceObject);
 
   if SUCCEEDED(Result) then
     Result := SourceObject.QueryInterface(IID_IMFMediaSource,
@@ -338,7 +353,7 @@ begin
         Exit;
 
       if not VideoFound and IsEqualGUID(MajorType,
-                                        MFMediaType_Video) then
+        MFMediaType_Video) then
         begin
           Result := Presentation.SelectStream(I);
 
@@ -349,7 +364,7 @@ begin
           VideoStream := Stream;
         end
       else if not AudioFound and IsEqualGUID(MajorType,
-                                              MFMediaType_Audio) then
+        MFMediaType_Audio) then
         begin
           Result := Presentation.SelectStream(I);
 
@@ -454,7 +469,7 @@ begin
   if SUCCEEDED(Result) and AudioFound then
     Result := AudioSourceNode.SetUnknown(
       MF_TOPONODE_PRESENTATION_DESCRIPTOR,
-      Presentation);
+                                         Presentation);
 
   if SUCCEEDED(Result) and AudioFound then
     Result := AudioSourceNode.SetUnknown(MF_TOPONODE_STREAM_DESCRIPTOR,
@@ -561,8 +576,9 @@ begin
                      Pointer(Display));
   if FAILED(Hr) then
     begin
-      PostNotice(tekError, Format('Get EVR display service failed: HRESULT 0x%.8x',
-                                  [Cardinal(Hr)]));
+      PostNotice(tekError,
+                 Format('Get EVR display service failed: HRESULT 0x%.8x',
+                        [Cardinal(Hr)]));
       Exit;
     end;
 
@@ -601,15 +617,16 @@ begin
                                         AText);
 
   if not PostMessageW(WindowHandle,
-                     WM_TOPOLOGY_PLAYER_EVENT,
-                     0,
-                     LPARAM(Notice)) then
+    WM_TOPOLOGY_PLAYER_EVENT,
+    0,
+    LPARAM(Notice)) then
     Notice.Free;
 end;
 
 
 function TTopologyPlayer.GetParameters(out pdwFlags,
                                        pdwQueue: DWORD): HRESULT;
+
 begin
 
   pdwFlags := 0;
@@ -665,8 +682,9 @@ begin
     Exit;
   if FAILED(EventStatus) then
     begin
-      PostNotice(tekError, Format('Media Session event failed: HRESULT 0x%.8x',
-                                 [Cardinal(EventStatus)]));
+      PostNotice(tekError,
+                 Format('Media Session event failed: HRESULT 0x%.8x',
+                        [Cardinal(EventStatus)]));
       Exit(S_OK);
     end;
 
@@ -675,26 +693,30 @@ begin
       begin
         TopologyStatus := 0;
         if SUCCEEDED((MediaEvent as IMFAttributes).GetUINT32(
-           MF_EVENT_TOPOLOGY_STATUS, TopologyStatus)) and
-           (TopologyStatus = UINT32(MF_TOPOSTATUS_READY)) then
+          MF_EVENT_TOPOLOGY_STATUS, TopologyStatus)) and
+          (TopologyStatus = UINT32(MF_TOPOSTATUS_READY)) then
           begin
             AcquireVideoDisplay(Session);
             PostNotice(tekTopologyReady,
-              'Topology ready: grayscale video plus audio pass-through.');
+                       'Topology ready: grayscale video plus audio pass-through.');
           end;
       end;
 
     MESessionStarted:
-      PostNotice(tekStarted, 'Media Session started.');
+      PostNotice(tekStarted,
+                 'Media Session started.');
 
     MESessionPaused:
-      PostNotice(tekPaused, 'Media Session paused.');
+      PostNotice(tekPaused,
+                 'Media Session paused.');
 
     MESessionStopped:
-      PostNotice(tekStopped, 'Media Session stopped.');
+      PostNotice(tekStopped,
+                 'Media Session stopped.');
 
     MEEndOfPresentation:
-      PostNotice(tekEnded, 'End of presentation.');
+      PostNotice(tekEnded,
+                 'End of presentation.');
   end;
 
   Result := S_OK;
@@ -766,7 +788,8 @@ begin
   end;
 
   if Assigned(Session) then
-    Check('Stop Media Session', Session.Stop);
+    Check('Stop Media Session',
+          Session.Stop);
 end;
 
 

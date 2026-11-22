@@ -80,8 +80,8 @@ uses
   AudioDelayRegistration,
   MfAudioDelayMFT;
 
-  function CreateAudioDelayClassFactory(): IClassFactory;
-  function AudioDelayCanUnloadNow(): HResult;
+function CreateAudioDelayClassFactory(): IClassFactory;
+function AudioDelayCanUnloadNow(): HResult;
 
 
 implementation
@@ -103,13 +103,16 @@ type
   // The Sample 9 class still implements IUnknown through TInterfacedObject.
   // This subclass only adds DLL lifetime accounting.
   TRegisteredAudioDelayMFT = class(TMfAudioDelayMFT)
+
   public
 
     constructor Create();
     destructor Destroy(); override;
   end;
 
-  TAudioDelayClassFactory = class(TInterfacedObject, IClassFactory)
+  TAudioDelayClassFactory = class(TInterfacedObject,
+                                  IClassFactory)
+
   public
 
     constructor Create();
@@ -124,6 +127,7 @@ type
 
 
 constructor TRegisteredAudioDelayMFT.Create();
+
 begin
 
   inherited Create();
@@ -133,6 +137,7 @@ end;
 
 
 destructor TRegisteredAudioDelayMFT.Destroy();
+
 begin
 
   InterlockedDecrement(GObjectCount);
@@ -142,6 +147,7 @@ end;
 
 
 constructor TAudioDelayClassFactory.Create();
+
 begin
 
   inherited Create();
@@ -151,6 +157,7 @@ end;
 
 
 destructor TAudioDelayClassFactory.Destroy();
+
 begin
 
   InterlockedDecrement(GObjectCount);
@@ -180,13 +187,16 @@ begin
                                        ppvObject);
 
   except
-    on EOutOfMemory do Result := E_OUTOFMEMORY;
-    on Exception do Result := E_UNEXPECTED;
+    on EOutOfMemory do
+      Result := E_OUTOFMEMORY;
+    on Exception do
+      Result := E_UNEXPECTED;
   end;
 end;
 
 
 function TAudioDelayClassFactory.LockServer(fLock: BOOL): HResult;
+
 begin
 
   if fLock then
@@ -199,6 +209,7 @@ end;
 
 
 function CreateAudioDelayClassFactory(): IClassFactory;
+
 begin
 
   Result := TAudioDelayClassFactory.Create();
@@ -206,15 +217,16 @@ end;
 
 
 function AudioDelayCanUnloadNow(): HResult;
+
 begin
 
   // An active class factory, transform, or server lock keeps the code loaded.
   if (InterlockedCompareExchange(GObjectCount,
-                                 0,
-                                 0) = 0) and
-     (InterlockedCompareExchange(GServerLocks,
-                                 0,
-                                 0) = 0) then
+    0,
+    0) = 0) and
+    (InterlockedCompareExchange(GServerLocks,
+                                0,
+                                0) = 0) then
     Result := S_OK
   else
     Result := S_FALSE;

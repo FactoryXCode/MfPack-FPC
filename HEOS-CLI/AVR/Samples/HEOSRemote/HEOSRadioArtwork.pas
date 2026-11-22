@@ -63,11 +63,12 @@ unit HEOSRadioArtwork;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   Classes,
   SysUtils,
   {Vcl}
@@ -76,6 +77,7 @@ LMessages,
 type
 
   THeosRadioArtwork = class(TThread)
+
   private
 
     FUrl: string;
@@ -109,7 +111,9 @@ uses
   {Vcl}
   FPReadGif;
 
+
 constructor THeosRadioArtwork.Create(const Url: string);
+
 begin
 
   inherited Create(True);
@@ -120,6 +124,7 @@ end;
 
 
 destructor THeosRadioArtwork.Destroy();
+
 begin
 
   Terminate();
@@ -153,8 +158,8 @@ begin
   try
     try
       if not StartsText('http://',
-                        FUrl) and not StartsText('https://',
-                                                 FUrl) then
+        FUrl) and not StartsText('https://',
+                                 FUrl) then
         begin
           if not FileExists(FUrl) then
             begin
@@ -185,10 +190,10 @@ begin
       else
         begin
           Session := InternetOpen('FactoryX HEOS Remote artwork',
-                                   INTERNET_OPEN_TYPE_PRECONFIG,
-                                   nil,
-                                   nil,
-                                   0);
+                                  INTERNET_OPEN_TYPE_PRECONFIG,
+                                  nil,
+                                  nil,
+                                  0);
 
           if not Assigned(Session) then
             begin
@@ -218,11 +223,11 @@ begin
             Exit;
 
           Request := InternetOpenUrlW(Session,
-                                     PChar(FUrl),
-                                     nil,
-                                     0,
-                                     INTERNET_FLAG_RELOAD or INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_NO_COOKIES or INTERNET_FLAG_NO_UI,
-                                     0);
+                                      PChar(FUrl),
+                                      nil,
+                                      0,
+                                      INTERNET_FLAG_RELOAD or INTERNET_FLAG_NO_CACHE_WRITE or INTERNET_FLAG_NO_COOKIES or INTERNET_FLAG_NO_UI,
+                                      0);
 
           if not Assigned(Request) then
             begin
@@ -235,10 +240,9 @@ begin
           Size := SizeOf(Status);
 
           if not HttpQueryInfoW(Request,
-                               HTTP_QUERY_STATUS_CODE or HTTP_QUERY_FLAG_NUMBER,
-                               @Status,
-                               Size,
-                               Index) or (Status < 200) or (Status >= 300) then
+            HTTP_QUERY_STATUS_CODE or HTTP_QUERY_FLAG_NUMBER, @Status,
+            Size,
+            Index) or (Status < 200) or (Status >= 300) then
             begin
               FErrorText := 'Station logo is unavailable from its server.';
               Exit;
@@ -255,10 +259,9 @@ begin
                   Exit;
                 end;
 
-              if not InternetReadFile(Request,
-                                      @Buffer[0],
-                                      SizeOf(Buffer),
-                                      Count) then
+              if not InternetReadFile(Request, @Buffer[0],
+                SizeOf(Buffer),
+                Count) then
                 begin
                   FErrorText := 'Station logo download was interrupted.';
                   Exit;
@@ -291,21 +294,18 @@ begin
       Stream.Position := 0;
 
       if (Stream.Size >= 8) and
-         (Buffer[0] = $89) and
-         (Buffer[1] = $50) and
-         (Buffer[2] = $4E) and
-         (Buffer[3] = $47) then
+        (Buffer[0] = $89) and
+        (Buffer[1] = $50) and
+        (Buffer[2] = $4E) and
+        (Buffer[3] = $47) then
         FGraphic := TPortableNetworkGraphic.Create()
-      else
-        if (Stream.Size >= 3) and (Buffer[0] = $FF) and (Buffer[1] = $D8) then
-          FGraphic := TJPEGImage.Create
-        else
-          if (Stream.Size >= 6) and (Buffer[0] = Ord('G')) and
-             (Buffer[1] = Ord('I')) and (Buffer[2] = Ord('F')) then
-            FGraphic := TGIFImage.Create
-          else
-            if (Stream.Size >= 2) and (Buffer[0] = Ord('B')) and (Buffer[1] = Ord('M')) then
-              FGraphic := Graphics.TBitmap.Create;
+      else if (Stream.Size >= 3) and (Buffer[0] = $FF) and (Buffer[1] = $D8) then
+        FGraphic := TJPEGImage.Create
+      else if (Stream.Size >= 6) and (Buffer[0] = Ord('G')) and
+        (Buffer[1] = Ord('I')) and (Buffer[2] = Ord('F')) then
+        FGraphic := TGIFImage.Create
+      else if (Stream.Size >= 2) and (Buffer[0] = Ord('B')) and (Buffer[1] = Ord('M')) then
+        FGraphic := Graphics.TBitmap.Create;
 
       if not Assigned(FGraphic) then
         begin

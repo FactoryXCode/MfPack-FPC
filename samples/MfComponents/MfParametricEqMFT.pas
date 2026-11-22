@@ -68,13 +68,11 @@ unit MfParametricEqMFT;
 interface
 
 uses
-
   Windows,
   SysUtils,
   Math,
   SyncObjs,
   WinApi.MediaFoundationApi.MfTransform,
-
   PcmLib,
   MfAudioEffectMFTBase;
 
@@ -102,9 +100,14 @@ type
   // Inspection interface (coeffs + params snapshots)
   IMfParametricEqInspect = interface(IInterface)
     ['{7E2DDE66-9D59-41D6-9E9E-2B4E0A3DFB87}']
-    function GetCurrentCoeffs(out C: TBiquadCoeffs; out SampleRate: Double): Boolean; stdcall;
-    function GetTargetCoeffs(out C: TBiquadCoeffs; out SampleRate: Double): Boolean; stdcall;
-    function GetCurrentParams(out GainDb, FreqHz, Q, BandwidthOct: Double): Boolean; stdcall;
+    function GetCurrentCoeffs(out C: TBiquadCoeffs;
+                              out SampleRate: Double): Boolean; stdcall;
+    function GetTargetCoeffs(out C: TBiquadCoeffs;
+                             out SampleRate: Double): Boolean; stdcall;
+    function GetCurrentParams(out GainDb,
+                              FreqHz,
+                              Q,
+                              BandwidthOct: Double): Boolean; stdcall;
   end;
 
 type
@@ -113,7 +116,11 @@ type
     z1, z2: Single;
   end;
 
-  TMfParametricEqMFT = class(TMfAudioEffectMFTBase, IMFTransform, IMfParametricEqControl, IMfParametricEqInspect)
+  TMfParametricEqMFT = class(TMfAudioEffectMFTBase,
+                             IMFTransform,
+                             IMfParametricEqControl,
+                             IMfParametricEqInspect)
+
   private
     FLock: TCriticalSection;
 
@@ -149,20 +156,35 @@ type
     procedure EnsureStateForChannels(const Channels: Integer);
     function ClampGainDb(const v: Single): Single;
     function ClampQ(const v: Single): Single;
-    function ClampFreqHz(const v: Single; const SampleRate: Integer): Single;
+    function ClampFreqHz(const v: Single;
+                         const SampleRate: Integer): Single;
 
-    function BWOctToQ(const BWOct: Single; const FreqHz: Single; const SampleRate: Integer): Single;
+    function BWOctToQ(const BWOct: Single;
+                      const FreqHz: Single;
+                      const SampleRate: Integer): Single;
 
-    procedure CalcPeakingCoeffs(const GainDb, FreqHz, Q: Double; const SampleRate: Integer; out C: TBiquadCoeffs);
+    procedure CalcPeakingCoeffs(const GainDb,
+                                FreqHz,
+                                Q: Double;
+                                const SampleRate: Integer;
+                                out C: TBiquadCoeffs);
 
-    procedure UpdateCoeffsAndSmoothing(const Frames, Channels, SampleRate: Integer);
-    function RampCoefPerBlock(const Frames, SampleRate: Integer): Single;
+    procedure UpdateCoeffsAndSmoothing(const Frames,
+                                       Channels,
+                                       SampleRate: Integer);
+    function RampCoefPerBlock(const Frames,
+                              SampleRate: Integer): Single;
 
-    function ProcessSampleDF2T(var S: TBiquadState; const x: Single; const C: TBiquadCoeffs): Single; inline;
+    function ProcessSampleDF2T(var S: TBiquadState;
+                               const x: Single;
+                               const C: TBiquadCoeffs): Single; inline;
 
   protected
 
-    procedure ProcessAudioFloat32(pData: PSingle; Frames, Channels, SampleRate: Integer); override;
+    procedure ProcessAudioFloat32(pData: PSingle;
+                                  Frames,
+                                  Channels,
+                                  SampleRate: Integer); override;
 
   public
 
@@ -185,9 +207,14 @@ type
     procedure SetTruePeakOversample(const Factor: Integer); stdcall;
 
     // IMfParametricEqInspect
-    function GetCurrentCoeffs(out C: TBiquadCoeffs; out SampleRate: Double): Boolean; stdcall;
-    function GetTargetCoeffs(out C: TBiquadCoeffs; out SampleRate: Double): Boolean; stdcall;
-    function GetCurrentParams(out GainDb, FreqHz, Q, BandwidthOct: Double): Boolean; stdcall;
+    function GetCurrentCoeffs(out C: TBiquadCoeffs;
+                              out SampleRate: Double): Boolean; stdcall;
+    function GetTargetCoeffs(out C: TBiquadCoeffs;
+                             out SampleRate: Double): Boolean; stdcall;
+    function GetCurrentParams(out GainDb,
+                              FreqHz,
+                              Q,
+                              BandwidthOct: Double): Boolean; stdcall;
   end;
 
 
@@ -195,6 +222,7 @@ implementation
 
 
 constructor TMfParametricEqMFT.Create;
+
 begin
 
   inherited Create;
@@ -228,6 +256,7 @@ end;
 
 
 destructor TMfParametricEqMFT.Destroy;
+
 begin
 
   FLock.Free;
@@ -274,6 +303,7 @@ end;
 
 
 function TMfParametricEqMFT.ClampGainDb(const v: Single): Single;
+
 begin
 
   Result := EnsureRange(v,
@@ -283,6 +313,7 @@ end;
 
 
 function TMfParametricEqMFT.ClampQ(const v: Single): Single;
+
 begin
 
   Result := EnsureRange(v,
@@ -291,7 +322,8 @@ begin
 end;
 
 
-function TMfParametricEqMFT.ClampFreqHz(const v: Single; const SampleRate: Integer): Single;
+function TMfParametricEqMFT.ClampFreqHz(const v: Single;
+                                        const SampleRate: Integer): Single;
 var
   hi: Single;
 
@@ -304,7 +336,9 @@ begin
 end;
 
 
-function TMfParametricEqMFT.BWOctToQ(const BWOct, FreqHz: Single; const SampleRate: Integer): Single;
+function TMfParametricEqMFT.BWOctToQ(const BWOct,
+                                     FreqHz: Single;
+                                     const SampleRate: Integer): Single;
 var
   w0, sw: Double;
   x: Double;
@@ -328,8 +362,11 @@ begin
 end;
 
 
-procedure TMfParametricEqMFT.CalcPeakingCoeffs(const GainDb, FreqHz, Q: Double;
-  const SampleRate: Integer; out C: TBiquadCoeffs);
+procedure TMfParametricEqMFT.CalcPeakingCoeffs(const GainDb,
+                                               FreqHz,
+                                               Q: Double;
+                                               const SampleRate: Integer;
+                                               out C: TBiquadCoeffs);
 var
   A,
   w0,
@@ -388,8 +425,8 @@ begin
     rmFast: ms := 10;
     rmSmooth: ms := 30;
     rmManual: ms := FRampTimeMs;
-  else
-    ms := 30;
+    else
+      ms := 30;
   end;
 
   if (ms <= 0) then
@@ -397,7 +434,8 @@ begin
 
   tau := ms / 1000.0;
   aPerSample := Exp(-1.0 / (tau * SampleRate));
-  Result := (Power(aPerSample, Frames)) * 1.0;  // per-block coefficient
+  Result := (Power(aPerSample,
+                   Frames)) * 1.0;  // per-block coefficient
 end;
 
 
@@ -429,8 +467,10 @@ begin
 
     // we expose both; target Q comes from either
     bw := FTBWOct;
-    if bw > 0 then
-      tgtQ := BWOctToQ(bw, tgtFreq, SampleRate)
+    if (bw > 0) then
+      tgtQ := BWOctToQ(bw,
+                       tgtFreq,
+                       SampleRate)
     else
       tgtQ := ClampQ(FTQ);
 
@@ -441,7 +481,8 @@ begin
     FLock.Leave();
   end;
 
-  a := RampCoefPerBlock(Frames, SampleRate);
+  a := RampCoefPerBlock(Frames,
+                        SampleRate);
 
   if (a <= 0) then
     begin
@@ -484,6 +525,7 @@ begin
   EnsureStateForChannels(Channels);
 end;
 
+
 function TMfParametricEqMFT.ProcessSampleDF2T(var S: TBiquadState;
                                               const x: Single;
                                               const C: TBiquadCoeffs): Single;
@@ -505,13 +547,14 @@ procedure TMfParametricEqMFT.ProcessAudioFloat32(pData: PSingle;
                                                  Channels,
                                                  SampleRate: Integer);
 
+
   function IsFiniteS(const v: Single): Boolean; inline;
   var
     u: Cardinal absolute v;
 
   begin
 
-    Result := (u and $7F800000) <> $7F800000;
+    Result := ((u and $7F800000) <> $7F800000);
   end;
 
 const
@@ -528,8 +571,8 @@ var
 begin
 
   if (Frames <= 0) or
-     (Channels <= 0) or
-     (pData = nil) then
+    (Channels <= 0) or
+    (pData = nil) then
     Exit;
 
   if not FEQEnabled then
@@ -578,13 +621,14 @@ begin
           p^ := x;
           Inc(p);
         end;
-  end;
+    end;
 end;
 
 
 { IMfParametricEqControl }
 
 procedure TMfParametricEqMFT.EnableEQ(const AEnabled: Boolean);
+
 begin
 
   FEQEnabled := AEnabled;
@@ -592,6 +636,7 @@ end;
 
 
 procedure TMfParametricEqMFT.SetGainDb(const GainDb: Single);
+
 begin
 
   FLock.Enter();
@@ -607,6 +652,7 @@ end;
 
 
 procedure TMfParametricEqMFT.SetCenterFreqHz(const Hz: Single);
+
 begin
 
   FLock.Enter();
@@ -622,6 +668,7 @@ end;
 
 
 procedure TMfParametricEqMFT.SetQ(const Q: Single);
+
 begin
 
   FLock.Enter();
@@ -639,6 +686,7 @@ end;
 
 
 procedure TMfParametricEqMFT.SetBandwidthOctaves(const Oct: Single);
+
 begin
 
   FLock.Enter();
@@ -654,6 +702,7 @@ end;
 
 
 procedure TMfParametricEqMFT.SetRampMode(const Mode: TMfRampMode);
+
 begin
 
   FRampMode := Mode;
@@ -661,6 +710,7 @@ end;
 
 
 procedure TMfParametricEqMFT.SetRampTimeMs(const Ms: Integer);
+
 begin
 
   FRampTimeMs := EnsureRange(Ms,
@@ -670,6 +720,7 @@ end;
 
 
 procedure TMfParametricEqMFT.EnableTruePeakGuard(const AEnabled: Boolean);
+
 begin
 
   SetTruePeakEnabled(AEnabled);
@@ -677,6 +728,7 @@ end;
 
 
 procedure TMfParametricEqMFT.SetTruePeakCeilingDbTP(const DbTP: Single);
+
 begin
 
   inherited SetTruePeakCeilingDbTP(DbTP);
@@ -684,6 +736,7 @@ end;
 
 
 procedure TMfParametricEqMFT.SetTruePeakOversample(const Factor: Integer);
+
 begin
 
   inherited SetTruePeakOversample(Factor);
@@ -693,6 +746,7 @@ end;
 
 function TMfParametricEqMFT.GetCurrentCoeffs(out C: TBiquadCoeffs;
                                              out SampleRate: Double): Boolean;
+
 begin
 
   C := FCoeffCur;
@@ -703,6 +757,7 @@ end;
 
 function TMfParametricEqMFT.GetTargetCoeffs(out C: TBiquadCoeffs;
                                             out SampleRate: Double): Boolean;
+
 begin
 
   C := FCoeffTgt;
@@ -715,6 +770,7 @@ function TMfParametricEqMFT.GetCurrentParams(out GainDb,
                                              FreqHz,
                                              Q,
                                              BandwidthOct: Double): Boolean;
+
 begin
 
   GainDb := FCGainDb;
@@ -727,4 +783,3 @@ end;
 
 
 end.
-

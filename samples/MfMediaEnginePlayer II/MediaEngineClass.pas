@@ -70,7 +70,7 @@ interface
 uses
   LMessages,
   LCLIntf,
-Forms,
+  Forms,
   {WinApi}
   Windows,
   Messages,
@@ -100,12 +100,17 @@ Forms,
   {$TYPEINFO ON}
 
 const
-   WM_TIMERUPDATE = WM_USER + 1001;
+  WM_TIMERUPDATE = WM_USER + 1001;
 
 
 type
-  TRedrawStatus = (rdStarted, rdStopped);
-  TRenderingState = (rsPlaying, rsPaused, rsStopped, rsFlushed, rsInitialised);
+  TRedrawStatus = (rdStarted,
+                   rdStopped);
+  TRenderingState = (rsPlaying,
+                     rsPaused,
+                     rsStopped,
+                     rsFlushed,
+                     rsInitialised);
   TRequestMsg = (rMsgSetVolume,
                  rMsgSetBalance,
                  rMsgUpdateVideoStream,
@@ -119,12 +124,16 @@ type
 
 
   PEngineEvent = ^TEngineEvent;
+
   TEngineEvent = record
     Event: DWORD;
     Param1: DWORD_PTR;
     Param2: DWORD;
   end;
-  TcMediaEngine = class(TInterfacedPersistent, IMFMediaEngineNotify)
+
+  TcMediaEngine = class(TInterfacedPersistent,
+                        IMFMediaEngineNotify)
+
   protected
     {protected fields}
     pt_hwndVideo: HWND;       // Handle of the videosurface
@@ -146,7 +155,9 @@ type
     procedure OnProgress(event: DWORD);
     procedure OnSuspend(event: DWORD);
     procedure OnAbort(event: DWORD);
-    procedure OnError(event: DWORD; param1: DWORD_PTR; param2: DWORD);
+    procedure OnError(event: DWORD;
+                      param1: DWORD_PTR;
+                      param2: DWORD);
     procedure OnEmptied(event: DWORD);
     procedure OnStalled(event: DWORD);
     procedure OnPlay(event: DWORD);
@@ -164,7 +175,9 @@ type
     procedure OnRateChange(event: DWORD);
     procedure OnDurationChange(event: DWORD);
     procedure OnVolumeChanged(event: DWORD);
-    procedure OnFormatChanged(event: DWORD; param1: DWORD_PTR; param2: DWORD);
+    procedure OnFormatChanged(event: DWORD;
+                              param1: DWORD_PTR;
+                              param2: DWORD);
     // EXTENSIONS on the HTML5 specs
     procedure OnPurgeQueuedEvents(event: DWORD);
     procedure OnTimeLineMarker(event: DWORD);
@@ -173,7 +186,9 @@ type
     procedure OnBufferingStarted(event: DWORD);
     procedure OnBufferingEnded(event: DWORD);
     procedure OnFrameStepCompleted(event: DWORD);
-    procedure OnNotifyStableState(event: DWORD; param1: DWORD_PTR; param2: DWORD);
+    procedure OnNotifyStableState(event: DWORD;
+                                  param1: DWORD_PTR;
+                                  param2: DWORD);
     procedure OnFirstFrameReady(event: DWORD);
     procedure OnTracksChange(event: DWORD);
     procedure OnOpmInfo(event: DWORD);
@@ -190,7 +205,10 @@ type
     FStopped: Boolean;
     FStartedMF: Boolean;
     procedure DispatchMessage(var Msg: TLMessage);
-    function DispatchEvent(Event: DWORD; Param1: DWORD_PTR; Param2: DWORD): HRESULT;
+    function DispatchEvent(Event: DWORD;
+                           Param1: DWORD_PTR;
+                           Param2: DWORD): HRESULT;
+
   private
     {private fields}
     pr_Volume: Double;
@@ -212,7 +230,7 @@ type
 
 
   public
-    {public fields}   //IMFMediaEngineClassFactoryEx
+    {public fields}//IMFMediaEngineClassFactoryEx
 
     pu_Duration: Double;        // Duration of the mediasource
     pu_CurrPosition: Double;    // The current play position
@@ -291,46 +309,77 @@ type
   end;
 
 
-  // Intitialize COM and MF
-  function InitMF(): HResult;
-  // Close COM and MF
-  function CloseMF(): HResult;
+// Intitialize COM and MF
+function InitMF(): HResult;
+// Close COM and MF
+function CloseMF(): HResult;
 
 
 implementation
 
 
 // CONSTRUCTOR
-constructor TcMediaEngine.Create(hwndVideo: HWND; hwndEvent: HWND; hwndCaller: HWND; out hres: HResult);
-var Attributes: IMFAttributes; Factory: IMFMediaEngineClassFactory; Base: IMFMediaEngine;
+constructor TcMediaEngine.Create(hwndVideo: HWND;
+                                 hwndEvent: HWND;
+                                 hwndCaller: HWND;
+                                 out hres: HResult);
+var
+  Attributes: IMFAttributes;
+  Factory: IMFMediaEngineClassFactory;
+  Base: IMFMediaEngine;
+
 begin
- inherited Create;
- hres:=E_FAIL;
- pt_hwndVideo:=hwndVideo;pt_hwndEvent:=hwndEvent;pt_hwndCaller:=hwndCaller;
- pt_RequestMsg:=rMsgNone;pu_RenderingState:=rsInitialised;
- pt_CritSec:=TCriticalSection.Create;
- FDispatchWindow:=LCLIntf.AllocateHWnd(DispatchMessage);
- hres:=MFStartup(MF_VERSION);
- if FAILED(hres) then Exit;
- FStartedMF:=True;
- hres:=CoCreateInstance(CLSID_MFMediaEngineClassFactory,nil,CLSCTX_INPROC_SERVER,IMFMediaEngineClassFactory,Factory);
- if FAILED(hres) then Exit;
- hres:=MFCreateAttributes(Attributes,2);
- if SUCCEEDED(hres) then hres:=Attributes.SetUnknown(MF_MEDIA_ENGINE_CALLBACK,Self);
- if SUCCEEDED(hres) then hres:=Attributes.SetUINT32(MF_MEDIA_ENGINE_VIDEO_OUTPUT_FORMAT,87) { DXGI_FORMAT_B8G8R8A8_UNORM };
- if SUCCEEDED(hres) then hres:=Factory.CreateInstance(0,Attributes,Base);
- if SUCCEEDED(hres) then hres:=Base.QueryInterface(IMFMediaEngineEx,pr_MediaEngine);
+
+  inherited Create;
+  hres := E_FAIL;
+  pt_hwndVideo := hwndVideo;
+  pt_hwndEvent := hwndEvent;
+  pt_hwndCaller := hwndCaller;
+  pt_RequestMsg := rMsgNone;
+  pu_RenderingState := rsInitialised;
+  pt_CritSec := TCriticalSection.Create;
+  FDispatchWindow := LCLIntf.AllocateHWnd(DispatchMessage);
+  hres := MFStartup(MF_VERSION);
+  if FAILED(hres) then
+    Exit;
+  FStartedMF := True;
+  hres := CoCreateInstance(CLSID_MFMediaEngineClassFactory,
+                           nil,
+                           CLSCTX_INPROC_SERVER,
+                           IMFMediaEngineClassFactory,
+                           Factory);
+  if FAILED(hres) then
+    Exit;
+  hres := MFCreateAttributes(Attributes,
+                             2);
+  if SUCCEEDED(hres) then
+    hres := Attributes.SetUnknown(MF_MEDIA_ENGINE_CALLBACK,
+                                  Self);
+  if SUCCEEDED(hres) then
+    hres := Attributes.SetUINT32(MF_MEDIA_ENGINE_VIDEO_OUTPUT_FORMAT,
+                                 87) { DXGI_FORMAT_B8G8R8A8_UNORM };
+  if SUCCEEDED(hres) then
+    hres := Factory.CreateInstance(0,
+                                   Attributes,
+                                   Base);
+  if SUCCEEDED(hres) then
+    hres := Base.QueryInterface(IMFMediaEngineEx,
+                                pr_MediaEngine);
 end;
 
 
 // DESTRUCTOR
 destructor TcMediaEngine.Destroy();
+
 begin
- FlushPlayer;
- if FDispatchWindow<>0 then LCLIntf.DeallocateHWnd(FDispatchWindow);
- FreeAndNil(pt_CritSec);
- if FStartedMF then MFShutdown;
- inherited;
+
+  FlushPlayer;
+  if (FDispatchWindow <> 0) then
+    LCLIntf.DeallocateHWnd(FDispatchWindow);
+  FreeAndNil(pt_CritSec);
+  if FStartedMF then
+    MFShutdown;
+  inherited;
 end;
 
 
@@ -343,91 +392,130 @@ end;
 
 //
 procedure TcMediaEngine.OnLoadStart(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnProgress(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnSuspend(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnAbort(event: DWORD);
+
 begin
+
   pu_RenderingState := rsStopped;
-  SetWindowTextW(pt_hwndEvent,PWideChar('STOPPED'));
+  SetWindowTextW(pt_hwndEvent,
+                 PWideChar('STOPPED'));
 end;
 
 
 procedure TcMediaEngine.OnError(event: DWORD;
                                 param1: DWORD_PTR;
                                 param2: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnEmptied(event: DWORD);
-begin pu_RenderingState:=rsStopped;end;
+
+begin
+
+  pu_RenderingState := rsStopped;
+end;
 
 
 procedure TcMediaEngine.OnStalled(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnPlay(event: DWORD);
+
 begin
+
   pu_RenderingState := rsPlaying;
 end;
 
 
 procedure TcMediaEngine.OnPause(event: DWORD);
-begin if not FStopped then pu_RenderingState:=rsPaused;end;
+
+begin
+
+  if not FStopped then
+    pu_RenderingState := rsPaused;
+end;
 
 
 procedure TcMediaEngine.OnLoadedMetaData(event: DWORD);
+
 begin
- if not FSubtitleLoaded and (FSubtitleExt<>'') then begin
-  FSubtitleLoaded:=True;
-  GetTimedTextInterface(string(pu_SourceURL),FSubtitleExt,nil);
- end;
+
+  if not FSubtitleLoaded and (FSubtitleExt <> '') then
+    begin
+      FSubtitleLoaded := True;
+      GetTimedTextInterface(string(pu_SourceURL),
+                            FSubtitleExt,
+                            nil);
+    end;
 end;
 
 
 procedure TcMediaEngine.OnLoadedData(event: DWORD);
+
 begin
-  SetWindowTextW(pt_hwndEvent,PWideChar('Mediafile ' +
-                ExtractFileName(pu_SourceURL) +
-                ' loaded. (duration ' +
-                MfSecToStr(pu_Duration, false) +
-                ')'));
+
+  SetWindowTextW(pt_hwndEvent,
+                 PWideChar('Mediafile ' +
+    ExtractFileName(pu_SourceURL) +
+    ' loaded. (duration ' +
+    MfSecToStr(pu_Duration,
+               false) +
+    ')'));
 end;
 
 
 procedure TcMediaEngine.OnWaiting(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnPlaying(event: DWORD);
+
 begin
+
   pu_RenderingState := rsPlaying;
 end;
 
 
 procedure TcMediaEngine.OnCanPlay(event: DWORD);
+
 begin
+
   // Immediately start playing when the source is loaded.
   if pu_bPlayAfterLoaded then
     {void} pr_MediaEngine.Play();
@@ -435,51 +523,71 @@ end;
 
 
 procedure TcMediaEngine.OnCanPlayThrough(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnSeeking(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnSeeked(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 {$HINTS OFF}
 procedure TcMediaEngine.OnTimeUpdate(event: DWORD);
+
 begin
- if pr_MediaEngine=nil then Exit;
- pu_CurrPosition:=pr_MediaEngine.GetCurrentTime;
- PostMessageW(pt_hwndCaller,WM_TIMERUPDATE,0,0);
+
+  if (pr_MediaEngine = nil) then
+    Exit;
+  pu_CurrPosition := pr_MediaEngine.GetCurrentTime;
+  PostMessageW(pt_hwndCaller,
+               WM_TIMERUPDATE,
+               0,
+               0);
 end;
 {$HINTS ON}
 
 procedure TcMediaEngine.OnEnded(event: DWORD);
+
 begin
+
   pu_RenderingState := rsStopped;
 end;
 
 
 procedure TcMediaEngine.OnRateChange(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnDurationChange(event: DWORD);
+
 begin
+
   pu_Duration := pr_MediaEngine.GetDuration();
 end;
 
 
 procedure TcMediaEngine.OnVolumeChanged(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
@@ -487,49 +595,65 @@ end;
 procedure TcMediaEngine.OnFormatChanged(event: DWORD;
                                         param1: DWORD_PTR;
                                         param2: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnPurgeQueuedEvents(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
-procedure  TcMediaEngine.OnTimeLineMarker(event: DWORD);
+procedure TcMediaEngine.OnTimeLineMarker(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnBalanceChanged(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnDownloadComplete(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnBufferingStarted(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnBufferingEnded(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnFrameStepCompleted(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
@@ -537,55 +661,73 @@ end;
 procedure TcMediaEngine.OnNotifyStableState(event: DWORD;
                                             param1: DWORD_PTR;
                                             param2: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnFirstFrameReady(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnTracksChange(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnOpmInfo(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnResourceLost(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnDelayLoadEventChanged(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnStreamRenderingError(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnSupportedRatesChanged(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
 
 procedure TcMediaEngine.OnAudioEndPointChanged(event: DWORD);
+
 begin
+
   // Implement code here
 end;
 
@@ -606,48 +748,82 @@ end;
 //
 // Values below 1000 correspond to events defined in HTML 5 for media elements.
 //
-function TcMediaEngine.EventNotify(Event: DWORD; Param1: DWORD_PTR; Param2: DWORD): HRESULT;
-var Packet: PEngineEvent;
+function TcMediaEngine.EventNotify(Event: DWORD;
+                                   Param1: DWORD_PTR;
+                                   Param2: DWORD): HRESULT;
+var
+  Packet: PEngineEvent;
+
 begin
- Result:=S_OK;
- if Event=Ord(MF_MEDIA_ENGINE_EVENT_NOTIFYSTABLESTATE) then begin SetEvent(THandle(Param1));Exit;end;
- if FClosing then Exit;
- New(Packet);Packet.Event:=Event;Packet.Param1:=Param1;Packet.Param2:=Param2;
- if not PostMessageW(FDispatchWindow,WM_APP+77,0,LPARAM(Packet)) then Dispose(Packet);
+
+  Result := S_OK;
+  if (Event = Ord(MF_MEDIA_ENGINE_EVENT_NOTIFYSTABLESTATE)) then
+    begin
+      SetEvent(THandle(Param1));
+      Exit;
+    end;
+  if FClosing then
+    Exit;
+  New(Packet);
+  Packet.Event := Event;
+  Packet.Param1 := Param1;
+  Packet.Param2 := Param2;
+  if not PostMessageW(FDispatchWindow, WM_APP + 77, 0, LPARAM(Packet)) then
+    Dispose(Packet);
 end;
+
+
 procedure TcMediaEngine.DispatchMessage(var Msg: TLMessage);
-var Packet: PEngineEvent;
+var
+  Packet: PEngineEvent;
+
 begin
- if Msg.Msg=WM_APP+77 then begin
-  Packet:=PEngineEvent(Msg.LParam);
-  try if not FClosing then DispatchEvent(Packet.Event,Packet.Param1,Packet.Param2);
-  finally Dispose(Packet);end;
-  Msg.Result:=0;
- end else Msg.Result:=DefWindowProcW(FDispatchWindow,Msg.Msg,Msg.WParam,Msg.LParam);
+
+  if (Msg.Msg = WM_APP + 77) then
+    begin
+      Packet := PEngineEvent(Msg.LParam);
+      try
+        if not FClosing then
+          DispatchEvent(Packet.Event,
+                        Packet.Param1,
+                        Packet.Param2);
+      finally
+        Dispose(Packet);
+      end;
+      Msg.Result := 0;
+    end
+  else
+    Msg.Result := DefWindowProcW(FDispatchWindow,
+                                 Msg.Msg,
+                                 Msg.WParam,
+                                 Msg.LParam);
 end;
+
+
 function TcMediaEngine.DispatchEvent(event: DWORD;
-                                   param1: DWORD_PTR;
-                                   param2: DWORD): HResult;
+                                     param1: DWORD_PTR;
+                                     param2: DWORD): HResult;
 var
   hr: HResult;
   eEvent: MfMediaEngineEvent;
 
 begin
+
   hr := S_OK;
   eEvent := MfMediaEngineEvent(event);
 
   case eEvent of
     // The Media Engine has started to load the source. See: IMFMediaEngine.Load.
-    MF_MEDIA_ENGINE_EVENT_LOADSTART:              OnLoadStart(event);
+    MF_MEDIA_ENGINE_EVENT_LOADSTART: OnLoadStart(event);
 
     // The Media Engine is loading the source.
-    MF_MEDIA_ENGINE_EVENT_PROGRESS:               OnProgress(event);
+    MF_MEDIA_ENGINE_EVENT_PROGRESS: OnProgress(event);
 
     // The Media Engine has suspended a load operation.
-    MF_MEDIA_ENGINE_EVENT_SUSPEND:                OnSuspend(event);
+    MF_MEDIA_ENGINE_EVENT_SUSPEND: OnSuspend(event);
 
     // The Media Engine cancelled a load operation that was in progress.
-    MF_MEDIA_ENGINE_EVENT_ABORT:                  OnAbort(event);
+    MF_MEDIA_ENGINE_EVENT_ABORT: OnAbort(event);
 
     // An error occurred.
     // Event Parameter	   Description
@@ -655,64 +831,66 @@ begin
     // param1	             A member of the MF_MEDIA_ENGINE_ERR enumeration.
     // param2	             A HRESULT error code, or zero.
     //
-    MF_MEDIA_ENGINE_EVENT_ERROR:                  OnError(event, param1, param2);
+    MF_MEDIA_ENGINE_EVENT_ERROR: OnError(event,
+                                         param1,
+                                         param2);
 
     // The Media Engine has switched to the MF_MEDIA_ENGINE_NETWORK_EMPTY state.
     // This can occur when the IMFMediaEngine.Load method is called,
     // or if an error occurs during the Load method. See: IMFMediaEngine.GetNetworkState.
-    MF_MEDIA_ENGINE_EVENT_EMPTIED:                OnEmptied(event);
+    MF_MEDIA_ENGINE_EVENT_EMPTIED: OnEmptied(event);
 
     // The Load algorithm is stalled, waiting for data.
-    MF_MEDIA_ENGINE_EVENT_STALLED:                OnStalled(event);
+    MF_MEDIA_ENGINE_EVENT_STALLED: OnStalled(event);
 
     // The Media Engine is switching to the playing state. See: IMFMediaEngine.Play.
-    MF_MEDIA_ENGINE_EVENT_PLAY:                   OnPlay(event);
+    MF_MEDIA_ENGINE_EVENT_PLAY: OnPlay(event);
 
     // The media engine has paused. See: IMFMediaEngine.Pause.
-    MF_MEDIA_ENGINE_EVENT_PAUSE:                  OnPause(event);
+    MF_MEDIA_ENGINE_EVENT_PAUSE: OnPause(event);
 
     // The Media Engine has loaded enough source data to determine the duration and
     // dimensions of the source.
     // This is important, because you can't acces this data before this event.
-    MF_MEDIA_ENGINE_EVENT_LOADEDMETADATA:         OnLoadedMetaData(event);
+    MF_MEDIA_ENGINE_EVENT_LOADEDMETADATA: OnLoadedMetaData(event);
 
     // The Media Engine has loaded enough data to render some content (for example, a video frame).
-    MF_MEDIA_ENGINE_EVENT_LOADEDDATA:             OnLoadedData(event);
+    MF_MEDIA_ENGINE_EVENT_LOADEDDATA: OnLoadedData(event);
 
     // Playback has stopped because the next frame is not available.
-    MF_MEDIA_ENGINE_EVENT_WAITING:                OnWaiting(event);
+    MF_MEDIA_ENGINE_EVENT_WAITING: OnWaiting(event);
 
     // Playback has started. See: IMFMediaEngine.Play.
-    MF_MEDIA_ENGINE_EVENT_PLAYING:                OnPlaying(event);
+    MF_MEDIA_ENGINE_EVENT_PLAYING: OnPlaying(event);
 
     // Playback can start, but the Media Engine might need to stop to buffer more data.
-    MF_MEDIA_ENGINE_EVENT_CANPLAY:                OnCanPlay(event);
+    MF_MEDIA_ENGINE_EVENT_CANPLAY: OnCanPlay(event);
 
     // The Media Engine can probably play through to the end of the resource,
     // without stopping to buffer data.
-    MF_MEDIA_ENGINE_EVENT_CANPLAYTHROUGH:         OnCanPlayThrough(event);
+    MF_MEDIA_ENGINE_EVENT_CANPLAYTHROUGH: OnCanPlayThrough(event);
 
     // The Media Engine has started seeking to a new playback position.
     // See: IMFMediaEngine.SetCurrentTime.
-    MF_MEDIA_ENGINE_EVENT_SEEKING:                OnSeeking(event);
+    MF_MEDIA_ENGINE_EVENT_SEEKING: OnSeeking(event);
 
     // The Media Engine has seeked to a new playback position. See: IMFMediaEngine.SetCurrentTime.
-    MF_MEDIA_ENGINE_EVENT_SEEKED:                 OnSeeked(event);
+    MF_MEDIA_ENGINE_EVENT_SEEKED: OnSeeked(event);
 
     // The playback position has changed. See: IMFMediaEngine.GetCurrentTime.
-    MF_MEDIA_ENGINE_EVENT_TIMEUPDATE:             OnTimeUpdate(event);
+    MF_MEDIA_ENGINE_EVENT_TIMEUPDATE: OnTimeUpdate(event);
 
     // Playback has reached the end of the source. This event is not sent if the GetLoop is TRUE.
-    MF_MEDIA_ENGINE_EVENT_ENDED:                  OnEnded(event);
+    MF_MEDIA_ENGINE_EVENT_ENDED: OnEnded(event);
 
     // The playback rate has changed. See: IMFMediaEngine.SetPlaybackRate.
-    MF_MEDIA_ENGINE_EVENT_RATECHANGE:             OnRateChange(event);
+    MF_MEDIA_ENGINE_EVENT_RATECHANGE: OnRateChange(event);
 
     // The duration of the media source has changed. See: IMFMediaEngine.GetDuration.
-    MF_MEDIA_ENGINE_EVENT_DURATIONCHANGE:         OnDurationChange(event);
+    MF_MEDIA_ENGINE_EVENT_DURATIONCHANGE: OnDurationChange(event);
 
     // The audio volume changed. See: IMFMediaEngine.SetVolume.
-    MF_MEDIA_ENGINE_EVENT_VOLUMECHANGE:           OnVolumeChanged(event);
+    MF_MEDIA_ENGINE_EVENT_VOLUMECHANGE: OnVolumeChanged(event);
 
     // The output format of the media source has changed.
     // Event Parameter	   Description
@@ -720,33 +898,35 @@ begin
     // param1	             Zero if the video format changed, 1 if the audio format changed.
     // param2	             Zero.
     //
-    MF_MEDIA_ENGINE_EVENT_FORMATCHANGE:           OnFormatChanged(event, param1, param2);
+    MF_MEDIA_ENGINE_EVENT_FORMATCHANGE: OnFormatChanged(event,
+                                                        param1,
+                                                        param2);
 
     //
     // EXTENSIONS
     //
 
     // The Media Engine flushed any pending events from its queue.
-    MF_MEDIA_ENGINE_EVENT_PURGEQUEUEDEVENTS:      OnPurgeQueuedEvents(event);
+    MF_MEDIA_ENGINE_EVENT_PURGEQUEUEDEVENTS: OnPurgeQueuedEvents(event);
 
     // The playback position reached a timeline marker.
     // See: IMFMediaEngineEx.SetTimelineMarkerTimer.
-    MF_MEDIA_ENGINE_EVENT_TIMELINE_MARKER:        OnTimeLineMarker(event);
+    MF_MEDIA_ENGINE_EVENT_TIMELINE_MARKER: OnTimeLineMarker(event);
 
     // The audio balance changed. See: IMFMediaEngineEx.SetBalance.
-    MF_MEDIA_ENGINE_EVENT_BALANCECHANGE:          OnBalanceChanged(event);
+    MF_MEDIA_ENGINE_EVENT_BALANCECHANGE: OnBalanceChanged(event);
 
     // The Media Engine has finished downloading the source data.
-    MF_MEDIA_ENGINE_EVENT_DOWNLOADCOMPLETE:       OnDownloadComplete(event);
+    MF_MEDIA_ENGINE_EVENT_DOWNLOADCOMPLETE: OnDownloadComplete(event);
 
     // The media source has started to buffer data.
-    MF_MEDIA_ENGINE_EVENT_BUFFERINGSTARTED:       OnBufferingStarted(event);
+    MF_MEDIA_ENGINE_EVENT_BUFFERINGSTARTED: OnBufferingStarted(event);
 
     // The media source has stopped buffering data.
-    MF_MEDIA_ENGINE_EVENT_BUFFERINGENDED:         OnBufferingEnded(event);
+    MF_MEDIA_ENGINE_EVENT_BUFFERINGENDED: OnBufferingEnded(event);
 
     // The IMFMediaEngineEx.FrameStep method completed.
-    MF_MEDIA_ENGINE_EVENT_FRAMESTEPCOMPLETED:     OnFrameStepCompleted(event);
+    MF_MEDIA_ENGINE_EVENT_FRAMESTEPCOMPLETED: OnFrameStepCompleted(event);
 
     // The Media Engine's Load algorithm is waiting to start.
     // Event Parameter     Description
@@ -762,14 +942,16 @@ begin
     //
     // If the Media Engine is not created with the MF_MEDIA_ENGINE_WAITFORSTABLE_STATE,
     // it does not send this event, and the Load thread does not wait to be signalled.
-    MF_MEDIA_ENGINE_EVENT_NOTIFYSTABLESTATE:      OnNotifyStableState(event, param1, param2);
+    MF_MEDIA_ENGINE_EVENT_NOTIFYSTABLESTATE: OnNotifyStableState(event,
+                                                                 param1,
+                                                                 param2);
 
     // The first frame of the media source is ready to render.
-    MF_MEDIA_ENGINE_EVENT_FIRSTFRAMEREADY:        OnFirstFrameReady(event);
+    MF_MEDIA_ENGINE_EVENT_FIRSTFRAMEREADY: OnFirstFrameReady(event);
 
     // Raised when a new track is added or removed.
     // Supported in Windows 8.1 and later.
-    MF_MEDIA_ENGINE_EVENT_TRACKSCHANGE:           OnTracksChange(event);
+    MF_MEDIA_ENGINE_EVENT_TRACKSCHANGE: OnTracksChange(event);
 
     // Raised when there is new information about the Output Protection Manager (OPM).
     // This event will be raised when an OPM failure occurs,
@@ -777,24 +959,24 @@ begin
     // This event will not be raised when there is an OPM failure and the fallback also fails.
     // For example, if ITA blocks playback entirely when OPM cannot be established.
     // Supported in Windows 8.1 and later.
-    MF_MEDIA_ENGINE_EVENT_OPMINFO:                OnOpmInfo(event);
+    MF_MEDIA_ENGINE_EVENT_OPMINFO: OnOpmInfo(event);
 
     // The source URL is deleted or unreachable
-    MF_MEDIA_ENGINE_EVENT_RESOURCELOST:           OnResourceLost(event);
+    MF_MEDIA_ENGINE_EVENT_RESOURCELOST: OnResourceLost(event);
 
     //
     MF_MEDIA_ENGINE_EVENT_DELAYLOADEVENT_CHANGED: OnDelayLoadEventChanged(event);
 
     // Raised when one of the component streams of a media stream fails.
     // This event is only raised if the media stream contains other component streams that did not fail.
-    MF_MEDIA_ENGINE_EVENT_STREAMRENDERINGERROR:   OnStreamRenderingError(event);
+    MF_MEDIA_ENGINE_EVENT_STREAMRENDERINGERROR: OnStreamRenderingError(event);
 
     // One oer more of the supported rates changed.
     MF_MEDIA_ENGINE_EVENT_SUPPORTEDRATES_CHANGED: OnSupportedRatesChanged(event);
 
     // The Audio Endpoint changed. This event occures when user changed,
     // for instance, a headphone or speaker jack
-    MF_MEDIA_ENGINE_EVENT_AUDIOENDPOINTCHANGE:    OnAudioEndPointChanged(event);
+    MF_MEDIA_ENGINE_EVENT_AUDIOENDPOINTCHANGE: OnAudioEndPointChanged(event);
 
     else
       begin
@@ -802,7 +984,7 @@ begin
 
       end;
   end;
-  Result:= hr;
+  Result := hr;
 end;
 
 
@@ -813,6 +995,7 @@ var
   hr: HResult;
 
 begin
+
   pt_CritSec.Enter;
   if pu_RenderingState in [rsPlaying, rsPaused] then
     begin
@@ -835,17 +1018,25 @@ end;
 function TcMediaEngine.GetVideoFrame(SourceRect: TRectF;
                                      DestRecr: TRect;
                                      var wicbmp: IWICBitmap): HResult;
-var Border: MFARGB;
+var
+  Border: MFARGB;
+
 begin
+
   // Frame-server mode: the caller controls ticking and presentation.
   // Transfer again while paused when the destination size changes.
-  if (pr_MediaEngine=nil) or (wicbmp=nil) then Exit(E_POINTER);
-  FillChar(Border,SizeOf(Border),0);
-  Border.rgbAlpha:=255;
+  if (pr_MediaEngine = nil) or (wicbmp = nil) then
+    Exit(E_POINTER);
+  FillChar(Border,
+           SizeOf(Border),
+           0);
+  Border.rgbAlpha := 255;
   pt_CritSec.Enter;
   try
-    Result:=pr_MediaEngine.TransferVideoFrame(IUnknown(wicbmp),
-      @SourceRect,@DestRecr,@Border);
+    Result := pr_MediaEngine.TransferVideoFrame(IUnknown(wicbmp),
+                                                @SourceRect,
+                                                @DestRecr,
+                                                @Border);
   finally
     pt_CritSec.Leave;
   end;
@@ -865,9 +1056,11 @@ var
   strtxtUrl: String; // temp for conversion
   trackId: DWord;
 
-label done;
+label
+  done;
 
 begin
+
   trackId := 1;
   strtxtUrl := ChangeFileExt(url,
                              fExt);
@@ -887,51 +1080,52 @@ begin
 
       // Call MFGetService to get the IMFTimedText interface.
       hr := MFGetService(pr_MediaEngine,
-                           MF_MEDIA_ENGINE_TIMEDTEXT,
-                           IID_IMFTimedText,
-                           Pointer(pr_TimedText));
+                         MF_MEDIA_ENGINE_TIMEDTEXT,
+                         IID_IMFTimedText,
+                         Pointer(pr_TimedText));
 
-     if Failed(hr) then
-       goto done;
+      if Failed(hr) then
+        goto done;
 
-     // Create the TimedText callback interface
-     pr_TimedTextNotify := TcTimedTextNotify.Create(pwstxtUrl,
-                                                    nil,
-                                                    nil,
-                                                    pt_hwndCaller);
+      // Create the TimedText callback interface
+      pr_TimedTextNotify := TcTimedTextNotify.Create(pwstxtUrl,
+                                                     nil,
+                                                     nil,
+                                                     pt_hwndCaller);
 
-     if not Assigned(pr_TimedTextNotify) then
-       begin
-         hr := E_POINTER;
-         goto done;
-       end;
+      if not Assigned(pr_TimedTextNotify) then
+        begin
+          hr := E_POINTER;
+          goto done;
+        end;
 
     end;
 
-  FTimedTextLifetime:=pr_TimedTextNotify;
+  FTimedTextLifetime := pr_TimedTextNotify;
   pr_TimedTextNotify.SelectWhenReady(pr_TimedText);
-  hr:=pr_TimedText.RegisterNotifications(pr_TimedTextNotify);
-  if FAILED(hr) then goto done;
+  hr := pr_TimedText.RegisterNotifications(pr_TimedTextNotify);
+  if FAILED(hr) then
+    goto done;
   hr := pr_TimedText.AddDataSourceFromUrl(pwstxtUrl,
                                           nil,
                                           nil,
                                           MF_TIMED_TEXT_TRACK_KIND_SUBTITLES, // The kind of timed text track is subtitles.)
-                                          True,
+    True,
                                           trackId);
 
   if Failed(hr) then
     goto done;
 
 
-  FTimedTextLifetime:=pr_TimedTextNotify;
+  FTimedTextLifetime := pr_TimedTextNotify;
   // Register TimedTextNotify for callbacks
   if Assigned(pr_TimedTextNotify) then
     hr := pr_TimedText.RegisterNotifications(pr_TimedTextNotify);
   if Failed(hr) then
     goto done;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 
 end;
 
@@ -939,9 +1133,10 @@ end;
 function TcMediaEngine.CanPlayStream(RFC4281Tag: PWideChar;
                                      out Answer: MF_MEDIA_ENGINE_CANPLAY): HResult;
 var
-  hr : HResult;
+  hr: HResult;
 
 begin
+
   hr := pr_MediaEngine.CanPlayType(WinApi.WinApiTypes.BSTR(PWideChar(WideString(RFC4281Tag))),
                                    Answer);
 
@@ -951,17 +1146,28 @@ end;
 
 // IMPLEMENTED METHODS /////////////////////////////////////////////////////////
 
-function TcMediaEngine.OpenURL(const pwURL: PWideChar;SubTitleFileExt: string = ''): HResult;
+function TcMediaEngine.OpenURL(const pwURL: PWideChar;
+                               SubTitleFileExt: string = ''): HResult;
+
 begin
- if pr_MediaEngine=nil then Exit(E_POINTER);
- if (pwURL=nil) or (pwURL^=#0) then Exit(E_INVALIDARG);
- pu_SourceURL:=pwURL;FSubtitleExt:=SubTitleFileExt;FSubtitleLoaded:=False;
- if FSubtitleExt='' then begin
-  if FileExists(ChangeFileExt(string(pu_SourceURL),EXT_WEBVTT)) then FSubtitleExt:=EXT_WEBVTT
-  else if FileExists(ChangeFileExt(string(pu_SourceURL),EXT_SUBRIP)) then FSubtitleExt:=EXT_SUBRIP;
- end;
- Result:=pr_MediaEngine.SetSource(WinApi.WinApiTypes.BSTR(PWideChar(WideString(pwURL))));
- if SUCCEEDED(Result) then pu_RenderingState:=rsInitialised;
+
+  if (pr_MediaEngine = nil) then
+    Exit(E_POINTER);
+  if (pwURL = nil) or (pwURL^ = #0) then
+    Exit(E_INVALIDARG);
+  pu_SourceURL := pwURL;
+  FSubtitleExt := SubTitleFileExt;
+  FSubtitleLoaded := False;
+  if (FSubtitleExt = '') then
+    begin
+      if FileExists(ChangeFileExt(string(pu_SourceURL), EXT_WEBVTT)) then
+        FSubtitleExt := EXT_WEBVTT
+      else if FileExists(ChangeFileExt(string(pu_SourceURL), EXT_SUBRIP)) then
+        FSubtitleExt := EXT_SUBRIP;
+    end;
+  Result := pr_MediaEngine.SetSource(WinApi.WinApiTypes.BSTR(PWideChar(WideString(pwURL))));
+  if SUCCEEDED(Result) then
+    pu_RenderingState := rsInitialised;
 end;
 
 
@@ -973,30 +1179,34 @@ label
   done;
 
 begin
- FStopped:=False;
- pt_CritSec.Enter;
- if (pu_SourceURL <> '') then
-   begin
-     hr := pr_MediaEngine.EnableTimeUpdateTimer(True);
-     if FAILED(hr) then
-       goto done;
 
-     hr := pr_MediaEngine.Play();
-     if FAILED(hr) then
-       goto done;
-   end
- else
-   hr := E_INVALIDARG;
+  FStopped := False;
+  pt_CritSec.Enter;
+  if (pu_SourceURL <> '') then
+    begin
+      hr := pr_MediaEngine.EnableTimeUpdateTimer(True);
+      if FAILED(hr) then
+        goto done;
 
-done:
-  pt_CritSec.Leave;
+      hr := pr_MediaEngine.Play();
+      if FAILED(hr) then
+        goto done;
+    end
+  else
+    hr := E_INVALIDARG;
+
+  done:
+    pt_CritSec.Leave;
   Result := hr;
 end;
 
 
 procedure TcMediaEngine.Pause();
+
 begin
- if (pr_MediaEngine<>nil) and SUCCEEDED(pr_MediaEngine.Pause) then pu_RenderingState:=rsPaused;
+
+  if (pr_MediaEngine <> nil) and SUCCEEDED(pr_MediaEngine.Pause) then
+    pu_RenderingState := rsPaused;
 end;
 
 
@@ -1004,11 +1214,16 @@ end;
 // There is a slight difference between stop or pause,
 // At stop the mediafile will be reset to it's begin and starts all over again when playbutton is pressed.
 procedure TcMediaEngine.Stop();
+
 begin
- if pr_MediaEngine=nil then Exit;
- FStopped:=True;
- pr_MediaEngine.Pause;pr_MediaEngine.SetCurrentTime(0);
- pu_CurrPosition:=0;pu_RenderingState:=rsStopped;
+
+  if (pr_MediaEngine = nil) then
+    Exit;
+  FStopped := True;
+  pr_MediaEngine.Pause;
+  pr_MediaEngine.SetCurrentTime(0);
+  pu_CurrPosition := 0;
+  pu_RenderingState := rsStopped;
 end;
 
 
@@ -1016,37 +1231,55 @@ end;
 // The caller has to release the player object and re-initialize,
 // before playing a new mediasource.
 procedure TcMediaEngine.FlushPlayer();
-var Msg: TMsg;
+var
+  Msg: TMsg;
+
 begin
- if FClosing then Exit;
- FClosing:=True;
- if pr_TimedTextNotify<>nil then pr_TimedTextNotify.Detach;
- if pr_TimedText<>nil then pr_TimedText.RegisterNotifications(nil);
- if pr_MediaEngine<>nil then pr_MediaEngine.Shutdown;
- pr_MediaEngine:=nil;
- pr_TimedText:=nil;pr_TimedTextNotify:=nil;FTimedTextLifetime:=nil;
- if FDispatchWindow<>0 then
-  while PeekMessageW(Msg,FDispatchWindow,WM_APP+77,WM_APP+77,PM_REMOVE) do Dispose(PEngineEvent(Msg.LParam));
- pu_RenderingState:=rsFlushed;
+
+  if FClosing then
+    Exit;
+  FClosing := True;
+  if (pr_TimedTextNotify <> nil) then
+    pr_TimedTextNotify.Detach;
+  if (pr_TimedText <> nil) then
+    pr_TimedText.RegisterNotifications(nil);
+  if (pr_MediaEngine <> nil) then
+    pr_MediaEngine.Shutdown;
+  pr_MediaEngine := nil;
+  pr_TimedText := nil;
+  pr_TimedTextNotify := nil;
+  FTimedTextLifetime := nil;
+  if (FDispatchWindow <> 0) then
+    while PeekMessageW(Msg, FDispatchWindow, WM_APP + 77, WM_APP + 77, PM_REMOVE) do
+      Dispose(PEngineEvent(Msg.LParam));
+  pu_RenderingState := rsFlushed;
 end;
 
 
 procedure TcMediaEngine.SetVolume(dVol: Double);
+
 begin
- pr_Volume:=dVol;
- if pr_MediaEngine<>nil then pr_MediaEngine.SetVolume(dVol);
+
+  pr_Volume := dVol;
+  if (pr_MediaEngine <> nil) then
+    pr_MediaEngine.SetVolume(dVol);
 end;
 
 
 procedure TcMediaEngine.SetBalance(dBal: Double);
+
 begin
- pr_Balance:=dBal;
- if pr_MediaEngine<>nil then pr_MediaEngine.SetBalance(dBal);
+
+  pr_Balance := dBal;
+  if (pr_MediaEngine <> nil) then
+    pr_MediaEngine.SetBalance(dBal);
 end;
 
 
 function TcMediaEngine.Mute(var bMute: BOOL): HResult;
+
 begin
+
   Result := pr_MediaEngine.SetMuted(bMute);
   // Return the mute state
   bMute := pr_MediaEngine.GetMuted();
@@ -1054,9 +1287,12 @@ end;
 
 
 function TcMediaEngine.SetPosition(sTime: Double): HResult;
+
 begin
- if pr_MediaEngine=nil then Exit(E_POINTER);
- Result:=pr_MediaEngine.SetCurrentTime(sTime);
+
+  if (pr_MediaEngine = nil) then
+    Exit(E_POINTER);
+  Result := pr_MediaEngine.SetCurrentTime(sTime);
 end;
 
 
@@ -1064,37 +1300,41 @@ end;
 // Specify TRUE to step forward or FALSE to step backward.
 // See: https://docs.microsoft.com/en-us/windows/win32/api/mfmediaengine/nf-mfmediaengine-imfmediaengine-getcurrenttime
 function TcMediaEngine.FrameStep(goForward: BOOL): HResult;
+
 begin
+
   Result := pr_MediaEngine.FrameStep(goForward);
 end;
 
 
 procedure TcMediaEngine.SetRedraw();
+
 begin
+
   pt_CritSec.Enter;
   // Stop flickering of controls and subtitle when resizing.
   if (pt_RedrawStatus = rdStarted) then
     begin
       SendMessageW(pt_hwndVideo,
-                  WM_SETREDRAW,
-                  WPARAM(False),
-                  0);
-      pt_RedrawStatus:= rdStopped;
+                   WM_SETREDRAW,
+                   WPARAM(False),
+                   0);
+      pt_RedrawStatus := rdStopped;
     end
   else
     begin
       SendMessageW(pt_hwndVideo,
-                  WM_SETREDRAW,
-                  WPARAM(True),
-                  0);
+                   WM_SETREDRAW,
+                   WPARAM(True),
+                   0);
 
       RedrawWindow(pt_hwndVideo,
                    nil,
                    0,
                    RDW_ERASE OR
-                   RDW_FRAME OR
-                   RDW_INVALIDATE OR
-                   RDW_ALLCHILDREN);
+        RDW_FRAME OR
+        RDW_INVALIDATE OR
+        RDW_ALLCHILDREN);
 
       pt_RedrawStatus := rdStarted;
     end;
@@ -1103,10 +1343,13 @@ end;
 
 
 function TcMediaEngine.ResizeVideo(nr: TRect): HResult;
+
 begin
- if pr_MediaEngine=nil then Exit(E_POINTER);
- pt_rcpdest:=nr;
- Result:=S_OK; // Frame-server destination is supplied to TransferVideoFrame.
+
+  if (pr_MediaEngine = nil) then
+    Exit(E_POINTER);
+  pt_rcpdest := nr;
+  Result := S_OK; // Frame-server destination is supplied to TransferVideoFrame.
 end;
 
 
@@ -1123,10 +1366,10 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(0,
-                 LPCWSTR('Your computer does not support this Media Foundation API version' +
-                         IntToStr(MF_VERSION) + '.'),
-                 LPCWSTR('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  LPCWSTR('Your computer does not support this Media Foundation API version' +
+        IntToStr(MF_VERSION) + '.'),
+                  LPCWSTR('MFStartup Failure!'),
+                  MB_ICONSTOP);
       Abort();
     end;
   Result := hr;
@@ -1134,7 +1377,9 @@ end;
 
 
 function CloseMF(): HResult;
+
 begin
+
   // Shutdown MF
   Result := MFShutdown();
 end;

@@ -70,7 +70,7 @@ interface
 uses
   MfEncodeAudio.Platform,
   LMessages,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -127,7 +127,8 @@ type
     Bevel2: TBevel;
     Bevel3: TBevel;
     procedure Open1Click(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure FormDestroy(Sender: TObject);
     procedure butPlayPauseClick(Sender: TObject);
     procedure butStopClick(Sender: TObject);
@@ -171,6 +172,7 @@ implementation
 
 
 procedure TfrmMain.butPlayPauseClick(Sender: TObject);
+
 begin
 
   // Activate the peakmeters.
@@ -182,7 +184,8 @@ begin
     begin
       if SUCCEEDED(fXaudio2Engine.Start()) then
         begin
-          StatusBar.SimpleText := Format('Playing file: %s.', [fAudioFileName]);
+          StatusBar.SimpleText := Format('Playing file: %s.',
+                                         [fAudioFileName]);
           butPlayPause.Tag := 1;
           butPlayPause.Caption := 'Pause';
         end;
@@ -191,7 +194,8 @@ begin
     begin
       if SUCCEEDED(fXaudio2Engine.Pause) then
         begin
-          StatusBar.SimpleText := Format('Paused file: %s.', [fAudioFileName]);
+          StatusBar.SimpleText := Format('Paused file: %s.',
+                                         [fAudioFileName]);
           butPlayPause.Tag := 0;
           butPlayPause.Caption := 'Play';
         end;
@@ -208,41 +212,52 @@ begin
   hr := fXaudio2Engine.Stop();
 
   if FAILED(hr) then
-    StatusBar.SimpleText := Format('Could not initialize XAudio2 Error: %d.', [hr])
+    StatusBar.SimpleText := Format('Could not initialize XAudio2 Error: %d.',
+                                   [hr])
   else
     begin
-      StatusBar.SimpleText := Format('Playing file: %s.', [fAudioFileName]);
+      StatusBar.SimpleText := Format('Playing file: %s.',
+                                     [fAudioFileName]);
       butPlayPause.Caption := 'Pause';
       butStop.Enabled := True;
       hr := fXaudio2Engine.InitializeXAudio2(True);
     end;
 
   if FAILED(hr) then
-    StatusBar.SimpleText := Format('Failed to replay %s (Error %d)', [fAudioFileName, hr]);
+    StatusBar.SimpleText := Format('Failed to replay %s (Error %d)',
+                                   [fAudioFileName, hr]);
 end;
 
 
 procedure TfrmMain.butStopClick(Sender: TObject);
+
 begin
 
   if SUCCEEDED(fXaudio2Engine.Stop()) then
-    StatusBar.SimpleText := Format('Stopped playing file: %s.', [fAudioFileName]);
+    StatusBar.SimpleText := Format('Stopped playing file: %s.',
+                                   [fAudioFileName]);
 end;
 
 
 procedure TfrmMain.Exit1Click(Sender: TObject);
+
 begin
 
   Close();
 end;
 
 
-procedure TfrmMain.FormCloseQuery(Sender: TObject;var CanClose: Boolean);
+procedure TfrmMain.FormCloseQuery(Sender: TObject;
+                                  var CanClose: Boolean);
+
 begin
+
   CanClose := True;
 end;
 
+
 procedure TfrmMain.FormDestroy(Sender: TObject);
+
 begin
 
   if Assigned(fXaudio2Engine) then
@@ -254,6 +269,7 @@ end;
 
 
 function TfrmMain.GetAudioFile(): string;
+
 begin
 
   Result := 'No audiofile selected.';
@@ -266,6 +282,7 @@ end;
 
 
 procedure TfrmMain.SetVolumeChannels();
+
 begin
 
   if not Assigned(fXaudio2Engine) then
@@ -289,6 +306,7 @@ end;
 
 
 procedure TfrmMain.trbVolumeLChange(Sender: TObject);
+
 begin
 
   if not Assigned(fXaudio2Engine) then
@@ -297,13 +315,14 @@ begin
   if (fXaudio2Engine.SoundChannels > 0) then
     begin
       if (cbLockVolumeSliders.Checked = True) then
-        trbVolumeR.Position := trbVolumeL.Position ;
+        trbVolumeR.Position := trbVolumeL.Position;
       SetVolumeChannels();
     end;
 end;
 
 
 procedure TfrmMain.trbVolumeRChange(Sender: TObject);
+
 begin
 
   if not Assigned(fXaudio2Engine) then
@@ -339,7 +358,8 @@ begin
     end;
 
   lblDuration.Caption := Format('Duration: %s',
-                                [HnsTimeToStr(llAudioDuration, False)]);
+                                [HnsTimeToStr(llAudioDuration,
+                                              False)]);
 
   // Create the engine
   if SUCCEEDED(hr) then
@@ -352,7 +372,8 @@ begin
     begin
       fAudioFileName := ExtractFileName(fAudioFile);
       butReplay.Enabled := True;
-      StatusBar.SimpleText := Format('Ready to play: %s', [fAudioFileName])
+      StatusBar.SimpleText := Format('Ready to play: %s',
+                                     [fAudioFileName])
     end;
 
   // Initialize the engine.
@@ -361,7 +382,8 @@ begin
                                 llAudioDuration);
 
   if FAILED(hr) then
-    StatusBar.SimpleText := Format('Failed to load %s (Error %d)', [fAudioFileName, hr])
+    StatusBar.SimpleText := Format('Failed to load %s (Error %d)',
+                                   [fAudioFileName, hr])
 end;
 
 
@@ -389,6 +411,7 @@ end;
 
 
 procedure TfrmMain.OnAudioReadyEvent(var AMessage: TLMessage);
+
 begin
 
   if (AMessage.WParam = 1) then
@@ -400,11 +423,13 @@ end;
 
 
 procedure TfrmMain.OnAudioEndedEvent(var AMessage: TLMessage);
+
 begin
 
   if (AMessage.WParam = 1) then
     begin
-      StatusBar.SimpleText := Format('Ended playing: %s', [fAudioFileName]);
+      StatusBar.SimpleText := Format('Ended playing: %s',
+                                     [fAudioFileName]);
       butPlayPause.Enabled := False;
       butPlayPause.Caption := 'Play';
       butReplay.Enabled := True;
@@ -418,14 +443,14 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_LITE)) then
-      begin
-        MessageBoxW(0,
-                   lpcwstr('Your computer does not support this Media Foundation API version ' +
-                           IntToStr(MF_VERSION) + '.'),
-                   lpcwstr('MFStartup Failure!'),
-                           MB_ICONSTOP);
-      end;
+    MFSTARTUP_LITE)) then
+    begin
+      MessageBoxW(0,
+                  lpcwstr('Your computer does not support this Media Foundation API version ' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
+    end;
 
 finalization
 

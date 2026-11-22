@@ -76,7 +76,7 @@ unit WinApi.DirectX.D3D11_3;
 interface
 
 uses
-  
+
   {WinApi}
   Windows,
   WinApi.WinApiTypes,
@@ -97,34 +97,35 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
 type
 
   PD3D11_CONTEXT_TYPE = ^D3D11_CONTEXT_TYPE;
-  D3D11_CONTEXT_TYPE           = (
-    D3D11_CONTEXT_TYPE_ALL     = 0,
-    D3D11_CONTEXT_TYPE_3D      = 1,
-    D3D11_CONTEXT_TYPE_COMPUTE = 2,
-    D3D11_CONTEXT_TYPE_COPY    = 3,
-    D3D11_CONTEXT_TYPE_VIDEO   = 4
-  );
+  D3D11_CONTEXT_TYPE = (
+    D3D11_CONTEXT_TYPE_ALL = 0,
+                        D3D11_CONTEXT_TYPE_3D = 1,
+                        D3D11_CONTEXT_TYPE_COMPUTE = 2,
+                        D3D11_CONTEXT_TYPE_COPY = 3,
+                        D3D11_CONTEXT_TYPE_VIDEO = 4
+    );
 
   PD3D11_TEXTURE_LAYOUT = ^D3D11_TEXTURE_LAYOUT;
-  D3D11_TEXTURE_LAYOUT                        = (
-    D3D11_TEXTURE_LAYOUT_UNDEFINED            = 0,
-    D3D11_TEXTURE_LAYOUT_ROW_MAJOR            = 1,
-    D3D11_TEXTURE_LAYOUT_64K_STANDARD_SWIZZLE = 2
-  );
+  D3D11_TEXTURE_LAYOUT = (
+    D3D11_TEXTURE_LAYOUT_UNDEFINED = 0,
+                          D3D11_TEXTURE_LAYOUT_ROW_MAJOR = 1,
+                          D3D11_TEXTURE_LAYOUT_64K_STANDARD_SWIZZLE = 2
+    );
 
 
- ///////////////////////////////////////////////////////////////////////////////
- //
- // Texture2D
- //
- ///////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  // Texture2D
+  //
+  ///////////////////////////////////////////////////////////////////////////////
 
 type
 
@@ -141,37 +142,39 @@ type
     MiscFlags: UINT;
     TextureLayout: D3D11_TEXTURE_LAYOUT;
 
-    public
-      constructor Create(const o: D3D11_TEXTURE2D_DESC1); overload;
+  public
+    constructor Create(const o: D3D11_TEXTURE2D_DESC1); overload;
 
-      constructor Create(aFormat: DXGI_FORMAT;
-                         aWidth: UINT;
-                         aHeight: UINT;
-                         aArraySize: UINT = 1;
-                         aMipLevels: UINT = 0;
-                         aBindFlags: UINT = D3D11_BIND_SHADER_RESOURCE;
-                         aUsage: D3D11_USAGE = D3D11_USAGE_DEFAULT;
-                         acpuaccessFlags: UINT = 0;
-                         aSampleCount: UINT = 1;
-                         aSampleQuality: UINT = 0;
-                         aMiscFlags: UINT = 0;
-                         aTextureLayout: D3D11_TEXTURE_LAYOUT = D3D11_TEXTURE_LAYOUT_UNDEFINED); overload;
+    constructor Create(aFormat: DXGI_FORMAT;
+                       aWidth: UINT;
+                       aHeight: UINT;
+                       aArraySize: UINT = 1;
+                       aMipLevels: UINT = 0;
+                       aBindFlags: UINT = D3D11_BIND_SHADER_RESOURCE;
+                       aUsage: D3D11_USAGE = D3D11_USAGE_DEFAULT;
+                       acpuaccessFlags: UINT = 0;
+                       aSampleCount: UINT = 1;
+                       aSampleQuality: UINT = 0;
+                       aMiscFlags: UINT = 0;
+                       aTextureLayout: D3D11_TEXTURE_LAYOUT = D3D11_TEXTURE_LAYOUT_UNDEFINED); overload;
 
-     constructor Create(aDesc: D3D11_TEXTURE2D_DESC;
-                        aTextureLayout: D3D11_TEXTURE_LAYOUT = D3D11_TEXTURE_LAYOUT_UNDEFINED); overload;
+    constructor Create(aDesc: D3D11_TEXTURE2D_DESC;
+                       aTextureLayout: D3D11_TEXTURE_LAYOUT = D3D11_TEXTURE_LAYOUT_UNDEFINED); overload;
   end;
 
 
   // Interface ID3D11Texture2D1
   // ==========================
   //
-  PID3D11Texture2D1 =^ID3D11Texture2D1;
+  PID3D11Texture2D1 = ^ID3D11Texture2D1;
+
   ID3D11Texture2D1 = interface(ID3D11Texture2D)
     ['{51218251-1E33-4617-9CCB-4D3A4367E7BB}']
 
     procedure GetDesc1(out pDesc: D3D11_TEXTURE2D_DESC1); stdcall;
 
   end;
+
   IID_ID3D11Texture2D1 = ID3D11Texture2D1;
 
 
@@ -184,6 +187,7 @@ type
 
 
   PD3D11_TEXTURE3D_DESC1 = ^D3D11_TEXTURE3D_DESC1;
+
   D3D11_TEXTURE3D_DESC1 = record
     Width: UINT;
     Height: UINT;
@@ -196,22 +200,22 @@ type
     MiscFlags: UINT;
     TextureLayout: D3D11_TEXTURE_LAYOUT;
 
-    public
-      constructor Create(const o: D3D11_TEXTURE3D_DESC1); overload;
+  public
+    constructor Create(const o: D3D11_TEXTURE3D_DESC1); overload;
 
-      constructor Create(aFormat: DXGI_FORMAT;
-                         aWidth: UINT;
-                         aHeight: UINT;
-                         aDepth: UINT;
-                         aMipLevels: UINT = 0;
-                         aBindFlags: UINT = D3D11_BIND_SHADER_RESOURCE;
-                         aUsage: D3D11_USAGE = D3D11_USAGE_DEFAULT;
-                         aCpuAccessFlags: UINT = 0;
-                         aMiscFlags: UINT = 0;
-                         aTextureLayout: D3D11_TEXTURE_LAYOUT = D3D11_TEXTURE_LAYOUT_UNDEFINED); overload;
+    constructor Create(aFormat: DXGI_FORMAT;
+                       aWidth: UINT;
+                       aHeight: UINT;
+                       aDepth: UINT;
+                       aMipLevels: UINT = 0;
+                       aBindFlags: UINT = D3D11_BIND_SHADER_RESOURCE;
+                       aUsage: D3D11_USAGE = D3D11_USAGE_DEFAULT;
+                       aCpuAccessFlags: UINT = 0;
+                       aMiscFlags: UINT = 0;
+                       aTextureLayout: D3D11_TEXTURE_LAYOUT = D3D11_TEXTURE_LAYOUT_UNDEFINED); overload;
 
-      constructor Create(aDesc: D3D11_TEXTURE3D_DESC;
-                         aTextureLayout: D3D11_TEXTURE_LAYOUT = D3D11_TEXTURE_LAYOUT_UNDEFINED); overload;
+    constructor Create(aDesc: D3D11_TEXTURE3D_DESC;
+                       aTextureLayout: D3D11_TEXTURE_LAYOUT = D3D11_TEXTURE_LAYOUT_UNDEFINED); overload;
 
   end;
 
@@ -220,12 +224,14 @@ type
   // ==========================
   //
   PID3D11Texture3D1 = ^ID3D11Texture3D1;
+
   ID3D11Texture3D1 = interface(ID3D11Texture3D)
     ['{0C711683-2853-4846-9BB0-F3E60639E46A}']
 
     procedure GetDesc1(out pDesc: D3D11_TEXTURE3D_DESC1); stdcall;
 
   end;
+
   IID_ID3D11Texture3D1 = ID3D11Texture3D1;
 
 
@@ -237,10 +243,10 @@ type
   //////////////////////////////////////////////////////////////////////////////
 
   PD3D11_CONSERVATIVE_RASTERIZATION_MODE = ^D3D11_CONSERVATIVE_RASTERIZATION_MODE;
-  D3D11_CONSERVATIVE_RASTERIZATION_MODE       = (
+  D3D11_CONSERVATIVE_RASTERIZATION_MODE = (
     D3D11_CONSERVATIVE_RASTERIZATION_MODE_OFF = 0,  // Default
-    D3D11_CONSERVATIVE_RASTERIZATION_MODE_ON  = 1
-  );
+    D3D11_CONSERVATIVE_RASTERIZATION_MODE_ON = 1
+    );
 
   D3D11_RASTERIZER_DESC2 = record
     FillMode: D3D11_FILL_MODE;
@@ -256,23 +262,23 @@ type
     ForcedSampleCount: UINT;
     ConservativeRaster: D3D11_CONSERVATIVE_RASTERIZATION_MODE;
 
-    public
-      constructor Create(const o: D3D11_RASTERIZER_DESC2); overload;
+  public
+    constructor Create(const o: D3D11_RASTERIZER_DESC2); overload;
 
-      constructor Create(Default: Boolean); overload;
+    constructor Create(Default: Boolean); overload;
 
-      constructor Create(aFillMode: D3D11_FILL_MODE;
-                         aCullMode: D3D11_CULL_MODE;
-                         aFrontCounterClockwise: BOOL;
-                         aDepthBias: INT;
-                         aDepthBiasClamp: FLOAT;
-                         aSlopeScaledDepthBias: FLOAT;
-                         aDepthClipEnable: BOOL;
-                         aScissorEnable: BOOL;
-                         aMultisampleEnable: BOOL;
-                         aAntialiasedLineEnable: BOOL;
-                         aForcedSampleCount: UINT;
-                         aConservativeRaster: D3D11_CONSERVATIVE_RASTERIZATION_MODE); overload;
+    constructor Create(aFillMode: D3D11_FILL_MODE;
+                       aCullMode: D3D11_CULL_MODE;
+                       aFrontCounterClockwise: BOOL;
+                       aDepthBias: INT;
+                       aDepthBiasClamp: FLOAT;
+                       aSlopeScaledDepthBias: FLOAT;
+                       aDepthClipEnable: BOOL;
+                       aScissorEnable: BOOL;
+                       aMultisampleEnable: BOOL;
+                       aAntialiasedLineEnable: BOOL;
+                       aForcedSampleCount: UINT;
+                       aConservativeRaster: D3D11_CONSERVATIVE_RASTERIZATION_MODE); overload;
 
   end;
 
@@ -281,12 +287,14 @@ type
   // ================================
   //
   PID3D11RasterizerState2 = ^ID3D11RasterizerState2;
+
   ID3D11RasterizerState2 = interface(ID3D11RasterizerState1)
     ['{6fbd02fb-209f-46c4-b059-2ed15586a6ac}']
 
     procedure GetDesc2(out pDesc: D3D11_RASTERIZER_DESC2); stdcall;
 
   end;
+
   IID_ID3D11RasterizerState2 = ID3D11RasterizerState2;
 
 
@@ -303,6 +311,7 @@ type
   end;
 
   PD3D11_TEX2D_ARRAY_SRV1 = ^D3D11_TEX2D_ARRAY_SRV1;
+
   D3D11_TEX2D_ARRAY_SRV1 = record
     MostDetailedMip: UINT;
     MipLevels: UINT;
@@ -315,47 +324,47 @@ type
     Format: DXGI_FORMAT;
     ViewDimension: D3D11_SRV_DIMENSION;
 
-    public
-      constructor Create(const o: D3D11_SHADER_RESOURCE_VIEW_DESC1); overload;
+  public
+    constructor Create(const o: D3D11_SHADER_RESOURCE_VIEW_DESC1); overload;
 
-      constructor Create(aViewDimension: D3D11_SRV_DIMENSION;
-                         aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                         aMostDetailedMip: UINT = 0; // FirstElement for BUFFER
-                         aMipLevels: UINT = UINT(-1); // NumElements for BUFFER
-                         aFirstArraySlice: UINT = 0; // First2DArrayFace for TEXTURECUBEARRAY
-                         aArraySize: UINT = UINT(-1); // NumCubes for TEXTURECUBEARRAY
-                         aFlags: UINT = 0; // BUFFEREX only
-                         aPlaneSlice: UINT = 0 {Texture2D and Texture2DArray only}); overload;
+    constructor Create(aViewDimension: D3D11_SRV_DIMENSION;
+                       aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                       aMostDetailedMip: UINT = 0; // FirstElement for BUFFER
+      aMipLevels: UINT = UINT(-1); // NumElements for BUFFER
+      aFirstArraySlice: UINT = 0; // First2DArrayFace for TEXTURECUBEARRAY
+      aArraySize: UINT = UINT(-1); // NumCubes for TEXTURECUBEARRAY
+      aFlags: UINT = 0; // BUFFEREX only
+      aPlaneSlice: UINT = 0 {Texture2D and Texture2DArray only}); overload;
 
-      constructor Create(const aBuffer: ID3D11Buffer;
-                         aFormat: DXGI_FORMAT;
-                         aFirstElement: UINT;
-                         aNumElements: UINT;
-                         aFlags: UINT = 0); overload;
+    constructor Create(const aBuffer: ID3D11Buffer;
+                       aFormat: DXGI_FORMAT;
+                       aFirstElement: UINT;
+                       aNumElements: UINT;
+                       aFlags: UINT = 0); overload;
 
-      constructor Create(const pTex1D: ID3D11Texture1D;
-                         aViewDimension: D3D11_SRV_DIMENSION;
-                         aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                         aMostDetailedMip: UINT = 0;
-                         aMipLevels: UINT = UINT(-1);
-                         afirstArraySlice: UINT = 0;
-                         aArraySize: UINT = UINT(-1)); overload;
+    constructor Create(const pTex1D: ID3D11Texture1D;
+                       aViewDimension: D3D11_SRV_DIMENSION;
+                       aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                       aMostDetailedMip: UINT = 0;
+                       aMipLevels: UINT = UINT(-1);
+                       afirstArraySlice: UINT = 0;
+                       aArraySize: UINT = UINT(-1)); overload;
 
-      constructor Create(const pTex2D: ID3D11Texture2D;
-                         aViewDimension: D3D11_SRV_DIMENSION;
-                         aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                         aMostDetailedMip: UINT = 0;
-                         aMipLevels: UINT = UINT(-1);
-                         aFirstArraySlice: UINT = 0; // First2DArrayFace for TEXTURECUBEARRAY
-                         aArraySize: UINT = UINT(-1);  // NumCubes for TEXTURECUBEARRAY
-                         aPlaneSlice: UINT = 0 {PlaneSlice for TEXTURE2D or TEXTURE2DARRAY}); overload;
+    constructor Create(const pTex2D: ID3D11Texture2D;
+                       aViewDimension: D3D11_SRV_DIMENSION;
+                       aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                       aMostDetailedMip: UINT = 0;
+                       aMipLevels: UINT = UINT(-1);
+                       aFirstArraySlice: UINT = 0; // First2DArrayFace for TEXTURECUBEARRAY
+      aArraySize: UINT = UINT(-1);  // NumCubes for TEXTURECUBEARRAY
+      aPlaneSlice: UINT = 0 {PlaneSlice for TEXTURE2D or TEXTURE2DARRAY}); overload;
 
-      constructor Create(const pTex3D: ID3D11Texture3D;
-                         aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                         aMostDetailedMip: UINT = 0;
-                         aMipLevels: UINT = UINT(-1)); overload;
+    constructor Create(const pTex3D: ID3D11Texture3D;
+                       aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                       aMostDetailedMip: UINT = 0;
+                       aMipLevels: UINT = UINT(-1)); overload;
 
-    {union}
+      {union}
     case Byte of
       0: (Buffer: D3D11_BUFFER_SRV);
       1: (Texture1D: D3D11_TEX1D_SRV);
@@ -375,12 +384,14 @@ type
   // ================================
   //
   PID3D11ShaderResourceView1 = ^ID3D11ShaderResourceView1;
+
   ID3D11ShaderResourceView1 = interface(ID3D11ShaderResourceView)
     ['{91308b87-9040-411d-8c67-c39253ce3802}']
 
     procedure GetDesc1(out pDesc1: D3D11_SHADER_RESOURCE_VIEW_DESC1);
 
   end;
+
   IID_ID3D11ShaderResourceView1 = ID3D11ShaderResourceView1;
 
 
@@ -392,12 +403,14 @@ type
 
 
   PD3D11_TEX2D_RTV1 = ^D3D11_TEX2D_RTV1;
+
   D3D11_TEX2D_RTV1 = record
     MipSlice: UINT;
     PlaneSlice: UINT;
   end;
 
   PD3D11_TEX2D_ARRAY_RTV1 = ^D3D11_TEX2D_ARRAY_RTV1;
+
   D3D11_TEX2D_ARRAY_RTV1 = record
     MipSlice: UINT;
     FirstArraySlice: UINT;
@@ -410,43 +423,43 @@ type
     Format: DXGI_FORMAT;
     ViewDimension: D3D11_RTV_DIMENSION;
 
-    public
-      constructor Create(const o: D3D11_RENDER_TARGET_VIEW_DESC1); overload;
+  public
+    constructor Create(const o: D3D11_RENDER_TARGET_VIEW_DESC1); overload;
 
-      constructor Create(aViewDimension: D3D11_RTV_DIMENSION;
-                         aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                         aMipSlice: UINT = 0; // FirstElement for BUFFER
-                         aFirstArraySlice: UINT = 0; // NumElements for BUFFER, FirstWSlice for TEXTURE3D
-                         aArraySize: UINT = UINT(-1); // WSize for TEXTURE3D
-                         aPlaneSlice: UINT = 0 {PlaneSlice for TEXTURE2D and TEXTURE2DARRAY}); overload;
+    constructor Create(aViewDimension: D3D11_RTV_DIMENSION;
+                       aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                       aMipSlice: UINT = 0; // FirstElement for BUFFER
+      aFirstArraySlice: UINT = 0; // NumElements for BUFFER, FirstWSlice for TEXTURE3D
+      aArraySize: UINT = UINT(-1); // WSize for TEXTURE3D
+      aPlaneSlice: UINT = 0 {PlaneSlice for TEXTURE2D and TEXTURE2DARRAY}); overload;
 
-      constructor Create(const aBuffer: ID3D11Buffer;
-                         aFormat: DXGI_FORMAT;
-                         aFirstElement: UINT;
-                         aNumElements: UINT); overload;
+    constructor Create(const aBuffer: ID3D11Buffer;
+                       aFormat: DXGI_FORMAT;
+                       aFirstElement: UINT;
+                       aNumElements: UINT); overload;
 
-      constructor Create(const pTex1D: ID3D11Texture1D;
-                         aViewDimension: D3D11_SRV_DIMENSION;
-                         aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                         aMipSlice: UINT = 0;
-                         aFirstArraySlice: UINT = 0;
-                         aArraySize: UINT = UINT(-1)); overload;
+    constructor Create(const pTex1D: ID3D11Texture1D;
+                       aViewDimension: D3D11_SRV_DIMENSION;
+                       aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                       aMipSlice: UINT = 0;
+                       aFirstArraySlice: UINT = 0;
+                       aArraySize: UINT = UINT(-1)); overload;
 
-      constructor Create(const pTex2D: ID3D11Texture2D;
-                         aViewDimension: D3D11_RTV_DIMENSION;
-                         aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                         aMipSlice: UINT = 0;
-                         aFirstArraySlice: UINT = 0;
-                         aArraySize: UINT = UINT(-1);
-                         aPlaneSlice: UINT = 0); overload;
+    constructor Create(const pTex2D: ID3D11Texture2D;
+                       aViewDimension: D3D11_RTV_DIMENSION;
+                       aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                       aMipSlice: UINT = 0;
+                       aFirstArraySlice: UINT = 0;
+                       aArraySize: UINT = UINT(-1);
+                       aPlaneSlice: UINT = 0); overload;
 
-      constructor Create(const pTex3D: ID3D11Texture3D;
-                         aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                         aMipSlice: UINT = 0;
-                         aFirstWSlice: UINT = 0;
-                         aWSize: UINT = UINT(-1)); overload;
+    constructor Create(const pTex3D: ID3D11Texture3D;
+                       aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                       aMipSlice: UINT = 0;
+                       aFirstWSlice: UINT = 0;
+                       aWSize: UINT = UINT(-1)); overload;
 
-    {union}
+      {union}
     case Byte of
       0: (Buffer: D3D11_BUFFER_RTV);
       1: (Texture1D: D3D11_TEX1D_RTV);
@@ -463,12 +476,14 @@ type
   // =================================
   //
   PID3D11RenderTargetView1 = ^ID3D11RenderTargetView1;
+
   ID3D11RenderTargetView1 = interface(ID3D11RenderTargetView)
-  ['{ffbe2e23-f011-418a-ac56-5ceed7c5b94b}']
+    ['{ffbe2e23-f011-418a-ac56-5ceed7c5b94b}']
 
     procedure GetDesc1(out pDesc1: D3D11_RENDER_TARGET_VIEW_DESC1); stdcall;
 
   end;
+
   IID_ID3D11RenderTargetView1 = ID3D11RenderTargetView1;
 
 
@@ -480,12 +495,14 @@ type
   //////////////////////////////////////////////////////////////////////////////
 
   PD3D11_TEX2D_UAV1 = ^D3D11_TEX2D_UAV1;
+
   D3D11_TEX2D_UAV1 = record
     MipSlice: UINT;
     PlaneSlice: UINT;
   end;
 
   PD3D11_TEX2D_ARRAY_UAV1 = ^D3D11_TEX2D_ARRAY_UAV1;
+
   D3D11_TEX2D_ARRAY_UAV1 = record
     MipSlice: UINT;
     FirstArraySlice: UINT;
@@ -498,50 +515,50 @@ type
     Format: DXGI_FORMAT;
     ViewDimension: D3D11_UAV_DIMENSION;
 
-    public
-      constructor Create(const o: D3D11_UNORDERED_ACCESS_VIEW_DESC1); overload;
+  public
+    constructor Create(const o: D3D11_UNORDERED_ACCESS_VIEW_DESC1); overload;
 
-      constructor Create(aViewDimension: D3D11_RTV_DIMENSION;
-                         aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                         aMipSlice: UINT = 0; // FirstElement for BUFFER
-                         aFirstArraySlice: UINT = 0; // NumElements for BUFFER, FirstWSlice for TEXTURE3D
-                         aArraySize: UINT = UINT(-1); // WSize for TEXTURE3D
-                         APlaneSlice: UINT = 0 {PlaneSlice for TEXTURE2D and TEXTURE2DARRAY}); overload;
+    constructor Create(aViewDimension: D3D11_RTV_DIMENSION;
+                       aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                       aMipSlice: UINT = 0; // FirstElement for BUFFER
+      aFirstArraySlice: UINT = 0; // NumElements for BUFFER, FirstWSlice for TEXTURE3D
+      aArraySize: UINT = UINT(-1); // WSize for TEXTURE3D
+      APlaneSlice: UINT = 0 {PlaneSlice for TEXTURE2D and TEXTURE2DARRAY}); overload;
 
-      constructor Create(const aBuffer: ID3D11Buffer;
-                         aFormat: DXGI_FORMAT;
-                         aFirstElement: UINT;
-                         aNumElements: UINT); overload;
+    constructor Create(const aBuffer: ID3D11Buffer;
+                       aFormat: DXGI_FORMAT;
+                       aFirstElement: UINT;
+                       aNumElements: UINT); overload;
 
-      constructor Create(const pTex1D: ID3D11Texture1D;
-                         aViewDimension: D3D11_RTV_DIMENSION;
-                         aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                         aMipSlice: UINT = 0;
-                         aFirstArraySlice: UINT = 0;
-                         aArraySize: UINT = UINT(-1)); overload;
+    constructor Create(const pTex1D: ID3D11Texture1D;
+                       aViewDimension: D3D11_RTV_DIMENSION;
+                       aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                       aMipSlice: UINT = 0;
+                       aFirstArraySlice: UINT = 0;
+                       aArraySize: UINT = UINT(-1)); overload;
 
-      constructor Create(const pTex2D: ID3D11Texture2D;
-                         aViewDimension: D3D11_UAV_DIMENSION;
-                         aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                         aMipSlice: UINT = 0;
-                         aFirstArraySlice: UINT = 0;
-                         aArraySize: UINT = UINT(-1);
-                         aPlaneSlice: UINT = 0); overload;
+    constructor Create(const pTex2D: ID3D11Texture2D;
+                       aViewDimension: D3D11_UAV_DIMENSION;
+                       aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                       aMipSlice: UINT = 0;
+                       aFirstArraySlice: UINT = 0;
+                       aArraySize: UINT = UINT(-1);
+                       aPlaneSlice: UINT = 0); overload;
 
-      constructor Create(const pTex3D: ID3D11Texture3D;
-                         aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
-                         aMipSlice: UINT = 0;
-                         aFirstWSlice: UINT = 0;
-                         aWSize: UINT = UINT(-1)); overload;
+    constructor Create(const pTex3D: ID3D11Texture3D;
+                       aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
+                       aMipSlice: UINT = 0;
+                       aFirstWSlice: UINT = 0;
+                       aWSize: UINT = UINT(-1)); overload;
 
-    {union}
+      {union}
     case Byte of
-      0:  (Buffer: D3D11_BUFFER_UAV);
-      1:  (Texture1D: D3D11_TEX1D_UAV);
-      2:  (Texture1DArray: D3D11_TEX1D_ARRAY_UAV);
-      3:  (Texture2D: D3D11_TEX2D_UAV1);
-      4:  (Texture2DArray: D3D11_TEX2D_ARRAY_UAV1);
-      5:  (Texture3D: D3D11_TEX3D_UAV);
+      0: (Buffer: D3D11_BUFFER_UAV);
+      1: (Texture1D: D3D11_TEX1D_UAV);
+      2: (Texture1DArray: D3D11_TEX1D_ARRAY_UAV);
+      3: (Texture2D: D3D11_TEX2D_UAV1);
+      4: (Texture2DArray: D3D11_TEX2D_ARRAY_UAV1);
+      5: (Texture3D: D3D11_TEX3D_UAV);
   end;
 
 
@@ -549,12 +566,14 @@ type
   // ====================================
   //
   PID3D11UnorderedAccessView1 = ^ID3D11SamplerState;
+
   ID3D11UnorderedAccessView1 = interface(ID3D11UnorderedAccessView)
-  ['{7b3b6153-a886-4544-ab37-6537c8500403}']
+    ['{7b3b6153-a886-4544-ab37-6537c8500403}']
 
     procedure GetDesc1(out pDesc1: D3D11_UNORDERED_ACCESS_VIEW_DESC1); stdcall;
 
   end;
+
   IID_ID3D11UnorderedAccessView1 = ID3D11UnorderedAccessView1;
 
 
@@ -569,12 +588,12 @@ type
     MiscFlags: UINT;
     ContextType: D3D11_CONTEXT_TYPE;
 
-    public
-      constructor Create(const o: D3D11_QUERY_DESC1); overload;
+  public
+    constructor Create(const o: D3D11_QUERY_DESC1); overload;
 
-      constructor Create(aQuery: D3D11_QUERY;
-                         aMiscFlags: UINT = 0;
-                         aContextType: D3D11_CONTEXT_TYPE = D3D11_CONTEXT_TYPE_ALL); overload;
+    constructor Create(aQuery: D3D11_QUERY;
+                       aMiscFlags: UINT = 0;
+                       aContextType: D3D11_CONTEXT_TYPE = D3D11_CONTEXT_TYPE_ALL); overload;
 
   end;
 
@@ -583,24 +602,26 @@ type
   // ======================
   //
   PID3D11Query1 = ^ID3D11Query1;
+
   ID3D11Query1 = interface(ID3D11Query)
-  ['{631b4766-36dc-461d-8db6-c47e13e60916}']
+    ['{631b4766-36dc-461d-8db6-c47e13e60916}']
 
     procedure GetDesc1(out pDesc1: D3D11_QUERY_DESC1); stdcall;
 
   end;
+
   IID_ID3D11Query1 = ID3D11Query1;
 
 
   PD3D11_FENCE_FLAG = ^D3D11_FENCE_FLAG;
-  D3D11_FENCE_FLAG                        = (
-    D3D11_FENCE_FLAG_NONE                 = $0,
-    D3D11_FENCE_FLAG_SHARED               = $2,
-    D3D11_FENCE_FLAG_SHARED_CROSS_ADAPTER = $4,
-    D3D11_FENCE_FLAG_NON_MONITORED        = $8
-  );
+  D3D11_FENCE_FLAG = (
+    D3D11_FENCE_FLAG_NONE = $0,
+                      D3D11_FENCE_FLAG_SHARED = $2,
+                      D3D11_FENCE_FLAG_SHARED_CROSS_ADAPTER = $4,
+                      D3D11_FENCE_FLAG_NON_MONITORED = $8
+    );
 
-{$DEFINE DEFINE_ENUM_FLAG_OPERATORS(D3D11_FENCE_FLAG)}
+  {$DEFINE DEFINE_ENUM_FLAG_OPERATORS(D3D11_FENCE_FLAG)}
 
 
 
@@ -615,8 +636,9 @@ type
   // ==============================
   //
   PID3D11DeviceContext3 = ^ID3D11DeviceContext3;
+
   ID3D11DeviceContext3 = interface(ID3D11DeviceContext2)
-  ['{b4e3c01d-e79e-4637-91b2-510e9f4c9b8f}']
+    ['{b4e3c01d-e79e-4637-91b2-510e9f4c9b8f}']
 
     procedure Flush1(ContextType: D3D11_CONTEXT_TYPE;
                      hEvent: THandle); stdcall;
@@ -626,6 +648,7 @@ type
     procedure GetHardwareProtectionState(out pHwProtectionEnable: BOOL); stdcall;
 
   end;
+
   IID_ID3D11DeviceContext3 = ID3D11DeviceContext3;
 
 
@@ -640,7 +663,7 @@ type
   // =====================
   //
   ID3D11Fence = interface(ID3D11DeviceChild)
-  ['{affde9d1-1df7-4bb7-8a34-0f46251dab80}']
+    ['{affde9d1-1df7-4bb7-8a34-0f46251dab80}']
 
     function CreateSharedHandle(pAttributes: PSECURITY_ATTRIBUTES;
                                 dwAccess: DWORD;
@@ -653,6 +676,7 @@ type
                                   hEvent: THandle): HRESULT; stdcall;
 
   end;
+
   IID_ID3D11Fence = ID3D11Fence;
 
 
@@ -667,7 +691,7 @@ type
   // ==============================
   //
   ID3D11DeviceContext4 = interface(ID3D11DeviceContext3)
-  ['{917600da-f58c-4c33-98d8-3e15b390fa24}']
+    ['{917600da-f58c-4c33-98d8-3e15b390fa24}']
 
     function Signal(const pFence: ID3D11Fence;
                     Value: UINT64): HRESULT; stdcall;
@@ -676,6 +700,7 @@ type
                   Value: UINT64): HRESULT; stdcall;
 
   end;
+
   IID_ID3D11DeviceContext4 = ID3D11DeviceContext4;
 
 
@@ -690,11 +715,11 @@ type
   // =======================
   //
   ID3D11Device3 = interface(ID3D11Device2)
-  ['{A05C8C37-D2C6-4732-B3A0-9CE0B0DC9AE6}']
+    ['{A05C8C37-D2C6-4732-B3A0-9CE0B0DC9AE6}']
 
     function CreateTexture2D1(pDesc1: D3D11_TEXTURE2D_DESC1;
-                             pInitialData: D3D11_SUBRESOURCE_DATA;
-                             ppTexture2D: PID3D11Texture2D1): HRESULT; stdcall;
+                              pInitialData: D3D11_SUBRESOURCE_DATA;
+                              ppTexture2D: PID3D11Texture2D1): HRESULT; stdcall;
 
     function CreateTexture3D1(pDesc1: D3D11_TEXTURE3D_DESC1;
                               pInitialData: PD3D11_SUBRESOURCE_DATA;
@@ -737,6 +762,7 @@ type
                                   SrcSubresource: UINT;
                                   pSrcBox: PD3D11_BOX); stdcall;
   end;
+
   IID_ID3D11Device3 = ID3D11Device3;
 
 
@@ -752,6 +778,7 @@ implementation
 {D3D11_TEXTURE2D_DESC1}
 
 constructor D3D11_TEXTURE2D_DESC1.Create(const o: D3D11_TEXTURE2D_DESC1);
+
 begin
 
   Self := o;
@@ -770,6 +797,7 @@ constructor D3D11_TEXTURE2D_DESC1.Create(aFormat: DXGI_FORMAT;
                                          aSampleQuality: UINT = 0;
                                          aMiscFlags: UINT = 0;
                                          aTextureLayout: D3D11_TEXTURE_LAYOUT = D3D11_TEXTURE_LAYOUT_UNDEFINED);
+
 begin
 
   Width := aWidth;
@@ -789,6 +817,7 @@ end;
 
 constructor D3D11_TEXTURE2D_DESC1.Create(aDesc: D3D11_TEXTURE2D_DESC;
                                          aTextureLayout: D3D11_TEXTURE_LAYOUT = D3D11_TEXTURE_LAYOUT_UNDEFINED);
+
 begin
 
   Width := aDesc.Width;
@@ -797,7 +826,7 @@ begin
   ArraySize := aDesc.ArraySize;
   Format := aDesc.Format;
   SampleDesc.Count := aDesc.SampleDesc.Count;
-  SampleDesc.Quality := aDesc. SampleDesc.Quality;
+  SampleDesc.Quality := aDesc.SampleDesc.Quality;
   Usage := aDesc.Usage;
   BindFlags := aDesc.BindFlags;
   CPUAccessFlags := aDesc.CPUAccessFlags;
@@ -809,6 +838,7 @@ end;
 {D3D11_TEXTURE3D_DESC1}
 
 constructor D3D11_TEXTURE3D_DESC1.Create(const o: D3D11_TEXTURE3D_DESC1);
+
 begin
 
   Self := o;
@@ -825,23 +855,25 @@ constructor D3D11_TEXTURE3D_DESC1.Create(aFormat: DXGI_FORMAT;
                                          aCpuAccessFlags: UINT = 0;
                                          aMiscFlags: UINT = 0;
                                          aTextureLayout: D3D11_TEXTURE_LAYOUT = D3D11_TEXTURE_LAYOUT_UNDEFINED);
+
 begin
 
- Width := aWidth;
- Height := aHeight;
- Depth := aDepth;
- MipLevels := aMipLevels;
- Format := aFormat;
- Usage := aUsage;
- BindFlags := aBindFlags;
- CPUAccessFlags := aCpuAccessFlags;
- MiscFlags := aMiscFlags;
- TextureLayout := aTextureLayout;
+  Width := aWidth;
+  Height := aHeight;
+  Depth := aDepth;
+  MipLevels := aMipLevels;
+  Format := aFormat;
+  Usage := aUsage;
+  BindFlags := aBindFlags;
+  CPUAccessFlags := aCpuAccessFlags;
+  MiscFlags := aMiscFlags;
+  TextureLayout := aTextureLayout;
 end;
 
 
 constructor D3D11_TEXTURE3D_DESC1.Create(aDesc: D3D11_TEXTURE3D_DESC;
                                          aTextureLayout: D3D11_TEXTURE_LAYOUT = D3D11_TEXTURE_LAYOUT_UNDEFINED);
+
 begin
 
   Width := aDesc.Width;
@@ -860,12 +892,15 @@ end;
 {PD3D11_RASTERIZER_DESC2}
 
 constructor D3D11_RASTERIZER_DESC2.Create(const o: D3D11_RASTERIZER_DESC2);
+
 begin
+
   Self := o;
 end;
 
 
 constructor D3D11_RASTERIZER_DESC2.Create(Default: Boolean);
+
 begin
 
   FillMode := D3D11_FILL_SOLID;
@@ -895,6 +930,7 @@ constructor D3D11_RASTERIZER_DESC2.Create(aFillMode: D3D11_FILL_MODE;
                                           aAntialiasedLineEnable: BOOL;
                                           aForcedSampleCount: UINT;
                                           aConservativeRaster: D3D11_CONSERVATIVE_RASTERIZATION_MODE);
+
 begin
 
   FillMode := aFillMode;
@@ -915,6 +951,7 @@ end;
 {D3D11_SHADER_RESOURCE_VIEW_DESC1}
 
 constructor D3D11_SHADER_RESOURCE_VIEW_DESC1.Create(const o: D3D11_SHADER_RESOURCE_VIEW_DESC1);
+
 begin
 
   Self := o;
@@ -924,11 +961,12 @@ end;
 constructor D3D11_SHADER_RESOURCE_VIEW_DESC1.Create(aViewDimension: D3D11_SRV_DIMENSION;
                                                     aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
                                                     aMostDetailedMip: UINT = 0; // FirstElement for BUFFER
-                                                    aMipLevels: UINT = UINT(-1); // NumElements for BUFFER
-                                                    aFirstArraySlice: UINT = 0; // First2DArrayFace for TEXTURECUBEARRAY
-                                                    aArraySize: UINT = UINT(-1); // NumCubes for TEXTURECUBEARRAY
-                                                    aFlags: UINT = 0; // BUFFEREX only
-                                                    aPlaneSlice: UINT = 0 {Texture2D and Texture2DArray only});
+  aMipLevels: UINT = UINT(-1); // NumElements for BUFFER
+  aFirstArraySlice: UINT = 0; // First2DArrayFace for TEXTURECUBEARRAY
+  aArraySize: UINT = UINT(-1); // NumCubes for TEXTURECUBEARRAY
+  aFlags: UINT = 0; // BUFFEREX only
+  aPlaneSlice: UINT = 0 {Texture2D and Texture2DArray only});
+
 begin
 
   Format := aFormat;
@@ -937,68 +975,68 @@ begin
 
   case aViewDimension of
 
-    D3D11_SRV_DIMENSION_BUFFER: begin
-                                  Buffer.FirstElement := aMostDetailedMip;
-                                  Buffer.NumElements := aMipLevels;
-                                end;
+      D3D11_SRV_DIMENSION_BUFFER: begin
+        Buffer.FirstElement := aMostDetailedMip;
+        Buffer.NumElements := aMipLevels;
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURE1D: begin
-                                     Texture1D.MostDetailedMip := aMostDetailedMip;
-                                     Texture1D.MipLevels := aMipLevels;
-                                   end;
+      D3D11_SRV_DIMENSION_TEXTURE1D: begin
+        Texture1D.MostDetailedMip := aMostDetailedMip;
+        Texture1D.MipLevels := aMipLevels;
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURE1DARRAY: begin
-                                          Texture1DArray.MostDetailedMip := aMostDetailedMip;
-                                          Texture1DArray.MipLevels := aMipLevels;
-                                          Texture1DArray.FirstArraySlice := aFirstArraySlice;
-                                          Texture1DArray.ArraySize := aArraySize;
-                                        end;
+      D3D11_SRV_DIMENSION_TEXTURE1DARRAY: begin
+        Texture1DArray.MostDetailedMip := aMostDetailedMip;
+        Texture1DArray.MipLevels := aMipLevels;
+        Texture1DArray.FirstArraySlice := aFirstArraySlice;
+        Texture1DArray.ArraySize := aArraySize;
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURE2D: begin
-                                     Texture2D.MostDetailedMip := aMostDetailedMip;
-                                     Texture2D.MipLevels := aMipLevels;
-                                     Texture2D.PlaneSlice := aPlaneSlice;
-                                   end;
+      D3D11_SRV_DIMENSION_TEXTURE2D: begin
+        Texture2D.MostDetailedMip := aMostDetailedMip;
+        Texture2D.MipLevels := aMipLevels;
+        Texture2D.PlaneSlice := aPlaneSlice;
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURE2DARRAY: begin
-                                          Texture2DArray.MostDetailedMip := aMostDetailedMip;
-                                          Texture2DArray.MipLevels := aMipLevels;
-                                          Texture2DArray.FirstArraySlice := aFirstArraySlice;
-                                          Texture2DArray.ArraySize := aArraySize;
-                                          Texture2DArray.PlaneSlice := aPlaneSlice;
-                                        end;
+      D3D11_SRV_DIMENSION_TEXTURE2DARRAY: begin
+        Texture2DArray.MostDetailedMip := aMostDetailedMip;
+        Texture2DArray.MipLevels := aMipLevels;
+        Texture2DArray.FirstArraySlice := aFirstArraySlice;
+        Texture2DArray.ArraySize := aArraySize;
+        Texture2DArray.PlaneSlice := aPlaneSlice;
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURE2DMS: begin
-                                       // Nothing todo.
-                                     end;
+      D3D11_SRV_DIMENSION_TEXTURE2DMS: begin
+        // Nothing todo.
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY: begin
-                                            Texture2DMSArray.FirstArraySlice := aFirstArraySlice;
-                                            Texture2DMSArray.ArraySize := aArraySize;
-                                          end;
+      D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY: begin
+        Texture2DMSArray.FirstArraySlice := aFirstArraySlice;
+        Texture2DMSArray.ArraySize := aArraySize;
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURE3D: begin
-                                     Texture3D.MostDetailedMip := aMostDetailedMip;
-                                     Texture3D.MipLevels := aMipLevels;
-                                   end;
+      D3D11_SRV_DIMENSION_TEXTURE3D: begin
+        Texture3D.MostDetailedMip := aMostDetailedMip;
+        Texture3D.MipLevels := aMipLevels;
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURECUBE: begin
-                                       TextureCube.MostDetailedMip := aMostDetailedMip;
-                                       TextureCube.MipLevels := aMipLevels;
-                                     end;
+      D3D11_SRV_DIMENSION_TEXTURECUBE: begin
+        TextureCube.MostDetailedMip := aMostDetailedMip;
+        TextureCube.MipLevels := aMipLevels;
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURECUBEARRAY: begin
-                                            TextureCubeArray.MostDetailedMip := aMostDetailedMip;
-                                            TextureCubeArray.MipLevels := aMipLevels;
-                                            TextureCubeArray.First2DArrayFace := aFirstArraySlice;
-                                            TextureCubeArray.NumCubes := aArraySize;
-                                          end;
+      D3D11_SRV_DIMENSION_TEXTURECUBEARRAY: begin
+        TextureCubeArray.MostDetailedMip := aMostDetailedMip;
+        TextureCubeArray.MipLevels := aMipLevels;
+        TextureCubeArray.First2DArrayFace := aFirstArraySlice;
+        TextureCubeArray.NumCubes := aArraySize;
+      end;
 
-    D3D11_SRV_DIMENSION_BUFFEREX: begin
-                                    BufferEx.FirstElement := aMostDetailedMip;
-                                    BufferEx.NumElements := aMipLevels;
-                                    BufferEx.Flags := aFlags;
-                                  end;
+      D3D11_SRV_DIMENSION_BUFFEREX: begin
+        BufferEx.FirstElement := aMostDetailedMip;
+        BufferEx.NumElements := aMipLevels;
+        BufferEx.Flags := aFlags;
+      end;
   end;
 end;
 
@@ -1008,6 +1046,7 @@ constructor D3D11_SHADER_RESOURCE_VIEW_DESC1.Create(const aBuffer: ID3D11Buffer;
                                                     aFirstElement: UINT;
                                                     aNumElements: UINT;
                                                     aFlags: UINT = 0);
+
 begin
 
   Format := aFormat;
@@ -1032,8 +1071,8 @@ begin
 
   ViewDimension := viewDimension;
 
-  if ( (DXGI_FORMAT_UNKNOWN = aFormat) or (aMipLevels = UINT(-1)) or
-            ( (aArraySize = UINT(-1)) and (D3D11_SRV_DIMENSION_TEXTURE1DARRAY = aViewDimension) )) then
+  if ((DXGI_FORMAT_UNKNOWN = aFormat) or (aMipLevels = UINT(-1)) or
+    ((aArraySize = UINT(-1)) and (D3D11_SRV_DIMENSION_TEXTURE1DARRAY = aViewDimension))) then
 
     begin
       pTex1D.GetDesc(TexDesc);
@@ -1049,17 +1088,17 @@ begin
 
   case aViewDimension of
 
-    D3D11_SRV_DIMENSION_TEXTURE1D: begin
-                                     Texture1D.MostDetailedMip := aMostDetailedMip;
-                                     Texture1D.MipLevels := aMipLevels;
-                                   end;
+      D3D11_SRV_DIMENSION_TEXTURE1D: begin
+        Texture1D.MostDetailedMip := aMostDetailedMip;
+        Texture1D.MipLevels := aMipLevels;
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURE1DARRAY: begin
-                                          Texture1DArray.MostDetailedMip := aMostDetailedMip;
-                                          Texture1DArray.MipLevels := aMipLevels;
-                                          Texture1DArray.FirstArraySlice := aFirstArraySlice;
-                                          Texture1DArray.ArraySize := aArraySize;
-                                        end;
+      D3D11_SRV_DIMENSION_TEXTURE1DARRAY: begin
+        Texture1DArray.MostDetailedMip := aMostDetailedMip;
+        Texture1DArray.MipLevels := aMipLevels;
+        Texture1DArray.FirstArraySlice := aFirstArraySlice;
+        Texture1DArray.ArraySize := aArraySize;
+      end;
   end;
 
 end;
@@ -1071,8 +1110,8 @@ constructor D3D11_SHADER_RESOURCE_VIEW_DESC1.Create(const pTex2D: ID3D11Texture2
                                                     aMostDetailedMip: UINT = 0;
                                                     aMipLevels: UINT = UINT(-1);
                                                     aFirstArraySlice: UINT = 0; // First2DArrayFace for TEXTURECUBEARRAY
-                                                    aArraySize: UINT = UINT(-1);  // NumCubes for TEXTURECUBEARRAY
-                                                    aPlaneSlice: UINT = 0 {PlaneSlice for TEXTURE2D or TEXTURE2DARRAY});
+  aArraySize: UINT = UINT(-1);  // NumCubes for TEXTURECUBEARRAY
+  aPlaneSlice: UINT = 0 {PlaneSlice for TEXTURE2D or TEXTURE2DARRAY});
 var
   TexDesc: D3D11_TEXTURE2D_DESC;
 
@@ -1080,13 +1119,13 @@ begin
 
   ViewDimension := aViewDimension;
   if (DXGI_FORMAT_UNKNOWN = aFormat) or
-            ((aMipLevels = Uint(-1)) and
-                (D3D11_SRV_DIMENSION_TEXTURE2DMS <> aViewDimension) and
-                (D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY <> viewDimension)) or
-            ((aArraySize = UINT(-1)) and
-                ((D3D11_SRV_DIMENSION_TEXTURE2DARRAY = aViewDimension) or
-                (D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY = aViewDimension) or
-                (D3D11_SRV_DIMENSION_TEXTURECUBEARRAY = aViewDimension))) then
+    ((aMipLevels = Uint(-1)) and
+    (D3D11_SRV_DIMENSION_TEXTURE2DMS <> aViewDimension) and
+    (D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY <> viewDimension)) or
+    ((aArraySize = UINT(-1)) and
+    ((D3D11_SRV_DIMENSION_TEXTURE2DARRAY = aViewDimension) or
+    (D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY = aViewDimension) or
+    (D3D11_SRV_DIMENSION_TEXTURECUBEARRAY = aViewDimension))) then
     begin
       pTex2D.GetDesc(TexDesc);
 
@@ -1106,40 +1145,46 @@ begin
 
   case aViewDimension of
 
-    D3D11_SRV_DIMENSION_TEXTURE2D: begin;
-                                     Texture2D.MostDetailedMip := aMostDetailedMip;
-                                     Texture2D.MipLevels := aMipLevels;
-                                     Texture2D.PlaneSlice := aPlaneSlice;
-                                   end;
+      D3D11_SRV_DIMENSION_TEXTURE2D: begin
+        ;
+        Texture2D.MostDetailedMip := aMostDetailedMip;
+        Texture2D.MipLevels := aMipLevels;
+        Texture2D.PlaneSlice := aPlaneSlice;
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURE2DARRAY: begin;
-                                          Texture2DArray.MostDetailedMip := aMostDetailedMip;
-                                          Texture2DArray.MipLevels := aMipLevels;
-                                          Texture2DArray.FirstArraySlice := aFirstArraySlice;
-                                          Texture2DArray.ArraySize := aArraySize;
-                                          Texture2DArray.PlaneSlice := aPlaneSlice;
-                                         end;
+      D3D11_SRV_DIMENSION_TEXTURE2DARRAY: begin
+        ;
+        Texture2DArray.MostDetailedMip := aMostDetailedMip;
+        Texture2DArray.MipLevels := aMipLevels;
+        Texture2DArray.FirstArraySlice := aFirstArraySlice;
+        Texture2DArray.ArraySize := aArraySize;
+        Texture2DArray.PlaneSlice := aPlaneSlice;
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURE2DMS: begin;
-                                       // Nothing todo.
-                                     end;
+      D3D11_SRV_DIMENSION_TEXTURE2DMS: begin
+        ;
+        // Nothing todo.
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY: begin;
-                                            Texture2DMSArray.FirstArraySlice := aFirstArraySlice;
-                                            Texture2DMSArray.ArraySize := aArraySize;
-                                          end;
+      D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY: begin
+        ;
+        Texture2DMSArray.FirstArraySlice := aFirstArraySlice;
+        Texture2DMSArray.ArraySize := aArraySize;
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURECUBE: begin;
-                                       TextureCube.MostDetailedMip := aMostDetailedMip;
-                                       TextureCube.MipLevels := aMipLevels;
-                                     end;
+      D3D11_SRV_DIMENSION_TEXTURECUBE: begin
+        ;
+        TextureCube.MostDetailedMip := aMostDetailedMip;
+        TextureCube.MipLevels := aMipLevels;
+      end;
 
-    D3D11_SRV_DIMENSION_TEXTURECUBEARRAY: begin;
-                                            TextureCubeArray.MostDetailedMip := aMostDetailedMip;
-                                            TextureCubeArray.MipLevels := aMipLevels;
-                                            TextureCubeArray.First2DArrayFace := aFirstArraySlice;
-                                            TextureCubeArray.NumCubes := aArraySize;
-                                          end;
+      D3D11_SRV_DIMENSION_TEXTURECUBEARRAY: begin
+        ;
+        TextureCubeArray.MostDetailedMip := aMostDetailedMip;
+        TextureCubeArray.MipLevels := aMipLevels;
+        TextureCubeArray.First2DArrayFace := aFirstArraySlice;
+        TextureCubeArray.NumCubes := aArraySize;
+      end;
   end;
 end;
 
@@ -1171,6 +1216,7 @@ end;
 {D3D11_RENDER_TARGET_VIEW_DESC1}
 
 constructor D3D11_RENDER_TARGET_VIEW_DESC1.Create(const o: D3D11_RENDER_TARGET_VIEW_DESC1);
+
 begin
 
   Self := o;
@@ -1180,9 +1226,10 @@ end;
 constructor D3D11_RENDER_TARGET_VIEW_DESC1.Create(aViewDimension: D3D11_RTV_DIMENSION;
                                                   aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
                                                   aMipSlice: UINT = 0; // FirstElement for BUFFER
-                                                  aFirstArraySlice: UINT = 0; // NumElements for BUFFER, FirstWSlice for TEXTURE3D
-                                                  aArraySize: UINT = UINT(-1); // WSize for TEXTURE3D
-                                                  aPlaneSlice: UINT = 0 {PlaneSlice for TEXTURE2D and TEXTURE2DARRAY});
+  aFirstArraySlice: UINT = 0; // NumElements for BUFFER, FirstWSlice for TEXTURE3D
+  aArraySize: UINT = UINT(-1); // WSize for TEXTURE3D
+  aPlaneSlice: UINT = 0 {PlaneSlice for TEXTURE2D and TEXTURE2DARRAY});
+
 begin
 
   Format := aFormat;
@@ -1190,47 +1237,47 @@ begin
 
   case aViewDimension of
 
-    D3D11_RTV_DIMENSION_BUFFER: begin
-                                  Buffer.FirstElement := aMipSlice;
-                                  Buffer.NumElements := aFirstArraySlice;
-                                end;
+      D3D11_RTV_DIMENSION_BUFFER: begin
+        Buffer.FirstElement := aMipSlice;
+        Buffer.NumElements := aFirstArraySlice;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE1D: begin
-                                     Texture1D.MipSlice := aMipSlice;
-                                   end;
+      D3D11_RTV_DIMENSION_TEXTURE1D: begin
+        Texture1D.MipSlice := aMipSlice;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE1DARRAY: begin
-                                          Texture1DArray.MipSlice := aMipSlice;
-                                          Texture1DArray.FirstArraySlice := aFirstArraySlice;
-                                          Texture1DArray.ArraySize := aArraySize;
-                                        end;
+      D3D11_RTV_DIMENSION_TEXTURE1DARRAY: begin
+        Texture1DArray.MipSlice := aMipSlice;
+        Texture1DArray.FirstArraySlice := aFirstArraySlice;
+        Texture1DArray.ArraySize := aArraySize;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE2D: begin
-                                     Texture2D.MipSlice := aMipSlice;
-                                     Texture2D.PlaneSlice := aPlaneSlice;
-                                   end;
+      D3D11_RTV_DIMENSION_TEXTURE2D: begin
+        Texture2D.MipSlice := aMipSlice;
+        Texture2D.PlaneSlice := aPlaneSlice;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE2DARRAY: begin
-                                          Texture2DArray.MipSlice := aMipSlice;
-                                          Texture2DArray.FirstArraySlice := aFirstArraySlice;
-                                          Texture2DArray.ArraySize := aArraySize;
-                                          Texture2DArray.PlaneSlice := aPlaneSlice;
-                                        end;
+      D3D11_RTV_DIMENSION_TEXTURE2DARRAY: begin
+        Texture2DArray.MipSlice := aMipSlice;
+        Texture2DArray.FirstArraySlice := aFirstArraySlice;
+        Texture2DArray.ArraySize := aArraySize;
+        Texture2DArray.PlaneSlice := aPlaneSlice;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE2DMS: begin
-                                       // Nothing todo.
-                                     end;
+      D3D11_RTV_DIMENSION_TEXTURE2DMS: begin
+        // Nothing todo.
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE2DMSARRAY: begin
-                                            Texture2DMSArray.FirstArraySlice := aFirstArraySlice;
-                                            Texture2DMSArray.ArraySize := aArraySize;
-                                          end;
+      D3D11_RTV_DIMENSION_TEXTURE2DMSARRAY: begin
+        Texture2DMSArray.FirstArraySlice := aFirstArraySlice;
+        Texture2DMSArray.ArraySize := aArraySize;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE3D: begin
-                                     Texture3D.MipSlice := aMipSlice;
-                                     Texture3D.FirstWSlice := aFirstArraySlice;
-                                     Texture3D.WSize := aArraySize;
-                                   end;
+      D3D11_RTV_DIMENSION_TEXTURE3D: begin
+        Texture3D.MipSlice := aMipSlice;
+        Texture3D.FirstWSlice := aFirstArraySlice;
+        Texture3D.WSize := aArraySize;
+      end;
   end;
 end;
 
@@ -1239,6 +1286,7 @@ constructor D3D11_RENDER_TARGET_VIEW_DESC1.Create(const aBuffer: ID3D11Buffer;
                                                   aFormat: DXGI_FORMAT;
                                                   aFirstElement: UINT;
                                                   aNumElements: UINT);
+
 begin
 
   Format := aFormat;
@@ -1260,8 +1308,8 @@ var
 begin
 
   ViewDimension := viewDimension;
-  if ( (DXGI_FORMAT_UNKNOWN = aFormat) or
-            ( (aArraySize = UINT(-1)) and (DWORD(D3D11_RTV_DIMENSION_TEXTURE1DARRAY) = aViewDimension) )) then
+  if ((DXGI_FORMAT_UNKNOWN = aFormat) or
+    ((aArraySize = UINT(-1)) and (DWORD(D3D11_RTV_DIMENSION_TEXTURE1DARRAY) = aViewDimension))) then
     begin
       pTex1D.GetDesc(TexDesc);
       if (DXGI_FORMAT_UNKNOWN = aFormat) then
@@ -1273,15 +1321,15 @@ begin
   Format := aFormat;
 
   case aViewDimension of
-    DWORD(D3D11_RTV_DIMENSION_TEXTURE1D): begin
-                                            Texture1D.MipSlice := aMipSlice;
-                                          end;
+      DWORD(D3D11_RTV_DIMENSION_TEXTURE1D): begin
+        Texture1D.MipSlice := aMipSlice;
+      end;
 
-    DWORD(D3D11_RTV_DIMENSION_TEXTURE1DARRAY): begin
-                                                 Texture1DArray.MipSlice := aMipSlice;
-                                                 Texture1DArray.FirstArraySlice := aFirstArraySlice;
-                                                 Texture1DArray.ArraySize := aArraySize;
-                                               end;
+      DWORD(D3D11_RTV_DIMENSION_TEXTURE1DARRAY): begin
+        Texture1DArray.MipSlice := aMipSlice;
+        Texture1DArray.FirstArraySlice := aFirstArraySlice;
+        Texture1DArray.ArraySize := aArraySize;
+      end;
   end;
 end;
 
@@ -1300,10 +1348,10 @@ begin
 
   ViewDimension := aViewDimension;
 
-  if ( (DXGI_FORMAT_UNKNOWN = format) or
-            ( (aArraySize = UINT(-1)) and
-                ( (D3D11_RTV_DIMENSION_TEXTURE2DARRAY = aViewDimension) or
-                  (D3D11_RTV_DIMENSION_TEXTURE2DMSARRAY = aViewDimension) ))) then
+  if ((DXGI_FORMAT_UNKNOWN = format) or
+    ((aArraySize = UINT(-1)) and
+    ((D3D11_RTV_DIMENSION_TEXTURE2DARRAY = aViewDimension) or
+    (D3D11_RTV_DIMENSION_TEXTURE2DMSARRAY = aViewDimension)))) then
     begin
       pTex2D.GetDesc(TexDesc);
       if (DXGI_FORMAT_UNKNOWN = format) then
@@ -1315,26 +1363,26 @@ begin
   Format := aFormat;
 
   case aViewDimension of
-    D3D11_RTV_DIMENSION_TEXTURE2D: begin
-                                     Texture2D.MipSlice := aMipSlice;
-                                     Texture2D.PlaneSlice := aPlaneSlice;
-                                   end;
+      D3D11_RTV_DIMENSION_TEXTURE2D: begin
+        Texture2D.MipSlice := aMipSlice;
+        Texture2D.PlaneSlice := aPlaneSlice;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE2DARRAY: begin
-                                          Texture2DArray.MipSlice := aMipSlice;
-                                          Texture2DArray.FirstArraySlice := aFirstArraySlice;
-                                          Texture2DArray.ArraySize := aArraySize;
-                                          Texture2DArray.PlaneSlice := aPlaneSlice;
-                                        end;
+      D3D11_RTV_DIMENSION_TEXTURE2DARRAY: begin
+        Texture2DArray.MipSlice := aMipSlice;
+        Texture2DArray.FirstArraySlice := aFirstArraySlice;
+        Texture2DArray.ArraySize := aArraySize;
+        Texture2DArray.PlaneSlice := aPlaneSlice;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE2DMS: begin
-                                       // Nothing todo.
-                                     end;
+      D3D11_RTV_DIMENSION_TEXTURE2DMS: begin
+        // Nothing todo.
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE2DMSARRAY: begin
-                                            Texture2DMSArray.FirstArraySlice := aFirstArraySlice;
-                                            Texture2DMSArray.ArraySize := aArraySize;
-                                          end;
+      D3D11_RTV_DIMENSION_TEXTURE2DMSARRAY: begin
+        Texture2DMSArray.FirstArraySlice := aFirstArraySlice;
+        Texture2DMSArray.ArraySize := aArraySize;
+      end;
   end;
 end;
 
@@ -1351,7 +1399,7 @@ begin
 
   ViewDimension := D3D11_RTV_DIMENSION_TEXTURE3D;
 
-  if ( (DXGI_FORMAT_UNKNOWN = aFormat) or (aWSize = UINT(-1)) ) then
+  if ((DXGI_FORMAT_UNKNOWN = aFormat) or (aWSize = UINT(-1))) then
     begin
       pTex3D.GetDesc(TexDesc);
       if (DXGI_FORMAT_UNKNOWN = aFormat) then
@@ -1362,7 +1410,7 @@ begin
 
   Format := format;
   Texture3D.MipSlice := aMipSlice;
-  Texture3D.FirstWSlice:= aFirstWSlice;
+  Texture3D.FirstWSlice := aFirstWSlice;
   Texture3D.WSize := aWSize;
 end;
 
@@ -1370,7 +1418,9 @@ end;
 {D3D11_UNORDERED_ACCESS_VIEW_DESC1}
 
 constructor D3D11_UNORDERED_ACCESS_VIEW_DESC1.Create(const o: D3D11_UNORDERED_ACCESS_VIEW_DESC1);
+
 begin
+
   Self := o;
 end;
 
@@ -1378,9 +1428,10 @@ end;
 constructor D3D11_UNORDERED_ACCESS_VIEW_DESC1.Create(aViewDimension: D3D11_RTV_DIMENSION;
                                                      aFormat: DXGI_FORMAT = DXGI_FORMAT_UNKNOWN;
                                                      aMipSlice: UINT = 0; // FirstElement for BUFFER
-                                                     aFirstArraySlice: UINT = 0; // NumElements for BUFFER, FirstWSlice for TEXTURE3D
-                                                     aArraySize: UINT = UINT(-1); // WSize for TEXTURE3D
-                                                     APlaneSlice: UINT = 0 {PlaneSlice for TEXTURE2D and TEXTURE2DARRAY});
+  aFirstArraySlice: UINT = 0; // NumElements for BUFFER, FirstWSlice for TEXTURE3D
+  aArraySize: UINT = UINT(-1); // WSize for TEXTURE3D
+  APlaneSlice: UINT = 0 {PlaneSlice for TEXTURE2D and TEXTURE2DARRAY});
+
 begin
 
   Format := aFormat;
@@ -1388,45 +1439,45 @@ begin
 
   case aViewDimension of
 
-    D3D11_RTV_DIMENSION_BUFFER: begin
-                                  Buffer.FirstElement := aMipSlice;
-                                  Buffer.NumElements := aFirstArraySlice;
-                                end;
+      D3D11_RTV_DIMENSION_BUFFER: begin
+        Buffer.FirstElement := aMipSlice;
+        Buffer.NumElements := aFirstArraySlice;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE1D: begin
-                                     Texture1D.MipSlice := aMipSlice;
-                                   end;
+      D3D11_RTV_DIMENSION_TEXTURE1D: begin
+        Texture1D.MipSlice := aMipSlice;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE1DARRAY: begin
-                                          Texture1DArray.MipSlice := aMipSlice;
-                                          Texture1DArray.FirstArraySlice := aFirstArraySlice;
-                                          Texture1DArray.ArraySize := aArraySize;
-                                        end;
+      D3D11_RTV_DIMENSION_TEXTURE1DARRAY: begin
+        Texture1DArray.MipSlice := aMipSlice;
+        Texture1DArray.FirstArraySlice := aFirstArraySlice;
+        Texture1DArray.ArraySize := aArraySize;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE2D: begin
-                                     Texture2D.MipSlice := aMipSlice;
-                                     Texture2D.PlaneSlice := aPlaneSlice;
-                                   end;
+      D3D11_RTV_DIMENSION_TEXTURE2D: begin
+        Texture2D.MipSlice := aMipSlice;
+        Texture2D.PlaneSlice := aPlaneSlice;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE2DARRAY: begin
-                                          Texture2DArray.MipSlice := aMipSlice;
-                                          Texture2DArray.FirstArraySlice := aFirstArraySlice;
-                                          Texture2DArray.ArraySize := aArraySize;
-                                          Texture2DArray.PlaneSlice := aPlaneSlice;
-                                        end;
+      D3D11_RTV_DIMENSION_TEXTURE2DARRAY: begin
+        Texture2DArray.MipSlice := aMipSlice;
+        Texture2DArray.FirstArraySlice := aFirstArraySlice;
+        Texture2DArray.ArraySize := aArraySize;
+        Texture2DArray.PlaneSlice := aPlaneSlice;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE2DMS: begin
-                                       // Nothing todo.
-                                     end;
-    D3D11_RTV_DIMENSION_TEXTURE2DMSARRAY: begin
-                                            Texture2DArray.FirstArraySlice := aFirstArraySlice;
-                                            Texture2DArray.ArraySize := aArraySize;
-                                          end;
-    D3D11_RTV_DIMENSION_TEXTURE3D: begin
-                                     Texture3D.MipSlice := aMipSlice;
-                                     Texture3D.FirstWSlice := aFirstArraySlice;
-                                     Texture3D.WSize := aArraySize;
-                                   end;
+      D3D11_RTV_DIMENSION_TEXTURE2DMS: begin
+        // Nothing todo.
+      end;
+      D3D11_RTV_DIMENSION_TEXTURE2DMSARRAY: begin
+        Texture2DArray.FirstArraySlice := aFirstArraySlice;
+        Texture2DArray.ArraySize := aArraySize;
+      end;
+      D3D11_RTV_DIMENSION_TEXTURE3D: begin
+        Texture3D.MipSlice := aMipSlice;
+        Texture3D.FirstWSlice := aFirstArraySlice;
+        Texture3D.WSize := aArraySize;
+      end;
   end;
 end;
 
@@ -1435,6 +1486,7 @@ constructor D3D11_UNORDERED_ACCESS_VIEW_DESC1.Create(const aBuffer: ID3D11Buffer
                                                      aFormat: DXGI_FORMAT;
                                                      aFirstElement: UINT;
                                                      aNumElements: UINT);
+
 begin
 
   Format := aFormat;
@@ -1471,15 +1523,15 @@ begin
 
   case aViewDimension of
 
-    D3D11_RTV_DIMENSION_TEXTURE1D: begin
-                                     Texture1D.MipSlice := aMipSlice;
-                                   end;
+      D3D11_RTV_DIMENSION_TEXTURE1D: begin
+        Texture1D.MipSlice := aMipSlice;
+      end;
 
-    D3D11_RTV_DIMENSION_TEXTURE1DARRAY: begin
-                                          Texture1DArray.MipSlice := aMipSlice;
-                                          Texture1DArray.FirstArraySlice := aFirstArraySlice;
-                                          Texture1DArray.ArraySize := aArraySize;
-                                        end;
+      D3D11_RTV_DIMENSION_TEXTURE1DARRAY: begin
+        Texture1DArray.MipSlice := aMipSlice;
+        Texture1DArray.FirstArraySlice := aFirstArraySlice;
+        Texture1DArray.ArraySize := aArraySize;
+      end;
   end;
 end;
 
@@ -1499,7 +1551,7 @@ begin
   ViewDimension := aViewDimension;
 
   if (DXGI_FORMAT_UNKNOWN = aFormat) or
-     ( (aArraySize = UINT(-1)) and (D3D11_UAV_DIMENSION_TEXTURE2DARRAY = aViewDimension) ) then
+    ((aArraySize = UINT(-1)) and (D3D11_UAV_DIMENSION_TEXTURE2DARRAY = aViewDimension)) then
     begin
       pTex2D.GetDesc(TexDesc);
       if (DXGI_FORMAT_UNKNOWN = aFormat) then
@@ -1511,17 +1563,17 @@ begin
   Format := aFormat;
 
   case aViewDimension of
-    D3D11_UAV_DIMENSION_TEXTURE2D: begin
-                                     Texture2D.MipSlice := aMipSlice;
-                                     Texture2D.PlaneSlice := aPlaneSlice;
-                                   end;
+      D3D11_UAV_DIMENSION_TEXTURE2D: begin
+        Texture2D.MipSlice := aMipSlice;
+        Texture2D.PlaneSlice := aPlaneSlice;
+      end;
 
-    D3D11_UAV_DIMENSION_TEXTURE2DARRAY: begin
-                                          Texture2DArray.MipSlice := aMipSlice;
-                                          Texture2DArray.FirstArraySlice := aFirstArraySlice;
-                                          Texture2DArray.ArraySize := aArraySize;
-                                          Texture2DArray.PlaneSlice := aPlaneSlice;
-                                        end;
+      D3D11_UAV_DIMENSION_TEXTURE2DARRAY: begin
+        Texture2DArray.MipSlice := aMipSlice;
+        Texture2DArray.FirstArraySlice := aFirstArraySlice;
+        Texture2DArray.ArraySize := aArraySize;
+        Texture2DArray.PlaneSlice := aPlaneSlice;
+      end;
   end;
 end;
 
@@ -1557,6 +1609,7 @@ end;
 {D3D11_QUERY_DESC1}
 
 constructor D3D11_QUERY_DESC1.Create(const o: D3D11_QUERY_DESC1);
+
 begin
 
   Self := o;
@@ -1566,6 +1619,7 @@ end;
 constructor D3D11_QUERY_DESC1.Create(aQuery: D3D11_QUERY;
                                      aMiscFlags: UINT = 0;
                                      aContextType: D3D11_CONTEXT_TYPE = D3D11_CONTEXT_TYPE_ALL);
+
 begin
 
   Query := aQuery;
@@ -1573,6 +1627,6 @@ begin
   ContextType := aContextType;
 end;
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

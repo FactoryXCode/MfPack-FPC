@@ -90,75 +90,82 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 const
 
-  DXGI_ENUM_MODES_STEREO          : UINT = 4;
-  DXGI_ENUM_MODES_DISABLED_STEREO : UINT = 8;
+  DXGI_ENUM_MODES_STEREO: UINT = 4;
+  DXGI_ENUM_MODES_DISABLED_STEREO: UINT = 8;
 
-  DXGI_SHARED_RESOURCE_READ       : DWORD = $80000000;
-  DXGI_SHARED_RESOURCE_WRITE      : DWORD = 1;
+  DXGI_SHARED_RESOURCE_READ: DWORD = $80000000;
+  DXGI_SHARED_RESOURCE_WRITE: DWORD = 1;
 
-// Enums =======================================================================
+  // Enums =======================================================================
 
 type
   PDXGI_OUTDUPL_POINTER_SHAPE_TYPE = ^DXGI_OUTDUPL_POINTER_SHAPE_TYPE;
   DXGI_OUTDUPL_POINTER_SHAPE_TYPE = DWord;
+
 const
-  DXGI_OUTDUPL_POINTER_SHAPE_TYPE_MONOCHROME   = DXGI_OUTDUPL_POINTER_SHAPE_TYPE($00000001);
-  DXGI_OUTDUPL_POINTER_SHAPE_TYPE_COLOR        = DXGI_OUTDUPL_POINTER_SHAPE_TYPE($00000002);
+  DXGI_OUTDUPL_POINTER_SHAPE_TYPE_MONOCHROME = DXGI_OUTDUPL_POINTER_SHAPE_TYPE($00000001);
+  DXGI_OUTDUPL_POINTER_SHAPE_TYPE_COLOR = DXGI_OUTDUPL_POINTER_SHAPE_TYPE($00000002);
   DXGI_OUTDUPL_POINTER_SHAPE_TYPE_MASKED_COLOR = DXGI_OUTDUPL_POINTER_SHAPE_TYPE($00000004);
 
 type
   PDXGI_ALPHA_MODE = ^DXGI_ALPHA_MODE;
   DXGI_ALPHA_MODE = DWord;
+
 const
-  DXGI_ALPHA_MODE_UNSPECIFIED   = DXGI_ALPHA_MODE(0);
+  DXGI_ALPHA_MODE_UNSPECIFIED = DXGI_ALPHA_MODE(0);
   DXGI_ALPHA_MODE_PREMULTIPLIED = DXGI_ALPHA_MODE(1);
-  DXGI_ALPHA_MODE_STRAIGHT      = DXGI_ALPHA_MODE(2);
-  DXGI_ALPHA_MODE_IGNORE        = DXGI_ALPHA_MODE(3);
+  DXGI_ALPHA_MODE_STRAIGHT = DXGI_ALPHA_MODE(2);
+  DXGI_ALPHA_MODE_IGNORE = DXGI_ALPHA_MODE(3);
   //DXGI_ALPHA_MODE_FORCE_DWORD   = FORCEDWORD;
 
 type
   PDXGI_OFFER_RESOURCE_PRIORITY = ^DXGI_OFFER_RESOURCE_PRIORITY;
   _DXGI_OFFER_RESOURCE_PRIORITY = DWord;
   DXGI_OFFER_RESOURCE_PRIORITY = _DXGI_OFFER_RESOURCE_PRIORITY;
+
 const
-  DXGI_OFFER_RESOURCE_PRIORITY_LOW     = DXGI_OFFER_RESOURCE_PRIORITY(1);
-  DXGI_OFFER_RESOURCE_PRIORITY_NORMAL  = DXGI_OFFER_RESOURCE_PRIORITY(2);
-  DXGI_OFFER_RESOURCE_PRIORITY_HIGH    = DXGI_OFFER_RESOURCE_PRIORITY(3);
+  DXGI_OFFER_RESOURCE_PRIORITY_LOW = DXGI_OFFER_RESOURCE_PRIORITY(1);
+  DXGI_OFFER_RESOURCE_PRIORITY_NORMAL = DXGI_OFFER_RESOURCE_PRIORITY(2);
+  DXGI_OFFER_RESOURCE_PRIORITY_HIGH = DXGI_OFFER_RESOURCE_PRIORITY(3);
 
 type
   PDXGI_SCALING = ^DXGI_SCALING;
   DXGI_SCALING = DWord;
+
 const
-  DXGI_SCALING_STRETCH              = DXGI_SCALING(0);
-  DXGI_SCALING_NONE                 = DXGI_SCALING(1);
+  DXGI_SCALING_STRETCH = DXGI_SCALING(0);
+  DXGI_SCALING_NONE = DXGI_SCALING(1);
   DXGI_SCALING_ASPECT_RATIO_STRETCH = DXGI_SCALING(2);
 
 type
   PDXGI_GRAPHICS_PREEMPTION_GRANULARITY = ^DXGI_GRAPHICS_PREEMPTION_GRANULARITY;
   DXGI_GRAPHICS_PREEMPTION_GRANULARITY = DWord;
+
 const
-  DXGI_GRAPHICS_PREEMPTION_DMA_BUFFER_BOUNDARY  = DXGI_GRAPHICS_PREEMPTION_GRANULARITY(0);
-  DXGI_GRAPHICS_PREEMPTION_PRIMITIVE_BOUNDARY   = DXGI_GRAPHICS_PREEMPTION_GRANULARITY(1);
-  DXGI_GRAPHICS_PREEMPTION_TRIANGLE_BOUNDARY    = DXGI_GRAPHICS_PREEMPTION_GRANULARITY(2);
-  DXGI_GRAPHICS_PREEMPTION_PIXEL_BOUNDARY       = DXGI_GRAPHICS_PREEMPTION_GRANULARITY(3);
+  DXGI_GRAPHICS_PREEMPTION_DMA_BUFFER_BOUNDARY = DXGI_GRAPHICS_PREEMPTION_GRANULARITY(0);
+  DXGI_GRAPHICS_PREEMPTION_PRIMITIVE_BOUNDARY = DXGI_GRAPHICS_PREEMPTION_GRANULARITY(1);
+  DXGI_GRAPHICS_PREEMPTION_TRIANGLE_BOUNDARY = DXGI_GRAPHICS_PREEMPTION_GRANULARITY(2);
+  DXGI_GRAPHICS_PREEMPTION_PIXEL_BOUNDARY = DXGI_GRAPHICS_PREEMPTION_GRANULARITY(3);
   DXGI_GRAPHICS_PREEMPTION_INSTRUCTION_BOUNDARY = DXGI_GRAPHICS_PREEMPTION_GRANULARITY(4);
 
 type
   PDXGI_COMPUTE_PREEMPTION_GRANULARITY = ^DXGI_COMPUTE_PREEMPTION_GRANULARITY;
   DXGI_COMPUTE_PREEMPTION_GRANULARITY = DWord;
-const
-  DXGI_COMPUTE_PREEMPTION_DMA_BUFFER_BOUNDARY   = DXGI_COMPUTE_PREEMPTION_GRANULARITY(0);
-  DXGI_COMPUTE_PREEMPTION_DISPATCH_BOUNDARY     = DXGI_COMPUTE_PREEMPTION_GRANULARITY(1);
-  DXGI_COMPUTE_PREEMPTION_THREAD_GROUP_BOUNDARY = DXGI_COMPUTE_PREEMPTION_GRANULARITY(2);
-  DXGI_COMPUTE_PREEMPTION_THREAD_BOUNDARY       = DXGI_COMPUTE_PREEMPTION_GRANULARITY(3);
-  DXGI_COMPUTE_PREEMPTION_INSTRUCTION_BOUNDARY  = DXGI_COMPUTE_PREEMPTION_GRANULARITY(4);
 
-// =============================================================================
+const
+  DXGI_COMPUTE_PREEMPTION_DMA_BUFFER_BOUNDARY = DXGI_COMPUTE_PREEMPTION_GRANULARITY(0);
+  DXGI_COMPUTE_PREEMPTION_DISPATCH_BOUNDARY = DXGI_COMPUTE_PREEMPTION_GRANULARITY(1);
+  DXGI_COMPUTE_PREEMPTION_THREAD_GROUP_BOUNDARY = DXGI_COMPUTE_PREEMPTION_GRANULARITY(2);
+  DXGI_COMPUTE_PREEMPTION_THREAD_BOUNDARY = DXGI_COMPUTE_PREEMPTION_GRANULARITY(3);
+  DXGI_COMPUTE_PREEMPTION_INSTRUCTION_BOUNDARY = DXGI_COMPUTE_PREEMPTION_GRANULARITY(4);
+
+  // =============================================================================
 
 
 type
@@ -180,25 +187,28 @@ type
   // =============================
   //
   IDXGIDisplayControl = interface(IUnknown)
-  ['{ea9dbf1a-c88e-4486-854a-98aa0138f30c}']
+    ['{ea9dbf1a-c88e-4486-854a-98aa0138f30c}']
 
     function IsStereoEnabled(): BOOL; stdcall;
 
     procedure SetStereoEnabled(enabled: BOOL);
 
   end;
+
   IID_IDXGIDisplayControl = IDXGIDisplayControl;
 
   //----------------------------------------------------------------------------
   // IDXGIOutputDuplication structures
   //----------------------------------------------------------------------------
   PDXGI_OUTDUPL_MOVE_RECT = ^DXGI_OUTDUPL_MOVE_RECT;
+
   DXGI_OUTDUPL_MOVE_RECT = record
     SourcePoint: TPoint;
     DestinationRect: TRect;
   end;
 
   PDXGI_OUTDUPL_DESC = ^DXGI_OUTDUPL_DESC;
+
   DXGI_OUTDUPL_DESC = record
     ModeDesc: DXGI_MODE_DESC;
     Rotation: DXGI_MODE_ROTATION;
@@ -206,6 +216,7 @@ type
   end;
 
   PDXGI_OUTDUPL_POINTER_POSITION = ^DXGI_OUTDUPL_POINTER_POSITION;
+
   DXGI_OUTDUPL_POINTER_POSITION = record
     Position: TPoint;
     Visible: BOOL;
@@ -213,6 +224,7 @@ type
 
 
   PDXGI_OUTDUPL_POINTER_SHAPE_INFO = ^DXGI_OUTDUPL_POINTER_SHAPE_INFO;
+
   DXGI_OUTDUPL_POINTER_SHAPE_INFO = record
     _Type: UINT;
     Width: UINT;
@@ -222,6 +234,7 @@ type
   end;
 
   PDXGI_OUTDUPL_FRAME_INFO = ^DXGI_OUTDUPL_FRAME_INFO;
+
   DXGI_OUTDUPL_FRAME_INFO = record
     LastPresentTime: LARGE_INTEGER;
     LastMouseUpdateTime: LARGE_INTEGER;
@@ -238,7 +251,7 @@ type
   // ================================
   //
   IDXGIOutputDuplication = interface(IDXGIObject)
-  ['{191cfac3-a341-470d-b26e-a864f428319c}']
+    ['{191cfac3-a341-470d-b26e-a864f428319c}']
 
     procedure GetDesc(out pDesc: DXGI_OUTDUPL_DESC);
 
@@ -266,6 +279,7 @@ type
     function ReleaseFrame(): HResult; stdcall;
 
   end;
+
   IID_IDXGIOutputDuplication = IDXGIOutputDuplication;
 
 
@@ -273,13 +287,14 @@ type
   // =======================
   //
   IDXGISurface2 = interface(IDXGISurface1)
-  ['{aba496dd-b617-4cb8-a866-bc44d7eb1fa2}']
+    ['{aba496dd-b617-4cb8-a866-bc44d7eb1fa2}']
 
     function GetResource(const riid: TGuid;
                          out ppParentResource: Pointer;
                          out pSubresourceIndex: UINT): HResult; stdcall;
 
   end;
+
   IID_IDXGISurface2 = IDXGISurface2;
 
 
@@ -287,7 +302,7 @@ type
   // ========================
   //
   IDXGIResource1 = interface(IDXGIResource)
-  ['{30961379-4609-4a41-998e-54fe567ee0c1}']
+    ['{30961379-4609-4a41-998e-54fe567ee0c1}']
 
     function CreateSubresourceSurface(index: UINT;
                                       out ppSurface: IDXGISurface2): HResult; stdcall;
@@ -298,6 +313,7 @@ type
                                 out _pHandle: THandle): HResult; stdcall;
 
   end;
+
   IID_IDXGIResource1 = IDXGIResource1;
 
 
@@ -305,7 +321,7 @@ type
   // ======================
   //
   IDXGIDevice2 = interface(IDXGIDevice1)
-  ['{05008617-fbfd-4051-a790-144884b4f6a9}']
+    ['{05008617-fbfd-4051-a790-144884b4f6a9}']
 
     function OfferResources(NumResources: UINT;
                             ppResources: IDXGIResource;
@@ -318,10 +334,12 @@ type
     function EnqueueSetEvent(hEvent: THandle): HResult; stdcall;
 
   end;
+
   IID_IDXGIDevice2 = IDXGIDevice2;
 
 
   PDXGI_MODE_DESC1 = ^DXGI_MODE_DESC1;
+
   DXGI_MODE_DESC1 = record
     Width: UINT;
     Height: UINT;
@@ -339,6 +357,7 @@ type
 
 
   PDXGI_SWAP_CHAIN_DESC1 = ^DXGI_SWAP_CHAIN_DESC1;
+
   DXGI_SWAP_CHAIN_DESC1 = record
     Width: UINT;
     Height: UINT;
@@ -354,6 +373,7 @@ type
   end;
 
   PDXGI_SWAP_CHAIN_FULLSCREEN_DESC = ^DXGI_SWAP_CHAIN_FULLSCREEN_DESC;
+
   DXGI_SWAP_CHAIN_FULLSCREEN_DESC = record
     RefreshRate: DXGI_RATIONAL;
     ScanlineOrdering: DXGI_MODE_SCANLINE_ORDER;
@@ -362,6 +382,7 @@ type
   end;
 
   PDXGI_PRESENT_PARAMETERS = ^DXGI_PRESENT_PARAMETERS;
+
   DXGI_PRESENT_PARAMETERS = record
     DirtyRectsCount: UINT;
     pDirtyRects: PRect;
@@ -374,7 +395,7 @@ type
   // =========================
   //
   IDXGISwapChain1 = interface(IDXGISwapChain)
-  ['{790a45f7-0d42-4876-983a-0a55cfe6f4aa}']
+    ['{790a45f7-0d42-4876-983a-0a55cfe6f4aa}']
 
     function GetDesc1(out pDesc: DXGI_SWAP_CHAIN_DESC1): HResult; stdcall;
 
@@ -402,6 +423,7 @@ type
     function GetRotation(pRotation: DXGI_MODE_ROTATION): HResult; stdcall;
 
   end;
+
   IID_IDXGISwapChain1 = IDXGISwapChain1;
 
 
@@ -409,7 +431,7 @@ type
   // =======================
   //
   IDXGIFactory2 = interface(IDXGIFactory1)
-  ['{50c83a1c-e072-4c48-87b0-3630fa36a6d0}']
+    ['{50c83a1c-e072-4c48-87b0-3630fa36a6d0}']
 
     function IsWindowedStereoEnabled(): BOOL; stdcall;
 
@@ -453,6 +475,7 @@ type
                                            out ppSwapChain: IDXGISwapChain1): HResult; stdcall;
 
   end;
+
   IID_IDXGIFactory2 = IDXGIFactory2;
 
   //----------------------------------------------------------------------------
@@ -460,6 +483,7 @@ type
   //----------------------------------------------------------------------------
 
   PDXGI_ADAPTER_DESC2 = ^DXGI_ADAPTER_DESC2;
+
   DXGI_ADAPTER_DESC2 = record
     Description: array[0..127] of WideChar;
     VendorId: UINT;
@@ -480,11 +504,12 @@ type
   // =======================
   //
   IDXGIAdapter2 = interface(IDXGIAdapter1)
-  ['{0AA1AE0A-FA0E-4B84-8644-E05FF8E5ACB5}']
+    ['{0AA1AE0A-FA0E-4B84-8644-E05FF8E5ACB5}']
 
     function GetDesc2(out pDesc: DXGI_ADAPTER_DESC2): HResult; stdcall;
 
   end;
+
   IID_IDXGIAdapter2 = IDXGIAdapter2;
 
 
@@ -492,7 +517,7 @@ type
   // ======================
   //
   IDXGIOutput1 = interface(IDXGIOutput)
-  ['{00cddea8-939b-4b83-a340-a685226666cc}']
+    ['{00cddea8-939b-4b83-a340-a685226666cc}']
 
     function GetDisplayModeList1(EnumFormat: DXGI_FORMAT;
                                  Flags: UINT;
@@ -509,6 +534,7 @@ type
                              out ppOutputDuplication: IDXGIOutputDuplication): HResult; stdcall;
 
   end;
+
   IID_IDXGIOutput1 = IDXGIOutput1;
 
 
@@ -518,6 +544,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

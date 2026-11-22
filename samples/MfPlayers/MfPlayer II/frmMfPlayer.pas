@@ -75,7 +75,7 @@ interface
 uses
   LMessages,
   MfPlayerSample.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -130,9 +130,12 @@ type
     procedure trbVolumeChange(Sender: TObject);
     procedure mnuTakeScreenshotClick(Sender: TObject);
     procedure butFullScreenClick(Sender: TObject);
-    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyUp(Sender: TObject;
+                        var Key: Word;
+                        Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
 
   private
     { Private declarations }
@@ -166,7 +169,9 @@ uses
 
 
 procedure Tfrm_MfPlayer.muExitClick(Sender: TObject);
+
 begin
+
   Close();
 end;
 
@@ -176,6 +181,7 @@ var
   bm: TBitmap;
 
 begin
+
   bm := TBitmap.Create;
   MfPlayer.TakeSnapShot(bm);
   // copy the bitmap to the Clipboard
@@ -185,7 +191,9 @@ end;
 
 
 procedure Tfrm_MfPlayer.butPauseClick(Sender: TObject);
+
 begin
+
   if Assigned(MfPlayer) then
     if MfPlayer.State in [OpenPending, Started] then
       MfPlayer.SendPlayerRequest(reqPause);
@@ -193,7 +201,9 @@ end;
 
 
 procedure Tfrm_MfPlayer.butPlayClick(Sender: TObject);
+
 begin
+
   if Assigned(MfPlayer) then
     if MfPlayer.State in [OpenPending, Stopped, Paused] then
       begin
@@ -210,7 +220,9 @@ end;
 
 
 procedure Tfrm_MfPlayer.butStopClick(Sender: TObject);
+
 begin
+
   if Assigned(MfPlayer) then
     begin
       SetProgressbarPosition(0);
@@ -227,36 +239,37 @@ var
   prc: LPRECT;
 
 begin
-   prc := Nil;
 
-   if (bFullScreenMode = False) then
-     begin
-        //Create the form TFullScreenLayer
-        if Not Assigned(FullScreenLayer) then
-          FullScreenLayer := TFullScreenLayer.Create(Nil);
+  prc := Nil;
 
-        with FullScreenLayer do
-          begin
-            Visible := true;
-            Top := 0;
-            Left := 0;
-            Width := Screen.Width;
-            Height := Screen.Height;
-          end;
+  if (bFullScreenMode = False) then
+    begin
+      //Create the form TFullScreenLayer
+      if Not Assigned(FullScreenLayer) then
+        FullScreenLayer := TFullScreenLayer.Create(Nil);
 
-        rc.Top := 0;
-        rc.Left := 0;
-        rc.right := Screen.Width;
-        rc.bottom := Screen.Height;
+      with FullScreenLayer do
+        begin
+          Visible := true;
+          Top := 0;
+          Left := 0;
+          Width := Screen.Width;
+          Height := Screen.Height;
+        end;
 
-        // Let MfPlayer know we changed the clipping window.
-        MfPlayer.SetVideoSurface := FullScreenLayer.Handle;
-        // copy TRECT to LPRECT
-        prc := @rc;
-        MfPlayer.ResizeVideo(prc);
-        bFullScreenMode := True;
-     end
-   else  // if FullScreenMode = False, get to the original window state
+      rc.Top := 0;
+      rc.Left := 0;
+      rc.right := Screen.Width;
+      rc.bottom := Screen.Height;
+
+      // Let MfPlayer know we changed the clipping window.
+      MfPlayer.SetVideoSurface := FullScreenLayer.Handle;
+      // copy TRECT to LPRECT
+      prc := @rc;
+      MfPlayer.ResizeVideo(prc);
+      bFullScreenMode := True;
+    end
+  else  // if FullScreenMode = False, get to the original window state
     begin
       bFullScreenMode := False;
 
@@ -287,7 +300,9 @@ end;
 
 
 procedure Tfrm_MfPlayer.DestroyMfPlayer();
+
 begin
+
   if Assigned(MfPlayer) then
     begin
       //close the form TFullScreenLayer
@@ -306,7 +321,9 @@ end;
 
 
 procedure Tfrm_MfPlayer.muOpenClick(Sender: TObject);
+
 begin
+
   // End the previous session
   DestroyMfPlayer();
 
@@ -314,27 +331,31 @@ begin
     begin
       if dlgOpenUrl.Execute then
         MfPlayer.OpenURL(PWideChar(dlgOpenUrl.Filename));
-        mnuSetPosition.Enabled := True;
-        mnuTakeScreenshot.Enabled := True;
-        pnlControls.Enabled := True;
+      mnuSetPosition.Enabled := True;
+      mnuTakeScreenshot.Enabled := True;
+      pnlControls.Enabled := True;
     end
   else
     MessageBoxW(0,
-               lpcwstr('Failed to initialize MfPlayer.'),
-               lpcwstr('Initial Failure!'),
-               MB_ICONERROR);
+                lpcwstr('Failed to initialize MfPlayer.'),
+                lpcwstr('Initial Failure!'),
+                MB_ICONERROR);
 end;
 
 
 procedure Tfrm_MfPlayer.WMSize(var Msg: TLMSize);
+
 begin
+
   Inherited;  // OnResize method will be handled first
   RealignInterface();
 end;
 
 
 procedure Tfrm_MfPlayer.WMProgressEvent(var Msg: TLMessage);
+
 begin
+
   // WParam 1 is a subtitle text event
   if (Msg.WParam = 1) then
     if (MfPlayer.State = Started) then
@@ -343,7 +364,9 @@ end;
 
 
 procedure Tfrm_MfPlayer.SetProgressbarPosition(iPos: int64);
+
 begin
+
   if prbProgress.Enabled then
     begin
       prbProgress.Position := Trunc((prbProgress.Width / MfPlayer.Duration) * iPos);
@@ -357,17 +380,18 @@ var
   pcrD: LPRECT;
 
 begin
+
   if Assigned(prbProgress) then
-    prbProgress.Max:= prbProgress.Width;
+    prbProgress.Max := prbProgress.Width;
 
   // Set video size
   if Assigned(MfPlayer) then
     begin
-      crD.left:= 0;
-      crD.top:= 0;
-      crD.right:= pnlVideo.ClientWidth;
-      crD.bottom:= pnlVideo.ClientHeight;
-      pcrD:= @crD;
+      crD.left := 0;
+      crD.top := 0;
+      crD.right := pnlVideo.ClientWidth;
+      crD.bottom := pnlVideo.ClientHeight;
+      pcrD := @crD;
       MfPlayer.ResizeVideo(pcrD);
     end;
 end;
@@ -382,6 +406,7 @@ var
   iDef: int64;
 
 begin
+
   // The calculated value is not accurate!
   sDur := IntToStr(int64(Trunc(MfPlayer.Duration / (iSec))));
 
@@ -389,7 +414,8 @@ begin
                    'Enter a value between 0 and ' + sDur + '.',
                    '1');
 
-  iDef := StrToInt64Def(sPos, 0) * iSec;
+  iDef := StrToInt64Def(sPos,
+                        0) * iSec;
   if (iDef >= MfPlayer.Duration) then
     iDef := 0; // Set back to start position
 
@@ -400,13 +426,18 @@ end;
 
 
 procedure Tfrm_MfPlayer.trbVolumeChange(Sender: TObject);
+
 begin
+
   MfPlayer.SetVolume(trbVolume.Position * 0.1);
 end;
 
 
-procedure Tfrm_MfPlayer.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure Tfrm_MfPlayer.FormCloseQuery(Sender: TObject;
+                                       var CanClose: Boolean);
+
 begin
+
   CanClose := False;
   DestroyMfPlayer();
   CanClose := True;
@@ -414,66 +445,72 @@ end;
 
 
 procedure Tfrm_MfPlayer.FormCreate(Sender: TObject);
+
 begin
+
   bFullScreenMode := False;
 end;
 
 
-procedure Tfrm_MfPlayer.FormKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure Tfrm_MfPlayer.FormKeyUp(Sender: TObject;
+                                  var Key: Word;
+                                  Shift: TShiftState);
 var
   bm: TBitmap;
 
 begin
+
   case Key of
-    VK_SPACE:   if Assigned(MfPlayer) then
-                  begin
-                    case MfPlayer.State of
-                      Started: MfPlayer.SendPlayerRequest(reqPause);
-                      OpenPending: MfPlayer.SendPlayerRequest(reqStart);
-                      Stopped, Paused: MfPlayer.SendPlayerRequest(reqStart);
-                    end;
-                  end;
+    VK_SPACE: if Assigned(MfPlayer) then
+        begin
+          case MfPlayer.State of
+            Started: MfPlayer.SendPlayerRequest(reqPause);
+            OpenPending: MfPlayer.SendPlayerRequest(reqStart);
+            Stopped, Paused: MfPlayer.SendPlayerRequest(reqStart);
+          end;
+        end;
 
-    VK_END:     if Assigned(MfPlayer) then
-                  begin
-                    MfPlayer.SendPlayerRequest(reqStop);
-                  end;
+    VK_END: if Assigned(MfPlayer) then
+        begin
+          MfPlayer.SendPlayerRequest(reqStop);
+        end;
 
-    VK_F11:     begin
-                  if Assigned(MfPlayer) then
-                  MfPlayer.ShutDown(); //DestroyMfPlayer;   //Kick ass...
-                end;
+      VK_F11: begin
+        if Assigned(MfPlayer) then
+          MfPlayer.ShutDown(); //DestroyMfPlayer;   //Kick ass...
+      end;
 
-    VK_F12:     muOpenClick(nil);
+    VK_F12: muOpenClick(nil);
 
     //take a snapshot and copy the bitmap to the clipboard
-    VK_F8:      begin
-                  bm := TBitmap.Create;
-                  MfPlayer.TakeSnapShot(bm);
-                  Clipboard.Assign(bm);
-                  FreeAndNil(bm);
-                end;
+      VK_F8: begin
+        bm := TBitmap.Create;
+        MfPlayer.TakeSnapShot(bm);
+        Clipboard.Assign(bm);
+        FreeAndNil(bm);
+      end;
 
     // Use left and right arrows to adjust the volume.
     // since there is a trackbar, this one will have the focus.
-    VK_LEFT:    begin
-                  MfPlayer.SetVolume(MfPlayer.Volume - 0.1);
-                end;
+      VK_LEFT: begin
+        MfPlayer.SetVolume(MfPlayer.Volume - 0.1);
+      end;
 
-    VK_RIGHT:   begin
-                  MfPlayer.SetVolume(MfPlayer.Volume + 0.1);
-                end;
+      VK_RIGHT: begin
+        MfPlayer.SetVolume(MfPlayer.Volume + 0.1);
+      end;
 
-    VK_ESCAPE:  begin
-                  ButFullScreenClick(Self);
-                end;
+      VK_ESCAPE: begin
+        ButFullScreenClick(Self);
+      end;
   end;
 end;
 
 
 function Tfrm_MfPlayer.GetFmPlayer(): HRESULT;
+
 begin
+
   Result := E_FAIL;
   if not Assigned(MfPlayer) then
     begin
@@ -481,8 +518,8 @@ begin
       // We want the video to be played on the VideoPanel, so, we use that handle.
       MfPlayer := TMfPlayer.Create(pnlVideo.Handle,
                                    stxtSubs.Handle,       // The clipping window / control
-                                   frm_MfPlayer.Handle,   // The window or control that receives the (text) messages.
-                                   frm_MfPlayer.Handle);  // Must be main form!
+        frm_MfPlayer.Handle,   // The window or control that receives the (text) messages.
+        frm_MfPlayer.Handle);  // Must be main form!
       // If you want a different clipping surface, for instance a TPanel
       //MfPlayer.SetVideoSurface := pnlVideo.Handle;
       Result := S_OK;

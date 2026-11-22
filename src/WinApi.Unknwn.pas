@@ -78,7 +78,7 @@ unit WinApi.Unknwn;
 interface
 
 uses
-  
+
   {WinApi}
   WinApi.WinApiTypes;
 
@@ -87,14 +87,15 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
 
 const
 
-  IID_IUnknown               : TGUID = '{00000000-0000-0000-C000-000000000046}';
+  IID_IUnknown: TGUID = '{00000000-0000-0000-C000-000000000046}';
 
 type
 
@@ -105,10 +106,10 @@ type
   LPUNKNOWN = ^IUnknown;
 
 
-//////////////////////////////////////////////////////////////////
-// IID_IUnknown and all other system IIDs are provided in UUID.LIB
-// Link that library in with your proxies, clients and servers
-//////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////
+  // IID_IUnknown and all other system IIDs are provided in UUID.LIB
+  // Link that library in with your proxies, clients and servers
+  //////////////////////////////////////////////////////////////////
 
 
   // Interface IUnknown
@@ -131,52 +132,52 @@ type
   // NOTE: Comment out this inteface, if you run in to clashes with System.IUnknown and
   //       IInterface.
   //
-//  {$EXTERNALSYM IUnknown}
-//  {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IUnknown);'}
-//  IUnknown = interface
-//  ['{00000000-0000-0000-C000-000000000046}']
-//    function QueryInterface(const riid: REFIID;
-//                            out ppvObject: Pointer): HResult; stdcall;
-    // Parameters
-    //  riid [in]
-    //    The identifier of the interface being requested.
-    //  ppvObject [out]
-    //    The address of a pointer variable that receives the interface pointer
-    //    requested in the riid parameter.
-    //    Upon successful return, *ppvObject contains the requested
-    //    interface pointer to the object.
-    //    If the object does not support the interface, ppvObject is set to NIL.
+  //  {$EXTERNALSYM IUnknown}
+  //  {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IUnknown);'}
+  //  IUnknown = interface
+  //  ['{00000000-0000-0000-C000-000000000046}']
+  //    function QueryInterface(const riid: REFIID;
+  //                            out ppvObject: Pointer): HResult; stdcall;
+  // Parameters
+  //  riid [in]
+  //    The identifier of the interface being requested.
+  //  ppvObject [out]
+  //    The address of a pointer variable that receives the interface pointer
+  //    requested in the riid parameter.
+  //    Upon successful return, *ppvObject contains the requested
+  //    interface pointer to the object.
+  //    If the object does not support the interface, ppvObject is set to NIL.
 
-//    function AddRef(): ULONG; stdcall;
-    // Increments the reference count for an interface on an object.
-    // This method should be called for every new copy of a pointer to an interface on an object.
-    // Return value
-    //  The method returns the new reference count. This value is intended to be used only for test purposes.
+  //    function AddRef(): ULONG; stdcall;
+  // Increments the reference count for an interface on an object.
+  // This method should be called for every new copy of a pointer to an interface on an object.
+  // Return value
+  //  The method returns the new reference count. This value is intended to be used only for test purposes.
 
-//    function Release(): ULONG; stdcall;
-    // Decrements the reference count for an interface on an object.
-    // Remarks
-    //  When the reference count on an object reaches zero,
-    //  Release must cause the interface pointer to free itself.
-    //  When the released pointer is the only existing reference to
-    //  an object (whether the object supports single or multiple interfaces),
-    //  the implementation must free the object.
-    //  Note that aggregation of objects restricts the ability to recover interface pointers.
-    //
-    //  Notes to Callers
-    //    Call this method when you no longer need to use an interface pointer.
-    //    If you are writing a method that takes an in-out parameter,
-    //    call Release on the pointer you are passing in before copying the out-value on top of it.
-//  end;
-//  IID_IUnknown = IUnknown;
-//  {$EXTERNALSYM IID_IUnknown}
+  //    function Release(): ULONG; stdcall;
+  // Decrements the reference count for an interface on an object.
+  // Remarks
+  //  When the reference count on an object reaches zero,
+  //  Release must cause the interface pointer to free itself.
+  //  When the released pointer is the only existing reference to
+  //  an object (whether the object supports single or multiple interfaces),
+  //  the implementation must free the object.
+  //  Note that aggregation of objects restricts the ability to recover interface pointers.
+  //
+  //  Notes to Callers
+  //    Call this method when you no longer need to use an interface pointer.
+  //    If you are writing a method that takes an in-out parameter,
+  //    call Release on the pointer you are passing in before copying the out-value on top of it.
+  //  end;
+  //  IID_IUnknown = IUnknown;
+  //  {$EXTERNALSYM IID_IUnknown}
 
   // Interface AsyncIUnknown
   // =======================
   // Undocumented
   //
   AsyncIUnknown = interface(IUnknown)
-  ['{000e0000-0000-0000-C000-000000000046}']
+    ['{000e0000-0000-0000-C000-000000000046}']
     function Begin_QueryInterface(const riid: REFIID): HResult; stdcall;
 
     function Finish_QueryInterface(out pvObject: PPointer): HResult; stdcall;
@@ -190,6 +191,7 @@ type
     function Finish_Release(): ULONG; stdcall;
 
   end;
+
   IID_AsyncIUnknown = AsyncIUnknown;
 
 
@@ -209,7 +211,7 @@ type
   // intend to create more than one object of the specified class.
   //
   IClassFactory = interface(IUnknown)
-  ['{00000001-0000-0000-C000-000000000046}']
+    ['{00000001-0000-0000-C000-000000000046}']
     function CreateInstance(const pUnkOuter: IUnknown;
                             const riid: REFIID;
                             out ppvObject: Pointer): HResult; stdcall;
@@ -217,6 +219,7 @@ type
     function LockServer(fLock: BOOL): HResult; stdcall;
 
   end;
+
   IID_IClassFactory = IClassFactory;
 
 
@@ -225,7 +228,9 @@ type
 type
 
   // Delphi specific to meet C++ implementations of IUnknown
-  TIUnknownObject = class(TObject, IUnknown)
+  TIUnknownObject = class(TObject,
+                          IUnknown)
+
   protected
     FRefCount: Integer;
     //----------------------- IUnknown methods ---------------------------------
@@ -247,32 +252,44 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 
 class function TIUnknownObject.NewInstance: TObject;
+
 begin
+
   Result := inherited NewInstance;
   TIUnknownObject(Result).FRefCount := 1; // Protect temporary constructor interfaces.
 end;
 
+
 procedure TIUnknownObject.AfterConstruction();
+
 begin
+
   System.InterlockedDecrement(FRefCount);
   inherited;
 end;
 
+
 procedure TIUnknownObject.BeforeDestruction();
+
 begin
-  if FRefCount <> 0 then RunError(204);
+
+  if (FRefCount <> 0) then
+    RunError(204);
   inherited;
 end;
 
+
 function TIUnknownObject.QueryInterface(constref riid: TGUID;
                                         out Obj): HResult;
+
 begin
+
   if GetInterface(riid,
-                  Obj) then
+    Obj) then
     Result := 0 // = S_OK
   else
     begin
@@ -281,13 +298,19 @@ begin
     end;
 end;
 
+
 function TIUnknownObject._AddRef: Integer;
+
 begin
+
   Result := System.InterlockedIncrement(FRefCount);
 end;
 
+
 function TIUnknownObject._Release: Integer;
+
 begin
+
   Result := System.InterlockedDecrement(FRefCount);
   if (Result = 0) then
     Destroy();

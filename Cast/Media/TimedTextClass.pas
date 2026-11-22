@@ -99,11 +99,11 @@ uses
   LangTags,
   MfPCXConstants;
 
-// function ContainsText returns true if the subtext is found, without case-sensitivity, in the given text.
-// In StrUtils you'll also find handy functions like StartsText, EndsText and ReplaceText
+  // function ContainsText returns true if the subtext is found, without case-sensitivity, in the given text.
+  // In StrUtils you'll also find handy functions like StartsText, EndsText and ReplaceText
 
 
-// TIMEDTEXT MAIN //////////////////////////////////////////////////////////////
+  // TIMEDTEXT MAIN //////////////////////////////////////////////////////////////
 
 type
 
@@ -117,27 +117,30 @@ type
 
 
   TFormattedText = record
-    private
-      constructor Create(aFont: TFont);
-    public
-      TextLine : string;
-      TextFont : TFont;
-      procedure Clear();
+
+  private
+    constructor Create(aFont: TFont);
+
+  public
+    TextLine: string;
+    TextFont: TFont;
+    procedure Clear();
   end;
   TFormattedTextArray = array of TFormattedText;
 
   TSubTitleTrack = record
+
   public
     procedure Init();
     procedure Clear();
 
   public
-    stIndex       : Integer;          // track index
-    Start         : MFTIME;           // Start time
-    Stop          : MFTIME;           // End time
-    Duration      : MFTIME;           // Duration
+    stIndex: Integer;          // track index
+    Start: MFTIME;           // Start time
+    Stop: MFTIME;           // End time
+    Duration: MFTIME;           // Duration
     // Each string can have it's own font
-    TrackText     : TFormattedTextArray;  // text lines and font
+    TrackText: TFormattedTextArray;  // text lines and font
   end;
   TSubTitleTracksArray = array of TSubTitleTrack;
 
@@ -152,29 +155,30 @@ type
 
 
   TMfTimedText = class(TObject)
+
   protected
-    ap_SubTitleTracks           : TSubTitleTracksArray;
-    tp_SubTitleFile             : TextFile;
+    ap_SubTitleTracks: TSubTitleTracksArray;
+    tp_SubTitleFile: TextFile;
 
   private
-    m_bTimedTextNotifyProcessed : Boolean;                   // Signal from floating form we need a new track
-    ip_TickIndex                : Integer;                   //
-    ip_Tracks                   : Integer;                   // Number of tracks in tracklist
-    hp_HwSender                 : HWnd;                      // Handle from sender
-    hp_TTextHandle              : HWnd;                      // Handle to this object
-    sp_Url                      : WideString;                // Filename including path
-    tp_FileType                 : TTXT_TYPE;                 // Timed text file type
-    sp_PreferredLanguage        : string;                    // Preferred language for subtitling
-    sp_FriendlyLangName         : string;                    // Friendly localised languagename
-    bp_AutoFormatText           : Boolean;                   // Option for automated formatting
-    cp_clDefaultTextColor       : TColor;                    // DEfault text color
-    lp_MatchList                : TStringlist;               // Global matchlist, stores tracktimes
-    tp_SubTitleTrack            : TSubTitleTrack;            // Presentation record
-    fTrackFont                  : TFont;
+    m_bTimedTextNotifyProcessed: Boolean;                   // Signal from floating form we need a new track
+    ip_TickIndex: Integer;                   //
+    ip_Tracks: Integer;                   // Number of tracks in tracklist
+    hp_HwSender: HWnd;                      // Handle from sender
+    hp_TTextHandle: HWnd;                      // Handle to this object
+    sp_Url: WideString;                // Filename including path
+    tp_FileType: TTXT_TYPE;                 // Timed text file type
+    sp_PreferredLanguage: string;                    // Preferred language for subtitling
+    sp_FriendlyLangName: string;                    // Friendly localised languagename
+    bp_AutoFormatText: Boolean;                   // Option for automated formatting
+    cp_clDefaultTextColor: TColor;                    // DEfault text color
+    lp_MatchList: TStringlist;               // Global matchlist, stores tracktimes
+    tp_SubTitleTrack: TSubTitleTrack;            // Presentation record
+    fTrackFont: TFont;
     // Each timed-text reader owns its language-tag helper. Do not use the
     // UI-level pc_LanguageTags singleton here: local playback and the Cast
     // transcode worker can have separate TMfTimedText instances.
-    FLanguageTags               : TLanguageTags;
+    FLanguageTags: TLanguageTags;
 
     // Catches all messages to this object
     procedure WndProc(var Msg: TLMessage);
@@ -219,14 +223,14 @@ type
 
     // RegEx implementation
     function GetMatchCount(const pattern: string; // RegEx pattern
-                           const txt: string;     // Text to search in
-                           const options: TRegExOptions = [roNotEmpty]): integer;
-//{$HINTS OFF}
+      const txt: string;     // Text to search in
+      const options: TRegExOptions = [roNotEmpty]): integer;
+    //{$HINTS OFF}
     // Not used, keep for later implementations.
     //function GetMatch(const pattern: string; // RegEx pattern
     //                  const txt: string;     // Text to search in
     //                  const options: TRegExOptions = [roNotEmpty]): string;
-//{$HINTS ON}
+    //{$HINTS ON}
 
     // Compares given pattern with given string
     function IsMatch(const pattern: string;
@@ -317,6 +321,7 @@ end;
 
 
 function MfTimedTextEscapeWebVttText(const AValue: string): string;
+
 begin
 
   Result := StringReplace(AValue,
@@ -339,10 +344,11 @@ end;
 constructor TMfTimedText.Create(hwSender: HWnd;
                                 TimedTextFile: WideString;
                                 SubtitleLanguage: string);
+
 begin
 
-  hp_HwSender       := hwSender;
-  sp_Url            := TimedTextFile;
+  hp_HwSender := hwSender;
+  sp_Url := TimedTextFile;
 
   // Do not call property PreferredLanguage directly, because this will
   // initiate function OpenTimedTextFile. At this moment we don't want to.
@@ -358,16 +364,16 @@ begin
   // Set the default font properties
   with fTrackFont do
     begin
-      Name        := 'Verdana';
-      Charset     := DEFAULT_CHARSET;
+      Name := 'Verdana';
+      Charset := DEFAULT_CHARSET;
       Orientation := 0;
-      Size        := 12;
+      Size := 12;
       Orientation := 0;
-      Quality     := fqDefault;
-      Pitch       := fpDefault;
-      Height      := -19;
-      Color       := clWhite;
-      Style       := [fsBold];
+      Quality := fqDefault;
+      Pitch := fpDefault;
+      Height := -19;
+      Color := clWhite;
+      Style := [fsBold];
     end;
   AutoFormatText := True;
   FLanguageTags := TLanguageTags.Create();
@@ -375,6 +381,7 @@ end;
 
 
 procedure TMfTimedText.BeforeDestruction();
+
 begin
 
   Clear();
@@ -387,6 +394,7 @@ end;
 
 
 destructor TMfTimedText.Destroy();
+
 begin
 
   LCLIntf.DeAllocateHWnd(hp_TTextHandle);
@@ -396,6 +404,7 @@ end;
 
 
 procedure TMfTimedText.WndProc(var Msg: TLMessage);
+
 begin
 
   // Initiate the first track
@@ -406,17 +415,16 @@ begin
     end
 
   // Get the next track
+  else if (Msg.Msg = WM_TIMEDTEXTNOTIFY_PROCESSED) then
+    begin
+      m_bTimedTextNotifyProcessed := True;
+      SendSubTitleText(TrackIndex + 1);
+    end
   else
-    if (Msg.Msg = WM_TIMEDTEXTNOTIFY_PROCESSED) then
-      begin
-        m_bTimedTextNotifyProcessed := True;
-        SendSubTitleText(TrackIndex + 1);
-      end
-    else
-      DefWindowProcW(hp_TTextHandle,
-                    Msg.Msg,
-                    Msg.wParam,
-                    Msg.lParam);
+    DefWindowProcW(hp_TTextHandle,
+                   Msg.Msg,
+                   Msg.wParam,
+                   Msg.lParam);
 end;
 
 
@@ -445,7 +453,7 @@ var
     // Prefer the currently active timed-text file.
     for J := 0 to High(FLanguageTags.TimedTxtPropsArray) do
       if FLanguageTags.TimedTxtPropsArray[J].bActiveFile and
-         (FLanguageTags.TimedTxtPropsArray[J].sTTxtType <> UNKNOWN) then
+        (FLanguageTags.TimedTxtPropsArray[J].sTTxtType <> UNKNOWN) then
         begin
           Result := J;
           Exit;
@@ -454,8 +462,8 @@ var
     // Otherwise select a file matching the preferred language.
     for J := 0 to High(FLanguageTags.TimedTxtPropsArray) do
       if (FLanguageTags.TimedTxtPropsArray[J].sTTxtType <> UNKNOWN) and
-         IsMatch(PreferredLanguage + '_[A-Z][A-Z]',
-                 FLanguageTags.TimedTxtPropsArray[J].sFile) then
+        IsMatch(PreferredLanguage + '_[A-Z][A-Z]',
+                FLanguageTags.TimedTxtPropsArray[J].sFile) then
         begin
           Result := J;
           Exit;
@@ -464,12 +472,13 @@ var
     // Fall back to the first available timed-text file.
     if (Length(FLanguageTags.TimedTxtPropsArray) > 0) then
       for J := 0 to High(FLanguageTags.TimedTxtPropsArray) do
-        if FLanguageTags.TimedTxtPropsArray[J].sTTxtType <> UNKNOWN then
+        if (FLanguageTags.TimedTxtPropsArray[J].sTTxtType <> UNKNOWN) then
           begin
             Result := J;
             Exit;
           end;
   end;
+
 
   function LoadTimedTextExt(const TimedTextExt: string;
                             out AFileFound: Boolean): HResult;
@@ -485,9 +494,9 @@ var
               0);
 
     FLanguageTags.TimedTxtPropsArray := FLanguageTags.ReadFileTags(Path + UrlFileName,
-                                                                       PreferredLanguage,
-                                                                       0,
-                                                                       TimedTextExt);
+                                                                   PreferredLanguage,
+                                                                   0,
+                                                                   TimedTextExt);
 
     // No file was found for this extension.
     if (Length(FLanguageTags.TimedTxtPropsArray) = 0) then
@@ -504,19 +513,17 @@ var
     // Select the parser from the detected contents, not only from the file
     // extension. In the wild, SubRip text is frequently stored as .sub,
     // an extension also used by MicroDVD text and binary VobSub.
-    if FLanguageTags.TimedTxtPropsArray[Index].sTTxtType = SUBRIB then
+    if (FLanguageTags.TimedTxtPropsArray[Index].sTTxtType = SUBRIB) then
       Result := ReadSubRipFile(LPCWSTR(FLanguageTags.TimedTxtPropsArray[Index].sFile))
+    else if (FLanguageTags.TimedTxtPropsArray[Index].sTTxtType = WEBVTT) then
+      Result := ReadWEBVTTFile(LPCWSTR(FLanguageTags.TimedTxtPropsArray[Index].sFile))
+    else if (FLanguageTags.TimedTxtPropsArray[Index].sTTxtType = MICRODVD) then
+      Result := ReadMicroDvdFile(LPCWSTR(FLanguageTags.TimedTxtPropsArray[Index].sFile))
     else
-      if FLanguageTags.TimedTxtPropsArray[Index].sTTxtType = WEBVTT then
-        Result := ReadWEBVTTFile(LPCWSTR(FLanguageTags.TimedTxtPropsArray[Index].sFile))
-      else
-        if FLanguageTags.TimedTxtPropsArray[Index].sTTxtType = MICRODVD then
-          Result := ReadMicroDvdFile(LPCWSTR(FLanguageTags.TimedTxtPropsArray[Index].sFile))
-        else
-          begin
-            Result := E_INVALIDARG;
-            Exit;
-          end;
+      begin
+        Result := E_INVALIDARG;
+        Exit;
+      end;
 
     // Only commit the selected file properties when loading succeeded.
     if (Result = S_OK) then
@@ -593,8 +600,8 @@ end;
 
 procedure TMfTimedText.AddMatchToList(match: TMatch);
 var
-  Group : TGroup;
-  i : integer;
+  Group: TGroup;
+  i: integer;
 
 begin
 
@@ -603,7 +610,7 @@ begin
     begin
 
       //group 0 is the entire match, so the first real group is 1
-      for i := 1 to match.Groups.Count -1 do
+      for i := 1 to match.Groups.Count - 1 do
         begin
           Group := match.Groups.Item[i];
           lp_MatchList.Append(Group.Value);
@@ -617,32 +624,33 @@ end;
 
 
 function TMfTimedText.GetMatchCount(const pattern: string; // RegEx pattern
-                                    const txt: string;     // Text to search in
-                                    const options: TRegExOptions = [roNotEmpty]): Integer;
+  const txt: string;     // Text to search in
+  const options: TRegExOptions = [roNotEmpty]): Integer;
 var
-  RegEx : TRegEx;
-  Match : TMatch;
+  RegEx: TRegEx;
+  Match: TMatch;
 
 begin
 
   lp_MatchList.Clear();
 
-try
-  RegEx := TRegEx.Create(pattern, options);
-  Match := RegEx.Match(txt);
+  try
+    RegEx := TRegEx.Create(pattern,
+                           options);
+    Match := RegEx.Match(txt);
 
-  if match.Success then
-    begin
-      AddMatchToList(Match);
-      Result := lp_MatchList.Count;
-    end
-  else
-    Result := 0;
+    if match.Success then
+      begin
+        AddMatchToList(Match);
+        Result := lp_MatchList.Count;
+      end
+    else
+      Result := 0;
 
-except
-  on e: Exception do
-    Result := GetLastError();
-end;
+  except
+    on e: Exception do
+      Result := GetLastError();
+  end;
 end;
 
 {
@@ -669,6 +677,7 @@ end;
 // compares given pattern with given string
 function TMfTimedText.IsMatch(const pattern: string;
                               const txt: string): Boolean;
+
 begin
 
   Result := TRegEx.IsMatch(txt,
@@ -695,98 +704,98 @@ begin
   flTemp := TStringList.Create();
   flTemp.LoadFromFile(sUrl);
 
-try
-try
+  try
+    try
 
-  // Remove empty lines if more than 1 and/or insert a track marker
-  for I := flTemp.Count - 1 downto 0 do
-    begin
-      if (flTemp.Strings[I] = Trim('')) and (bPrev = False) then
+      // Remove empty lines if more than 1 and/or insert a track marker
+      for I := flTemp.Count - 1 downto 0 do
         begin
-          flTemp.Strings[I] := IMARKER;  // insert a track end tag
-          inc(bPrev);
-        end
-      else
-        if (flTemp.Strings[I] = Trim('')) and (bPrev = True) then
-          flTemp.Delete(I)
-        else
-          if (flTemp.Strings[I] <> Trim('')) then
-            bPrev := False;
-    end;
-
-  // A trailing blank line is optional in SubRip. Ensure the final cue has the
-  // same terminator as intermediate cues so its text loop cannot run past EOF.
-  if (flTemp.Count > 0) and
-     (Pos(IMARKER, flTemp.Strings[flTemp.Count - 1]) = 0) then
-    flTemp.Add(IMARKER);
-
-  SetLength(ap_SubTitleTracks,
-            1);
-  aSize := 0;
-  I := 0;
-
-  while (I < flTemp.Count -1) do
-    begin
-
-      // Get index
-      if TryStrToInt(flTemp.Strings[I], intCheck) then  // we found a track index
-        begin
-          // Get the track index
-          if (StrToIntDef(flTemp.Strings[I],
-                          0) > 0) then
+          if (flTemp.Strings[I] = Trim('')) and (bPrev = False) then
             begin
-              ap_SubTitleTracks[aSize].stIndex := StrToIntDef(flTemp.Strings[I],
-                                                              0);
-              ip_Tracks := ap_SubTitleTracks[aSize].stIndex;
-            end;
-        end
-      else
-        // Get time codes
-        if (Pos(WTP,
-                flTemp.Strings[I]) > 0) then
-          begin
-            // Get the start and stop time from this format 00:00:00,000 --> 00:00:00,000
-            iMatches := GetMatchCount('[0-9][0-9]:[0-5][0-9]:[0-5][0-9],[0-9][0-9][0-9]',
-                                      flTemp.Strings[I],
-                                      [roSingleLine, roNotEmpty]);
+              flTemp.Strings[I] := IMARKER;  // insert a track end tag
+              inc(bPrev);
+            end
+          else if (flTemp.Strings[I] = Trim('')) and (bPrev = True) then
+            flTemp.Delete(I)
+          else if (flTemp.Strings[I] <> Trim('')) then
+            bPrev := False;
+        end;
 
-            if (iMatches = 2) then
-              begin
-                // Calculate begin
-                ap_SubTitleTracks[aSize].Start := TimeToHnsTime(lp_MatchList.Strings[0],
-                                                                False);
-                // Calculate end
-                ap_SubTitleTracks[aSize].Stop := TimeToHnsTime(lp_MatchList.Strings[1],
-                                                               False);
-                // Calculate duration
-                ap_SubTitleTracks[aSize].Duration := ap_SubTitleTracks[aSize].Stop - ap_SubTitleTracks[aSize].Start;
-              end
-            else
-              // The file or format is corrupted
-              begin
-                hr := E_INVALIDARG;
-                Break;
-              end;
-            lp_MatchList.Clear();
-          end
-        else
-          // Get the text tracks
+      // A trailing blank line is optional in SubRip. Ensure the final cue has the
+      // same terminator as intermediate cues so its text loop cannot run past EOF.
+      if (flTemp.Count > 0) and
+        (Pos(IMARKER,
+             flTemp.Strings[flTemp.Count - 1]) = 0) then
+        flTemp.Add(IMARKER);
+
+      SetLength(ap_SubTitleTracks,
+                1);
+      aSize := 0;
+      I := 0;
+
+      while (I < flTemp.Count - 1) do
+        begin
+
+          // Get index
+          if TryStrToInt(flTemp.Strings[I], intCheck) then  // we found a track index
+            begin
+              // Get the track index
+              if (StrToIntDef(flTemp.Strings[I],
+                0) > 0) then
+                begin
+                  ap_SubTitleTracks[aSize].stIndex := StrToIntDef(flTemp.Strings[I],
+                                                                  0);
+                  ip_Tracks := ap_SubTitleTracks[aSize].stIndex;
+                end;
+            end
+          else // Get time codes
+          if (Pos(WTP,
+            flTemp.Strings[I]) > 0) then
+            begin
+              // Get the start and stop time from this format 00:00:00,000 --> 00:00:00,000
+              iMatches := GetMatchCount('[0-9][0-9]:[0-5][0-9]:[0-5][0-9],[0-9][0-9][0-9]',
+                                        flTemp.Strings[I],
+                                        [roSingleLine, roNotEmpty]);
+
+              if (iMatches = 2) then
+                begin
+                  // Calculate begin
+                  ap_SubTitleTracks[aSize].Start := TimeToHnsTime(lp_MatchList.Strings[0],
+                                                                  False);
+                  // Calculate end
+                  ap_SubTitleTracks[aSize].Stop := TimeToHnsTime(lp_MatchList.Strings[1],
+                                                                 False);
+                  // Calculate duration
+                  ap_SubTitleTracks[aSize].Duration := ap_SubTitleTracks[aSize].Stop - ap_SubTitleTracks[aSize].Start;
+                end
+              else
+                // The file or format is corrupted
+                begin
+                  hr := E_INVALIDARG;
+                  Break;
+                end;
+              lp_MatchList.Clear();
+            end
+          else // Get the text tracks
           if (Pos(WTP, flTemp.Strings[I]) = 0) or (TryStrToInt(flTemp.Strings[I], intCheck) = false) then
             begin
               J := 0;
-              while I < flTemp.Count do
+              while (I < flTemp.Count) do
                 begin
 
-                  if Pos(IMARKER, flTemp.Strings[I]) <> 0 then
+                  if (Pos(IMARKER, flTemp.Strings[I]) <> 0) then
                     Break;
 
                   inc(J);
                   // Increase the SubTitleLines array
-                  SetLength(ap_SubTitleTracks[aSize].TrackText, J);
+                  SetLength(ap_SubTitleTracks[aSize].TrackText,
+                            J);
                   // Clear paragraph tags and set the fontproperties for each record.
                   // fTextFormat can be a custom or auto format, where autoformat is the format
                   // defined by the tags.
-                  ProcessSrtTags(flTemp.Strings[I], aSize, J -1);
+                  ProcessSrtTags(flTemp.Strings[I],
+                                 aSize,
+                                 J - 1);
                   Inc(I);
                 end;
 
@@ -802,7 +811,7 @@ try
                   begin
                     Inc(aSize);
                     SetLength(ap_SubTitleTracks,
-                              aSize +1);
+                              aSize + 1);
                   end;
             end
           else
@@ -811,27 +820,27 @@ try
               hr := E_INVALIDARG;
               Break;
             end;
-        inc(I);
-   end; // while
+          inc(I);
+        end; // while
 
-except
-  pwInt := PWideChar(InttoStr(hr));
+    except
+      pwInt := PWideChar(InttoStr(hr));
 
-  MessageBoxW(0,
-             PWideChar('An exception has been returned. (hr: ' + pwInt + ')'),
-             PWideChar('Error'),
-             MB_ICONERROR);
-end;
-
-finally
-  flTemp.Free;
-  if FAILED(hr) then
-    begin
-      Clear();
-      lp_MatchList.Clear();
+      MessageBoxW(0,
+                  PWideChar('An exception has been returned. (hr: ' + pwInt + ')'),
+                  PWideChar('Error'),
+                  MB_ICONERROR);
     end;
-  Result := hr;
-end;
+
+  finally
+    flTemp.Free;
+    if FAILED(hr) then
+      begin
+        Clear();
+        lp_MatchList.Clear();
+      end;
+    Result := hr;
+  end;
 end;
 
 
@@ -854,88 +863,87 @@ begin
   flTemp := TStringList.Create();
   flTemp.LoadFromFile(sUrl);
 
-try
-try
-  if (flTemp.Count = 0) then
-    begin
-      hr := E_UNEXPECTED;
-      raise Exception.Create('Invalid file.');
-    end;
-
-  // A WebVTT file starts with the WEBVTT signature. Do not assume that the
-  // file contains additional lines before validating the header.
-  if not SameText(flTemp.Strings[0].Trim,
-                  WVTT_WVTT) then
-    begin
-      hr := HRESULT_FROM_WIN32(ERROR_BAD_FORMAT);
-      raise Exception.Create('Invalid WebVTT format.');
-    end;
-
-  // Remove empty lines if more than 1 and/or insert a track marker
-  for I := flTemp.Count - 1 downto 0 do
-    begin
-      if (flTemp.Strings[I] = Trim('')) and (bPrev = False) then
+  try
+    try
+      if (flTemp.Count = 0) then
         begin
-          flTemp.Strings[I] := IMARKER;  // insert a track end tag
-          inc(bPrev);
-        end
-      else
-        if (flTemp.Strings[I] = Trim('')) and (bPrev = True) then
-          flTemp.Delete(I)
-        else
-          if (flTemp.Strings[I] <> Trim('')) then
-            bPrev := False;
-    end;
+          hr := E_UNEXPECTED;
+          raise Exception.Create('Invalid file.');
+        end;
 
-  SetLength(ap_SubTitleTracks, 1);
-  aSize := 0;
-  I := 0;
-
-  while (I < flTemp.Count -1) do
-    begin
-      // Get index
-      if TryStrToInt(flTemp.Strings[I],
-                     intCheck) then  // we found a track index
+      // A WebVTT file starts with the WEBVTT signature. Do not assume that the
+      // file contains additional lines before validating the header.
+      if not SameText(flTemp.Strings[0].Trim,
+        WVTT_WVTT) then
         begin
-          // Get the track index
-          if (StrToIntDef(flTemp.Strings[I], 0) > 0) then
+          hr := HRESULT_FROM_WIN32(ERROR_BAD_FORMAT);
+          raise Exception.Create('Invalid WebVTT format.');
+        end;
+
+      // Remove empty lines if more than 1 and/or insert a track marker
+      for I := flTemp.Count - 1 downto 0 do
+        begin
+          if (flTemp.Strings[I] = Trim('')) and (bPrev = False) then
             begin
-              ap_SubTitleTracks[aSize].stIndex := StrToIntDef(flTemp.Strings[I],
-                                                              0);
-              ip_Tracks := ap_SubTitleTracks[aSize].stIndex;
-            end;
-        end
-      else
-        // Get time codes
-        if (Pos(WTP,
-                flTemp.Strings[I]) > 0) then
-          begin
-            // Get the start and stop time from this format 00:00:00.000 --> 00:00:00.000
-            iMatches := GetMatchCount('[0-9][0-9]:[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]',
-                                      flTemp.Strings[I],
-                                      [roSingleLine, roNotEmpty]);
-            // If we find the start and end time.
-            if (iMatches = 2) then
-              begin
+              flTemp.Strings[I] := IMARKER;  // insert a track end tag
+              inc(bPrev);
+            end
+          else if (flTemp.Strings[I] = Trim('')) and (bPrev = True) then
+            flTemp.Delete(I)
+          else if (flTemp.Strings[I] <> Trim('')) then
+            bPrev := False;
+        end;
 
-                // Calculate begin
-                ap_SubTitleTracks[aSize].Start := TimeToHnsTime(lp_MatchList.Strings[0], False);
-                // Calculate end
-                ap_SubTitleTracks[aSize].Stop := TimeToHnsTime(lp_MatchList.Strings[1], False);
-                // Calculate duration
-                ap_SubTitleTracks[aSize].Duration := ap_SubTitleTracks[aSize].Stop - ap_SubTitleTracks[aSize].Start;
-              end
-            else
-              // The file or format is corrupted
-              begin
-                hr := E_INVALIDARG;
-                Break;
-              end;
+      SetLength(ap_SubTitleTracks,
+                1);
+      aSize := 0;
+      I := 0;
 
-            lp_MatchList.Clear();
-          end
-        else
-          // Get the text tracks
+      while (I < flTemp.Count - 1) do
+        begin
+          // Get index
+          if TryStrToInt(flTemp.Strings[I],
+            intCheck) then  // we found a track index
+            begin
+              // Get the track index
+              if (StrToIntDef(flTemp.Strings[I], 0) > 0) then
+                begin
+                  ap_SubTitleTracks[aSize].stIndex := StrToIntDef(flTemp.Strings[I],
+                                                                  0);
+                  ip_Tracks := ap_SubTitleTracks[aSize].stIndex;
+                end;
+            end
+          else // Get time codes
+          if (Pos(WTP,
+            flTemp.Strings[I]) > 0) then
+            begin
+              // Get the start and stop time from this format 00:00:00.000 --> 00:00:00.000
+              iMatches := GetMatchCount('[0-9][0-9]:[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]',
+                                        flTemp.Strings[I],
+                                        [roSingleLine, roNotEmpty]);
+              // If we find the start and end time.
+              if (iMatches = 2) then
+                begin
+
+                  // Calculate begin
+                  ap_SubTitleTracks[aSize].Start := TimeToHnsTime(lp_MatchList.Strings[0],
+                                                                  False);
+                  // Calculate end
+                  ap_SubTitleTracks[aSize].Stop := TimeToHnsTime(lp_MatchList.Strings[1],
+                                                                 False);
+                  // Calculate duration
+                  ap_SubTitleTracks[aSize].Duration := ap_SubTitleTracks[aSize].Stop - ap_SubTitleTracks[aSize].Start;
+                end
+              else
+                // The file or format is corrupted
+                begin
+                  hr := E_INVALIDARG;
+                  Break;
+                end;
+
+              lp_MatchList.Clear();
+            end
+          else // Get the text tracks
           if (Pos(WTP, flTemp.Strings[I]) = 0) or (TryStrToInt(flTemp.Strings[I], intCheck) = false) then
             begin
               J := 0;
@@ -950,7 +958,7 @@ try
                   // defined by the tags.
                   ProcessVttTags(flTemp.Strings[I],
                                  aSize,
-                                 J -1);
+                                 J - 1);
                   Inc(I);
                 end;
 
@@ -959,7 +967,7 @@ try
                 begin
                   Inc(aSize);
                   SetLength(ap_SubTitleTracks,
-                            aSize +1);
+                            aSize + 1);
                 end;
             end
           else
@@ -968,27 +976,27 @@ try
               hr := E_INVALIDARG;
               Break;
             end;
-        inc(I);
-   end; // while
+          inc(I);
+        end; // while
 
-except
-  pwInt := PWideChar(InttoStr(hr));
+    except
+      pwInt := PWideChar(InttoStr(hr));
 
-  MessageBoxW(0,
-             PWideChar('An exception has been returned. (hr: ' + pwInt + ')'),
-             PWideChar('Error'),
-             MB_ICONERROR);
-end;
-
-finally
-  flTemp.Free;
-  if FAILED(hr) then
-    begin
-      Clear();
-      lp_MatchList.Clear();
+      MessageBoxW(0,
+                  PWideChar('An exception has been returned. (hr: ' + pwInt + ')'),
+                  PWideChar('Error'),
+                  MB_ICONERROR);
     end;
-  Result := hr;
-end;
+
+  finally
+    flTemp.Free;
+    if FAILED(hr) then
+      begin
+        Clear();
+        lp_MatchList.Clear();
+      end;
+    Result := hr;
+  end;
 end;
 
 
@@ -1009,74 +1017,73 @@ begin
   flTemp := TStringList.Create();
   flTemp.LoadFromFile(sUrl);
 
-try
-try
+  try
+    try
 
-  // Remove empty lines if more than 1 and/or insert a track marker
-  for I := flTemp.Count - 1 downto 0 do
-    begin
-      if (flTemp.Strings[I] = Trim('')) and (bPrev = False) then
+      // Remove empty lines if more than 1 and/or insert a track marker
+      for I := flTemp.Count - 1 downto 0 do
         begin
-          flTemp.Strings[I] := IMARKER;  // insert a track end tag
-          inc(bPrev);
-        end
-      else
-        if (flTemp.Strings[I] = Trim('')) and (bPrev = True) then
-          flTemp.Delete(I)
-        else
-          if (flTemp.Strings[I] <> Trim('')) then
+          if (flTemp.Strings[I] = Trim('')) and (bPrev = False) then
+            begin
+              flTemp.Strings[I] := IMARKER;  // insert a track end tag
+              inc(bPrev);
+            end
+          else if (flTemp.Strings[I] = Trim('')) and (bPrev = True) then
+            flTemp.Delete(I)
+          else if (flTemp.Strings[I] <> Trim('')) then
             bPrev := False;
-    end;
-
-  SetLength(ap_SubTitleTracks, 1);
-  aSize := 0;
-  I := 0;
-
-  while (I < flTemp.Count -1) do
-    begin
-      // Get the start and stop frame from this format {start-frame}{stop-frame}
-      // This regex expression should always return 2 matches.
-      iMatches := GetMatchCount('{\K[-+]?[0-9]*',
-                                flTemp.Strings[I],
-                                [roSingleLine, roNotEmpty]);
-      if (iMatches = 2) then
-        begin
-          // Calculate begin
-          ap_SubTitleTracks[aSize].Start := TimeToHnsTime(lp_MatchList.Strings[0],
-                                                          False);
-          // Calculate end
-          ap_SubTitleTracks[aSize].Stop := TimeToHnsTime(lp_MatchList.Strings[1],
-                                                         False);
-          // Calculate duration
-          ap_SubTitleTracks[aSize].Duration := ap_SubTitleTracks[aSize].Stop - ap_SubTitleTracks[aSize].Start;
-        end
-      else // The file or format is corrupted
-        begin
-          hr := E_INVALIDARG;
-          Break;
         end;
-      lp_MatchList.Clear();
+
+      SetLength(ap_SubTitleTracks,
+                1);
+      aSize := 0;
+      I := 0;
+
+      while (I < flTemp.Count - 1) do
+        begin
+          // Get the start and stop frame from this format {start-frame}{stop-frame}
+          // This regex expression should always return 2 matches.
+          iMatches := GetMatchCount('{\K[-+]?[0-9]*',
+                                    flTemp.Strings[I],
+                                    [roSingleLine, roNotEmpty]);
+          if (iMatches = 2) then
+            begin
+              // Calculate begin
+              ap_SubTitleTracks[aSize].Start := TimeToHnsTime(lp_MatchList.Strings[0],
+                                                              False);
+              // Calculate end
+              ap_SubTitleTracks[aSize].Stop := TimeToHnsTime(lp_MatchList.Strings[1],
+                                                             False);
+              // Calculate duration
+              ap_SubTitleTracks[aSize].Duration := ap_SubTitleTracks[aSize].Stop - ap_SubTitleTracks[aSize].Start;
+            end
+          else // The file or format is corrupted
+            begin
+              hr := E_INVALIDARG;
+              Break;
+            end;
+          lp_MatchList.Clear();
+        end;
+
+    except
+      pwInt := PWideChar(InttoStr(hr));
+
+      MessageBoxW(0,
+                  PWideChar('An exception has been returned. (hr: ' + pwInt + ')'),
+                  PWideChar('Error'),
+                  MB_ICONERROR);
     end;
 
-except
-  pwInt := PWideChar(InttoStr(hr));
-
-  MessageBoxW(0,
-             PWideChar('An exception has been returned. (hr: ' + pwInt + ')'),
-             PWideChar('Error'),
-             MB_ICONERROR);
-end;
-
-finally
-  flTemp.Free;
-  if FAILED(hr) then
-    begin
-      Clear();
-      if (lp_MatchList <> nil) then
-        lp_MatchList.Clear();
-    end;
-  Result := hr;
-end;
+  finally
+    flTemp.Free;
+    if FAILED(hr) then
+      begin
+        Clear();
+        if (lp_MatchList <> nil) then
+          lp_MatchList.Clear();
+      end;
+    Result := hr;
+  end;
 end;
 
 
@@ -1100,6 +1107,7 @@ end;
 
 
 procedure TMfTimedText.SetAutoFormatText(aValue: Boolean);
+
 begin
 
   bp_AutoFormatText := aValue;
@@ -1107,6 +1115,7 @@ end;
 
 
 procedure TMfTimedText.SetDefaultTextColor(aValue: TColor);
+
 begin
 
   cp_clDefaultTextColor := aValue;
@@ -1130,6 +1139,7 @@ begin
     end;
 end;
 
+
 function TMfTimedText.TryGetTrackAtTime(MediaTimeMs: MFTIME;
                                         out Track: TSubTitleTrack): Boolean;
 var
@@ -1144,7 +1154,8 @@ begin
   Track.Start := 0;
   Track.Stop := 0;
   Track.Duration := 0;
-  SetLength(Track.TrackText, 0);
+  SetLength(Track.TrackText,
+            0);
   Result := False;
 
   if (Length(ap_SubTitleTracks) = 0) then
@@ -1153,9 +1164,9 @@ begin
   // Most calls arrive in chronological frame order. Reuse the previous cue
   // before doing a binary search, which makes an active cue effectively O(1).
   if (ip_TickIndex >= Low(ap_SubTitleTracks)) and
-     (ip_TickIndex <= High(ap_SubTitleTracks)) and
-     (MediaTimeMs >= ap_SubTitleTracks[ip_TickIndex].Start) and
-     (MediaTimeMs < ap_SubTitleTracks[ip_TickIndex].Stop) then
+    (ip_TickIndex <= High(ap_SubTitleTracks)) and
+    (MediaTimeMs >= ap_SubTitleTracks[ip_TickIndex].Start) and
+    (MediaTimeMs < ap_SubTitleTracks[ip_TickIndex].Stop) then
     begin
       Track := ap_SubTitleTracks[ip_TickIndex];
       tp_SubTitleTrack := Track;
@@ -1171,7 +1182,7 @@ begin
   while (LowIndex <= HighIndex) do
     begin
       MiddleIndex := LowIndex + ((HighIndex - LowIndex) div 2);
-      if ap_SubTitleTracks[MiddleIndex].Start <= MediaTimeMs then
+      if (ap_SubTitleTracks[MiddleIndex].Start <= MediaTimeMs) then
         begin
           CandidateIndex := MiddleIndex;
           LowIndex := MiddleIndex + 1;
@@ -1186,12 +1197,12 @@ begin
   // Preserve the old first-match behavior for the uncommon case of
   // overlapping cues by walking back to the earliest still-active cue.
   while (CandidateIndex > Low(ap_SubTitleTracks)) and
-        (ap_SubTitleTracks[CandidateIndex - 1].Stop > MediaTimeMs) do
+    (ap_SubTitleTracks[CandidateIndex - 1].Stop > MediaTimeMs) do
     Dec(CandidateIndex);
 
   I := CandidateIndex;
   while (I <= High(ap_SubTitleTracks)) and
-        (ap_SubTitleTracks[I].Start <= MediaTimeMs) do
+    (ap_SubTitleTracks[I].Start <= MediaTimeMs) do
     begin
       if (MediaTimeMs < ap_SubTitleTracks[I].Stop) then
         begin
@@ -1235,9 +1246,8 @@ begin
 
         HasText := False;
 
-        for J := Low(ap_SubTitleTracks[I].TrackText) to
-                 High(ap_SubTitleTracks[I].TrackText) do
-          if Trim(ap_SubTitleTracks[I].TrackText[J].TextLine) <> '' then
+        for J := Low(ap_SubTitleTracks[I].TrackText) to High(ap_SubTitleTracks[I].TrackText) do
+          if (Trim(ap_SubTitleTracks[I].TrackText[J].TextLine) <> '') then
             begin
               HasText := True;
               Break;
@@ -1247,21 +1257,21 @@ begin
           Continue;
 
         Lines.Add(MfTimedTextFormatWebVttTime(ap_SubTitleTracks[I].Start) +
-                  ' --> ' +
-                  MfTimedTextFormatWebVttTime(ap_SubTitleTracks[I].Stop));
+          ' --> ' +
+          MfTimedTextFormatWebVttTime(ap_SubTitleTracks[I].Stop));
 
         if (CueCount < 4) then
           OutputDebugStringW(PChar(Format('MfCast WebVTT cue %d: startMs=%d stopMs=%d time=%s --> %s',
-                                         [CueCount + 1,
-                                          ap_SubTitleTracks[I].Start,
-                                          ap_SubTitleTracks[I].Stop,
-                                          MfTimedTextFormatWebVttTime(ap_SubTitleTracks[I].Start),
-                                          MfTimedTextFormatWebVttTime(ap_SubTitleTracks[I].Stop)])));
+                                          [CueCount + 1,
+            ap_SubTitleTracks[I].Start,
+            ap_SubTitleTracks[I].Stop,
+            MfTimedTextFormatWebVttTime(ap_SubTitleTracks[I].Start),
+            MfTimedTextFormatWebVttTime(ap_SubTitleTracks[I].Stop)])));
 
         for J := Low(ap_SubTitleTracks[I].TrackText) to High(ap_SubTitleTracks[I].TrackText) do
           if (Trim(ap_SubTitleTracks[I].TrackText[J].TextLine) <> '') then
             Lines.Add(MfTimedTextEscapeWebVttText(
-                        ap_SubTitleTracks[I].TrackText[J].TextLine));
+              ap_SubTitleTracks[I].TrackText[J].TextLine));
 
         Lines.Add('');
         Inc(CueCount);
@@ -1361,6 +1371,7 @@ end;
 
 
 procedure TMfTimedText.SetTrackIndex(aValue: Integer);
+
 begin
 
   if (aValue <> ip_TickIndex) then
@@ -1369,6 +1380,7 @@ end;
 
 
 procedure TMfTimedText.SetTimedTextFile(aValue: WideString);
+
 begin
 
   sp_Url := aValue;
@@ -1377,32 +1389,33 @@ end;
 
 // Sender did send a message, we need a new track
 function TMfTimedText.SendSubTitleText(Index: Integer): Integer;
+
 begin
 
-try
+  try
 
-  // store into the global index
-  TrackIndex := Index;
+    // store into the global index
+    TrackIndex := Index;
 
-  if (Index <= ip_Tracks) then
-    begin
-      // read a track and add to property
-      tp_SubTitleTrack := ap_SubTitleTracks[Index];
-      m_bTimedTextNotifyProcessed := False;
+    if (Index <= ip_Tracks) then
+      begin
+        // read a track and add to property
+        tp_SubTitleTrack := ap_SubTitleTracks[Index];
+        m_bTimedTextNotifyProcessed := False;
 
-      // Send a message to the owner: A new track is ready.
-      SendMessage(hp_HwSender,
-                  WM_TIMEDTEXTNOTIFY_UPDATE,
-                  WPARAM(1), // 1 = track ready to read
-                  LPARAM(TrackIndex));
-      Result := Index;
-    end
-  else
-    Result := -1; // End tag processing
+        // Send a message to the owner: A new track is ready.
+        SendMessage(hp_HwSender,
+                    WM_TIMEDTEXTNOTIFY_UPDATE,
+                    WPARAM(1), // 1 = track ready to read
+          LPARAM(TrackIndex));
+        Result := Index;
+      end
+    else
+      Result := -1; // End tag processing
 
-except
-  Result := -10;
-end;
+  except
+    Result := -10;
+  end;
 end;
 
 
@@ -1416,13 +1429,13 @@ begin
   if not IdentToColor(sValue, liColor) then
     begin
       if TryStrToInt(sValue,
-                     liColor) then
-        Result:= TColor(liColor)
+        liColor) then
+        Result := TColor(liColor)
       else
-        Result:= cp_clDefaultTextColor;  // if no valid color found, use the default
+        Result := cp_clDefaultTextColor;  // if no valid color found, use the default
     end
   else
-    Result:= TColor(liColor);
+    Result := TColor(liColor);
 end;
 
 
@@ -1450,52 +1463,58 @@ begin
 
   if AutoFormatText then
     begin
-     // Italic
-     if (Pos(SRTTAG_ITALIC_START, AnsiLowerCase(fText)) > 0) then
-       begin
-         fTrackFont.Style := fTrackFont.Style + [fsItalic];
-         ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Style := fTrackFont.Style;
-       end;
+      // Italic
+      if (Pos(SRTTAG_ITALIC_START, AnsiLowerCase(fText)) > 0) then
+        begin
+          fTrackFont.Style := fTrackFont.Style + [fsItalic];
+          ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Style := fTrackFont.Style;
+        end;
 
-    // Bold
-    if (Pos(SRTTAG_BOLD_START, AnsiLowerCase(fText)) > 0) then
-      begin
-        fTrackFont.Style := fTrackFont.Style + [fsBold];
-        ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Style := fTrackFont.Style;
-      end;
+      // Bold
+      if (Pos(SRTTAG_BOLD_START, AnsiLowerCase(fText)) > 0) then
+        begin
+          fTrackFont.Style := fTrackFont.Style + [fsBold];
+          ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Style := fTrackFont.Style;
+        end;
 
-    // Underline
-    if Pos(SRTTAG_UNDERLINE_START, AnsiLowerCase(fText)) > 0 then
-      begin
-        fTrackFont.Style := fTrackFont.Style + [fsUnderline];
-        ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Style := fTrackFont.Style;
-      end;
+      // Underline
+      if (Pos(SRTTAG_UNDERLINE_START, AnsiLowerCase(fText)) > 0) then
+        begin
+          fTrackFont.Style := fTrackFont.Style + [fsUnderline];
+          ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Style := fTrackFont.Style;
+        end;
 
-    // Color
-    if pos(SRTTAG_COLOR_START, AnsiLowerCase(fText)) > 0 then
-      begin
-        sColor := Trim(copy(fText,
-                       pos(SRTTAG_COLOR_START, fText) + Length(SRTTAG_COLOR_START),
-                       Length(fText))); //the length of the color information is 8 ex '$' or '#'
-        sColor := Trim(copy(sColor, 0, pos('">', sColor)-1));
+      // Color
+      if (pos(SRTTAG_COLOR_START, AnsiLowerCase(fText)) > 0) then
+        begin
+          sColor := Trim(copy(fText,
+                              pos(SRTTAG_COLOR_START,
+                                  fText) + Length(SRTTAG_COLOR_START),
+                              Length(fText))); //the length of the color information is 8 ex '$' or '#'
+          sColor := Trim(copy(sColor,
+                              0,
+                              pos('">',
+                                  sColor) - 1));
 
-        // Check if we have to deal with text, decimal or hex.
+          // Check if we have to deal with text, decimal or hex.
 
-        if (Pos(sColor, '#') > 0) then // Hex?
-          sColor := '$' + copy(sColor, 1, Length(sColor))
-        else  // integer?
+          if (Pos(sColor, '#') > 0) then // Hex?
+            sColor := '$' + copy(sColor,
+                                 1,
+                                 Length(sColor))
+          else  // integer?
           if TryStrToInt(sColor, iTest) then
             sColor := '$' + IntToStr(iTest)
           else // text?
-            if (Pos(sColor, '#') = 0) then
-              sColor := 'cl' + sColor
-            else // not valid?
-              sColor := ColorToString(cp_clDefaultTextColor);
+          if (Pos(sColor, '#') = 0) then
+            sColor := 'cl' + sColor
+          else // not valid?
+            sColor := ColorToString(cp_clDefaultTextColor);
 
-        fTrackFont.Color := StrToColor(sColor);
-        ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Color := fTrackFont.Color;
-      end;  // color
-  end; // AutoFormat
+          fTrackFont.Color := StrToColor(sColor);
+          ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Color := fTrackFont.Color;
+        end;  // color
+    end; // AutoFormat
 
   // strip tags from textline
   sTmp := fText;
@@ -1506,26 +1525,27 @@ end;
 
 procedure TMfTimedText.DeleteSrtFontTags(var fText: string);
 
+
   function CleanUp(sTag: string): string;
-    begin
-      Result := StringReplace(fText,
-                              sTag,
-                              '',
-                              [rfReplaceAll, rfIgnoreCase]);
-    end;
+  begin
+    Result := StringReplace(fText,
+                            sTag,
+                            '',
+                            [rfReplaceAll, rfIgnoreCase]);
+  end;
 
 begin
 
-   fText := CleanUp(SRTTAG_ITALIC_START);
-   fText := CleanUp(SRTTAG_ITALIC_END);
-   fText := CleanUp(SRTTAG_BOLD_START);
-   fText := CleanUp(SRTTAG_BOLD_START);
-   fText := CleanUp(SRTTAG_BOLD_END);
-   fText := CleanUp(SRTTAG_UNDERLINE_START);
-   fText := CleanUp(SRTTAG_UNDERLINE_END);
-   fText := CleanUp(SRTTAG_COLOR_START);
-   fText := CleanUp(SRTTAG_COLOR_END);
-   fText := CleanUp(SRTTAG_COLOR_EQOUTE);
+  fText := CleanUp(SRTTAG_ITALIC_START);
+  fText := CleanUp(SRTTAG_ITALIC_END);
+  fText := CleanUp(SRTTAG_BOLD_START);
+  fText := CleanUp(SRTTAG_BOLD_START);
+  fText := CleanUp(SRTTAG_BOLD_END);
+  fText := CleanUp(SRTTAG_UNDERLINE_START);
+  fText := CleanUp(SRTTAG_UNDERLINE_END);
+  fText := CleanUp(SRTTAG_COLOR_START);
+  fText := CleanUp(SRTTAG_COLOR_END);
+  fText := CleanUp(SRTTAG_COLOR_EQOUTE);
 end;
 
 
@@ -1543,33 +1563,33 @@ begin
 
   if AutoFormatText then
     begin
-     // Italic
-     if (Pos(WVTT_ITALIC_START, AnsiLowerCase(fText)) > 0) then
-       begin
-         fTrackFont.Style := fTrackFont.Style + [fsItalic];
-         ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Style := fTrackFont.Style;
-       end;
+      // Italic
+      if (Pos(WVTT_ITALIC_START, AnsiLowerCase(fText)) > 0) then
+        begin
+          fTrackFont.Style := fTrackFont.Style + [fsItalic];
+          ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Style := fTrackFont.Style;
+        end;
 
-    // Bold
-    if (Pos(WVTT_BOLD_START, AnsiLowerCase(fText)) > 0) then
-      begin
-        fTrackFont.Style := fTrackFont.Style + [fsBold];
-        ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Style := fTrackFont.Style;
-      end;
+      // Bold
+      if (Pos(WVTT_BOLD_START, AnsiLowerCase(fText)) > 0) then
+        begin
+          fTrackFont.Style := fTrackFont.Style + [fsBold];
+          ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Style := fTrackFont.Style;
+        end;
 
-    // Underline
-    if (Pos(WVTT_UNDERLINE_START, AnsiLowerCase(fText)) > 0) then
-      begin
-        fTrackFont.Style := fTrackFont.Style + [fsUnderline];
-        ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Style := fTrackFont.Style;
-      end;
+      // Underline
+      if (Pos(WVTT_UNDERLINE_START, AnsiLowerCase(fText)) > 0) then
+        begin
+          fTrackFont.Style := fTrackFont.Style + [fsUnderline];
+          ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Style := fTrackFont.Style;
+        end;
 
-    // Color
-    // The text anf text background color is not yet implemented, so, we keep it White text and transparent background.
-    fTrackFont.Color := clWhite;
-    ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Color := fTrackFont.Color;
+      // Color
+      // The text anf text background color is not yet implemented, so, we keep it White text and transparent background.
+      fTrackFont.Color := clWhite;
+      ap_SubTitleTracks[trackIndex].TrackText[txtLine].TextFont.Color := fTrackFont.Color;
 
-  end; // AutoFormat
+    end; // AutoFormat
 
   // strip tags from textline
   sTmp := fText;
@@ -1581,31 +1601,33 @@ end;
 //
 procedure TMfTimedText.DeleteVttFontTags(var fText: string);
 
-  function CleanUp(sTag: string): string;
-    begin
 
-      Result := StringReplace(fText,
-                              sTag,
-                              '',
-                              [rfReplaceAll, rfIgnoreCase]);
-    end;
+  function CleanUp(sTag: string): string;
+  begin
+
+    Result := StringReplace(fText,
+                            sTag,
+                            '',
+                            [rfReplaceAll, rfIgnoreCase]);
+  end;
 
 begin
 
-   fText := CleanUp(WVTT_ITALIC_START);
-   fText := CleanUp(WVTT_ITALIC_END);
-   fText := CleanUp(WVTT_BOLD_START);
-   fText := CleanUp(WVTT_BOLD_START);
-   fText := CleanUp(WVTT_BOLD_END);
-   fText := CleanUp(WVTT_UNDERLINE_START);
-   fText := CleanUp(WVTT_UNDERLINE_END);
-   fText := CleanUp(WVTT_RUBY_START);
-   fText := CleanUp(WVTT_RUBY_END);
-   // Text and text background colors are not implemented (yet).
+  fText := CleanUp(WVTT_ITALIC_START);
+  fText := CleanUp(WVTT_ITALIC_END);
+  fText := CleanUp(WVTT_BOLD_START);
+  fText := CleanUp(WVTT_BOLD_START);
+  fText := CleanUp(WVTT_BOLD_END);
+  fText := CleanUp(WVTT_UNDERLINE_START);
+  fText := CleanUp(WVTT_UNDERLINE_END);
+  fText := CleanUp(WVTT_RUBY_START);
+  fText := CleanUp(WVTT_RUBY_END);
+  // Text and text background colors are not implemented (yet).
 end;
 
 
 constructor TFormattedText.Create(aFont: TFont);
+
 begin
 
   if (aFont = Nil) then
@@ -1614,17 +1636,17 @@ begin
 
       with TextFont do
         begin
-          Name        := 'Verdana';
-          Charset     := DEFAULT_CHARSET;
+          Name := 'Verdana';
+          Charset := DEFAULT_CHARSET;
           Orientation := 0;
-          Size        := 12;
+          Size := 12;
           Orientation := 0;
-          Quality     := fqDefault;
-          Pitch       := fpDefault;
-          Height      := -19;
-          Color       := clWhite;
-          Style       := [fsBold];
-       end;
+          Quality := fqDefault;
+          Pitch := fpDefault;
+          Height := -19;
+          Color := clWhite;
+          Style := [fsBold];
+        end;
     end
   else
     begin
@@ -1636,6 +1658,7 @@ end;
 
 
 procedure TFormattedText.Clear();
+
 begin
 
   FreeAndNil(TextFont);
@@ -1644,9 +1667,11 @@ end;
 
 
 procedure TSubTitleTrack.Init();
+
 begin
 
-  SetLength(TrackText, 0);
+  SetLength(TrackText,
+            0);
 end;
 
 

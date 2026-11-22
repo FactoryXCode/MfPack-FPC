@@ -68,7 +68,7 @@ interface
 
 uses
   MfEncodeAudio.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   Classes,
@@ -81,32 +81,32 @@ uses
 
 
 
-// Use these setting for testing.
+  // Use these setting for testing.
 const
   NATIVE_EFFECT_DEFAULT: XAUDIO2FX_REVERB_PARAMETERS = (
-      WetDryMix: XAUDIO2FX_REVERB_DEFAULT_WET_DRY_MIX;
-      ReflectionsDelay: XAUDIO2FX_REVERB_DEFAULT_REFLECTIONS_DELAY;
-      ReverbDelay:      XAUDIO2FX_REVERB_DEFAULT_REVERB_DELAY;
-      RearDelay: XAUDIO2FX_REVERB_DEFAULT_REAR_DELAY;
-      PositionLeft: XAUDIO2FX_REVERB_DEFAULT_POSITION;
-      PositionRight: XAUDIO2FX_REVERB_DEFAULT_POSITION;
-      PositionMatrixLeft: XAUDIO2FX_REVERB_DEFAULT_POSITION_MATRIX;
-      PositionMatrixRight: XAUDIO2FX_REVERB_DEFAULT_POSITION_MATRIX;
-      EarlyDiffusion: XAUDIO2FX_REVERB_DEFAULT_EARLY_DIFFUSION;
-      LateDiffusion: XAUDIO2FX_REVERB_DEFAULT_LATE_DIFFUSION;
-      LowEQGain: XAUDIO2FX_REVERB_DEFAULT_LOW_EQ_GAIN;
-      LowEQCutoff: XAUDIO2FX_REVERB_DEFAULT_LOW_EQ_CUTOFF;
-      HighEQGain: XAUDIO2FX_REVERB_DEFAULT_HIGH_EQ_GAIN;
-      HighEQCutoff: XAUDIO2FX_REVERB_DEFAULT_HIGH_EQ_CUTOFF;
-      RoomFilterFreq: XAUDIO2FX_REVERB_DEFAULT_ROOM_FILTER_FREQ;
-      RoomFilterMain: XAUDIO2FX_REVERB_DEFAULT_ROOM_FILTER_MAIN;
-      RoomFilterHF: XAUDIO2FX_REVERB_DEFAULT_ROOM_FILTER_HF;
-      ReflectionsGain: XAUDIO2FX_REVERB_DEFAULT_REFLECTIONS_GAIN;
-      ReverbGain: XAUDIO2FX_REVERB_DEFAULT_REVERB_GAIN;
-      DecayTime: XAUDIO2FX_REVERB_DEFAULT_DECAY_TIME;
-      Density: XAUDIO2FX_REVERB_DEFAULT_DENSITY;
-      RoomSize: XAUDIO2FX_REVERB_DEFAULT_ROOM_SIZE
-     );
+    WetDryMix: XAUDIO2FX_REVERB_DEFAULT_WET_DRY_MIX;
+    ReflectionsDelay: XAUDIO2FX_REVERB_DEFAULT_REFLECTIONS_DELAY;
+    ReverbDelay: XAUDIO2FX_REVERB_DEFAULT_REVERB_DELAY;
+    RearDelay: XAUDIO2FX_REVERB_DEFAULT_REAR_DELAY;
+    PositionLeft: XAUDIO2FX_REVERB_DEFAULT_POSITION;
+    PositionRight: XAUDIO2FX_REVERB_DEFAULT_POSITION;
+    PositionMatrixLeft: XAUDIO2FX_REVERB_DEFAULT_POSITION_MATRIX;
+    PositionMatrixRight: XAUDIO2FX_REVERB_DEFAULT_POSITION_MATRIX;
+    EarlyDiffusion: XAUDIO2FX_REVERB_DEFAULT_EARLY_DIFFUSION;
+    LateDiffusion: XAUDIO2FX_REVERB_DEFAULT_LATE_DIFFUSION;
+    LowEQGain: XAUDIO2FX_REVERB_DEFAULT_LOW_EQ_GAIN;
+    LowEQCutoff: XAUDIO2FX_REVERB_DEFAULT_LOW_EQ_CUTOFF;
+    HighEQGain: XAUDIO2FX_REVERB_DEFAULT_HIGH_EQ_GAIN;
+    HighEQCutoff: XAUDIO2FX_REVERB_DEFAULT_HIGH_EQ_CUTOFF;
+    RoomFilterFreq: XAUDIO2FX_REVERB_DEFAULT_ROOM_FILTER_FREQ;
+    RoomFilterMain: XAUDIO2FX_REVERB_DEFAULT_ROOM_FILTER_MAIN;
+    RoomFilterHF: XAUDIO2FX_REVERB_DEFAULT_ROOM_FILTER_HF;
+    ReflectionsGain: XAUDIO2FX_REVERB_DEFAULT_REFLECTIONS_GAIN;
+    ReverbGain: XAUDIO2FX_REVERB_DEFAULT_REVERB_GAIN;
+    DecayTime: XAUDIO2FX_REVERB_DEFAULT_DECAY_TIME;
+    Density: XAUDIO2FX_REVERB_DEFAULT_DENSITY;
+    RoomSize: XAUDIO2FX_REVERB_DEFAULT_ROOM_SIZE
+    );
 
 type
   // Reverb effect parameters.
@@ -121,6 +121,7 @@ type
   TReverbI3DL2ParamArray = array [0..29] of TReverbI3DL2Params;
 
   TFxReverb = class(TObject)
+
   private
 
     pvFxParameters: XAUDIO2FX_REVERB_PARAMETERS;
@@ -153,8 +154,8 @@ type
 
   end;
 
-  /// <summary>Get all predifined effects for I3DL and Native</summary>
-  function GetReverbParams(): TReverbI3DL2ParamArray;
+/// <summary>Get all predifined effects for I3DL and Native</summary>
+function GetReverbParams(): TReverbI3DL2ParamArray;
 
 
 var
@@ -165,14 +166,18 @@ implementation
 
 
 constructor TFxReverb.Create();
+
 begin
+
   inherited;
 
 end;
 
 
 destructor TFxReverb.Destroy();
+
 begin
+
   if Assigned(XAPOReverbEffect) then
     SafeRelease(XAPOReverbEffect);
   inherited;
@@ -281,7 +286,8 @@ begin
       //Result[i].ConvertToNative();
       // or
 
-      ReverbConvertI3DL2ToNative(@Result[i].i3dl2Param,@Result[i].nativeParam);
+      ReverbConvertI3DL2ToNative(@Result[i].i3dl2Param,
+                                 @Result[i].nativeParam);
 
       Result[i].sevenDotOneReverb := False; // Default
       // Check if all parameters are within their boundaries and correct them if they don't.
@@ -346,14 +352,16 @@ begin
     hr := EnableReverbEffect(ppVoice,
                              pEnableEffect);
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
 function TFxReverb.RemoveReverbEffect(ppVoice: PIXAudio2Voice;
                                       pEffectIndex: UINT32): HResult;
+
 begin
+
   Result := ppVoice.DisableEffect(0,
                                   XAUDIO2_COMMIT_NOW);
 end;
@@ -362,7 +370,9 @@ end;
 function TFxReverb.EnableReverbEffect(ppVoice: PIXAudio2Voice;
                                       pEnable: Boolean;
                                       pEffectIndex: UINT32 = 0): HResult;
+
 begin
+
   // Disable or enable the effect, whenever appropriate.
   // You can use DisableEffect at any time to turn an effect off.
   // You can turn on an effect again with EnableEffect.
@@ -370,17 +380,20 @@ begin
   //       effect in the chain to enable or disable.
   if pEnable then
     Result := ppVoice.EnableEffect(0, //pEffectIndex,
-                                   XAUDIO2_COMMIT_NOW)
+      XAUDIO2_COMMIT_NOW)
   else
     Result := ppVoice.DisableEffect(0, //pEffectIndex,
-                                    XAUDIO2_COMMIT_NOW);
+      XAUDIO2_COMMIT_NOW);
   pvReverbEffectEnabled := SUCCEEDED(Result);
 end;
 
 
 procedure TReverbI3DL2Params.ConvertToNative(sdOneReverb: BOOL = TRUE);
+
 begin
-  ReverbConvertI3DL2ToNative(@i3dl2Param,@nativeParam,
+
+  ReverbConvertI3DL2ToNative(@i3dl2Param,
+                             @nativeParam,
                              sdOneReverb);
 end;
 

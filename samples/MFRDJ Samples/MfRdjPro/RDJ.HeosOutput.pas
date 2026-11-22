@@ -65,11 +65,12 @@ unit RDJ.HeosOutput;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   Classes,
@@ -84,6 +85,7 @@ type
   TRdjHeosOutput = class;
 
   TRdjHeosEncoderThread = class(TThread)
+
   private
 
     FOwner: TRdjHeosOutput;
@@ -98,11 +100,12 @@ type
   end;
 
   TRdjHeosOutput = class
+
   private
 
     FLock: SyncObjs.TCriticalSection;
     FWake: TEvent;
-    FBuffer: TArray<Single>;
+    FBuffer: TArray < Single > ;
     FRead: Integer;
     FWrite: Integer;
     FCount: Integer;
@@ -124,7 +127,8 @@ type
     function StartOutput(const AReceiver: string;
                          APort: Word;
                          const ALocalAddress:
-                         string; ARadio: Boolean;
+      string;
+                         ARadio: Boolean;
                          ABitrateKbps: Integer;
                          AChannels: Integer): HRESULT;
 
@@ -188,7 +192,9 @@ const
   HEOS_RING_FRAMES = 96000;
   HEOS_ENCODER_FRAMES = 1024;
 
+
 constructor TRdjHeosOutput.Create();
+
 begin
 
   inherited;
@@ -208,6 +214,7 @@ end;
 
 
 destructor TRdjHeosOutput.Destroy();
+
 begin
 
   Stop();
@@ -223,6 +230,7 @@ function TRdjHeosOutput.Start(const AReceiver: string;
                               const ALocalAddress: string;
                               ABitrateKbps: Integer;
                               AChannels: Integer): HRESULT;
+
 begin
 
   Result := StartOutput(AReceiver,
@@ -238,6 +246,7 @@ function TRdjHeosOutput.StartBroadcast(const ALocalAddress: string;
                                        APort: Word;
                                        ABitrateKbps: Integer;
                                        AChannels: Integer): HRESULT;
+
 begin
 
   Result := StartOutput('',
@@ -259,6 +268,7 @@ var
   Rate: Integer;
   Address: string;
   Error: string;
+
 
   function Fail(const Text: string;
                 Code: HRESULT = E_INVALIDARG): HRESULT;
@@ -315,8 +325,8 @@ begin
 
     if (Address = '') then
       if not TryLocalAddressFor(AReceiver,
-                                Address,
-                                Error) then
+        Address,
+        Error) then
         Exit(Fail(Error,
                   E_FAIL));
 
@@ -362,6 +372,7 @@ end;
 
 
 procedure TRdjHeosOutput.Stop();
+
 begin
 
   InterlockedExchange(FActive,
@@ -397,6 +408,7 @@ end;
 
 procedure TRdjHeosOutput.SetMasterGains(ALeft: Single;
                                         ARight: Single);
+
 begin
 
   InterlockedExchange(FGainL,
@@ -439,7 +451,8 @@ begin
 
     if (ASampleRate <> FSampleRate) then
       begin
-        InterlockedExchange(FFormatChanged, 1);
+        InterlockedExchange(FFormatChanged,
+                            1);
         Exit;
       end;
 
@@ -490,7 +503,8 @@ begin
   FLock.Acquire;
 
   try
-    Result := Min(FCount, AMaximum);
+    Result := Min(FCount,
+                  AMaximum);
 
     if (Result = 0) then
       Exit;
@@ -504,7 +518,8 @@ begin
 
     if (First < Result) then
       begin
-        Inc(ABuffer, First * 2);
+        Inc(ABuffer,
+            First * 2);
         Move(FBuffer[0],
              ABuffer^,
              (Result - First) * 2 * SizeOf(Single));
@@ -521,6 +536,7 @@ end;
 
 
 procedure TRdjHeosOutput.SetError(const AText: string);
+
 begin
 
   FLock.Acquire;
@@ -535,15 +551,17 @@ end;
 
 
 function TRdjHeosOutput.Active(): Boolean;
+
 begin
 
-  Result := InterlockedCompareExchange(FActive,
-                                       0,
-                                       0) <> 0;
+  Result := (InterlockedCompareExchange(FActive,
+                                        0,
+                                        0) <> 0);
 end;
 
 
 function TRdjHeosOutput.Ready(): Boolean;
+
 begin
 
   Result := Active() and (InterlockedCompareExchange(FReady,
@@ -553,6 +571,7 @@ end;
 
 
 function TRdjHeosOutput.Url(): string;
+
 begin
 
   Result := '';
@@ -566,11 +585,12 @@ end;
 
 
 function TRdjHeosOutput.ErrorText(): string;
+
 begin
 
   if (InterlockedCompareExchange(FFormatChanged,
-                                 0,
-                                 0) <> 0) then
+    0,
+    0) <> 0) then
     Exit('The Masterdeck sample rate changed. Restart HEOS streaming.');
 
   FLock.Acquire;
@@ -602,6 +622,7 @@ end;
 
 
 function TRdjHeosOutput.DroppedBlocks(): Integer;
+
 begin
 
   Result := InterlockedCompareExchange(FDropped,
@@ -611,6 +632,7 @@ end;
 
 
 function TRdjHeosOutput.Requests(): Integer;
+
 begin
 
   Result := 0;
@@ -624,6 +646,7 @@ end;
 
 
 function TRdjHeosOutput.Listeners(): Integer;
+
 begin
 
   Result := 0;
@@ -634,6 +657,7 @@ end;
 
 
 constructor TRdjHeosEncoderThread.Create(AOwner: TRdjHeosOutput);
+
 begin
 
   inherited Create(True);
@@ -654,6 +678,7 @@ var
   ComStarted: Boolean;
   MfStarted: Boolean;
 
+
   function CheckResult(Code: HRESULT;
                        const Operation: string): Boolean;
   begin
@@ -672,14 +697,14 @@ begin
   try
     try
       if not CheckResult(CoInitializeEx(nil,
-                                        COINIT_MULTITHREADED),
-                                        'Initialize HEOS COM') then
+        COINIT_MULTITHREADED),
+        'Initialize HEOS COM') then
         Exit;
       ComStarted := True;
 
       if not CheckResult(MFStartup(MF_VERSION,
-                                   MFSTARTUP_FULL),
-                                   'Initialize HEOS Media Foundation') then
+        MFSTARTUP_FULL),
+        'Initialize HEOS Media Foundation') then
         Exit;
 
       MfStarted := True;
@@ -689,7 +714,7 @@ begin
       Settings.BitrateKbps := FOwner.FBitrateKbps;
 
       if not CheckResult(Encoder.Initialize(Settings),
-                         'Initialize HEOS AAC encoder') then
+        'Initialize HEOS AAC encoder') then
         Exit;
 
       InterlockedExchange(FOwner.FReady,
@@ -697,7 +722,8 @@ begin
 
       while not Terminated do
         begin
-          Frames := FOwner.Pop(@Samples[0], HEOS_ENCODER_FRAMES);
+          Frames := FOwner.Pop(@Samples[0],
+                               HEOS_ENCODER_FRAMES);
 
           if (Frames = 0) then
             begin
@@ -711,9 +737,9 @@ begin
               Samples[I] := Samples[I * 2] * 0.5 + Samples[I * 2 + 1] * 0.5;
 
           if not CheckResult(Encoder.EncodeInterleavedFloat32(@Samples[0],
-                                                              Frames,
-                                                              Bytes),
-                             'Encode HEOS Masterdeck audio') then
+            Frames,
+            Bytes),
+            'Encode HEOS Masterdeck audio') then
             Exit;
 
           if (Length(Bytes) > 0) then

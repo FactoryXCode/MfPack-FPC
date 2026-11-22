@@ -69,7 +69,7 @@ interface
 uses
   LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -127,6 +127,7 @@ implementation
 {$R *.lfm}
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+
 begin
 
   DoubleBuffered := True;
@@ -148,15 +149,16 @@ begin
   ClosePlayer(True);
 
   while PeekMessageW(Msg,
-                    Handle,
-                    WM_TOPOLOGY_PLAYER_EVENT,
-                    WM_TOPOLOGY_PLAYER_EVENT,
-                    PM_REMOVE) do
+      Handle,
+      WM_TOPOLOGY_PLAYER_EVENT,
+      WM_TOPOLOGY_PLAYER_EVENT,
+      PM_REMOVE) do
     TTopologyEventNotice(Pointer(Msg.LParam)).Free;
 end;
 
 
 procedure TfrmMain.ClosePlayer(const ADetachWindow: Boolean);
+
 begin
 
   FReady := False;
@@ -174,6 +176,7 @@ end;
 
 
 procedure TfrmMain.OpenVideo(const AFileName: string);
+
 begin
 
   ClosePlayer(False);
@@ -192,6 +195,7 @@ end;
 
 
 procedure TfrmMain.LogError(const E: Exception);
+
 begin
 
   lblState.Caption := 'Error';
@@ -221,7 +225,8 @@ begin
           btnPlayPause.Enabled := True;
           btnStop.Enabled := True;
           lblState.Caption := 'Topology ready';
-          FPlayer.ResizeVideo(pnlVideo.ClientWidth, pnlVideo.ClientHeight);
+          FPlayer.ResizeVideo(pnlVideo.ClientWidth,
+                              pnlVideo.ClientHeight);
         end;
       tekStarted:
         begin
@@ -261,6 +266,7 @@ end;
 
 
 procedure TfrmMain.btnOpenClick(Sender: TObject);
+
 begin
 
   if not dlgOpenVideo.Execute then
@@ -279,6 +285,7 @@ end;
 
 
 procedure TfrmMain.btnPlayPauseClick(Sender: TObject);
+
 begin
 
   if not FReady or not Assigned(FPlayer) then
@@ -295,7 +302,9 @@ begin
   end;
 end;
 
+
 procedure TfrmMain.btnStopClick(Sender: TObject);
+
 begin
 
   if not FReady or not Assigned(FPlayer) then
@@ -311,6 +320,7 @@ end;
 
 
 procedure TfrmMain.FormResize(Sender: TObject);
+
 begin
 
   if Assigned(FPlayer) then
@@ -320,6 +330,7 @@ end;
 
 
 procedure TfrmMain.FormPaint(Sender: TObject);
+
 begin
 
   if Assigned(FPlayer) then

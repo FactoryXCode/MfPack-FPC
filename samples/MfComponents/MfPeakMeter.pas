@@ -103,6 +103,7 @@ type
                                      const Hr: HRESULT) of object;
 
   TMfPeakMeter = class(TGraphicControl)
+
   private
     { private fields }
     FPeakMeterBmp: TBitmap;
@@ -134,7 +135,7 @@ type
     FPeakRightBits: Integer;
 
     // Reusable buffer for GetChannelsPeakValues.
-    FPeakValues: TArray<Single>;
+    FPeakValues: TArray < Single > ;
 
     FOnError: TMfPeakMeterErrorEvent;
 
@@ -149,7 +150,7 @@ type
     procedure SetEndpointDeviceID(const Value: string);
     procedure SetTimerPeriod(value: LongWord);
     procedure TimerTick(Sender: TObject);
-    function  EnsureMeterReady: Boolean;
+    function EnsureMeterReady: Boolean;
     procedure ReleaseMeter();
     procedure DoError(const Hr: HRESULT);
 
@@ -203,7 +204,9 @@ procedure Register;
 
 implementation
 
+
 procedure Register;
+
 begin
 
   RegisterComponents('MfPack Core Audio Samples',
@@ -218,6 +221,7 @@ end;
 //   through the default rendering device.
 //-----------------------------------------------------------
 constructor TMfPeakMeter.Create(aOwner: Tcomponent);
+
 begin
 
   inherited Create(aOwner);
@@ -256,6 +260,7 @@ end;
 
 
 destructor TMfPeakMeter.Destroy();
+
 begin
 
   if Assigned(FTimer) then
@@ -270,6 +275,7 @@ end;
 
 
 procedure TMfPeakMeter.ReleaseMeter();
+
 begin
 
   // Release COM interfaces
@@ -278,7 +284,8 @@ begin
   pEnumerator := nil;
 
   FChannelCount := 0;
-  SetLength(FPeakValues, 0);
+  SetLength(FPeakValues,
+            0);
 
   // Reset snapshot
   InterlockedExchange(FPeakLeftBits,
@@ -290,6 +297,7 @@ end;
 
 
 procedure TMfPeakMeter.DoError(const Hr: HRESULT);
+
 begin
 
   // Disable metering on fatal errors and let the application decide what to do.
@@ -306,6 +314,7 @@ end;
 
 
 class function TMfPeakMeter.SingleToBits(const V: Single): Integer;
+
 begin
 
   Result := PInteger(@V)^;
@@ -313,6 +322,7 @@ end;
 
 
 class function TMfPeakMeter.BitsToSingle(const B: Integer): Single;
+
 begin
 
   Result := PSingle(@B)^;
@@ -320,6 +330,7 @@ end;
 
 
 class function TMfPeakMeter.Clamp_(const V: Single): Single;
+
 begin
 
   if (V < 0) then
@@ -356,7 +367,7 @@ begin
   // Endpoint selection:
   // - If EndpointDeviceID is set, bind to that specific IMMDevice ID.
   // - Otherwise, use the default endpoint (DataFlow + Role).
-  if fEndpointDeviceID <> '' then
+  if (fEndpointDeviceID <> '') then
     begin
 
       Hr := pEnumerator.GetDevice(PWideChar(FEndpointDeviceID),
@@ -462,7 +473,8 @@ begin
                           ChBitsL);
 
       // Mono: mirror into "Right" so SampleChannel=mcRight still shows the same signal.
-      InterlockedExchange(fPeakRightBits, ChBitsL);
+      InterlockedExchange(fPeakRightBits,
+                          ChBitsL);
     end
   else
     begin
@@ -481,7 +493,8 @@ begin
 
           PeakR := Clamp_(FPeakValues[1]);
           ChBitsR := SingleToBits(PeakR);
-          InterlockedExchange(FPeakRightBits, ChBitsR);
+          InterlockedExchange(FPeakRightBits,
+                              ChBitsR);
         end;
     end;
 
@@ -543,7 +556,7 @@ begin
 
       FPeakMeterBmp.Canvas.Brush.Color := fBarColor;
       FPeakMeterBmp.Canvas.FillRect(R);
-  end;
+    end;
 
   // Blit once
   Canvas.Draw(0,
@@ -555,6 +568,7 @@ end;
 
 
 procedure TMfPeakMeter.Paint();
+
 begin
 
   DrawPeakMeter();
@@ -564,6 +578,7 @@ end;
 
 
 procedure TMfPeakMeter.Resize();
+
 begin
 
   inherited;
@@ -573,6 +588,7 @@ end;
 
 
 procedure TMfPeakMeter.SetBackGroundColor(value: TColor);
+
 begin
 
   if (FBackGroundColor <> value) then
@@ -585,6 +601,7 @@ end;
 
 
 procedure TMfPeakMeter.SetBarColor(value: TColor);
+
 begin
 
   if (FBarColor <> value) then
@@ -597,6 +614,7 @@ end;
 
 
 procedure TMfPeakMeter.SetDirection(value: TPeakDirection);
+
 begin
 
   if (FPeakDirection <> value) then
@@ -609,6 +627,7 @@ end;
 
 
 procedure TMfPeakMeter.SetPeakMeterChannel(value: TPeakMeterChannel);
+
 begin
 
   if (FMeterChannel <> value) then
@@ -621,6 +640,7 @@ end;
 
 
 procedure TMfPeakMeter.SetDeviceDataFlow(value: EDataFlow);
+
 begin
 
   if (FDataFlow = value) then
@@ -656,6 +676,7 @@ end;
 
 
 procedure TMfPeakMeter.SetDeviceRole(value: ERole);
+
 begin
 
   if (fRole = value) then
@@ -690,6 +711,7 @@ end;
 
 
 procedure TMfPeakMeter.SetEndpointDeviceID(const Value: string);
+
 begin
 
   if (FEndpointDeviceID = Value) then
@@ -722,6 +744,7 @@ end;
 
 
 procedure TMfPeakMeter.SetTimerPeriod(value: LongWord);
+
 begin
 
   if (lwTimerPeriod <> value) then
@@ -735,6 +758,7 @@ end;
 
 
 procedure TMfPeakMeter.SetEnabled(value: Boolean);
+
 begin
 
   if (FEnabled = value) then

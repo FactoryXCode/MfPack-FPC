@@ -94,7 +94,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
@@ -104,18 +105,18 @@ type
 
   PTrustLevel = ^TrustLevel;
   TrustLevel = (
-    BaseTrust    = 0,
-    PartialTrust = 1,
-    FullTrust    = 2
-  );
+    BaseTrust = 0,
+                PartialTrust = 1,
+                FullTrust = 2
+    );
 
 
   // IInspectable interface
   // ======================
   //
   IInspectable = interface(IUnknown)
-  ['{AF86E2E0-B12D-4c6a-9C5A-D7AA65101E90}']
-     
+    ['{AF86E2E0-B12D-4c6a-9C5A-D7AA65101E90}']
+
     function GetIids(out iidCount: ULONG;
                      out iids: PGuid): HRESULT; stdcall;
 
@@ -124,6 +125,7 @@ type
     function GetTrustLevel(out _trustLevel: TrustLevel): HRESULT; stdcall;
 
   end;
+
   IID_IInspectable = IInspectable;
   // C IInspectable* is a Pascal interface reference, not a pointer to its storage.
   LPINSPECTABLE = IInspectable;
@@ -135,6 +137,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

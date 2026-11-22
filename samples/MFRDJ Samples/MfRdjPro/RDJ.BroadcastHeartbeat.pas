@@ -5,16 +5,18 @@ unit RDJ.BroadcastHeartbeat;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-Windows,
+  Windows,
   Classes;
 
 type
 
   TRdjBroadcastHeartbeat = class(TThread)
+
   private
     FBaseDir: string;
     FLockDir: string;
@@ -28,16 +30,18 @@ type
     FWriteError: string;
     function GetCompleted(): Boolean;
     function WriteJson(const AFileName: string): Boolean;
+
   protected
     procedure Execute(); override;
     procedure UpdateHeartbeat(); virtual;
+
   public
     constructor Create(const ABaseDir: string;
-                         const ALockDir: string;
-                         const AStatusFile: string;
-                         const AOwnerId: string;
-                         const AJson: string;
-                         const AWasConnectionLost: Boolean);
+                       const ALockDir: string;
+                       const AStatusFile: string;
+                       const AOwnerId: string;
+                       const AJson: string;
+                       const AWasConnectionLost: Boolean);
     destructor Destroy(); override;
     property Completed: Boolean read GetCompleted;
     property OwnerId: string read FOwnerId;
@@ -51,18 +55,18 @@ function CancelBroadcastHeartbeatIo(AThread: THandle): BOOL; stdcall;
 implementation
 
 uses
-
   SysUtils,
   FxProxy.IOUtils,
   FxProxy.JSON;
 
 
 constructor TRdjBroadcastHeartbeat.Create(const ABaseDir: string;
-                                           const ALockDir: string;
-                                           const AStatusFile: string;
-                                           const AOwnerId: string;
-                                           const AJson: string;
-                                           const AWasConnectionLost: Boolean);
+                                          const ALockDir: string;
+                                          const AStatusFile: string;
+                                          const AOwnerId: string;
+                                          const AJson: string;
+                                          const AWasConnectionLost: Boolean);
+
 begin
 
   inherited Create(True);
@@ -77,6 +81,7 @@ end;
 
 
 destructor TRdjBroadcastHeartbeat.Destroy();
+
 begin
 
   Terminate();
@@ -92,9 +97,11 @@ end;
 
 
 function TRdjBroadcastHeartbeat.GetCompleted(): Boolean;
+
 begin
 
-  Result := (WaitForSingleObject(Handle, 0) = WAIT_OBJECT_0);
+  Result := (WaitForSingleObject(Handle,
+                                 0) = WAIT_OBJECT_0);
 end;
 
 
@@ -115,15 +122,16 @@ begin
     Exit;
 
   TempFile := AFileName + Format('.tmp_%x_%x',
-                                  [GetCurrentProcessId(), GetCurrentThreadId()]);
+                                 [GetCurrentProcessId(), GetCurrentThreadId()]);
   try
     try
       Bytes := TEncoding.UTF8.GetBytes(FJson);
       Stream := TFileStream.Create(TempFile,
-                                     fmCreate or fmShareDenyWrite);
+                                   fmCreate or fmShareDenyWrite);
       try
         if (Length(Bytes) > 0) then
-          Stream.WriteBuffer(Bytes[0], Length(Bytes));
+          Stream.WriteBuffer(Bytes[0],
+                             Length(Bytes));
       finally
         Stream.Free();
       end;
@@ -134,8 +142,8 @@ begin
             Exit;
 
           if MoveFileExW(PChar(TempFile),
-                          PChar(AFileName),
-                          MOVEFILE_REPLACE_EXISTING) then
+            PChar(AFileName),
+            MOVEFILE_REPLACE_EXISTING) then
             Exit(True);
 
           ErrorCode := GetLastError();
@@ -190,7 +198,8 @@ begin
     end
   else
     begin
-      OwnerFile := TPath.Combine(FLockDir, 'owner.json');
+      OwnerFile := TPath.Combine(FLockDir,
+                                 'owner.json');
 
       if not FileExists(OwnerFile) then
         begin
@@ -202,7 +211,9 @@ begin
       OwnerText := TEncoding.UTF8.GetString(TFile.ReadAllBytes(OwnerFile));
 
       if (Length(OwnerText) > 0) and (OwnerText[1] = #$FEFF) then
-        Delete(OwnerText, 1, 1);
+        Delete(OwnerText,
+               1,
+               1);
 
       OwnerJson := FxParseJSON(OwnerText);
       try
@@ -249,6 +260,7 @@ end;
 
 
 procedure TRdjBroadcastHeartbeat.Execute();
+
 begin
 
   try

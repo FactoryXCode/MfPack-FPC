@@ -82,6 +82,7 @@ uses
 type
 
   TFxServeHost = class
+
   private
     FConfig: TFxServeConfig;
     FLogger: TFxServeLogger;
@@ -133,7 +134,9 @@ function TFxServeHost.ReadConfigFileState(out AWriteTime,
                                           AFileSize: UInt64): Boolean;
 var
   Data: TWin32FileAttributeData;
+
 begin
+
   AWriteTime := 0;
   AFileSize := 0;
   FillChar(Data,
@@ -141,26 +144,28 @@ begin
            0);
 
   Result := GetFileAttributesExW(PChar(FConfigFileName),
-                                GetFileExInfoStandard,
-                                @Data);
+                                 GetFileExInfoStandard,
+                                 @Data);
   if not Result then
     Exit;
 
   AWriteTime := (UInt64(Data.ftLastWriteTime.dwHighDateTime) shl 32) or
-                UInt64(Data.ftLastWriteTime.dwLowDateTime);
+    UInt64(Data.ftLastWriteTime.dwLowDateTime);
   AFileSize := (UInt64(Data.nFileSizeHigh) shl 32) or
-               UInt64(Data.nFileSizeLow);
+    UInt64(Data.nFileSizeLow);
 end;
 
 
 procedure TFxServeHost.StartRuntime(
   AConfig: TFxServeConfig;
-  ALogger: TFxServeLogger;
-  out AServer: TFxServeServer;
-  out AWanServer: TFxServeWanServer;
-  out ACertificateManager: TFxServeCertificateManager;
-  out AChallengeSource: IFxServeAcmeChallengeSource);
+                                    ALogger: TFxServeLogger;
+                                    out AServer: TFxServeServer;
+                                    out AWanServer: TFxServeWanServer;
+                                    out ACertificateManager: TFxServeCertificateManager;
+                                    out AChallengeSource: IFxServeAcmeChallengeSource);
+
 begin
+
   AServer := nil;
   AWanServer := nil;
   ACertificateManager := nil;
@@ -176,9 +181,9 @@ begin
           begin
             ACertificateManager := TFxServeCertificateManager.Create(
               ALogger,
-              AConfig.WanHostName,
-              AConfig.WanHttpsPort,
-              AConfig.WanHttpEnabled);
+                                                                     AConfig.WanHostName,
+                                                                     AConfig.WanHttpsPort,
+                                                                     AConfig.WanHttpEnabled);
             AChallengeSource := ACertificateManager;
           end;
 
@@ -202,10 +207,12 @@ end;
 
 procedure TFxServeHost.StopRuntime(
   var AServer: TFxServeServer;
-  var AWanServer: TFxServeWanServer;
-  var ACertificateManager: TFxServeCertificateManager;
-  var AChallengeSource: IFxServeAcmeChallengeSource);
+                                   var AWanServer: TFxServeWanServer;
+                                   var ACertificateManager: TFxServeCertificateManager;
+                                   var AChallengeSource: IFxServeAcmeChallengeSource);
+
 begin
+
   if Assigned(ACertificateManager) then
     ACertificateManager.Stop();
 
@@ -227,6 +234,7 @@ end;
 
 
 destructor TFxServeHost.Destroy();
+
 begin
 
   Stop();
@@ -236,6 +244,7 @@ end;
 
 
 procedure TFxServeHost.Start(const AConfigFileName: string);
+
 begin
 
   if Assigned(FServer) then
@@ -258,12 +267,12 @@ begin
                    FChallengeSource);
 
       FObservedStateValid := ReadConfigFileState(FObservedWriteTime,
-                                                  FObservedFileSize);
+                                                 FObservedFileSize);
       FObservedAtTick := GetTickCount();
       FLastConfigPollTick := FObservedAtTick;
       FReloadPending := False;
       FLogger.Info('Configuration reload monitoring active: ' +
-                   FConfigFileName);
+        FConfigFileName);
 
     except
       FreeAndNil(FLogger);
@@ -278,7 +287,9 @@ end;
 
 
 procedure TFxServeHost.Stop();
+
 begin
+
   StopRuntime(FServer,
               FWanServer,
               FCertificateManager,
@@ -298,7 +309,9 @@ var
   NewLogger: TFxServeLogger;
   OldConfig: TFxServeConfig;
   OldLogger: TFxServeLogger;
+
 begin
+
   NewConfig := TFxServeConfig.Create();
   NewLogger := nil;
 
@@ -339,7 +352,7 @@ begin
           except
             on RestoreError: Exception do
               FLogger.Error('Previous configuration could not be restored: ' +
-                            RestoreError.Message);
+                RestoreError.Message);
           end;
 
           Exit;
@@ -368,17 +381,19 @@ var
   CurrentWriteTime: UInt64;
   CurrentFileSize: UInt64;
   CurrentTick: Cardinal;
+
 begin
+
   if (FConfigFileName = '') or not Assigned(FConfig) then
     Exit;
 
   CurrentTick := GetTickCount();
-  if Cardinal(CurrentTick - FLastConfigPollTick) < CONFIG_POLL_INTERVAL_MS then
+  if (Cardinal(CurrentTick - FLastConfigPollTick) < CONFIG_POLL_INTERVAL_MS) then
     Exit;
   FLastConfigPollTick := CurrentTick;
 
   if not ReadConfigFileState(CurrentWriteTime,
-                             CurrentFileSize) then
+    CurrentFileSize) then
     begin
       if FObservedStateValid and Assigned(FLogger) then
         FLogger.Error('Configuration file is unavailable; current settings remain active.');
@@ -388,8 +403,8 @@ begin
     end;
 
   if (not FObservedStateValid) or
-     (CurrentWriteTime <> FObservedWriteTime) or
-     (CurrentFileSize <> FObservedFileSize) then
+    (CurrentWriteTime <> FObservedWriteTime) or
+    (CurrentFileSize <> FObservedFileSize) then
     begin
       FObservedWriteTime := CurrentWriteTime;
       FObservedFileSize := CurrentFileSize;
@@ -400,7 +415,7 @@ begin
     end;
 
   if not FReloadPending or
-     (Cardinal(CurrentTick - FObservedAtTick) < CONFIG_STABLE_INTERVAL_MS) then
+    (Cardinal(CurrentTick - FObservedAtTick) < CONFIG_STABLE_INTERVAL_MS) then
     Exit;
 
   // Mark this stable version handled. A rejected version is retried only after
@@ -412,18 +427,20 @@ begin
     on E: Exception do
       if Assigned(FLogger) then
         FLogger.Error('Configuration reload rejected; current settings remain active: ' +
-                      E.Message);
+          E.Message);
   end;
 end;
 
+
 function TFxServeHost.IsRunning(): Boolean;
+
 begin
 
   Result := Assigned(FServer) and
-            FServer.Running and
-            (not FConfig.WanEnabled or
-            (Assigned(FWanServer) and
-            FWanServer.Running));
+    FServer.Running and
+    (not FConfig.WanEnabled or
+    (Assigned(FWanServer) and
+    FWanServer.Running));
 end;
 
 end.

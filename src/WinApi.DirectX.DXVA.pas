@@ -87,7 +87,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+    {$ALIGN 8}
+    // Win64
   {$ENDIF}
 
 
@@ -101,203 +102,672 @@ const
   // -------------------------------------------------------------------------
   //
 
-  DXVA_ModeNone             : TGUID = (D1 : $1b81be00; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH261_A           : TGUID = (D1 : $1b81be01; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH261_B           : TGUID = (D1 : $1b81be02; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
+  DXVA_ModeNone: TGUID = (D1: $1b81be00; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                    $84,
+                                                                    $00,
+                                                                    $c0,
+                                                                    $4f,
+                                                                    $2e,
+                                                                    $73,
+                                                                    $c5));
+  DXVA_ModeH261_A: TGUID = (D1: $1b81be01; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeH261_B: TGUID = (D1: $1b81be02; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
 
 
-  DXVA_ModeH263_A           : TGUID = (D1 : $1b81be03; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH263_B           : TGUID = (D1 : $1b81be04; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH263_C           : TGUID = (D1 : $1b81be05; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH263_D           : TGUID = (D1 : $1b81be06; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH263_E           : TGUID = (D1 : $1b81be07; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH263_F           : TGUID = (D1 : $1b81be08; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
+  DXVA_ModeH263_A: TGUID = (D1: $1b81be03; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeH263_B: TGUID = (D1: $1b81be04; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeH263_C: TGUID = (D1: $1b81be05; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeH263_D: TGUID = (D1: $1b81be06; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeH263_E: TGUID = (D1: $1b81be07; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeH263_F: TGUID = (D1: $1b81be08; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
 
-  DXVA_ModeMPEG1_A          :	TGUID = (D1: $1b81be09; D2: $a0c7; D3: $11d3; D4: ($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeMPEG1_VLD        :	TGUID = (D1: $6f3ec719; D2: $3735; D3: $42cc; D4: ($80, $63, $65, $cc, $3c, $b3, $66, $16));
+  DXVA_ModeMPEG1_A: TGUID = (D1: $1b81be09; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                       $84,
+                                                                       $00,
+                                                                       $c0,
+                                                                       $4f,
+                                                                       $2e,
+                                                                       $73,
+                                                                       $c5));
+  DXVA_ModeMPEG1_VLD: TGUID = (D1: $6f3ec719; D2: $3735; D3: $42cc; D4: ($80,
+                                                                         $63,
+                                                                         $65,
+                                                                         $cc,
+                                                                         $3c,
+                                                                         $b3,
+                                                                         $66,
+                                                                         $16));
 
-  DXVA_ModeMPEG2_A          : TGUID = (D1 : $1b81be0A; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeMPEG2_B          : TGUID = (D1 : $1b81be0B; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeMPEG2_C          : TGUID = (D1 : $1b81be0C; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeMPEG2_D          : TGUID = (D1 : $1b81be0D; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeMPEG2and1_VLD    : TGUID = (D1 : $86695f12; D2 : $340e; D3 : $4f04; D4:($9f, $d3, $92, $53, $dd, $32, $74, $60));
+  DXVA_ModeMPEG2_A: TGUID = (D1: $1b81be0A; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                       $84,
+                                                                       $00,
+                                                                       $c0,
+                                                                       $4f,
+                                                                       $2e,
+                                                                       $73,
+                                                                       $c5));
+  DXVA_ModeMPEG2_B: TGUID = (D1: $1b81be0B; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                       $84,
+                                                                       $00,
+                                                                       $c0,
+                                                                       $4f,
+                                                                       $2e,
+                                                                       $73,
+                                                                       $c5));
+  DXVA_ModeMPEG2_C: TGUID = (D1: $1b81be0C; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                       $84,
+                                                                       $00,
+                                                                       $c0,
+                                                                       $4f,
+                                                                       $2e,
+                                                                       $73,
+                                                                       $c5));
+  DXVA_ModeMPEG2_D: TGUID = (D1: $1b81be0D; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                       $84,
+                                                                       $00,
+                                                                       $c0,
+                                                                       $4f,
+                                                                       $2e,
+                                                                       $73,
+                                                                       $c5));
+  DXVA_ModeMPEG2and1_VLD: TGUID = (D1: $86695f12; D2: $340e; D3: $4f04; D4: ($9f,
+                                                                             $d3,
+                                                                             $92,
+                                                                             $53,
+                                                                             $dd,
+                                                                             $32,
+                                                                             $74,
+                                                                             $60));
 
-  DXVA_ModeH264_A           : TGUID = (D1 : $1b81be64; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH264_B           : TGUID = (D1 : $1b81be65; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH264_C           : TGUID = (D1 : $1b81be66; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH264_D           : TGUID = (D1 : $1b81be67; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH264_E           : TGUID = (D1 : $1b81be68; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH264_F           : TGUID = (D1 : $1b81be69; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH264_VLD_WithFMOASO_NoFGT            : TGUID = (D1 : $d5f04ff9; D2 : $3418; D3 : $45d8; D4:($95, $61, $32, $a7, $6a, $ae, $2d, $dd));
+  DXVA_ModeH264_A: TGUID = (D1: $1b81be64; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeH264_B: TGUID = (D1: $1b81be65; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeH264_C: TGUID = (D1: $1b81be66; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeH264_D: TGUID = (D1: $1b81be67; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeH264_E: TGUID = (D1: $1b81be68; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeH264_F: TGUID = (D1: $1b81be69; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeH264_VLD_WithFMOASO_NoFGT: TGUID = (D1: $d5f04ff9; D2: $3418; D3: $45d8; D4: ($95,
+                                                                                         $61,
+                                                                                         $32,
+                                                                                         $a7,
+                                                                                         $6a,
+                                                                                         $ae,
+                                                                                         $2d,
+                                                                                         $dd));
 
-  DXVA_ModeH264_VLD_Stereo_Progressive_NoFGT    : TGUID = (D1 : $d79be8da; D2 : $0cf1; D3 : $4c81; D4:($b8, $2a, $69, $a4, $e2, $36, $f4, $3d));
-  DXVA_ModeH264_VLD_Stereo_NoFGT                : TGUID = (D1 : $f9aaccbb; D2 : $c2b6; D3 : $4cfc; D4:($87, $79, $57, $07, $b1, $76, $05, $52));
-  DXVA_ModeH264_VLD_Multiview_NoFGT             : TGUID = (D1 : $705b9d82; D2 : $76cf; D3 : $49d6; D4:($b7, $e6, $ac, $88, $72, $db, $01, $3c));
+  DXVA_ModeH264_VLD_Stereo_Progressive_NoFGT: TGUID = (D1: $d79be8da; D2: $0cf1; D3: $4c81; D4: ($b8,
+                                                                                                 $2a,
+                                                                                                 $69,
+                                                                                                 $a4,
+                                                                                                 $e2,
+                                                                                                 $36,
+                                                                                                 $f4,
+                                                                                                 $3d));
+  DXVA_ModeH264_VLD_Stereo_NoFGT: TGUID = (D1: $f9aaccbb; D2: $c2b6; D3: $4cfc; D4: ($87,
+                                                                                     $79,
+                                                                                     $57,
+                                                                                     $07,
+                                                                                     $b1,
+                                                                                     $76,
+                                                                                     $05,
+                                                                                     $52));
+  DXVA_ModeH264_VLD_Multiview_NoFGT: TGUID = (D1: $705b9d82; D2: $76cf; D3: $49d6; D4: ($b7,
+                                                                                        $e6,
+                                                                                        $ac,
+                                                                                        $88,
+                                                                                        $72,
+                                                                                        $db,
+                                                                                        $01,
+                                                                                        $3c));
 
-  DXVA_ModeWMV8_A           : TGUID = (D1 : $1b81be80; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeWMV8_B           : TGUID = (D1 : $1b81be81; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
+  DXVA_ModeWMV8_A: TGUID = (D1: $1b81be80; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeWMV8_B: TGUID = (D1: $1b81be81; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
 
-  DXVA_ModeWMV9_A           : TGUID = (D1 : $1b81be90; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeWMV9_B           : TGUID = (D1 : $1b81be91; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeWMV9_C           : TGUID = (D1 : $1b81be94; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
+  DXVA_ModeWMV9_A: TGUID = (D1: $1b81be90; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeWMV9_B: TGUID = (D1: $1b81be91; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
+  DXVA_ModeWMV9_C: TGUID = (D1: $1b81be94; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                      $84,
+                                                                      $00,
+                                                                      $c0,
+                                                                      $4f,
+                                                                      $2e,
+                                                                      $73,
+                                                                      $c5));
 
-  DXVA_ModeVC1_A           : TGUID = (D1 : $1b81beA0; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeVC1_B           : TGUID = (D1 : $1b81beA1; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeVC1_C           : TGUID = (D1 : $1b81beA2; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeVC1_D           : TGUID = (D1 : $1b81beA3; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeVC1_D2010       : TGUID = (D1 : $1b81beA4; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
+  DXVA_ModeVC1_A: TGUID = (D1: $1b81beA0; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                     $84,
+                                                                     $00,
+                                                                     $c0,
+                                                                     $4f,
+                                                                     $2e,
+                                                                     $73,
+                                                                     $c5));
+  DXVA_ModeVC1_B: TGUID = (D1: $1b81beA1; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                     $84,
+                                                                     $00,
+                                                                     $c0,
+                                                                     $4f,
+                                                                     $2e,
+                                                                     $73,
+                                                                     $c5));
+  DXVA_ModeVC1_C: TGUID = (D1: $1b81beA2; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                     $84,
+                                                                     $00,
+                                                                     $c0,
+                                                                     $4f,
+                                                                     $2e,
+                                                                     $73,
+                                                                     $c5));
+  DXVA_ModeVC1_D: TGUID = (D1: $1b81beA3; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                     $84,
+                                                                     $00,
+                                                                     $c0,
+                                                                     $4f,
+                                                                     $2e,
+                                                                     $73,
+                                                                     $c5));
+  DXVA_ModeVC1_D2010: TGUID = (D1: $1b81beA4; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                         $84,
+                                                                         $00,
+                                                                         $c0,
+                                                                         $4f,
+                                                                         $2e,
+                                                                         $73,
+                                                                         $c5));
 
-  DXVA_ModeMPEG4pt2_VLD_Simple            : TGUID = (D1 : $efd64d74; D2 : $c9e8; D3 : $41d7; D4:($a5, $e9, $e9, $b0, $e3, $9f, $a3, $19));
-  DXVA_ModeMPEG4pt2_VLD_AdvSimple_NoGMC   : TGUID = (D1 : $ed418a9f; D2 : $010d; D3 : $4eda; D4:($9a, $e3, $9a, $65, $35, $8d, $8d, $2e));
-  DXVA_ModeMPEG4pt2_VLD_AdvSimple_GMC     : TGUID = (D1 : $ab998b5b; D2 : $4258; D3 : $44a9; D4:($9f, $eb, $94, $e5, $97, $a6, $ba, $ae));
+  DXVA_ModeMPEG4pt2_VLD_Simple: TGUID = (D1: $efd64d74; D2: $c9e8; D3: $41d7; D4: ($a5,
+                                                                                   $e9,
+                                                                                   $e9,
+                                                                                   $b0,
+                                                                                   $e3,
+                                                                                   $9f,
+                                                                                   $a3,
+                                                                                   $19));
+  DXVA_ModeMPEG4pt2_VLD_AdvSimple_NoGMC: TGUID = (D1: $ed418a9f; D2: $010d; D3: $4eda; D4: ($9a,
+                                                                                            $e3,
+                                                                                            $9a,
+                                                                                            $65,
+                                                                                            $35,
+                                                                                            $8d,
+                                                                                            $8d,
+                                                                                            $2e));
+  DXVA_ModeMPEG4pt2_VLD_AdvSimple_GMC: TGUID = (D1: $ab998b5b; D2: $4258; D3: $44a9; D4: ($9f,
+                                                                                          $eb,
+                                                                                          $94,
+                                                                                          $e5,
+                                                                                          $97,
+                                                                                          $a6,
+                                                                                          $ba,
+                                                                                          $ae));
 
 
-  DXVA_ModeHEVC_VLD_Main           : TGUID = (D1: $5b11d51b;
+  DXVA_ModeHEVC_VLD_Main: TGUID = (D1: $5b11d51b;
                                               D2: $2f4c;
                                               D3: $4452;
-                                              D4: ($bc, $c3, $09, $f2, $a1, $16, $0c, $c0));
+                                              D4: ($bc,
+                                                   $c3,
+                                                   $09,
+                                                   $f2,
+                                                   $a1,
+                                                   $16,
+                                                   $0c,
+                                                   $c0));
 
-  DXVA_ModeHEVC_VLD_Main10        : TGUID = (D1: $107af0e0;
+  DXVA_ModeHEVC_VLD_Main10: TGUID = (D1: $107af0e0;
                                              D2: $ef1a;
                                              D3: $4d19;
-                                             D4: ($ab, $a8, $67, $a1, $63, $07, $3d, $13));
+                                             D4: ($ab,
+                                                  $a8,
+                                                  $67,
+                                                  $a1,
+                                                  $63,
+                                                  $07,
+                                                  $3d,
+                                                  $13));
 
-  DXVA_ModeHEVC_VLD_Monochrome    : TGUID = (D1: $0685b993;
+  DXVA_ModeHEVC_VLD_Monochrome: TGUID = (D1: $0685b993;
                                              D2: $3d8c;
                                              D3: $43a0;
-                                             D4: ($8b, $28, $d7, $4c, $2d, $68, $99, $a4));
+                                             D4: ($8b,
+                                                  $28,
+                                                  $d7,
+                                                  $4c,
+                                                  $2d,
+                                                  $68,
+                                                  $99,
+                                                  $a4));
 
-  DXVA_ModeHEVC_VLD_Monochrome10  : TGUID = (D1: $142a1d0f;
+  DXVA_ModeHEVC_VLD_Monochrome10: TGUID = (D1: $142a1d0f;
                                              D2: $69dd;
                                              D3: $4ec9;
-                                             D4: ($85, $91, $b1, $2f, $fc, $b9, $1a, $29));
+                                             D4: ($85,
+                                                  $91,
+                                                  $b1,
+                                                  $2f,
+                                                  $fc,
+                                                  $b9,
+                                                  $1a,
+                                                  $29));
 
-  DXVA_ModeHEVC_VLD_Main12        : TGUID = (D1: $1a72925f;
+  DXVA_ModeHEVC_VLD_Main12: TGUID = (D1: $1a72925f;
                                              D2: $0c2c;
                                              D3: $4f15;
-                                             D4: ($96, $fb, $b1, $7d, $14, $73, $60, $3f));
+                                             D4: ($96,
+                                                  $fb,
+                                                  $b1,
+                                                  $7d,
+                                                  $14,
+                                                  $73,
+                                                  $60,
+                                                  $3f));
 
-  DXVA_ModeHEVC_VLD_Main10_422    : TGUID = (D1: $0bac4fe5;
+  DXVA_ModeHEVC_VLD_Main10_422: TGUID = (D1: $0bac4fe5;
                                              D2: $1532;
                                              D3: $4429;
-                                             D4: ($a8, $54, $f8, $4d, $e0, $49, $53, $db));
+                                             D4: ($a8,
+                                                  $54,
+                                                  $f8,
+                                                  $4d,
+                                                  $e0,
+                                                  $49,
+                                                  $53,
+                                                  $db));
 
-  DXVA_ModeHEVC_VLD_Main12_422    : TGUID = (D1: $55bcac81;
+  DXVA_ModeHEVC_VLD_Main12_422: TGUID = (D1: $55bcac81;
                                              D2: $f311;
                                              D3: $4093;
-                                             D4: ($a7, $d0, $1c, $bc, $0b, $84, $9b, $ee));
+                                             D4: ($a7,
+                                                  $d0,
+                                                  $1c,
+                                                  $bc,
+                                                  $0b,
+                                                  $84,
+                                                  $9b,
+                                                  $ee));
 
-  DXVA_ModeHEVC_VLD_Main_444      : TGUID = (D1: $4008018f;
+  DXVA_ModeHEVC_VLD_Main_444: TGUID = (D1: $4008018f;
                                              D2: $f537;
                                              D3: $4b36;
-                                             D4: ($98, $cf, $61, $af, $8a, $2c, $1a, $33));
+                                             D4: ($98,
+                                                  $cf,
+                                                  $61,
+                                                  $af,
+                                                  $8a,
+                                                  $2c,
+                                                  $1a,
+                                                  $33));
 
-  DXVA_ModeHEVC_VLD_Main10_Ext    : TGUID = (D1: $9cc55490;
+  DXVA_ModeHEVC_VLD_Main10_Ext: TGUID = (D1: $9cc55490;
                                              D2: $e37c;
                                              D3: $4932;
-                                             D4: ($86, $84, $49, $20, $f9, $f6, $40, $9c));
+                                             D4: ($86,
+                                                  $84,
+                                                  $49,
+                                                  $20,
+                                                  $f9,
+                                                  $f6,
+                                                  $40,
+                                                  $9c));
 
-  DXVA_ModeHEVC_VLD_Main10_444    : TGUID = (D1: $0dabeffa;
+  DXVA_ModeHEVC_VLD_Main10_444: TGUID = (D1: $0dabeffa;
                                              D2: $4458;
                                              D3: $4602;
-                                             D4: ($bc, $03, $07, $95, $65, $9d, $61, $7c));
+                                             D4: ($bc,
+                                                  $03,
+                                                  $07,
+                                                  $95,
+                                                  $65,
+                                                  $9d,
+                                                  $61,
+                                                  $7c));
 
-  DXVA_ModeHEVC_VLD_Main12_444    : TGUID = (D1: $9798634d;
+  DXVA_ModeHEVC_VLD_Main12_444: TGUID = (D1: $9798634d;
                                              D2: $fe9d;
                                              D3: $48e5;
-                                             D4: ($b4, $da, $db, $ec, $45, $b3, $df, $01));
+                                             D4: ($b4,
+                                                  $da,
+                                                  $db,
+                                                  $ec,
+                                                  $45,
+                                                  $b3,
+                                                  $df,
+                                                  $01));
 
-  DXVA_ModeHEVC_VLD_Main16        : TGUID = (D1: $a4fbdbb0;
+  DXVA_ModeHEVC_VLD_Main16: TGUID = (D1: $a4fbdbb0;
                                              D2: $a113;
                                              D3: $482b;
-                                             D4: ($a2, $32, $63, $5c, $c0, $69, $7f, $6d));
+                                             D4: ($a2,
+                                                  $32,
+                                                  $63,
+                                                  $5c,
+                                                  $c0,
+                                                  $69,
+                                                  $7f,
+                                                  $6d));
 
 
-  DXVA_ModeVP9_VLD_Profile0       : TGUID = (D1: $463707f8;
+  DXVA_ModeVP9_VLD_Profile0: TGUID = (D1: $463707f8;
                                              D2: $a1d0;
                                              D3: $4585;
-                                             D4: ($87, $6d, $83, $aa, $6d, $60, $b8, $9e));
+                                             D4: ($87,
+                                                  $6d,
+                                                  $83,
+                                                  $aa,
+                                                  $6d,
+                                                  $60,
+                                                  $b8,
+                                                  $9e));
 
-  DXVA_ModeVP9_VLD_10bit_Profile2 : TGUID = (D1: $a4c749ef;
+  DXVA_ModeVP9_VLD_10bit_Profile2: TGUID = (D1: $a4c749ef;
                                              D2: $6ecf;
                                              D3: $48aa;
-                                             D4: ($84, $48, $50, $a7, $a1, $16, $5f, $f7));
+                                             D4: ($84,
+                                                  $48,
+                                                  $50,
+                                                  $a7,
+                                                  $a1,
+                                                  $16,
+                                                  $5f,
+                                                  $f7));
 
-  DXVA_ModeVP8_VLD                : TGUID = (D1: $90b899ea;
+  DXVA_ModeVP8_VLD: TGUID = (D1: $90b899ea;
                                              D2: $3a62;
                                              D3: $4705;
-                                             D4: ($88, $b3, $8d, $f0, $4b, $27, $44, $e7));
+                                             D4: ($88,
+                                                  $b3,
+                                                  $8d,
+                                                  $f0,
+                                                  $4b,
+                                                  $27,
+                                                  $44,
+                                                  $e7));
 
-  DXVA_ModeAV1_VLD_Profile0       : TGUID = (D1: $b8be4ccb;
+  DXVA_ModeAV1_VLD_Profile0: TGUID = (D1: $b8be4ccb;
                                              D2: $cf53;
                                              D3: $46ba;
-                                             D4: ($8d, $59, $d6, $b8, $a6, $da, $5d, $2a));
+                                             D4: ($8d,
+                                                  $59,
+                                                  $d6,
+                                                  $b8,
+                                                  $a6,
+                                                  $da,
+                                                  $5d,
+                                                  $2a));
 
-  DXVA_ModeAV1_VLD_Profile1       : TGUID = (D1: $6936ff0f;
+  DXVA_ModeAV1_VLD_Profile1: TGUID = (D1: $6936ff0f;
                                              D2: $45b1;
                                              D3: $4163;
-                                             D4: ($9c, $c1, $64, $6e, $f6, $94, $61, $08));
+                                             D4: ($9c,
+                                                  $c1,
+                                                  $64,
+                                                  $6e,
+                                                  $f6,
+                                                  $94,
+                                                  $61,
+                                                  $08));
 
-  DXVA_ModeAV1_VLD_Profile2       : TGUID = (D1: $0c5f2aa1;
+  DXVA_ModeAV1_VLD_Profile2: TGUID = (D1: $0c5f2aa1;
                                              D2: $e541;
                                              D3: $4089;
-                                             D4: ($bb, $7b, $98, $11, $0a, $19, $d7, $c8));
+                                             D4: ($bb,
+                                                  $7b,
+                                                  $98,
+                                                  $11,
+                                                  $0a,
+                                                  $19,
+                                                  $d7,
+                                                  $c8));
 
-  DXVA_ModeAV1_VLD_12bit_Profile2 : TGUID = (D1: $17127009;
+  DXVA_ModeAV1_VLD_12bit_Profile2: TGUID = (D1: $17127009;
                                              D2: $a00f;
                                              D3: $4ce1;
-                                             D4: ($99, $4e, $bf, $40, $81, $f6, $f3, $f0));
+                                             D4: ($99,
+                                                  $4e,
+                                                  $bf,
+                                                  $40,
+                                                  $81,
+                                                  $f6,
+                                                  $f3,
+                                                  $f0));
 
-  DXVA_ModeAV1_VLD_12bit_Profile2_420 : TGUID = (D1: $2d80bed6;
+  DXVA_ModeAV1_VLD_12bit_Profile2_420: TGUID = (D1: $2d80bed6;
                                                  D2: $9cac;
                                                  D3: $4835;
-                                                 D4: ($9e, $91, $32, $7b, $bc, $4f, $9e, $e8));
+                                                 D4: ($9e,
+                                                      $91,
+                                                      $32,
+                                                      $7b,
+                                                      $bc,
+                                                      $4f,
+                                                      $9e,
+                                                      $e8));
 
-  DXVA_ModeMJPEG_VLD_420          : TGUID = (D1: $725cb506;
+  DXVA_ModeMJPEG_VLD_420: TGUID = (D1: $725cb506;
                                              D2: $0c29;
                                              D3: $43c4;
-                                             D4: ($94, $40, $8e, $93, $97, $90, $3a, $04));
+                                             D4: ($94,
+                                                  $40,
+                                                  $8e,
+                                                  $93,
+                                                  $97,
+                                                  $90,
+                                                  $3a,
+                                                  $04));
 
-  DXVA_ModeMJPEG_VLD_422          : TGUID = (D1: $5b77b9cd;
+  DXVA_ModeMJPEG_VLD_422: TGUID = (D1: $5b77b9cd;
                                              D2: $1a35;
                                              D3: $4c30;
-                                             D4: ($9f, $d8, $ef, $4b, $60, $c0, $35, $dd));
+                                             D4: ($9f,
+                                                  $d8,
+                                                  $ef,
+                                                  $4b,
+                                                  $60,
+                                                  $c0,
+                                                  $35,
+                                                  $dd));
 
-  DXVA_ModeMJPEG_VLD_444          : TGUID = (D1: $d95161f9;
+  DXVA_ModeMJPEG_VLD_444: TGUID = (D1: $d95161f9;
                                              D2: $0d44;
                                              D3: $47e6;
-                                             D4: ($bc, $f5, $1b, $fb, $fb, $26, $8f, $97));
+                                             D4: ($bc,
+                                                  $f5,
+                                                  $1b,
+                                                  $fb,
+                                                  $fb,
+                                                  $26,
+                                                  $8f,
+                                                  $97));
 
-  DXVA_ModeMJPEG_VLD_4444         : TGUID = (D1: $c91748d5;
+  DXVA_ModeMJPEG_VLD_4444: TGUID = (D1: $c91748d5;
                                              D2: $fd18;
                                              D3: $4aca;
-                                             D4: ($9d, $b3, $3a, $66, $34, $ab, $54, $7d));
+                                             D4: ($9d,
+                                                  $b3,
+                                                  $3a,
+                                                  $66,
+                                                  $34,
+                                                  $ab,
+                                                  $54,
+                                                  $7d));
 
-  DXVA_ModeJPEG_VLD_420           : TGUID = (D1: $cf782c83;
+  DXVA_ModeJPEG_VLD_420: TGUID = (D1: $cf782c83;
                                              D2: $bef5;
                                              D3: $4a2c;
-                                             D4: ($87, $cb, $60, $19, $e7, $b1, $75, $ac));
+                                             D4: ($87,
+                                                  $cb,
+                                                  $60,
+                                                  $19,
+                                                  $e7,
+                                                  $b1,
+                                                  $75,
+                                                  $ac));
 
-  DXVA_ModeJPEG_VLD_422           : TGUID = (D1: $f04df417;
+  DXVA_ModeJPEG_VLD_422: TGUID = (D1: $f04df417;
                                              D2: $eee2;
                                              D3: $4067;
-                                             D4: ($a7, $78, $f3, $5c, $15, $ab, $97, $21));
+                                             D4: ($a7,
+                                                  $78,
+                                                  $f3,
+                                                  $5c,
+                                                  $15,
+                                                  $ab,
+                                                  $97,
+                                                  $21));
 
-  DXVA_ModeJPEG_VLD_444           : TGUID = (D1: $4cd00e17;
+  DXVA_ModeJPEG_VLD_444: TGUID = (D1: $4cd00e17;
                                              D2: $89ba;
                                              D3: $48ef;
-                                             D4: ($b9, $f9, $ed, $cb, $82, $71, $3f, $65));
+                                             D4: ($b9,
+                                                  $f9,
+                                                  $ed,
+                                                  $cb,
+                                                  $82,
+                                                  $71,
+                                                  $3f,
+                                                  $65));
 
   { 10.0.28000.0  }
-  DXVA_ModeAPV_VLD_422_10  : TGUID = '{226A709D-AE12-44C5-BA21-164FEEB7F9B6}';
-  DXVA_ModeAPV_VLD_422_12  : TGUID = '{F6F152AD-94E5-4BFA-9227-676CDDEFF42B}';
-  DXVA_ModeAPV_VLD_444_10  : TGUID = '{6A4A8D7D-7610-469F-855F-39F13051C013}';
-  DXVA_ModeAPV_VLD_444_12  : TGUID = '{F1039A1C-E208-45C1-952C-040841B67667}';
-  DXVA_ModeAPV_VLD_4444_10 : TGUID = '{C83799B9-9655-4B95-8008-56A322CE5D81}';
-  DXVA_ModeAPV_VLD_4444_12 : TGUID = '{6A763EE3-4D05-47FE-A429-723474B69D7C}';
-  DXVA_ModeAPV_VLD_400_10  : TGUID = '{37148862-6BD6-4618-8293-777B686B0824}';
+  DXVA_ModeAPV_VLD_422_10: TGUID = '{226A709D-AE12-44C5-BA21-164FEEB7F9B6}';
+  DXVA_ModeAPV_VLD_422_12: TGUID = '{F6F152AD-94E5-4BFA-9227-676CDDEFF42B}';
+  DXVA_ModeAPV_VLD_444_10: TGUID = '{6A4A8D7D-7610-469F-855F-39F13051C013}';
+  DXVA_ModeAPV_VLD_444_12: TGUID = '{F1039A1C-E208-45C1-952C-040841B67667}';
+  DXVA_ModeAPV_VLD_4444_10: TGUID = '{C83799B9-9655-4B95-8008-56A322CE5D81}';
+  DXVA_ModeAPV_VLD_4444_12: TGUID = '{6A763EE3-4D05-47FE-A429-723474B69D7C}';
+  DXVA_ModeAPV_VLD_400_10: TGUID = '{37148862-6BD6-4618-8293-777B686B0824}';
 
-  DXVA_NoEncrypt                          : TGUID = (D1 : $1b81beD0; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
+  DXVA_NoEncrypt: TGUID = (D1: $1b81beD0; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                     $84,
+                                                                     $00,
+                                                                     $c0,
+                                                                     $4f,
+                                                                     $2e,
+                                                                     $73,
+                                                                     $c5));
 
 
   // Delphi 10++ compiler introduction
@@ -306,125 +776,230 @@ const
   // Not possible any more, is something like this: DXVA_ModeWMV8_PostProc = DXVA_ModeWMV8_A;
 
 
-  DXVA_ModeWMV8_PostProc              : TGUID = (D1 : $1b81be80; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeWMV8_MoComp                : TGUID = (D1 : $1b81be81; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
+  DXVA_ModeWMV8_PostProc: TGUID = (D1: $1b81be80; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                             $84,
+                                                                             $00,
+                                                                             $c0,
+                                                                             $4f,
+                                                                             $2e,
+                                                                             $73,
+                                                                             $c5));
+  DXVA_ModeWMV8_MoComp: TGUID = (D1: $1b81be81; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                           $84,
+                                                                           $00,
+                                                                           $c0,
+                                                                           $4f,
+                                                                           $2e,
+                                                                           $73,
+                                                                           $c5));
 
-  DXVA_ModeWMV9_PostProc              : TGUID = (D1 : $1b81be90; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeWMV9_MoComp                : TGUID = (D1 : $1b81be91; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeWMV9_IDCT                  : TGUID = (D1 : $1b81be94; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
+  DXVA_ModeWMV9_PostProc: TGUID = (D1: $1b81be90; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                             $84,
+                                                                             $00,
+                                                                             $c0,
+                                                                             $4f,
+                                                                             $2e,
+                                                                             $73,
+                                                                             $c5));
+  DXVA_ModeWMV9_MoComp: TGUID = (D1: $1b81be91; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                           $84,
+                                                                           $00,
+                                                                           $c0,
+                                                                           $4f,
+                                                                           $2e,
+                                                                           $73,
+                                                                           $c5));
+  DXVA_ModeWMV9_IDCT: TGUID = (D1: $1b81be94; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                         $84,
+                                                                         $00,
+                                                                         $c0,
+                                                                         $4f,
+                                                                         $2e,
+                                                                         $73,
+                                                                         $c5));
 
-  DXVA_ModeVC1_PostProc               : TGUID = (D1 : $1b81beA0; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeVC1_MoComp                 : TGUID = (D1 : $1b81beA1; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeVC1_IDCT                   : TGUID = (D1 : $1b81beA2; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeVC1_VLD                    : TGUID = (D1 : $1b81beA3; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
+  DXVA_ModeVC1_PostProc: TGUID = (D1: $1b81beA0; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                            $84,
+                                                                            $00,
+                                                                            $c0,
+                                                                            $4f,
+                                                                            $2e,
+                                                                            $73,
+                                                                            $c5));
+  DXVA_ModeVC1_MoComp: TGUID = (D1: $1b81beA1; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                          $84,
+                                                                          $00,
+                                                                          $c0,
+                                                                          $4f,
+                                                                          $2e,
+                                                                          $73,
+                                                                          $c5));
+  DXVA_ModeVC1_IDCT: TGUID = (D1: $1b81beA2; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                        $84,
+                                                                        $00,
+                                                                        $c0,
+                                                                        $4f,
+                                                                        $2e,
+                                                                        $73,
+                                                                        $c5));
+  DXVA_ModeVC1_VLD: TGUID = (D1: $1b81beA3; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                       $84,
+                                                                       $00,
+                                                                       $c0,
+                                                                       $4f,
+                                                                       $2e,
+                                                                       $73,
+                                                                       $c5));
 
-  DXVA_ModeH264_MoComp_NoFGT          : TGUID = (D1 : $1b81be64; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH264_MoComp_FGT            : TGUID = (D1 : $1b81be65; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH264_IDCT_NoFGT            : TGUID = (D1 : $1b81be66; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH264_IDCT_FGT              : TGUID = (D1 : $1b81be67; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH264_VLD_NoFGT             : TGUID = (D1 : $1b81be68; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
-  DXVA_ModeH264_VLD_FGT               : TGUID = (D1 : $1b81be69; D2 : $a0c7; D3 : $11d3; D4:($b9, $84, $00, $c0, $4f, $2e, $73, $c5));
+  DXVA_ModeH264_MoComp_NoFGT: TGUID = (D1: $1b81be64; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                                 $84,
+                                                                                 $00,
+                                                                                 $c0,
+                                                                                 $4f,
+                                                                                 $2e,
+                                                                                 $73,
+                                                                                 $c5));
+  DXVA_ModeH264_MoComp_FGT: TGUID = (D1: $1b81be65; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                               $84,
+                                                                               $00,
+                                                                               $c0,
+                                                                               $4f,
+                                                                               $2e,
+                                                                               $73,
+                                                                               $c5));
+  DXVA_ModeH264_IDCT_NoFGT: TGUID = (D1: $1b81be66; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                               $84,
+                                                                               $00,
+                                                                               $c0,
+                                                                               $4f,
+                                                                               $2e,
+                                                                               $73,
+                                                                               $c5));
+  DXVA_ModeH264_IDCT_FGT: TGUID = (D1: $1b81be67; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                             $84,
+                                                                             $00,
+                                                                             $c0,
+                                                                             $4f,
+                                                                             $2e,
+                                                                             $73,
+                                                                             $c5));
+  DXVA_ModeH264_VLD_NoFGT: TGUID = (D1: $1b81be68; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                              $84,
+                                                                              $00,
+                                                                              $c0,
+                                                                              $4f,
+                                                                              $2e,
+                                                                              $73,
+                                                                              $c5));
+  DXVA_ModeH264_VLD_FGT: TGUID = (D1: $1b81be69; D2: $a0c7; D3: $11d3; D4: ($b9,
+                                                                            $84,
+                                                                            $00,
+                                                                            $c0,
+                                                                            $4f,
+                                                                            $2e,
+                                                                            $73,
+                                                                            $c5));
 
-  DXVA_RESTRICTED_MODE_UNRESTRICTED                  = $FFFF;
-  DXVA_RESTRICTED_MODE_H261_A                        = 1;
-  DXVA_RESTRICTED_MODE_H261_B                        = 2;
-  DXVA_RESTRICTED_MODE_H263_A                        = 3;
-  DXVA_RESTRICTED_MODE_H263_B                        = 4;
-  DXVA_RESTRICTED_MODE_H263_C                        = 5;
-  DXVA_RESTRICTED_MODE_H263_D                        = 6;
-  DXVA_RESTRICTED_MODE_H263_E                        = 7;
-  DXVA_RESTRICTED_MODE_H263_F                        = 8;
-  DXVA_RESTRICTED_MODE_MPEG1_A                       = 9;
-  DXVA_RESTRICTED_MODE_MPEG2_A                       = $A;
-  DXVA_RESTRICTED_MODE_MPEG2_B                       = $B;
-  DXVA_RESTRICTED_MODE_MPEG2_C                       = $C;
-  DXVA_RESTRICTED_MODE_MPEG2_D                       = $D;
-  DXVA_RESTRICTED_MODE_MPEG1_VLD                     = $10;
-  DXVA_RESTRICTED_MODE_MPEG2and1_VLD                 = $11;
-  DXVA_RESTRICTED_MODE_H264_A                        = $64;
-  DXVA_RESTRICTED_MODE_H264_B                        = $65;
-  DXVA_RESTRICTED_MODE_H264_C                        = $66;
-  DXVA_RESTRICTED_MODE_H264_D                        = $67;
-  DXVA_RESTRICTED_MODE_H264_E                        = $68;
-  DXVA_RESTRICTED_MODE_H264_F                        = $69;
-  DXVA_RESTRICTED_MODE_H264_VLD_WITHFMOASO_NOFGT     = $70;
+  DXVA_RESTRICTED_MODE_UNRESTRICTED = $FFFF;
+  DXVA_RESTRICTED_MODE_H261_A = 1;
+  DXVA_RESTRICTED_MODE_H261_B = 2;
+  DXVA_RESTRICTED_MODE_H263_A = 3;
+  DXVA_RESTRICTED_MODE_H263_B = 4;
+  DXVA_RESTRICTED_MODE_H263_C = 5;
+  DXVA_RESTRICTED_MODE_H263_D = 6;
+  DXVA_RESTRICTED_MODE_H263_E = 7;
+  DXVA_RESTRICTED_MODE_H263_F = 8;
+  DXVA_RESTRICTED_MODE_MPEG1_A = 9;
+  DXVA_RESTRICTED_MODE_MPEG2_A = $A;
+  DXVA_RESTRICTED_MODE_MPEG2_B = $B;
+  DXVA_RESTRICTED_MODE_MPEG2_C = $C;
+  DXVA_RESTRICTED_MODE_MPEG2_D = $D;
+  DXVA_RESTRICTED_MODE_MPEG1_VLD = $10;
+  DXVA_RESTRICTED_MODE_MPEG2and1_VLD = $11;
+  DXVA_RESTRICTED_MODE_H264_A = $64;
+  DXVA_RESTRICTED_MODE_H264_B = $65;
+  DXVA_RESTRICTED_MODE_H264_C = $66;
+  DXVA_RESTRICTED_MODE_H264_D = $67;
+  DXVA_RESTRICTED_MODE_H264_E = $68;
+  DXVA_RESTRICTED_MODE_H264_F = $69;
+  DXVA_RESTRICTED_MODE_H264_VLD_WITHFMOASO_NOFGT = $70;
   DXVA_RESTRICTED_MODE_H264_VLD_STEREO_PROGRESSIVE_NOFGT = $71;
-  DXVA_RESTRICTED_MODE_H264_VLD_STEREO_NOFGT         = $72;
-  DXVA_RESTRICTED_MODE_H264_VLD_MULTIVIEW_NOFGT      = $73;
-  DXVA_RESTRICTED_MODE_WMV8_A                        = $80;
-  DXVA_RESTRICTED_MODE_WMV8_B                        = $81;
-  DXVA_RESTRICTED_MODE_WMV9_A                        = $90;
-  DXVA_RESTRICTED_MODE_WMV9_B                        = $91;
-  DXVA_RESTRICTED_MODE_WMV9_C                        = $94;
-  DXVA_RESTRICTED_MODE_VC1_A                         = $A0;
-  DXVA_RESTRICTED_MODE_VC1_B                         = $A1;
-  DXVA_RESTRICTED_MODE_VC1_C                         = $A2;
-  DXVA_RESTRICTED_MODE_VC1_D                         = $A3;
-  DXVA_RESTRICTED_MODE_VC1_D2010                     = $A4;
-  DXVA_RESTRICTED_MODE_MPEG4PT2_VLD_SIMPLE           = $B0;
+  DXVA_RESTRICTED_MODE_H264_VLD_STEREO_NOFGT = $72;
+  DXVA_RESTRICTED_MODE_H264_VLD_MULTIVIEW_NOFGT = $73;
+  DXVA_RESTRICTED_MODE_WMV8_A = $80;
+  DXVA_RESTRICTED_MODE_WMV8_B = $81;
+  DXVA_RESTRICTED_MODE_WMV9_A = $90;
+  DXVA_RESTRICTED_MODE_WMV9_B = $91;
+  DXVA_RESTRICTED_MODE_WMV9_C = $94;
+  DXVA_RESTRICTED_MODE_VC1_A = $A0;
+  DXVA_RESTRICTED_MODE_VC1_B = $A1;
+  DXVA_RESTRICTED_MODE_VC1_C = $A2;
+  DXVA_RESTRICTED_MODE_VC1_D = $A3;
+  DXVA_RESTRICTED_MODE_VC1_D2010 = $A4;
+  DXVA_RESTRICTED_MODE_MPEG4PT2_VLD_SIMPLE = $B0;
   DXVA_RESTRICTED_MODE_MPEG4PT2_VLD_ADV_SIMPLE_NOGMC = $B1;
-  DXVA_RESTRICTED_MODE_MPEG4PT2_VLD_ADV_SIMPLE_GMC   = $B2;
+  DXVA_RESTRICTED_MODE_MPEG4PT2_VLD_ADV_SIMPLE_GMC = $B2;
 
 
-  DXVA_RESTRICTED_MODE_WMV8_POSTPROC     = DXVA_RESTRICTED_MODE_WMV8_A;
-  DXVA_RESTRICTED_MODE_WMV8_MOCOMP       = DXVA_RESTRICTED_MODE_WMV8_B;
+  DXVA_RESTRICTED_MODE_WMV8_POSTPROC = DXVA_RESTRICTED_MODE_WMV8_A;
+  DXVA_RESTRICTED_MODE_WMV8_MOCOMP = DXVA_RESTRICTED_MODE_WMV8_B;
 
-  DXVA_RESTRICTED_MODE_WMV9_POSTPROC     = DXVA_RESTRICTED_MODE_WMV9_A;
-  DXVA_RESTRICTED_MODE_WMV9_MOCOMP       = DXVA_RESTRICTED_MODE_WMV9_B;
-  DXVA_RESTRICTED_MODE_WMV9_IDCT         = DXVA_RESTRICTED_MODE_WMV9_C;
+  DXVA_RESTRICTED_MODE_WMV9_POSTPROC = DXVA_RESTRICTED_MODE_WMV9_A;
+  DXVA_RESTRICTED_MODE_WMV9_MOCOMP = DXVA_RESTRICTED_MODE_WMV9_B;
+  DXVA_RESTRICTED_MODE_WMV9_IDCT = DXVA_RESTRICTED_MODE_WMV9_C;
 
-  DXVA_RESTRICTED_MODE_VC1_POSTPROC      = DXVA_RESTRICTED_MODE_VC1_A;
-  DXVA_RESTRICTED_MODE_VC1_MOCOMP        = DXVA_RESTRICTED_MODE_VC1_B;
-  DXVA_RESTRICTED_MODE_VC1_IDCT          = DXVA_RESTRICTED_MODE_VC1_C;
-  DXVA_RESTRICTED_MODE_VC1_VLD           = DXVA_RESTRICTED_MODE_VC1_D;
+  DXVA_RESTRICTED_MODE_VC1_POSTPROC = DXVA_RESTRICTED_MODE_VC1_A;
+  DXVA_RESTRICTED_MODE_VC1_MOCOMP = DXVA_RESTRICTED_MODE_VC1_B;
+  DXVA_RESTRICTED_MODE_VC1_IDCT = DXVA_RESTRICTED_MODE_VC1_C;
+  DXVA_RESTRICTED_MODE_VC1_VLD = DXVA_RESTRICTED_MODE_VC1_D;
 
   DXVA_RESTRICTED_MODE_H264_MOCOMP_NOFGT = DXVA_RESTRICTED_MODE_H264_A;
-  DXVA_RESTRICTED_MODE_H264_MOCOMP_FGT   = DXVA_RESTRICTED_MODE_H264_B;
-  DXVA_RESTRICTED_MODE_H264_IDCT_NOFGT   = DXVA_RESTRICTED_MODE_H264_C;
-  DXVA_RESTRICTED_MODE_H264_IDCT_FGT     = DXVA_RESTRICTED_MODE_H264_D;
-  DXVA_RESTRICTED_MODE_H264_VLD_NOFGT    = DXVA_RESTRICTED_MODE_H264_E;
-  DXVA_RESTRICTED_MODE_H264_VLD_FGT      = DXVA_RESTRICTED_MODE_H264_F;
+  DXVA_RESTRICTED_MODE_H264_MOCOMP_FGT = DXVA_RESTRICTED_MODE_H264_B;
+  DXVA_RESTRICTED_MODE_H264_IDCT_NOFGT = DXVA_RESTRICTED_MODE_H264_C;
+  DXVA_RESTRICTED_MODE_H264_IDCT_FGT = DXVA_RESTRICTED_MODE_H264_D;
+  DXVA_RESTRICTED_MODE_H264_VLD_NOFGT = DXVA_RESTRICTED_MODE_H264_E;
+  DXVA_RESTRICTED_MODE_H264_VLD_FGT = DXVA_RESTRICTED_MODE_H264_F;
 
 
-  DXVA_COMPBUFFER_TYPE_THAT_IS_NOT_USED   = 0;
-  DXVA_PICTURE_DECODE_BUFFER              = 1;
-  DXVA_MACROBLOCK_CONTROL_BUFFER          = 2;
-  DXVA_RESIDUAL_DIFFERENCE_BUFFER         = 3;
-  DXVA_DEBLOCKING_CONTROL_BUFFER          = 4;
+  DXVA_COMPBUFFER_TYPE_THAT_IS_NOT_USED = 0;
+  DXVA_PICTURE_DECODE_BUFFER = 1;
+  DXVA_MACROBLOCK_CONTROL_BUFFER = 2;
+  DXVA_RESIDUAL_DIFFERENCE_BUFFER = 3;
+  DXVA_DEBLOCKING_CONTROL_BUFFER = 4;
   DXVA_INVERSE_QUANTIZATION_MATRIX_BUFFER = 5;
-  DXVA_SLICE_CONTROL_BUFFER               = 6;
-  DXVA_BITSTREAM_DATA_BUFFER              = 7;
-  DXVA_AYUV_BUFFER                        = 8;
-  DXVA_IA44_SURFACE_BUFFER                = 9;
-  DXVA_DPXD_SURFACE_BUFFER                = 10;
-  DXVA_HIGHLIGHT_BUFFER                   = 11;
-  DXVA_DCCMD_SURFACE_BUFFER               = 12;
-  DXVA_ALPHA_BLEND_COMBINATION_BUFFER     = 13;
-  DXVA_PICTURE_RESAMPLE_BUFFER            = 14;
-  DXVA_READ_BACK_BUFFER                   = 15;
+  DXVA_SLICE_CONTROL_BUFFER = 6;
+  DXVA_BITSTREAM_DATA_BUFFER = 7;
+  DXVA_AYUV_BUFFER = 8;
+  DXVA_IA44_SURFACE_BUFFER = 9;
+  DXVA_DPXD_SURFACE_BUFFER = 10;
+  DXVA_HIGHLIGHT_BUFFER = 11;
+  DXVA_DCCMD_SURFACE_BUFFER = 12;
+  DXVA_ALPHA_BLEND_COMBINATION_BUFFER = 13;
+  DXVA_PICTURE_RESAMPLE_BUFFER = 14;
+  DXVA_READ_BACK_BUFFER = 15;
 
 // H.264/AVC Additional buffer types
 
-  DXVA_MOTION_VECTOR_BUFFER           = 16;
-  DXVA_FILM_GRAIN_BUFFER              = 17;
-  DXVA_NUM_TYPES_COMP_BUFFERS         = 18;
+  DXVA_MOTION_VECTOR_BUFFER = 16;
+  DXVA_FILM_GRAIN_BUFFER = 17;
+  DXVA_NUM_TYPES_COMP_BUFFERS = 18;
 
 // values for bDXVA_Func
 
-  DXVA_PICTURE_DECODING_FUNCTION        = 1;
-  DXVA_ALPHA_BLEND_DATA_LOAD_FUNCTION   = 2;
+  DXVA_PICTURE_DECODING_FUNCTION = 1;
+  DXVA_ALPHA_BLEND_DATA_LOAD_FUNCTION = 2;
   DXVA_ALPHA_BLEND_COMBINATION_FUNCTION = 3;
-  DXVA_PICTURE_RESAMPLE_FUNCTION        = 4;
-  DXVA_DEBLOCKING_FILTER_FUNCTION       = 5;
-  DXVA_FILM_GRAIN_SYNTHESIS_FUNCTION    = 6;
-  DXVA_STATUS_REPORTING_FUNCTION        = 7;
+  DXVA_PICTURE_RESAMPLE_FUNCTION = 4;
+  DXVA_DEBLOCKING_FILTER_FUNCTION = 5;
+  DXVA_FILM_GRAIN_SYNTHESIS_FUNCTION = 6;
+  DXVA_STATUS_REPORTING_FUNCTION = 7;
 
 //* values returned from Execute command in absence of read-back */
 
-  DXVA_EXECUTE_RETURN_OK                 = 0;
-  DXVA_EXECUTE_RETURN_DATA_ERROR_MINOR   = 1;
-  DXVA_EXECUTE_RETURN_DATA_ERROR_SIGNIF  = 2;
-  DXVA_EXECUTE_RETURN_DATA_ERROR_SEVERE  = 3;
+  DXVA_EXECUTE_RETURN_OK = 0;
+  DXVA_EXECUTE_RETURN_DATA_ERROR_MINOR = 1;
+  DXVA_EXECUTE_RETURN_DATA_ERROR_SIGNIF = 2;
+  DXVA_EXECUTE_RETURN_DATA_ERROR_SEVERE = 3;
   DXVA_EXECUTE_RETURN_OTHER_ERROR_SEVERE = 4;
 
 
@@ -433,24 +1008,28 @@ type
   PDXVA_ConnectMode = ^_DXVA_ConnectMode;
   LPDXVA_ConnectMode = ^_DXVA_ConnectMode;
   _DXVA_ConnectMode = record
-     guidMode        : TGUID;
-     wRestrictedMode : WORD;
+     guidMode: TGUID;
+     wRestrictedMode: WORD;
   end;
   DXVA_ConnectMode = _DXVA_ConnectMode;
 
   LPDXVA_ConfigQueryOrReplyFunc = ^DXVA_ConfigQueryOrReplyFunc;
-  DXVA_ConfigQueryOrReplyFunc = {$IFDEF TYPE_IDENTITY} type {$ENDIF} DWORD;
+  DXVA_ConfigQueryOrReplyFunc =
+{$IFDEF TYPE_IDENTITY}
+  type
+{$ENDIF}
+  DWORD;
 
 
 const
 
-  DXVA_QUERYORREPLYFUNCFLAG_DECODER_PROBE_QUERY    = $FFFFF1;
-  DXVA_QUERYORREPLYFUNCFLAG_DECODER_LOCK_QUERY     = $FFFFF5;
-  DXVA_QUERYORREPLYFUNCFLAG_ACCEL_PROBE_OK_COPY    = $FFFFF8;
-  DXVA_QUERYORREPLYFUNCFLAG_ACCEL_PROBE_OK_PLUS    = $FFFFF9;
-  DXVA_QUERYORREPLYFUNCFLAG_ACCEL_LOCK_OK_COPY     = $FFFFFC;
+  DXVA_QUERYORREPLYFUNCFLAG_DECODER_PROBE_QUERY = $FFFFF1;
+  DXVA_QUERYORREPLYFUNCFLAG_DECODER_LOCK_QUERY = $FFFFF5;
+  DXVA_QUERYORREPLYFUNCFLAG_ACCEL_PROBE_OK_COPY = $FFFFF8;
+  DXVA_QUERYORREPLYFUNCFLAG_ACCEL_PROBE_OK_PLUS = $FFFFF9;
+  DXVA_QUERYORREPLYFUNCFLAG_ACCEL_LOCK_OK_COPY = $FFFFFC;
   DXVA_QUERYORREPLYFUNCFLAG_ACCEL_PROBE_FALSE_PLUS = $FFFFFB;
-  DXVA_QUERYORREPLYFUNCFLAG_ACCEL_LOCK_FALSE_PLUS  = $FFFFFF;
+  DXVA_QUERYORREPLYFUNCFLAG_ACCEL_LOCK_FALSE_PLUS = $FFFFFF;
 
 
 
@@ -471,11 +1050,15 @@ const
 type
 
   LPDXVA_EncryptProtocolFunc = ^DXVA_EncryptProtocolFunc;
-  DXVA_EncryptProtocolFunc = {$IFDEF TYPE_IDENTITY} type {$ENDIF} DWORD;
+  DXVA_EncryptProtocolFunc =
+{$IFDEF TYPE_IDENTITY}
+  type
+{$ENDIF}
+  DWORD;
 
 
 const
-  DXVA_ENCRYPTPROTOCOLFUNCFLAG_HOST  = $FFFF00;
+  DXVA_ENCRYPTPROTOCOLFUNCFLAG_HOST = $FFFF00;
   DXVA_ENCRYPTPROTOCOLFUNCFLAG_ACCEL = $FFFF08;
 
 
@@ -493,41 +1076,41 @@ const
 
 type
 
-  PDXVA_EncryptProtocolHeader  = ^_DXVA_EncryptProtocolHeader;
-  LPDXVA_EncryptProtocolHeader  = ^_DXVA_EncryptProtocolHeader;
+  PDXVA_EncryptProtocolHeader = ^_DXVA_EncryptProtocolHeader;
+  LPDXVA_EncryptProtocolHeader = ^_DXVA_EncryptProtocolHeader;
   _DXVA_EncryptProtocolHeader = record
     dwFunction: DXVA_EncryptProtocolFunc;
     ReservedBits: array[0..2] of DWORD;
     guidEncryptProtocol: TGUID;
   end;
-  DXVA_EncryptProtocolHeader    = _DXVA_EncryptProtocolHeader;
+  DXVA_EncryptProtocolHeader = _DXVA_EncryptProtocolHeader;
 
 
   _DXVA_ConfigPictureDecode = record
     // Operation Indicated
     dwFunction: DXVA_ConfigQueryOrReplyFunc;
     // Alignment
-    dwReservedBits                 : array[0..2] of DWORD;
+    dwReservedBits: array[0..2] of DWORD;
     // Encryption GUIDs
-    guidConfigBitstreamEncryption  : TGUID;
-    guidConfigMBcontrolEncryption  : TGUID;
-    guidConfigResidDiffEncryption  : TGUID;
+    guidConfigBitstreamEncryption: TGUID;
+    guidConfigMBcontrolEncryption: TGUID;
+    guidConfigResidDiffEncryption: TGUID;
     // Bitstream Processing Indicator
-    bConfigBitstreamRaw            : BYTE;
+    bConfigBitstreamRaw: BYTE;
     // Macroblock Control Config
-    bConfigMBcontrolRasterOrder    : BYTE;
+    bConfigMBcontrolRasterOrder: BYTE;
     // Host Resid Diff Config
-    bConfigResidDiffHost           : BYTE;
-    bConfigSpatialResid8           : BYTE;
-    bConfigResid8Subtraction       : BYTE;
-    bConfigSpatialHost8or9Clipping : BYTE;
-    bConfigSpatialResidInterleaved : BYTE;
-    bConfigIntraResidUnsigned      : BYTE;
+    bConfigResidDiffHost: BYTE;
+    bConfigSpatialResid8: BYTE;
+    bConfigResid8Subtraction: BYTE;
+    bConfigSpatialHost8or9Clipping: BYTE;
+    bConfigSpatialResidInterleaved: BYTE;
+    bConfigIntraResidUnsigned: BYTE;
     // Accelerator Resid Diff Config
-    bConfigResidDiffAccelerator    : BYTE;
-    bConfigHostInverseScan         : BYTE;
-    bConfigSpecificIDCT            : BYTE;
-    bConfig4GroupedCoefs           : BYTE;
+    bConfigResidDiffAccelerator: BYTE;
+    bConfigHostInverseScan: BYTE;
+    bConfigSpecificIDCT: BYTE;
+    bConfig4GroupedCoefs: BYTE;
   end;
   DXVA_ConfigPictureDecode = _DXVA_ConfigPictureDecode;
   LPDXVA_ConfigPictureDecode = ^DXVA_ConfigPictureDecode;
@@ -538,42 +1121,42 @@ type
 
 
   _DXVA_PictureParameters = record
-    wDecodedPictureIndex          : WORD;
-    wDeblockedPictureIndex        : WORD;
-    wForwardRefPictureIndex       : WORD;
-    wBackwardRefPictureIndex      : WORD;
-    wPicWidthInMBminus1           : WORD;
-    wPicHeightInMBminus1          : WORD;
-    bMacroblockWidthMinus1        : BYTE;
-    bMacroblockHeightMinus1       : BYTE;
-    bBlockWidthMinus1             : BYTE;
-    bBlockHeightMinus1            : BYTE;
-    bBPPminus1                    : BYTE;
-    bPicStructure                 : BYTE;
-    bSecondField                  : BYTE;
-    bPicIntra                     : BYTE;
-    bPicBackwardPrediction        : BYTE;
-    bBidirectionalAveragingMode   : BYTE;
-    bMVprecisionAndChromaRelation : BYTE;
-    bChromaFormat                 : BYTE;
-    bPicScanFixed                 : BYTE;
-    bPicScanMethod                : BYTE;
-    bPicReadbackRequests          : BYTE;
-    bRcontrol                     : BYTE;
-    bPicSpatialResid8             : BYTE;
-    bPicOverflowBlocks            : BYTE;
-    bPicExtrapolation             : BYTE;
-    bPicDeblocked                 : BYTE;
-    bPicDeblockConfined           : BYTE;
-    bPic4MVallowed                : BYTE;
-    bPicOBMC                      : BYTE;
-    bPicBinPB                     : BYTE;
-    bMV_RPS                       : BYTE;
-    bReservedBits                 : BYTE;
-    wBitstreamFcodes              : WORD;
-    wBitstreamPCEelements         : WORD;
-    bBitstreamConcealmentNeed     : BYTE;
-    bBitstreamConcealmentMethod   : BYTE;
+    wDecodedPictureIndex: WORD;
+    wDeblockedPictureIndex: WORD;
+    wForwardRefPictureIndex: WORD;
+    wBackwardRefPictureIndex: WORD;
+    wPicWidthInMBminus1: WORD;
+    wPicHeightInMBminus1: WORD;
+    bMacroblockWidthMinus1: BYTE;
+    bMacroblockHeightMinus1: BYTE;
+    bBlockWidthMinus1: BYTE;
+    bBlockHeightMinus1: BYTE;
+    bBPPminus1: BYTE;
+    bPicStructure: BYTE;
+    bSecondField: BYTE;
+    bPicIntra: BYTE;
+    bPicBackwardPrediction: BYTE;
+    bBidirectionalAveragingMode: BYTE;
+    bMVprecisionAndChromaRelation: BYTE;
+    bChromaFormat: BYTE;
+    bPicScanFixed: BYTE;
+    bPicScanMethod: BYTE;
+    bPicReadbackRequests: BYTE;
+    bRcontrol: BYTE;
+    bPicSpatialResid8: BYTE;
+    bPicOverflowBlocks: BYTE;
+    bPicExtrapolation: BYTE;
+    bPicDeblocked: BYTE;
+    bPicDeblockConfined: BYTE;
+    bPic4MVallowed: BYTE;
+    bPicOBMC: BYTE;
+    bPicBinPB: BYTE;
+    bMV_RPS: BYTE;
+    bReservedBits: BYTE;
+    wBitstreamFcodes: WORD;
+    wBitstreamPCEelements: WORD;
+    bBitstreamConcealmentNeed: BYTE;
+    bBitstreamConcealmentMethod: BYTE;
   end;
   DXVA_PictureParameters = _DXVA_PictureParameters;
   LPDXVA_PictureParameters = ^DXVA_PictureParameters;
@@ -584,17 +1167,17 @@ type
 
 
   _DXVA_PicResample = record
-    wPicResampleSourcePicIndex  : WORD;
-    wPicResampleDestPicIndex    : WORD;
-    wPicResampleRcontrol        : WORD;
-    bPicResampleExtrapWidth     : BYTE;
-    bPicResampleExtrapHeight    : BYTE;
-    dwPicResampleSourceWidth    : DWORD;
-    dwPicResampleSourceHeight   : DWORD;
-    dwPicResampleDestWidth      : DWORD;
-    dwPicResampleDestHeight     : DWORD;
-    dwPicResampleFullDestWidth  : DWORD;
-    dwPicResampleFullDestHeight : DWORD;
+    wPicResampleSourcePicIndex: WORD;
+    wPicResampleDestPicIndex: WORD;
+    wPicResampleRcontrol: WORD;
+    bPicResampleExtrapWidth: BYTE;
+    bPicResampleExtrapHeight: BYTE;
+    dwPicResampleSourceWidth: DWORD;
+    dwPicResampleSourceHeight: DWORD;
+    dwPicResampleDestWidth: DWORD;
+    dwPicResampleDestHeight: DWORD;
+    dwPicResampleFullDestWidth: DWORD;
+    dwPicResampleFullDestHeight: DWORD;
   end;
   DXVA_PicResample = _DXVA_PicResample;
   LPDXVA_PicResample = ^DXVA_PicResample;
@@ -607,31 +1190,31 @@ const
   DXVA_CHROMA_FORMAT_422 = 2;
   DXVA_CHROMA_FORMAT_444 = 3;
 
-  DXVA_PICTURE_STRUCTURE_TOP_FIELD    = 1;
+  DXVA_PICTURE_STRUCTURE_TOP_FIELD = 1;
   DXVA_PICTURE_STRUCTURE_BOTTOM_FIELD = 2;
-  DXVA_PICTURE_STRUCTURE_FRAME        = 3;
+  DXVA_PICTURE_STRUCTURE_FRAME = 3;
 
   DXVA_BIDIRECTIONAL_AVERAGING_MPEG2_ROUND = 0;
-  DXVA_BIDIRECTIONAL_AVERAGING_H263_TRUNC  = 1;
+  DXVA_BIDIRECTIONAL_AVERAGING_H263_TRUNC = 1;
 
   DXVA_MV_PRECISION_AND_CHROMA_RELATION_MPEG2 = 0;
-  DXVA_MV_PRECISION_AND_CHROMA_RELATION_H263  = 1;
-  DXVA_MV_PRECISION_AND_CHROMA_RELATION_H261  = 2;
+  DXVA_MV_PRECISION_AND_CHROMA_RELATION_H263 = 1;
+  DXVA_MV_PRECISION_AND_CHROMA_RELATION_H261 = 2;
 
-  DXVA_SCAN_METHOD_ZIG_ZAG              = 0;
-  DXVA_SCAN_METHOD_ALTERNATE_VERTICAL   = 1;
+  DXVA_SCAN_METHOD_ZIG_ZAG = 0;
+  DXVA_SCAN_METHOD_ALTERNATE_VERTICAL = 1;
   DXVA_SCAN_METHOD_ALTERNATE_HORIZONTAL = 2;
-  DXVA_SCAN_METHOD_ARBITRARY            = 3;
+  DXVA_SCAN_METHOD_ARBITRARY = 3;
 
   DXVA_BITSTREAM_CONCEALMENT_NEED_UNLIKELY = 0;
-  DXVA_BITSTREAM_CONCEALMENT_NEED_MILD     = 1;
-  DXVA_BITSTREAM_CONCEALMENT_NEED_LIKELY   = 2;
-  DXVA_BITSTREAM_CONCEALMENT_NEED_SEVERE   = 3;
+  DXVA_BITSTREAM_CONCEALMENT_NEED_MILD = 1;
+  DXVA_BITSTREAM_CONCEALMENT_NEED_LIKELY = 2;
+  DXVA_BITSTREAM_CONCEALMENT_NEED_SEVERE = 3;
 
   DXVA_BITSTREAM_CONCEALMENT_METHOD_UNSPECIFIED = 0;
-  DXVA_BITSTREAM_CONCEALMENT_METHOD_INTRA       = 1;
-  DXVA_BITSTREAM_CONCEALMENT_METHOD_FORWARD     = 2;
-  DXVA_BITSTREAM_CONCEALMENT_METHOD_BACKWARD    = 3;
+  DXVA_BITSTREAM_CONCEALMENT_METHOD_INTRA = 1;
+  DXVA_BITSTREAM_CONCEALMENT_METHOD_FORWARD = 2;
+  DXVA_BITSTREAM_CONCEALMENT_METHOD_BACKWARD = 3;
 
 
 type
@@ -640,16 +1223,16 @@ type
 
 
   _DXVA_BufferDescription = record
-    dwTypeIndex      : DWORD;
-    dwBufferIndex    : DWORD;
-    dwDataOffset     : DWORD;
-    dwDataSize       : DWORD;
-    dwFirstMBaddress : DWORD;
-    dwNumMBsInBuffer : DWORD;
-    dwWidth          : DWORD;
-    dwHeight         : DWORD;
-    dwStride         : DWORD;
-    dwReservedBits   : DWORD;
+    dwTypeIndex: DWORD;
+    dwBufferIndex: DWORD;
+    dwDataOffset: DWORD;
+    dwDataSize: DWORD;
+    dwFirstMBaddress: DWORD;
+    dwNumMBsInBuffer: DWORD;
+    dwWidth: DWORD;
+    dwHeight: DWORD;
+    dwStride: DWORD;
+    dwReservedBits: DWORD;
   end;
   DXVA_BufferDescription = _DXVA_BufferDescription;
   LPDXVA_BufferDescription = ^DXVA_BufferDescription;
@@ -660,8 +1243,8 @@ type
 
 
   _DXVA_TCoef4Group = record
-    TCoefIDX   : array [0..3] of BYTE;
-    TCoefValue : array [0..3] of SHORT;
+    TCoefIDX: array [0..3] of BYTE;
+    TCoefValue: array [0..3] of SHORT;
   end;
   DXVA_TCoef4Group = _DXVA_TCoef4Group;
   LPDXVA_TCoef4Group = ^DXVA_TCoef4Group;
@@ -671,8 +1254,8 @@ type
 
 
   _DXVA_TCoefSingle = record
-    wIndexWithEOB : WORD;
-    TCoefValue    : smallint;
+    wIndexWithEOB: WORD;
+    TCoefValue: smallint;
   end;
   DXVA_TCoefSingle = _DXVA_TCoefSingle;
   LPDXVA_TCoefSingle = ^DXVA_TCoefSingle;
@@ -697,18 +1280,22 @@ const
 
   // Spatial-Domain Residual Difference Blocks
 
-  DXVA_USUAL_BLOCK_WIDTH  = 8;
+  DXVA_USUAL_BLOCK_WIDTH = 8;
   DXVA_USUAL_BLOCK_HEIGHT = 8;
-  DXVA_USUAL_BLOCK_SIZE   = (DXVA_USUAL_BLOCK_WIDTH * DXVA_USUAL_BLOCK_HEIGHT);
+  DXVA_USUAL_BLOCK_SIZE = (DXVA_USUAL_BLOCK_WIDTH * DXVA_USUAL_BLOCK_HEIGHT);
 
 
 type
 
   DXVA_Sample16 = array[0..DXVA_USUAL_BLOCK_SIZE - 1] of SmallInt;
-  DXVA_Sample8  = array[0..DXVA_USUAL_BLOCK_SIZE - 1] of ShortInt;
+  DXVA_Sample8 = array[0..DXVA_USUAL_BLOCK_SIZE - 1] of ShortInt;
 
   // Deblocking Filter Control Structure
-  DXVA_DeblockingEdgeControl = {$IFDEF TYPE_IDENTITY} type {$ENDIF} BYTE;
+  DXVA_DeblockingEdgeControl =
+{$IFDEF TYPE_IDENTITY}
+  type
+{$ENDIF}
+  BYTE;
   LPDXVA_DeblockingEdgeControl = ^DXVA_DeblockingEdgeControl;
 
 
@@ -742,9 +1329,9 @@ type
   LPDXVA_QmatrixData = ^_DXVA_QmatrixData;
   PDXVAQmatrixData = ^_DXVA_QmatrixData;
   _DXVA_QmatrixData = record
-    bNewQmatrix : array [0..3] of BYTE;
+    bNewQmatrix: array [0..3] of BYTE;
     // intra Y, inter Y, intra chroma, inter chroma
-    Qmatrix : array [0..3, 0..(DXVA_USUAL_BLOCK_WIDTH*DXVA_USUAL_BLOCK_HEIGHT) - 1] of WORD;
+    Qmatrix: array [0..3, 0..(DXVA_USUAL_BLOCK_WIDTH*DXVA_USUAL_BLOCK_HEIGHT) - 1] of WORD;
   end;
   DXVA_QmatrixData = _DXVA_QmatrixData;
 
@@ -754,16 +1341,16 @@ type
   PDXVA_SliceInfo = ^_DXVA_SliceInfo;
   LPDXVA_SliceInfo = ^_DXVA_SliceInfo;
   _DXVA_SliceInfo = record
-    wHorizontalPosition : WORD;
-    wVerticalPosition   : WORD;
-    dwSliceBitsInBuffer : DWORD;
-    dwSliceDataLocation : DWORD;
-    bStartCodeBitOffset : BYTE;
-    bReservedBits       : BYTE;
-    wMBbitOffset        : WORD;
-    wNumberMBsInSlice   : WORD;
-    wQuantizerScaleCode : WORD;
-    wBadSliceChopping   : WORD;
+    wHorizontalPosition: WORD;
+    wVerticalPosition: WORD;
+    dwSliceBitsInBuffer: DWORD;
+    dwSliceDataLocation: DWORD;
+    bStartCodeBitOffset: BYTE;
+    bReservedBits: BYTE;
+    wMBbitOffset: WORD;
+    wNumberMBsInSlice: WORD;
+    wQuantizerScaleCode: WORD;
+    wBadSliceChopping: WORD;
   end;
   DXVA_SliceInfo = _DXVA_SliceInfo;
 
@@ -771,9 +1358,9 @@ type
 const
 
   DXVA_NumMV_OBMC_off_BinPBwith4MV_off = 4;
-  DXVA_NumMV_OBMC_off_BinPBwith4MV_on  = (4 + 1);
-  DXVA_NumMV_OBMC_on__BinPB_off        = (10);
-  DXVA_NumMV_OBMC_on__BinPB_on         = (11); // not current standards
+  DXVA_NumMV_OBMC_off_BinPBwith4MV_on = (4 + 1);
+  DXVA_NumMV_OBMC_on__BinPB_off = (10);
+  DXVA_NumMV_OBMC_on__BinPB_on = (11); // not current standards
 
 
   DXVA_NumBlocksPerMB_420 = (4 + 2 + 0);
@@ -787,13 +1374,13 @@ type
   // Host Residual Differences
   PDXVA_MBctrl_I_HostResidDiff_1 = ^_DXVA_MBctrl_I_HostResidDiff_1;
   _DXVA_MBctrl_I_HostResidDiff_1 = record
-    wMBaddress      : WORD;
-    wMBtype         : WORD;
-    dwMB_SNL        : DWORD;
-    wPatternCode    : WORD;
-    wPC_Overflow    : WORD;
+    wMBaddress: WORD;
+    wMBtype: WORD;
+    dwMB_SNL: DWORD;
+    wPatternCode: WORD;
+    wPC_Overflow: WORD;
     // zero if not overflow format
-    dwReservedBits2 : DWORD;
+    dwReservedBits2: DWORD;
   end;
   DXVA_MBctrl_I_HostResidDiff_1 = _DXVA_MBctrl_I_HostResidDiff_1;
   LPDXVA_MBctrl_I_HostResidDiff_1 = ^DXVA_MBctrl_I_HostResidDiff_1;
@@ -802,11 +1389,11 @@ type
   // Off-Host IDCT, 4:2:0 sampling
   PDXVA_MBctrl_I_OffHostIDCT_1 = ^_DXVA_MBctrl_I_OffHostIDCT_1;
   _DXVA_MBctrl_I_OffHostIDCT_1 = record
-    wMBaddress   : WORD;
-    wMBtype      : WORD;
-    dwMB_SNL     : DWORD;
-    wPatternCode : WORD;
-    bNumCoef     : array [0..DXVA_NumBlocksPerMB_420 - 1] of BYTE;
+    wMBaddress: WORD;
+    wMBtype: WORD;
+    dwMB_SNL: DWORD;
+    wPatternCode: WORD;
+    bNumCoef: array [0..DXVA_NumBlocksPerMB_420 - 1] of BYTE;
   end;
   DXVA_MBctrl_I_OffHostIDCT_1 = _DXVA_MBctrl_I_OffHostIDCT_1;
 
@@ -817,14 +1404,14 @@ type
   // Host Residual Differences
   PDXVA_MBctrl_P_HostResidDiff_1 = ^_DXVA_MBctrl_P_HostResidDiff_1;
   _DXVA_MBctrl_P_HostResidDiff_1 = record
-    wMBaddress   : WORD;
-    wMBtype      : WORD;
-    dwMB_SNL     : DWORD;
-    wPatternCode : WORD;
-    wPC_Overflow : WORD;
+    wMBaddress: WORD;
+    wMBtype: WORD;
+    dwMB_SNL: DWORD;
+    wPatternCode: WORD;
+    wPC_Overflow: WORD;
     // zero if not overflow format
-    dwReservedBits2 : DWORD;
-    MVector : array [0..DXVA_NumMV_OBMC_off_BinPBwith4MV_off-1] of DXVA_MVvalue;
+    dwReservedBits2: DWORD;
+    MVector: array [0..DXVA_NumMV_OBMC_off_BinPBwith4MV_off-1] of DXVA_MVvalue;
   end;
   DXVA_MBctrl_P_HostResidDiff_1 = _DXVA_MBctrl_P_HostResidDiff_1;
   LPDXVA_MBctrl_P_HostResidDiff_1 = ^DXVA_MBctrl_P_HostResidDiff_1;
@@ -835,12 +1422,12 @@ type
   // Off-Host IDCT, 4:2:0 sampling
   PDXVA_MBctrl_P_OffHostIDCT_1 = ^_DXVA_MBctrl_P_OffHostIDCT_1;
   _DXVA_MBctrl_P_OffHostIDCT_1 = record
-    wMBaddress   : WORD;
-    wMBtype      : WORD;
-    dwMB_SNL     : DWORD;
-    wPatternCode : WORD;
-    bNumCoef : array [0..DXVA_NumBlocksPerMB_420 - 1] of BYTE;
-    MVector  : array [0..DXVA_NumMV_OBMC_off_BinPBwith4MV_off - 1] of DXVA_MVvalue;
+    wMBaddress: WORD;
+    wMBtype: WORD;
+    dwMB_SNL: DWORD;
+    wPatternCode: WORD;
+    bNumCoef: array [0..DXVA_NumBlocksPerMB_420 - 1] of BYTE;
+    MVector: array [0..DXVA_NumMV_OBMC_off_BinPBwith4MV_off - 1] of DXVA_MVvalue;
   end;
   DXVA_MBctrl_P_OffHostIDCT_1 = _DXVA_MBctrl_P_OffHostIDCT_1;
 
@@ -848,7 +1435,7 @@ type
   LPDXVA_ConfigAlphaLoad = ^_DXVA_ConfigAlphaLoad;
   _DXVA_ConfigAlphaLoad = record
     // Operation Indicated
-    dwFunction: DXVA_ConfigQueryOrReplyFunc ;
+    dwFunction: DXVA_ConfigQueryOrReplyFunc;
     // Alignment
     dwReservedBits: array[0..2] of DWORD;
     bConfigDataType: BYTE;
@@ -873,19 +1460,19 @@ type
     // Operation Indicated
     dwFunction: DXVA_ConfigQueryOrReplyFunc;
     // Alignment
-    dwReservedBits               : array[0..2] of DWORD;
-    bConfigBlendType             : BYTE;
-    bConfigPictureResizing       : BYTE;
+    dwReservedBits: array[0..2] of DWORD;
+    bConfigBlendType: BYTE;
+    bConfigPictureResizing: BYTE;
     bConfigOnlyUsePicDestRectArea: BYTE;
-    bConfigGraphicResizing       : BYTE;
-    bConfigWholePlaneAlpha       : BYTE;
+    bConfigGraphicResizing: BYTE;
+    bConfigWholePlaneAlpha: BYTE;
   end;
   DXVA_ConfigAlphaCombine = _DXVA_ConfigAlphaCombine;
 
 
 const
 
-  DXVA_CONFIG_BLEND_TYPE_FRONT_BUFFER  = 0;
+  DXVA_CONFIG_BLEND_TYPE_FRONT_BUFFER = 0;
   DXVA_CONFIG_BLEND_TYPE_BACK_HARDWARE = 1;
 
 
@@ -894,15 +1481,19 @@ type
 
   LPDXVA_AYUVsample2 = ^_DXVA_AYUVsample2;
   _DXVA_AYUVsample2 = record
-    bCrValue      : BYTE;
-    bCbValue      : BYTE;
-    bY_Value      : BYTE;
-    bSampleAlpha8 : BYTE;
+    bCrValue: BYTE;
+    bCbValue: BYTE;
+    bY_Value: BYTE;
+    bSampleAlpha8: BYTE;
   end;
   DXVA_AYUVsample2 = _DXVA_AYUVsample2;
 
   // Macros for IA44 alpha blending surface samples
-  DXVA_AI44sample   = {$IFDEF TYPE_IDENTITY} type {$ENDIF} BYTE;
+  DXVA_AI44sample =
+{$IFDEF TYPE_IDENTITY}
+  type
+{$ENDIF}
+  BYTE;
   LPDXVA_AI44sample = ^DXVA_AI44sample;
 
 
@@ -917,10 +1508,10 @@ type
   (* Highlight data structure *)
 
   _DXVA_Highlight = record
-    wHighlightActive  : WORD;
-    wHighlightIndices : WORD;
-    wHighlightAlphas  : WORD;
-    HighlightRect     : TRect;
+    wHighlightActive: WORD;
+    wHighlightIndices: WORD;
+    wHighlightAlphas: WORD;
+    HighlightRect: TRect;
   end;
   DXVA_Highlight = _DXVA_Highlight;
   LPDXVA_Highlight = ^DXVA_Highlight;
@@ -936,16 +1527,16 @@ type
   PDXVA_BlendCombination = ^_DXVA_BlendCombination;
   LPDXVA_BlendCombination = ^_DXVA_BlendCombination;
   _DXVA_BlendCombination = record
-    wPictureSourceIndex      : WORD;
-    wBlendedDestinationIndex : WORD;
-    PictureSourceRect16thPel : TRECT;
-    PictureDestinationRect   : TRECT;
-    GraphicSourceRect        : TRECT;
-    GraphicDestinationRect   : TRECT;
-    wBlendDelay              : WORD;
-    bBlendOn                 : BYTE;
-    bWholePlaneAlpha         : BYTE;
-    OutsideYUVcolor          : DXVA_AYUVsample2;
+    wPictureSourceIndex: WORD;
+    wBlendedDestinationIndex: WORD;
+    PictureSourceRect16thPel: TRECT;
+    PictureDestinationRect: TRECT;
+    GraphicSourceRect: TRECT;
+    GraphicDestinationRect: TRECT;
+    wBlendDelay: WORD;
+    bBlendOn: BYTE;
+    bWholePlaneAlpha: BYTE;
+    OutsideYUVcolor: DXVA_AYUVsample2;
   end;
   DXVA_BlendCombination = _DXVA_BlendCombination;
 
@@ -960,7 +1551,8 @@ type
     private
       bPicEntry: byte;
       function ReadBytes(const aIndex: integer): Byte;
-      procedure WriteBytes(const aIndex: integer; const aValue: Byte);
+      procedure WriteBytes(const aIndex: integer;
+                           const aValue: Byte);
 
     public
       property Index7Bits: Byte index $07 read ReadBytes write WriteBytes;      // 7 bits at offset 0
@@ -974,6 +1566,7 @@ type
   //
   PDXVA_PicParams_H264 = ^_DXVA_PicParams_H264;
   _DXVA_PicParams_H264 = record
+
   public
     wFrameWidthInMbsMinus1: USHORT;
     wFrameHeightInMbsMinus1: USHORT;
@@ -983,7 +1576,8 @@ type
   private
     wBitFields: USHORT; // USHORT = Unsigned 16-bit integer
     function GetBits(const aIndex: Integer): USHORT;
-    procedure SetBits(const aIndex: Integer; const aValue: USHORT);
+    procedure SetBits(const aIndex: Integer;
+                      const aValue: USHORT);
 
   public
      property field_pic_flag: USHORT index $0001 read GetBits write SetBits;                 // 1 bit at offset 0 $0
@@ -1113,10 +1707,12 @@ type
 
   // Record for bitfields in the main record
   TDXVA_MBctrl_H264_BitFields = packed record
+
   private
     dwMBtype: UINT;
     function GetBits(const aIndex: Integer): UINT8;
-    procedure SetBits(const aIndex: Integer; const aValue: UINT8);
+    procedure SetBits(const aIndex: Integer;
+                      const aValue: UINT8);
 
   public
     property bSliceID: UINT8 index $0008 read GetBits write SetBits;                // 8 bits at offset 0
@@ -1199,10 +1795,13 @@ type
 
   // Record for DXVA_Deblock_H264.
   TDXVA_Deblock_H264_BitFields = packed record
+
   private
     FirstByte: UCHAR;
     function GetBits(const aIndex: Integer): UINT8;
-    procedure SetBits(const aIndex: Integer; const aValue: UINT8);
+    procedure SetBits(const aIndex: Integer;
+                      const aValue: UINT8);
+
   public
     property ReservedBit: UINT8 index $0001 read GetBits write SetBits;                // 1 bit at offset 0
     property FieldModeCurrentMbFlag: UINT8 index $0101 read GetBits write SetBits;     // 1 bit at offset 1
@@ -1295,6 +1894,7 @@ type
   // Helper record for bitfields in the main record.
   //
   TDXVA_PicParams_H264_MVC_BitFields = packed record
+
   private
     wBitFields: USHORT;
     function GetBits(const aIndex: Integer): USHORT;
@@ -1405,6 +2005,7 @@ type
 
   // Bitfield handling for wPicFlagBitFields.
   TDXVA_PicParams_MPEG4_PART2_PicFlagBitFields = packed record
+
   private
     wPicFlagBitFields: USHORT;
     function GetBits(const aIndex: Integer): USHORT;
@@ -1429,6 +2030,7 @@ type
 
   // Bitfield handling for wSpriteBitFields.
   TDXVA_PicParams_MPEG4_PART2_SpriteBitFields = packed record
+
   private
     wSpriteBitFields: USHORT;
     function GetBits(const aIndex: Integer): USHORT;
@@ -1443,6 +2045,7 @@ type
 
   // Bitfield handling for wFcodeBitFields.
   TDXVA_PicParams_MPEG4_PART2_FcodeBitFields = packed record
+
   private
     wFcodeBitFields: UCHAR;
     function GetBits(const aIndex: Integer): UCHAR;
@@ -1492,6 +2095,7 @@ type
   //
 
   _DXVA_PicEntry_HEVC = packed record
+
   private
     bPicEntry: UCHAR;
     function GetIndex7Bits: UCHAR;
@@ -1515,6 +2119,7 @@ type
 
   // Record for Format and Sequence Info Flags.
   TFormatAndSequenceInfoFlags = packed record
+
   private
     FFlags: USHORT;
     function GetBits(const Index: Integer): USHORT;
@@ -1536,6 +2141,7 @@ type
 
   // Record for Coding Param Tool Flags.
   TCodingParamToolFlags = packed record
+
   private
     FFlags: UINT32;
     function GetBits(const Index: Integer): UINT32;
@@ -1568,6 +2174,7 @@ type
 
   // Record for Coding Setting Picture Property Flags
   TCodingSettingPicturePropertyFlags = packed record
+
   private
     FFlags: UINT32;
     function GetBits(const Index: Integer): UINT32;
@@ -1655,6 +2262,7 @@ type
 
   // Record for Range Extension Flags.
   TRangeExtensionFlags = packed record
+
   private
     FFlags: USHORT;
     function GetBits(const Index: Integer): USHORT;
@@ -1702,13 +2310,14 @@ type
   // #pragma pack(push, 16)
   {$ALIGN 16}
 
-  LPDXVA_MBctrl_I_OffHostIDCT_1   = ^DXVA_MBctrl_I_OffHostIDCT_1;
+  LPDXVA_MBctrl_I_OffHostIDCT_1 = ^DXVA_MBctrl_I_OffHostIDCT_1;
 
-  LPDXVA_MBctrl_P_OffHostIDCT_1   = ^DXVA_MBctrl_P_OffHostIDCT_1;
+  LPDXVA_MBctrl_P_OffHostIDCT_1 = ^DXVA_MBctrl_P_OffHostIDCT_1;
 
 
   //#pragma pack(pop)
-  {$ALIGN 8}  // Set back to default
+  {$ALIGN 8}
+  // Set back to default
 
 
   // MJPEG specific structures.
@@ -1994,7 +2603,7 @@ const
   DXVA_SampleSubStream = 7;
 const
 
-  DXVA_ExtColorData_ShiftBase  = 8;
+  DXVA_ExtColorData_ShiftBase = 8;
   DXVA_VideoTransFuncShift = (DXVA_ExtColorData_ShiftBase + 19);
   DXVA_VideoTransFuncMask = (not((not 0) shl 5)) shl ( DXVA_VideoTransFuncShift - DXVA_ExtColorData_ShiftBase);
 
@@ -2184,8 +2793,8 @@ type
 
 const
 
-  DXVA_DeinterlaceBobDevice       : TGUID = '{335aa36e-7884-43a4-9c91-7f87faf3e37e}';
-  DXVA_DeinterlaceContainerDevice : TGUID = '{0e85cb93-3046-4ff0-aecc-d58cb5f035fd}';
+  DXVA_DeinterlaceBobDevice: TGUID = '{335aa36e-7884-43a4-9c91-7f87faf3e37e}';
+  DXVA_DeinterlaceContainerDevice: TGUID = '{0e85cb93-3046-4ff0-aecc-d58cb5f035fd}';
 
 
   // -------------------------------------------------------------------------
@@ -2194,10 +2803,10 @@ const
   //
 type
 
-  PDXVA_Frequency =  ^_DXVA_Frequency;
+  PDXVA_Frequency = ^_DXVA_Frequency;
   _DXVA_Frequency = record
-    Numerator   : DWORD;
-    Denominator : DWORD;
+    Numerator: DWORD;
+    Denominator: DWORD;
   end;
   DXVA_Frequency = _DXVA_Frequency;
 
@@ -2221,15 +2830,15 @@ type
   PDXVAVideoProcessCaps = ^_DXVA_VideoProcessCaps;
   DXVA_VideoProcessCaps = _DXVA_VideoProcessCaps;
 const
-  DXVA_VideoProcess_None               = DXVA_VideoProcessCaps($0000);
-  DXVA_VideoProcess_YUV2RGB            = DXVA_VideoProcessCaps($0001);
-  DXVA_VideoProcess_StretchX           = DXVA_VideoProcessCaps($0002);
-  DXVA_VideoProcess_StretchY           = DXVA_VideoProcessCaps($0004);
-  DXVA_VideoProcess_AlphaBlend         = DXVA_VideoProcessCaps($0008);
-  DXVA_VideoProcess_SubRects           = DXVA_VideoProcessCaps($0010);
-  DXVA_VideoProcess_SubStreams         = DXVA_VideoProcessCaps($0020);
+  DXVA_VideoProcess_None = DXVA_VideoProcessCaps($0000);
+  DXVA_VideoProcess_YUV2RGB = DXVA_VideoProcessCaps($0001);
+  DXVA_VideoProcess_StretchX = DXVA_VideoProcessCaps($0002);
+  DXVA_VideoProcess_StretchY = DXVA_VideoProcessCaps($0004);
+  DXVA_VideoProcess_AlphaBlend = DXVA_VideoProcessCaps($0008);
+  DXVA_VideoProcess_SubRects = DXVA_VideoProcessCaps($0010);
+  DXVA_VideoProcess_SubStreams = DXVA_VideoProcessCaps($0020);
   DXVA_VideoProcess_SubStreamsExtended = DXVA_VideoProcessCaps($0040);
-  DXVA_VideoProcess_YUV2RGBExtended    = DXVA_VideoProcessCaps($0080);
+  DXVA_VideoProcess_YUV2RGBExtended = DXVA_VideoProcessCaps($0080);
   DXVA_VideoProcess_AlphaBlendExtended = DXVA_VideoProcessCaps($0100);
 
 
@@ -2240,37 +2849,37 @@ type
   DXVA_DeinterlaceTech = _DXVA_DeinterlaceTech;
 const
   // the algorithm is unknown or proprietary
-  DXVA_DeinterlaceTech_Unknown                = DXVA_DeinterlaceTech($0000);
+  DXVA_DeinterlaceTech_Unknown = DXVA_DeinterlaceTech($0000);
   // the algorithm creates the missing lines by repeating
   // the line either above or below it - this method will look very jaggy and
   // isn't recommended
-  DXVA_DeinterlaceTech_BOBLineReplicate       = DXVA_DeinterlaceTech($0001);
+  DXVA_DeinterlaceTech_BOBLineReplicate = DXVA_DeinterlaceTech($0001);
   // The algorithm creates the missing lines by vertically stretching each
   // video field by a factor of two by averaging two lines
-  DXVA_DeinterlaceTech_BOBVerticalStretch     = DXVA_DeinterlaceTech($0002);
+  DXVA_DeinterlaceTech_BOBVerticalStretch = DXVA_DeinterlaceTech($0002);
   // or using a [-1); 9); 9); -1]/16 filter across four lines.
   DXVA_DeinterlaceTech_BOBVerticalStretch4Tap = DXVA_DeinterlaceTech($0100);
   // the pixels in the missing line are recreated by a median filtering operation
-  DXVA_DeinterlaceTech_MedianFiltering        = DXVA_DeinterlaceTech($0004);
+  DXVA_DeinterlaceTech_MedianFiltering = DXVA_DeinterlaceTech($0004);
   // the pixels in the missing line are recreated by an edge filter.
   // In this process); spatial directional filters are applied to determine
   // the orientation of edges in the picture content); and missing
   // pixels are created by filtering along (rather than across) the
   // detected edges.
-  DXVA_DeinterlaceTech_EdgeFiltering          = DXVA_DeinterlaceTech($0010);
+  DXVA_DeinterlaceTech_EdgeFiltering = DXVA_DeinterlaceTech($0010);
   // the pixels in the missing line are recreated by switching on a field by
   // field basis between using either spatial or temporal interpolation
   // depending on the amount of motion.
-  DXVA_DeinterlaceTech_FieldAdaptive          = DXVA_DeinterlaceTech($0020);
+  DXVA_DeinterlaceTech_FieldAdaptive = DXVA_DeinterlaceTech($0020);
   // the pixels in the missing line are recreated by switching on a pixel by pixel
   // basis between using either spatial or temporal interpolation depending on
   // the amount of motion..
-  DXVA_DeinterlaceTech_PixelAdaptive          = DXVA_DeinterlaceTech($0040);
+  DXVA_DeinterlaceTech_PixelAdaptive = DXVA_DeinterlaceTech($0040);
   // Motion Vector Steering  identifies objects within a sequence of video
   // fields.  The missing pixels are recreated after first aligning the
   // movement axes of the individual objects in the scene to make them
   // parallel with the time axis.
-  DXVA_DeinterlaceTech_MotionVectorSteered    = DXVA_DeinterlaceTech($0080);
+  DXVA_DeinterlaceTech_MotionVectorSteered = DXVA_DeinterlaceTech($0080);
 
 type
   LPDXVA_VideoSample = ^_DXVA_VideoSample;
@@ -2294,10 +2903,10 @@ type
   PDXVASampleFlags = ^_DXVA_SampleFlags;
   DXVA_SampleFlags = _DXVA_SampleFlags;
 const
-  DXVA_SampleFlagsMask              = DXVA_SampleFlags((1 shl 3) or (1 shl 2) or (1 shl 1) or (1 shl 0));
-  DXVA_SampleFlag_Palette_Changed   = DXVA_SampleFlags($0001);
-  DXVA_SampleFlag_SrcRect_Changed   = DXVA_SampleFlags($0002);
-  DXVA_SampleFlag_DstRect_Changed   = DXVA_SampleFlags($0004);
+  DXVA_SampleFlagsMask = DXVA_SampleFlags((1 shl 3) or (1 shl 2) or (1 shl 1) or (1 shl 0));
+  DXVA_SampleFlag_Palette_Changed = DXVA_SampleFlags($0001);
+  DXVA_SampleFlag_SrcRect_Changed = DXVA_SampleFlags($0002);
+  DXVA_SampleFlag_DstRect_Changed = DXVA_SampleFlags($0004);
   DXVA_SampleFlag_ColorData_Changed = DXVA_SampleFlags($0008);
 
   // The DXVA_SampleFlags enumeration type contains a collection of flags that identify
@@ -2320,11 +2929,11 @@ type
   PDXVADestinationFlags = ^_DXVA_DestinationFlags;
   DXVA_DestinationFlags = _DXVA_DestinationFlags;
 const
-  DXVA_DestinationFlagMask                = DXVA_DestinationFlags((1 shl 3) or (1 shl 2) or (1 shl 1) or (1 shl 0));
+  DXVA_DestinationFlagMask = DXVA_DestinationFlags((1 shl 3) or (1 shl 2) or (1 shl 1) or (1 shl 0));
   DXVA_DestinationFlag_Background_Changed = DXVA_DestinationFlags($0001);
   DXVA_DestinationFlag_TargetRect_Changed = DXVA_DestinationFlags($0002);
-  DXVA_DestinationFlag_ColorData_Changed  = DXVA_DestinationFlags($0004);
-  DXVA_DestinationFlag_Alpha_Changed      = DXVA_DestinationFlags($0008);
+  DXVA_DestinationFlag_ColorData_Changed = DXVA_DestinationFlags($0004);
+  DXVA_DestinationFlag_Alpha_Changed = DXVA_DestinationFlags($0008);
 
   // The DXVA_DestinationFlags enumeration type contains a collection of flags that identify
   // changes in the current destination surface from the previous destination surface.
@@ -2364,14 +2973,14 @@ type
   PDXVA_DeinterlaceCaps = ^_DXVA_DeinterlaceCaps;
 
   _DXVA_DeinterlaceCaps = record
-     Size                    : DWORD;
-     NumPreviousOutputFrames : DWORD;
-     InputPool               : DWORD;
-     NumForwardRefSamples    : DWORD;
-     NumBackwardRefSamples   : DWORD;
-     d3dOutputFormat         : D3DFORMAT;
-     VideoProcessingCaps     : DXVA_VideoProcessCaps;
-     DeinterlaceTechnology   : DXVA_DeinterlaceTech;
+     Size: DWORD;
+     NumPreviousOutputFrames: DWORD;
+     InputPool: DWORD;
+     NumForwardRefSamples: DWORD;
+     NumBackwardRefSamples: DWORD;
+     d3dOutputFormat: D3DFORMAT;
+     VideoProcessingCaps: DXVA_VideoProcessCaps;
+     DeinterlaceTechnology: DXVA_DeinterlaceTech;
   end;
   DXVA_DeinterlaceCaps = _DXVA_DeinterlaceCaps;
   LPDXVA_DeinterlaceCaps = ^DXVA_DeinterlaceCaps;
@@ -2435,13 +3044,13 @@ type
 type
   PDXVA_DeinterlaceBlt = ^_DXVA_DeinterlaceBlt;
   _DXVA_DeinterlaceBlt = record
-    Size              : DWORD;
-    Reserved          : DWORD;
-    rtTarget          : REFERENCE_TIME;
-    DstRect           : TRECT;
-    SrcRect           : TRECT;
-    NumSourceSurfaces : DWORD;
-    Alpha             : Single;
+    Size: DWORD;
+    Reserved: DWORD;
+    rtTarget: REFERENCE_TIME;
+    DstRect: TRECT;
+    SrcRect: TRECT;
+    NumSourceSurfaces: DWORD;
+    Alpha: Single;
     Source: array[0..MAX_DEINTERLACE_SURFACES-1] of DXVA_VideoSample;
   end;
   DXVA_DeinterlaceBlt = _DXVA_DeinterlaceBlt;
@@ -2458,14 +3067,14 @@ type
   PDXVA_DeinterlaceBltEx = ^DXVA_DeinterlaceBltEx;
   DXVA_DeinterlaceBltEx = record
     Size: DWORD;
-    BackgroundColor   : DXVA_AYUVsample2;
-    rcTarget          : TRect;
-    rtTarget          : REFERENCE_TIME;
-    NumSourceSurfaces : DWORD;
-    Alpha             : Single;
-    Source            : array[0..MAX_DEINTERLACE_SURFACES-1] of DXVA_VideoSample2;
-    DestinationFormat : DWORD;
-    DestinationFlags  : DWORD;
+    BackgroundColor: DXVA_AYUVsample2;
+    rcTarget: TRect;
+    rtTarget: REFERENCE_TIME;
+    NumSourceSurfaces: DWORD;
+    Alpha: Single;
+    Source: array[0..MAX_DEINTERLACE_SURFACES-1] of DXVA_VideoSample2;
+    DestinationFormat: DWORD;
+    DestinationFlags: DWORD;
   end;
 
 
@@ -2474,7 +3083,7 @@ const
   MAX_DEINTERLACE_DEVICE_GUIDS = 32;
 
 
-  DXVA_DeinterlaceQueryAvailableModesFnCode= $01;
+  DXVA_DeinterlaceQueryAvailableModesFnCode = $01;
   // lpInput => DXVA_VideoDesc*
   // lpOuput => DXVA_DeinterlaceQueryAvailableModes*
 
@@ -2482,8 +3091,8 @@ type
 
   PDXVA_DeinterlaceQueryAvailableModes = ^_DXVA_DeinterlaceQueryAvailableModes;
   _DXVA_DeinterlaceQueryAvailableModes = record
-    Size     : DWORD;
-    NumGuids : DWORD;
+    Size: DWORD;
+    NumGuids: DWORD;
     Guids: array[0..MAX_DEINTERLACE_DEVICE_GUIDS-1] of TGUID;
   end;
   DXVA_DeinterlaceQueryAvailableModes = _DXVA_DeinterlaceQueryAvailableModes;
@@ -2491,9 +3100,9 @@ type
 
   PDXVA_DeinterlaceQueryModeCaps = ^_DXVA_DeinterlaceQueryModeCaps;
   _DXVA_DeinterlaceQueryModeCaps = record
-    Size      : DWORD;
-    Guid      : TGUID;
-    VideoDesc : DXVA_VideoDesc;
+    Size: DWORD;
+    Guid: TGUID;
+    VideoDesc: DXVA_VideoDesc;
   end;
   DXVA_DeinterlaceQueryModeCaps = _DXVA_DeinterlaceQueryModeCaps;
 
@@ -2515,19 +3124,23 @@ const
 
 const
 
-  DXVA_ProcAmpControlDevice         : TGUID = '{9f200913-2ffd-4056-9f1e-e1b508f22dcf}';
+  DXVA_ProcAmpControlDevice: TGUID = '{9f200913-2ffd-4056-9f1e-e1b508f22dcf}';
 
 
 type
 
-  DXVA_ProcAmpControlProp = {$IFDEF TYPE_IDENTITY} type {$ENDIF} DWORD;
+  DXVA_ProcAmpControlProp =
+{$IFDEF TYPE_IDENTITY}
+  type
+{$ENDIF}
+  DWORD;
 
 const
 
-  DXVA_ProcAmp_None       = $0000;
+  DXVA_ProcAmp_None = $0000;
   DXVA_ProcAmp_Brightness = $0001;
-  DXVA_ProcAmp_Contrast   = $0002;
-  DXVA_ProcAmp_Hue        = $0004;
+  DXVA_ProcAmp_Contrast = $0002;
+  DXVA_ProcAmp_Hue = $0004;
   DXVA_ProcAmp_Saturation = $0008;
 
 type
@@ -2535,11 +3148,11 @@ type
   PDXVA_ProcAmpControlCaps = ^_DXVA_ProcAmpControlCaps;
   LPDXVA_ProcAmpControlCaps = ^_DXVA_ProcAmpControlCaps;
   _DXVA_ProcAmpControlCaps = record
-    Size                : DWORD;
-    InputPool           : DWORD;
-    d3dOutputFormat     : D3DFORMAT;
-    ProcAmpControlProps : DWORD; // see DXVA_ProcAmpControlProp
-    VideoProcessingCaps : DWORD; // see DXVA_VideoProcessCaps
+    Size: DWORD;
+    InputPool: DWORD;
+    d3dOutputFormat: D3DFORMAT;
+    ProcAmpControlProps: DWORD; // see DXVA_ProcAmpControlProp
+    VideoProcessingCaps: DWORD; // see DXVA_VideoProcessCaps
   end;
   DXVA_ProcAmpControlCaps = _DXVA_ProcAmpControlCaps;
 
@@ -2583,14 +3196,14 @@ const
 type
 
   _DXVA_ProcAmpControlBlt = record
-    Size       : DWORD;
-    DstRect    : TRECT;
-    SrcRect    : TRECT;
-    Alpha      : Single;
-    Brightness : Single;
-    Contrast   : Single;
-    Hue        : Single;
-    Saturation : Single;
+    Size: DWORD;
+    DstRect: TRECT;
+    SrcRect: TRECT;
+    Alpha: Single;
+    Brightness: Single;
+    Contrast: Single;
+    Hue: Single;
+    Saturation: Single;
   end;
   DXVA_ProcAmpControlBlt = _DXVA_ProcAmpControlBlt;
   PDXVA_ProcAmpControlBlt = ^DXVA_ProcAmpControlBlt;
@@ -2611,7 +3224,7 @@ const
   // -------------------------------------------------------------------------
   //
 
-  DXVA_COPPDevice : TGUID = '{D2457ADD-8999-45ED-8A8A-D1AA047BA4D5}';
+  DXVA_COPPDevice: TGUID = '{D2457ADD-8999-45ED-8A8A-D1AA047BA4D5}';
 
 
   // -------------------------------------------------------------------------
@@ -2670,7 +3283,7 @@ const
   DXVA_COPPCommandFnCode = $04;
   // lpInputData => DXVA_COPPCommand*
   // lpOuputData => NULL
-  DXVA_COPPSetProtectionLevel : TGUID = '{9bb9327c-4eb5-4727-9f00-b42b0919c0da}';
+  DXVA_COPPSetProtectionLevel: TGUID = '{9bb9327c-4eb5-4727-9f00-b42b0919c0da}';
 
 
 type
@@ -2689,10 +3302,10 @@ type
 
 const
 
-  COPP_HDCP_Level0    = 0;
-  COPP_HDCP_LevelMin  = COPP_HDCP_Level0;
-  COPP_HDCP_Level1    = 1;
-  COPP_HDCP_LevelMax  = COPP_HDCP_Level1;
+  COPP_HDCP_Level0 = 0;
+  COPP_HDCP_LevelMin = COPP_HDCP_Level0;
+  COPP_HDCP_Level1 = 1;
+  COPP_HDCP_LevelMax = COPP_HDCP_Level1;
   COPP_HDCP_ForceDWORD = $7FFFFFFF;
 
 
@@ -2717,12 +3330,12 @@ type
   COPP_ACP_Protection_Level = DWORD;
 
 const
-  COPP_ACP_Level0     = 0;
-  COPP_ACP_LevelMin   = COPP_ACP_Level0;
-  COPP_ACP_Level1     = 1;
-  COPP_ACP_Level2     = 2;
-  COPP_ACP_Level3     = 3;
-  COPP_ACP_LevelMax   = COPP_ACP_Level3;
+  COPP_ACP_Level0 = 0;
+  COPP_ACP_LevelMin = COPP_ACP_Level0;
+  COPP_ACP_Level1 = 1;
+  COPP_ACP_Level2 = 2;
+  COPP_ACP_Level3 = 3;
+  COPP_ACP_LevelMax = COPP_ACP_Level3;
   COPP_ACP_ForceDWORD = $7FFFFFFF;
 
 
@@ -2733,15 +3346,15 @@ const
   // Bit flags of possible protection types. Note that it is possible to apply
   // different protection settings to a single connector.
   //
-  COPP_ProtectionType_Unknown      = $80000000;
-  COPP_ProtectionType_None         = $00000000;
-  COPP_ProtectionType_HDCP         = $00000001;
-  COPP_ProtectionType_ACP          = $00000002;
-  COPP_ProtectionType_CGMSA        = $00000004;
-  COPP_ProtectionType_Mask         = $80000007;
-  COPP_ProtectionType_Reserved     = $FFFFFFF8;
+  COPP_ProtectionType_Unknown = $80000000;
+  COPP_ProtectionType_None = $00000000;
+  COPP_ProtectionType_HDCP = $00000001;
+  COPP_ProtectionType_ACP = $00000002;
+  COPP_ProtectionType_CGMSA = $00000004;
+  COPP_ProtectionType_Mask = $80000007;
+  COPP_ProtectionType_Reserved = $FFFFFFF8;
 
-  DXVA_COPPSetSignaling : TGUID = '{09A631A5-D684-4C60-8E4D-D3BB0F0BE3EE}';
+  DXVA_COPPSetSignaling: TGUID = '{09A631A5-D684-4C60-8E4D-D3BB0F0BE3EE}';
 
 
 type
@@ -2766,26 +3379,26 @@ type
   COPP_TVProtectionStandard = DWORD;
   PCOPP_TVProtectionStandard = ^COPP_TVProtectionStandard;
 const
-  COPP_ProtectionStandard_Unknown             = COPP_TVProtectionStandard($80000000);
-  COPP_ProtectionStandard_None                = COPP_TVProtectionStandard($00000000);
-  COPP_ProtectionStandard_IEC61880_525i       = COPP_TVProtectionStandard($00000001);
-  COPP_ProtectionStandard_IEC61880_2_525i     = COPP_TVProtectionStandard($00000002);
-  COPP_ProtectionStandard_IEC62375_625p       = COPP_TVProtectionStandard($00000004);
-  COPP_ProtectionStandard_EIA608B_525         = COPP_TVProtectionStandard($00000008);
-  COPP_ProtectionStandard_EN300294_625i       = COPP_TVProtectionStandard($00000010);
-  COPP_ProtectionStandard_CEA805A_TypeA_525p  = COPP_TVProtectionStandard($00000020);
-  COPP_ProtectionStandard_CEA805A_TypeA_750p  = COPP_TVProtectionStandard($00000040);
+  COPP_ProtectionStandard_Unknown = COPP_TVProtectionStandard($80000000);
+  COPP_ProtectionStandard_None = COPP_TVProtectionStandard($00000000);
+  COPP_ProtectionStandard_IEC61880_525i = COPP_TVProtectionStandard($00000001);
+  COPP_ProtectionStandard_IEC61880_2_525i = COPP_TVProtectionStandard($00000002);
+  COPP_ProtectionStandard_IEC62375_625p = COPP_TVProtectionStandard($00000004);
+  COPP_ProtectionStandard_EIA608B_525 = COPP_TVProtectionStandard($00000008);
+  COPP_ProtectionStandard_EN300294_625i = COPP_TVProtectionStandard($00000010);
+  COPP_ProtectionStandard_CEA805A_TypeA_525p = COPP_TVProtectionStandard($00000020);
+  COPP_ProtectionStandard_CEA805A_TypeA_750p = COPP_TVProtectionStandard($00000040);
   COPP_ProtectionStandard_CEA805A_TypeA_1125i = COPP_TVProtectionStandard($00000080);
-  COPP_ProtectionStandard_CEA805A_TypeB_525p  = COPP_TVProtectionStandard($00000100);
-  COPP_ProtectionStandard_CEA805A_TypeB_750p  = COPP_TVProtectionStandard($00000200);
+  COPP_ProtectionStandard_CEA805A_TypeB_525p = COPP_TVProtectionStandard($00000100);
+  COPP_ProtectionStandard_CEA805A_TypeB_750p = COPP_TVProtectionStandard($00000200);
   COPP_ProtectionStandard_CEA805A_TypeB_1125i = COPP_TVProtectionStandard($00000400);
-  COPP_ProtectionStandard_ARIBTRB15_525i      = COPP_TVProtectionStandard($00000800);
-  COPP_ProtectionStandard_ARIBTRB15_525p      = COPP_TVProtectionStandard($00001000);
-  COPP_ProtectionStandard_ARIBTRB15_750p      = COPP_TVProtectionStandard($00002000);
-  COPP_ProtectionStandard_ARIBTRB15_1125i     = COPP_TVProtectionStandard($00004000);
-  COPP_ProtectionStandard_Mask                = COPP_TVProtectionStandard($80007FFF);
-  COPP_ProtectionStandard_Reserved            = COPP_TVProtectionStandard($7FFF8000);
-  COPP_ImageAspectRatio_EN300294_Mask         = COPP_TVProtectionStandard($00000007);
+  COPP_ProtectionStandard_ARIBTRB15_525i = COPP_TVProtectionStandard($00000800);
+  COPP_ProtectionStandard_ARIBTRB15_525p = COPP_TVProtectionStandard($00001000);
+  COPP_ProtectionStandard_ARIBTRB15_750p = COPP_TVProtectionStandard($00002000);
+  COPP_ProtectionStandard_ARIBTRB15_1125i = COPP_TVProtectionStandard($00004000);
+  COPP_ProtectionStandard_Mask = COPP_TVProtectionStandard($80007FFF);
+  COPP_ProtectionStandard_Reserved = COPP_TVProtectionStandard($7FFF8000);
+  COPP_ImageAspectRatio_EN300294_Mask = COPP_TVProtectionStandard($00000007);
 
 
 type
@@ -2811,10 +3424,10 @@ type
   PDXVA_COPPStatusInput = ^DXVA_COPPStatusInput;
   LPDXVA_COPPStatusInput = ^DXVA_COPPStatusInput;
   DXVA_COPPStatusInput = record
-    rApp                : TGUID;              //   16 bytes
-    guidStatusRequestID : TGUID;              //   16 bytes
-    dwSequence          : ULONG;              //    4 bytes
-    cbSizeData          : ULONG;              //    4 bytes
+    rApp: TGUID;              //   16 bytes
+    guidStatusRequestID: TGUID;              //   16 bytes
+    dwSequence: ULONG;              //    4 bytes
+    cbSizeData: ULONG;              //    4 bytes
     StatusData: array[0..4055] of AnsiChar;   // 4056 bytes (4056+4+4+16+16 = 4096)
   end;
 
@@ -2822,9 +3435,9 @@ type
   PDXVA_COPPStatusOutput = ^DXVA_COPPStatusOutput;
   LPDXVA_COPPStatusOutput = ^DXVA_COPPStatusOutput;
   DXVA_COPPStatusOutput = record
-    macKDI     : TGUID;         //   16 bytes
-    cbSizeData : ULONG;         //    4 bytes
-    COPPStatus : array[0..4075] of AnsiChar; // 4076 bytes (4076+16+4 = 4096)
+    macKDI: TGUID;         //   16 bytes
+    cbSizeData: ULONG;         //    4 bytes
+    COPPStatus: array[0..4075] of AnsiChar; // 4076 bytes (4076+16+4 = 4096)
   end;
 
 
@@ -2843,11 +3456,11 @@ type
 
   PDXVACOPPStatusData = ^DXVA_COPPStatusData;
   DXVA_COPPStatusData = record
-    rApp             : TGUID;
-    dwFlags          : ULONG; // See COPP_StatusFlags above
-    dwData           : ULONG;
-    ExtendedInfoValidMask : ULONG;
-    ExtendedInfoData : ULONG;
+    rApp: TGUID;
+    dwFlags: ULONG; // See COPP_StatusFlags above
+    dwData: ULONG;
+    ExtendedInfoValidMask: ULONG;
+    ExtendedInfoData: ULONG;
   end;
 
 
@@ -2863,12 +3476,12 @@ type
     FreqDenominator: ULONG;
   end;
 
-  COPP_StatusHDCPFlags    = DWORD;
+  COPP_StatusHDCPFlags = DWORD;
 
 const
 
-  COPP_HDCPRepeater       = $01;
-  COPP_HDCPFlagsReserved  = $FFFFFFFE;
+  COPP_HDCPRepeater = $01;
+  COPP_HDCPFlagsReserved = $FFFFFFFE;
 
 
 type
@@ -2894,7 +3507,7 @@ const
   //
   // Status GUID and enumerations
   //
-  DXVA_COPPQueryConnectorType: TGUID =  '{81d0bfd5-6afe-48c2-99c0-95a08f97c5da}';
+  DXVA_COPPQueryConnectorType: TGUID = '{81d0bfd5-6afe-48c2-99c0-95a08f97c5da}';
 
 
 type
@@ -2926,12 +3539,12 @@ type
 
 const
 
-  DXVA_COPPQueryProtectionType        : TGUID = '{38f2a801-9a6c-48bb-9107-b6696e6f1797}';
-  DXVA_COPPQueryLocalProtectionLevel  : TGUID = '{b2075857-3eda-4d5d-88db-748f8c1a0549}';
-  DXVA_COPPQueryGlobalProtectionLevel : TGUID = '{1957210a-7766-452a-b99a-d27aed54f03a}';
-  DXVA_COPPQueryDisplayData           : TGUID = '{d7bf1ba3-ad13-4f8e-af98-0dcb3ca204cc}';
-  DXVA_COPPQueryHDCPKeyData           : TGUID = '{0db59d74-a992-492e-a0bd-c23fda564e00}';
-  DXVA_COPPQueryBusData               : TGUID = '{c6f4d673-6174-4184-8e35-f6db5200bcba}';
+  DXVA_COPPQueryProtectionType: TGUID = '{38f2a801-9a6c-48bb-9107-b6696e6f1797}';
+  DXVA_COPPQueryLocalProtectionLevel: TGUID = '{b2075857-3eda-4d5d-88db-748f8c1a0549}';
+  DXVA_COPPQueryGlobalProtectionLevel: TGUID = '{1957210a-7766-452a-b99a-d27aed54f03a}';
+  DXVA_COPPQueryDisplayData: TGUID = '{d7bf1ba3-ad13-4f8e-af98-0dcb3ca204cc}';
+  DXVA_COPPQueryHDCPKeyData: TGUID = '{0db59d74-a992-492e-a0bd-c23fda564e00}';
+  DXVA_COPPQueryBusData: TGUID = '{c6f4d673-6174-4184-8e35-f6db5200bcba}';
 
 
 type
@@ -2952,7 +3565,7 @@ type
 
 const
 
-  DXVA_COPPQuerySignaling : TGUID = '{6629A591-3B79-4CF3-924A-11E8E7811671}';
+  DXVA_COPPQuerySignaling: TGUID = '{6629A591-3B79-4CF3-924A-11E8E7811671}';
 
 type
 
@@ -2992,19 +3605,46 @@ type
 implementation
 
 // Local bitfield operations keep the header independent of VCL-based MfUtils.
-function GetDWordBits(const Data: DWORD; const Index: Integer): DWORD; inline;
-begin Result := (Data shr (Index shr 8)) and ((DWORD(1) shl Byte(Index)) - 1); end;
-function GetWordBits(const Data: WORD; const Index: Integer): WORD; inline;
-begin Result := GetDWordBits(Data, Index); end;
-procedure SetDWordBits(var Data: DWORD; const Index, Value: Integer); inline;
-var Mask: DWORD;
+function GetDWordBits(const Data: DWORD;
+                      const Index: Integer): DWORD; inline;
+
 begin
+
+  Result := (Data shr (Index shr 8)) and ((DWORD(1) shl Byte(Index)) - 1);
+  end;
+function GetWordBits(const Data: WORD;
+                     const Index: Integer): WORD; inline;
+
+begin
+
+  Result := GetDWordBits(Data,
+                         Index);
+  end;
+procedure SetDWordBits(var Data: DWORD;
+                       const Index,
+                       Value: Integer); inline;
+var
+  Mask: DWORD;
+
+begin
+
   Mask := (DWORD(1) shl Byte(Index)) - 1;
   Data := (Data and not (Mask shl (Index shr 8))) or ((DWORD(Value) and Mask) shl (Index shr 8));
 end;
-procedure SetWordBits(var Data: WORD; const Index, Value: Integer); inline;
-var D: DWORD;
-begin D := Data; SetDWordBits(D, Index, Value); Data := WORD(D); end;
+procedure SetWordBits(var Data: WORD;
+                      const Index,
+                      Value: Integer); inline;
+var
+  D: DWORD;
+
+begin
+
+  D := Data;
+  SetDWordBits(D,
+               Index,
+               Value);
+  Data := WORD(D);
+  end;
 
 
 
@@ -3024,6 +3664,7 @@ var
   Mask: Byte;
 
 begin
+
   NrBits := aIndex and $FF;
   Offset := aIndex shr 8;
   Mask := ((1 shl NrBits) - 1);
@@ -3031,13 +3672,15 @@ begin
 end;
 
 
-procedure _DXVA_PicEntry_H264.WriteBytes(const aIndex: integer; const aValue: Byte);
+procedure _DXVA_PicEntry_H264.WriteBytes(const aIndex: integer;
+                                         const aValue: Byte);
 var
   Offset: Byte;
   NrBits: Byte;
   Mask: Byte;
 
 begin
+
   NrBits := aIndex and $FF;
   Offset := aIndex shr 8;
   Mask := ((1 shl NrBits) - 1);
@@ -3063,7 +3706,8 @@ end;
     Result := (Value shr Offset) and Mask;
   end;
 
-  procedure DXVA_ExtendedFormat.WriteBits(const iIndex: Integer; const iValue: Integer);
+  procedure DXVA_ExtendedFormat.WriteBits(const iIndex: Integer;
+                                          const iValue: Integer);
   var
     Offset: Integer;
     NrBits: Integer;
@@ -3097,294 +3741,408 @@ end;
 // inline
 
 function readDXVA_MBskipsFollowing(dwMB_SNL: DWord): DWORD;
+
 begin
+
   Result := ((dwMB_SNL and $FF000000) shr 24);
 end;
 
 function readDXVA_MBdataLocation(dwMB_SNL: DWord): DWORD;
+
 begin
+
   Result := (dwMB_SNL and $00FFFFFF);
 end;
 
 function writeDXVA_MB_SNL(dwMB_SNL: DWord;
                           skips: DWord;
                           dloc: DWord): DWORD;
+
 begin
+
   Result := (dwMB_SNL or (skips shl 24) or dloc);
 end;
 
 function setDXVA_MBskipsFollowing(dwMB_SNL: DWord;
                                   skips: DWord): DWORD;
+
 begin
+
   Result := dwMB_SNL or (skips shl 24);
 end;
 
 function setDXVA_MBdataLocation(dwMB_SNL: DWord;
                                 dloc: Dword): DWORD;
+
 begin
+
   Result := (dwMB_SNL or dloc);
 end;
 
 function readDXVA_MvertFieldSel_3(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $8000) shr 15);
 end;
 
 function readDXVA_MvertFieldSel_2(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $4000) shr 14);
 end;
 
 function readDXVA_MvertFieldSel_1(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $2000) shr 13);
 end;
 
 function readDXVA_MvertFieldSel_0(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $1000) shr 12);
 end;
 
 function readDXVA_ReservedBits(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $0800) shr 11);
 end;
 
 function readDXVA_HostResidDiff(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $0400) shr 10);
 end;
 
 function readDXVA_MotionType(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $0300) shr 8);
 end;
 
 function readDXVA_MBscanMethod(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $00C0) shr 6);
 end;
 
 function readDXVA_FieldResidual(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $0020) shr 5);
 end;
 
 function readDXVA_H261LoopFilter(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $0010) shr 4);
 end;
 
 function readDXVA_Motion4MV(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $0008) shr 3);
 end;
 
 function readDXVA_MotionBackward(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $0004) shr 2);
 end;
 
 function readDXVA_MotionForward(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $0002) shr 1);
 end;
 
 function readDXVA_IntraMacroblock(wMBtype: DWord): DWORD;
+
 begin
+
   Result := ((wMBtype and $0001));
 end;
 
 function setDXVA_MvertFieldSel_3(wMBtype: DWord): DWORD;
+
 begin
+
   Result := (wMBtype or $8000);
 end;
 
 function setDXVA_MvertFieldSel_2(wMBtype: DWord): DWORD;
+
 begin
+
   Result := (wMBtype or $4000);
 end;
 
 function setDXVA_MvertFieldSel_1(wMBtype: DWord): DWORD;
+
 begin
+
   Result := (wMBtype or $2000);
 end;
 
 function setDXVA_MvertFieldSel_0(wMBtype: DWord): DWORD;
+
 begin
+
   Result := (wMBtype or $1000);
 end;
 
 function setDXVA_ReservedBits(wMBtype: DWord): DWORD;
+
 begin
+
   Result := (wMBtype or $0800);
 end;
 
 function setDXVA_HostResidDiff(wMBtype: DWord): DWORD;
+
 begin
+
   Result := (wMBtype or $0400);
 end;
 
 function setDXVA_MotionType(wMBtype: DWord;
                             value: DWord ): DWORD;
+
 begin
+
   Result := wMBtype or (value shl 8);
 end;
 
 function setDXVA_MBscanMethod(wMBtype: DWord;
                               value: DWord ): DWORD;
+
 begin
+
   Result := wMBtype or (value shl 6);
 end;
 
 function setDXVA_FieldResidual(wMBtype: DWord): DWORD;
+
 begin
+
   Result := wMBtype or $0020;
 end;
 
 function setDXVA_H261LoopFilter(wMBtype: DWord): DWORD;
+
 begin
+
   Result := wMBtype or $0010;
 end;
 
 function setDXVA_Motion4MV(wMBtype: DWord): DWORD;
+
 begin
+
   Result := wMBtype or $0008;
 end;
 
 function setDXVA_MotionBackward(wMBtype: DWord): DWORD;
+
 begin
+
   Result := wMBtype or $0004;
 end;
 
 function setDXVA_MotionForward(wMBtype: DWord): DWORD;
+
 begin
+
   Result := wMBtype or $0002;
 end;
 
 function setDXVA_IntraMacroblock(wMBtype: DWord): DWORD;
+
 begin
+
   Result := wMBtype or $0001;
 end;
 
 function readDXVA_Y___0coded(wPatternCode: Dword): DWORD;
+
 begin
+
   Result := ((wPatternCode and $0800) shr 11);
 end;
 
 function readDXVA_Y___1coded(wPatternCode: Dword): DWORD;
+
 begin
+
   Result := ((wPatternCode and $0400) shr 10);
 end;
 
 function readDXVA_Y___2coded(wPatternCode: Dword): DWORD;
+
 begin
+
   Result := ((wPatternCode and $0200) shr 9);
 end;
 
 function readDXVA_Y___3coded(wPatternCode: Dword): DWORD;
+
 begin
+
   Result := ((wPatternCode and $0100) shr 8);
 end;
 
 function readDXVA_Cb__4coded(wPatternCode: Dword): DWORD;
+
 begin
+
   Result := ((wPatternCode and $0080) shr 7);
 end;
 
 function readDXVA_Cr__5coded(wPatternCode: Dword): DWORD;
+
 begin
+
   Result := ((wPatternCode and $0040) shr 6);
 end;
 
 function readDXVA_Cb__6coded(wPatternCode: Dword): DWORD;
+
 begin
+
   Result := ((wPatternCode and $0020) shr 5);
 end;
 
 function readDXVA_Cr__7coded(wPatternCode: Dword): DWORD;
+
 begin
+
   Result := ((wPatternCode and $0010) shr 4);
 end;
 
 function readDXVA_Cb__8coded(wPatternCode: Dword): DWORD;
+
 begin
+
   Result := ((wPatternCode and $0008) shr 3);
 end;
 
 function readDXVA_Cb__9coded(wPatternCode: Dword): DWORD;
+
 begin
+
   Result := ((wPatternCode and $0004) shr 2);
 end;
 
 function readDXVA_Cr_10coded(wPatternCode: Dword): DWORD;
+
 begin
+
   Result := ((wPatternCode and $0002) shr 1);
 end;
 
 function readDXVA_Cr_11coded(wPatternCode: Dword): DWORD;
+
 begin
+
   Result := (wPatternCode and $0001);
 end;
 
 
 function readDXVA_Y___0oflow(wPC_Overflow: DWord): DWORD;
+
 begin
+
   Result := ((wPC_Overflow and $0800) shr 11);
 end;
 
 function readDXVA_Y___1oflow(wPC_Overflow: DWord): DWORD;
+
 begin
+
   Result := ((wPC_Overflow and $0400) shr 10);
 end;
 
 function readDXVA_Y___2oflow(wPC_Overflow: DWord): DWORD;
+
 begin
+
   Result := ((wPC_Overflow and $0200) shr 9);
 end;
 
 function readDXVA_Y___3oflow(wPC_Overflow: DWord): DWORD;
+
 begin
+
   Result := ((wPC_Overflow and $0100) shr 8);
 end;
 
 function readDXVA_Cb__4oflow(wPC_Overflow: DWord): DWORD;
+
 begin
+
   Result := ((wPC_Overflow and $0080) shr 7);
 end;
 
 function readDXVA_Cr__5oflow(wPC_Overflow: DWord): DWORD;
+
 begin
+
   Result := ((wPC_Overflow and $0040) shr 6);
 end;
 
 function readDXVA_Cb__6oflow(wPC_Overflow: DWord): DWORD;
+
 begin
+
   Result := ((wPC_Overflow and $0020) shr 5);
 end;
 
 function readDXVA_Cr__7oflow(wPC_Overflow: DWord): DWORD;
+
 begin
+
   Result := ((wPC_Overflow and $0010) shr 4);
 end;
 
 function readDXVA_Cb__8oflow(wPC_Overflow: DWord): DWORD;
+
 begin
+
   Result := ((wPC_Overflow and $0008) shr 3);
 end;
 
 function readDXVA_Cb__9oflow(wPC_Overflow: DWord): DWORD;
+
 begin
+
   Result := ((wPC_Overflow and $0004) shr 2);
 end;
 
 function readDXVA_Cr_10oflow(wPC_Overflow: DWord): DWORD;
+
 begin
+
   Result := ((wPC_Overflow and $0002) shr 1);
 end;
 
 function readDXVA_Cr_11oflow(wPC_Overflow: DWord): DWORD;
+
 begin
+
   Result := wPC_Overflow and $0001;
 end;
 
@@ -3395,7 +4153,9 @@ end;
 // DXVA_PicParams_H264 helpers /////////////////////////////////////////////////
 
 function _DXVA_PicParams_H264.GetBits(const aIndex: Integer): USHORT;
+
 begin
+
   Result := GetDWordBits(wBitFields,
                          aIndex);
 end;
@@ -3403,7 +4163,9 @@ end;
 
 procedure _DXVA_PicParams_H264.SetBits(const aIndex: Integer;
                                        const aValue: USHORT);
+
 begin
+
   SetWordBits(wBitFields,
               aIndex,
               aValue);
@@ -3413,7 +4175,9 @@ end;
 // DXVA_MBctrl_H264 helpers ////////////////////////////////////////////////////
 
 function TDXVA_MBctrl_H264_BitFields.GetBits(const aIndex: Integer): UINT8;
+
 begin
+
   Result := GetDWordBits(dwMBtype,
                          aIndex);
 end;
@@ -3421,7 +4185,9 @@ end;
 
 procedure TDXVA_MBctrl_H264_BitFields.SetBits(const aIndex: Integer;
                                               const aValue: UINT8);
+
 begin
+
   SetDWordBits(dwMBtype,
                aIndex,
                aValue);
@@ -3431,15 +4197,21 @@ end;
 // DXVA_Deblock_H264 helpers ///////////////////////////////////////////////////
 
 function TDXVA_Deblock_H264_BitFields.GetBits(const aIndex: Integer): UINT8;
+
 begin
-  Result := GetDWordBits(FirstByte, aIndex);
+
+  Result := GetDWordBits(FirstByte,
+                         aIndex);
 end;
 
 
 procedure TDXVA_Deblock_H264_BitFields.SetBits(const aIndex: Integer;
                                                const aValue: UINT8);
-var Mask: Byte;
+var
+  Mask: Byte;
+
 begin
+
   Mask := (1 shl Byte(aIndex)) - 1;
   FirstByte := (FirstByte and not (Mask shl (aIndex shr 8))) or
                ((aValue and Mask) shl (aIndex shr 8));
@@ -3450,7 +4222,9 @@ end;
 
 // Function to get bits from the bitfield.
 function TDXVA_PicParams_H264_MVC_BitFields.GetBits(const aIndex: Integer): USHORT;
+
 begin
+
   Result := (wBitFields shr (aIndex shr 8)) and ((1 shl Byte(aIndex)) - 1);
 end;
 
@@ -3463,6 +4237,7 @@ var
   Mask: USHORT;
 
 begin
+
   Mask := ((1 shl Byte(aIndex)) - 1);
 
   {$IFDEF DEBUG}
@@ -3477,7 +4252,9 @@ end;
 // TDXVA_PicParams_MPEG4_PART2_PicFlagBitFields helpers ////////////////////////
 
 function TDXVA_PicParams_MPEG4_PART2_PicFlagBitFields.GetBits(const aIndex: Integer): USHORT;
+
 begin
+
   Result := (wPicFlagBitFields shr (aIndex shr 8)) and ((1 shl Byte(aIndex)) - 1);
 end;
 
@@ -3488,6 +4265,7 @@ var
   Mask: USHORT;
 
 begin
+
   Mask := ((1 shl Byte(aIndex)) - 1);
 
   {$IFDEF DEBUG}
@@ -3502,7 +4280,9 @@ end;
 // TDXVA_PicParams_MPEG4_PART2_SpriteBitFields helpers /////////////////////////
 
 function TDXVA_PicParams_MPEG4_PART2_SpriteBitFields.GetBits(const aIndex: Integer): USHORT;
+
 begin
+
   Result := (wSpriteBitFields shr (aIndex shr 8)) and ((1 shl Byte(aIndex)) - 1);
 end;
 
@@ -3514,6 +4294,7 @@ var
   Mask: USHORT;
 
 begin
+
   Mask := ((1 shl Byte(aIndex)) - 1);
 
   {$IFDEF DEBUG}
@@ -3527,7 +4308,9 @@ end;
 // TDXVA_PicParams_MPEG4_PART2_FcodeBitFields helpers //////////////////////////
 
 function TDXVA_PicParams_MPEG4_PART2_FcodeBitFields.GetBits(const aIndex: Integer): UCHAR;
+
 begin
+
   Result := (wFcodeBitFields shr (aIndex shr 8)) and ((1 shl Byte(aIndex)) - 1);
 end;
 
@@ -3539,6 +4322,7 @@ var
   Mask: USHORT;
 
 begin
+
   Mask := ((1 shl Byte(aIndex)) - 1);
 
   {$IFDEF DEBUG}
@@ -3553,22 +4337,30 @@ end;
 // DXVA_PicEntry_HEVC helpers //////////////////////////////////////////////////
 
 function _DXVA_PicEntry_HEVC.GetIndex7Bits: UCHAR;
+
 begin
+
   Result := bPicEntry and $7F;  // Mask to get the lower 7 bits
 end;
 
 function _DXVA_PicEntry_HEVC.GetAssociatedFlag: UCHAR;
+
 begin
+
   Result := (bPicEntry shr 7) and $01;  // Shift right to get the highest bit
 end;
 
 procedure _DXVA_PicEntry_HEVC.SetIndex7Bits(const Value: UCHAR);
+
 begin
+
   bPicEntry := (bPicEntry and $80) or (Value and $7F);  // Preserve the highest bit and set the lower 7 bits
 end;
 
 procedure _DXVA_PicEntry_HEVC.SetAssociatedFlag(const Value: UCHAR);
+
 begin
+
   bPicEntry := (bPicEntry and $7F) or ((Value and $01) shl 7);  // Preserve the lower 7 bits and set the highest bit
 end;
 
@@ -3576,7 +4368,9 @@ end;
 // DXVA_PicEntry_HEVC helpers //////////////////////////////////////////////////
 
 function TFormatAndSequenceInfoFlags.GetBits(const Index: Integer): USHORT;
+
 begin
+
   Result := GetWordBits(FFlags,
                         Index);
 end;
@@ -3584,7 +4378,9 @@ end;
 
 procedure TFormatAndSequenceInfoFlags.SetBits(const Index: Integer;
                                               const Value: USHORT);
+
 begin
+
   SetWordBits(FFlags,
               Index,
               Value);
@@ -3592,7 +4388,9 @@ end;
 
 
 function TCodingParamToolFlags.GetBits(const Index: Integer): UINT32;
+
 begin
+
   Result := GetDWordBits(FFlags,
                          Index);
 end;
@@ -3600,7 +4398,9 @@ end;
 
 procedure TCodingParamToolFlags.SetBits(const Index: Integer;
                                         const Value: UINT32);
+
 begin
+
   SetDWordBits(FFlags,
                Index,
                Value);
@@ -3608,7 +4408,9 @@ end;
 
 
 function TCodingSettingPicturePropertyFlags.GetBits(const Index: Integer): UINT32;
+
 begin
+
   Result := GetDWordBits(FFlags,
                          Index);
 end;
@@ -3616,7 +4418,9 @@ end;
 
 procedure TCodingSettingPicturePropertyFlags.SetBits(const Index: Integer;
                                                      const Value: UINT32);
+
 begin
+
   SetDWordBits(FFlags,
                Index,
                Value);
@@ -3625,7 +4429,9 @@ end;
 // DXVA_PicParams_HEVC_RangeExt helpers ////////////////////////////////////////
 
 function TRangeExtensionFlags.GetBits(const Index: Integer): USHORT;
+
 begin
+
   Result := GetWordBits(FFlags,
                         Index);
 end;
@@ -3633,7 +4439,9 @@ end;
 
 procedure TRangeExtensionFlags.SetBits(const Index: Integer;
                                        const Value: USHORT);
+
 begin
+
   SetWordBits(FFlags,
               Index,
               Value);

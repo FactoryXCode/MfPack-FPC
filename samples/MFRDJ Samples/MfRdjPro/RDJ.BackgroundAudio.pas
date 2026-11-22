@@ -65,11 +65,12 @@ unit RDJ.BackgroundAudio;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   SysUtils,
@@ -82,6 +83,7 @@ type
   TRdjBackgroundAudioLogEvent = procedure(const Text: string) of object;
 
   TRdjBackgroundAudio = class
+
   private
 
     FOutput: TRdjHeosOutput;
@@ -132,6 +134,7 @@ uses
   {Application}
   Heos.Files;
 
+
 constructor TRdjBackgroundAudio.Create(const SettingsFile: string);
 var
   Settings: TIniFile;
@@ -180,6 +183,7 @@ end;
 
 
 destructor TRdjBackgroundAudio.Destroy();
+
 begin
 
   FOnLog := nil;
@@ -190,6 +194,7 @@ end;
 
 
 function TRdjBackgroundAudio.CurrentTick(): DWORD;
+
 begin
 
   Result := GetTickCount();
@@ -197,6 +202,7 @@ end;
 
 
 procedure TRdjBackgroundAudio.Log(const Text: string);
+
 begin
 
   if Assigned(FOnLog) then
@@ -205,8 +211,8 @@ end;
 
 
 function TRdjBackgroundAudio.TryReadAudioSettings(out BitrateKbps: Integer;
-                                                   out Channels: Integer;
-                                                   out ErrorText: string): Boolean;
+                                                  out Channels: Integer;
+                                                  out ErrorText: string): Boolean;
 var
   Settings: TMemIniFile;
 
@@ -229,8 +235,8 @@ begin
       BitrateKbps := 192;
 
     Channels := Settings.ReadInteger('HEOS',
-                                      'AacChannels',
-                                      2);
+                                     'AacChannels',
+                                     2);
     if (Channels <> 1) and (Channels <> 2) then
       Channels := 2;
 
@@ -284,7 +290,9 @@ begin
 
   // The audio callback only forwards PCM and updates this atomic rate.
   // Starting the listener and encoder always happens on the owner thread.
-  Rate := InterlockedCompareExchange(FSampleRate, 0, 0);
+  Rate := InterlockedCompareExchange(FSampleRate,
+                                     0,
+                                     0);
 
   if (Rate <> 44100) and (Rate <> 48000) then
     Exit;
@@ -309,17 +317,17 @@ begin
 
     // Reload when starting, without interrupting an active broadcast.
     if not TryReadAudioSettings(BitrateKbps,
-                                Channels,
-                                Error) then
+      Channels,
+      Error) then
       begin
         Log('Background AAC start failed: ' + Error + ' Retrying in 30 seconds.');
         Exit;
       end;
 
     if Failed(FOutput.StartBroadcast(FAddress,
-                                     FPort,
-                                     BitrateKbps,
-                                     Channels)) then
+      FPort,
+      BitrateKbps,
+      Channels)) then
       begin
         Log('Background AAC start failed: ' + FOutput.ErrorText() + ' Retrying in 30 seconds.');
         Exit;
@@ -356,15 +364,18 @@ end;
 
 procedure TRdjBackgroundAudio.SetMasterGains(ALeft: Single;
                                              ARight: Single);
+
 begin
 
-  FOutput.SetMasterGains(ALeft, ARight);
+  FOutput.SetMasterGains(ALeft,
+                         ARight);
 end;
 
 
 procedure TRdjBackgroundAudio.PushFloat32(Data: PSingle;
                                           Frames: Integer;
                                           SampleRate: Integer);
+
 begin
 
   InterlockedExchange(FSampleRate,

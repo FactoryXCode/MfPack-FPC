@@ -67,7 +67,7 @@ interface
 
 uses
   MfCapturePlatform,
-{Winapi}
+  {Winapi}
   Windows,
   WinApi.DirectX.D2D1,
   WinApi.DirectX.DCommon,
@@ -87,6 +87,7 @@ uses
 
 type
   TSampleConverter = class(TPersistent)
+
   protected
     FRenderTarget: ID2D1DCRenderTarget;
 
@@ -107,49 +108,120 @@ type
   end;
 
 implementation
-uses SysUtils;
+
+uses
+  SysUtils;
+
+
 constructor TSampleConverter.Create;
-begin inherited;end;
-destructor TSampleConverter.Destroy;
-begin inherited;end;
-procedure TSampleConverter.CreateDirect2DBitmapProperties;
-begin end;
-function TSampleConverter.CreateRenderTarget: Boolean;
-begin Result:=False;end;
-function TSampleConverter.BitmapFromSample(const ASample: IMFSample;
- const AVideoInfo: TVideoFormatInfo; var AError: string; var AImage: TBitmap): Boolean;
-var Buffer: IMFMediaBuffer; Data: PByte; Count: DWORD;
-    RowBytes, Pitch, Y, Offset: Integer; Required: UInt64;
-    Header: TBitmapFileHeader; Info: TBitmapInfoHeader; Stream: TMemoryStream;
+
 begin
- Result:=False; AError:='Invalid RGB32 sample';
- if (ASample=nil) or (AImage=nil) or (AVideoInfo.iVideoWidth<=0) or
-    (AVideoInfo.iVideoHeight<=0) or (AVideoInfo.iVideoWidth>MaxInt div 4) then Exit;
- RowBytes:=AVideoInfo.iVideoWidth*4; Pitch:=AVideoInfo.iStride;
- if Pitch=0 then Pitch:=RowBytes;
- if (Pitch=Low(Integer)) or (Abs(Pitch)<RowBytes) then Exit;
- Required:=UInt64(Abs(Pitch))*UInt64(AVideoInfo.iVideoHeight-1)+UInt64(RowBytes);
- if (Required>MaxInt) or
-    (UInt64(RowBytes)*UInt64(AVideoInfo.iVideoHeight)>High(DWORD)-54) then Exit;
- if FAILED(ASample.ConvertToContiguousBuffer(@Buffer)) then Exit;
- if FAILED(Buffer.Lock(Data,nil,@Count)) then Exit;
- try
-  if (Data=nil) or (Required>Count) then Exit;
-  Stream:=TMemoryStream.Create;
-  try
-   FillChar(Header,SizeOf(Header),0); FillChar(Info,SizeOf(Info),0);
-   Header.bfType:=$4D42; Header.bfOffBits:=SizeOf(Header)+SizeOf(Info);
-   Info.biSize:=SizeOf(Info); Info.biWidth:=AVideoInfo.iVideoWidth;
-   Info.biHeight:=-AVideoInfo.iVideoHeight; Info.biPlanes:=1; Info.biBitCount:=32;
-   Info.biSizeImage:=RowBytes*AVideoInfo.iVideoHeight;
-   Header.bfSize:=Header.bfOffBits+Info.biSizeImage;
-   Stream.WriteBuffer(Header,SizeOf(Header)); Stream.WriteBuffer(Info,SizeOf(Info));
-   for Y:=0 to AVideoInfo.iVideoHeight-1 do begin
-    if Pitch<0 then Offset:=(AVideoInfo.iVideoHeight-1-Y)*(-Pitch) else Offset:=Y*Pitch;
-    Stream.WriteBuffer(PByte(NativeUInt(Data)+NativeUInt(Offset))^,RowBytes);
-   end;
-   Stream.Position:=0; AImage.LoadFromStream(Stream); AError:=''; Result:=True;
-  finally Stream.Free;end;
- finally Buffer.Unlock;end;
+
+  inherited;
 end;
+
+
+destructor TSampleConverter.Destroy;
+
+begin
+
+  inherited;
+end;
+
+
+procedure TSampleConverter.CreateDirect2DBitmapProperties;
+
+begin
+
+end;
+
+
+function TSampleConverter.CreateRenderTarget: Boolean;
+
+begin
+
+  Result := False;
+end;
+
+
+function TSampleConverter.BitmapFromSample(const ASample: IMFSample;
+                                           const AVideoInfo: TVideoFormatInfo;
+                                           var AError: string;
+                                           var AImage: TBitmap): Boolean;
+var
+  Buffer: IMFMediaBuffer;
+  Data: PByte;
+  Count: DWORD;
+  RowBytes, Pitch, Y, Offset: Integer;
+  Required: UInt64;
+  Header: TBitmapFileHeader;
+  Info: TBitmapInfoHeader;
+  Stream: TMemoryStream;
+
+begin
+
+  Result := False;
+  AError := 'Invalid RGB32 sample';
+  if (ASample = nil) or (AImage = nil) or (AVideoInfo.iVideoWidth <= 0) or
+    (AVideoInfo.iVideoHeight <= 0) or (AVideoInfo.iVideoWidth > MaxInt div 4) then
+    Exit;
+  RowBytes := AVideoInfo.iVideoWidth * 4;
+  Pitch := AVideoInfo.iStride;
+  if (Pitch = 0) then
+    Pitch := RowBytes;
+  if (Pitch = Low(Integer)) or (Abs(Pitch) < RowBytes) then
+    Exit;
+  Required := UInt64(Abs(Pitch)) * UInt64(AVideoInfo.iVideoHeight - 1) + UInt64(RowBytes);
+  if (Required > MaxInt) or
+    (UInt64(RowBytes) * UInt64(AVideoInfo.iVideoHeight) > High(DWORD) - 54) then
+    Exit;
+  if FAILED(ASample.ConvertToContiguousBuffer(@Buffer)) then
+    Exit;
+  if FAILED(Buffer.Lock(Data, nil, @Count)) then
+    Exit;
+  try
+    if (Data = nil) or (Required > Count) then
+      Exit;
+    Stream := TMemoryStream.Create;
+    try
+      FillChar(Header,
+               SizeOf(Header),
+               0);
+      FillChar(Info,
+               SizeOf(Info),
+               0);
+      Header.bfType := $4D42;
+      Header.bfOffBits := SizeOf(Header) + SizeOf(Info);
+      Info.biSize := SizeOf(Info);
+      Info.biWidth := AVideoInfo.iVideoWidth;
+      Info.biHeight := -AVideoInfo.iVideoHeight;
+      Info.biPlanes := 1;
+      Info.biBitCount := 32;
+      Info.biSizeImage := RowBytes * AVideoInfo.iVideoHeight;
+      Header.bfSize := Header.bfOffBits + Info.biSizeImage;
+      Stream.WriteBuffer(Header,
+                         SizeOf(Header));
+      Stream.WriteBuffer(Info,
+                         SizeOf(Info));
+      for Y := 0 to AVideoInfo.iVideoHeight - 1 do
+        begin
+          if (Pitch < 0) then
+            Offset := (AVideoInfo.iVideoHeight - 1 - Y) * (-Pitch)
+          else
+            Offset := Y * Pitch;
+          Stream.WriteBuffer(PByte(NativeUInt(Data) + NativeUInt(Offset))^,
+                             RowBytes);
+        end;
+      Stream.Position := 0;
+      AImage.LoadFromStream(Stream);
+      AError := '';
+      Result := True;
+    finally
+      Stream.Free;
+    end;
+  finally
+    Buffer.Unlock;
+  end;
+end;
+
 end.

@@ -84,6 +84,7 @@ uses
 type
 
   TMfCastAndroidTvSession = class
+
   private
     FTransport: IMfCastTransport;
     FInput: TBytes;
@@ -118,43 +119,42 @@ type
   end;
 
 
-  function MfCastAndroidTvPairingFile(const ADevice: TMfCastDevice): string;
+function MfCastAndroidTvPairingFile(const ADevice: TMfCastDevice): string;
 
-  function MfCastImportAndroidTvPairing(const ADevice: TMfCastDevice;
-                                        const APfx: TBytes): HRESULT;
+function MfCastImportAndroidTvPairing(const ADevice: TMfCastDevice;
+                                      const APfx: TBytes): HRESULT;
 
-  function MfCastAndroidTvPower(const ADevice: TMfCastDevice;
-                                const AStandby: Boolean;
-                                out AIsOn: Boolean;
-                                out ADetail: string): HRESULT;
+function MfCastAndroidTvPower(const ADevice: TMfCastDevice;
+                              const AStandby: Boolean;
+                              out AIsOn: Boolean;
+                              out ADetail: string): HRESULT;
 
-  function CryptProtectData(var Input: TRemoteBlob;
-                            Description: PWideChar;
-                            Entropy: Pointer;
-                            Reserved: Pointer;
+function CryptProtectData(var Input: TRemoteBlob;
+                          Description: PWideChar;
+                          Entropy: Pointer;
+                          Reserved: Pointer;
+                          Prompt: Pointer;
+                          Flags: DWORD;
+                          out Output: TRemoteBlob): BOOL; stdcall;
+
+function CryptUnprotectData(var Input: TRemoteBlob;
+                            Description: Pointer;
+                            Entropy,
+                            Reserved,
                             Prompt: Pointer;
                             Flags: DWORD;
                             out Output: TRemoteBlob): BOOL; stdcall;
 
-  function CryptUnprotectData(var Input: TRemoteBlob;
-                              Description: Pointer;
-                              Entropy,
-                              Reserved,
-                              Prompt: Pointer;
-                              Flags: DWORD;
+function PFXImportCertStore(var Data: TRemoteBlob;
+                            Password: PWideChar;
+                            Flags: DWORD): Pointer; stdcall;
 
-                              out Output: TRemoteBlob): BOOL; stdcall;
+function CertEnumCertificatesInStore(Store: Pointer;
+                                     Previous: Pointer): Pointer; stdcall;
 
-  function PFXImportCertStore(var Data: TRemoteBlob;
-                              Password: PWideChar;
-                              Flags: DWORD): Pointer; stdcall;
-
-  function CertEnumCertificatesInStore(Store: Pointer;
-                                       Previous: Pointer): Pointer; stdcall;
-
-  function CertFreeCertificateContext(Cert: Pointer): BOOL; stdcall;
-  function CertCloseStore(Store: Pointer;
-                          Flags: DWORD): BOOL; stdcall;
+function CertFreeCertificateContext(Cert: Pointer): BOOL; stdcall;
+function CertCloseStore(Store: Pointer;
+                        Flags: DWORD): BOOL; stdcall;
 
 
 implementation
@@ -171,9 +171,10 @@ const
   TimeoutResult = HRESULT($800705B4);
   Crypt32Lib = 'crypt32.dll';
 
-function SHGetKnownFolderPath(const AFolderId: TGUID; const AFlags: DWORD;
-
-  const AToken: THandle; out APath: PWideChar): HRESULT; stdcall;
+function SHGetKnownFolderPath(const AFolderId: TGUID;
+                              const AFlags: DWORD;
+                              const AToken: THandle;
+                              out APath: PWideChar): HRESULT; stdcall;
 
   external 'shell32.dll' name 'SHGetKnownFolderPath';
 
@@ -209,7 +210,10 @@ begin
 
   Path := nil;
 
-  Hr := SHGetKnownFolderPath(LocalAppDataId, NoPackageRedirection, 0, Path);
+  Hr := SHGetKnownFolderPath(LocalAppDataId,
+                             NoPackageRedirection,
+                             0,
+                             Path);
 
   try
 
@@ -251,11 +255,15 @@ var
 begin
 
   Size := Length(AData);
-  SetLength(AData, Size + Length(ABytes));
+  SetLength(AData,
+            Size + Length(ABytes));
 
   if (Length(ABytes) > 0) then
-    Move(ABytes[0], AData[Size], Length(ABytes));
+    Move(ABytes[0],
+         AData[Size],
+         Length(ABytes));
 end;
+
 
 function Varint(AValue: Cardinal): TBytes;
 var
@@ -278,12 +286,14 @@ begin
 
   until (AValue = 0);
 
-  SetLength(Result, Count);
+  SetLength(Result,
+            Count);
 end;
 
 
 function Scalar(AField: Cardinal;
                 AValue: Cardinal): TBytes;
+
 begin
 
   Result := Varint(AField shl 3);
@@ -294,6 +304,7 @@ end;
 
 function MessageField(AField: Cardinal;
                       const AValue: TBytes): TBytes;
+
 begin
 
   Result := Varint((AField shl 3) or 2);
@@ -319,7 +330,7 @@ begin
 
   for Shift := 0 to 4 do
     begin
-      if (AOffset >= Length(AData))then
+      if (AOffset >= Length(AData)) then
         Exit(False);
 
       B := AData[AOffset];
@@ -329,7 +340,7 @@ begin
         Exit(False);
 
       AValue := AValue or (Cardinal(B and $7F) shl (Shift * 7));
-      if (B and $80) = 0 then
+      if ((B and $80) = 0) then
         Exit(True);
     end;
 
@@ -356,32 +367,32 @@ begin
   while (Offset < Length(AData)) do
     begin
       if not ReadVarint(AData,
-                        Offset,
-                        Tag) or (Tag = 0) then
+        Offset,
+        Tag) or (Tag = 0) then
         Exit(False);
 
       case Tag and 7 of
-        0: begin
-             if not ReadVarint(AData,
-                               Offset,
-                               Value) then
-               Exit(False);
+          0: begin
+            if not ReadVarint(AData,
+              Offset,
+              Value) then
+              Exit(False);
 
-             if (Tag shr 3 = AField) then
-                begin
-                  AValue := Value;
-                  Exit(True);
-                end;
-           end;
+            if (Tag shr 3 = AField) then
+              begin
+                AValue := Value;
+                Exit(True);
+              end;
+          end;
 
-      1: Inc(Offset,
-             8);
+        1: Inc(Offset,
+               8);
 
-      2: begin
-           if not ReadVarint(AData,
-                             Offset,
-                             Count) or (Count > Cardinal(Length(AData) - Offset)) then
-             Exit(False);
+          2: begin
+            if not ReadVarint(AData,
+              Offset,
+              Count) or (Count > Cardinal(Length(AData) - Offset)) then
+              Exit(False);
 
             if (Tag shr 3 = AField) then
               begin
@@ -395,10 +406,10 @@ begin
                 Count);
           end;
 
-      5: Inc(Offset,
-             4);
-      else
-        Exit(False);
+        5: Inc(Offset,
+               4);
+        else
+          Exit(False);
       end;
     end;
 
@@ -409,6 +420,7 @@ end;
 constructor TMfCastAndroidTvSession.Create(const ATransport: IMfCastTransport;
                                            const ASettleMs: Cardinal;
                                            const ATimeoutMs: Cardinal);
+
 begin
 
   inherited Create;
@@ -453,8 +465,8 @@ begin
       Offset := 0;
 
       if ReadVarint(FInput,
-                    Offset,
-                    Count) then
+        Offset,
+        Count) then
         begin
           if (Count > MaxMessageSize) then
             Exit(E_INVALIDARG);
@@ -471,36 +483,35 @@ begin
               Exit(S_OK);
             end;
         end
-      else
-        if (Length(FInput) >= 5) then
-          Exit(E_INVALIDARG);
+      else if (Length(FInput) >= 5) then
+        Exit(E_INVALIDARG);
 
-    Result := FTransport.ReceiveBuffer(@Buffer[0],
-                                       SizeOf(Buffer),
-                                       Received);
+      Result := FTransport.ReceiveBuffer(@Buffer[0],
+                                         SizeOf(Buffer),
+                                         Received);
 
-    if Result = HRESULT($8007274C) then
-      Continue; // Poll timeout, not disconnection.
+      if (Result = HRESULT($8007274C)) then
+        Continue; // Poll timeout, not disconnection.
 
-    if Failed(Result) then
-      Exit;
+      if Failed(Result) then
+        Exit;
 
-    if (Received > 0) then
-      begin
-        SetLength(Extra,
-                  Received);
+      if (Received > 0) then
+        begin
+          SetLength(Extra,
+                    Received);
 
-        Move(Buffer[0],
-             Extra[0],
-             Received);
+          Move(Buffer[0],
+               Extra[0],
+               Received);
 
-        Append(FInput,
-          Extra);
+          Append(FInput,
+                 Extra);
 
-        if (Length(FInput) > MaxMessageSize + 5) then
-          Exit(E_INVALIDARG);
-      end;
-  end;
+          if (Length(FInput) > MaxMessageSize + 5) then
+            Exit(E_INVALIDARG);
+        end;
+    end;
 
   Result := TimeoutResult;
 end;
@@ -523,19 +534,19 @@ begin
   Result := S_OK;
 
   if Field(AMessage,
-           1,
-           Value,
-           Body) then // Configure.
+    1,
+    Value,
+    Body) then // Configure.
     begin
       if not Field(Body,
-                   1,
-                   Value,
-                   Ignored) then
+        1,
+        Value,
+        Ignored) then
         Exit(E_INVALIDARG);
 
       FFeatures := FFeatures and Value;
 
-      if (FFeatures and (2 or 32)) <> (2 or 32) then
+      if ((FFeatures and (2 or 32)) <> (2 or 32)) then
         Exit(E_NOTIMPL);
 
       Info := Scalar(3,
@@ -561,53 +572,49 @@ begin
                           Info));
 
       Result := Send(MessageField(1,
-                                Reply));
+                                  Reply));
     end
-  else
-    if Field(AMessage,
-             2,
-             Value,
-             Body) then // Set active.
-      Result := Send(MessageField(2,
+  else if Field(AMessage,
+    2,
+    Value,
+    Body) then // Set active.
+    Result := Send(MessageField(2,
+                                Scalar(1,
+                                       FFeatures)))
+  else if Field(AMessage,
+    8,
+    Value,
+    Body) then // Ping.
+    begin
+      Field(Body,
+            1,
+            Value,
+            Ignored);
+
+      Result := Send(MessageField(9,
                                   Scalar(1,
-                                         FFeatures)))
-    else
-      if Field(AMessage,
-               8,
-               Value,
-               Body) then // Ping.
-        begin
-          Field(Body,
-                1,
-                Value,
-                Ignored);
+                                         Value)));
+    end
+  else if Field(AMessage,
+    40,
+    Value,
+    Body) then // Authoritative power report.
+    begin
 
-          Result := Send(MessageField(9,
-                                      Scalar(1,
-                                             Value)));
-       end
-     else
-       if Field(AMessage,
-                40,
-                Value,
-                Body) then // Authoritative power report.
-         begin
+      // Proto3 omits started=false, so an empty remote_start means standby.
+      Field(Body,
+            1,
+            Value,
+            Ignored);
 
-           // Proto3 omits started=false, so an empty remote_start means standby.
-           Field(Body,
-                 1,
-                 Value,
-                 Ignored);
-
-           AHasPower := True;
-           AIsOn := Value <> 0;
-         end
-       else
-         if Field(AMessage,
-                  3,
-                  Value,
-                  Body) then
-           Result := E_FAIL;
+      AHasPower := True;
+      AIsOn := (Value <> 0);
+    end
+  else if Field(AMessage,
+    3,
+    Value,
+    Body) then
+    Result := E_FAIL;
 end;
 
 
@@ -657,16 +664,16 @@ begin
   Result := ReadPower(IsOn);
 
   if Failed(Result) then
-  begin
-    ADetail := 'Cannot read TV power state; no power key was sent.';
-    Exit;
-  end;
+    begin
+      ADetail := 'Cannot read TV power state; no power key was sent.';
+      Exit;
+    end;
 
   if not IsOn then
-  begin
-    ADetail := 'TV is already in standby; no power key was sent.';
-    Exit(S_OK);
-  end;
+    begin
+      ADetail := 'TV is already in standby; no power key was sent.';
+      Exit(S_OK);
+    end;
 
   // This receiver accepts its power key after the remote handshake has settled.
   // Keep servicing pings and power updates during the same five-second interval
@@ -686,7 +693,9 @@ begin
         Exit;
       end;
 
-    Result := ProcessMessage(Message, HasPower, ReportedOn);
+    Result := ProcessMessage(Message,
+                             HasPower,
+                             ReportedOn);
 
     if Failed(Result) then
       Exit;
@@ -706,12 +715,11 @@ begin
                 26); // KEYCODE_POWER. Never retry this toggle.
   Append(Key,
          Scalar(2,
-         3)); // SHORT press, matching the verified paired test.
+                3)); // SHORT press, matching the verified paired test.
 
   FPowerCommandAttempted := True;
 
   Result := Send(MessageField(10,
-
                               Key));
 
   if Failed(Result) then
@@ -780,7 +788,7 @@ begin
     Name := Name + IntToHex(Bytes[I],
                             2);
 
-  if Length(Name) > 180 then
+  if (Length(Name) > 180) then
     Exit; // Bound paths from discovery data.
 
   Result := IncludeTrailingPathDelimiter(Root) + 'MfPack\Cast\AndroidTvRemotes\' + Name + '.pairing';
@@ -799,7 +807,7 @@ begin
 
   AOutput := nil;
 
-  if Length(AData) = 0 then
+  if (Length(AData) = 0) then
     Exit(E_INVALIDARG);
 
   Input.Size := Length(AData);
@@ -862,7 +870,7 @@ begin
 
   FileName := MfCastAndroidTvPairingFile(ADevice);
 
-  if FileName = '' then
+  if (FileName = '') then
     Exit(E_INVALIDARG);
 
   Result := Protect(APfx,
@@ -926,7 +934,7 @@ begin
 
     begin
 
-      if FileName <> '' then
+      if (FileName <> '') then
 
         ADetail := ADetail + ' Expected credential: ' + FileName;
 
@@ -955,7 +963,9 @@ begin
       Stream.Free;
     end;
 
-    Result := Protect(Data, False, Pfx);
+    Result := Protect(Data,
+                      False,
+                      Pfx);
 
     if Failed(Result) then
       Exit;
@@ -970,7 +980,7 @@ begin
              Length(Pfx),
              0);
 
-    if Store = nil then
+    if (Store = nil) then
       Exit(LastErrorResult);
 
     try
@@ -1038,7 +1048,7 @@ begin
               end;
 
           finally
-             Session.Free;
+            Session.Free;
           end;
 
 
@@ -1054,19 +1064,22 @@ begin
 
               Transport.Disconnect();
 
-              VerifyResult := Transport.Connect(Host, 6466);
+              VerifyResult := Transport.Connect(Host,
+                                                6466);
 
-              if VerifyResult = S_OK then
+              if (VerifyResult = S_OK) then
 
                 begin
 
-                  Verifier := TMfCastAndroidTvSession.Create(Transport, 0, 3000);
+                  Verifier := TMfCastAndroidTvSession.Create(Transport,
+                                                             0,
+                                                             3000);
 
                   try
 
                     VerifyResult := Verifier.ReadPower(VerifiedOn);
 
-                    if VerifyResult = S_OK then
+                    if (VerifyResult = S_OK) then
 
                       begin
 
@@ -1109,7 +1122,8 @@ begin
       end;
 
     finally
-      CertCloseStore(Store, 0);
+      CertCloseStore(Store,
+                     0);
     end;
 
   except
@@ -1117,7 +1131,7 @@ begin
       begin
         ADetail := 'Android TV standby failed: ' + E.Message;
         Result := E_FAIL;
-     end;
+      end;
   end;
 end;
 
@@ -1126,12 +1140,12 @@ end;
 
 {$WARN SYMBOL_PLATFORM OFF}
 
-function CryptProtectData;            external Crypt32Lib name 'CryptProtectData' ;
-function CryptUnprotectData;          external Crypt32Lib name 'CryptUnprotectData' ;
-function PFXImportCertStore;          external Crypt32Lib name 'PFXImportCertStore' ;
-function CertEnumCertificatesInStore; external Crypt32Lib name 'CertEnumCertificatesInStore' ;
-function CertFreeCertificateContext;  external Crypt32Lib name 'CertFreeCertificateContext' ;
-function CertCloseStore;              external Crypt32Lib name 'CertCloseStore' ;
+function CryptProtectData; external Crypt32Lib name 'CryptProtectData';
+function CryptUnprotectData; external Crypt32Lib name 'CryptUnprotectData';
+function PFXImportCertStore; external Crypt32Lib name 'PFXImportCertStore';
+function CertEnumCertificatesInStore; external Crypt32Lib name 'CertEnumCertificatesInStore';
+function CertFreeCertificateContext; external Crypt32Lib name 'CertFreeCertificateContext';
+function CertCloseStore; external Crypt32Lib name 'CertCloseStore';
 
 {$WARN SYMBOL_PLATFORM ON}
 end.

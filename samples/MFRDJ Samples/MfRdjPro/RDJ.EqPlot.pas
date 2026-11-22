@@ -65,11 +65,12 @@ unit RDJ.EqPlot;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-Windows,
+  Windows,
   Graphics,
   MfAudioEffectMFTBase;
 
@@ -77,36 +78,31 @@ type
 
   TComplex = record
 
-    var
-      Re, Im: Double;
-
+  var
+    Re, Im: Double;
     class function Make(const ARe,
                         AIm: Double): TComplex; static;
-
     class operator Add(const A,
                        B: TComplex): TComplex;
-
     class operator Subtract(const A,
                             B: TComplex): TComplex;
-
     class operator Multiply(const A,
                             B: TComplex): TComplex;
-
     class operator Divide(const A,
                           B: TComplex): TComplex;
     function Abs_(): Double;
   end;
 
-  function BiquadResponse(const Bq: TBiquadCoeffs;
-                          const Fs,
-                          FreqHz: Double): TComplex;
+function BiquadResponse(const Bq: TBiquadCoeffs;
+                        const Fs,
+                        FreqHz: Double): TComplex;
 
-  procedure PlotEqResponse(Canvas: TCanvas;
-                           const R: TRect;
-                           const Fs: Double;
-                           const LowBq,
-                           MidBq,
-                           HighBq: TBiquadCoeffs);
+procedure PlotEqResponse(Canvas: TCanvas;
+                         const R: TRect;
+                         const Fs: Double;
+                         const LowBq,
+                         MidBq,
+                         HighBq: TBiquadCoeffs);
 
 
 implementation
@@ -117,6 +113,7 @@ uses
 
 class function TComplex.Make(const ARe,
                              AIm: Double): TComplex;
+
 begin
 
   Result.Re := ARe;
@@ -126,23 +123,31 @@ end;
 
 class operator TComplex.Add(const A,
                             B: TComplex): TComplex;
+
 begin
 
-  Result := TComplex.Make(A.Re + B.Re, A.Im + B.Im);
+  Result := TComplex.Make(A.Re + B.Re,
+                          A.Im + B.Im);
 end;
 
 
 class operator TComplex.Subtract(const A,
                                  B: TComplex): TComplex;
+
 begin
 
-  Result := TComplex.Make(A.Re - B.Re, A.Im - B.Im);
+  Result := TComplex.Make(A.Re - B.Re,
+                          A.Im - B.Im);
 end;
 
-class operator TComplex.Multiply(const A, B: TComplex): TComplex;
+
+class operator TComplex.Multiply(const A,
+                                 B: TComplex): TComplex;
+
 begin
 
-  Result := TComplex.Make(A.Re*B.Re - A.Im*B.Im, A.Re*B.Im + A.Im*B.Re);
+  Result := TComplex.Make(A.Re * B.Re - A.Im * B.Im,
+                          A.Re * B.Im + A.Im * B.Re);
 end;
 
 
@@ -165,9 +170,10 @@ end;
 
 
 function TComplex.Abs_(): Double;
+
 begin
 
-  Result := Sqrt(Re * Re + Im*Im);
+  Result := Sqrt(Re * Re + Im * Im);
 end;
 
 
@@ -205,17 +211,17 @@ begin
 
   numerator := TComplex.Make(Bq.b0,
                              0) +
-               TComplex.Make(Bq.b1,
-                             0) * e1 +
-               TComplex.Make(Bq.b2,
-                             0) * e2;
+    TComplex.Make(Bq.b1,
+                  0) * e1 +
+    TComplex.Make(Bq.b2,
+                  0) * e2;
 
   denominator := TComplex.Make(1.0,
                                0) +
-                 TComplex.Make(Bq.a1,
-                               0) * e1 +
-                 TComplex.Make(Bq.a2,
-                               0) * e2;
+    TComplex.Make(Bq.a1,
+                  0) * e1 +
+    TComplex.Make(Bq.a2,
+                  0) * e2;
 
   Result := (numerator / denominator);
 end;
@@ -224,13 +230,15 @@ end;
 procedure PlotEqResponse(Canvas: TCanvas;
                          const R: TRect;
                          const Fs: Double;
-                         const LowBq, MidBq, HighBq: TBiquadCoeffs);
+                         const LowBq,
+                         MidBq,
+                         HighBq: TBiquadCoeffs);
 const
-  Fmin   = 10.0;
-  Fmax   = 22000.0;
+  Fmin = 10.0;
+  Fmax = 22000.0;
   Points = 400;
-  DbMin  = -24.0;
-  DbMax  =  24.0;
+  DbMin = -24.0;
+  DbMax = 24.0;
 
 var
   i: Integer;
@@ -251,8 +259,9 @@ begin
   if (R.Width <= 0) or (R.Height <= 0) or (Fs <= 0) then
     Exit;
 
-  UpperHz := Min(Fmax, Fs * 0.499);
-  if UpperHz <= Fmin then
+  UpperHz := Min(Fmax,
+                 Fs * 0.499);
+  if (UpperHz <= Fmin) then
     Exit;
 
   // Background
@@ -293,7 +302,7 @@ begin
 
       db := 20 * Log10(mag);
       // Suppress floating-point noise around unity before pixel rounding.
-      if Abs(db) < 1e-9 then
+      if (Abs(db) < 1e-9) then
         db := 0.0;
       db := EnsureRange(db,
                         DbMin,
@@ -303,10 +312,12 @@ begin
       y := R.Bottom - 1 - Round((db - DbMin) / (DbMax - DbMin) * (R.Height - 1));
 
       if (i = 0) then
-        Canvas.MoveTo(x, y)
+        Canvas.MoveTo(x,
+                      y)
       else
-        Canvas.LineTo(x, y);
-  end;
+        Canvas.LineTo(x,
+                      y);
+    end;
 end;
 
 

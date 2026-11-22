@@ -66,7 +66,7 @@ interface
 
 uses
   MfCaptureSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -115,6 +115,7 @@ type
     procedure btnResumeHttpClick(Sender: TObject);
     procedure btnBrowseOutputClick(Sender: TObject);
     procedure tmrStatusTimer(Sender: TObject);
+
   private
     FVideoDevices: TSimpleDeviceList;
     FAudioDevices: TSimpleDeviceList;
@@ -170,9 +171,10 @@ begin
 
   OldSelStart := memStatus.SelStart;
   OldSelLength := memStatus.SelLength;
-  HadSelection := OldSelLength > 0;
+  HadSelection := (OldSelLength > 0);
 
-  memStatus.Lines.Add(FormatDateTime('hh:nn:ss', Now) + '  ' + S);
+  memStatus.Lines.Add(FormatDateTime('hh:nn:ss',
+                                     Now) + '  ' + S);
 
   // Do not steal the selection while the user is copying diagnostic text.
   // When there is no active selection, keep the normal tail-follow behavior.
@@ -190,14 +192,16 @@ begin
     end;
 end;
 
+
 function TfrmMain.BuildRecordingFileName: string;
+
 begin
 
   Result := IncludeTrailingPathDelimiter(FRecordingFolder) +
-            FRecordingBaseName + '_' +
-            FormatDateTime('yyyymmdd_hhnnss',
-                           Now) +
-            '.mp4';
+    FRecordingBaseName + '_' +
+    FormatDateTime('yyyymmdd_hhnnss',
+                   Now) +
+    '.mp4';
 end;
 
 
@@ -212,9 +216,8 @@ begin
   if Assigned(FRecordingStream) then
     Exit(True);
 
-  if not Assigned(FCapture) or
-     not FCapture.GetInitSegment(InitSegment) or
-     (Length(InitSegment) = 0) then
+  if not Assigned(FCapture) or not FCapture.GetInitSegment(InitSegment) or
+    (Length(InitSegment) = 0) then
     Exit;
 
   FRecordingFileName := BuildRecordingFileName;
@@ -251,6 +254,7 @@ end;
 
 
 procedure TfrmMain.StopRecordingFile;
+
 begin
 
   if Assigned(FRecordingStream) then
@@ -292,13 +296,14 @@ end;
 
 
 procedure TfrmMain.CheckRecordingRoll;
+
 begin
 
   if not Assigned(FRecordingStream) or (FRecordingStarted = 0) then
     Exit;
 
   if (MinutesBetween(Now,
-                    FRecordingStarted) < RECORDING_FILE_MINUTES) then
+    FRecordingStarted) < RECORDING_FILE_MINUTES) then
     Exit;
 
   // Drain everything already produced before closing this archive file.
@@ -333,15 +338,15 @@ begin
   Files := TStringList.Create;
 
   try
-    if FindFirst(IncludeTrailingPathDelimiter(FRecordingFolder) +
-                 FRecordingBaseName + '_*.mp4',
-                 faAnyFile and not faDirectory,
-                 SearchRec) = 0 then
+    if (FindFirst(IncludeTrailingPathDelimiter(FRecordingFolder) +
+      FRecordingBaseName + '_*.mp4',
+      faAnyFile and not faDirectory,
+      SearchRec) = 0) then
       begin
         try
           repeat
             Files.Add(SearchRec.Name);
-          until FindNext(SearchRec) <> 0;
+          until (FindNext(SearchRec) <> 0);
         finally
           FindClose(SearchRec);
         end;
@@ -352,10 +357,10 @@ begin
     for I := 0 to Files.Count - RECORDING_RETENTION_FILES - 1 do
       begin
         FileName := IncludeTrailingPathDelimiter(FRecordingFolder) +
-                    Files[I];
+          Files[I];
 
         if not SameText(FileName,
-                        FRecordingFileName) then
+          FRecordingFileName) then
           DeleteFile(FileName);
       end;
   finally
@@ -365,13 +370,14 @@ end;
 
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+
 begin
 
   FVideoDevices := TSimpleDeviceList.Create(
-                     MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
+    MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
 
   FAudioDevices := TSimpleDeviceList.Create(
-                     MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_GUID);
+    MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_GUID);
 
   FCapture := TSimpleAvCapture.Create();
 
@@ -399,6 +405,7 @@ end;
 
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
+
 begin
 
   tmrStatus.Enabled := False;
@@ -431,14 +438,14 @@ begin
     if SUCCEEDED(hr) and (FVideoDevices.Count > 0) then
       for I := 0 to FVideoDevices.Count - 1 do
         if SUCCEEDED(FVideoDevices.GetFriendlyName(I,
-                                                   Name)) then
+          Name)) then
           cbCamera.Items.Add(Name);
 
     hr := FAudioDevices.Enumerate;
     if SUCCEEDED(hr) and (FAudioDevices.Count > 0) then
       for I := 0 to FAudioDevices.Count - 1 do
         if SUCCEEDED(FAudioDevices.GetFriendlyName(I,
-                                                   Name)) then
+          Name)) then
           cbMicrophone.Items.Add(Name);
 
     if (cbCamera.Items.Count > 0) then
@@ -449,12 +456,13 @@ begin
 
     AddStatus(Format('Found %d camera(s), %d microphone(s).',
                      [cbCamera.Items.Count,
-                      cbMicrophone.Items.Count]));
+      cbMicrophone.Items.Count]));
   finally
     cbCamera.Items.EndUpdate();
     cbMicrophone.Items.EndUpdate();
   end;
 end;
+
 
 procedure TfrmMain.UpdateControls();
 var
@@ -463,23 +471,22 @@ var
 begin
 
   Capturing := Assigned(FCapture) and
-               (FCapture.State = csCapturing);
+    (FCapture.State = csCapturing);
 
   btnStart.Enabled := not Capturing and
-                      (cbCamera.ItemIndex >= 0) and
-                      (cbMicrophone.ItemIndex >= 0);
+    (cbCamera.ItemIndex >= 0) and
+    (cbMicrophone.ItemIndex >= 0);
 
   btnStop.Enabled := Capturing;
 
   btnPauseHttp.Enabled := Capturing and
-                          Assigned(FHttpServer) and
-                          FHttpServer.Running and
-                          not FHttpServer.DebugDropRequests;
+    Assigned(FHttpServer) and
+    FHttpServer.Running and not FHttpServer.DebugDropRequests;
 
   btnResumeHttp.Enabled := Capturing and
-                           Assigned(FHttpServer) and
-                           FHttpServer.Running and
-                           FHttpServer.DebugDropRequests;
+    Assigned(FHttpServer) and
+    FHttpServer.Running and
+    FHttpServer.DebugDropRequests;
 
   cbCamera.Enabled := not Capturing;
   cbMicrophone.Enabled := not Capturing;
@@ -501,8 +508,8 @@ begin
     Folder := FRecordingFolder;
 
   if MfSelectDirectory('Select MP4 output folder',
-                     '',
-                     Folder) then
+    '',
+    Folder) then
     begin
       FRecordingFolder := ExcludeTrailingPathDelimiter(Folder);
       edOutput.Text := FRecordingFolder;
@@ -521,9 +528,9 @@ var
 begin
 
   if not TryStrToInt(Trim(edHttpPort.Text),
-                     HttpPortValue) or
-     (HttpPortValue < 1) or
-     (HttpPortValue > 65535) then
+    HttpPortValue) or
+    (HttpPortValue < 1) or
+    (HttpPortValue > 65535) then
     begin
       MessageDlg('HTTP port must be a number from 1 through 65535.',
                  mtError,
@@ -567,7 +574,8 @@ begin
 
   if FAILED(HR) then
     begin
-      AddStatus(Format('Start failed: 0x%.8x', [Cardinal(HR)]));
+      AddStatus(Format('Start failed: 0x%.8x',
+                       [Cardinal(HR)]));
       MessageDlg(Format('Unable to start capture.'#13#10'HRESULT = 0x%.8x',
                         [Cardinal(HR)]),
                  mtError,
@@ -604,7 +612,7 @@ begin
       else
         AddStatus(Format('HTTP server failed to start on port %d.',
                          [HttpPort]));
-  end;
+    end;
 
   UpdateControls();
 end;
@@ -625,7 +633,8 @@ begin
   hr := FCapture.Stop();
 
   if FAILED(hr) then
-    AddStatus(Format('Stop/finalize failed: 0x%.8x', [Cardinal(HR)]))
+    AddStatus(Format('Stop/finalize failed: 0x%.8x',
+                     [Cardinal(HR)]))
   else
     AddStatus('Capture stopped and file finalized.');
 
@@ -634,6 +643,7 @@ end;
 
 
 procedure TfrmMain.btnPauseHttpClick(Sender: TObject);
+
 begin
 
   if Assigned(FHttpServer) and FHttpServer.Running then
@@ -646,10 +656,11 @@ end;
 
 
 procedure TfrmMain.btnResumeHttpClick(Sender: TObject);
+
 begin
 
   if Assigned(FHttpServer) and
-     FHttpServer.Running then
+    FHttpServer.Running then
     begin
       FHttpServer.DebugDropRequests := False;
       AddStatus('HTTP test pause disabled. Requests are served again.');
@@ -659,6 +670,7 @@ end;
 
 
 function TfrmMain.HttpGetInit(out AData: TBytes): Boolean;
+
 begin
 
   AData := nil;
@@ -667,14 +679,15 @@ end;
 
 
 function TfrmMain.HttpGetFragment(const ASequence: UInt64;
-                                      out AData: TBytes): Boolean;
+                                  out AData: TBytes): Boolean;
+
 begin
 
   AData := nil;
 
   Result := Assigned(FCapture) and
-            FCapture.GetFragment(ASequence,
-                                 AData);
+    FCapture.GetFragment(ASequence,
+                         AData);
 end;
 
 
@@ -704,33 +717,33 @@ begin
                                WindowCount);
 
   if Result and
-     FCapture.GetFmp4Diagnostics(InitBytes,
-                                 FragmentBytes,
-                                 FragmentCount,
-                                 TotalBytes) then
+    FCapture.GetFmp4Diagnostics(InitBytes,
+                                FragmentBytes,
+                                FragmentCount,
+                                TotalBytes) then
     AText := AnsiString(
       Format('generation=%d'#13#10 +
-             'state=%d'#13#10 +
-             'videoSamples=%d'#13#10 +
-             'audioSamples=%d'#13#10 +
-             'initBytes=%d'#13#10 +
-             'lastFragmentBytes=%d'#13#10 +
-             'fragmentCount=%d'#13#10 +
-             'first=%d'#13#10 +
-             'last=%d'#13#10 +
-             'windowCount=%d'#13#10 +
-             'observedBytes=%d'#13#10,
+      'state=%d'#13#10 +
+      'videoSamples=%d'#13#10 +
+      'audioSamples=%d'#13#10 +
+      'initBytes=%d'#13#10 +
+      'lastFragmentBytes=%d'#13#10 +
+      'fragmentCount=%d'#13#10 +
+      'first=%d'#13#10 +
+      'last=%d'#13#10 +
+      'windowCount=%d'#13#10 +
+      'observedBytes=%d'#13#10,
              [FStreamGeneration,
-              Ord(FCapture.State),
-              FCapture.VideoSamples,
-              FCapture.AudioSamples,
-              InitBytes,
-              FragmentBytes,
-              FragmentCount,
-              FirstSequence,
-              LastSequence,
-              WindowCount,
-              TotalBytes]));
+      Ord(FCapture.State),
+      FCapture.VideoSamples,
+      FCapture.AudioSamples,
+      InitBytes,
+      FragmentBytes,
+      FragmentCount,
+      FirstSequence,
+      LastSequence,
+      WindowCount,
+      TotalBytes]));
 end;
 
 
@@ -752,14 +765,14 @@ begin
                         [FCapture.VideoSamples, FCapture.AudioSamples]);
 
       if FCapture.GetFmp4Diagnostics(InitBytes,
-                                     FragmentBytes,
-                                     FragmentCount,
-                                     TotalBytes) and (FragmentCount <> FLastFragmentCount) then
+        FragmentBytes,
+        FragmentCount,
+        TotalBytes) and (FragmentCount <> FLastFragmentCount) then
         begin
           FLastFragmentCount := FragmentCount;
 
           AddStatus(Format('fMP4: init=%d bytes, fragment=%d bytes, count=%d, observed=%d',
-                          [InitBytes, FragmentBytes, FragmentCount, TotalBytes]));
+                           [InitBytes, FragmentBytes, FragmentCount, TotalBytes]));
         end;
     end
   else

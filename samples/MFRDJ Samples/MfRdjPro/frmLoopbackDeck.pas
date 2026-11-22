@@ -64,11 +64,12 @@ unit frmLoopbackDeck;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -289,6 +290,7 @@ uses
 
 
 procedure TfrmLoopbackDeck.FormCreate(Sender: TObject);
+
 begin
 
   FEngine := TMfLoopbackDeckEngine.Create();
@@ -331,6 +333,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.FormDestroy(Sender: TObject);
+
 begin
 
   FClosing := True;
@@ -347,6 +350,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.FormShow(Sender: TObject);
+
 begin
 
   UpdateUiState();
@@ -357,21 +361,24 @@ begin
   // No form caption
   SetWindowLong(Handle,
                 GWL_STYLE,
-                GetWindowLong(Handle, GWL_STYLE) and not WS_CAPTION or WS_BORDER);
+                GetWindowLong(Handle,
+                              GWL_STYLE) and not WS_CAPTION or WS_BORDER);
   Width := 261;
 end;
 
 
 procedure TfrmLoopbackDeck.btnSelectProcessClick(Sender: TObject);
+
 begin
 
   if SelectTargetProcess(FProcessId,
-                         FProcessName) then
+    FProcessName) then
     UpdateProcessUi();
 end;
 
 
 procedure TfrmLoopbackDeck.btnSetDownbeatClick(Sender: TObject);
+
 begin
 
   if Assigned(FEngine) then
@@ -380,6 +387,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.btnPlayStopClick(Sender: TObject);
+
 begin
 
   if not Assigned(FEngine) then
@@ -394,6 +402,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.chkMuteClick(Sender: TObject);
+
 begin
 
   FMute := chkMute.Checked;
@@ -407,6 +416,7 @@ procedure TfrmLoopbackDeck.chkCrossFadeClick(Sender: TObject);
 var
   I: Integer;
   Count: Integer;
+
 begin
 
   FLastXFadePosition := tbVolume.Position;
@@ -464,7 +474,9 @@ begin
   UpdateMixerChannelState();
 end;
 
+
 procedure TfrmLoopbackDeck.btnPFLClick(Sender: TObject);
+
 begin
 
   ApplyPflToMixer();
@@ -473,6 +485,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.tbVolumeChange(Sender: TObject);
+
 begin
 
   if not FApplyingXFade then
@@ -483,6 +496,7 @@ begin
   ApplyVolumeToMixer();
   UpdateMixerChannelState();
 end;
+
 
 procedure TfrmLoopbackDeck.tbVolumeDblClick(Sender: TObject);
 var
@@ -501,6 +515,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.tbBalanceChange(Sender: TObject);
+
 begin
 
   UpdateBalanceUi();
@@ -510,6 +525,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.tbBalanceDblClick(Sender: TObject);
+
 begin
 
   tbBalance.AnimateTrackBarToPosition(0,
@@ -535,6 +551,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.tbEqCenterFreqHzDblClick(Sender: TObject);
+
 begin
 
   tbEqCenterFreqHz.AnimateTrackBarToPosition(1500,
@@ -560,6 +577,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.tbEqGainDbDblClick(Sender: TObject);
+
 begin
 
   tbEqGainDb.AnimateTrackBarToPosition(0,
@@ -591,6 +609,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.tbEqQDblClick(Sender: TObject);
+
 begin
 
   tbEqQ.AnimateTrackBarToPosition(10,
@@ -599,6 +618,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.tbInputGainChange(Sender: TObject);
+
 begin
 
   ApplyInputGainToEngine();
@@ -606,6 +626,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.tbInputGainDblClick(Sender: TObject);
+
 begin
 
   tbInputGain.AnimateTrackBarToPosition(0,
@@ -614,6 +635,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.tbPitchChange(Sender: TObject);
+
 begin
 
   FTempoPercent := GetTempoPercentFromTrackBar();
@@ -623,6 +645,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.tbPitchDblClick(Sender: TObject);
+
 begin
 
   tbPitch.AnimateTrackBarToPosition(0,
@@ -654,6 +677,7 @@ end;
 
 procedure TfrmLoopbackDeck.WasApiStateEvent(Sender: TObject;
                                             const AState: TWasApiDeviceState);
+
 begin
 
   if FClosing then
@@ -663,26 +687,26 @@ begin
     Exit;
 
   case AState of
-    dsReady: begin
+      dsReady: begin
 
-               // Nothing for the moment.
-             end;
-    dsPlay:  begin
+        // Nothing for the moment.
+      end;
+      dsPlay: begin
 
-               prStopwatch := TStopwatch.StartNew();
-               FTimerRunning := True;
-               Timer1.Enabled := True;
-             end;
+        prStopwatch := TStopwatch.StartNew();
+        FTimerRunning := True;
+        Timer1.Enabled := True;
+      end;
 
-    dsStop:  begin
+      dsStop: begin
 
-               // Stop the timer and stopwatch.
-               prStopwatch.Stop;
-               FTimerRunning := False;
-               Timer1.Enabled := False;
-               UpdateTimeLabel();
-               prStopWatch.Reset;
-             end;
+        // Stop the timer and stopwatch.
+        prStopwatch.Stop;
+        FTimerRunning := False;
+        Timer1.Enabled := False;
+        UpdateTimeLabel();
+        prStopWatch.Reset;
+      end;
   end;
 end;
 
@@ -692,6 +716,7 @@ procedure TfrmLoopbackDeck.DeckTick(Sender: TObject;
                                     const Position100ns: Int64;
                                     const CurrentBpm: Double;
                                     const BeatPhase: Double);
+
 begin
 
   if FClosing or (csDestroying in ComponentState) then
@@ -714,6 +739,7 @@ procedure TfrmLoopbackDeck.DeckBeat(Sender: TObject;
                                     const Position100ns: Int64;
                                     const BeatNumber: Int64;
                                     const CurrentBpm: Double);
+
 begin
 
   if FClosing or (csDestroying in ComponentState) then
@@ -733,6 +759,7 @@ end;
 // BPM end ---------------------------------------------------------------------
 
 function TfrmLoopbackDeck.IsCapturing(): Boolean;
+
 begin
 
   Result := Assigned(FEngine) and FEngine.Active;
@@ -777,9 +804,8 @@ begin
       lblStatus.Caption := 'Start: Failed';
       lblStatus.Hint := lblStatus.Caption;
     end
-  else
-    if Assigned(MainMDIFrm) then
-      MainMDIFrm.RefreshNowPlayingSource();
+  else if Assigned(MainMDIFrm) then
+    MainMDIFrm.RefreshNowPlayingSource();
 end;
 
 
@@ -793,7 +819,7 @@ begin
     Exit;
 
   hr := FEngine.Stop();
-  if FAILED(hr)  then
+  if FAILED(hr) then
     begin
 
       lblStatus.Caption := Format('Stop failed with error %d',
@@ -813,6 +839,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.BindAudioRack();
+
 begin
 
   FAudioRack := nil;
@@ -876,6 +903,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.RegisterToMixer();
+
 begin
 
   if Assigned(FMixerChannel) then
@@ -903,11 +931,12 @@ end;
 
 
 procedure TfrmLoopbackDeck.UnregisterFromMixer();
+
 begin
 
   if Assigned(FMixerChannel) and
-     Assigned(MainMDIFrm) and
-     Assigned(MainMDIFrm.InternalMixer) then
+    Assigned(MainMDIFrm) and
+    Assigned(MainMDIFrm.InternalMixer) then
     MainMDIFrm.InternalMixer.RemoveChannel(FMixerChannel);
 
   FMixerChannel := nil;
@@ -915,6 +944,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.UpdateMixerChannelState();
+
 begin
 
   if (FEngine.Active = False) then
@@ -939,6 +969,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.UpdateUiState();
+
 begin
 
   btnSelectProcess.Enabled := not (Assigned(FEngine) and FEngine.Active);
@@ -968,6 +999,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.UpdateProcessUi();
+
 begin
 
   if (FProcessName <> '') then
@@ -1009,6 +1041,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.UpdateVolumeUi();
+
 begin
 
   lblVolumePerc.Caption := IntToStr(tbVolume.Position) + '%';
@@ -1016,6 +1049,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.UpdateBalanceUi();
+
 begin
 
   { Replace with preferred balance text if needed. }
@@ -1023,6 +1057,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.UpdatePitchUi();
+
 begin
 
   lblP.Caption := Format('%.1f%%',
@@ -1031,6 +1066,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.UpdateAudioFormatUi();
+
 begin
 
   lblAudioFormat.Caption := '44.1 kHz / stereo';
@@ -1038,6 +1074,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.ApplyVolumeToMixer();
+
 begin
 
   if not Assigned(FMixerChannel) then
@@ -1048,6 +1085,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.ApplyBalanceToMixer();
+
 begin
 
   if not Assigned(FMixerChannel) then
@@ -1058,6 +1096,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.ApplyMuteToMixer();
+
 begin
 
   if not Assigned(FMixerChannel) then
@@ -1068,6 +1107,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.ApplyPflToMixer();
+
 begin
 
   if not Assigned(FMixerChannel) then
@@ -1080,6 +1120,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.ApplyCrossFadeToMixer();
+
 begin
 
   // Same behavior as the channel deck crossfade checkbox:
@@ -1101,23 +1142,23 @@ begin
   FLastXFadePosition := tbVolume.Position;
 
   if FApplyingXFade or
-     (not chkCrossFade.Checked) then
+    (not chkCrossFade.Checked) then
     Exit;
 
   Range := tbVolume.Maximum - tbVolume.Minimum;
-  if Range <= 0 then
+  if (Range <= 0) then
     Exit;
 
   // Move the other fader by the same percentage, from its current level.
   Delta := (ANewPos - PreviousPosition) / Range;
-  if Delta = 0.0 then
+  if (Delta = 0.0) then
     Exit;
 
   FXFadeRemainder := 0.0;
 
   for I := 0 to Screen.FormCount - 1 do
     begin
-      if Screen.Forms[I] = Self then
+      if (Screen.Forms[I] = Self) then
         Continue;
 
       if Screen.Forms[I] is TfrmChannelDeck then
@@ -1154,14 +1195,14 @@ var
 
 begin
 
-  if ADelta = 0.0 then
+  if (ADelta = 0.0) then
     Exit;
 
   Position := tbVolume.Position + FXFadeRemainder -
-              ADelta * (tbVolume.Maximum - tbVolume.Minimum);
-  if Position < tbVolume.Minimum then
+    ADelta * (tbVolume.Maximum - tbVolume.Minimum);
+  if (Position < tbVolume.Minimum) then
     Position := tbVolume.Minimum
-  else if Position > tbVolume.Maximum then
+  else if (Position > tbVolume.Maximum) then
     Position := tbVolume.Maximum;
 
   FApplyingXFade := True;
@@ -1179,6 +1220,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.ApplyTempoToEngine();
+
 begin
 
   if not Assigned(FEngine) then
@@ -1214,6 +1256,7 @@ end;
 
 // Helpers volume --------------------------------------------------------------
 function TfrmLoopbackDeck.Clamp01(const AValue: Single): Single;
+
 begin
 
   if (AValue < 0.0) then
@@ -1305,15 +1348,17 @@ end;
 
 
 function TfrmLoopbackDeck.CanStartCapture(): Boolean;
+
 begin
 
   Result := Assigned(FEngine) and
-            (FProcessId <> 0);
+    (FProcessId <> 0);
 end;
 
 
 function TfrmLoopbackDeck.SelectTargetProcess(out AProcessId: Cardinal;
                                               out AProcessName: string): Boolean;
+
 begin
 
   AProcessId := 0;
@@ -1360,6 +1405,7 @@ var
   hr: HRESULT;
   ByteCount: DWORD;
   Wfx: TWAVEFORMATEX;
+
 begin
 
   Flags := 0;
@@ -1376,7 +1422,9 @@ begin
   if Failed(hr) then
     Exit(hr);
 
-  FillChar(Wfx, SizeOf(Wfx), 0);
+  FillChar(Wfx,
+           SizeOf(Wfx),
+           0);
   Wfx.wFormatTag := WAVE_FORMAT_IEEE_FLOAT;
   Wfx.nChannels := 2;
   Wfx.nSamplesPerSec := 44100;
@@ -1402,6 +1450,7 @@ end;
 
 // bpm -------------------------------------------------------------------------
 procedure TfrmLoopbackDeck.UpdateBpmGuiFromEngine();
+
 begin
 
   if not Assigned(FEngine) then
@@ -1419,6 +1468,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.ResetBeatLamp();
+
 begin
 
   FBeatPulseActive := False;
@@ -1427,6 +1477,7 @@ end;
 
 
 procedure TfrmLoopbackDeck.DetachDeckEngineEvents();
+
 begin
 
   if not Assigned(FEngine) then

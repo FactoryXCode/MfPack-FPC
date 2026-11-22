@@ -88,6 +88,7 @@ uses
 type
 
   TMfPitchTempoEffect = class(TMfWasApiFxComponentBase)
+
   private
 
     FSettings: TPitchTempoSettings;
@@ -147,6 +148,7 @@ implementation
 
 
 procedure Register;
+
 begin
 
   RegisterComponents('MfPack Core Audio Samples',
@@ -156,6 +158,7 @@ end;
 { TMfPitchTempoEffect }
 
 constructor TMfPitchTempoEffect.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
@@ -168,6 +171,7 @@ end;
 
 
 destructor TMfPitchTempoEffect.Destroy();
+
 begin
 
   FMft := nil;
@@ -195,13 +199,14 @@ begin
 
   // Ensure settings are applied even if recreated.
   if Supports(FMft,
-              IMfPitchTempoMft,
-              Ctrl) then
+    IMfPitchTempoMft,
+    Ctrl) then
     Ctrl.SetSettings(FSettings);
 end;
 
 
 function TMfPitchTempoEffect.GetMftInstance(): IMFTransform;
+
 begin
 
   if not IsDesigning() then
@@ -220,8 +225,8 @@ begin
     Exit;
 
   if Supports(FMft,
-              IMfPitchTempoMft,
-              Ctrl) then
+    IMfPitchTempoMft,
+    Ctrl) then
     begin
 
       // Keep enable state in sync (MFT can early-out on the audio thread).
@@ -232,6 +237,7 @@ end;
 
 
 function TMfPitchTempoEffect.GetEnabled(): LongBool;
+
 begin
 
   Result := Boolean(FSettings.Enabled);
@@ -244,20 +250,21 @@ var
 
 begin
 
-  if Boolean(FSettings.Enabled) = Value then
+  if (Boolean(FSettings.Enabled) = Value) then
     Exit;
 
   // Delphi LongBool True = -1; normalize to 0/1.
   FSettings.Enabled := Abs(Ord(Value));
 
   if (FMft <> nil) and Supports(FMft,
-                                IMfPitchTempoMft,
-                                Ctrl) then
+    IMfPitchTempoMft,
+    Ctrl) then
     Ctrl.EnableFX(Value);
 end;
 
 
 function TMfPitchTempoEffect.GetPitchSemitones(): Single;
+
 begin
 
   Result := FSettings.PitchSemitones;
@@ -265,10 +272,11 @@ end;
 
 
 procedure TMfPitchTempoEffect.SetPitchSemitones(const Value: Single);
+
 begin
 
   if SameValue(FSettings.PitchSemitones,
-               Value) then
+    Value) then
     Exit;
 
   FSettings.PitchSemitones := Value;
@@ -277,6 +285,7 @@ end;
 
 
 function TMfPitchTempoEffect.GetTempoPercent(): Single;
+
 begin
 
   Result := FSettings.TempoPercent;
@@ -284,10 +293,11 @@ end;
 
 
 procedure TMfPitchTempoEffect.SetTempoPercent(const Value: Single);
+
 begin
 
   if SameValue(FSettings.TempoPercent,
-               Value) then
+    Value) then
     Exit;
 
   FSettings.TempoPercent := Value;
@@ -296,6 +306,7 @@ end;
 
 
 function TMfPitchTempoEffect.GetPreserveFormants(): Boolean;
+
 begin
 
   Result := Boolean(FSettings.PreserveFormants);
@@ -303,9 +314,10 @@ end;
 
 
 procedure TMfPitchTempoEffect.SetPreserveFormants(const Value: Boolean);
+
 begin
 
-  if Boolean(FSettings.PreserveFormants) = Value then
+  if (Boolean(FSettings.PreserveFormants) = Value) then
     Exit;
 
   // Delphi LongBool True = -1; normalize to 0/1.
@@ -315,12 +327,15 @@ end;
 
 
 function TMfPitchTempoEffect.GetWindowSize(): Integer;
+
 begin
+
   Result := FSettings.WindowSize;
 end;
 
 
 procedure TMfPitchTempoEffect.SetWindowSize(const Value: Integer);
+
 begin
 
   if (FSettings.WindowSize = Value) then
@@ -332,6 +347,7 @@ end;
 
 
 function TMfPitchTempoEffect.GetOverlap(): Single;
+
 begin
 
   Result := FSettings.Overlap;
@@ -339,10 +355,11 @@ end;
 
 
 procedure TMfPitchTempoEffect.SetOverlap(const Value: Single);
+
 begin
 
   if SameValue(FSettings.Overlap,
-               Value) then
+    Value) then
     Exit;
 
   FSettings.Overlap := Value;
@@ -351,6 +368,7 @@ end;
 
 
 function TMfPitchTempoEffect.GetMode: TPitchTempoMode;
+
 begin
 
   Result := FSettings.Mode;
@@ -358,6 +376,7 @@ end;
 
 
 procedure TMfPitchTempoEffect.SetMode(const Value: TPitchTempoMode);
+
 begin
 
   if (FSettings.Mode = Value) then

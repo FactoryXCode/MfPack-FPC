@@ -64,11 +64,12 @@ unit RDJ.LibraryScanThread;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   SysUtils,
   Classes,
   {Application}
@@ -94,6 +95,7 @@ type
                                            const AErrorMsg: string) of object;
 
   TRDJLibraryScanThread = class(TThread)
+
   private
 
     FDbFileName: string;
@@ -142,6 +144,7 @@ implementation
 constructor TRDJLibraryScanThread.Create(const ADbFileName: string;
                                          const AFolder: string;
                                          const ARecursive: Boolean);
+
 begin
 
   inherited Create(True);
@@ -163,6 +166,7 @@ end;
 
 
 function TRDJLibraryScanThread.ScannerCancelCheck(Sender: TObject): Boolean;
+
 begin
 
   Result := Terminated;
@@ -183,6 +187,7 @@ end;
 }
 
 procedure TRDJLibraryScanThread.DoProgress;
+
 begin
 
   if Assigned(FOnProgress) then
@@ -194,6 +199,7 @@ end;
 
 
 procedure TRDJLibraryScanThread.DoFinished;
+
 begin
 
   if Assigned(FOnFinished) then
@@ -238,7 +244,7 @@ begin
     Files := Scanner.CollectAudioFiles(FFolder,
                                        FRecursive);
 
-    if Files = nil then
+    if (Files = nil) then
       begin
         FCancelled := True;
         Exit;
@@ -264,7 +270,7 @@ begin
           Synchronize(DoProgress);
 
           if RDJReadTrackInfo(Files[i],
-                              Track) then
+            Track) then
             begin
               RDJUpdateTrackQuality(Track);
               LibraryRef.AddOrUpdateTrack(Track);
@@ -272,7 +278,7 @@ begin
               Inc(BatchCount);
             end;
 
-          if BatchCount >= COMMIT_BATCH_SIZE then
+          if (BatchCount >= COMMIT_BATCH_SIZE) then
             begin
               Db.CommitTx;
               Db.BeginTx;

@@ -87,6 +87,7 @@ type
   TMfCastChannel = class;
 
   TMfCastChannelWorker = class(TThread)
+
   private
     FOwner: TMfCastChannel;
 
@@ -99,7 +100,9 @@ type
     function IsStopping(): Boolean;
   end;
 
-  TMfCastChannel = class(TInterfacedObject, IMfCastChannel)
+  TMfCastChannel = class(TInterfacedObject,
+                         IMfCastChannel)
+
   private
     FSettings: TMfCastProtocolSettings;
     FTransport: IMfCastTransport;
@@ -214,6 +217,7 @@ end;
 
 procedure MfCastAppendVarUInt(var AData: TBytes;
                               AValue: Cardinal);
+
 begin
 
   repeat
@@ -251,23 +255,25 @@ end;
 procedure MfCastAppendProtoVarUInt(var AData: TBytes;
                                    const AFieldNumber: Cardinal;
                                    const AValue: Cardinal);
+
 begin
 
   MfCastAppendVarUInt(AData,
-                     (AFieldNumber shl 3) or 0);
+                      (AFieldNumber shl 3) or 0);
   MfCastAppendVarUInt(AData,
                       AValue);
 end;
 
 
 function MfCastStreamTypeToString(const AStreamType: TMfCastStreamType): string;
+
 begin
 
   case AStreamType of
     cstLive: Result := 'LIVE';
     cstNone: Result := 'NONE';
-  else
-    Result := 'BUFFERED';
+    else
+      Result := 'BUFFERED';
   end;
 end;
 
@@ -289,12 +295,12 @@ begin
       #10: Result := Result + '\n';
       #12: Result := Result + '\f';
       LFEED: Result := Result + '\r';
-    else
-      if (Ord(AValue[I]) < 32) then
-        Result := Result + '\u' + IntToHex(Ord(AValue[I]),
-                                           4)
       else
-        Result := Result + AValue[I];
+        if (Ord(AValue[I]) < 32) then
+          Result := Result + '\u' + IntToHex(Ord(AValue[I]),
+                                             4)
+        else
+          Result := Result + AValue[I];
     end;
 end;
 
@@ -303,6 +309,7 @@ function MfCastBuildMessage(const ASourceId: string;
                             const ADestinationId: string;
                             const ANamespace: string;
                             const AJsonPayload: string): TBytes;
+
 begin
 
   SetLength(Result,
@@ -375,7 +382,7 @@ begin
       Inc(AIndex);
       AValue := AValue or (Cardinal(B and $7F) shl Shift);
 
-      if (B and $80) = 0 then
+      if ((B and $80) = 0) then
         begin
           Result := True;
           Exit;
@@ -401,8 +408,8 @@ begin
   AValue := '';
 
   if not MfCastReadVarUInt(AData,
-                           AIndex,
-                           ValueLength) then
+    AIndex,
+    ValueLength) then
     Exit;
 
   if (ValueLength > Cardinal(Length(AData) - AIndex)) then
@@ -462,20 +469,18 @@ begin
             'n': Result := Result + #10;
             'f': Result := Result + #12;
             'r': Result := Result + LFEED;
-          else
-            Result := Result + AJson[I];
+            else
+              Result := Result + AJson[I];
           end;
 
           Escaped := False;
         end
+      else if (AJson[I] = '\') then
+        Escaped := True
+      else if (AJson[I] = '"') then
+        Exit
       else
-        if (AJson[I] = '\') then
-          Escaped := True
-        else
-          if (AJson[I] = '"') then
-            Exit
-          else
-            Result := Result + AJson[I];
+        Result := Result + AJson[I];
       Inc(I);
     end;
 end;
@@ -528,27 +533,25 @@ begin
 
           if Escaped then
             Escaped := False
-          else
-            if (AJson[I] = '\') then
-              Escaped := True
-            else
-              if (AJson[I] = '"') then
-                InString := False;
+          else if (AJson[I] = '\') then
+            Escaped := True
+          else if (AJson[I] = '"') then
+            InString := False;
         end
       else
         case AJson[I] of
           '"': InString := True;
           '{': Inc(Depth);
-          '}': begin
-                 Dec(Depth);
-                 if (Depth = 0) then
-                   begin
-                     Result := Copy(AJson,
-                                    Start,
-                                    I - Start + 1);
-                     Exit;
-                   end;
-               end;
+            '}': begin
+              Dec(Depth);
+              if (Depth = 0) then
+                begin
+                  Result := Copy(AJson,
+                                 Start,
+                                 I - Start + 1);
+                  Exit;
+                end;
+            end;
         end;
       Inc(I);
     end;
@@ -693,8 +696,8 @@ var
 begin
 
   ScaledValue := MfCastExtractJsonTime100ns(AJson,
-                                             AName,
-                                             Round(ADefault * 10000000.0));
+                                            AName,
+                                            Round(ADefault * 10000000.0));
   Result := ScaledValue / 10000000.0;
 end;
 
@@ -726,19 +729,20 @@ begin
     Inc(I);
 
   if SameText(Copy(AJson,
-                   I,
-                   4),
-              'true') then
+    I,
+    4),
+    'true') then
     Result := True
   else if SameText(Copy(AJson,
-                        I,
-                        5),
-                   'false') then
+    I,
+    5),
+    'false') then
     Result := False;
 end;
 
 
 constructor TMfCastChannelWorker.Create(const AOwner: TMfCastChannel);
+
 begin
 
   inherited Create(True);
@@ -748,6 +752,7 @@ end;
 
 
 procedure TMfCastChannelWorker.Execute();
+
 begin
 
   if Assigned(FOwner) then
@@ -756,6 +761,7 @@ end;
 
 
 function TMfCastChannelWorker.IsStopping(): Boolean;
+
 begin
 
   Result := Terminated;
@@ -763,6 +769,7 @@ end;
 
 
 constructor TMfCastChannel.Create(const ATransport: IMfCastTransport);
+
 begin
 
   inherited Create();
@@ -785,6 +792,7 @@ end;
 
 
 destructor TMfCastChannel.Destroy();
+
 begin
 
   StopWorker(True);
@@ -795,13 +803,14 @@ end;
 
 
 function TMfCastChannel.Configure(const ASettings: TMfCastProtocolSettings): HRESULT;
+
 begin
 
   if (FState <> csIdle) then
-  begin
-    Result := E_UNEXPECTED;
-    Exit;
-  end;
+    begin
+      Result := E_UNEXPECTED;
+      Exit;
+    end;
 
   FSettings := ASettings;
 
@@ -813,6 +822,7 @@ end;
 
 
 procedure TMfCastChannel.SetCallbacks(const ACallbacks: TMfCastChannelCallbacks);
+
 begin
 
   FCallbacks := ACallbacks;
@@ -820,6 +830,7 @@ end;
 
 
 procedure TMfCastChannel.SetLogger(const ALogger: IMfCastLogger);
+
 begin
 
   FLogger := ALogger;
@@ -884,6 +895,7 @@ end;
 
 
 function TMfCastChannel.Disconnect(): HRESULT;
+
 begin
 
   StopWorker(True);
@@ -909,6 +921,7 @@ end;
 
 
 function TMfCastChannel.LaunchReceiver(): HRESULT;
+
 begin
 
   if (FTransportId = '') then
@@ -975,13 +988,13 @@ begin
 
   RequestId := NextRequestId();
   Payload := '{"type":"LOAD","requestId":' + IntToStr(RequestId) +
-             ',"media":{"contentId":"' + MfCastJsonEscape(ARequest.ContentId) +
-             '","streamType":"' + MfCastStreamTypeToString(ARequest.StreamType) +
-             '","contentType":"' + MfCastJsonEscape(ARequest.ContentType) + '"';
+    ',"media":{"contentId":"' + MfCastJsonEscape(ARequest.ContentId) +
+    '","streamType":"' + MfCastStreamTypeToString(ARequest.StreamType) +
+    '","contentType":"' + MfCastJsonEscape(ARequest.ContentType) + '"';
 
   if (Trim(ARequest.Title) <> '') then
     Payload := Payload + ',"metadata":{"metadataType":0,"title":"' +
-               MfCastJsonEscape(ARequest.Title) + '"}';
+      MfCastJsonEscape(ARequest.Title) + '"}';
 
   if (Length(ARequest.Tracks) > 0) then
     begin
@@ -1000,9 +1013,9 @@ begin
             TrackType := 'TEXT';
 
           Payload := Payload + '{"trackId":' + IntToStr(Track.TrackId) +
-                     ',"type":"' + MfCastJsonEscape(TrackType) + '"' +
-                     ',"trackContentId":"' + MfCastJsonEscape(Track.ContentId) + '"' +
-                     ',"trackContentType":"' + MfCastJsonEscape(Track.ContentType) + '"';
+            ',"type":"' + MfCastJsonEscape(TrackType) + '"' +
+            ',"trackContentId":"' + MfCastJsonEscape(Track.ContentId) + '"' +
+            ',"trackContentType":"' + MfCastJsonEscape(Track.ContentType) + '"';
 
           if (Trim(Track.Name) <> '') then
             Payload := Payload + ',"name":"' + MfCastJsonEscape(Track.Name) + '"';
@@ -1020,13 +1033,13 @@ begin
 
   if (Length(ARequest.Tracks) > 0) then
     Payload := Payload +
-               ',"textTrackStyle":{' +
-               '"foregroundColor":"#FFFFFFFF",' +
-               '"backgroundColor":"#00000000",' +
-               '"edgeType":"OUTLINE",' +
-               '"edgeColor":"#000000FF",' +
-               '"windowType":"NONE",' +
-               '"windowColor":"#00000000"}';
+      ',"textTrackStyle":{' +
+      '"foregroundColor":"#FFFFFFFF",' +
+      '"backgroundColor":"#00000000",' +
+      '"edgeType":"OUTLINE",' +
+      '"edgeColor":"#000000FF",' +
+      '"windowType":"NONE",' +
+      '"windowColor":"#00000000"}';
 
   Payload := Payload + '}';
 
@@ -1070,7 +1083,7 @@ begin
                   'Channel',
                   Format('Media LOAD destination: session="%s" transport="%s".',
                          [FSessionId,
-                          FTransportId]));
+        FTransportId]));
     end;
 
   // LOAD creates a new media session. Do not attach an ID learned from the
@@ -1102,23 +1115,24 @@ begin
 
       if (WaitResult = S_OK) then
         Result := S_OK
+      else if (WaitResult = S_FALSE) then
+        begin
+          Result := HRESULT(DWORD($800705B4));
+          if Assigned(FLogger) then
+            FLogger.Log(cllWarning,
+                        'Channel',
+                        Format('Media LOAD was not acknowledged within %d ms for contentId="%s"; session="%s" transport="%s" lastNamespace="%s" lastPayload="%s".',
+                               [LoadTimeoutMs,
+              ARequest.ContentId,
+              FSessionId,
+              FTransportId,
+              FLastNamespace,
+              Copy(FLastPayload,
+                   1,
+                   512)]));
+        end
       else
-        if (WaitResult = S_FALSE) then
-          begin
-            Result := HRESULT(DWORD($800705B4));
-            if Assigned(FLogger) then
-              FLogger.Log(cllWarning,
-                          'Channel',
-                          Format('Media LOAD was not acknowledged within %d ms for contentId="%s"; session="%s" transport="%s" lastNamespace="%s" lastPayload="%s".',
-                                 [LoadTimeoutMs,
-                                  ARequest.ContentId,
-                                  FSessionId,
-                                  FTransportId,
-                                  FLastNamespace,
-                                  Copy(FLastPayload, 1, 512)]));
-          end
-        else
-          Result := WaitResult;
+        Result := WaitResult;
     end
   else
     SetState(csError);
@@ -1196,9 +1210,9 @@ var
 
 begin
 
-  if (InterlockedCompareExchange(FStopInProgress, 
-                                 1,
-                                 0) <> 0) then
+  if (InterlockedCompareExchange(FStopInProgress,
+    1,
+    0) <> 0) then
     begin
       Result := S_OK;
       Exit;
@@ -1218,7 +1232,7 @@ begin
     begin
       RequestId := NextRequestId();
       Payload := '{"type":"STOP","requestId":' + IntToStr(RequestId) +
-                 ',"mediaSessionId":' + IntToStr(FMediaSessionId) + '}';
+        ',"mediaSessionId":' + IntToStr(FMediaSessionId) + '}';
 
       MediaStopResult := SendJson(FTransportId,
                                   FSettings.NamespaceMedia,
@@ -1230,7 +1244,7 @@ begin
     begin
       RequestId := NextRequestId();
       Payload := '{"type":"STOP","requestId":' + IntToStr(RequestId) +
-                 ',"sessionId":"' + MfCastJsonEscape(FSessionId) + '"}';
+        ',"sessionId":"' + MfCastJsonEscape(FSessionId) + '"}';
       ReceiverStopResult := SendJson(FSettings.ReceiverId,
                                      FSettings.NamespaceReceiver,
                                      Payload);
@@ -1238,8 +1252,8 @@ begin
 
   OutputDebugStringW(PChar(Format(
     'MfCast STOP media=%.8x receiver=%.8x mediaSession=%d session=%s transport=%s',
-    [DWORD(MediaStopResult), DWORD(ReceiverStopResult), FMediaSessionId,
-     FSessionId, FTransportId])));
+                                  [DWORD(MediaStopResult), DWORD(ReceiverStopResult), FMediaSessionId,
+    FSessionId, FTransportId])));
 
   // Keep TLS alive briefly so the receiver can process both encrypted STOP
   // messages before controller cleanup closes the control connection.
@@ -1275,7 +1289,9 @@ begin
 
   RequestId := NextRequestId();
   SecondsText := StringReplace(FloatToStr(APosition100ns / 10000000.0),
-                               ',', '.', []);
+                               ',',
+                               '.',
+                               []);
   Payload := '{"type":"SEEK","requestId":' + IntToStr(RequestId) + ',"currentTime":' + SecondsText;
 
   if (FMediaSessionId <> 0) then
@@ -1312,7 +1328,7 @@ begin
                              []);
 
   if SameText(FReceiverVolumeControlType,
-              'fixed') then
+    'fixed') then
     begin
       if (FMediaSessionId = 0) or (FTransportId = '') then
         begin
@@ -1321,8 +1337,8 @@ begin
         end;
 
       Payload := '{"type":"VOLUME","requestId":' + IntToStr(RequestId) +
-                 ',"mediaSessionId":' + IntToStr(FMediaSessionId) +
-                 ',"volume":{"level":' + LevelText + '}}';
+        ',"mediaSessionId":' + IntToStr(FMediaSessionId) +
+        ',"volume":{"level":' + LevelText + '}}';
 
       if Assigned(FLogger) then
         FLogger.Log(cllDebug,
@@ -1336,7 +1352,7 @@ begin
   else
     begin
       Payload := '{"type":"SET_VOLUME","requestId":' + IntToStr(RequestId) +
-                 ',"volume":{"level":' + LevelText + '}}';
+        ',"volume":{"level":' + LevelText + '}}';
 
       Result := SendJson(FSettings.ReceiverId,
                          FSettings.NamespaceReceiver,
@@ -1356,7 +1372,7 @@ var
 begin
 
   if SameText(FReceiverVolumeControlType,
-              'fixed') then
+    'fixed') then
     begin
       if (FMediaSessionId = 0) or (FTransportId = '') then
         begin
@@ -1366,8 +1382,8 @@ begin
 
       RequestId := NextRequestId();
       Payload := '{"type":"VOLUME","requestId":' + IntToStr(RequestId) +
-                 ',"mediaSessionId":' + IntToStr(FMediaSessionId) +
-                 ',"volume":{"muted":';
+        ',"mediaSessionId":' + IntToStr(FMediaSessionId) +
+        ',"volume":{"muted":';
 
       if AMuted then
         Payload := Payload + 'true'
@@ -1455,8 +1471,8 @@ var
 begin
 
   Payload := '{"type":"LAUNCH","appId":"' +
-             MfCastJsonEscape(FSettings.ReceiverApplicationId) +
-             '","requestId":' + IntToStr(NextRequestId()) + '}';
+    MfCastJsonEscape(FSettings.ReceiverApplicationId) +
+    '","requestId":' + IntToStr(NextRequestId()) + '}';
 
   Result := SendJson(FSettings.ReceiverId,
                      FSettings.NamespaceReceiver,
@@ -1465,6 +1481,7 @@ end;
 
 
 function TMfCastChannel.SynchronizeMediaStatus(const ATimeoutMs: Cardinal): HRESULT;
+
 begin
 
   FReceivedMediaStatus := False;
@@ -1479,13 +1496,12 @@ end;
 
 
 procedure TMfCastChannel.StartWorker();
+
 begin
 
   FWorkerLock.Acquire();
   try
-    if Assigned(FWorker) or
-       not Assigned(FTransport) or
-       not FTransport.IsConnected() then
+    if Assigned(FWorker) or not Assigned(FTransport) or not FTransport.IsConnected() then
       Exit;
 
     FWorker := TMfCastChannelWorker.Create(Self);
@@ -1515,7 +1531,7 @@ begin
   try
     Worker := FWorker;
     CalledFromWorker := Assigned(Worker) and
-                        (GetCurrentThreadId() = Worker.ThreadID);
+      (GetCurrentThreadId() = Worker.ThreadID);
 
     if not CalledFromWorker then
       FWorker := nil;
@@ -1543,22 +1559,24 @@ begin
             if not SameText(FTransportId, ReceiverId) then
               begin
                 CloseResult := SendJson(FTransportId,
-                                       FSettings.NamespaceConnection,
-                                       '{"type":"CLOSE"}');
+                                        FSettings.NamespaceConnection,
+                                        '{"type":"CLOSE"}');
                 if FAILED(CloseResult) and Assigned(FLogger) then
-                  FLogger.Log(cllDebug, 'Channel',
-                    Format('Application CLOSE failed: HRESULT $%.8x.',
-                           [DWORD(CloseResult)]));
+                  FLogger.Log(cllDebug,
+                              'Channel',
+                              Format('Application CLOSE failed: HRESULT $%.8x.',
+                                     [DWORD(CloseResult)]));
               end;
 
             // Still close the device connection if the app has already exited.
             CloseResult := SendJson(ReceiverId,
-                                   FSettings.NamespaceConnection,
-                                   '{"type":"CLOSE"}');
+                                    FSettings.NamespaceConnection,
+                                    '{"type":"CLOSE"}');
             if Assigned(FLogger) then
-              FLogger.Log(cllDebug, 'Channel',
-                Format('Receiver CLOSE completed: HRESULT $%.8x.',
-                       [DWORD(CloseResult)]));
+              FLogger.Log(cllDebug,
+                          'Channel',
+                          Format('Receiver CLOSE completed: HRESULT $%.8x.',
+                                 [DWORD(CloseResult)]));
           end;
 
         FTransport.Disconnect();
@@ -1640,22 +1658,21 @@ begin
               Break;
             end;
         end
-      else
-        if (ReadResult <> S_FALSE) then
-          begin
-            if Assigned(FLogger) then
-              FLogger.Log(cllWarning,
-                          'Channel',
-                          Format('Persistent control receive stopped: HRESULT $%.8x.',
-                                 [DWORD(ReadResult)]));
+      else if (ReadResult <> S_FALSE) then
+        begin
+          if Assigned(FLogger) then
+            FLogger.Log(cllWarning,
+                        'Channel',
+                        Format('Persistent control receive stopped: HRESULT $%.8x.',
+                               [DWORD(ReadResult)]));
 
-            Break;
-          end;
+          Break;
+        end;
 
       if AWorker.IsStopping() then
         Break;
 
-      if (GetTickCount() - LastHeartbeatTick) >= HeartbeatIntervalMs then
+      if ((GetTickCount() - LastHeartbeatTick) >= HeartbeatIntervalMs) then
         begin
           HeartbeatResult := SendJson(FSettings.ReceiverId,
                                       FSettings.NamespaceHeartbeat,
@@ -1674,7 +1691,7 @@ begin
             end;
         end;
 
-      if (GetTickCount() - LastReceiveTick) >= HeartbeatTimeoutMs then
+      if ((GetTickCount() - LastReceiveTick) >= HeartbeatTimeoutMs) then
         begin
           if Assigned(FLogger) then
             FLogger.Log(cllWarning,
@@ -1694,6 +1711,7 @@ end;
 
 
 function TMfCastChannel.GetState(): TMfCastState;
+
 begin
 
   Result := FState;
@@ -1701,6 +1719,7 @@ end;
 
 
 function TMfCastChannel.NextRequestId(): Cardinal;
+
 begin
 
   Inc(FRequestId);
@@ -1739,7 +1758,8 @@ begin
     if (Length(Frame) = 0) then
       Result := E_FAIL
     else
-      Result := FTransport.SendBuffer(@Frame[0], Length(Frame));
+      Result := FTransport.SendBuffer(@Frame[0],
+                                      Length(Frame));
   finally
     FSendLock.Release();
   end;
@@ -1747,6 +1767,7 @@ end;
 
 
 function TMfCastChannel.SendConnect(const ADestinationId: string): HRESULT;
+
 begin
 
   Result := SendJson(ADestinationId,
@@ -1764,7 +1785,9 @@ begin
 
   FLastNamespace := '';
   FLastPayload := '';
-  Result := MfCastProtocolDecodeMessage(AData, Namespace, Payload);
+  Result := MfCastProtocolDecodeMessage(AData,
+                                        Namespace,
+                                        Payload);
   if FAILED(Result) then
     Exit;
 
@@ -1777,32 +1800,32 @@ begin
   // threads enough to disturb real-time desktop capture.  Process every
   // status below, but rely on the existing state/volume logs and throttled
   // OnMediaStatus callback instead of tracing every periodic payload.
-  if Assigned(FLogger) and
-     not (SameText(Namespace,
-                   FSettings.NamespaceMedia) and
-          (Pos('MEDIA_STATUS', Payload) > 0)) then
+  if Assigned(FLogger) and not (SameText(Namespace,
+    FSettings.NamespaceMedia) and
+    (Pos('MEDIA_STATUS',
+         Payload) > 0)) then
     FLogger.Log(cllTrace,
                 'Channel',
                 Format('Received namespace="%s" payload="%s".',
                        [Namespace,
-                        Copy(Payload, 1, 1024)]));
+      Copy(Payload,
+           1,
+           1024)]));
 
   if SameText(Namespace, FSettings.NamespaceHeartbeat) then
     begin
       if (Pos('PING',
-             UpperCase(Payload)) > 0) then
+        UpperCase(Payload)) > 0) then
         Result := SendJson(FSettings.ReceiverId,
                            FSettings.NamespaceHeartbeat,
                            '{"type":"PONG"}');
     end
-  else
-    if SameText(Namespace,
-                FSettings.NamespaceReceiver) then
-      Result := ProcessReceiverMessage(Payload)
-    else
-      if SameText(Namespace,
-                  FSettings.NamespaceMedia) then
-        Result := ProcessMediaMessage(Payload);
+  else if SameText(Namespace,
+    FSettings.NamespaceReceiver) then
+    Result := ProcessReceiverMessage(Payload)
+  else if SameText(Namespace,
+    FSettings.NamespaceMedia) then
+    Result := ProcessMediaMessage(Payload);
 end;
 
 
@@ -1817,7 +1840,7 @@ begin
 
   Result := S_OK;
   if (Pos('RECEIVER_STATUS',
-          AJsonPayload) > 0) then
+    AJsonPayload) > 0) then
     begin
       VolumeStatus := MfCastExtractJsonObject(AJsonPayload,
                                               'volume');
@@ -1826,10 +1849,10 @@ begin
         begin
           FReceiverVolumeControlType := MfCastExtractJsonString(
             VolumeStatus,
-            'controlType');
+                                                                'controlType');
 
           if (VolumeStatus <> FLastReceiverVolumeStatus) and
-             Assigned(FLogger) then
+            Assigned(FLogger) then
             begin
               FLastReceiverVolumeStatus := VolumeStatus;
               FLogger.Log(cllDebug,
@@ -1837,7 +1860,7 @@ begin
                           'Receiver volume status: ' + VolumeStatus + '.');
 
               if SameText(FReceiverVolumeControlType,
-                          'fixed') then
+                'fixed') then
                 FLogger.Log(cllWarning,
                             'Channel',
                             'Chromecast reports fixed device volume; Volume and Mute will target the active media stream.');
@@ -1849,22 +1872,21 @@ begin
       // application's transport as receiver-ready or LOAD will be sent to the
       // old app and silently ignored.
       NewApplicationId := MfCastExtractJsonString(AJsonPayload,
-                                                   'appId');
-      if (FSettings.ReceiverApplicationId <> '') and
-         not SameText(NewApplicationId,
-                      FSettings.ReceiverApplicationId) then
+                                                  'appId');
+      if (FSettings.ReceiverApplicationId <> '') and not SameText(NewApplicationId,
+        FSettings.ReceiverApplicationId) then
         begin
           if (NewApplicationId <> '') and Assigned(FLogger) then
             FLogger.Log(cllTrace,
                         'Channel',
                         Format('Ignoring receiver status for appId="%s" while waiting for appId="%s".',
                                [NewApplicationId,
-                                FSettings.ReceiverApplicationId]));
+              FSettings.ReceiverApplicationId]));
           Exit;
         end;
 
       NewTransportId := MfCastExtractJsonString(AJsonPayload,
-                                                 'transportId');
+                                                'transportId');
       if (NewTransportId = '') then
         Exit;
 
@@ -1875,7 +1897,7 @@ begin
         NewSessionId := FSettings.ReceiverApplicationId;
 
       if (FSessionId <> '') and SameText(FTransportId,
-                                         NewTransportId) then
+        NewTransportId) then
         Exit;
 
       FSessionId := NewSessionId;
@@ -1889,17 +1911,16 @@ begin
         FCallbacks.OnReceiverReady(FSessionId,
                                    FTransportId);
     end
-  else
-    if (Pos('CLOSE',
-            AJsonPayload) > 0) then
-      begin
-        FSessionId := '';
-        FTransportId := FSettings.ReceiverId;
-        FMediaSessionId := 0;
+  else if (Pos('CLOSE',
+    AJsonPayload) > 0) then
+    begin
+      FSessionId := '';
+      FTransportId := FSettings.ReceiverId;
+      FMediaSessionId := 0;
 
-        if Assigned(FCallbacks.OnReceiverClosed) then
-          FCallbacks.OnReceiverClosed();
-      end;
+      if Assigned(FCallbacks.OnReceiverClosed) then
+        FCallbacks.OnReceiverClosed();
+    end;
 end;
 
 
@@ -1924,7 +1945,7 @@ begin
                                                   0);
       Error.Reset();
       Error.HResult := E_FAIL;
-      if DetailedErrorCode = 103 then
+      if (DetailedErrorCode = 103) then
         Error.Stage := 'Media network'
       else
         Error.Stage := 'Media error';
@@ -1938,11 +1959,11 @@ begin
     end;
 
   if (Pos('LOAD_FAILED',
-          AJsonPayload) > 0) or
-     (Pos('LOAD_CANCELLED',
-          AJsonPayload) > 0) or
-     (Pos('INVALID_REQUEST',
-          AJsonPayload) > 0) then
+    AJsonPayload) > 0) or
+    (Pos('LOAD_CANCELLED',
+         AJsonPayload) > 0) or
+    (Pos('INVALID_REQUEST',
+         AJsonPayload) > 0) then
     begin
       Error.Reset();
       Error.HResult := E_FAIL;
@@ -1957,22 +1978,23 @@ begin
       Exit;
     end;
 
-  if (Pos('MEDIA_STATUS', 
-          AJsonPayload) = 0) then
+  if (Pos('MEDIA_STATUS',
+    AJsonPayload) = 0) then
     Exit;
 
   if (Pos('"status":[]',
-          StringReplace(AJsonPayload,
-                        ' ',
-                        '',
-                        [rfReplaceAll])) > 0) then
+    StringReplace(AJsonPayload,
+                  ' ',
+                  '',
+                  [rfReplaceAll])) > 0) then
     Exit;
 
   if (FPendingLoadContentId <> '') and
-     (Pos(FPendingLoadContentId, AJsonPayload) = 0) then
+    (Pos(FPendingLoadContentId,
+         AJsonPayload) = 0) then
     begin
       OutputDebugStringW(PChar('MfCast MEDIA_STATUS ignored stale status while waiting for ' +
-                              FPendingLoadContentId));
+        FPendingLoadContentId));
       Exit;
     end;
 
@@ -1983,8 +2005,8 @@ begin
   Status.Reset();
 
   Status.MediaSessionId := MfCastExtractJsonInt64(AJsonPayload,
-                                                 'mediaSessionId',
-                                                 0);
+                                                  'mediaSessionId',
+                                                  0);
 
   Status.PlayerState := MfCastExtractJsonString(AJsonPayload,
                                                 'playerState');
@@ -2000,9 +2022,9 @@ begin
       Status.Volume := MfCastExtractJsonSingle(MediaVolumeStatus,
                                                'level',
                                                Status.Volume);
-      if Status.Volume < 0.0 then
+      if (Status.Volume < 0.0) then
         Status.Volume := 0.0
-      else if Status.Volume > 1.0 then
+      else if (Status.Volume > 1.0) then
         Status.Volume := 1.0;
 
       Status.Muted := MfCastExtractJsonBoolean(MediaVolumeStatus,
@@ -2011,8 +2033,8 @@ begin
     end;
 
   if (MediaVolumeStatus <> '') and
-     (MediaVolumeStatus <> FLastMediaVolumeStatus) and
-     Assigned(FLogger) then
+    (MediaVolumeStatus <> FLastMediaVolumeStatus) and
+    Assigned(FLogger) then
     begin
       FLastMediaVolumeStatus := MediaVolumeStatus;
       FLogger.Log(cllDebug,
@@ -2027,14 +2049,14 @@ begin
                                                  'playerState');
 
   if SameText(Status.PlayerState,
-              'IDLE') and
-     ((SameText(ExtendedPlayerState,
-                'LOADING')) or
-      (SameText(ExtendedPlayerState,
-                'BUFFERING'))) then
+    'IDLE') and
+    ((SameText(ExtendedPlayerState,
+               'LOADING')) or
+    (SameText(ExtendedPlayerState,
+              'BUFFERING'))) then
     begin
       if SameText(ExtendedPlayerState,
-                  'LOADING') then
+        'LOADING') then
         Status.PlayerState := 'BUFFERING'
       else
         Status.PlayerState := ExtendedPlayerState;
@@ -2042,36 +2064,34 @@ begin
       Status.IdleReason := '';
 
       OutputDebugStringW(PChar('MfCast MEDIA_STATUS extended playerState=' +
-                              ExtendedPlayerState + ' mapped=' +
-                              Status.PlayerState));
+        ExtendedPlayerState + ' mapped=' +
+        Status.PlayerState));
     end;
   Status.CurrentTime100ns := MfCastExtractJsonTime100ns(AJsonPayload,
-                                                       'currentTime',
-                                                       0);
+                                                        'currentTime',
+                                                        0);
   Status.Duration100ns := MfCastExtractJsonTime100ns(AJsonPayload,
-                                                    'duration',
-                                                    0);
+                                                     'duration',
+                                                     0);
 
-  if Status.MediaSessionId <> 0 then
+  if (Status.MediaSessionId <> 0) then
     FMediaSessionId := Status.MediaSessionId;
   if SameText(Status.PlayerState, 'PLAYING') then
     SetState(csPlaying)
-  else
-    if SameText(Status.PlayerState, 'PAUSED') then
-      SetState(csPaused)
-    else
-      if SameText(Status.PlayerState, 'BUFFERING') or
-         SameText(Status.PlayerState, 'LOADING') then
-        SetState(csBuffering)
-      else
-        if SameText(Status.PlayerState, 'IDLE') then
-          SetState(csStopped);
+  else if SameText(Status.PlayerState, 'PAUSED') then
+    SetState(csPaused)
+  else if SameText(Status.PlayerState, 'BUFFERING') or
+    SameText(Status.PlayerState,
+             'LOADING') then
+    SetState(csBuffering)
+  else if SameText(Status.PlayerState, 'IDLE') then
+    SetState(csStopped);
 
   CurrentTick := GetTickCount();
   NotifyCallback := not SameText(Status.PlayerState,
                                  FLastReportedPlayerState) or
-                    (FLastMediaCallbackTick = 0) or
-                    ((CurrentTick - FLastMediaCallbackTick) >= 500);
+    (FLastMediaCallbackTick = 0) or
+    ((CurrentTick - FLastMediaCallbackTick) >= 500);
 
   if NotifyCallback then
     begin
@@ -2079,10 +2099,10 @@ begin
       FLastMediaCallbackTick := CurrentTick;
 
       if (InterlockedCompareExchange(FStopInProgress,
-                                     0,
-                                     0) = 0) and
-         Assigned(FCallbacks.OnMediaStatus) and
-         ((Status.MediaSessionId <> 0) or (Status.PlayerState <> '')) then
+        0,
+        0) = 0) and
+        Assigned(FCallbacks.OnMediaStatus) and
+        ((Status.MediaSessionId <> 0) or (Status.PlayerState <> '')) then
         FCallbacks.OnMediaStatus(Status);
     end;
 end;
@@ -2114,7 +2134,7 @@ begin
       if FAILED(Result) then
         begin
           if (TotalRead = 0) and
-             (Result = HRESULT(DWORD($8007274C))) then
+            (Result = HRESULT(DWORD($8007274C))) then
             Result := S_FALSE;
           Exit;
         end;
@@ -2153,9 +2173,9 @@ begin
     Exit;
 
   MessageLength := (Cardinal(Header[0]) shl 24) or
-                   (Cardinal(Header[1]) shl 16) or
-                   (Cardinal(Header[2]) shl 8) or
-                   Cardinal(Header[3]);
+    (Cardinal(Header[1]) shl 16) or
+    (Cardinal(Header[2]) shl 8) or
+    Cardinal(Header[3]);
 
   if (MessageLength > Cardinal(16 * 1024 * 1024)) then
     begin
@@ -2169,7 +2189,8 @@ begin
 
   if (MessageLength > 0) then
     begin
-      Result := ReadExact(@AMessage[0], MessageLength);
+      Result := ReadExact(@AMessage[0],
+                          MessageLength);
       if (Result = S_FALSE) then
         Result := E_FAIL;
     end
@@ -2201,13 +2222,13 @@ begin
 
     if (Result = S_FALSE) then
       begin
-        if (GetTickCount() - LastStatusTick) >= 3000 then
+        if ((GetTickCount() - LastStatusTick) >= 3000) then
           begin
             RequestReceiverStatus();
             LastStatusTick := GetTickCount();
           end;
 
-        if (GetTickCount() - LastLaunchTick) >= 6000 then
+        if ((GetTickCount() - LastLaunchTick) >= 6000) then
           begin
             if Assigned(FLogger) then
               FLogger.Log(cllDebug,
@@ -2231,14 +2252,13 @@ begin
       Exit;
 
     if (FSessionId <> '') and
-       (FTransportId <> '') and
-       not SameText(FTransportId,
-                    FSettings.ReceiverId) then
+      (FTransportId <> '') and not SameText(FTransportId,
+                                            FSettings.ReceiverId) then
       begin
         Result := S_OK;
         Exit;
       end;
-  until (GetTickCount() - StartTick) >= TimeoutMs;
+  until ((GetTickCount() - StartTick) >= TimeoutMs);
 
   if Assigned(FLogger) then
     FLogger.Log(cllWarning,
@@ -2281,7 +2301,7 @@ begin
             // but it used to be reported as a LOAD failure. Wait for the
             // receiver's LOAD response until a session ID has been assigned.
             if (FPendingLoadContentId = '') or
-               (FMediaSessionId <> 0) then
+              (FMediaSessionId <> 0) then
               RequestMediaStatus();
             LastStatusTick := GetTickCount();
           end;
@@ -2305,18 +2325,19 @@ begin
     // transcoder has produced its first bytes, so waiting for PLAYING here
     // creates a false timeout and makes the controller cancel that transcoder.
     if FReceivedMediaStatus and
-       (FState in [csBuffering, csPlaying, csPaused, csStopped]) then
+      (FState in [csBuffering, csPlaying, csPaused, csStopped]) then
       begin
         Result := S_OK;
         Exit;
       end;
-  until (GetTickCount() - StartTick) >= TimeoutMs;
+  until ((GetTickCount() - StartTick) >= TimeoutMs);
 
   Result := S_FALSE;
 end;
 
 
 procedure TMfCastChannel.SetState(const AState: TMfCastState);
+
 begin
 
   FState := AState;

@@ -69,9 +69,9 @@ interface
 
 uses
   MfCapturePlatform,
-LMessages,
+  LMessages,
   LCLIntf,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   WinApi.Ks,
@@ -161,12 +161,12 @@ begin
       rbMP4.Enabled := False;
       rbWMV.Enabled := False;
       edOutputFile.Enabled := False;
-      if MessageDlg('There is no capture device found on this system.'  + #13 +
-                    'Activate a capture device and press Ok or Cancel to ' + #13 +
-                    'close the application?',
-                    mtWarning,
-                    mbOkCancel,
-                    0) = mrOk then
+      if (MessageDlg('There is no capture device found on this system.' + #13 +
+        'Activate a capture device and press Ok or Cancel to ' + #13 +
+        'close the application?',
+        mtWarning,
+        mbOkCancel,
+        0) = mrOk) then
         begin
           // Enumerate the video capture devices again.
           hr := UpdateDeviceList();
@@ -182,7 +182,7 @@ begin
         end
       else
         Close();
-        Exit;
+      Exit;
     end;
 
   if not Assigned(CaptureEngine) then
@@ -198,7 +198,7 @@ begin
 
   if Assigned(CaptureEngine) then
     begin
-      if CaptureEngine.IsCapturing() = State_Capturing then   // Is video capture in progress now?
+      if (CaptureEngine.IsCapturing() = State_Capturing) then   // Is video capture in progress now?
         begin
           StopCapture();
           butCapture.Caption := 'Start Capture';
@@ -213,12 +213,12 @@ begin
 
   if bDeviceLost then
     begin
-      if MessageDlg('Capture device ' + sActiveDeviceFriendlyName + ' is removed or lost.'  + #13 +
-                    'There are IntToStr(DeviceList.Count) available capturedevices on this system' + #13 + #13 +
-                    'Close the application?',
-                    mtWarning,
-                    mbYesNo,
-                    0) = mrNo then
+      if (MessageDlg('Capture device ' + sActiveDeviceFriendlyName + ' is removed or lost.' + #13 +
+        'There are IntToStr(DeviceList.Count) available capturedevices on this system' + #13 + #13 +
+        'Close the application?',
+        mtWarning,
+        mbYesNo,
+        0) = mrNo) then
         begin
           butCapture.Caption := 'Start Capture';
           cbDeviceList.Enabled := True;
@@ -234,7 +234,9 @@ end;
 
 
 procedure TdlgMfCaptureToFile.butCaptureClick(Sender: TObject);
+
 begin
+
   UpdateUI();
 end;
 
@@ -277,10 +279,10 @@ begin
       bDeviceLost := False;
 
       if Assigned(CaptureEngine) then
-        if CaptureEngine.IsCapturing() = State_Capturing then
+        if (CaptureEngine.IsCapturing() = State_Capturing) then
           begin
             if (StrIComp(PWideChar(CaptureEngine.DeviceSymbolicLink),
-                         PWideChar(pwDevSymbolicLink)) = 0) then
+              PWideChar(pwDevSymbolicLink)) = 0) then
               bDeviceLost := True;
 
             if (FAILED(hr) or bDeviceLost) then
@@ -294,7 +296,9 @@ end;
 
 
 procedure TdlgMfCaptureToFile.FormDestroy(Sender: TObject);
+
 begin
+
   if Assigned(CaptureEngine) then
     begin
       CaptureEngine.EndCaptureSession();
@@ -303,8 +307,8 @@ begin
 
   if Assigned(DeviceList) then
     begin
-       DeviceList.Free;
-       DeviceList := nil;
+      DeviceList.Free;
+      DeviceList := nil;
     end;
 
   if (g_hdevnotify <> 0) then
@@ -325,7 +329,8 @@ var
 begin
 
   iSize := SizeOf(DEV_BROADCAST_DEVICEINTERFACE);
-  ZeroMemory(@devbroadcastdevice, iSize);
+  ZeroMemory(@devbroadcastdevice,
+             iSize);
 
   sActiveDeviceFriendlyName := 'Unknown';
 
@@ -340,10 +345,10 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(0,
-                 LPCWSTR('Your computer does not support this Media Foundation API version' +
-                         IntToStr(MF_VERSION) + '.'),
-                 LPCWSTR('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  LPCWSTR('Your computer does not support this Media Foundation API version' +
+        IntToStr(MF_VERSION) + '.'),
+                  LPCWSTR('MFStartup Failure!'),
+                  MB_ICONSTOP);
       Abort();
     end;
 
@@ -358,8 +363,8 @@ begin
       devbroadcastdevice.dbcc_name[0] := #0;
 
       g_hdevnotify := RegisterDeviceNotificationW(hDlg,
-                                                 @devbroadcastdevice,
-                                                 DEVICE_NOTIFY_WINDOW_HANDLE);
+                                                  @devbroadcastdevice,
+                                                  DEVICE_NOTIFY_WINDOW_HANDLE);
 
       if not (g_hdevnotify <> 0) then
         hr := HRESULT_FROM_WIN32(GetLastError());
@@ -373,9 +378,9 @@ begin
   if Failed(hr) then
     begin
       MessageBoxW(hDlg,
-                 LPCWSTR('Could not find a video capture device.'),
-                 LPCWSTR('No device found'),
-                 MB_OK);
+                  LPCWSTR('Could not find a video capture device.'),
+                  LPCWSTR('No device found'),
+                  MB_OK);
       Close();
     end;
 end;
@@ -392,7 +397,7 @@ end;
 function TdlgMfCaptureToFile.GetSelectedDevice(out Activate: IMFActivate): HResult;
 var
   iListIndex: Integer;
-  hr : HResult;
+  hr: HResult;
 
 label
   done;
@@ -410,9 +415,10 @@ begin
 
 
   // Now create the media source.
-  hr := DeviceList.GetDevice(iListIndex, Activate);
+  hr := DeviceList.GetDevice(iListIndex,
+                             Activate);
 
-done:
+  done:
     Result := hr;
 end;
 
@@ -427,6 +433,7 @@ label
   done;
 
 begin
+
   if not Assigned(DeviceList) then
     begin
       hr := E_POINTER;
@@ -441,7 +448,7 @@ begin
   if FAILED(hr) then
     goto done;
 
-  for iDevice := 0 to DeviceList.Count-1 do
+  for iDevice := 0 to DeviceList.Count - 1 do
     begin
       // Get the fiendly name of the device.
       hr := DeviceList.GetFriendlyName(iDevice,
@@ -456,17 +463,17 @@ begin
       CoTaskMemFree(szFiendlyName);
       szFiendlyName := nil;
 
-    if (DeviceList.Count > 0) then
-      begin
-        // Select the first item.
-        cbDeviceList.ItemIndex := 0;
-      end
-    else
-      hr := ERROR_SYSTEM_DEVICE_NOT_FOUND;
+      if (DeviceList.Count > 0) then
+        begin
+          // Select the first item.
+          cbDeviceList.ItemIndex := 0;
+        end
+      else
+        hr := ERROR_SYSTEM_DEVICE_NOT_FOUND;
     end;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 //-----------------------------------------------------------------------------
@@ -480,24 +487,29 @@ var
   sFile: string;
 
 begin
+
   sFile := edOutputFile.Text;
 
   case (sifile) of
 
-    FileContainer_MP4: begin
-                         sFile := ChangeFileExt(sFile, '.mp4');
-                         rbMP4.Checked := True;
-                       end;
+      FileContainer_MP4: begin
+        sFile := ChangeFileExt(sFile,
+                               '.mp4');
+        rbMP4.Checked := True;
+      end;
 
-    FileContainer_WMV: begin
-                         sFile := ChangeFileExt(sFile, '.wmv');
-                         rbWMV.Checked := True;
-                       end;
+      FileContainer_WMV: begin
+        sFile := ChangeFileExt(sFile,
+                               '.wmv');
+        rbWMV.Checked := True;
+      end;
 
-    else               begin
-                         sFile := ChangeFileExt(sFile, '.mp4');
-                         rbMP4.Checked := True;
-                       end;
+    else
+      begin
+        sFile := ChangeFileExt(sFile,
+                               '.mp4');
+        rbMP4.Checked := True;
+      end;
   end;
 
   edOutputFile.Text := sFile;
@@ -506,12 +518,17 @@ end;
 
 
 procedure TdlgMfCaptureToFile.rbMP4Click(Sender: TObject);
+
 begin
+
   SelectEncodingType(FileContainer_MP4);
 end;
 
+
 procedure TdlgMfCaptureToFile.rbWMVClick(Sender: TObject);
+
 begin
+
   SelectEncodingType(FileContainer_WMV);
 end;
 
@@ -543,7 +560,7 @@ begin
 
   // Get the name of the target file.
   szFile := PWideChar(edOutputFile.Text);
-  if Length(szFile) > 0 then
+  if (Length(szFile) > 0) then
     hr := S_OK
   else
     begin
@@ -568,13 +585,13 @@ begin
   if SUCCEEDED(hr) then
     sActiveDeviceFriendlyName := WideCharToString(CaptureEngine.DeviceFriendlyName);
 
-done:
-   Result := hr;
+  done:
+    Result := hr;
 
-{$IFDEF DEBUG}
+  {$IFDEF DEBUG}
   if FAILED(hr) then
      OutputDebugStringW(PChar('Error starting capture. hr = ' + IntToStr(hr)));
-{$ENDIF}
+  {$ENDIF}
 
 end;
 
@@ -589,6 +606,7 @@ var
   hr: HResult;
 
 begin
+
   hr := CaptureEngine.EndCaptureSession();
 
   CaptureEngine := nil;
@@ -599,10 +617,10 @@ begin
   // pointers. This ensures that the current instance of the video capture
   // source is released.
 
-{$IFDEF DEBUG}
+  {$IFDEF DEBUG}
   if FAILED(hr) then
      OutputDebugStringW(PChar('Error stopping capture. File might be corrupt. hr = ' + IntToStr(hr)));
-{$ENDIF}
+  {$ENDIF}
 
   Result := hr
 end;

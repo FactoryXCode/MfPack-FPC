@@ -69,7 +69,7 @@ interface
 uses
   LMessages,
   LCLIntf,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -113,22 +113,29 @@ type
     trbBalance: TTrackBar;
     cbMute: TCheckBox;
 
-    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyUp(Sender: TObject;
+                        var Key: Word;
+                        Shift: TShiftState);
     procedure muOpenClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure butStopClick(Sender: TObject);
     procedure butPauseClick(Sender: TObject);
     procedure butPlayClick(Sender: TObject);
     procedure trbVolumeChange(Sender: TObject);
-    procedure prbProgressMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure prbProgressMouseUp(Sender: TObject;
+                                 Button: TMouseButton;
+                                 Shift: TShiftState;
+                                 X,
+                                 Y: Integer);
     procedure FormCreate(Sender: TObject);
     procedure butFullScreenClick(Sender: TObject);
     procedure mnuTakeScreenshotClick(Sender: TObject);
     procedure trbBalanceChange(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure trbBalanceKeyUp(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
+    procedure trbBalanceKeyUp(Sender: TObject;
+                              var Key: Word;
+                              Shift: TShiftState);
     procedure muExitClick(Sender: TObject);
     procedure cbMuteClick(Sender: TObject);
 
@@ -162,24 +169,30 @@ uses
   ClipBrd;
 
 
-
 destructor TFeMediaEnginePlayer.Destroy;
+
 begin
- ReleaseEngine;
- 
- inherited;
+
+  ReleaseEngine;
+
+  inherited;
 end;
 
+
 procedure TFeMediaEnginePlayer.ResetInterface();
+
 begin
-  prbProgress.Position:= 0;
-  pnlControls.Enabled:= False;
-  mnuTakeScreenshot.Enabled:= False;
+
+  prbProgress.Position := 0;
+  pnlControls.Enabled := False;
+  mnuTakeScreenshot.Enabled := False;
 end;
 
 
 procedure TFeMediaEnginePlayer.trbVolumeChange(Sender: TObject);
+
 begin
+
   if not Assigned(gi_MediaEngine) then
     Exit;
 
@@ -192,7 +205,9 @@ end;
 
 
 procedure TFeMediaEnginePlayer.trbBalanceChange(Sender: TObject);
+
 begin
+
   if not Assigned(gi_MediaEngine) then
     Exit;
   gi_MediaEngine.SetBalance(trbBalance.Position * 0.01);
@@ -200,9 +215,12 @@ end;
 
 
 // Reset balance
-procedure TFeMediaEnginePlayer.trbBalanceKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TFeMediaEnginePlayer.trbBalanceKeyUp(Sender: TObject;
+                                               var Key: Word;
+                                               Shift: TShiftState);
+
 begin
+
   if (Key = VK_F1) then
     trbBalance.Position := 0;
 end;
@@ -215,12 +233,12 @@ var
 begin
 
   if (prbProgress <> Nil) then
-    prbProgress.Max:= prbProgress.Width;
+    prbProgress.Max := prbProgress.Width;
 
   // Set video size
   if Assigned(gi_MediaEngine) then
     begin
-      crD.left:= 0;
+      crD.left := 0;
       crD.top := 0;
       crD.right := pnlVideo.ClientWidth;
       crD.bottom := pnlVideo.ClientHeight;
@@ -230,7 +248,9 @@ end;
 
 
 function TFeMediaEnginePlayer.ReleaseEngine(): HResult;
+
 begin
+
   if Assigned(gi_MediaEngine) then
     begin
       // To safely release all objects, you need to call this function first!
@@ -263,39 +283,41 @@ begin
         MapWindowPoints(Handle,
                         HWND_DESKTOP,
                         rc, // A pointer to an array of POINT structures that contain the set of points to be converted. The points are in device units. This parameter can also point to a RECT structure, in which case the cPoints parameter should be set to 2.
-                        2);
+          2);
         // Create canvas
         ScrCanvas := TCanvas.Create;
         // Create bitmap
         bm := TBitmap.Create();
-      try
-        // Get canvas handle
-        ScrCanvas.Handle := GetDC(0);
-        // Set bitmap properties
-        bm := TBitmap.Create();
-        bm.PixelFormat := Graphics.pf32bit;
-        bm.Width := pnlVideo.Width;
-        bm.Height := pnlVideo.Height;
+        try
+          // Get canvas handle
+          ScrCanvas.Handle := GetDC(0);
+          // Set bitmap properties
+          bm := TBitmap.Create();
+          bm.PixelFormat := Graphics.pf32bit;
+          bm.Width := pnlVideo.Width;
+          bm.Height := pnlVideo.Height;
 
-        bm.Canvas.CopyRect(bm.Canvas.ClipRect,
-                           ScrCanvas,
-                           rc);
+          bm.Canvas.CopyRect(bm.Canvas.ClipRect,
+                             ScrCanvas,
+                             rc);
 
-        ClipBoard.Assign(bm);
+          ClipBoard.Assign(bm);
 
-      finally
-        bm.free;
-        ReleaseDC(0,
-                  ScrCanvas.Handle);
-        ScrCanvas.Handle := 0;
-        ScrCanvas.Free;
+        finally
+          bm.free;
+          ReleaseDC(0,
+                    ScrCanvas.Handle);
+          ScrCanvas.Handle := 0;
+          ScrCanvas.Free;
+        end;
       end;
-  end;
 end;
 
 
 procedure TFeMediaEnginePlayer.muExitClick(Sender: TObject);
+
 begin
+
   Close();
 end;
 
@@ -305,6 +327,7 @@ var
   hr: HResult;
 
 begin
+
   // End and release any previous session first!
   ReleaseEngine();
 
@@ -328,12 +351,16 @@ begin
 end;
 
 
-procedure TFeMediaEnginePlayer.prbProgressMouseUp(Sender: TObject; Button: TMouseButton;
-                                                  Shift: TShiftState; X, Y: Integer);
+procedure TFeMediaEnginePlayer.prbProgressMouseUp(Sender: TObject;
+                                                  Button: TMouseButton;
+                                                  Shift: TShiftState;
+                                                  X,
+                                                  Y: Integer);
 var
   fPos: Double;
 
 begin
+
   if (X <= 0) then
     fPos := 0.0
   else
@@ -347,8 +374,10 @@ end;
 
 
 procedure TFeMediaEnginePlayer.SetWindowStyle(bFullScreen: Boolean);
+
 begin
-  if bFullScreen = True then
+
+  if (bFullScreen = True) then
     begin
       BorderStyle := bsNone;
       pnlControls.Visible := False;
@@ -371,7 +400,9 @@ end;
 // Get to fullscreen
 // user needs to hit ESC button to go back to windowed mode
 procedure TFeMediaEnginePlayer.butFullScreenClick(Sender: TObject);
+
 begin
+
   if bIsFullScreen then
     SetWindowStyle(False)
   else
@@ -381,38 +412,44 @@ end;
 
 // Pause
 procedure TFeMediaEnginePlayer.butPauseClick(Sender: TObject);
+
 begin
+
   {void} gi_MediaEngine.Pause();
 end;
 
 
 // Play
 procedure TFeMediaEnginePlayer.butPlayClick(Sender: TObject);
+
 begin
+
   if not Assigned(gi_MediaEngine) then
     Exit;
 
   if FAILED(gi_MediaEngine.Play()) then
     begin
       MessageBoxW(0,
-                 LPCWSTR('An error occured while trying to play the media file.'),
-                 LPCWSTR('Error'),
-                 MB_ICONEXCLAMATION);
+                  LPCWSTR('An error occured while trying to play the media file.'),
+                  LPCWSTR('Error'),
+                  MB_ICONEXCLAMATION);
     end
   else
-    mnuTakeScreenshot.Enabled:= True;
+    mnuTakeScreenshot.Enabled := True;
 end;
 
 
 procedure TFeMediaEnginePlayer.butStopClick(Sender: TObject);
+
 begin
+
   // Note: This calls: Pause()
   //       The file pointer will be set to 0.0
   //       So, if hitting Play, the file will start at position 0.0
   //       See explanation at method gi_MediaEngine.Stop()
   {void} gi_MediaEngine.Stop();
-  mnuTakeScreenshot.Enabled:= False;
-  prbProgress.Position:= 0;
+  mnuTakeScreenshot.Enabled := False;
+  prbProgress.Position := 0;
 end;
 
 
@@ -421,17 +458,21 @@ var
   bchecked: Bool;
 
 begin
+
   if Assigned(gi_MediaEngine) then
     begin
-      bchecked:= cbMute.Checked;
+      bchecked := cbMute.Checked;
       if Succeeded(gi_MediaEngine.Mute(bchecked)) then
-        cbMute.Checked:= bchecked;
+        cbMute.Checked := bchecked;
     end;
 end;
 
 
-procedure TFeMediaEnginePlayer.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TFeMediaEnginePlayer.FormCloseQuery(Sender: TObject;
+                                              var CanClose: Boolean);
+
 begin
+
   CanClose := False;
   if Assigned(gi_MediaEngine) then
     begin
@@ -440,9 +481,9 @@ begin
       else
         begin
           MessageBoxW(0,
-                     LPCWSTR('Unable to release the MediaEngine.'),
-                     LPCWSTR('Error!'),
-                     MB_ICONEXCLAMATION);
+                      LPCWSTR('Unable to release the MediaEngine.'),
+                      LPCWSTR('Error!'),
+                      MB_ICONEXCLAMATION);
           Application.Terminate;
         end;
     end
@@ -452,78 +493,89 @@ end;
 
 
 procedure TFeMediaEnginePlayer.OnMeTimerUpdate(var Msg: TLMessage);
+
 begin
+
   if Not Assigned(gi_MediaEngine) then
     Exit;
-  if gi_MediaEngine.pu_Duration > 0 then
+  if (gi_MediaEngine.pu_Duration > 0) then
     prbProgress.Position := Trunc((prbProgress.Width / gi_MediaEngine.pu_Duration) *
-                                  gi_MediaEngine.pu_CurrPosition);
+      gi_MediaEngine.pu_CurrPosition);
 end;
 
 
 procedure TFeMediaEnginePlayer.FormCreate(Sender: TObject);
+
 begin
+
   bIsFullScreen := False;
   RealignInterface();
 end;
 
 
-procedure TFeMediaEnginePlayer.FormKeyUp(Sender: TObject; var Key: Word;
-                               Shift: TShiftState);
+procedure TFeMediaEnginePlayer.FormKeyUp(Sender: TObject;
+                                         var Key: Word;
+                                         Shift: TShiftState);
+
 begin
+
   case Key of
     // Play/pause
-    VK_SPACE:   if Assigned(gi_MediaEngine) then
-                  begin
-                    case gi_MediaEngine.pu_RenderingState of
-                      rsPlaying: butPauseClick(Self);
-                      rsStopped, rsPaused: butPlayClick(Self);
-                      rsInitialised: butPlayClick(Self);
-                    end;
-                  end;
+    VK_SPACE: if Assigned(gi_MediaEngine) then
+        begin
+          case gi_MediaEngine.pu_RenderingState of
+            rsPlaying: butPauseClick(Self);
+            rsStopped, rsPaused: butPlayClick(Self);
+            rsInitialised: butPlayClick(Self);
+          end;
+        end;
     // Stop
-    VK_END:     if Assigned(gi_MediaEngine) then
-                  begin
-                   butStopClick(Self);
-                  end;
+    VK_END: if Assigned(gi_MediaEngine) then
+        begin
+          butStopClick(Self);
+        end;
     // Exit
-    VK_F11:       begin
-                    Close();
-                  end;
+      VK_F11: begin
+        Close();
+      end;
     // Open file
-    VK_F12:     begin muOpenClick(Self); end;
+      VK_F12: begin
+        muOpenClick(Self);
+      end;
 
     // Take a snapshot and copy the bitmap to the clipboard
-    VK_F8:      begin
-                  // See comments at mnuTakeScreenshotClick()
-                  mnuTakeScreenshotClick(Self);
-                  // See: https://docs.microsoft.com/windows/desktop/api/mfmediaengine/nf-mfmediaengine-imfmediaengine-transfervideoframe
-                end;
+      VK_F8: begin
+        // See comments at mnuTakeScreenshotClick()
+        mnuTakeScreenshotClick(Self);
+        // See: https://docs.microsoft.com/windows/desktop/api/mfmediaengine/nf-mfmediaengine-imfmediaengine-transfervideoframe
+      end;
 
     // Use left and right arrows to adjust the volume.
     // since there is a trackbar, this one will have the focus.
     // We did not implement a balance method.
-    VK_LEFT:    begin
-                  trbVolume.Position := trbVolume.Position - 1;
-                  if Assigned(gi_MediaEngine) then
-                    gi_MediaEngine.SetVolume(trbVolume.Position * 0.01);
-                end;
+      VK_LEFT: begin
+        trbVolume.Position := trbVolume.Position - 1;
+        if Assigned(gi_MediaEngine) then
+          gi_MediaEngine.SetVolume(trbVolume.Position * 0.01);
+      end;
 
-    VK_RIGHT:   begin
-                  trbVolume.Position := trbVolume.Position + 1;
-                  if Assigned(gi_MediaEngine) then
-                    gi_MediaEngine.SetVolume(trbVolume.Position * 0.01);
-                end;
+      VK_RIGHT: begin
+        trbVolume.Position := trbVolume.Position + 1;
+        if Assigned(gi_MediaEngine) then
+          gi_MediaEngine.SetVolume(trbVolume.Position * 0.01);
+      end;
 
-    VK_ESCAPE:  begin
-                  butFullScreenClick(Self);
-                end;
+      VK_ESCAPE: begin
+        butFullScreenClick(Self);
+      end;
   end;
 end;
 
 
 procedure TFeMediaEnginePlayer.FormResize(Sender: TObject);
+
 begin
+
   if Assigned(gi_MediaEngine) then
     RealignInterface();
 end;

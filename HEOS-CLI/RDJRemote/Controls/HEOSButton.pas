@@ -66,10 +66,11 @@ unit HEOSButton;
 
 interface
 
-uses LMessages,
+uses
+  LMessages,
   LCLType,
   Heos.Fpc.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -91,21 +92,23 @@ type
                      blGlyphTop,
                      blGlyphBottom);
 
-  TMPButtonStyle  = (bsNormal,
-                     bsEncarta,
-                     bsModern,
-                     bsOld,
-                     bsShape,
-                     bsQuicken);
+  TMPButtonStyle = (bsNormal,
+                    bsEncarta,
+                    bsModern,
+                    bsOld,
+                    bsShape,
+                    bsQuicken);
 
   TDnButtonBehavior = (bbAuto,
-                         bbPushButton,
-                         bbCheckBox,
-                         bbRadioButton);
+                       bbPushButton,
+                       bbCheckBox,
+                       bbRadioButton);
 
   TDnButton = class(TCustomControl)
+
   published
     property BorderSpacing;
+
   private
     FAlignment: TAlignment;
     FAllowAllUp: Boolean;
@@ -221,10 +224,12 @@ type
 
     procedure MouseDown(Button: TMouseButton;
                         Shift: TShiftState;
-                        X, Y: Integer); override;
+                        X,
+                        Y: Integer); override;
     procedure MouseUp(Button: TMouseButton;
                       Shift: TShiftState;
-                      X, Y: Integer); override;
+                      X,
+                      Y: Integer); override;
     procedure ActionChange(Sender: TObject;
                            CheckDefaults: Boolean); override;
     procedure WMLButtonDblClk(var Message: TLMLButtonDblClk); message WM_LBUTTONDBLCLK;
@@ -310,7 +315,9 @@ implementation
 const
   cHotTrackSteps = 10;
 
+
 procedure Register;
+
 begin
 
   RegisterComponents('HEOS Controls',
@@ -321,15 +328,16 @@ end;
 { TDnButton }
 
 constructor TDnButton.Create(AOwner: TComponent);
+
 begin
 
   inherited;
 
   ControlStyle := ControlStyle + [csSetCaption,
-                                  csClickEvents,
-                                  csDoubleClicks,
-                                  csCaptureMouse,
-                                  csOpaque];
+    csClickEvents,
+    csDoubleClicks,
+    csCaptureMouse,
+    csOpaque];
 
   DoubleBuffered := True;
   ParentDoubleBuffered := False;
@@ -382,6 +390,7 @@ end;
 
 
 destructor TDnButton.Destroy;
+
 begin
 
   FreeAndNil(FDecTimer);
@@ -395,6 +404,7 @@ end;
 
 
 procedure TDnButton.CMEnabledChanged(var Msg: TLMessage);
+
 begin
 
   inherited;
@@ -414,6 +424,7 @@ end;
 
 
 procedure TDnButton.CMColorChanged(var Msg: TLMessage);
+
 begin
 
   inherited;
@@ -423,7 +434,7 @@ begin
     Exit;
 
   if (FColorWhenUp = clNone) or
-     (FColorWhenUp = clBtnFace) then
+    (FColorWhenUp = clBtnFace) then
     FColorWhenUp := Color;
 
   Invalidate;
@@ -431,6 +442,7 @@ end;
 
 
 procedure TDnButton.SetCaption(const Value: TCaption);
+
 begin
 
   inherited Caption := Value;
@@ -439,6 +451,7 @@ end;
 
 
 function TDnButton.GetCaption(): TCaption;
+
 begin
 
   Result := inherited Caption;
@@ -446,6 +459,7 @@ end;
 
 
 procedure TDnButton.SetAlignment(Value: TAlignment);
+
 begin
 
   if (FAlignment = Value) then
@@ -456,6 +470,7 @@ end;
 
 
 procedure TDnButton.SetFlat(Value: Boolean);
+
 begin
 
   if (FFlat = Value) then
@@ -466,6 +481,7 @@ end;
 
 
 procedure TDnButton.SetColorWhenDown(Value: TColor);
+
 begin
 
   FColorWhenDown := Value;
@@ -474,6 +490,7 @@ end;
 
 
 procedure TDnButton.SetColorWhenUp(Value: TColor);
+
 begin
 
   FColorWhenUp := Value;
@@ -562,7 +579,7 @@ begin
   FDown := Value;
 
   if (OldDown <> FDown) and (GetEffectiveBehavior <> bbPushButton) and
-     (not (csLoading in ComponentState)) and (not (csDesigning in ComponentState)) then
+    (not (csLoading in ComponentState)) and (not (csDesigning in ComponentState)) then
     DoCheckedChanged;
 
   Invalidate;
@@ -570,6 +587,7 @@ end;
 
 
 procedure TDnButton.ReadLegacyDown(Reader: TReader);
+
 begin
 
   // Backward compatibility for older DFM resources. Down is no longer a
@@ -579,6 +597,7 @@ end;
 
 
 procedure TDnButton.DefineProperties(Filer: TFiler);
+
 begin
 
   inherited DefineProperties(Filer);
@@ -590,6 +609,7 @@ end;
 
 
 procedure TDnButton.SetGlyph(Value: TBitmap);
+
 begin
 
   if (Value <> nil) then
@@ -613,6 +633,7 @@ end;
 
 
 procedure TDnButton.SetGroupIndex(Value: Integer);
+
 begin
 
   if (FGroupIndex = Value) then
@@ -623,6 +644,7 @@ end;
 
 
 procedure TDnButton.SetHTFont(Value: TFont);
+
 begin
 
   if (Value = nil) then
@@ -633,6 +655,7 @@ end;
 
 
 procedure TDnButton.SetLayout(Value: TMPButtonLayout);
+
 begin
 
   if (FLayout = Value) then
@@ -643,6 +666,7 @@ end;
 
 
 procedure TDnButton.SetLightColor(Value: TColor);
+
 begin
 
   if (FLightColor = Value) then
@@ -653,6 +677,7 @@ end;
 
 
 procedure TDnButton.SetNumGlyphs(Value: Integer);
+
 begin
 
   if (FNumGlyphs = Value) then
@@ -663,6 +688,7 @@ end;
 
 
 procedure TDnButton.SetShadowColor(Value: TColor);
+
 begin
 
   if (FShadowColor = Value) then
@@ -673,13 +699,14 @@ end;
 
 
 procedure TDnButton.SetStyle(Value: TMPButtonStyle);
+
 begin
 
   // Respect old 8bpp limitation but don't silently ignore property updates
   if (Value = bsModern) and
-     (GetDeviceCaps(Canvas.Handle,
-                    BITSPIXEL) <= 8) and
-     (not (csDesigning in ComponentState)) then
+    (GetDeviceCaps(Canvas.Handle,
+                   BITSPIXEL) <= 8) and
+    (not (csDesigning in ComponentState)) then
     Value := bsNormal;
 
   if (FStyle = Value) then
@@ -690,6 +717,7 @@ end;
 
 
 procedure TDnButton.SetTransparent(Value: Boolean);
+
 begin
 
   if (FTransparent = Value) then
@@ -710,6 +738,7 @@ end;
 
 
 procedure TDnButton.SetWordWrap(Value: Boolean);
+
 begin
 
   if (FWordWrap = Value) then
@@ -720,6 +749,7 @@ end;
 
 
 procedure TDnButton.SetGlyphTPColor(Value: TColor);
+
 begin
 
   if (FGlyphTPColor = Value) then
@@ -731,6 +761,7 @@ end;
 
 
 procedure TDnButton.SetFGlTransp(Value: Boolean);
+
 begin
 
   if (FGlTransp = Value) then
@@ -741,6 +772,7 @@ end;
 
 
 procedure TDnButton.SetSlowDecease(Value: Boolean);
+
 begin
 
   if (FSlowDecease = Value) then
@@ -771,6 +803,7 @@ end;
 
 
 procedure TDnButton.DecTimerTick(Sender: TObject);
+
 begin
 
   if bCursorOnButton then
@@ -792,6 +825,7 @@ end;
 
 
 function TDnButton.GetChecked(): Boolean;
+
 begin
 
   Result := FDown;
@@ -799,6 +833,7 @@ end;
 
 
 procedure TDnButton.SetChecked(Value: Boolean);
+
 begin
 
   SetDown(Value);
@@ -806,6 +841,7 @@ end;
 
 
 procedure TDnButton.SetBehavior(Value: TDnButtonBehavior);
+
 begin
 
   if (FBehavior = Value) then
@@ -816,6 +852,7 @@ end;
 
 
 procedure TDnButton.SetGlyphUnchecked(Value: TBitmap);
+
 begin
 
   if (Value <> nil) then
@@ -828,6 +865,7 @@ end;
 
 
 procedure TDnButton.SetGlyphChecked(Value: TBitmap);
+
 begin
 
   if (Value <> nil) then
@@ -840,16 +878,18 @@ end;
 
 
 procedure TDnButton.SetImages(Value: TCustomImageList);
+
 begin
 
   if (FImages = Value) then
-  Exit;
+    Exit;
   FImages := Value;
   Invalidate;
 end;
 
 
 procedure TDnButton.SetImageIndexUnchecked(Value: Integer);
+
 begin
 
   if (FImageIndexUnchecked = Value) then
@@ -860,6 +900,7 @@ end;
 
 
 procedure TDnButton.SetImageIndexChecked(Value: Integer);
+
 begin
 
   if (FImageIndexChecked = Value) then
@@ -870,6 +911,7 @@ end;
 
 
 procedure TDnButton.SetShowFocusRect(Value: Boolean);
+
 begin
 
   if (FShowFocusRect = Value) then
@@ -880,6 +922,7 @@ end;
 
 
 procedure TDnButton.DoCheckedChanged();
+
 begin
 
   if Assigned(FOnCheckedChanged) then
@@ -888,16 +931,18 @@ end;
 
 
 function TDnButton.HasStateGlyphs(): Boolean;
+
 begin
 
   Result := (FGlyphUnchecked <> nil) and
-            (FGlyphChecked <> nil) and
-            (not FGlyphUnchecked.Empty) and
-            (not FGlyphChecked.Empty);
+    (FGlyphChecked <> nil) and
+    (not FGlyphUnchecked.Empty) and
+    (not FGlyphChecked.Empty);
 end;
 
 
 function TDnButton.GetEffectiveBehavior(): TDnButtonBehavior;
+
 begin
 
   if (FBehavior <> bbAuto) then
@@ -920,59 +965,61 @@ begin
 
   // State glyph bitmaps override
   if HasStateGlyphs then
-  begin
+    begin
 
-    if Down then
-      Exit(FGlyphChecked)
-    else
-      Exit(FGlyphUnchecked);
-  end;
+      if Down then
+        Exit(FGlyphChecked)
+      else
+        Exit(FGlyphUnchecked);
+    end;
 
   // ImageList override
   if (FImages <> nil) then
-  begin
+    begin
 
-    if Down then
-      idx := FImageIndexChecked
-    else
-      idx := FImageIndexUnchecked;
+      if Down then
+        idx := FImageIndexChecked
+      else
+        idx := FImageIndexUnchecked;
 
-    if (idx >= 0) then
-      begin
+      if (idx >= 0) then
+        begin
 
-        bmp := TBitmap.Create;
-        bmp.SetSize(FImages.Width, FImages.Height);
-        bmp.Canvas.Brush.Color := FGlyphTPColor;
-        bmp.Canvas.FillRect(Rect(0,
-                                 0,
-                                 bmp.Width,
-                                 bmp.Height));
+          bmp := TBitmap.Create;
+          bmp.SetSize(FImages.Width,
+                      FImages.Height);
+          bmp.Canvas.Brush.Color := FGlyphTPColor;
+          bmp.Canvas.FillRect(Rect(0,
+                                   0,
+                                   bmp.Width,
+                                   bmp.Height));
 
-        bmp.Transparent := True;
-        bmp.TransparentColor := FGlyphTPColor;
+          bmp.Transparent := True;
+          bmp.TransparentColor := FGlyphTPColor;
 
-        FImages.Draw(bmp.Canvas,
-                     0,
-                     0,
-                     idx,
-                     True);
-        Exit(bmp); // owned by caller
-      end;
-  end;
+          FImages.Draw(bmp.Canvas,
+                       0,
+                       0,
+                       idx,
+                       True);
+          Exit(bmp); // owned by caller
+        end;
+    end;
 
   Result := FGlyph;
 end;
 
 
 function TDnButton.GetPaintNumGlyphs(): Integer;
+
 begin
 
   if HasStateGlyphs then
     Exit(1);
 
   if (FImages <> nil) and
-     ((FImageIndexUnchecked >= 0) or
-     (FImageIndexChecked >= 0)) then
+    ((FImageIndexUnchecked >= 0) or
+    (FImageIndexChecked >= 0)) then
     Exit(1);
 
   Result := FNumGlyphs;
@@ -980,63 +1027,67 @@ end;
 
 
 procedure TDnButton.Notification(AComponent: TComponent;
-                                   Operation: TOperation);
+                                 Operation: TOperation);
+
 begin
 
   inherited;
 
   if (Operation = opRemove) and (AComponent = FImages) then
-  begin
+    begin
 
-    FImages := nil;
-    Invalidate;
-  end;
+      FImages := nil;
+      Invalidate;
+    end;
 end;
 
 
 procedure TDnButton.KeyDown(var Key: Word;
-                              Shift: TShiftState);
+                            Shift: TShiftState);
+
 begin
 
   inherited;
 
   if not Enabled then
-  Exit;
+    Exit;
 
   if (Key = VK_SPACE) or (Key = VK_RETURN) then
-  begin
+    begin
 
-    Click();
-    Key := 0;
-  end;
+      Click();
+      Key := 0;
+    end;
 end;
 
 
 procedure TDnButton.DoMouseEnter(var Msg: TLMessage);
+
 begin
 
   inherited;
 
   if Enabled and
-     Visible and
-     (Parent <> nil) and
-     Parent.Showing then
-  begin
+    Visible and
+    (Parent <> nil) and
+    Parent.Showing then
+    begin
 
-    bCursorOnButton := True;
-    FHotTrackStep := cHotTrackSteps;
-    if (FDecTimer <> nil) then
-      FDecTimer.Enabled := False;
+      bCursorOnButton := True;
+      FHotTrackStep := cHotTrackSteps;
+      if (FDecTimer <> nil) then
+        FDecTimer.Enabled := False;
 
-    Invalidate;
+      Invalidate;
 
-    if Assigned(FOnMouseEnter) then
-      FOnMouseEnter(Self);
-  end;
+      if Assigned(FOnMouseEnter) then
+        FOnMouseEnter(Self);
+    end;
 end;
 
 
 procedure TDnButton.DoMouseLeave(var Msg: TLMessage);
+
 begin
 
   inherited;
@@ -1052,35 +1103,37 @@ begin
     end;
 
   if Enabled and
-     Visible and
-     (Parent <> nil) and
-     Parent.Showing then
-       if Assigned(FOnMouseExit) then
-         FOnMouseExit(Self);
+    Visible and
+    (Parent <> nil) and
+    Parent.Showing then
+    if Assigned(FOnMouseExit) then
+      FOnMouseExit(Self);
 end;
 
 
 procedure TDnButton.DoDialogChar(var Message: TCMDialogChar);
+
 begin
 
   inherited;
 
   // basic '&' accelerator support
   if IsAccel(Message.CharCode,
-     Caption) and
-     Enabled and
-     Visible then
-  begin
+    Caption) and
+    Enabled and
+    Visible then
+    begin
 
-    Click();
-    Message.Result := 1;
-  end;
+      Click();
+      Message.Result := 1;
+    end;
 end;
 
 
 procedure TDnButton.MouseDown(Button: TMouseButton;
-                                Shift: TShiftState;
-                                X, Y: Integer);
+                              Shift: TShiftState;
+                              X,
+                              Y: Integer);
 var
   mode: TDnButtonBehavior;
 
@@ -1089,7 +1142,7 @@ begin
   inherited;
 
   if (Button <> mbLeft) then
-  Exit;
+    Exit;
 
   if (TabStop and CanFocus) then
     SetFocus;
@@ -1100,24 +1153,25 @@ begin
     bbPushButton: SetDown(True);
     bbCheckBox: SetDown(not FDown);
     bbRadioButton:
-    begin
+      begin
 
-      if FDown then
-        begin
+        if FDown then
+          begin
 
-          if FAllowAllUp then
-            SetDown(False);
-        end
-      else
-        SetDown(True);
-    end;
+            if FAllowAllUp then
+              SetDown(False);
+          end
+        else
+          SetDown(True);
+      end;
   end;
 end;
 
 
 procedure TDnButton.MouseUp(Button: TMouseButton;
-                              Shift: TShiftState;
-                              X, Y: Integer);
+                            Shift: TShiftState;
+                            X,
+                            Y: Integer);
 var
   mode: TDnButtonBehavior;
 
@@ -1126,7 +1180,7 @@ begin
   inherited;
 
   if (Button <> mbLeft) then
-  Exit;
+    Exit;
 
   mode := GetEffectiveBehavior();
   if (mode = bbPushButton) then
@@ -1135,6 +1189,7 @@ end;
 
 
 procedure TDnButton.WMLButtonDblClk(var Message: TLMLButtonDblClk);
+
 begin
 
   Perform(WM_LBUTTONDOWN,
@@ -1144,6 +1199,7 @@ end;
 
 
 procedure TDnButton.WMSize(var Msg: TLMSize);
+
 begin
 
   inherited;
@@ -1153,6 +1209,7 @@ end;
 
 
 procedure TDnButton.WMWindowPosChanged(var Msg: TLMWindowPosChanged);
+
 begin
 
   inherited;
@@ -1162,6 +1219,7 @@ end;
 
 
 procedure TDnButton.CMParentColorChanged(var Msg: TLMessage);
+
 begin
 
   inherited;
@@ -1171,14 +1229,15 @@ end;
 
 
 procedure TDnButton.ActionChange(Sender: TObject;
-                                   CheckDefaults: Boolean);
+                                 CheckDefaults: Boolean);
+
 
   procedure CopyImage(ImageList: TCustomImageList;
                       Index: Integer);
   begin
 
     if (ImageList = nil) or (Index < 0) then
-    Exit;
+      Exit;
 
     with Glyph do
       begin
@@ -1217,8 +1276,8 @@ begin
 
       if not CheckDefaults or (not Assigned(Glyph)) then
         if (TCustomAction(Sender).ActionList <> nil) and
-           (TCustomAction(Sender).ActionList.Images <> nil) and
-           (TCustomAction(Sender).ImageIndex >= 0) then
+          (TCustomAction(Sender).ActionList.Images <> nil) and
+          (TCustomAction(Sender).ImageIndex >= 0) then
           CopyImage(TCustomAction(Sender).ActionList.Images,
                     TCustomAction(Sender).ImageIndex);
     end;
@@ -1226,6 +1285,7 @@ end;
 
 
 procedure TDnButton.Click();
+
 begin
 
   inherited;
@@ -1233,6 +1293,7 @@ end;
 
 
 procedure TDnButton.Paint();
+
 
   procedure PaintParentBackground(ABitmap: TBitmap);
   var
@@ -1242,7 +1303,7 @@ procedure TDnButton.Paint();
   begin
 
     if (Parent = nil) then
-    Exit;
+      Exit;
 
     DC := ABitmap.Canvas.Handle;
     SaveIndex := SaveDC(DC);
@@ -1282,7 +1343,7 @@ var
 begin
 
   if (csLoading in ComponentState) then
-  Exit;
+    Exit;
 
   if not (Visible or (csDesigning in ComponentState)) then
     Exit;
@@ -1305,9 +1366,9 @@ begin
 
         bmp.Canvas.Brush.Color := Color;
         bmp.Canvas.FillRect(Rect(0,
-                            0,
-                            Width,
-                            Height));
+                                 0,
+                                 Width,
+                                 Height));
       end;
 
     // Map style/layout to DenonButtons
@@ -1315,25 +1376,25 @@ begin
 
     case FStyle of
       bsEncarta: aStyle := HEOSButtons.bsEncarta;
-      bsModern:  aStyle := HEOSButtons.bsModern;
-      bsOld:     aStyle := HEOSButtons.bsOld;
-      bsShape:   aStyle := HEOSButtons.bsShape;
+      bsModern: aStyle := HEOSButtons.bsModern;
+      bsOld: aStyle := HEOSButtons.bsOld;
+      bsShape: aStyle := HEOSButtons.bsShape;
       bsQuicken: aStyle := HEOSButtons.bsQuicken;
     end;
 
     aLayout := HEOSButtons.blGlyphLeft;
     case FLayout of
-      blGlyphTop:    aLayout := HEOSButtons.blGlyphTop;
-      blGlyphRight:  aLayout := HEOSButtons.blGlyphRight;
+      blGlyphTop: aLayout := HEOSButtons.blGlyphTop;
+      blGlyphRight: aLayout := HEOSButtons.blGlyphRight;
       blGlyphBottom: aLayout := HEOSButtons.blGlyphBottom;
     end;
 
     paintGlyph := GetPaintGlyph();
     numGlyphs := GetPaintNumGlyphs();
     tmpGlyphOwned := (paintGlyph <> nil) and
-                     (paintGlyph <> FGlyph) and
-                     (paintGlyph <> FGlyphUnchecked) and
-                     (paintGlyph <> FGlyphChecked);
+      (paintGlyph <> FGlyph) and
+      (paintGlyph <> FGlyphUnchecked) and
+      (paintGlyph <> FGlyphChecked);
 
     // Choose base color: allow ColorWhenUp override
     baseColor := Color;
@@ -1371,23 +1432,24 @@ begin
                     FAlignment);
 
     Canvas.Draw(0,
-                0, bmp);
+                0,
+                bmp);
 
     // Focus rectangle
     if FShowFocusRect and
-       TabStop and
-       Focused and
-       Enabled then
-    begin
+      TabStop and
+      Focused and
+      Enabled then
+      begin
 
-      Canvas.Brush.Style := bsClear;
-      Canvas.Pen.Style := psDot;
-      Canvas.Rectangle(2,
-                       2,
-                       Width - 2,
-                       Height - 2);
-      Canvas.Pen.Style := psSolid;
-    end;
+        Canvas.Brush.Style := bsClear;
+        Canvas.Pen.Style := psDot;
+        Canvas.Rectangle(2,
+                         2,
+                         Width - 2,
+                         Height - 2);
+        Canvas.Pen.Style := psSolid;
+      end;
 
   finally
 

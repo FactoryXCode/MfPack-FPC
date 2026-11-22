@@ -65,11 +65,12 @@ unit MfAudioFileWriter;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   WinApi.WinApiTypes,
@@ -111,7 +112,9 @@ type
     function Kind(): TAudioOutputKind;
   end;
 
-  TMfAudioFileWriter = class(TInterfacedObject, IAudioWriter)
+  TMfAudioFileWriter = class(TInterfacedObject,
+                             IAudioWriter)
+
   private
 
     FKind: TAudioOutputKind;
@@ -135,7 +138,8 @@ type
     FConvBuf: TBytes;
 
     // MF init refcount
-    class var FStartupCS: SyncObjs.TCriticalSection;
+  class var
+  FStartupCS: SyncObjs.TCriticalSection;
     class constructor ClassCreate();
     class destructor ClassDestroy();
 
@@ -145,7 +149,8 @@ type
     function GetExtensibleSubFormatGUID(const Wf: WAVEFORMATEX;
                                         out SubFmt: TGUID): Boolean;
 
-    function MakeAudioType(const Major, SubType: TGUID;
+    function MakeAudioType(const Major,
+                           SubType: TGUID;
                            SampleRate,
                            Channels,
                            BitsPerSample,
@@ -189,7 +194,7 @@ type
   end;
 
 
-  function CreateAudioWriterFromFileName(const FileName: string): IAudioWriter;
+function CreateAudioWriterFromFileName(const FileName: string): IAudioWriter;
 
 
 implementation
@@ -198,6 +203,7 @@ implementation
 { TMfAudioFileWriter }
 
 class constructor TMfAudioFileWriter.ClassCreate;
+
 begin
 
   FStartupCS := SyncObjs.TCriticalSection.Create();
@@ -205,6 +211,7 @@ end;
 
 
 class destructor TMfAudioFileWriter.ClassDestroy();
+
 begin
 
   FreeAndNil(FStartupCS);
@@ -212,6 +219,7 @@ end;
 
 
 constructor TMfAudioFileWriter.Create(AKind: TAudioOutputKind);
+
 begin
 
   inherited Create();
@@ -225,6 +233,7 @@ end;
 
 
 destructor TMfAudioFileWriter.Destroy();
+
 begin
 
   Close();
@@ -234,6 +243,7 @@ end;
 
 
 function TMfAudioFileWriter.Kind(): TAudioOutputKind;
+
 begin
 
   Result := FKind;
@@ -241,10 +251,11 @@ end;
 
 
 function TMfAudioFileWriter.IsExtensible(const Wf: WAVEFORMATEX): Boolean;
+
 begin
 
   Result := (Wf.wFormatTag = WAVE_FORMAT_EXTENSIBLE) and
-            (Wf.cbSize >= (SizeOf(WAVEFORMATEXTENSIBLE) - SizeOf(WAVEFORMATEX)));
+    (Wf.cbSize >= (SizeOf(WAVEFORMATEXTENSIBLE) - SizeOf(WAVEFORMATEX)));
 end;
 
 
@@ -278,9 +289,9 @@ begin
     Exit(True);
 
   if GetExtensibleSubFormatGUID(Wf,
-                                sub) then
+    sub) then
     Exit(IsEqualGUID(sub,
-         KSDATAFORMAT_SUBTYPE_IEEE_FLOAT));
+                     KSDATAFORMAT_SUBTYPE_IEEE_FLOAT));
 
   Result := False;
 end;
@@ -305,9 +316,9 @@ begin
   case Wf.nChannels of
     1: Result := $00000004; // SPEAKER_FRONT_CENTER
     2: Result := $00000003; // SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT
-  else
+    else
 
-    Result := 0; // unknown
+      Result := 0; // unknown
   end;
 end;
 
@@ -481,7 +492,7 @@ end;
 
 
 function TMfAudioFileWriter.Open(const FileName: string;
-                             const Wf: WAVEFORMATEX): HResult;
+                                 const Wf: WAVEFORMATEX): HResult;
 var
   hr: HResult;
 
@@ -512,10 +523,10 @@ end;
 
 
 procedure TMfAudioFileWriter.ConvertFloatToPCM24Packed(const Src: Pointer;
-                                                   NumFrames: UINT32;
-                                                   Channels: UINT32;
-                                                   out DstPtr: Pointer;
-                                                   out DstBytes: UINT32);
+                                                       NumFrames: UINT32;
+                                                       Channels: UINT32;
+                                                       out DstPtr: Pointer;
+                                                       out DstBytes: UINT32);
 var
   totalSamples: NativeUInt;
   needBytes: NativeUInt;
@@ -544,31 +555,29 @@ begin
       v := inF^;
       if (v > 1.0) then
         v := 1.0
-      else
-        if (v < -1.0) then
-          v := -1.0;
+      else if (v < -1.0) then
+        v := -1.0;
 
-    // Signed 24-bit range
-    s := Round(v * 8388607.0);
+      // Signed 24-bit range
+      s := Round(v * 8388607.0);
 
-    if (s > 8388607) then
-      s := 8388607
-    else
-      if (s < -8388608) then
+      if (s > 8388607) then
+        s := 8388607
+      else if (s < -8388608) then
         s := -8388608;
 
-    // Pack little-endian 24-bit
-    outB^ := Byte(s and $FF);
-    Inc(outB);
+      // Pack little-endian 24-bit
+      outB^ := Byte(s and $FF);
+      Inc(outB);
 
-    outB^ := Byte((s shr 8) and $FF);
-    Inc(outB);
+      outB^ := Byte((s shr 8) and $FF);
+      Inc(outB);
 
-    outB^ := Byte((s shr 16) and $FF);
-    Inc(outB);
+      outB^ := Byte((s shr 16) and $FF);
+      Inc(outB);
 
-    Inc(inF);
-  end;
+      Inc(inF);
+    end;
 
   DstPtr := @FConvBuf[0];
   DstBytes := UINT32(needBytes);
@@ -627,9 +636,8 @@ begin
 
       if (s24 > 8388607) then
         s24 := 8388607
-      else
-        if (s24 < -8388608) then
-          s24 := -8388608;
+      else if (s24 < -8388608) then
+        s24 := -8388608;
 
       outB^ := Byte(s24 and $FF);
       Inc(outB);
@@ -701,13 +709,12 @@ begin
                                           FInChannels,
                                           srcPtr,
                                           bytesToWrite)
-             else
-               if (FSrcBitsPerSample = 32) then
-                 ConvertPCM32ToPCM24Packed(Data,
-                                           NumFrames,
-                                           FInChannels,
-                                           srcPtr,
-                                           bytesToWrite)
+              else if (FSrcBitsPerSample = 32) then
+                ConvertPCM32ToPCM24Packed(Data,
+                                          NumFrames,
+                                          FInChannels,
+                                          srcPtr,
+                                          bytesToWrite)
               else
                 begin
 
@@ -856,5 +863,3 @@ begin
 end;
 
 end.
-
-

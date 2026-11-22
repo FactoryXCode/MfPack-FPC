@@ -74,7 +74,7 @@ unit WinApi.DirectX.DWrite_2;
 interface
 
 uses
-  
+
   {WinApi}
   Windows,
   {DirectX}
@@ -88,18 +88,20 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 type
   PDWRITE_FONT_FAMILY_NAME = ^PWideChar;
 
-// Enums =======================================================================
+  // Enums =======================================================================
 
 type
   // How to align glyphs to the margin.
   PDWRITE_OPTICAL_ALIGNMENT = ^DWRITE_OPTICAL_ALIGNMENT;
   DWRITE_OPTICAL_ALIGNMENT = DWord;
+
 const
   // Align to the default metrics of the glyph.
   DWRITE_OPTICAL_ALIGNMENT_NONE = DWRITE_OPTICAL_ALIGNMENT(0);
@@ -113,6 +115,7 @@ type
   // Whether to enable grid-fitting of glyph outlines (a.k.a. hinting).
   PDWRITE_GRID_FIT_MODE = ^DWRITE_GRID_FIT_MODE;
   DWRITE_GRID_FIT_MODE = DWord;
+
 const
   // Choose grid fitting base on the font's gasp table information.
   DWRITE_GRID_FIT_MODE_DEFAULT = DWRITE_GRID_FIT_MODE(0);
@@ -122,7 +125,7 @@ const
   DWRITE_GRID_FIT_MODE_ENABLED = DWRITE_GRID_FIT_MODE(2);
 
 
-// =============================================================================
+  // =============================================================================
 
 type
 
@@ -136,8 +139,9 @@ type
   // Overall metrics associated with text after layout.
   // All coordinates are in device independent pixels (DIPs).
   PDWRITE_TEXT_METRICS1 = ^DWRITE_TEXT_METRICS1;
+
   DWRITE_TEXT_METRICS1 = record
-    DWriteTextMetrics : DWRITE_TEXT_METRICS;
+    DWriteTextMetrics: DWRITE_TEXT_METRICS;
 
     // The height of the formatted text taking into account the
     // trailing whitespace at the end of each line, which will
@@ -153,7 +157,7 @@ type
   // such as underlines.
   //
   IDWriteTextRenderer1 = interface(IDWriteTextRenderer)
-  ['{D3E0E934-22A0-427E-AAE4-7D9574B59DB1}']
+    ['{D3E0E934-22A0-427E-AAE4-7D9574B59DB1}']
 
     // IDWriteTextLayout.Draw calls this function to instruct the client to
     // render a run of glyphs.
@@ -291,6 +295,7 @@ type
                               clientDrawingEffect: IUnknown = nil): HResult; stdcall; overload;
 
   end;
+
   IID_IDWriteTextRenderer1 = IDWriteTextRenderer1;
 
 
@@ -302,7 +307,7 @@ type
   // </remarks>
   //
   IDWriteTextFormat1 = interface(IDWriteTextFormat)
-  ['{5F174B49-0D8B-4CFB-8BCA-F1CCE9D06C67}']
+    ['{5F174B49-0D8B-4CFB-8BCA-F1CCE9D06C67}']
 
     // Set the preferred orientation of glyphs when using a vertical reading direction.
     // param name = glyphOrientation: Preferred glyph orientation.
@@ -347,6 +352,7 @@ type
     function GetFontFallback(out fontFallback: IDWriteFontFallback): HResult; stdcall;
 
   end;
+
   IID_IDWriteTextFormat1 = IDWriteTextFormat1;
 
 
@@ -357,7 +363,7 @@ type
   // been fully analyzed and formatted.
   //
   IDWriteTextLayout2 = interface(IDWriteTextLayout1)
-  ['{1093C18F-8D5E-43F0-B064-0917311B525E}']
+    ['{1093C18F-8D5E-43F0-B064-0917311B525E}']
     // GetMetrics retrieves overall metrics for the formatted string.
     // param name = textMetrics: The returned metrics.
     // returns
@@ -414,6 +420,7 @@ type
     function GetFontFallback(out fontFallback: IDWriteFontFallback): HResult; stdcall;
 
   end;
+
   IID_IDWriteTextLayout2 = IDWriteTextLayout2;
 
 
@@ -424,7 +431,7 @@ type
   // such as underlines.
   //
   IDWriteTextAnalyzer2 = interface(IDWriteTextAnalyzer1)
-  ['{553A9FF3-5693-4DF7-B52B-74806F7F2EB9}']
+    ['{553A9FF3-5693-4DF7-B52B-74806F7F2EB9}']
     // Returns 2x3 transform matrix for the respective angle to draw the
     // glyph run or other object.
     // param name = glyphOrientationAngle: The angle reported to one of the application callbacks,
@@ -491,6 +498,7 @@ type
                                      featureApplies: PByte): HResult; stdcall;
 
   end;
+
   IID_IDWriteTextAnalyzer2 = IDWriteTextAnalyzer2;
 
 
@@ -500,7 +508,7 @@ type
   // supporting them.
   //
   IDWriteFontFallback = interface(IUnknown)
-  ['{EFA008F9-F7A1-48BF-B05C-F224713CC0FF}']
+    ['{EFA008F9-F7A1-48BF-B05C-F224713CC0FF}']
 
     // Determines an appropriate font to use to render the range of text.
     // param name = source: The text source implementation holds the text and
@@ -537,6 +545,7 @@ type
                            out scale: Single): HResult; stdcall; overload;
 
   end;
+
   IID_IDWriteFontFallback = IDWriteFontFallback;
 
 
@@ -548,7 +557,7 @@ type
   // This object may not be thread-safe.
   //
   IDWriteFontFallbackBuilder = interface(IUnknown)
-  ['{FD882D06-8ABA-4FB8-B849-8BE8B73E14DE}']
+    ['{FD882D06-8ABA-4FB8-B849-8BE8B73E14DE}']
     // Appends a single mapping to the list. Call this once for each additional mapping.
     // param name = ranges: Unicode ranges that apply to this mapping.
     // param name = rangesCount: Number of Unicode ranges.
@@ -582,32 +591,33 @@ type
     function CreateFontFallback(out fontFallback: IDWriteFontFallback): HResult; stdcall;
 
   end;
+
   IID_IDWriteFontFallbackBuilder = IDWriteFontFallbackBuilder;
 
-// DWRITE_COLOR_F
-//#ifndef D3DCOLORVALUE_DEFINED
+  // DWRITE_COLOR_F
+  //#ifndef D3DCOLORVALUE_DEFINED
 
-//typedef struct _D3DCOLORVALUE {
-//    union {
-//    Single r;
-//    Single dvR;
-//    };
-//    union {
-//    Single g;
-//    Single dvG;
-//    };
-//    union {
-//    Single b;
-//    Single dvB;
-//    };
-//    union {
-//    Single a;
-//    Single dvA;
-//    };
-//} D3DCOLORVALUE;
+  //typedef struct _D3DCOLORVALUE {
+  //    union {
+  //    Single r;
+  //    Single dvR;
+  //    };
+  //    union {
+  //    Single g;
+  //    Single dvG;
+  //    };
+  //    union {
+  //    Single b;
+  //    Single dvB;
+  //    };
+  //    union {
+  //    Single a;
+  //    Single dvA;
+  //    };
+  //} D3DCOLORVALUE;
 
-//#define D3DCOLORVALUE_DEFINED
-//#endif // D3DCOLORVALUE_DEFINED
+  //#define D3DCOLORVALUE_DEFINED
+  //#endif // D3DCOLORVALUE_DEFINED
 
 
   PDWRITE_COLOR_F = ^D3DCOLORVALUE;
@@ -619,7 +629,7 @@ type
   // The IDWriteFont interface represents a physical font in a font collection.
   //
   IDWriteFont2 = interface(IDWriteFont1)
-  ['{29748ed6-8c9c-4a6a-be0b-d912e8538944}']
+    ['{29748ed6-8c9c-4a6a-be0b-d912e8538944}']
 
     // Returns TRUE if the font contains tables that can provide color information
     // (including COLR, CPAL, SVG, CBDT, sbix  tables), or FALSE if not. Note that
@@ -628,6 +638,7 @@ type
     function IsColorFont(): BOOL; stdcall;
 
   end;
+
   IID_IDWriteFont2 = IDWriteFont2;
 
 
@@ -638,7 +649,7 @@ type
   // Various font data such as metrics, names and glyph outlines is obtained from IDWriteFontFace.
   //
   IDWriteFontFace2 = interface(IDWriteFontFace1)
-  ['{d8b768ff-64bc-4e66-982b-ec8e87f693f7}']
+    ['{d8b768ff-64bc-4e66-982b-ec8e87f693f7}']
 
     // Returns TRUE if the font contains tables that can provide color information
     // (including COLR, CPAL, SVG, CBDT, sbix  tables), or FALSE if not. Note that
@@ -709,6 +720,7 @@ type
                                          out gridFitMode: DWRITE_GRID_FIT_MODE): HResult; stdcall; overload;
 
   end;
+
   IID_IDWriteFontFace2 = IDWriteFontFace2;
 
 
@@ -717,6 +729,7 @@ type
   // layered on top of each other to produce a color representation of the
   // given base glyph run.
   PDWRITE_COLOR_GLYPH_RUN = ^DWRITE_COLOR_GLYPH_RUN;
+
   DWRITE_COLOR_GLYPH_RUN = record
     // Glyph run to render.
     glyphRun: DWRITE_GLYPH_RUN;
@@ -744,7 +757,7 @@ type
   // Enumerator for an ordered collection of color glyph runs.
   //
   IDWriteColorGlyphRunEnumerator = interface(IUnknown)
-  ['{d31fbe17-f157-41a2-8d24-cb779e0560e8}']
+    ['{d31fbe17-f157-41a2-8d24-cb779e0560e8}']
 
     // Advances to the first or next color run. The runs are enumerated
     // in order from back to front.
@@ -765,6 +778,7 @@ type
     function GetCurrentRun(out colorGlyphRun: PDWRITE_COLOR_GLYPH_RUN): HResult; stdcall; overload;
 
   end;
+
   IID_IDWriteColorGlyphRunEnumerator = IDWriteColorGlyphRunEnumerator;
 
 
@@ -773,12 +787,13 @@ type
   // The interface that represents text rendering settings for glyph rasterization and filtering.
   //
   IDWriteRenderingParams2 = interface(IDWriteRenderingParams1)
-  ['{F9D711C3-9777-40AE-87E8-3E5AF9BF0948}']
+    ['{F9D711C3-9777-40AE-87E8-3E5AF9BF0948}']
 
     // Gets the grid fitting mode.
     function GetGridFitMode(): DWRITE_GRID_FIT_MODE; stdcall;
 
   end;
+
   IID_IDWriteRenderingParams2 = IDWriteRenderingParams2;
 
 
@@ -787,7 +802,7 @@ type
   // The root factory interface for all DWrite objects.
   //
   IDWriteFactory2 = interface(IDWriteFactory1)
-  ['{0439fc60-ca44-4994-8dee-3a9af7b732ec}']
+    ['{0439fc60-ca44-4994-8dee-3a9af7b732ec}']
 
     // Get the system-appropriate font fallback mapping list.
     // param name = fontFallback: The system fallback list.
@@ -880,6 +895,7 @@ type
                                     out glyphRunAnalysis: IDWriteGlyphRunAnalysis): HResult; stdcall; overload;
 
   end;
+
   IID_IDWriteFactory2 = IDWriteFactory2;
 
 
@@ -889,7 +905,6 @@ type
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.
-

@@ -73,7 +73,7 @@ unit WinApi.DirectX.D3D9;
 interface
 
 uses
-  
+
   {WinApi}
   Windows,
   {System}
@@ -87,13 +87,15 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
-{$IFNDEF DIRECT3D_VERSION}
+  {$IFNDEF DIRECT3D_VERSION}
 const
-  DIRECT3D_VERSION                    = $0900;
-{$ENDIF}  //DIRECT3D_VERSION
+  DIRECT3D_VERSION = $0900;
+  {$ENDIF}
+  //DIRECT3D_VERSION
 
   //include this file content only if compiling for DX9 interfaces
   //#if(DIRECT3D_VERSION >= $0900)
@@ -106,18 +108,18 @@ const
   //(The number itself has no meaning.)
 
   {$IFDEF D3D_DEBUG_INFO}
-  D3D_SDK_VERSION                     = (32 or $80000000);
-  D3D9b_SDK_VERSION                   = (31 or $80000000);
+  D3D_SDK_VERSION = (32 or $80000000);
+  D3D9b_SDK_VERSION = (31 or $80000000);
   {$ELSE}
-  D3D_SDK_VERSION                     = 32;
-  D3D9b_SDK_VERSION                   = 31;
+  D3D_SDK_VERSION = 32;
+  D3D9b_SDK_VERSION = 31;
   {$ENDIF}
 
 type
- {IFDEF HMONITOR_DECLARED AND (WINVER < $0500)}
+  {IFDEF HMONITOR_DECLARED AND (WINVER < $0500)}
   HMONITOR = THandle;
- {DEFINE HMONITOR_DECLARED}
- {ENDIF}
+  {DEFINE HMONITOR_DECLARED}
+  {ENDIF}
 
 
 type
@@ -125,8 +127,8 @@ type
   // Forward Interface declarations
   // ==============================
 
-//  PIDirect3D9 = ^IDirect3D9;
-//  IDirect3D9 = interface;
+  //  PIDirect3D9 = ^IDirect3D9;
+  //  IDirect3D9 = interface;
 
   PIDirect3DDevice9 = ^IDirect3DDevice9;
   IDirect3DDevice9 = interface;
@@ -186,7 +188,7 @@ type
   // ====================
   //
   IDirect3D9 = interface(IUnknown)
-  ['{81bdcbca-64d4-426d-ae8d-ad0147f4275c}']
+    ['{81bdcbca-64d4-426d-ae8d-ad0147f4275c}']
 
     //*** IDirect3D9 methods ***//
     function RegisterSoftwareDevice(pInitializeFunction: Pointer): HResult; stdcall;
@@ -252,6 +254,7 @@ type
                           pPresentationParameters: PD3DPRESENT_PARAMETERS;
                           out ppReturnedDeviceInterface: IDirect3DDevice9): HResult; stdcall;
   end;
+
   IID_IDirect3D9 = IDirect3D9;
 
 
@@ -268,7 +271,7 @@ type
   // ==========================
   //
   IDirect3DDevice9 = interface(IUnknown)
-  ['{d0223b96-bf7a-43fd-92bd-a43b0d82b9eb}']
+    ['{d0223b96-bf7a-43fd-92bd-a43b0d82b9eb}']
     //*** IDirect3DDevice9 methods ***//
     function TestCooperativeLevel(): HResult; stdcall;
 
@@ -493,7 +496,8 @@ type
     function GetTexture(Stage: DWORD;
                         out ppTexture: IDirect3DBaseTexture9): HResult; stdcall;
 
-    function SetTexture(Stage: DWORD; pTexture: IDirect3DBaseTexture9): HResult; stdcall;
+    function SetTexture(Stage: DWORD;
+                        pTexture: IDirect3DBaseTexture9): HResult; stdcall;
 
     function GetTextureStageState(Stage: UINT;
                                   _Type: D3DTEXTURESTAGESTATETYPE;
@@ -555,7 +559,8 @@ type
                                     MinVertexIndex: UINT;
                                     NumVertice: UINT;
                                     PrimitiveCount: UINT;
-                                    const pIndexData; IndexDataFormat: D3DFORMAT;
+                                    const pIndexData;
+                                    IndexDataFormat: D3DFORMAT;
                                     const pVertexStreamZeroData;
                                     VertexStreamZeroStride: UINT): HResult; stdcall;
 
@@ -601,8 +606,8 @@ type
                                       Vector4iCount: UINT): HResult; stdcall;
 
     function SetVertexShaderConstantB(StartRegister: UINT;
-                                     pConstantData: PBOOL;
-                                     BoolCount: UINT): HResult; stdcall;
+                                      pConstantData: PBOOL;
+                                      BoolCount: UINT): HResult; stdcall;
 
     function GetVertexShaderConstantB(StartRegister: UINT;
                                       pConstantData: PBOOL;
@@ -673,6 +678,7 @@ type
                          out ppQuery: IDirect3DQuery9): HResult; stdcall;
 
   end;
+
   IID_IDirect3DDevice9 = IDirect3DDevice9;
 
 
@@ -720,12 +726,13 @@ type
   // ==============================
   //
   IDirect3DStateBlock9 = interface(IUnknown)
-  ['{B07C4FE5-310D-4ba8-A23C-4F0F206F218B}']
-     //*** IDirect3DStateBlock9 methods ***//
+    ['{B07C4FE5-310D-4ba8-A23C-4F0F206F218B}']
+    //*** IDirect3DStateBlock9 methods ***//
     function GetDevice(out ppDevice: IDirect3DDevice9): HResult; stdcall;
     function Capture(): HResult; stdcall;
     function Apply(): HResult; stdcall;
   end;
+
   IID_IDirect3DStateBlock9 = IDirect3DStateBlock9;
 
 
@@ -742,7 +749,7 @@ type
   // =============================
   //
   IDirect3DSwapChain9 = interface(IUnknown)
-  ['{794950F2-ADFC-458a-905E-10A10B0B503B}']
+    ['{794950F2-ADFC-458a-905E-10A10B0B503B}']
     //*** IDirect3DSwapChain9 methods ***//
     function Present(pSourceRect: PRect;
                      pDestRect: PRect;
@@ -764,6 +771,7 @@ type
 
     function GetPresentParameters(out pPresentationParameters: D3DPRESENT_PARAMETERS): HResult; stdcall;
   end;
+
   IID_IDirect3DSwapChain9 = IDirect3DSwapChain9;
 
 
@@ -782,7 +790,7 @@ type
   // ============================
   //
   IDirect3DResource9 = interface(IUnknown)
-  ['{05EEC05D-8F7D-4362-B999-D1BAF357C704}']
+    ['{05EEC05D-8F7D-4362-B999-D1BAF357C704}']
     //*** IDirect3DResource9 methods ***//
     function GetDevice(out ppDevice: IDirect3DDevice9): HResult; stdcall;
 
@@ -805,6 +813,7 @@ type
 
     function GetType(): D3DRESOURCETYPE; stdcall;
   end;
+
   IID_IDirect3DResource9 = IDirect3DResource9;
 
 
@@ -813,13 +822,14 @@ type
   // =====================================
   //
   IDirect3DVertexDeclaration9 = interface(IUnknown)
-  ['{DD13C59C-36FA-4098-A8FB-C7ED39DC8546}']
+    ['{DD13C59C-36FA-4098-A8FB-C7ED39DC8546}']
     //*** IDirect3DVertexDeclaration9 methods ***//
     function GetDevice(out ppDevice: IDirect3DDevice9): HResult; stdcall;
 
     function GetDeclaration(pElement: PD3DVertexElement9;
                             out pNumElements: UINT): HResult; stdcall;
   end;
+
   IID_IDirect3DVertexDeclaration9 = IDirect3DVertexDeclaration9;
 
 
@@ -837,13 +847,14 @@ type
   // ================================
   //
   IDirect3DVertexShader9 = interface(IUnknown)
-  ['{EFC5557E-6265-4613-8A94-43857889EB36}']
+    ['{EFC5557E-6265-4613-8A94-43857889EB36}']
     //*** IDirect3DVertexShader9 methods ***//
     function GetDevice(out ppDevice: IDirect3DDevice9): HResult; stdcall;
 
     function GetFunction(pData: Pointer;
                          out pSizeOfData: UINT): HResult; stdcall;
   end;
+
   IID_IDirect3DVertexShader9 = IDirect3DVertexShader9;
 
 
@@ -861,13 +872,14 @@ type
   // ===============================
   //
   IDirect3DPixelShader9 = interface(IUnknown)
-  ['{6D3BDBDC-5B02-4415-B852-CE5E8BCCB289}']
+    ['{6D3BDBDC-5B02-4415-B852-CE5E8BCCB289}']
     //*** IDirect3DPixelShader9 methods ***//
     function GetDevice(out ppDevice: IDirect3DDevice9): HResult; stdcall;
 
     function GetFunction(pData: Pointer;
                          out pSizeOfData: UINT): HResult; stdcall;
   end;
+
   IID_IDirect3DPixelShader9 = IDirect3DPixelShader9;
 
 
@@ -884,7 +896,7 @@ type
   // ===============================
   //
   IDirect3DBaseTexture9 = interface(IDirect3DResource9)
-  ['{580ca87e-1d3c-4d54-991d-b7d3e3c298ce}']
+    ['{580ca87e-1d3c-4d54-991d-b7d3e3c298ce}']
     //*** IDirect3DBaseTexture9 methods ***//
     function SetLOD(LODNew: DWORD): DWORD; stdcall;
 
@@ -898,6 +910,7 @@ type
 
     procedure GenerateMipSubLevels();
   end;
+
   IID_IDirect3DBaseTexture9 = IDirect3DBaseTexture9;
 
 
@@ -906,7 +919,7 @@ type
   // ===========================
   //
   IDirect3DTexture9 = interface(IDirect3DBaseTexture9)
-  ['{85c31227-3de5-4f00-9b3a-f11ac38c18b5}']
+    ['{85c31227-3de5-4f00-9b3a-f11ac38c18b5}']
     //*** IDirect3DTexture9 methods ***//
     function GetLevelDesc(Level: UINT;
                           out pDesc: D3DSURFACE_DESC): HResult; stdcall;
@@ -923,6 +936,7 @@ type
 
     function AddDirtyRect(pDirtyRect: PRect): HResult; stdcall;
   end;
+
   IID_IDirect3DTexture9 = IDirect3DTexture9;
 
 
@@ -951,7 +965,7 @@ type
   // =================================
   //
   IDirect3DVolumeTexture9 = interface(IDirect3DBaseTexture9)
-  ['{2518526C-E789-4111-A7B9-47EF328D13E6}']
+    ['{2518526C-E789-4111-A7B9-47EF328D13E6}']
     //*** IDirect3DVolumeTexture9 methods ***//
     function GetLevelDesc(Level: UINT;
                           out pDesc: D3DVOLUME_DESC): HResult; stdcall;
@@ -962,12 +976,13 @@ type
     function LockBox(Level: UINT;
                      out pLockedVolume: D3DLOCKED_BOX;
                      pBox: PD3DBOX; // Specifying Nil for this parameter locks the entire volume level.
-                     Flags: DWORD): HResult; stdcall;
+      Flags: DWORD): HResult; stdcall;
 
     function UnlockBox(Level: UINT): HResult; stdcall;
 
     function AddDirtyBox(pDirtyBox: PD3DBox): HResult; stdcall; // Specifying Nil expands the dirty region to cover the entire volume texture.
   end;
+
   IID_IDirect3DVolumeTexture9 = IDirect3DVolumeTexture9;
 
 
@@ -996,7 +1011,7 @@ type
   // ===============================
   //
   IDirect3DCubeTexture9 = interface(IDirect3DBaseTexture9)
-  ['{fff32f81-d953-473a-9223-93d652aba93f}']
+    ['{fff32f81-d953-473a-9223-93d652aba93f}']
     //*** IDirect3DCubeTexture9 methods ***//
     function GetLevelDesc(Level: UINT;
                           out pDesc: D3DSURFACE_DESC): HResult; stdcall;
@@ -1017,6 +1032,7 @@ type
     function AddDirtyRect(FaceType: D3DCUBEMAP_FACES;
                           pDirtyRect: PRect): HResult; stdcall;
   end;
+
   IID_IDirect3DCubeTexture9 = IDirect3DCubeTexture9;
 
 
@@ -1044,7 +1060,7 @@ type
   // ================================
   //
   IDirect3DVertexBuffer9 = interface(IDirect3DResource9)
-  ['{b64bb1b5-fd70-4df6-bf91-19d0a12455e3}']
+    ['{b64bb1b5-fd70-4df6-bf91-19d0a12455e3}']
     //*** IDirect3DVertexBuffer9 methods ***//
     function Lock(OffsetToLock: UINT;
                   SizeToLock: UINT;
@@ -1055,6 +1071,7 @@ type
 
     function GetDesc(out pDesc: D3DVERTEXBUFFER_DESC): HResult; stdcall;
   end;
+
   IID_IDirect3DVertexBuffer9 = IDirect3DVertexBuffer9;
 
 
@@ -1078,7 +1095,7 @@ type
   // ===============================
   //
   IDirect3DIndexBuffer9 = interface(IDirect3DResource9)
-  ['{7C9DD65E-D3F7-4529-ACEE-785830ACDE35}']
+    ['{7C9DD65E-D3F7-4529-ACEE-785830ACDE35}']
     //*** IDirect3DIndexBuffer9 methods ***//
     function Lock(OffsetToLock: DWORD;
                   SizeToLock: DWORD;
@@ -1089,6 +1106,7 @@ type
 
     function GetDesc(out pDesc: D3DINDEXBUFFER_DESC): HResult; stdcall;
   end;
+
   IID_IDirect3DIndexBuffer9 = IDirect3DIndexBuffer9;
 
 
@@ -1112,7 +1130,7 @@ type
   // ===========================
   //
   IDirect3DSurface9 = interface(IDirect3DResource9)
-  ['{0cfbaf3a-9ff6-429a-99b3-a2796af8b89b}']
+    ['{0cfbaf3a-9ff6-429a-99b3-a2796af8b89b}']
     //*** IDirect3DSurface9 methods ***//
     function GetContainer(const riid: TGuid;
                           out ppContainer {Void}): HResult; stdcall;
@@ -1129,6 +1147,7 @@ type
 
     function ReleaseDC(hdc: HDC): HResult; stdcall;
   end;
+
   IID_IDirect3DSurface9 = IDirect3DSurface9;
 
 
@@ -1155,13 +1174,14 @@ type
   // Interface IDirect3DVolume9
   // ==========================
   //
-  IDirect3DVolume9 = interface (IUnknown)
-  ['{24F416E6-1F67-4aa7-B88E-D33F6F3128A1}']
+  IDirect3DVolume9 = interface(IUnknown)
+    ['{24F416E6-1F67-4aa7-B88E-D33F6F3128A1}']
     //*** IDirect3DVolume9 methods ***//
     function GetDevice(out ppDevice: IDirect3DDevice9): HResult; stdcall;
 
     function SetPrivateData(const refguid: TGuid;
-                            const pData; DWORD,
+                            const pData;
+                            DWORD,
                             Flags: DWORD): HResult; stdcall;
 
     function GetPrivateData(const refguid: TGuid;
@@ -1181,6 +1201,7 @@ type
 
     function UnlockBox(): HResult; stdcall;
   end;
+
   IID_IDirect3DVolume9 = IDirect3DVolume9;
 
 
@@ -1205,7 +1226,7 @@ type
   // =========================
   //
   IDirect3DQuery9 = interface(IUnknown)
-  ['{d9771460-a695-4f26-bbd3-27b840b541cc}']
+    ['{d9771460-a695-4f26-bbd3-27b840b541cc}']
     //*** IDirect3DQuery9 methods ***//
     function GetDevice(out ppDevice: IDirect3DDevice9): HResult; stdcall;
 
@@ -1219,6 +1240,7 @@ type
                      dwSize: DWORD;
                      dwGetDataFlags: DWORD): HResult; stdcall;
   end;
+
   IID_IDirect3DQuery9 = IDirect3DQuery9;
 
 
@@ -1231,7 +1253,7 @@ type
     CreationCallStack: LPCWSTR;
   end;
 
-// Interfaces end -------------------------------------------------------------
+  // Interfaces end -------------------------------------------------------------
 
 
   //*
@@ -1242,51 +1264,50 @@ type
   //* against the right headers.
   //*/
 
-  function _Direct3DCreate9(SDKVersion: LongWord): Pointer; stdcall;
+function _Direct3DCreate9(SDKVersion: LongWord): Pointer; stdcall;
 
-  // Calling this function directly will not work, so we create a workaround
-  function Direct3DCreate9(SDKVersion: LongWord): IDirect3D9; stdcall;
-
-
-  //*
-  //* Stubs for graphics profiling.
-  //*//
+// Calling this function directly will not work, so we create a workaround
+function Direct3DCreate9(SDKVersion: LongWord): IDirect3D9; stdcall;
 
 
-  function D3DPERF_BeginEvent(col: D3DCOLOR;
-                              wszName: LPCWSTR): Integer; stdcall;
-
-  function D3DPERF_EndEvent(): Integer; stdcall;
-
-  procedure D3DPERF_SetMarker(col: D3DCOLOR;
-                              wszName: LPCWSTR); stdcall;
-
-  procedure D3DPERF_SetRegion(col: D3DCOLOR;
-                              wszName: LPCWSTR); stdcall;
-
-  function D3DPERF_QueryRepeatFrame(): BOOL; stdcall;
-
-  procedure D3DPERF_SetOptions(dwOptions: DWORD); stdcall;
-
-  function D3DPERF_GetStatus(): DWORD; stdcall;
+//*
+//* Stubs for graphics profiling.
+//*//
 
 
+function D3DPERF_BeginEvent(col: D3DCOLOR;
+                            wszName: LPCWSTR): Integer; stdcall;
+
+function D3DPERF_EndEvent(): Integer; stdcall;
+
+procedure D3DPERF_SetMarker(col: D3DCOLOR;
+                            wszName: LPCWSTR); stdcall;
+
+procedure D3DPERF_SetRegion(col: D3DCOLOR;
+                            wszName: LPCWSTR); stdcall;
+
+function D3DPERF_QueryRepeatFrame(): BOOL; stdcall;
+
+procedure D3DPERF_SetOptions(dwOptions: DWORD); stdcall;
+
+function D3DPERF_GetStatus(): DWORD; stdcall;
 
 
 
- //****************************************************************************
- //* Flags for SetPrivateData method on all D3D9 interfaces
- //*
- //* The passed pointer is an IUnknown ptr. The SizeOfData argument to SetPrivateData
- //* must be set to sizeof(IUnknown*). Direct3D will call AddRef through this
- //* pointer and Release when the private data is destroyed. The data will be
- //* destroyed when another SetPrivateData with the same GUID is set, when
- //* FreePrivateData is called, or when the D3D9 object is freed.
- //****************************************************************************/
+
+//****************************************************************************
+//* Flags for SetPrivateData method on all D3D9 interfaces
+//*
+//* The passed pointer is an IUnknown ptr. The SizeOfData argument to SetPrivateData
+//* must be set to sizeof(IUnknown*). Direct3D will call AddRef through this
+//* pointer and Release when the private data is destroyed. The data will be
+//* destroyed when another SetPrivateData with the same GUID is set, when
+//* FreePrivateData is called, or when the D3D9 object is freed.
+//****************************************************************************/
 
 const
 
-  D3DSPD_IUNKNOWN                     = $00000001;
+  D3DSPD_IUNKNOWN = $00000001;
 
   //***************************************************************************
   //*
@@ -1294,16 +1315,16 @@ const
   //*
   //***************************************************************************/
 
-  D3DCREATE_FPU_PRESERVE              = $00000002;
-  D3DCREATE_MULTITHREADED             = $00000004;
+  D3DCREATE_FPU_PRESERVE = $00000002;
+  D3DCREATE_MULTITHREADED = $00000004;
 
-  D3DCREATE_PUREDEVICE                = $00000010;
+  D3DCREATE_PUREDEVICE = $00000010;
   D3DCREATE_SOFTWARE_VERTEXPROCESSING = $00000020;
   D3DCREATE_HARDWARE_VERTEXPROCESSING = $00000040;
-  D3DCREATE_MIXED_VERTEXPROCESSING    = $00000080;
+  D3DCREATE_MIXED_VERTEXPROCESSING = $00000080;
 
   D3DCREATE_DISABLE_DRIVER_MANAGEMENT = $00000100;
-  D3DCREATE_ADAPTERGROUP_DEVICE       = $00000200;
+  D3DCREATE_ADAPTERGROUP_DEVICE = $00000200;
   D3DCREATE_DISABLE_DRIVER_MANAGEMENT_EX = $00000400;
 
   // This flag causes the D3D runtime not to alter the focus
@@ -1311,19 +1332,19 @@ const
   // focus management events (alt-tab, etc.) falls on the
   // application, and appropriate responses (switching display
   // mode, etc.) should be coded.
-  D3DCREATE_NOWINDOWCHANGES           = $00000800;
+  D3DCREATE_NOWINDOWCHANGES = $00000800;
 
   //* D3D9Ex only -- *//
   //{$IFDEF D3D_DISABLE_9EX}
 
   // Disable multithreading for software vertex processing
-  D3DCREATE_DISABLE_PSGP_THREADING    = $00002000;
+  D3DCREATE_DISABLE_PSGP_THREADING = $00002000;
   // This flag enables present statistics on device.
-  D3DCREATE_ENABLE_PRESENTSTATS       = $00004000;
+  D3DCREATE_ENABLE_PRESENTSTATS = $00004000;
   // This flag disables printscreen support in the runtime for this device
-  D3DCREATE_DISABLE_PRINTSCREEN       = $00008000;
+  D3DCREATE_DISABLE_PRINTSCREEN = $00008000;
 
-  D3DCREATE_SCREENSAVER               = $10000000;
+  D3DCREATE_SCREENSAVER = $10000000;
 
 
   //{$ENDIF} // !D3D_DISABLE_9EX
@@ -1336,7 +1357,7 @@ const
   //*
   //***************************************************************************/
 
-  D3DADAPTER_DEFAULT                  = 0;
+  D3DADAPTER_DEFAULT = 0;
 
   //***************************************************************************
   //*
@@ -1350,7 +1371,7 @@ const
   //* See the DirectX SDK for sample code on discovering driver signatures.
   //*/
 
-  D3DENUM_WHQL_LEVEL                  = $00000002;
+  D3DENUM_WHQL_LEVEL = $00000002;
 
   //* D3D9Ex only -- *//
   //{$IFDEF D3D_DISABLE_9EX}
@@ -1358,7 +1379,7 @@ const
   //* NO_DRIVERVERSION will not fill out the DriverVersion field, nor will the
   //  DriverVersion be incorporated into the DeviceIdentifier GUID. WINNT only */
 
-  D3DENUM_NO_DRIVERVERSION            = $00000004;
+  D3DENUM_NO_DRIVERVERSION = $00000004;
 
   //{$ENDIF} // !D3D_DISABLE_9EX
   //* -- D3D9Ex only *//
@@ -1370,7 +1391,7 @@ const
   //*
   //***************************************************************************/
 
-  D3DPRESENT_BACK_BUFFERS_MAX         = 3;
+  D3DPRESENT_BACK_BUFFERS_MAX = 3;
 
   //* D3D9Ex only -- *//
   //{$IFDEF D3D_DISABLE_9EX}
@@ -1381,7 +1402,7 @@ const
   //*
   //***************************************************************************/
 
-  D3DPRESENT_BACK_BUFFERS_MAX_EX      = 30;
+  D3DPRESENT_BACK_BUFFERS_MAX_EX = 30;
 
   //{$ENDIF} // !D3D_DISABLE_9EX
   //* -- D3D9Ex only *//
@@ -1392,8 +1413,8 @@ const
   //*
   //***************************************************************************/
 
-  D3DSGR_NO_CALIBRATION               = $00000000;
-  D3DSGR_CALIBRATE                    = $00000001;
+  D3DSGR_NO_CALIBRATION = $00000000;
+  D3DSGR_CALIBRATE = $00000001;
 
   //***************************************************************************
   //*
@@ -1401,7 +1422,7 @@ const
   //*
   //***************************************************************************/
 
-  D3DCURSOR_IMMEDIATE_UPDATE          = $00000001;
+  D3DCURSOR_IMMEDIATE_UPDATE = $00000001;
 
   //***************************************************************************
   //*
@@ -1409,19 +1430,19 @@ const
   //*
   //***************************************************************************/
 
-  D3DPRESENT_DONOTWAIT                = $00000001;
-  D3DPRESENT_LINEAR_CONTENT           = $00000002;
+  D3DPRESENT_DONOTWAIT = $00000001;
+  D3DPRESENT_LINEAR_CONTENT = $00000002;
 
   //* D3D9Ex only -- *//
   //{$IFDEF D3D_DISABLE_9EX}
 
-  D3DPRESENT_DONOTFLIP                = $00000004;
-  D3DPRESENT_FLIPRESTART              = $00000008;
+  D3DPRESENT_DONOTFLIP = $00000004;
+  D3DPRESENT_FLIPRESTART = $00000008;
   D3DPRESENT_VIDEO_RESTRICT_TO_MONITOR = $00000010;
-  D3DPRESENT_UPDATEOVERLAYONLY        = $00000020;
-  D3DPRESENT_HIDEOVERLAY              = $00000040;
-  D3DPRESENT_UPDATECOLORKEY           = $00000080;
-  D3DPRESENT_FORCEIMMEDIATE           = $00000100;
+  D3DPRESENT_UPDATEOVERLAYONLY = $00000020;
+  D3DPRESENT_HIDEOVERLAY = $00000040;
+  D3DPRESENT_UPDATECOLORKEY = $00000080;
+  D3DPRESENT_FORCEIMMEDIATE = $00000100;
 
   //{$ENDIF} // !D3D_DISABLE_9EX
   //* -- D3D9Ex only *//
@@ -1437,7 +1458,7 @@ const
   //*
   //*  DirectDraw error codes
   //*/
-  _FACD3D                             = $876;
+  _FACD3D = $876;
 
   // Have to work around, because a macro can't be assigned to a const
   // The macro MAKE_HRESULT is defined in WinError.pas
@@ -1454,48 +1475,48 @@ const
   //*
   //* Direct3D Errors
   //*/
-  D3D_OK                              = S_OK;
+  D3D_OK = S_OK;
 
-  D3DERR_WRONGTEXTUREFORMAT           = MAKE_D3DHRESULT_R OR (2072);
-  D3DERR_UNSUPPORTEDCOLOROPERATION    = MAKE_D3DHRESULT_R OR (2073);
-  D3DERR_UNSUPPORTEDCOLORARG          = MAKE_D3DHRESULT_R OR (2074);
-  D3DERR_UNSUPPORTEDALPHAOPERATION    = MAKE_D3DHRESULT_R OR (2075);
-  D3DERR_UNSUPPORTEDALPHAARG          = MAKE_D3DHRESULT_R OR (2076);
-  D3DERR_TOOMANYOPERATIONS            = MAKE_D3DHRESULT_R OR (2077);
-  D3DERR_CONFLICTINGTEXTUREFILTER     = MAKE_D3DHRESULT_R OR (2078);
-  D3DERR_UNSUPPORTEDFACTORVALUE       = MAKE_D3DHRESULT_R OR (2079);
-  D3DERR_CONFLICTINGRENDERSTATE       = MAKE_D3DHRESULT_R OR (2081);
-  D3DERR_UNSUPPORTEDTEXTUREFILTER     = MAKE_D3DHRESULT_R OR (2082);
-  D3DERR_CONFLICTINGTEXTUREPALETTE    = MAKE_D3DHRESULT_R OR (2086);
-  D3DERR_DRIVERINTERNALERROR          = MAKE_D3DHRESULT_R OR (2087);
+  D3DERR_WRONGTEXTUREFORMAT = MAKE_D3DHRESULT_R OR (2072);
+  D3DERR_UNSUPPORTEDCOLOROPERATION = MAKE_D3DHRESULT_R OR (2073);
+  D3DERR_UNSUPPORTEDCOLORARG = MAKE_D3DHRESULT_R OR (2074);
+  D3DERR_UNSUPPORTEDALPHAOPERATION = MAKE_D3DHRESULT_R OR (2075);
+  D3DERR_UNSUPPORTEDALPHAARG = MAKE_D3DHRESULT_R OR (2076);
+  D3DERR_TOOMANYOPERATIONS = MAKE_D3DHRESULT_R OR (2077);
+  D3DERR_CONFLICTINGTEXTUREFILTER = MAKE_D3DHRESULT_R OR (2078);
+  D3DERR_UNSUPPORTEDFACTORVALUE = MAKE_D3DHRESULT_R OR (2079);
+  D3DERR_CONFLICTINGRENDERSTATE = MAKE_D3DHRESULT_R OR (2081);
+  D3DERR_UNSUPPORTEDTEXTUREFILTER = MAKE_D3DHRESULT_R OR (2082);
+  D3DERR_CONFLICTINGTEXTUREPALETTE = MAKE_D3DHRESULT_R OR (2086);
+  D3DERR_DRIVERINTERNALERROR = MAKE_D3DHRESULT_R OR (2087);
 
-  D3DERR_NOTFOUND                     = MAKE_D3DHRESULT_R OR (2150);
-  D3DERR_MOREDATA                     = MAKE_D3DHRESULT_R OR (2151);
-  D3DERR_DEVICELOST                   = MAKE_D3DHRESULT_R OR (2152);
-  D3DERR_DEVICENOTRESET               = MAKE_D3DHRESULT_R OR (2153);
-  D3DERR_NOTAVAILABLE                 = MAKE_D3DHRESULT_R OR (2154);
-  D3DERR_OUTOFVIDEOMEMORY             = MAKE_D3DHRESULT_R OR (380);
-  D3DERR_INVALIDDEVICE                = MAKE_D3DHRESULT_R OR (2155);
-  D3DERR_INVALIDCALL                  = MAKE_D3DHRESULT_R OR (2156);
-  D3DERR_DRIVERINVALIDCALL            = MAKE_D3DHRESULT_R OR (2157);
-  D3DERR_WASSTILLDRAWING              = MAKE_D3DHRESULT_R OR (540);
-  D3DOK_NOAUTOGEN                     = MAKE_D3DSTATUS_R OR (2159);
+  D3DERR_NOTFOUND = MAKE_D3DHRESULT_R OR (2150);
+  D3DERR_MOREDATA = MAKE_D3DHRESULT_R OR (2151);
+  D3DERR_DEVICELOST = MAKE_D3DHRESULT_R OR (2152);
+  D3DERR_DEVICENOTRESET = MAKE_D3DHRESULT_R OR (2153);
+  D3DERR_NOTAVAILABLE = MAKE_D3DHRESULT_R OR (2154);
+  D3DERR_OUTOFVIDEOMEMORY = MAKE_D3DHRESULT_R OR (380);
+  D3DERR_INVALIDDEVICE = MAKE_D3DHRESULT_R OR (2155);
+  D3DERR_INVALIDCALL = MAKE_D3DHRESULT_R OR (2156);
+  D3DERR_DRIVERINVALIDCALL = MAKE_D3DHRESULT_R OR (2157);
+  D3DERR_WASSTILLDRAWING = MAKE_D3DHRESULT_R OR (540);
+  D3DOK_NOAUTOGEN = MAKE_D3DSTATUS_R OR (2159);
 
   //* D3D9Ex only -- *//
   //{$IFDEF D3D_DISABLE_9EX}
 
 
-  D3DERR_DEVICEREMOVED                = MAKE_D3DHRESULT_R OR (2160);
-  S_NOT_RESIDENT                      = MAKE_D3DSTATUS_R OR (2165);
-  S_RESIDENT_IN_SHARED_MEMORY         = MAKE_D3DSTATUS_R OR (2166);
-  S_PRESENT_MODE_CHANGED              = MAKE_D3DSTATUS_R OR (2167);
-  S_PRESENT_OCCLUDED                  = MAKE_D3DSTATUS_R OR (2168);
-  D3DERR_DEVICEHUNG                   = MAKE_D3DHRESULT_R OR (2164);
-  D3DERR_UNSUPPORTEDOVERLAY           = MAKE_D3DHRESULT_R OR (2171);
-  D3DERR_UNSUPPORTEDOVERLAYFORMAT     = MAKE_D3DHRESULT_R OR (2172);
-  D3DERR_CANNOTPROTECTCONTENT         = MAKE_D3DHRESULT_R OR (2173);
-  D3DERR_UNSUPPORTEDCRYPTO            = MAKE_D3DHRESULT_R OR (2174);
-  D3DERR_PRESENT_STATISTICS_DISJOINT  = MAKE_D3DHRESULT_R OR (2180);
+  D3DERR_DEVICEREMOVED = MAKE_D3DHRESULT_R OR (2160);
+  S_NOT_RESIDENT = MAKE_D3DSTATUS_R OR (2165);
+  S_RESIDENT_IN_SHARED_MEMORY = MAKE_D3DSTATUS_R OR (2166);
+  S_PRESENT_MODE_CHANGED = MAKE_D3DSTATUS_R OR (2167);
+  S_PRESENT_OCCLUDED = MAKE_D3DSTATUS_R OR (2168);
+  D3DERR_DEVICEHUNG = MAKE_D3DHRESULT_R OR (2164);
+  D3DERR_UNSUPPORTEDOVERLAY = MAKE_D3DHRESULT_R OR (2171);
+  D3DERR_UNSUPPORTEDOVERLAYFORMAT = MAKE_D3DHRESULT_R OR (2172);
+  D3DERR_CANNOTPROTECTCONTENT = MAKE_D3DHRESULT_R OR (2173);
+  D3DERR_UNSUPPORTEDCRYPTO = MAKE_D3DHRESULT_R OR (2174);
+  D3DERR_PRESENT_STATISTICS_DISJOINT = MAKE_D3DHRESULT_R OR (2180);
 
 
   //*********************
@@ -1539,18 +1560,27 @@ type
   // ======================
   //
   IDirect3D9Ex = interface(IDirect3D9)
-  ['{02177241-69FC-400C-8FF1-93A44DF6861D}']
-    function GetAdapterModeCountEx(Adapter: UINT; const pFilter: D3DDISPLAYMODEFILTER): UINT; stdcall;
-    function EnumAdapterModesEx(Adapter: UINT; const pFilter: D3DDISPLAYMODEFILTER;
-      Mode: UINT; var pMode: D3DDISPLAYMODEEX): HResult; stdcall;
-    function GetAdapterDisplayModeEx(Adapter: UINT; var pMode: D3DDISPLAYMODEEX;
-      pRotation: PD3DDISPLAYROTATION): HResult; stdcall;
-    function CreateDeviceEx(Adapter: UINT; DeviceType: D3DDEVTYPE; hFocusWindow: HWND;
-      BehaviorFlags: DWORD; var pPresentationParameters: D3DPRESENT_PARAMETERS;
-      pFullscreenDisplayMode: PD3DDISPLAYMODEEX;
-      out ppReturnedDeviceInterface: IDirect3DDevice9Ex): HResult; stdcall;
-    function GetAdapterLUID(Adapter: UINT; out pLUID: LUID): HResult; stdcall;
+    ['{02177241-69FC-400C-8FF1-93A44DF6861D}']
+    function GetAdapterModeCountEx(Adapter: UINT;
+                                   const pFilter: D3DDISPLAYMODEFILTER): UINT; stdcall;
+    function EnumAdapterModesEx(Adapter: UINT;
+                                const pFilter: D3DDISPLAYMODEFILTER;
+                                Mode: UINT;
+                                var pMode: D3DDISPLAYMODEEX): HResult; stdcall;
+    function GetAdapterDisplayModeEx(Adapter: UINT;
+                                     var pMode: D3DDISPLAYMODEEX;
+                                     pRotation: PD3DDISPLAYROTATION): HResult; stdcall;
+    function CreateDeviceEx(Adapter: UINT;
+                            DeviceType: D3DDEVTYPE;
+                            hFocusWindow: HWND;
+                            BehaviorFlags: DWORD;
+                            var pPresentationParameters: D3DPRESENT_PARAMETERS;
+                            pFullscreenDisplayMode: PD3DDISPLAYMODEEX;
+                            out ppReturnedDeviceInterface: IDirect3DDevice9Ex): HResult; stdcall;
+    function GetAdapterLUID(Adapter: UINT;
+                            out pLUID: LUID): HResult; stdcall;
   end;
+
   IID_IDirect3D9Ex = IDirect3D9Ex;
 
 
@@ -1559,35 +1589,64 @@ type
   // ============================
   //
   IDirect3DDevice9Ex = interface(IDirect3DDevice9)
-  ['{B18B10CE-2649-405A-870F-95F777D4313A}']
-    function SetConvolutionMonoKernel(Width, Height: UINT; RowWeights, ColumnWeights: PSingle): HResult; stdcall;
-    function ComposeRects(pSource, pDestination: IDirect3DSurface9;
-      pSrcRectDescriptors: IDirect3DVertexBuffer9; NumRects: UINT;
-      pDstRectDescriptors: IDirect3DVertexBuffer9; Operation: D3DCOMPOSERECTSOP;
-      XOffset, YOffset: Integer): HResult; stdcall;
-    function PresentEx(pSourceRect, pDestRect: PRect; hDestWindowOverride: HWND;
-      pDirtyRegion: PRGNDATA; dwFlags: DWORD): HResult; stdcall;
+    ['{B18B10CE-2649-405A-870F-95F777D4313A}']
+    function SetConvolutionMonoKernel(Width,
+                                      Height: UINT;
+                                      RowWeights,
+                                      ColumnWeights: PSingle): HResult; stdcall;
+    function ComposeRects(pSource,
+                          pDestination: IDirect3DSurface9;
+                          pSrcRectDescriptors: IDirect3DVertexBuffer9;
+                          NumRects: UINT;
+                          pDstRectDescriptors: IDirect3DVertexBuffer9;
+                          Operation: D3DCOMPOSERECTSOP;
+                          XOffset,
+                          YOffset: Integer): HResult; stdcall;
+    function PresentEx(pSourceRect,
+                       pDestRect: PRect;
+                       hDestWindowOverride: HWND;
+                       pDirtyRegion: PRGNDATA;
+                       dwFlags: DWORD): HResult; stdcall;
     function GetGPUThreadPriority(out pPriority: Integer): HResult; stdcall;
     function SetGPUThreadPriority(pPriority: Integer): HResult; stdcall;
     function WaitForVBlank(SwapChainIndex: UINT): HResult; stdcall;
-    function CheckResourceResidency(pResourceArray: PIDirect3DResource9; NumResources: UINT32): HResult; stdcall;
+    function CheckResourceResidency(pResourceArray: PIDirect3DResource9;
+                                    NumResources: UINT32): HResult; stdcall;
     function SetMaximumFrameLatency(pMaxLatency: UINT): HResult; stdcall;
     function GetMaximumFrameLatency(out pMaxLatency: UINT): HResult; stdcall;
     function CheckDeviceState(hWindow: HWND): HResult; stdcall;
-    function CreateRenderTargetEx(Width, Height: UINT; Format: D3DFORMAT;
-      MultiSample: D3DMULTISAMPLE_TYPE; MultisampleQuality: DWORD; Lockable: BOOL;
-      out ppSurface: IDirect3DSurface9; pSharedHandle: PHandle; Usage: DWORD): HResult; stdcall;
-    function CreateOffscreenPlainSurfaceEx(Width, Height: UINT; Format: D3DFORMAT;
-      Pool: D3DPOOL; out ppSurface: IDirect3DSurface9; pSharedHandle: PHandle;
-      Usage: DWORD): HResult; stdcall;
-    function CreateDepthStencilSurfaceEx(Width, Height: UINT; Format: D3DFORMAT;
-      MultiSample: D3DMULTISAMPLE_TYPE; MultisampleQuality: DWORD; Discard: BOOL;
-      out ppSurface: IDirect3DSurface9; pSharedHandle: PHandle; Usage: DWORD): HResult; stdcall;
+    function CreateRenderTargetEx(Width,
+                                  Height: UINT;
+                                  Format: D3DFORMAT;
+                                  MultiSample: D3DMULTISAMPLE_TYPE;
+                                  MultisampleQuality: DWORD;
+                                  Lockable: BOOL;
+                                  out ppSurface: IDirect3DSurface9;
+                                  pSharedHandle: PHandle;
+                                  Usage: DWORD): HResult; stdcall;
+    function CreateOffscreenPlainSurfaceEx(Width,
+                                           Height: UINT;
+                                           Format: D3DFORMAT;
+                                           Pool: D3DPOOL;
+                                           out ppSurface: IDirect3DSurface9;
+                                           pSharedHandle: PHandle;
+                                           Usage: DWORD): HResult; stdcall;
+    function CreateDepthStencilSurfaceEx(Width,
+                                         Height: UINT;
+                                         Format: D3DFORMAT;
+                                         MultiSample: D3DMULTISAMPLE_TYPE;
+                                         MultisampleQuality: DWORD;
+                                         Discard: BOOL;
+                                         out ppSurface: IDirect3DSurface9;
+                                         pSharedHandle: PHandle;
+                                         Usage: DWORD): HResult; stdcall;
     function ResetEx(var pPresentationParameters: D3DPRESENT_PARAMETERS;
-      pFullscreenDisplayMode: PD3DDISPLAYMODEEX): HResult; stdcall;
-    function GetDisplayModeEx(iSwapChain: UINT; var pMode: D3DDISPLAYMODEEX;
-      pRotation: PD3DDISPLAYROTATION): HResult; stdcall;
+                     pFullscreenDisplayMode: PD3DDISPLAYMODEEX): HResult; stdcall;
+    function GetDisplayModeEx(iSwapChain: UINT;
+                              var pMode: D3DDISPLAYMODEEX;
+                              pRotation: PD3DDISPLAYROTATION): HResult; stdcall;
   end;
+
   IID_IDirect3DDevice9Ex = IDirect3DDevice9Ex;
 
 
@@ -1595,12 +1654,13 @@ type
   // ===============================
   //
   IDirect3DSwapChain9Ex = interface(IDirect3DSwapChain9)
-  ['{91886CAF-1C3D-4D2E-A0AB-3E4C7D8D3303}']
+    ['{91886CAF-1C3D-4D2E-A0AB-3E4C7D8D3303}']
     function GetLastPresentCount(out pLastPresentCount: UINT): HResult; stdcall;
     function GetPresentStats(out pPresentationStatistics: D3DPRESENTSTATS): HResult; stdcall;
     function GetDisplayModeEx(var pMode: D3DDISPLAYMODEEX;
-      pRotation: PD3DDISPLAYROTATION): HResult; stdcall;
+                              pRotation: PD3DDISPLAYROTATION): HResult; stdcall;
   end;
+
   IID_IDirect3DSwapChain9Ex = IDirect3DSwapChain9Ex;
 
   //{$ENDIF} // !D3D_DISABLE_9EX
@@ -1610,7 +1670,7 @@ type
   // ======================================
   //
   IDirect3D9ExOverlayExtension = interface(IUnknown)
-  ['{187aeb13-aaf5-4c59-876d-e059088c0df8}']
+    ['{187aeb13-aaf5-4c59-876d-e059088c0df8}']
     //*** IDirect3D9ExOverlayExtension methods ***//
     function CheckDeviceOverlayType(Adapter: UINT;
                                     DevType: D3DDEVTYPE;
@@ -1621,6 +1681,7 @@ type
                                     DisplayRotation: D3DDISPLAYROTATION;
                                     out pOverlayCaps: D3DOVERLAYCAPS): HResult; stdcall;
   end;
+
   IID_IDirect3D9ExOverlayExtension = IDirect3D9ExOverlayExtension;
 
 
@@ -1629,15 +1690,19 @@ type
   // ===============================
   //
   IDirect3DDevice9Video = interface(IUnknown)
-  ['{26DC4561-A1EE-4AE7-96DA-118A36C0EC95}']
-    function GetContentProtectionCaps(pCryptoType, pDecodeProfile: PGUID;
-      out pCaps: D3DCONTENTPROTECTIONCAPS): HResult; stdcall;
+    ['{26DC4561-A1EE-4AE7-96DA-118A36C0EC95}']
+    function GetContentProtectionCaps(pCryptoType,
+                                      pDecodeProfile: PGUID;
+                                      out pCaps: D3DCONTENTPROTECTIONCAPS): HResult; stdcall;
     function CreateAuthenticatedChannel(ChannelType: D3DAUTHENTICATEDCHANNELTYPE;
-      out ppAuthenticatedChannel: IDirect3DAuthenticatedChannel9;
-      out pChannelHandle: THandle): HResult; stdcall;
-    function CreateCryptoSession(pCryptoType, pDecodeProfile: PGUID;
-      out ppCryptoSession: IDirect3DCryptoSession9; out pCryptoHandle: THandle): HResult; stdcall;
+                                        out ppAuthenticatedChannel: IDirect3DAuthenticatedChannel9;
+                                        out pChannelHandle: THandle): HResult; stdcall;
+    function CreateCryptoSession(pCryptoType,
+                                 pDecodeProfile: PGUID;
+                                 out ppCryptoSession: IDirect3DCryptoSession9;
+                                 out pCryptoHandle: THandle): HResult; stdcall;
   end;
+
   IID_IDirect3DDevice9Video = IDirect3DDevice9Video;
 
 
@@ -1646,14 +1711,21 @@ type
   // ========================================
   //
   IDirect3DAuthenticatedChannel9 = interface(IUnknown)
-  ['{FF24BEEE-DA21-4BEB-98B5-D2F899F98AF9}']
+    ['{FF24BEEE-DA21-4BEB-98B5-D2F899F98AF9}']
     function GetCertificateSize(out pCertificateSize: UINT): HResult; stdcall;
-    function GetCertificate(CertificateSize: UINT; pCertificate: PByte): HResult; stdcall;
-    function NegotiateKeyExchange(DataSize: UINT; pData: Pointer): HResult; stdcall;
-    function Query(InputSize: UINT; pInput: Pointer; OutputSize: UINT; pOutput: Pointer): HResult; stdcall;
-    function Configure(InputSize: UINT; pInput: Pointer;
-      out pOutput: D3DAUTHENTICATEDCHANNEL_CONFIGURE_OUTPUT): HResult; stdcall;
+    function GetCertificate(CertificateSize: UINT;
+                            pCertificate: PByte): HResult; stdcall;
+    function NegotiateKeyExchange(DataSize: UINT;
+                                  pData: Pointer): HResult; stdcall;
+    function Query(InputSize: UINT;
+                   pInput: Pointer;
+                   OutputSize: UINT;
+                   pOutput: Pointer): HResult; stdcall;
+    function Configure(InputSize: UINT;
+                       pInput: Pointer;
+                       out pOutput: D3DAUTHENTICATEDCHANNEL_CONFIGURE_OUTPUT): HResult; stdcall;
   end;
+
   IID_IDirect3DAuthenticatedChannel9 = IDirect3DAuthenticatedChannel9;
 
 
@@ -1662,60 +1734,76 @@ type
   // =================================
   //
   IDirect3DCryptoSession9 = interface(IUnknown)
-  ['{FA0AB799-7A9C-48CA-8C5B-237E71A54434}']
+    ['{FA0AB799-7A9C-48CA-8C5B-237E71A54434}']
     function GetCertificateSize(out pCertificateSize: UINT): HResult; stdcall;
-    function GetCertificate(CertificateSize: UINT; pCertificate: PByte): HResult; stdcall;
-    function NegotiateKeyExchange(DataSize: UINT; pData: Pointer): HResult; stdcall;
-    function EncryptionBlt(pSrcSurface, pDstSurface: IDirect3DSurface9;
-      DstSurfaceSize: UINT; pIV: Pointer): HResult; stdcall;
-    function DecryptionBlt(pSrcSurface, pDstSurface: IDirect3DSurface9;
-      SrcSurfaceSize: UINT; pEncryptedBlockInfo: PD3DENCRYPTED_BLOCK_INFO;
-      pContentKey, pIV: Pointer): HResult; stdcall;
-    function GetSurfacePitch(pSrcSurface: IDirect3DSurface9; out pSurfacePitch: UINT): HResult; stdcall;
-    function StartSessionKeyRefresh(pRandomNumber: Pointer; RandomNumberSize: UINT): HResult; stdcall;
+    function GetCertificate(CertificateSize: UINT;
+                            pCertificate: PByte): HResult; stdcall;
+    function NegotiateKeyExchange(DataSize: UINT;
+                                  pData: Pointer): HResult; stdcall;
+    function EncryptionBlt(pSrcSurface,
+                           pDstSurface: IDirect3DSurface9;
+                           DstSurfaceSize: UINT;
+                           pIV: Pointer): HResult; stdcall;
+    function DecryptionBlt(pSrcSurface,
+                           pDstSurface: IDirect3DSurface9;
+                           SrcSurfaceSize: UINT;
+                           pEncryptedBlockInfo: PD3DENCRYPTED_BLOCK_INFO;
+                           pContentKey,
+                           pIV: Pointer): HResult; stdcall;
+    function GetSurfacePitch(pSrcSurface: IDirect3DSurface9;
+                             out pSurfacePitch: UINT): HResult; stdcall;
+    function StartSessionKeyRefresh(pRandomNumber: Pointer;
+                                    RandomNumberSize: UINT): HResult; stdcall;
     function FinishSessionKeyRefresh: HResult; stdcall;
-    function GetEncryptionBltKey(pReadbackKey: Pointer; KeySize: UINT): HResult; stdcall;
+    function GetEncryptionBltKey(pReadbackKey: Pointer;
+                                 KeySize: UINT): HResult; stdcall;
   end;
+
   IID_IDirect3DCryptoSession9 = IDirect3DCryptoSession9;
 
 
 
-  function Direct3DCreate9Ex(SDKVersion: UINT;
-                             out ppD3D: IDirect3D9Ex): HResult; stdcall;
+function Direct3DCreate9Ex(SDKVersion: UINT;
+                           out ppD3D: IDirect3D9Ex): HResult; stdcall;
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
 
 const
-  D3D9Lib                = 'D3d9.dll';
+  D3D9Lib = 'D3d9.dll';
+
 
 function MAKE_D3DHRESULT(Code: DWORD): DWORD; inline;
+
 begin
-  Result:= DWORD((1 shl 31) or (_FACD3D shl 16)) or Code;
+
+  Result := DWORD((1 shl 31) or (_FACD3D shl 16)) or Code;
 end;
 
 
 function MAKE_D3DSTATUS(Code: DWORD): DWORD; inline;
+
 begin
-  Result:= DWORD((0 shl 31) or (_FACD3D shl 16)) or Code;
+
+  Result := DWORD((0 shl 31) or (_FACD3D shl 16)) or Code;
 end;
 
 
 
-  function _Direct3DCreate9;         external D3D9Lib name 'Direct3DCreate9' ;
-  function Direct3DCreate9Ex;        external D3D9Lib name 'Direct3DCreate9Ex' ;
+function _Direct3DCreate9; external D3D9Lib name 'Direct3DCreate9';
+function Direct3DCreate9Ex; external D3D9Lib name 'Direct3DCreate9Ex';
 
-  function D3DPERF_BeginEvent;       external D3D9Lib name 'D3DPERF_BeginEvent' ;
-  function D3DPERF_EndEvent;         external D3D9Lib name 'D3DPERF_EndEvent' ;
-  procedure D3DPERF_SetMarker;       external D3D9Lib name 'D3DPERF_SetMarker' ;
-  procedure D3DPERF_SetRegion;       external D3D9Lib name 'D3DPERF_SetRegion' ;
-  function D3DPERF_QueryRepeatFrame; external D3D9Lib name 'D3DPERF_QueryRepeatFrame' ;
-  procedure D3DPERF_SetOptions;      external D3D9Lib name 'D3DPERF_SetOptions' ;
-  function D3DPERF_GetStatus;        external D3D9Lib name 'D3DPERF_GetStatus' ;
+function D3DPERF_BeginEvent; external D3D9Lib name 'D3DPERF_BeginEvent';
+function D3DPERF_EndEvent; external D3D9Lib name 'D3DPERF_EndEvent';
+procedure D3DPERF_SetMarker; external D3D9Lib name 'D3DPERF_SetMarker';
+procedure D3DPERF_SetRegion; external D3D9Lib name 'D3DPERF_SetRegion';
+function D3DPERF_QueryRepeatFrame; external D3D9Lib name 'D3DPERF_QueryRepeatFrame';
+procedure D3DPERF_SetOptions; external D3D9Lib name 'D3DPERF_SetOptions';
+function D3DPERF_GetStatus; external D3D9Lib name 'D3DPERF_GetStatus';
 
 
 
@@ -1723,9 +1811,11 @@ end;
 
 // Helper for Direct3DCreate9
 function Direct3DCreate9(SDKVersion: LongWord): IDirect3D9; stdcall;
+
 begin
+
   // Cast returned pointer to IDirect3D9 pointer.
-  Result:= IDirect3D9(_Direct3DCreate9(SDKVersion));
+  Result := IDirect3D9(_Direct3DCreate9(SDKVersion));
   // Release from autoincrement reference count
   if Assigned(Result) then
     Result._Release;

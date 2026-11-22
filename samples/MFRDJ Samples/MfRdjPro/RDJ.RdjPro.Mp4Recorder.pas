@@ -68,12 +68,13 @@ unit RDJ.RdjPro.Mp4Recorder;
 
 interface
 
-uses Rdj.Thread,
-Rdj.Platform,
-LMessages,
+uses
+  Rdj.Thread,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ComBaseApi,
   WinApi.WinApiTypes,
@@ -113,6 +114,7 @@ type
   end;
 
   TRdjProMp4Recorder = class(TObject)
+
   private
     FCritSec: SyncObjs.TCriticalSection;
     FQueueLock: SyncObjs.TCriticalSection;
@@ -122,8 +124,8 @@ type
     FVideoStreamIndex: DWORD;
     FAudioStreamIndex: DWORD;
 
-    FVideoQueue: TQueue<IMFSample>;
-    FAudioQueue: TQueue<TRdjProAudioBlock>;
+    FVideoQueue: TQueue < IMFSample > ;
+    FAudioQueue: TQueue < TRdjProAudioBlock > ;
     FWorker: TThread;
 
     FFileName: string;
@@ -205,6 +207,7 @@ const
 
 function RDJMakeUINT64(const HighPart: DWORD;
                        const LowPart: DWORD): UINT64;
+
 begin
 
   Result := (UINT64(HighPart) shl 32) or UINT64(LowPart);
@@ -212,6 +215,7 @@ end;
 
 
 function RDJHighDWORD(const Value: UINT64): DWORD;
+
 begin
 
   Result := DWORD(Value shr 32);
@@ -219,6 +223,7 @@ end;
 
 
 function RDJLowDWORD(const Value: UINT64): DWORD;
+
 begin
 
   Result := DWORD(Value and $FFFFFFFF);
@@ -226,6 +231,7 @@ end;
 
 
 constructor TRdjProMp4Recorder.Create();
+
 begin
 
   inherited Create();
@@ -237,8 +243,8 @@ begin
                                False,
                                '');
 
-  FVideoQueue := TQueue<IMFSample>.Create();
-  FAudioQueue := TQueue<TRdjProAudioBlock>.Create();
+  FVideoQueue := (TQueue < IMFSample > .Create());
+  FAudioQueue := (TQueue < TRdjProAudioBlock > .Create());
 
   FVideoStreamIndex := DWORD(-1);
   FAudioStreamIndex := DWORD(-1);
@@ -254,6 +260,7 @@ end;
 
 
 destructor TRdjProMp4Recorder.Destroy();
+
 begin
 
   StopRecording();
@@ -274,6 +281,7 @@ end;
 
 
 procedure TRdjProMp4Recorder.ClearAudioFormat();
+
 begin
 
   FAudioSamplesPerSec := 0;
@@ -285,6 +293,7 @@ end;
 
 
 procedure TRdjProMp4Recorder.ResetTiming();
+
 begin
 
   FBaseVideoTimeSet := False;
@@ -304,13 +313,13 @@ begin
 
   try
 
-    while FVideoQueue.Count > 0 do
+    while (FVideoQueue.Count > 0) do
       begin
         VideoSample := FVideoQueue.Dequeue();
         VideoSample := nil;
       end;
 
-    while FAudioQueue.Count > 0 do
+    while (FAudioQueue.Count > 0) do
       begin
 
         AudioBlock := FAudioQueue.Dequeue();
@@ -326,17 +335,19 @@ end;
 
 
 function TRdjProMp4Recorder.GetActive(): Boolean;
+
 begin
 
   Result := FState in [mrsStarting,
-                       mrsRecording,
-                       mrsStopping,
-                       mrsFinalizing];
+    mrsRecording,
+    mrsStopping,
+    mrsFinalizing];
 end;
 
 
 procedure TRdjProMp4Recorder.SetState(const AState: TRdjProMp4RecorderState;
                                       const AError: HRESULT);
+
 begin
 
   FState := AState;
@@ -345,6 +356,7 @@ end;
 
 
 procedure TRdjProMp4Recorder.Reset();
+
 begin
 
   StopRecording();
@@ -402,7 +414,7 @@ begin
   Den := 1;
 
   if SUCCEEDED(pInputType.GetUINT64(MF_MT_FRAME_SIZE,
-                                    FrameSize)) then
+    FrameSize)) then
     begin
 
       Width := RDJHighDWORD(FrameSize);
@@ -410,7 +422,7 @@ begin
     end;
 
   if SUCCEEDED(pInputType.GetUINT64(MF_MT_FRAME_RATE,
-                                    FrameRate)) then
+    FrameRate)) then
     begin
       Num := RDJHighDWORD(FrameRate);
       Den := RDJLowDWORD(FrameRate);
@@ -493,8 +505,8 @@ begin
     Exit(MF_E_NOT_INITIALIZED);
 
   if (FAudioSamplesPerSec = 0) or
-     (FAudioChannels = 0) or
-     (FAudioBlockAlign = 0) then
+    (FAudioChannels = 0) or
+    (FAudioBlockAlign = 0) then
     Exit(MF_E_INVALIDMEDIATYPE);
 
   Result := MFCreateMediaType(OutType);
@@ -572,8 +584,8 @@ begin
 
   Result := InType.SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
                              FAudioSamplesPerSec *
-                             FAudioChannels *
-                             SizeOf(Single));
+    FAudioChannels *
+    SizeOf(Single));
   if FAILED(Result) then
     Exit;
 
@@ -584,6 +596,7 @@ end;
 
 
 function TRdjProMp4Recorder.StartWorker(): HRESULT;
+
 begin
 
   Result := S_OK;
@@ -646,9 +659,9 @@ begin
       end;
 
     if (not AVideoOnly) and
-       ((FAudioSamplesPerSec = 0) or
-        (FAudioChannels = 0) or
-        (FAudioBlockAlign = 0)) then
+      ((FAudioSamplesPerSec = 0) or
+      (FAudioChannels = 0) or
+      (FAudioBlockAlign = 0)) then
       begin
 
         Result := MF_E_INVALIDMEDIATYPE;
@@ -784,14 +797,14 @@ begin
       WaitRes := WaitForSingleObject(Worker.Handle,
                                      5000);
 
-      if WaitRes = WAIT_OBJECT_0 then
+      if (WaitRes = WAIT_OBJECT_0) then
         begin
 
           FCritSec.Enter();
 
           try
 
-            if FWorker = Worker then
+            if (FWorker = Worker) then
               FWorker := nil;
           finally
 
@@ -850,6 +863,7 @@ end;
 
 
 function TRdjProMp4Recorder.SetVideoPreviewMediaType(const pMediaType: IMFMediaType): HRESULT;
+
 begin
 
   Result := S_OK;
@@ -875,6 +889,7 @@ end;
 
 
 function TRdjProMp4Recorder.SetAudioWaveFormat(const pwfx: PWAVEFORMATEX): HRESULT;
+
 begin
 
   Result := S_OK;
@@ -892,8 +907,8 @@ begin
       end;
 
     if (pwfx.nSamplesPerSec = 0) or
-       (pwfx.nChannels = 0) or
-       (pwfx.nBlockAlign = 0) then
+      (pwfx.nChannels = 0) or
+      (pwfx.nBlockAlign = 0) then
       begin
 
         Result := MF_E_INVALIDMEDIATYPE;
@@ -907,7 +922,7 @@ begin
     FAudioBitsPerSample := 32;
     FAudioBlockAlign := FAudioChannels * SizeOf(Single);
     FAudioAvgBytesPerSec := FAudioSamplesPerSec *
-                             FAudioBlockAlign;
+      FAudioBlockAlign;
   finally
 
     FCritSec.Leave();
@@ -916,6 +931,7 @@ end;
 
 
 procedure TRdjProMp4Recorder.SetRotationDegrees(const Degrees: DWORD);
+
 begin
 
   FCritSec.Enter();
@@ -926,8 +942,8 @@ begin
       90,
       180,
       270: FRotationDegrees := Degrees;
-    else
-      FRotationDegrees := 0;
+      else
+        FRotationDegrees := 0;
     end;
   finally
 
@@ -951,12 +967,12 @@ begin
 
   try
     if (FState <> mrsRecording) or
-       (not FAcceptSamples) or
-       FStopRequested then
+      (not FAcceptSamples) or
+      FStopRequested then
       begin
 
         OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.QueueVideoSample rejected: State=%d Accept=%d Stop=%d',
-                                       [Ord(FState), Ord(FAcceptSamples), Ord(FStopRequested)])));
+                                        [Ord(FState), Ord(FAcceptSamples), Ord(FStopRequested)])));
         Exit(S_OK);
       end;
 
@@ -978,6 +994,7 @@ var
   ByteCount: Integer;
 
 begin
+
   Result := S_OK;
 
   if not Assigned(pData) then
@@ -986,7 +1003,7 @@ begin
   if not Assigned(pwfx) then
     Exit(E_POINTER);
 
-  if Frames <= 0 then
+  if (Frames <= 0) then
     Exit(E_INVALIDARG);
 
   if FVideoOnly then
@@ -998,12 +1015,12 @@ begin
   try
 
     if (FState <> mrsRecording) or
-       (not FAcceptSamples) or
-       FStopRequested then
+      (not FAcceptSamples) or
+      FStopRequested then
       begin
 
         OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.PushPcmFloat32 rejected: State=%d Accept=%d Stop=%d',
-                                       [Ord(FState), Ord(FAcceptSamples), Ord(FStopRequested)])));
+                                        [Ord(FState), Ord(FAcceptSamples), Ord(FStopRequested)])));
         Exit(S_OK);
       end;
 
@@ -1011,19 +1028,19 @@ begin
       begin
 
         OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.PushPcmFloat32 dropped newest: AQ=%d',
-                                       [FAudioQueue.Count])));
+                                        [FAudioQueue.Count])));
         Exit(S_OK);
       end;
   finally
 
     FQueueLock.Leave();
   end;
-  
-  ByteCount := Frames *
-               Integer(FAudioChannels) *
-               SizeOf(Single);
 
-  if ByteCount <= 0 then
+  ByteCount := Frames *
+    Integer(FAudioChannels) *
+    SizeOf(Single);
+
+  if (ByteCount <= 0) then
     Exit(E_INVALIDARG);
 
   SetLength(AudioBlock.Data,
@@ -1039,15 +1056,15 @@ begin
   AudioBlock.BitsPerSample := 32;
   AudioBlock.BlockAlign := pwfx.nChannels * SizeOf(Single);
   AudioBlock.AvgBytesPerSec := pwfx.nSamplesPerSec *
-                               AudioBlock.BlockAlign;
+    AudioBlock.BlockAlign;
 
   FQueueLock.Enter();
 
   try
 
     if (FState <> mrsRecording) or
-       (not FAcceptSamples) or
-       FStopRequested then
+      (not FAcceptSamples) or
+      FStopRequested then
       Exit(S_OK);
 
     FAudioQueue.Enqueue(AudioBlock);
@@ -1060,6 +1077,7 @@ end;
 
 
 function TRdjProMp4Recorder.PopVideoSample(out ASample: IMFSample): Boolean;
+
 begin
 
   Result := False;
@@ -1083,6 +1101,7 @@ end;
 
 
 function TRdjProMp4Recorder.PopAudioBlock(out ABlock: TRdjProAudioBlock): Boolean;
+
 begin
 
   Result := False;
@@ -1092,11 +1111,11 @@ begin
   FQueueLock.Enter();
 
   try
-    if FAudioQueue.Count > 0 then
+    if (FAudioQueue.Count > 0) then
       begin
 
         ABlock := FAudioQueue.Dequeue();
-        Result := Length(ABlock.Data) > 0;
+        Result := (Length(ABlock.Data) > 0);
       end;
   finally
 
@@ -1136,7 +1155,7 @@ begin
   // A missing duration can make MP4 playback look frozen or make players pick
   // a strange stream duration. Fall back to 30 fps for this first RDJ path.
   if FAILED(pSample.GetSampleDuration(@SampleDuration)) or
-     (SampleDuration <= 0) then
+    (SampleDuration <= 0) then
     pSample.SetSampleDuration(RDJ_100NS_PER_SECOND div 30);
 
   Result := FSinkWriter.WriteSample(FVideoStreamIndex,
@@ -1160,7 +1179,7 @@ begin
   if not Assigned(FSinkWriter) then
     Exit(MF_E_NOT_INITIALIZED);
 
-  if Length(ABlock.Data) = 0 then
+  if (Length(ABlock.Data) = 0) then
     Exit(S_OK);
 
   ByteCount := Length(ABlock.Data);
@@ -1201,8 +1220,8 @@ begin
   Buffer := nil;
 
   Duration100ns := (LONGLONG(ABlock.Frames) *
-                    RDJ_100NS_PER_SECOND) div
-                    LONGLONG(ABlock.SamplesPerSec);
+    RDJ_100NS_PER_SECOND) div
+    LONGLONG(ABlock.SamplesPerSec);
 
   Sample.SetSampleTime(FNextAudioTime100ns);
   Sample.SetSampleDuration(Duration100ns);
@@ -1232,7 +1251,7 @@ begin
 
       try
         StopNow := FStopRequested or
-                   (FState <> mrsRecording);
+          (FState <> mrsRecording);
       finally
 
         FCritSec.Leave();
@@ -1274,7 +1293,7 @@ begin
 
               // Keep worker alive for now. StopRecording/Finalize reports final state.
               OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.WorkerExecute WriteVideoSample failed. hr=%.8x',
-                                             [Hr])));
+                                              [Hr])));
             end;
 
           VideoSample := nil;
@@ -1310,7 +1329,7 @@ begin
             begin
               // Keep worker alive for now.
               OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.WorkerExecute WriteAudioBlock failed. hr=%.8x',
-                                             [Hr])));
+                                              [Hr])));
             end;
 
           AudioBlock.Data := nil;
@@ -1324,7 +1343,7 @@ begin
       try
 
         if (FVideoQueue.Count = 0) and
-           (FAudioQueue.Count = 0) then
+          (FAudioQueue.Count = 0) then
           FQueueEvent.ResetEvent();
       finally
 

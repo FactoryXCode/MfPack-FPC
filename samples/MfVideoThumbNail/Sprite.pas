@@ -68,7 +68,7 @@ interface
 
 uses
   MfSmallSamplesPlatform,
-{WinApi}
+  {WinApi}
   Messages,
   WinApi.WinApiTypes,
   {System}
@@ -85,13 +85,12 @@ uses
   {Project}
   VideoTumbNailHelpers;
 
-
 const
   WOBBLE_ANGLE = 10.0;
   WOBBLE_DECAY = 0.25;
 
   // from float.h
-  FLT_EPSILON  = 1.19209290E-07; // smallest such that 1.0 + FLT_EPSILON >= 1.0
+  FLT_EPSILON = 1.19209290E-07; // smallest such that 1.0 + FLT_EPSILON >= 1.0
 
   MAX_SPRITES = 5; // You can have virtually as much sprites as you want.
 
@@ -99,6 +98,7 @@ const
 type
 
   TFormatInfo = record
+
   public
     imageWidthPels: UINT32;
     imageHeightPels: UINT32;
@@ -111,9 +111,11 @@ type
   TState = (_CLEAR,
             _PENDING,
             _BITMAP);
+
 type
 
   TSprite = class(TObject)
+
   private
 
     m_pBitmap: ID2D1Bitmap;
@@ -175,7 +177,7 @@ type
 
     procedure Clear();
 
-end;
+  end;
 
   TSpritesArray = array [0..MAX_SPRITES] of TSprite;
 
@@ -185,7 +187,9 @@ implementation
 
 
 procedure TFormatInfo.SetRectEmpty();
+
 begin
+
   Self := Default(TFormatInfo);
 end;
 
@@ -200,7 +204,9 @@ end;
 //-------------------------------------------------------------------
 //Sprite();
 constructor TSprite.Create();
+
 begin
+
   m_pBitmap := nil;
   m_bAnimating := FALSE;
   m_timeStart := 0;
@@ -215,7 +221,9 @@ end;
 //-------------------------------------------------------------------
 //~Sprite();
 destructor TSprite.Destroy();
+
 begin
+
   if Assigned(m_pBitmap) then
     begin
       SafeRelease(m_pBitmap);
@@ -224,7 +232,9 @@ end;
 
 
 function TSprite.GetState(): TState;
+
 begin
+
   if Assigned(m_pBitmap) then
     Result := _BITMAP
   else
@@ -237,7 +247,9 @@ end;
 //-------------------------------------------------------------------
 procedure TSprite.SetBitmap(pBitmap: ID2D1Bitmap;
                             const pformat: TFormatInfo);
+
 begin
+
   SafeRelease(m_pBitmap);
 
   if Assigned(pBitmap) then
@@ -246,13 +258,13 @@ begin
       //m_pBitmap._AddRef();   // >> Delphi takes care of that.
     end;
 
-    m_bTopDown := pformat.bTopDown;
+  m_bTopDown := pformat.bTopDown;
 
-    D2D1RectFDefault(m_nrcBound);  // set rect
-    D2D1RectFDefault(m_fill);
+  D2D1RectFDefault(m_nrcBound);  // set rect
+  D2D1RectFDefault(m_fill);
 
-    m_AspectRatio := D2D1SizeF(pformat.rcPicture.right,
-                               pformat.rcPicture.bottom);
+  m_AspectRatio := D2D1SizeF(pformat.rcPicture.right,
+                             pformat.rcPicture.bottom);
 end;
 
 //-------------------------------------------------------------------
@@ -267,30 +279,32 @@ end;
 procedure TSprite.AnimateBoundingBox(bound2: D2D_RECT_F;
                                      const fTime: FLOAT;
                                      const duration: FLOAT);
+
 begin
+
   if (duration = 0.0) then
     begin
-        // Apply the new position immediately
+      // Apply the new position immediately
 
-        m_nrcBound := bound2;
-        m_bAnimating := FALSE;
-        m_fAngle := 0.0;
+      m_nrcBound := bound2;
+      m_bAnimating := FALSE;
+      m_fAngle := 0.0;
     end
   else
     begin
-        // Set the animation parameters.
+      // Set the animation parameters.
 
-        m_timeStart := fTime;
-        m_timeEnd := fTime + duration;
+      m_timeStart := fTime;
+      m_timeEnd := fTime + duration;
 
-        m_nrcAnimDistance := SubtD2D1RectF(bound2,
-                                           m_nrcBound);
+      m_nrcAnimDistance := SubtD2D1RectF(bound2,
+                                         m_nrcBound);
 
-        m_nrcStartPosition := m_nrcBound;
+      m_nrcStartPosition := m_nrcBound;
 
-        m_fAngle := WOBBLE_ANGLE;
+      m_fAngle := WOBBLE_ANGLE;
 
-        m_bAnimating := TRUE;
+      m_bAnimating := TRUE;
     end;
 end;
 
@@ -314,19 +328,19 @@ begin
 
   if ((m_timeStart < fTime) AND (m_timeEnd > fTime)) then
     begin
-        // We are in the middle of an animation. Interpolate the position.
-        v := multD2D1RectFxF(m_nrcAnimDistance,
-                            ((fTime - m_timeStart) / (m_timeEnd - m_timeStart)));
-        m_nrcBound := SumD2D1RectF(v,
-                                   m_nrcStartPosition);
+      // We are in the middle of an animation. Interpolate the position.
+      v := multD2D1RectFxF(m_nrcAnimDistance,
+                           ((fTime - m_timeStart) / (m_timeEnd - m_timeStart)));
+      m_nrcBound := SumD2D1RectF(v,
+                                 m_nrcStartPosition);
     end
   else if (m_bAnimating AND (fTime >= m_timeEnd)) then
     begin
-        // We have reached the end of an animation.
-        // Set the final position (avoids any rounding errors)
-        m_nrcBound := SumD2D1RectF(m_nrcStartPosition,
-                                   m_nrcAnimDistance);
-        m_bAnimating := FALSE;
+      // We have reached the end of an animation.
+      // Set the final position (avoids any rounding errors)
+      m_nrcBound := SumD2D1RectF(m_nrcStartPosition,
+                                 m_nrcAnimDistance);
+      m_bAnimating := FALSE;
     end;
 
   // Compute the correct letterbox for the bitmap.
@@ -380,15 +394,18 @@ begin
   // If the image is bottom-up, flip around the x-axis.
   if (m_bTopDown = FALSE) then
     begin
-      mat := D2D1_MATRIX_3X2_F.Scale(D2D1SizeF(1, -1),
-                                     D2D1PointF(0, (_height / 2)));
+      mat := D2D1_MATRIX_3X2_F.Scale(D2D1SizeF(1,
+                                               -1),
+                                     D2D1PointF(0,
+                                                (_height / 2)));
     end;
 
   // Apply wobble.
   if (m_fAngle >= FLT_EPSILON) then
     begin
       mat := mat * D2D1_MATRIX_3X2_F.Rotation((m_fAngle * sin(m_theta)),
-                                              D2D1PointF((_width / 2), (_height / 2 )));
+                                              D2D1PointF((_width / 2),
+                                                         (_height / 2)));
 
       // Reduce the wobble by the decay factor...
       m_theta := m_theta + WOBBLE_DECAY;
@@ -411,7 +428,11 @@ begin
   m_mat := mat;
 
   //
-  pRT.DrawBitmap(m_pBitmap,@m_fill,1,D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,nil);
+  pRT.DrawBitmap(m_pBitmap,
+                 @m_fill,
+                 1,
+                 D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,
+                 nil);
 
 end;
 
@@ -425,6 +446,7 @@ var
   pt: D2D1_POINT_2F;
 
 begin
+
   mat := m_mat;
 
   // Use the inverse of our current transform matrix to transform the
@@ -449,7 +471,9 @@ end;
 // Clear: Clears the bitmap.
 //-------------------------------------------------------------------
 procedure TSprite.Clear();
+
 begin
+
   SafeRelease(m_pBitmap);
 
   m_nrcBound := D2D1RectF(0.0,

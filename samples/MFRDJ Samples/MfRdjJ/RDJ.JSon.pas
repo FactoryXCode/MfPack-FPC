@@ -64,11 +64,12 @@ unit RDJ.JSon;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   SysUtils,
@@ -79,6 +80,7 @@ LMessages,
 type
 
   TRDJRadioStatusJson = class
+
   public
 
     class procedure WriteRadioStatusJson(const AFileName: string;
@@ -104,6 +106,7 @@ uses
   RDJ.Setup,
   frmMainMdi;
 
+
 class procedure TRDJRadioStatusJson.WriteRadioStatusJson(const AFileName: string;
                                                          const ADjName: string;
                                                          const AShowName: string;
@@ -124,6 +127,7 @@ var
   JsonText: string;
   Utf8Bytes: TBytes;
   JsonStream: TFileStream;
+
 
   procedure SetJsonInteger(const AName: string;
                            const AValue: Integer);
@@ -150,7 +154,7 @@ var
   begin
 
     if (AValue = '') and
-       (not AAllowEmpty) then
+      (not AAllowEmpty) then
       Exit;
 
     Json.RemovePair(AName).Free;
@@ -164,11 +168,11 @@ begin
     Exit;
 
   if (not AClearEmptyTrackInfo) and
-     (ADjName = '') and
-     (AShowName = '') and
-     (AArtist = '') and
-     (ATitle = '') and
-     (AListeners = 0) then
+    (ADjName = '') and
+    (AShowName = '') and
+    (AArtist = '') and
+    (ATitle = '') and
+    (AListeners = 0) then
     Exit;
 
   if not Assigned(MainMDIFrm) then
@@ -245,7 +249,7 @@ begin
     JsonStream := TFileStream.Create(TmpFileName,
                                      fmCreate);
     try
-      if Length(Utf8Bytes) > 0 then
+      if (Length(Utf8Bytes) > 0) then
         JsonStream.WriteBuffer(Utf8Bytes[0],
                                Length(Utf8Bytes));
     finally

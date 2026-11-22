@@ -71,7 +71,7 @@ interface
 uses
   MfEncodeAudio.Platform,
   LMessages,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -134,7 +134,8 @@ type
     lblRightVolume: TLabel;
     lblPitch: TLabel;
     procedure Open1Click(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure FormDestroy(Sender: TObject);
     procedure butPlayClick(Sender: TObject);
     procedure butStopClick(Sender: TObject);
@@ -142,7 +143,9 @@ type
     procedure trbVolumeLChange(Sender: TObject);
     procedure trbVolumeRChange(Sender: TObject);
     procedure butPauseClick(Sender: TObject);
-    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyUp(Sender: TObject;
+                        var Key: Word;
+                        Shift: TShiftState);
     procedure trbPitchChange(Sender: TObject);
 
   private
@@ -179,16 +182,19 @@ implementation
 
 
 procedure TfrmMain.butPauseClick(Sender: TObject);
+
 begin
 
   if not Assigned(fXaudio2Engine) then
     Exit;
   if SUCCEEDED(fXaudio2Engine.Pause) then
-    StatusBar.SimpleText := Format('Paused file: %s.', [fFileName]);
+    StatusBar.SimpleText := Format('Paused file: %s.',
+                                   [fFileName]);
 end;
 
 
 procedure TfrmMain.butPlayClick(Sender: TObject);
+
 begin
 
   if not Assigned(fXaudio2Engine) then
@@ -202,36 +208,44 @@ begin
   SetVolumeChannels();
 
   if SUCCEEDED(fXaudio2Engine.Play()) then
-    StatusBar.SimpleText := Format('Playing file: %s.', [fFileName]);
+    StatusBar.SimpleText := Format('Playing file: %s.',
+                                   [fFileName]);
 end;
 
 
 procedure TfrmMain.butStopClick(Sender: TObject);
+
 begin
 
   if not Assigned(fXaudio2Engine) then
     Exit;
   if SUCCEEDED(fXaudio2Engine.Stop()) then
     if SUCCEEDED(fXaudio2Engine.InitializeXAudio2(False)) then
-      StatusBar.SimpleText := Format('Stopped playing file: %s.', [fFileName]);
+      StatusBar.SimpleText := Format('Stopped playing file: %s.',
+                                     [fFileName]);
 end;
 
 
 procedure TfrmMain.Exit1Click(Sender: TObject);
+
 begin
 
   Close();
 end;
 
 
-procedure TfrmMain.FormCloseQuery(Sender: TObject;var CanClose: Boolean);
+procedure TfrmMain.FormCloseQuery(Sender: TObject;
+                                  var CanClose: Boolean);
+
 begin
+
   CanClose := True;
 end;
 
-procedure TfrmMain.FormDestroy(Sender: TObject);
-begin
 
+procedure TfrmMain.FormDestroy(Sender: TObject);
+
+begin
 
   if Assigned(fXaudio2Engine) then
     FreeAndNil(fXaudio2Engine);
@@ -241,8 +255,9 @@ begin
 end;
 
 
-procedure TfrmMain.FormKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TfrmMain.FormKeyUp(Sender: TObject;
+                             var Key: Word;
+                             Shift: TShiftState);
 var
   iPos: Integer;
 
@@ -266,35 +281,36 @@ begin
     end;
 
   case Key of
-    VK_SPACE:   if Assigned(fXaudio2Engine) then
-                  begin
-                    butPlayClick(nil);
-                  end;
+    VK_SPACE: if Assigned(fXaudio2Engine) then
+        begin
+          butPlayClick(nil);
+        end;
 
-    VK_END:     if Assigned(fXaudio2Engine) then
-                  begin
-                    butStopClick(nil);
-                  end;
+    VK_END: if Assigned(fXaudio2Engine) then
+        begin
+          butStopClick(nil);
+        end;
 
-    VK_F10:     if Assigned(fXaudio2Engine) then
-                  begin
-                    butPauseClick(nil);
-                  end;
+    VK_F10: if Assigned(fXaudio2Engine) then
+        begin
+          butPauseClick(nil);
+        end;
 
-    VK_F12:     begin
-                  Open1Click(nil);
-                end;
+      VK_F12: begin
+        Open1Click(nil);
+      end;
 
-    VK_F8:      begin
-                  iPos := trbVolumeL.Position + trbVolumeR.Position div 2;
-                  trbVolumeL.Position := iPos;
-                  trbVolumeR.Position := iPos;
-                end;
+      VK_F8: begin
+        iPos := trbVolumeL.Position + trbVolumeR.Position div 2;
+        trbVolumeL.Position := iPos;
+        trbVolumeR.Position := iPos;
+      end;
   end;
 end;
 
 
 function TfrmMain.GetAudioFile(): string;
+
 begin
 
   Result := 'No audiofile selected.';
@@ -307,6 +323,7 @@ end;
 
 
 procedure TfrmMain.SetVolumeChannels();
+
 begin
 
   if not Assigned(fXaudio2Engine) then
@@ -341,19 +358,19 @@ begin
 
   PitchPosition := trbPitch.Position + 10;
   freq := MapRange(PitchPosition, // * 0.01
-                   trbPitch.Max,  // * 0.01
-                   trbPitch.Min,  // * 0.01
-                   MIN_PITCH,
+    trbPitch.Max,  // * 0.01
+    trbPitch.Min,  // * 0.01
+    MIN_PITCH,
                    MAX_PITCH);
 
   fXaudio2Engine.SetPitch(freq);
 
   if (trbPitch.Position > 0) then
-    lblPitch.Caption :=  Format('%d',
-                                [Abs(trbPitch.Position)])
+    lblPitch.Caption := Format('%d',
+                               [Abs(trbPitch.Position)])
   else
-    lblPitch.Caption :=  Format('%d',
-                                [Abs(trbPitch.Position)]);
+    lblPitch.Caption := Format('%d',
+                               [Abs(trbPitch.Position)]);
 end;
 
 
@@ -369,12 +386,13 @@ begin
   SetVolumeChannels();
 
   vol := (MapRange((trbVolumeL.Position),
-                    trbVolumeL.Max,
-                    trbVolumeL.Min,
-                    MIN_VOLUME,
-                    MAX_VOLUME) / (MAX_VOLUME / 100));
+                   trbVolumeL.Max,
+                   trbVolumeL.Min,
+                   MIN_VOLUME,
+                   MAX_VOLUME) / (MAX_VOLUME / 100));
 
-  lblLeftVolume.Caption := Format('%d', [Trunc(vol)]) + '%';
+  lblLeftVolume.Caption := Format('%d',
+                                  [Trunc(vol)]) + '%';
 end;
 
 
@@ -390,12 +408,13 @@ begin
   SetVolumeChannels();
 
   vol := (MapRange((trbVolumeR.Position),
-                    trbVolumeR.Max,
-                    trbVolumeR.Min,
-                    MIN_VOLUME,
-                    MAX_VOLUME) / (MAX_VOLUME / 100));
+                   trbVolumeR.Max,
+                   trbVolumeR.Min,
+                   MIN_VOLUME,
+                   MAX_VOLUME) / (MAX_VOLUME / 100));
 
-  lblRightVolume.Caption := Format('%d', [Trunc(vol)]) + '%';
+  lblRightVolume.Caption := Format('%d',
+                                   [Trunc(vol)]) + '%';
 end;
 
 
@@ -413,16 +432,17 @@ begin
   fFileName := ExtractFileName(fAudioFileUrl);
 
   // Get the length of the audiofile.
- hr := GetFileDuration(StrToPWideChar(fAudioFileUrl),
-                       llAudioDuration);
- if FAILED(hr) then
+  hr := GetFileDuration(StrToPWideChar(fAudioFileUrl),
+                        llAudioDuration);
+  if FAILED(hr) then
     begin
       ShowMessage('Could not retrieve the duration of the audio file.');
       llAudioDuration := 0;
     end;
 
   lblDuration.Caption := Format('Duration: %s',
-                                [HnsTimeToStr(llAudioDuration, False)]);
+                                [HnsTimeToStr(llAudioDuration,
+                                              False)]);
 
   // Create the engine
   if SUCCEEDED(hr) then
@@ -452,6 +472,7 @@ var
   tstr: string;
 
 begin
+
   iProgress := AMessage.WParam;
   iSamples := AMessage.LParam;
 
@@ -467,11 +488,13 @@ end;
 
 
 procedure TfrmMain.OnAudioReadyEvent(var AMessage: TLMessage);
+
 begin
 
   if (AMessage.WParam = 1) then
     begin
-      StatusBar.SimpleText := Format('Ready to play: %s', [fFileName]);
+      StatusBar.SimpleText := Format('Ready to play: %s',
+                                     [fFileName]);
       butPlay.Enabled := True;
       butPause.Enabled := True;
       butStop.Enabled := True;
@@ -480,11 +503,13 @@ end;
 
 
 procedure TfrmMain.OnAudioEndedEvent(var AMessage: TLMessage);
+
 begin
 
   if (AMessage.WParam = 1) then
     begin
-      StatusBar.SimpleText := Format('Stopped playing: %s', [fFileName]);
+      StatusBar.SimpleText := Format('Stopped playing: %s',
+                                     [fFileName]);
       butPlay.Enabled := True;
       butPause.Enabled := True;
       butStop.Enabled := True;
@@ -500,14 +525,14 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_LITE)) then
-      begin
-        MessageBoxW(0,
-                   lpcwstr('Your computer does not support this Media Foundation API version ' +
-                           IntToStr(MF_VERSION) + '.'),
-                   lpcwstr('MFStartup Failure!'),
-                           MB_ICONSTOP);
-      end;
+    MFSTARTUP_LITE)) then
+    begin
+      MessageBoxW(0,
+                  lpcwstr('Your computer does not support this Media Foundation API version ' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
+    end;
 
 finalization
 

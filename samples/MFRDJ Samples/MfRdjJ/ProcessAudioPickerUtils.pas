@@ -64,14 +64,15 @@ unit ProcessAudioPickerUtils;
 
 interface
 
-uses WinApi.WinApiTypes,
-WinApi.ComBaseApi,
-Rdj.Platform,
-LMessages,
+uses
+  WinApi.WinApiTypes,
+  WinApi.ComBaseApi,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-WinApi.CoreAudioApi.AudioSessionTypes,
-Windows,
+  WinApi.CoreAudioApi.AudioSessionTypes,
+  Windows,
   JwaTlHelp32,
   WinApi.ActiveX.ObjBase,
   SysUtils,
@@ -82,9 +83,12 @@ Windows,
   Winapi.CoreAudioApi.AudioPolicy;
 
 type
-  TProcessAudioState = (pasUnknown, pasSilent, pasActive);
+  TProcessAudioState = (pasUnknown,
+                        pasSilent,
+                        pasActive);
 
   TProcessChildItem = class
+
   public
 
     ProcessId: DWORD;
@@ -102,6 +106,7 @@ type
   end;
 
   TProcessGroupItem = class
+
   public
 
     RootProcessId: DWORD;
@@ -113,13 +118,13 @@ type
     AudioChildCount: Integer;
     IsBrowserLike: Boolean;
     BrowserFamily: string;
-    Children: TObjectList<TProcessChildItem>;
+    Children: TObjectList < TProcessChildItem > ;
 
     constructor Create;
     destructor Destroy; override;
   end;
 
-  procedure BuildLiveProcessGroups(AGroups: TObjectList<TProcessGroupItem>);
+procedure BuildLiveProcessGroups(AGroups: TObjectList < TProcessGroupItem > );
 
 
 implementation
@@ -128,8 +133,8 @@ const
   PROCESS_QUERY_LIMITED_INFORMATION = $1000;
 
   AUDIO_SESSION_STATE_INACTIVE = 0;
-  AUDIO_SESSION_STATE_ACTIVE   = 1;
-  AUDIO_SESSION_STATE_EXPIRED  = 2;
+  AUDIO_SESSION_STATE_ACTIVE = 1;
+  AUDIO_SESSION_STATE_EXPIRED = 2;
 
 type
 
@@ -155,15 +160,17 @@ function QueryFullProcessImageNameW(hProcess: THandle;
 
 
 constructor TProcessGroupItem.Create();
+
 begin
 
   inherited Create;
 
-  Children := TObjectList<TProcessChildItem>.Create(True);
+  Children := (TObjectList < TProcessChildItem > .Create(True));
 end;
 
 
 destructor TProcessGroupItem.Destroy;
+
 begin
 
   Children.Free;
@@ -199,9 +206,8 @@ begin
     Size := Length(Buf);
 
     if QueryFullProcessImageNameW(H,
-                                  0,
-                                  @Buf[0],
-                                  Size) then
+      0, @Buf[0],
+      Size) then
       begin
 
         AImagePath := Buf;
@@ -215,6 +221,7 @@ end;
 
 
 function GetExeName(const APath: string): string;
+
 begin
 
   Result := ExtractFileName(APath);
@@ -222,6 +229,7 @@ end;
 
 
 function NormalizeExeName(const AExeName: string): string;
+
 begin
 
   Result := LowerCase(Trim(AExeName));
@@ -229,6 +237,7 @@ end;
 
 
 function NormalizePath(const APath: string): string;
+
 begin
 
   Result := LowerCase(Trim(APath));
@@ -236,7 +245,7 @@ end;
 
 
 function BrowserFamilyFromProcess(const AExeName,
-                                        AImagePath: string): string;
+                                  AImagePath: string): string;
 var
   Exe: string;
   Path: string;
@@ -247,23 +256,23 @@ begin
   Path := NormalizePath(AImagePath);
 
   if (Pos('tor browser',
-          Path) > 0) or
-     ((Exe = 'firefox.exe') and (Pos('\tor browser\',
-                                     Path) > 0)) then
+    Path) > 0) or
+    ((Exe = 'firefox.exe') and (Pos('\tor browser\',
+                                    Path) > 0)) then
     Exit('Tor Browser');
 
   if (Exe = 'librewolf.exe') or (Pos('librewolf',
-                                     Path) > 0) then
+    Path) > 0) then
     Exit('LibreWolf');
 
   if (Exe = 'mullvad-browser.exe') or (Pos('mullvad browser',
-                                           Path) > 0) or
-     (Pos('mullvad-browser',
-          Path) > 0) then
+    Path) > 0) or
+    (Pos('mullvad-browser',
+         Path) > 0) then
     Exit('Mullvad Browser');
 
   if (Exe = 'duckduckgo.exe') or (Pos('duckduckgo',
-                                      Path) > 0) then
+    Path) > 0) then
     Exit('DuckDuckGo');
 
   if (Exe = 'chrome.exe') then
@@ -273,22 +282,22 @@ begin
     Exit('Edge');
 
   if (Exe = 'msedgewebview2.exe') or (Pos('webview2',
-                                          Path) > 0) then
+    Path) > 0) then
     Exit('WebView2');
 
   if (Exe = 'firefox.exe') then
     Exit('Firefox');
 
   if (Exe = 'brave.exe') or (Pos('brave',
-                                 Path) > 0) then
+    Path) > 0) then
     Exit('Brave');
 
   if (Exe = 'opera.exe') or (Exe = 'opera_gx.exe') or (Pos('opera',
-                                                           Path) > 0) then
+    Path) > 0) then
     Exit('Opera');
 
   if (Exe = 'vivaldi.exe') or (Pos('vivaldi',
-                                   Path) > 0) then
+    Path) > 0) then
     Exit('Vivaldi');
 
   Result := '';
@@ -296,25 +305,30 @@ end;
 
 
 function IsBrowserLikeProcess(const AExeName,
-                                    AImagePath: string): Boolean;
+                              AImagePath: string): Boolean;
+
 begin
 
-  Result := BrowserFamilyFromProcess(AExeName, AImagePath) <> '';
+  Result := (BrowserFamilyFromProcess(AExeName,
+                                      AImagePath) <> '');
 end;
 
 
-function SameProcessImage(const ALeftPath, ARightPath: string): Boolean;
+function SameProcessImage(const ALeftPath,
+                          ARightPath: string): Boolean;
+
 begin
 
   if (ALeftPath <> '') and (ARightPath <> '') then
     Exit(SameText(ALeftPath,
-         ARightPath));
+                  ARightPath));
 
   Result := True;
 end;
 
 
 function AudioStateFromSessionState(const AState: UINT): TProcessAudioState;
+
 begin
 
   case AState of
@@ -322,15 +336,16 @@ begin
       Result := pasActive;
     AUDIO_SESSION_STATE_INACTIVE:
       Result := pasSilent;
-  else
+    else
 
-    Result := pasUnknown;
+      Result := pasUnknown;
   end;
 end;
 
 
 function MergeAudioState(const ACurrent,
-                               ANew: TProcessAudioState): TProcessAudioState;
+                         ANew: TProcessAudioState): TProcessAudioState;
+
 begin
 
   Result := ACurrent;
@@ -340,7 +355,7 @@ begin
 end;
 
 
-function FindSessionSummary(const AItems: TList<TAudioSessionSummary>;
+function FindSessionSummary(const AItems: TList < TAudioSessionSummary > ;
                             const APid: DWORD): Integer;
 var
   I: Integer;
@@ -349,12 +364,12 @@ begin
 
   Result := -1;
   for I := 0 to AItems.Count - 1 do
-    if AItems[I].ProcessId = APid then
+    if (AItems[I].ProcessId = APid) then
       Exit(I);
 end;
 
 
-procedure EnumerateAudioSessions(AItems: TList<TAudioSessionSummary>);
+procedure EnumerateAudioSessions(AItems: TList < TAudioSessionSummary > );
 var
   Enumerator: IMMDeviceEnumerator;
   Device: IMMDevice;
@@ -374,21 +389,21 @@ begin
   AItems.Clear;
 
   if Failed(CoCreateInstance(CLSID_MMDeviceEnumerator,
-                             nil,
-                             CLSCTX_ALL,
-                             IID_IMMDeviceEnumerator,
-                             Enumerator)) then
+    nil,
+    CLSCTX_ALL,
+    IID_IMMDeviceEnumerator,
+    Enumerator)) then
     Exit;
 
   if Failed(Enumerator.GetDefaultAudioEndpoint(eRender,
-                                               eMultimedia,
-                                               Device)) then
+    eMultimedia,
+    Device)) then
     Exit;
 
   if Failed(Device.Activate(IID_IAudioSessionManager2,
-                            CLSCTX_ALL,
-                            nil,
-                            Pointer(SessionMgr))) then
+    CLSCTX_ALL,
+    nil,
+    Pointer(SessionMgr))) then
     Exit;
 
   if Failed(SessionMgr.GetSessionEnumerator(SessionEnum)) then
@@ -406,7 +421,7 @@ begin
       Pid := 0;
 
       if Failed(SessionEnum.GetSession(I,
-                                       SessionCtrl)) or (SessionCtrl = nil) then
+        SessionCtrl)) or (SessionCtrl = nil) then
         Continue;
 
       if Failed(SessionCtrl.GetState(_AudioSessionState(State))) then
@@ -416,8 +431,8 @@ begin
         Continue;
 
       if Supports(SessionCtrl,
-                  IAudioSessionControl2,
-                  SessionCtrl2) then
+        IAudioSessionControl2,
+        SessionCtrl2) then
         begin
 
           if Failed(SessionCtrl2.GetProcessId(Pid)) then
@@ -426,7 +441,8 @@ begin
           if (Pid <> 0) then
             begin
 
-              Index := FindSessionSummary(AItems, Pid);
+              Index := FindSessionSummary(AItems,
+                                          Pid);
 
               if (Index >= 0) then
                 begin
@@ -451,7 +467,8 @@ begin
 end;
 
 
-procedure BuildProcessSnapshot(AMap: TDictionary<DWORD, TProcessInfo>);
+procedure BuildProcessSnapshot(AMap: TDictionary < DWORD,
+                               TProcessInfo > );
 var
   Snap: THandle;
   Entry: TProcessEntry32W;
@@ -462,31 +479,34 @@ begin
 
   AMap.Clear;
 
-  Snap := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  Snap := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,
+                                   0);
   if (Snap = INVALID_HANDLE_VALUE) then
     Exit;
 
   try
 
-    ZeroMemory(@Entry, SizeOf(Entry));
+    ZeroMemory(@Entry,
+               SizeOf(Entry));
     Entry.dwSize := SizeOf(Entry);
 
     if Process32FirstW(Snap,
-                      Entry) then
+      Entry) then
       repeat
 
         Info.ProcessId := Entry.th32ProcessID;
         Info.ParentProcessId := Entry.th32ParentProcessID;
         Info.ExeName := Entry.szExeFile;
         if TryGetProcessImagePath(Info.ProcessId,
-                                  Path) then
+          Path) then
           Info.ImagePath := Path
         else
           Info.ImagePath := '';
 
-        AMap.AddOrSetValue(Info.ProcessId, Info);
+        AMap.AddOrSetValue(Info.ProcessId,
+                           Info);
       until not Process32NextW(Snap,
-                              Entry);
+          Entry);
   finally
 
     CloseHandle(Snap);
@@ -494,9 +514,11 @@ begin
 end;
 
 
-function TryGetProcessInfo(const AProcMap: TDictionary<DWORD, TProcessInfo>;
+function TryGetProcessInfo(const AProcMap: TDictionary < DWORD,
+                           TProcessInfo > ;
                            const APid: DWORD;
                            out AInfo: TProcessInfo): Boolean;
+
 begin
 
   Result := AProcMap.TryGetValue(APid,
@@ -513,7 +535,8 @@ begin
 end;
 
 
-function ResolveGroupRootPid(const AProcMap: TDictionary<DWORD, TProcessInfo>;
+function ResolveGroupRootPid(const AProcMap: TDictionary < DWORD,
+                             TProcessInfo > ;
                              const APid: DWORD): DWORD;
 var
   CurInfo: TProcessInfo;
@@ -526,15 +549,15 @@ begin
   Result := APid;
 
   if not TryGetProcessInfo(AProcMap,
-                           APid,
-                           CurInfo) then
+    APid,
+    CurInfo) then
     Exit;
 
   while (CurInfo.ParentProcessId <> 0) and
-        (CurInfo.ParentProcessId <> 4) and
-        TryGetProcessInfo(AProcMap,
-                          CurInfo.ParentProcessId,
-                          ParentInfo) do
+    (CurInfo.ParentProcessId <> 4) and
+    TryGetProcessInfo(AProcMap,
+                      CurInfo.ParentProcessId,
+                      ParentInfo) do
     begin
 
       CurFamily := BrowserFamilyFromProcess(CurInfo.ExeName,
@@ -547,20 +570,20 @@ begin
         Break;
 
       if not SameProcessImage(ParentInfo.ImagePath,
-                              CurInfo.ImagePath) then
+        CurInfo.ImagePath) then
         begin
 
           if (CurFamily = '') or (ParentFamily = '') or
-             (not SameText(CurFamily,
-                           ParentFamily)) then
+            (not SameText(CurFamily,
+                          ParentFamily)) then
             Break;
         end;
 
       if (not SameText(ParentInfo.ExeName,
-                       CurInfo.ExeName)) and
-         ((CurFamily = '') or (ParentFamily = '') or
-          (not SameText(CurFamily,
-                        ParentFamily))) then
+        CurInfo.ExeName)) and
+        ((CurFamily = '') or (ParentFamily = '') or
+        (not SameText(CurFamily,
+                      ParentFamily))) then
         Break;
 
       Result := ParentInfo.ProcessId;
@@ -569,7 +592,7 @@ begin
 end;
 
 
-function FindGroupByRootPid(const AGroups: TObjectList<TProcessGroupItem>;
+function FindGroupByRootPid(const AGroups: TObjectList < TProcessGroupItem > ;
                             const ARootPid: DWORD): TProcessGroupItem;
 var
   I: Integer;
@@ -586,6 +609,7 @@ end;
 
 procedure InitializeGroupFromInfo(AGroup: TProcessGroupItem;
                                   const AInfo: TProcessInfo);
+
 begin
 
   AGroup.RootProcessId := AInfo.ProcessId;
@@ -594,12 +618,11 @@ begin
 
   if (AGroup.ExeName <> '') then
     AGroup.DisplayName := AGroup.ExeName
+  else if (AGroup.ImagePath <> '') then
+    AGroup.DisplayName := GetExeName(AGroup.ImagePath)
   else
-    if (AGroup.ImagePath <> '') then
-      AGroup.DisplayName := GetExeName(AGroup.ImagePath)
-    else
-      AGroup.DisplayName := Format('PID %d',
-                                   [AInfo.ProcessId]);
+    AGroup.DisplayName := Format('PID %d',
+                                 [AInfo.ProcessId]);
 
   AGroup.AudioState := pasUnknown;
   AGroup.Peak := 0.0;
@@ -612,6 +635,7 @@ end;
 
 function DetermineChildRoleHint(const AGroup: TProcessGroupItem;
                                 const AChild: TProcessChildItem): string;
+
 begin
 
   if (AChild.ProcessId = AGroup.RootProcessId) then
@@ -647,22 +671,21 @@ begin
           else
             Result := 'WebView helper process';
         end
+      else if (AChild.ParentProcessId = AGroup.RootProcessId) then
+        begin
+          if AChild.IsAudioProcess then
+            Result := 'tab / utility audio process'
+          else
+            Result := 'tab / utility process';
+        end
       else
-        if (AChild.ParentProcessId = AGroup.RootProcessId) then
-          begin
-            if AChild.IsAudioProcess then
-              Result := 'tab / utility audio process'
-            else
-              Result := 'tab / utility process';
-          end
-        else
-          begin
+        begin
 
-            if AChild.IsAudioProcess then
-              Result := 'nested tab / utility audio process'
-            else
-              Result := 'nested tab / utility process';
-          end;
+          if AChild.IsAudioProcess then
+            Result := 'nested tab / utility audio process'
+          else
+            Result := 'nested tab / utility process';
+        end;
       Exit;
     end;
 
@@ -685,8 +708,10 @@ begin
 end;
 
 
-function IsDescendantOf(const AProcMap: TDictionary<DWORD, TProcessInfo>;
-                        const AChildPid, ARootPid: DWORD): Boolean;
+function IsDescendantOf(const AProcMap: TDictionary < DWORD,
+                        TProcessInfo > ;
+                        const AChildPid,
+                        ARootPid: DWORD): Boolean;
 var
   CurInfo: TProcessInfo;
   Safety: Integer;
@@ -699,8 +724,8 @@ begin
     Exit(True);
 
   if not TryGetProcessInfo(AProcMap,
-                           AChildPid,
-                           CurInfo) then
+    AChildPid,
+    CurInfo) then
     Exit(False);
 
   Safety := 0;
@@ -712,8 +737,8 @@ begin
         Exit(True);
 
       if not TryGetProcessInfo(AProcMap,
-                               CurInfo.ParentProcessId,
-                               CurInfo) then
+        CurInfo.ParentProcessId,
+        CurInfo) then
         Break;
 
       Inc(Safety);
@@ -723,7 +748,7 @@ begin
 end;
 
 
-function FindSessionSummaryForPid(const ASummaries: TList<TAudioSessionSummary>;
+function FindSessionSummaryForPid(const ASummaries: TList < TAudioSessionSummary > ;
                                   const APid: DWORD;
                                   out ASummary: TAudioSessionSummary): Boolean;
 var
@@ -747,10 +772,11 @@ end;
 
 
 procedure AddDescendantProcessesToGroup(AGroup: TProcessGroupItem;
-                                        const AProcMap: TDictionary<DWORD, TProcessInfo>;
-                                        const ASummaries: TList<TAudioSessionSummary>);
+                                        const AProcMap: TDictionary < DWORD,
+                                        TProcessInfo > ;
+                                        const ASummaries: TList < TAudioSessionSummary > );
 var
-  Pair: TPair<DWORD, TProcessInfo>;
+  Pair: TPair < DWORD, TProcessInfo > ;
   Child: TProcessChildItem;
   Summary: TAudioSessionSummary;
 
@@ -760,8 +786,8 @@ begin
     begin
 
       if not IsDescendantOf(AProcMap,
-                            Pair.Key,
-                            AGroup.RootProcessId) then
+        Pair.Key,
+        AGroup.RootProcessId) then
         Continue;
 
       Child := TProcessChildItem.Create;
@@ -776,21 +802,20 @@ begin
 
       if (Child.ExeName <> '') then
         Child.DisplayName := Child.ExeName
+      else if (Child.ImagePath <> '') then
+        Child.DisplayName := GetExeName(Child.ImagePath)
       else
-        if (Child.ImagePath <> '') then
-          Child.DisplayName := GetExeName(Child.ImagePath)
-        else
-          Child.DisplayName := Format('PID %d',
-                                      [Child.ProcessId]);
+        Child.DisplayName := Format('PID %d',
+                                    [Child.ProcessId]);
 
       if FindSessionSummaryForPid(ASummaries,
-                                  Child.ProcessId,
-                                  Summary) then
+        Child.ProcessId,
+        Summary) then
         begin
 
           Child.SessionCount := Summary.SessionCount;
           Child.AudioState := Summary.AudioState;
-          Child.IsAudioProcess := Summary.SessionCount > 0;
+          Child.IsAudioProcess := (Summary.SessionCount > 0);
         end
       else
         begin
@@ -816,45 +841,49 @@ end;
 
 
 function CompareTProcessGroupItem(constref Left,
-                                                                         Right: TProcessGroupItem): Integer;
+                                  Right: TProcessGroupItem): Integer;
+
 begin
 
-                                                            Result := CompareText(Left.DisplayName,
-                                                                                  Right.DisplayName);
-                                                            if (Result = 0) then
-                                                              Result := Integer(Left.RootProcessId) - Integer(Right.RootProcessId);
-                                                          end;
+  Result := CompareText(Left.DisplayName,
+                        Right.DisplayName);
+  if (Result = 0) then
+    Result := Integer(Left.RootProcessId) - Integer(Right.RootProcessId);
+end;
+
 
 function CompareTProcessChildItem(constref Left,
-                                                                         Right: TProcessChildItem): Integer;
+                                  Right: TProcessChildItem): Integer;
+
 begin
 
-                                                            if (Left.IsAudioProcess <> Right.IsAudioProcess) then
-                                                              begin
+  if (Left.IsAudioProcess <> Right.IsAudioProcess) then
+    begin
 
-                                                                if Left.IsAudioProcess then
-                                                                  Exit(-1)
-                                                                else
-                                                                  Exit(1);
-                                                              end;
+      if Left.IsAudioProcess then
+        Exit(-1)
+      else
+        Exit(1);
+    end;
 
-                                                            Result := CompareText(Left.DisplayName,
-                                                                                  Right.DisplayName);
-                                                            if (Result = 0) then
-                                                              Result := Integer(Left.ProcessId) - Integer(Right.ProcessId);
-                                                          end;
+  Result := CompareText(Left.DisplayName,
+                        Right.DisplayName);
+  if (Result = 0) then
+    Result := Integer(Left.ProcessId) - Integer(Right.ProcessId);
+end;
 
-procedure SortGroupsAndChildren(AGroups: TObjectList<TProcessGroupItem>);
+
+procedure SortGroupsAndChildren(AGroups: TObjectList < TProcessGroupItem > );
 var
-  GroupComparer: IComparer<TProcessGroupItem>;
-  ChildComparer: IComparer<TProcessChildItem>;
+  GroupComparer: IComparer < TProcessGroupItem > ;
+  ChildComparer: IComparer < TProcessChildItem > ;
   I: Integer;
 
 begin
 
-  GroupComparer := TComparer<TProcessGroupItem>.Construct(CompareTProcessGroupItem);
+  GroupComparer := (TComparer < TProcessGroupItem > .Construct(CompareTProcessGroupItem));
 
-  ChildComparer := TComparer<TProcessChildItem>.Construct(CompareTProcessChildItem);
+  ChildComparer := (TComparer < TProcessChildItem > .Construct(CompareTProcessChildItem));
 
   AGroups.Sort(GroupComparer);
 
@@ -863,10 +892,10 @@ begin
 end;
 
 
-procedure BuildLiveProcessGroups(AGroups: TObjectList<TProcessGroupItem>);
+procedure BuildLiveProcessGroups(AGroups: TObjectList < TProcessGroupItem > );
 var
-  Sessions: TList<TAudioSessionSummary>;
-  ProcMap: TDictionary<DWORD, TProcessInfo>;
+  Sessions: TList < TAudioSessionSummary > ;
+  ProcMap: TDictionary < DWORD, TProcessInfo > ;
   Summary: TAudioSessionSummary;
   RootPid: DWORD;
   RootInfo: TProcessInfo;
@@ -876,9 +905,9 @@ begin
 
   AGroups.Clear;
 
-  Sessions := TList<TAudioSessionSummary>.Create;
-  ProcMap := TDictionary<DWORD,
-                         TProcessInfo>.Create;
+  Sessions := (TList < TAudioSessionSummary > .Create);
+  ProcMap := (TDictionary < DWORD,
+              TProcessInfo > .Create);
   try
 
     EnumerateAudioSessions(Sessions);
@@ -898,8 +927,8 @@ begin
             Group := TProcessGroupItem.Create;
 
             if not TryGetProcessInfo(ProcMap,
-                                     RootPid,
-                                     RootInfo) then
+              RootPid,
+              RootInfo) then
               begin
 
                 RootInfo.ProcessId := RootPid;

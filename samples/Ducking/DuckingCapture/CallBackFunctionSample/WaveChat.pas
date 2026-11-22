@@ -68,7 +68,7 @@ interface
 
 uses
   MfCapturePlatform,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   {System}
@@ -81,11 +81,12 @@ uses
   ChatTransport,
   WaveOutputRoute;
 
-// const WAVE_MAPPED_DEFAULT_COMMUNICATION_DEVICE = $0010  declared in MMeApi
+  // const WAVE_MAPPED_DEFAULT_COMMUNICATION_DEVICE = $0010  declared in MMeApi
 
 type
 
   CWaveChat = class(CChatTransport)
+
   private
     _waveHandle: HWAVEIN; // wavein handle, returned by function waveInOpen.
     _waveHeader1: WAVEHDR;
@@ -134,38 +135,38 @@ begin
 
   case uMsg of
 
-    MM_WIM_OPEN:  begin
-                    // ignore
-                  end;
+      MM_WIM_OPEN: begin
+        // ignore
+      end;
 
-    MM_WIM_CLOSE: begin
-                    // ignore
-                  end;
+      MM_WIM_CLOSE: begin
+        // ignore
+      end;
 
-    MM_WIM_DATA:  begin
-                    //
-                    // Process the capture data since we've received a buffers worth of data.
-                    //
-                    //  In real life, we'd copy the capture data out of the waveHeader that just completed and process it, but since
-                    //  this is a sample, we discard the data and simply re-submit the buffer.
-                    //
-                    chat := CWaveChat(Pointer(dwInstance));
-                    hwaveHandle := hWaveIn;
-                    waveHeader := LPWAVEHDR(lPar);
-                    if (hWaveIn <> 0) and Assigned(chat) and not chat._stopping then
-                      begin
-                        chat.RouteCapturedBuffer(waveHeader);
-                        mmr := waveInAddBuffer(hwaveHandle,
-                                               waveHeader,
-                                               SizeOf(WAVEHDR));
-                        if mmr <> MMSYSERR_NOERROR then
-                          MessageBoxW(hWaveIn,
-                                     'Failed to add buffer',
-                                     'Error',
-                                     MB_OK);
-                      end;
-                  end;
-   end;
+      MM_WIM_DATA: begin
+        //
+        // Process the capture data since we've received a buffers worth of data.
+        //
+        //  In real life, we'd copy the capture data out of the waveHeader that just completed and process it, but since
+        //  this is a sample, we discard the data and simply re-submit the buffer.
+        //
+        chat := CWaveChat(Pointer(dwInstance));
+        hwaveHandle := hWaveIn;
+        waveHeader := LPWAVEHDR(lPar);
+        if (hWaveIn <> 0) and Assigned(chat) and not chat._stopping then
+          begin
+            chat.RouteCapturedBuffer(waveHeader);
+            mmr := waveInAddBuffer(hwaveHandle,
+                                   waveHeader,
+                                   SizeOf(WAVEHDR));
+            if (mmr <> MMSYSERR_NOERROR) then
+              MessageBoxW(hWaveIn,
+                          'Failed to add buffer',
+                          'Error',
+                          MB_OK);
+          end;
+      end;
+  end;
 end;
 
 
@@ -173,7 +174,9 @@ end;
 
 
 constructor CWaveChat.Create(AppWindow: HWND);
+
 begin
+
   _AppWindow := AppWindow;
 
   ZeroMemory(@_waveHeader1,
@@ -183,42 +186,49 @@ begin
   _waveOutput := CWaveOutputRoute.Create;
 end;
 
+
 procedure CWaveChat.RouteCapturedBuffer(const WaveHeader: LPWAVEHDR);
 var
   BufferIndex: Integer;
+
 begin
+
   if not Assigned(_waveOutput) or not Assigned(WaveHeader) then
     Exit;
-  if WaveHeader = @_waveHeader1 then
+  if (WaveHeader = @_waveHeader1) then
     BufferIndex := 0
-  else if WaveHeader = @_waveHeader2 then
+  else if (WaveHeader = @_waveHeader2) then
     BufferIndex := 1
   else
     Exit;
-  _waveOutput.Submit(BufferIndex, WaveHeader.lpData, WaveHeader.dwBytesRecorded);
+  _waveOutput.Submit(BufferIndex,
+                     WaveHeader.lpData,
+                     WaveHeader.dwBytesRecorded);
 end;
 
 //
 //  We can "Chat" if there's more than one wave input device.
 //
 function CWaveChat.Initialize(const UseInputDevice: Boolean): Boolean;
+
 begin
-  if UseInputDevice = False then
+
+  if (UseInputDevice = False) then
     begin
       MessageBoxW(_AppWindow,
-                 'Wave Chat can only run on the input device',
-                 'Failed to initialize chat',
-                 MB_OK);
+                  'Wave Chat can only run on the input device',
+                  'Failed to initialize chat',
+                  MB_OK);
       Result := false;
       Exit;
     end;
 
-  if waveInGetNumDevs() = 0 then
+  if (waveInGetNumDevs() = 0) then
     begin
       MessageBoxW(0,
-                 'No Capture Devices found',
-                 'Failed to initialize chat',
-                 MB_OK);
+                  'No Capture Devices found',
+                  'Failed to initialize chat',
+                  MB_OK);
       Result := false;
       Exit;
     end;
@@ -234,53 +244,58 @@ var
   mmr: MMRESULT;
 
 begin
-  if _waveHandle <> 0 then
+
+  if (_waveHandle <> 0) then
     begin
       _stopping := True;
       mmr := waveInStop(_waveHandle);
-      if mmr <> MMSYSERR_NOERROR then
+      if (mmr <> MMSYSERR_NOERROR) then
         MessageBoxW(0,
-                   'Failed to start',
-                   'Error',
-                   MB_OK);
+                    'Failed to start',
+                    'Error',
+                    MB_OK);
 
       mmr := waveInReset(_waveHandle);
-      if mmr <> MMSYSERR_NOERROR then
+      if (mmr <> MMSYSERR_NOERROR) then
         MessageBoxW(0,
-                   'Failed to reset',
-                   'Error',
-                   MB_OK);
+                    'Failed to reset',
+                    'Error',
+                    MB_OK);
 
       mmr := waveInUnprepareHeader(_waveHandle,
                                    @_waveHeader1,
                                    SizeOf(_waveHeader1));
 
-      if mmr <> MMSYSERR_NOERROR then
+      if (mmr <> MMSYSERR_NOERROR) then
         MessageBoxW(0,
-                   'Failed to unprepare wave header 1',
-                   'Error',
-                   MB_OK);
+                    'Failed to unprepare wave header 1',
+                    'Error',
+                    MB_OK);
 
-      Delete(_waveBuffer1, 0, Length(_waveBuffer1));
+      Delete(_waveBuffer1,
+             0,
+             Length(_waveBuffer1));
 
       mmr := waveInUnprepareHeader(_waveHandle,
                                    @_waveHeader2,
                                    sizeof(_waveHeader2));
 
-      if mmr <> MMSYSERR_NOERROR then
+      if (mmr <> MMSYSERR_NOERROR) then
         MessageBoxW(0,
-                   'Failed to unprepare wave header 2',
-                   'Error',
-                   MB_OK);
+                    'Failed to unprepare wave header 2',
+                    'Error',
+                    MB_OK);
 
-      Delete(_waveBuffer2, 0, Length(_waveBuffer1));
+      Delete(_waveBuffer2,
+             0,
+             Length(_waveBuffer1));
 
       mmr := waveInClose(_waveHandle);
-      if mmr <> MMSYSERR_NOERROR then
+      if (mmr <> MMSYSERR_NOERROR) then
         MessageBoxW(0,
-                   'Failed to close wave handle',
-                   'Error',
-                   MB_OK);
+                    'Failed to close wave handle',
+                    'Error',
+                    MB_OK);
 
       _waveHandle := 0;
     end;
@@ -288,8 +303,11 @@ begin
     _waveOutput.Shutdown;
 end;
 
+
 destructor CWaveChat.Destroy();
+
 begin
+
   _waveOutput.Free;
   inherited Destroy;
 end;
@@ -304,6 +322,7 @@ var
   bufferBytes: Cardinal;
 
 begin
+
   _stopping := False;
   waveFormat.cbSize := 0;
   waveFormat.nSamplesPerSec := 44100;
@@ -323,9 +342,9 @@ begin
   if (mmr <> MMSYSERR_NOERROR) then
     begin
       MessageBoxW(_AppWindow,
-                 'Failed to open wave in',
-                 'Error',
-                 MB_OK);
+                  'Failed to open wave in',
+                  'Error',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -336,9 +355,9 @@ begin
   if not _waveOutput.Initialize(waveFormat, bufferBytes) then
     begin
       MessageBoxW(_AppWindow,
-                 'Failed to open the default wave output endpoint',
-                 'Error',
-                 MB_OK);
+                  'Failed to open the default wave output endpoint',
+                  'Error',
+                  MB_OK);
       waveInClose(_waveHandle);
       _waveHandle := 0;
       Result := False;
@@ -354,9 +373,9 @@ begin
   if Not Assigned(_waveBuffer1) then
     begin
       MessageBoxW(_AppWindow,
-                 'Failed to allocate buffer for header 1',
-                 'Error',
-                 MB_OK);
+                  'Failed to allocate buffer for header 1',
+                  'Error',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -368,12 +387,12 @@ begin
   mmr := waveInPrepareHeader(_waveHandle,
                              @_waveHeader1,
                              SizeOf(WAVEHDR));
-  if mmr <> MMSYSERR_NOERROR then
+  if (mmr <> MMSYSERR_NOERROR) then
     begin
       MessageBoxW(_AppWindow,
-                 'Failed to prepare header 1',
-                 'Error',
-                 MB_OK);
+                  'Failed to prepare header 1',
+                  'Error',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -381,12 +400,12 @@ begin
   mmr := waveInAddBuffer(_waveHandle,
                          @_waveHeader1,
                          SizeOf(WAVEHDR));
-  if mmr <> MMSYSERR_NOERROR then
+  if (mmr <> MMSYSERR_NOERROR) then
     begin
       MessageBoxW(_AppWindow,
-                 'Failed to add buffer 1',
-                 'Error',
-                 MB_OK);
+                  'Failed to add buffer 1',
+                  'Error',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -394,15 +413,15 @@ begin
   ZeroMemory(@_waveHeader2,
              SizeOf(_waveHeader2));
 
-  SetLength (_waveBuffer2,
-             bufferBytes div SizeOf(Word));
+  SetLength(_waveBuffer2,
+            bufferBytes div SizeOf(Word));
 
   if Not Assigned(_waveBuffer2) then
     begin
       MessageBoxW(_AppWindow,
-                 'Failed to allocate buffer for header 2',
-                 'Error',
-                 MB_OK);
+                  'Failed to allocate buffer for header 2',
+                  'Error',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -413,12 +432,12 @@ begin
   mmr := waveInPrepareHeader(_waveHandle,
                              @_waveHeader2,
                              SizeOf(WAVEHDR));
-  if mmr <> MMSYSERR_NOERROR then
+  if (mmr <> MMSYSERR_NOERROR) then
     begin
       MessageBoxW(0,
-                 'Failed to prepare header 2',
-                 'Error',
-                 MB_OK);
+                  'Failed to prepare header 2',
+                  'Error',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -426,23 +445,23 @@ begin
   mmr := waveInAddBuffer(_waveHandle,
                          @_waveHeader2,
                          SizeOf(WAVEHDR));
-  if mmr <> MMSYSERR_NOERROR then
+  if (mmr <> MMSYSERR_NOERROR) then
     begin
       MessageBoxW(_AppWindow,
-                 'Failed to add buffer 2',
-                 'Error',
-                 MB_OK);
+                  'Failed to add buffer 2',
+                  'Error',
+                  MB_OK);
       Result := False;
       Exit;
     end;
 
   mmr := waveInStart(_waveHandle);
-  if mmr <> MMSYSERR_NOERROR then
+  if (mmr <> MMSYSERR_NOERROR) then
     begin
       MessageBoxW(_AppWindow,
-                 'Failed to start',
-                 'Error',
-                 MB_OK);
+                  'Failed to start',
+                  'Error',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -458,53 +477,58 @@ var
   mmr: MMRESULT;
 
 begin
-  if _waveHandle <> 0 then
+
+  if (_waveHandle <> 0) then
     begin
 
       _stopping := True;
 
-     mmr := waveInStop(_waveHandle);
-      if mmr <> MMSYSERR_NOERROR then
+      mmr := waveInStop(_waveHandle);
+      if (mmr <> MMSYSERR_NOERROR) then
         MessageBoxW(0,
-                   'Failed to start',
-                   'Error',
-                   MB_OK);
+                    'Failed to start',
+                    'Error',
+                    MB_OK);
 
       mmr := waveInReset(_waveHandle);
-      if mmr <> MMSYSERR_NOERROR then
+      if (mmr <> MMSYSERR_NOERROR) then
         MessageBoxW(0,
-                   'Failed to reset',
-                   'Error',
-                   MB_OK);
+                    'Failed to reset',
+                    'Error',
+                    MB_OK);
 
       mmr := waveInUnprepareHeader(_waveHandle,
                                    @_waveHeader1,
                                    SizeOf(_waveHeader1));
-      if mmr <> MMSYSERR_NOERROR then
+      if (mmr <> MMSYSERR_NOERROR) then
         MessageBoxW(0,
-                   'Failed to unprepare wave header 1',
-                   'Error',
-                   MB_OK);
+                    'Failed to unprepare wave header 1',
+                    'Error',
+                    MB_OK);
 
-      Delete(_waveBuffer1, 0, Length(_waveBuffer1));
+      Delete(_waveBuffer1,
+             0,
+             Length(_waveBuffer1));
 
       mmr := waveInUnprepareHeader(_waveHandle,
                                    @_waveHeader2,
                                    SizeOf(_waveHeader2));
-      if mmr <> MMSYSERR_NOERROR then
-          MessageBoxW(0,
-                     'Failed to unprepare wave header 2',
-                     'Error',
-                     MB_OK);
+      if (mmr <> MMSYSERR_NOERROR) then
+        MessageBoxW(0,
+                    'Failed to unprepare wave header 2',
+                    'Error',
+                    MB_OK);
 
-      Delete(_waveBuffer2, 0, Length(_waveBuffer1));
+      Delete(_waveBuffer2,
+             0,
+             Length(_waveBuffer1));
 
       mmr := waveInClose(_waveHandle);
-      if mmr <> MMSYSERR_NOERROR then
+      if (mmr <> MMSYSERR_NOERROR) then
         MessageBoxW(0,
-                   'Failed to close wave handle',
-                   'Error',
-                   MB_OK);
+                    'Failed to close wave handle',
+                    'Error',
+                    MB_OK);
 
       _waveHandle := 0;
     end;
@@ -512,15 +536,20 @@ begin
     _waveOutput.Shutdown;
 end;
 
+
 function CWaveChat.CanStartChat(): Boolean;
+
 begin
+
   Result := True;
 end;
 
+
 function CWaveChat.TransportType(): ChatTransportType;
+
 begin
+
   Result := ChatTransportWave;
 end;
 
 end.
-

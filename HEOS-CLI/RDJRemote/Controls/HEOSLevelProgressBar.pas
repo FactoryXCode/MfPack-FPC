@@ -66,10 +66,11 @@ unit HEOSLevelProgressBar;
 
 interface
 
-uses LMessages,
+uses
+  LMessages,
   LCLType,
   Heos.Fpc.Platform,
-{System}
+  {System}
   SysUtils,
   Classes,
   Types,
@@ -88,8 +89,10 @@ type
                       plCenter);
 
   TDnLevelProgressBar = class(TCustomControl)
+
   published
     property BorderSpacing;
+
   private
 
     FMin: Integer;
@@ -189,7 +192,7 @@ implementation
 
 
 uses
-  
+
   {WinApi}
   Windows,
   {Vcl}
@@ -197,7 +200,9 @@ uses
 
 
 procedure Register;
+
 begin
+
   RegisterComponents('HEOS Controls',
                      [TDnLevelProgressBar]);
 end;
@@ -206,6 +211,7 @@ end;
 { TDnLevelProgressBar }
 
 constructor TDnLevelProgressBar.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
@@ -236,6 +242,7 @@ end;
 
 
 destructor TDnLevelProgressBar.Destroy;
+
 begin
 
   FreeAndNil(FForegroundPicture);
@@ -245,6 +252,7 @@ end;
 
 
 procedure TDnLevelProgressBar.DoChange;
+
 begin
 
   if Assigned(FOnChange) then
@@ -301,12 +309,12 @@ begin
           H := Graphic.Height;
 
           if (W <= 0) or (H <= 0) then
-          begin
+            begin
 
-            DrawRoundedFill(AFillRect,
-                            FForegroundColor);
-            Exit;
-          end;
+              DrawRoundedFill(AFillRect,
+                              FForegroundColor);
+              Exit;
+            end;
 
           Y := AFillRect.Top;
           while (Y < AFillRect.Bottom) do
@@ -317,9 +325,9 @@ begin
                 begin
 
                   DstRect := Types.Rect(X,
-                                  Y,
-                                  X + W,
-                                  Y + H);
+                                        Y,
+                                        X + W,
+                                        Y + H);
                   Canvas.StretchDraw(DstRect,
                                      Graphic);
                   Inc(X,
@@ -345,13 +353,13 @@ begin
             end;
 
           if (W > (AFillRect.Right - AFillRect.Left)) or
-             (H > (AFillRect.Bottom - AFillRect.Top)) then
+            (H > (AFillRect.Bottom - AFillRect.Top)) then
             begin
 
               SrcRect := Types.Rect(0,
-                              0,
-                              Graphic.Width,
-                              Graphic.Height);
+                                    0,
+                                    Graphic.Width,
+                                    Graphic.Height);
               Canvas.StretchDraw(AFillRect,
                                  Graphic);
             end
@@ -359,9 +367,9 @@ begin
             begin
 
               DstRect := Types.Rect(AFillRect.Left + ((AFillRect.Right - AFillRect.Left - W) div 2),
-                              AFillRect.Top + ((AFillRect.Bottom - AFillRect.Top - H) div 2),
-                              AFillRect.Left + ((AFillRect.Right - AFillRect.Left - W) div 2) + W,
-                              AFillRect.Top + ((AFillRect.Bottom - AFillRect.Top - H) div 2) + H);
+                                    AFillRect.Top + ((AFillRect.Bottom - AFillRect.Top - H) div 2),
+                                    AFillRect.Left + ((AFillRect.Right - AFillRect.Left - W) div 2) + W,
+                                    AFillRect.Top + ((AFillRect.Bottom - AFillRect.Top - H) div 2) + H);
               Canvas.StretchDraw(DstRect,
                                  Graphic);
             end;
@@ -377,6 +385,7 @@ end;
 
 procedure TDnLevelProgressBar.DrawRoundedFill(const R: TRect;
                                               AColor: TColor);
+
 begin
 
   if IsRectEmpty(R) then
@@ -386,7 +395,7 @@ begin
   Canvas.Brush.Color := AColor;
   Canvas.Pen.Style := psClear;
 
-  if FRoundRadius > 0 then
+  if (FRoundRadius > 0) then
     Canvas.RoundRect(R.Left,
                      R.Top,
                      R.Right,
@@ -401,6 +410,7 @@ end;
 
 procedure TDnLevelProgressBar.DrawRoundedFrame(const R: TRect;
                                                AColor: TColor);
+
 begin
 
   if not FShowBorder then
@@ -423,6 +433,7 @@ end;
 
 
 procedure TDnLevelProgressBar.ForegroundPictureChanged(Sender: TObject);
+
 begin
 
   Invalidate;
@@ -438,9 +449,9 @@ begin
   LPad := Max(FPadding,
               0);
   Result := Types.Rect(LPad,
-                 LPad,
-                 Width - LPad,
-                 Height - LPad);
+                       LPad,
+                       Width - LPad,
+                       Height - LPad);
 
   if (Result.Right < Result.Left) then
     Result.Right := Result.Left;
@@ -492,7 +503,8 @@ begin
     Exit(0.0);
 
   PosValue := EnsureRange(FPosition,
-                          FMin, FMax) - FMin;
+                          FMin,
+                          FMax) - FMin;
   Result := PosValue / Range;
   Result := EnsureRange(Result,
                         0.0,
@@ -506,6 +518,7 @@ var
   FillRect: TRect;
 
 begin
+
   inherited;
 
   Canvas.Brush.Style := bsSolid;
@@ -525,14 +538,13 @@ begin
     begin
 
       if FForegroundPictureEnabled and
-         Assigned(FForegroundPicture) and
-         Assigned(FForegroundPicture.Graphic) and
-         not FForegroundPicture.Graphic.Empty then
+        Assigned(FForegroundPicture) and
+        Assigned(FForegroundPicture.Graphic) and not FForegroundPicture.Graphic.Empty then
         DrawPictureFill(FillRect)
-    else
-      DrawRoundedFill(FillRect,
-                      FForegroundColor);
-  end;
+      else
+        DrawRoundedFill(FillRect,
+                        FForegroundColor);
+    end;
 
   DrawRoundedFrame(BarRect,
                    FBorderColor);
@@ -540,6 +552,7 @@ end;
 
 
 procedure TDnLevelProgressBar.Resize;
+
 begin
 
   inherited Resize;
@@ -549,6 +562,7 @@ end;
 
 
 procedure TDnLevelProgressBar.SetBackgroundColor(const Value: TColor);
+
 begin
 
   if (FBackgroundColor = Value) then
@@ -559,6 +573,7 @@ end;
 
 
 procedure TDnLevelProgressBar.SetBorderColor(const Value: TColor);
+
 begin
 
   if (FBorderColor = Value) then
@@ -569,6 +584,7 @@ end;
 
 
 procedure TDnLevelProgressBar.SetForegroundColor(const Value: TColor);
+
 begin
 
   if (FForegroundColor = Value) then
@@ -579,6 +595,7 @@ end;
 
 
 procedure TDnLevelProgressBar.SetForegroundPicture(const Value: TPicture);
+
 begin
 
   FForegroundPicture.Assign(Value);
@@ -587,6 +604,7 @@ end;
 
 
 procedure TDnLevelProgressBar.SetForegroundPictureEnabled(const Value: Boolean);
+
 begin
 
   if (FForegroundPictureEnabled = Value) then
@@ -597,6 +615,7 @@ end;
 
 
 procedure TDnLevelProgressBar.SetForegroundPictureLayout(const Value: TMfPictureLayout);
+
 begin
 
   if (FForegroundPictureLayout = Value) then
@@ -649,6 +668,7 @@ end;
 
 
 procedure TDnLevelProgressBar.SetOrientation(const Value: TMfProgressOrientation);
+
 begin
 
   if (FOrientation = Value) then
@@ -680,7 +700,8 @@ var
 begin
 
   NewPos := EnsureRange(Value,
-                        FMin, FMax);
+                        FMin,
+                        FMax);
   if (FPosition = NewPos) then
     Exit;
 
@@ -706,6 +727,7 @@ end;
 
 
 procedure TDnLevelProgressBar.SetShowBorder(const Value: Boolean);
+
 begin
 
   if (FShowBorder = Value) then

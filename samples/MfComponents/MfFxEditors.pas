@@ -91,6 +91,7 @@ type
   // Reusable slider dialog (unit-scope class, Delphi-compatible; no anon methods)
   // ---------------------------------------------------------------------------
   TMfSingleSliderDialog = class(TForm)
+
   private
     FMinV: Double;
     FMaxV: Double;
@@ -119,6 +120,7 @@ type
 
 
 constructor TMfSingleSliderDialog.Create(AOwner: TComponent);
+
 begin
 
   // CreateNew avoids needing a DFM.
@@ -172,7 +174,7 @@ begin
                    FMinV,
                    FMaxV);
   FLbl.Caption := UTF8Encode(Format('%s: %g',
-                         [FPropName, v]));
+                                    [FPropName, v]));
 end;
 
 
@@ -237,6 +239,7 @@ type
 
   // Generic slider dialog editor for floating properties (stored as text).
   TSingleSliderProperty = class(TFloatProperty)
+
   protected
     function GetMinValue(): Double; virtual;
     function GetMaxValue(): Double; virtual;
@@ -251,6 +254,7 @@ type
 
   // Specific editors (override ranges)
   TGainDbProperty = class(TSingleSliderProperty)
+
   protected
     function GetMinValue(): Double; override;
     function GetMaxValue(): Double; override;
@@ -259,6 +263,7 @@ type
   end;
 
   TFreqHzProperty = class(TSingleSliderProperty)
+
   protected
     function GetMinValue(): Double; override;
     function GetMaxValue(): Double; override;
@@ -267,6 +272,7 @@ type
   end;
 
   TQProperty = class(TSingleSliderProperty)
+
   protected
     function GetMinValue: Double; override;
     function GetMaxValue: Double; override;
@@ -275,6 +281,7 @@ type
   end;
 
   TBwOctProperty = class(TSingleSliderProperty)
+
   protected
     function GetMinValue(): Double; override;
     function GetMaxValue(): Double; override;
@@ -283,6 +290,7 @@ type
   end;
 
   TWet01Property = class(TSingleSliderProperty)
+
   protected
     function GetMinValue(): Double; override;
     function GetMaxValue(): Double; override;
@@ -290,9 +298,10 @@ type
     function GetCaption(): string; override;
   end;
 
-{ TSingleSliderProperty }
+  { TSingleSliderProperty }
 
 function TSingleSliderProperty.GetAttributes(): TPropertyAttributes;
+
 begin
 
   Result := inherited GetAttributes + [paDialog];
@@ -300,6 +309,7 @@ end;
 
 
 function TSingleSliderProperty.GetMinValue(): Double;
+
 begin
 
   Result := 0;
@@ -307,6 +317,7 @@ end;
 
 
 function TSingleSliderProperty.GetMaxValue(): Double;
+
 begin
 
   Result := 1;
@@ -314,6 +325,7 @@ end;
 
 
 function TSingleSliderProperty.GetStep(): Double;
+
 begin
 
   Result := 0.01;
@@ -321,7 +333,9 @@ end;
 
 
 function TSingleSliderProperty.GetCaption(): string;
+
 begin
+
   Result := GetName();
 end;
 
@@ -355,17 +369,17 @@ begin
   try
 
     if Dlg.Execute(GetName(),
-                   GetCaption(),
-                   minV,
-                   maxV,
-                   stepV,
-                   curV,
-                   outV) then
-    begin
+      GetCaption(),
+      minV,
+      maxV,
+      stepV,
+      curV,
+      outV) then
+      begin
 
-      SetValue(FloatToStr(outV));
-      Modified();
-    end;
+        SetValue(FloatToStr(outV));
+        Modified();
+      end;
   finally
 
     Dlg.Free();
@@ -375,6 +389,7 @@ end;
 { Specific ranges }
 
 function TGainDbProperty.GetMinValue(): Double;
+
 begin
 
   Result := -24;
@@ -382,13 +397,15 @@ end;
 
 
 function TGainDbProperty.GetMaxValue(): Double;
+
 begin
 
-  Result :=  24;
+  Result := 24;
 end;
 
 
 function TGainDbProperty.GetStep(): Double;
+
 begin
 
   Result := 0.1;
@@ -396,6 +413,7 @@ end;
 
 
 function TGainDbProperty.GetCaption(): string;
+
 begin
 
   Result := 'Gain (dB)';
@@ -403,6 +421,7 @@ end;
 
 
 function TFreqHzProperty.GetMinValue(): Double;
+
 begin
 
   Result := 10;
@@ -410,6 +429,7 @@ end;
 
 
 function TFreqHzProperty.GetMaxValue(): Double;
+
 begin
 
   Result := 22000;
@@ -417,6 +437,7 @@ end;
 
 
 function TFreqHzProperty.GetStep(): Double;
+
 begin
 
   Result := 10;
@@ -424,6 +445,7 @@ end;
 
 
 function TFreqHzProperty.GetCaption(): string;
+
 begin
 
   Result := 'Center Frequency (Hz)';
@@ -431,6 +453,7 @@ end;
 
 
 function TQProperty.GetMinValue(): Double;
+
 begin
 
   Result := 0.2;
@@ -438,6 +461,7 @@ end;
 
 
 function TQProperty.GetMaxValue(): Double;
+
 begin
 
   Result := 12.0;
@@ -445,6 +469,7 @@ end;
 
 
 function TQProperty.GetStep(): Double;
+
 begin
 
   Result := 0.05;
@@ -452,6 +477,7 @@ end;
 
 
 function TQProperty.GetCaption(): string;
+
 begin
 
   Result := 'Q';
@@ -459,6 +485,7 @@ end;
 
 
 function TBwOctProperty.GetMinValue(): Double;
+
 begin
 
   Result := 0.1;
@@ -466,6 +493,7 @@ end;
 
 
 function TBwOctProperty.GetMaxValue(): Double;
+
 begin
 
   Result := 4.0;
@@ -473,6 +501,7 @@ end;
 
 
 function TBwOctProperty.GetStep(): Double;
+
 begin
 
   Result := 0.05;
@@ -480,6 +509,7 @@ end;
 
 
 function TBwOctProperty.GetCaption(): string;
+
 begin
 
   Result := 'Bandwidth (Octaves)';
@@ -487,6 +517,7 @@ end;
 
 
 function TWet01Property.GetMinValue(): Double;
+
 begin
 
   Result := 0.0;
@@ -494,6 +525,7 @@ end;
 
 
 function TWet01Property.GetMaxValue(): Double;
+
 begin
 
   Result := 1.0;
@@ -501,6 +533,7 @@ end;
 
 
 function TWet01Property.GetStep(): Double;
+
 begin
 
   Result := 0.01;
@@ -508,6 +541,7 @@ end;
 
 
 function TWet01Property.GetCaption(): string;
+
 begin
 
   Result := 'Wet (0..1)';
@@ -515,6 +549,7 @@ end;
 
 
 procedure Register;
+
 begin
 
   // Property editors registered by property name.
@@ -548,4 +583,3 @@ begin
 end;
 
 end.
-

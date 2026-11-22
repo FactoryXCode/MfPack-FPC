@@ -85,7 +85,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   //****************************************************************************
@@ -98,15 +99,16 @@ uses
 
 const
 
-  TIMERR_NOERROR                      = (0);  { no error }
-  TIMERR_NOCANDO                      = (TIMERR_BASE + 1);  { request not completed }
-  TIMERR_STRUCT                       = (TIMERR_BASE + 33);  { time struct size }
+  TIMERR_NOERROR = (0);  { no error }
+  TIMERR_NOCANDO = (TIMERR_BASE + 1);  { request not completed }
+  TIMERR_STRUCT = (TIMERR_BASE + 33);  { time struct size }
 
   { timer device capabilities data structure }
 
 type
 
   PTIMECAPS = ^timecaps_tag;
+
   timecaps_tag = record
     wPeriodMin: UINT;               { minimum period supported  }
     wPeriodMax: UINT;               { maximum period supported  }
@@ -117,22 +119,22 @@ type
 
   { timer function prototypes }
 
-  function timeGetSystemTime(pmmt: LPMMTIME;
-                             cbmmt: UINT): MMRESULT; stdcall;
+function timeGetSystemTime(pmmt: LPMMTIME;
+                           cbmmt: UINT): MMRESULT; stdcall;
 
-  function timeGetTime(): DWORD; stdcall;
+function timeGetTime(): DWORD; stdcall;
 
-  function timeGetDevCaps(ptc: LPTIMECAPS;
-                          cbtc: UINT): MMRESULT; stdcall;
+function timeGetDevCaps(ptc: LPTIMECAPS;
+                        cbtc: UINT): MMRESULT; stdcall;
 
-  function timeBeginPeriod(uPeriod: UINT): MMRESULT; stdcall;
+function timeBeginPeriod(uPeriod: UINT): MMRESULT; stdcall;
 
-  function timeEndPeriod(uPeriod: UINT): MMRESULT; stdcall;
+function timeEndPeriod(uPeriod: UINT): MMRESULT; stdcall;
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 
 implementation
@@ -141,11 +143,11 @@ const
   TimerApiLib = 'winmm.dll';
 
 function timeGetSystemTime; external TimerApiLib name 'timeGetSystemTime';
-function timeGetTime;       external TimerApiLib name 'timeGetTime';
-function timeGetDevCaps;    external TimerApiLib name 'timeGetDevCaps';
-function timeBeginPeriod;   external TimerApiLib name 'timeBeginPeriod';
-function timeEndPeriod;     external TimerApiLib name 'timeEndPeriod';
+function timeGetTime; external TimerApiLib name 'timeGetTime';
+function timeGetDevCaps; external TimerApiLib name 'timeGetDevCaps';
+function timeBeginPeriod; external TimerApiLib name 'timeBeginPeriod';
+function timeEndPeriod; external TimerApiLib name 'timeEndPeriod';
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

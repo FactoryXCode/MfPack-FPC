@@ -69,7 +69,7 @@ interface
 
 uses
   MfGpuCapture.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ActiveX.ObjBase,
   WinApi.ComBaseApi,
@@ -104,6 +104,7 @@ type
   PSmallIntArray = ^TSmallIntArray;
 
   TLoopbackAudioOnlyRecorder = class(TComponent)
+
   private
 
     FCrit: TCriticalSection;
@@ -191,6 +192,7 @@ implementation
 { TLoopbackAudioOnlyRecorder }
 
 constructor TLoopbackAudioOnlyRecorder.Create(AOwner: TComponent);
+
 begin
 
   inherited;
@@ -208,12 +210,14 @@ begin
   FFlacReady := False;
   FAudioRt100ns := 0;
 
-  SetLength(FTempPcm16, 0);
+  SetLength(FTempPcm16,
+            0);
   FStopping := False;
 end;
 
 
 destructor TLoopbackAudioOnlyRecorder.Destroy();
+
 begin
 
   Stop();
@@ -224,14 +228,18 @@ end;
 
 
 procedure TLoopbackAudioOnlyRecorder.ApplyDeviceIdToCapture();
+
 begin
-  if FCapture <> nil then FCapture.AudioDeviceId := FCaptureDeviceId;
+
+  if (FCapture <> nil) then
+    FCapture.AudioDeviceId := FCaptureDeviceId;
 end;
 
 
 procedure TLoopbackAudioOnlyRecorder.StartToFile(const FileName: string;
                                                  const Format: TAudioFileFormat;
                                                  const ChannelMask: Cardinal);
+
 begin
 
   StartToFile(FileName,
@@ -271,10 +279,10 @@ begin
     FStopping := False;
 
     dir := ExtractFileDir(FFileName);
-    if dir <> '' then
+    if (dir <> '') then
       ForceDirectories(dir);
 
-    if FFormat = aoWavPcm16 then
+    if (FFormat = aoWavPcm16) then
       FStream := TFileStream.Create(FFileName,
                                     fmCreate or fmShareDenyWrite);
 
@@ -330,7 +338,8 @@ begin
       begin
 
         hr := FFlacWriter.Finalize();
-        CheckHR(hr, 'FLAC SinkWriter.Finalize');
+        CheckHR(hr,
+                'FLAC SinkWriter.Finalize');
 
         FFlacWriter := nil;
         FFlacReady := False;
@@ -341,7 +350,8 @@ begin
         MFShutdown();
         FMFStarted := False;
       end;
-    SetLength(FTempPcm16, 0);
+    SetLength(FTempPcm16,
+              0);
   finally
 
     FCrit.Leave;
@@ -364,15 +374,15 @@ begin
   if FStopping then
     Exit;
   if (Buffer = nil) or
-     (WaveFormat = nil) or
-     (NumFrames = 0) then
+    (WaveFormat = nil) or
+    (NumFrames = 0) then
     Exit;
 
   if not ConvertToPcm16(Buffer,
-                        NumFrames,
-                        WaveFormat,
-                        outPtr,
-                        outBytes) then
+    NumFrames,
+    WaveFormat,
+    outPtr,
+    outBytes) then
     Exit;
 
   FCrit.Enter;
@@ -389,7 +399,8 @@ begin
 
           if Assigned(FStream) then
             begin
-              FStream.WriteBuffer(outPtr^, outBytes);
+              FStream.WriteBuffer(outPtr^,
+                                  outBytes);
 
               // DEBUG only
               // OutputDebugStringW(PChar(Format('WAV pos=%d size=%d wrote=%d',
@@ -399,9 +410,9 @@ begin
               //                 [WaveFormat.wFormatTag, WaveFormat.nChannels, WaveFormat.nSamplesPerSec,
               //                 WaveFormat.wBitsPerSample, WaveFormat.nBlockAlign])));
 
-            Inc(FWavDataBytes,
-                UInt64(outBytes));
-          end;
+              Inc(FWavDataBytes,
+                  UInt64(outBytes));
+            end;
         end;
 
       aoFlac:
@@ -435,17 +446,17 @@ begin
 
   // Plain old float
   if (Wf.wFormatTag = WAVE_FORMAT_IEEE_FLOAT) and
-     (Wf.wBitsPerSample = 32) then
+    (Wf.wBitsPerSample = 32) then
     Exit(True);
 
   // EXTENSIBLE float (this is your case)
   if (Wf.wFormatTag = WAVE_FORMAT_EXTENSIBLE) and
-     (Wf.cbSize >= SizeOf(WAVEFORMATEXTENSIBLE) - SizeOf(WAVEFORMATEX)) then
+    (Wf.cbSize >= SizeOf(WAVEFORMATEXTENSIBLE) - SizeOf(WAVEFORMATEX)) then
     begin
       Ext := PWAVEFORMATEXTENSIBLE(Wf);
       Result := IsEqualGUID(Ext.SubFormat,
                             KSDATAFORMAT_SUBTYPE_IEEE_FLOAT) and
-                            (Ext.Format.wBitsPerSample = 32);
+        (Ext.Format.wBitsPerSample = 32);
     end;
 end;
 
@@ -462,34 +473,35 @@ begin
     Exit;
 
   if (Wf.wFormatTag = WAVE_FORMAT_PCM) and
-     (Wf.wBitsPerSample = 16) then
+    (Wf.wBitsPerSample = 16) then
     Exit(True);
 
   if (Wf.wFormatTag = WAVE_FORMAT_EXTENSIBLE) and
-     (Wf.cbSize >= SizeOf(WAVEFORMATEXTENSIBLE) - SizeOf(WAVEFORMATEX)) then
+    (Wf.cbSize >= SizeOf(WAVEFORMATEXTENSIBLE) - SizeOf(WAVEFORMATEX)) then
     begin
       Ext := PWAVEFORMATEXTENSIBLE(Wf);
       Result := IsEqualGUID(Ext.SubFormat,
                             KSDATAFORMAT_SUBTYPE_PCM) and
-                            (Ext.Format.wBitsPerSample = 16);
+        (Ext.Format.wBitsPerSample = 16);
     end;
 end;
 
 
 function TLoopbackAudioOnlyRecorder.DefaultChannelMask(Channels: Word): Cardinal;
+
 begin
 
   if (Channels = 1) then
     Result := $4
-  else
-    if (Channels = 2) then
-      Result := $3
+  else if (Channels = 2) then
+    Result := $3
   else
     Result := 0;
 end;
 
 
 procedure TLoopbackAudioOnlyRecorder.EnsureTempPcm16Bytes(NeededBytes: Integer);
+
 begin
 
   if (NeededBytes <= 0) then
@@ -500,7 +512,8 @@ begin
 end;
 
 
-function TLoopbackAudioOnlyRecorder.ConvertToPcm16(const InBuf: Pointer; NumFrames: Cardinal;
+function TLoopbackAudioOnlyRecorder.ConvertToPcm16(const InBuf: Pointer;
+                                                   NumFrames: Cardinal;
                                                    const Wf: PWAVEFORMATEX;
                                                    out OutPtr: Pointer;
                                                    out OutBytes: Integer): Boolean;
@@ -519,9 +532,9 @@ begin
   OutBytes := 0;
 
   if (InBuf = nil) or
-     (Wf = nil) or
-     (NumFrames = 0) or
-     (Wf.nChannels = 0) then
+    (Wf = nil) or
+    (NumFrames = 0) or
+    (Wf.nChannels = 0) then
     Exit;
 
   nSamples := Integer(NumFrames) * Integer(Wf.nChannels);
@@ -544,7 +557,7 @@ begin
       OutBytes := nSamples * SizeOf(SmallInt);
       EnsureTempPcm16Bytes(OutBytes);
 
-      inF  := PSingle(InBuf);
+      inF := PSingle(InBuf);
       outP := PSmallInt(@FTempPcm16[0]);
 
       for i := 0 to nSamples - 1 do
@@ -555,9 +568,8 @@ begin
           // clamp
           if (v > 1.0) then
             v := 1.0
-          else
-            if (v < -1.0 )then
-              v := -1.0;
+          else if (v < -1.0) then
+            v := -1.0;
 
           // scale with proper handling of -1.0 -> -32768
           if (v >= 0) then
@@ -567,9 +579,8 @@ begin
 
           if (s > 32767) then
             s := 32767
-          else
-            if (s < -32768) then
-              s := -32768;
+          else if (s < -32768) then
+            s := -32768;
 
           outP^ := SmallInt(s);
           Inc(outP);
@@ -586,6 +597,7 @@ end;
 
 
 procedure TLoopbackAudioOnlyRecorder.EnsureWavHeader(const Wf: PWAVEFORMATEX);
+
 begin
 
   if FWavHeaderWritten then
@@ -593,9 +605,9 @@ begin
   if not Assigned(FStream) then
     Exit;
   if (Wf = nil) or
-     (Wf.nChannels = 0) or
-     (Wf.nSamplesPerSec = 0) then
-  Exit;
+    (Wf.nChannels = 0) or
+    (Wf.nSamplesPerSec = 0) then
+    Exit;
 
   WriteWavHeaderPcm16(Wf.nChannels,
                       Wf.nSamplesPerSec,
@@ -608,10 +620,22 @@ procedure TLoopbackAudioOnlyRecorder.WriteWavHeaderPcm16(const Channels: Word;
                                                          const SampleRate: Cardinal;
                                                          const DataSize: Cardinal);
 const
-  RIFF_ID: array[0..3] of AnsiChar = ('R','I','F','F');
-  WAVE_ID: array[0..3] of AnsiChar = ('W','A','V','E');
-  FMT_ID : array[0..3] of AnsiChar = ('f','m','t',' ');
-  DATA_ID: array[0..3] of AnsiChar = ('d','a','t','a');
+  RIFF_ID: array[0..3] of AnsiChar = ('R',
+                                      'I',
+                                      'F',
+                                      'F');
+  WAVE_ID: array[0..3] of AnsiChar = ('W',
+                                      'A',
+                                      'V',
+                                      'E');
+  FMT_ID: array[0..3] of AnsiChar = ('f',
+                                     'm',
+                                     't',
+                                     ' ');
+  DATA_ID: array[0..3] of AnsiChar = ('d',
+                                      'a',
+                                      't',
+                                      'a');
 
 var
   riffSize: Cardinal;
@@ -632,21 +656,34 @@ begin
   riffSize := 4 + (8 + fmtSize) + (8 + DataSize);
 
   FStream.Position := 0;
-  FStream.WriteBuffer(RIFF_ID, 4);
-  FStream.WriteBuffer(riffSize, 4);
-  FStream.WriteBuffer(WAVE_ID, 4);
+  FStream.WriteBuffer(RIFF_ID,
+                      4);
+  FStream.WriteBuffer(riffSize,
+                      4);
+  FStream.WriteBuffer(WAVE_ID,
+                      4);
 
-  FStream.WriteBuffer(FMT_ID, 4);
-  FStream.WriteBuffer(fmtSize, 4);
-  FStream.WriteBuffer(audioFormat, 2);
-  FStream.WriteBuffer(Channels, 2);
-  FStream.WriteBuffer(SampleRate, 4);
-  FStream.WriteBuffer(byteRate, 4);
-  FStream.WriteBuffer(blockAlign, 2);
-  FStream.WriteBuffer(bitsPerSample, 2);
+  FStream.WriteBuffer(FMT_ID,
+                      4);
+  FStream.WriteBuffer(fmtSize,
+                      4);
+  FStream.WriteBuffer(audioFormat,
+                      2);
+  FStream.WriteBuffer(Channels,
+                      2);
+  FStream.WriteBuffer(SampleRate,
+                      4);
+  FStream.WriteBuffer(byteRate,
+                      4);
+  FStream.WriteBuffer(blockAlign,
+                      2);
+  FStream.WriteBuffer(bitsPerSample,
+                      2);
 
-  FStream.WriteBuffer(DATA_ID, 4);
-  FStream.WriteBuffer(DataSize, 4);
+  FStream.WriteBuffer(DATA_ID,
+                      4);
+  FStream.WriteBuffer(DataSize,
+                      4);
 end;
 
 
@@ -658,7 +695,7 @@ var
 begin
 
   if (not Assigned(FStream)) or
-     (not FWavHeaderWritten) then
+    (not FWavHeaderWritten) then
     Exit;
 
   if (FWavDataBytes > High(DWord)) then
@@ -669,9 +706,11 @@ begin
   riffSize := 36 + dataSize;
 
   FStream.Position := 4;
-  FStream.WriteBuffer(riffSize, 4);
+  FStream.WriteBuffer(riffSize,
+                      4);
   FStream.Position := 40;
-  FStream.WriteBuffer(dataSize, 4);
+  FStream.WriteBuffer(dataSize,
+                      4);
 end;
 
 
@@ -688,14 +727,16 @@ begin
     Exit;
 
   if (Wf = nil) or
-     (Wf.nChannels = 0) or
-     (Wf.nSamplesPerSec = 0) then
+    (Wf.nChannels = 0) or
+    (Wf.nSamplesPerSec = 0) then
     Exit;
 
   if not FMFStarted then
     begin
-      hr := MFStartup(MF_VERSION,MFSTARTUP_FULL);
-      CheckHR(hr,'MFStartup');
+      hr := MFStartup(MF_VERSION,
+                      MFSTARTUP_FULL);
+      CheckHR(hr,
+              'MFStartup');
       FMFStarted := True;
     end;
 
@@ -703,67 +744,83 @@ begin
                                   nil,
                                   nil,
                                   FFlacWriter);
-  CheckHR(hr, 'MFCreateSinkWriterFromURL(.flac)');
+  CheckHR(hr,
+          'MFCreateSinkWriterFromURL(.flac)');
 
   // Output type: FLAC (declare 24-bit; encoder will store correct bits-per-sample)
   hr := MFCreateMediaType(outType);
-  CheckHR(hr, 'MFCreateMediaType(outType)');
+  CheckHR(hr,
+          'MFCreateMediaType(outType)');
 
   hr := outType.SetGUID(MF_MT_MAJOR_TYPE,
                         MFMediaType_Audio);
-  CheckHR(hr, 'FLAC outType MAJOR');
+  CheckHR(hr,
+          'FLAC outType MAJOR');
 
   hr := outType.SetGUID(MF_MT_SUBTYPE,
                         MFAudioFormat_FLAC);
-  CheckHR(hr, 'FLAC outType SUBTYPE');
+  CheckHR(hr,
+          'FLAC outType SUBTYPE');
 
   hr := outType.SetUINT32(MF_MT_AUDIO_NUM_CHANNELS,
                           Wf.nChannels);
-  CheckHR(hr, 'FLAC outType channels');
+  CheckHR(hr,
+          'FLAC outType channels');
 
   hr := outType.SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,
                           Wf.nSamplesPerSec);
-  CheckHR(hr, 'FLAC outType rate');
+  CheckHR(hr,
+          'FLAC outType rate');
 
   hr := outType.SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
                           16);
-  CheckHR(hr, 'FLAC outType bps');
+  CheckHR(hr,
+          'FLAC outType bps');
 
   hr := FFlacWriter.AddStream(outType,
                               FFlacAudioStreamIndex);
-  CheckHR(hr, 'SinkWriter.AddStream(FLAC)');
+  CheckHR(hr,
+          'SinkWriter.AddStream(FLAC)');
 
   // Input type: PCM 16-bit (simple + reliable)
   hr := MFCreateMediaType(inType);
-  CheckHR(hr, 'MFCreateMediaType(inType)');
+  CheckHR(hr,
+          'MFCreateMediaType(inType)');
 
   hr := inType.SetGUID(MF_MT_MAJOR_TYPE,
                        MFMediaType_Audio);
-  CheckHR(hr, 'PCM inType MAJOR');
+  CheckHR(hr,
+          'PCM inType MAJOR');
 
   hr := inType.SetGUID(MF_MT_SUBTYPE,
                        MFAudioFormat_PCM);
-  CheckHR(hr, 'PCM inType SUBTYPE');
+  CheckHR(hr,
+          'PCM inType SUBTYPE');
 
   hr := inType.SetUINT32(MF_MT_AUDIO_NUM_CHANNELS,
                          Wf.nChannels);
-  CheckHR(hr, 'PCM inType channels');
+  CheckHR(hr,
+          'PCM inType channels');
 
   hr := inType.SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,
                          Wf.nSamplesPerSec);
-  CheckHR(hr, 'PCM inType rate');
+  CheckHR(hr,
+          'PCM inType rate');
 
   hr := inType.SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
                          16);
-  CheckHR(hr, 'PCM inType bps');
+  CheckHR(hr,
+          'PCM inType bps');
 
   hr := inType.SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,
                          Wf.nChannels * 2);
-  CheckHR(hr, 'PCM inType blockalign');
+  CheckHR(hr,
+          'PCM inType blockalign');
 
   hr := inType.SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
                          Wf.nSamplesPerSec * Wf.nChannels * 2);
-  CheckHR(hr, 'PCM inType avgBps');
+  CheckHR(hr,
+          'PCM inType avgBps');
 
 
   chMask := FChannelMask;
@@ -775,16 +832,19 @@ begin
 
       hr := inType.SetUINT32(MF_MT_AUDIO_CHANNEL_MASK,
                              chMask);
-      CheckHR(hr, 'PCM inType channel mask');
+      CheckHR(hr,
+              'PCM inType channel mask');
     end;
 
   hr := FFlacWriter.SetInputMediaType(FFlacAudioStreamIndex,
                                       inType,
                                       nil);
-  CheckHR(hr, 'SinkWriter.SetInputMediaType(PCM16)');
+  CheckHR(hr,
+          'SinkWriter.SetInputMediaType(PCM16)');
 
   hr := FFlacWriter.BeginWriting();
-  CheckHR(hr,'SinkWriter.BeginWriting');
+  CheckHR(hr,
+          'SinkWriter.BeginWriting');
 
   FFlacReady := True;
   FAudioRt100ns := 0;
@@ -806,7 +866,7 @@ var
 begin
 
   if (not FFlacReady) or
-     (FFlacWriter = nil) then
+    (FFlacWriter = nil) then
     Exit;
 
   if (PcmPtr = nil) or
@@ -814,19 +874,21 @@ begin
     Exit;
 
   if (Wf = nil) or
-     (Wf.nSamplesPerSec = 0) then
+    (Wf.nSamplesPerSec = 0) then
     Exit;
 
   dur100ns := (Int64(NumFrames) * 10000000) div Int64(Wf.nSamplesPerSec);
 
   hr := MFCreateMemoryBuffer(PcmBytes,
                              buf);
-  CheckHR(hr, 'MFCreateMemoryBuffer');
+  CheckHR(hr,
+          'MFCreateMemoryBuffer');
 
   hr := buf.Lock(p,
                  @maxLen,
                  nil);
-  CheckHR(hr, 'AudioBuffer.Lock');
+  CheckHR(hr,
+          'AudioBuffer.Lock');
 
   try
     Move(PcmPtr^,
@@ -838,23 +900,29 @@ begin
   end;
 
   hr := buf.SetCurrentLength(PcmBytes);
-  CheckHR(hr, 'AudioBuffer.SetCurrentLength');
+  CheckHR(hr,
+          'AudioBuffer.SetCurrentLength');
 
   hr := MFCreateSample(sample);
-  CheckHR(hr, 'MFCreateSample');
+  CheckHR(hr,
+          'MFCreateSample');
 
   hr := sample.AddBuffer(buf);
-  CheckHR(hr, 'Sample.AddBuffer');
+  CheckHR(hr,
+          'Sample.AddBuffer');
 
   hr := sample.SetSampleTime(FAudioRt100ns);
-  CheckHR(hr, 'Sample.SetSampleTime');
+  CheckHR(hr,
+          'Sample.SetSampleTime');
 
-  hr :=sample.SetSampleDuration(dur100ns);
-  CheckHR(hr, 'Sample.SetSampleDuration');
+  hr := sample.SetSampleDuration(dur100ns);
+  CheckHR(hr,
+          'Sample.SetSampleDuration');
 
   hr := FFlacWriter.WriteSample(FFlacAudioStreamIndex,
                                 sample);
-  CheckHR(hr, 'SinkWriter.WriteSample(FLAC)');
+  CheckHR(hr,
+          'SinkWriter.WriteSample(FLAC)');
 
   Inc(FAudioRt100ns,
       dur100ns);
@@ -862,4 +930,3 @@ end;
 
 
 end.
-

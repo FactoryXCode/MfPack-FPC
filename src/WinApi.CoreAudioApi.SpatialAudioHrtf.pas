@@ -74,7 +74,7 @@ unit WinApi.CoreAudioApi.SpatialAudioHrtf;
 interface
 
 uses
-  
+
   {WinApi}
   WinApi.WinApiTypes,
   {WinMM}
@@ -88,7 +88,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -96,44 +97,48 @@ uses
 type
 
   PSpatialAudioHrtfDirectivityType = ^SpatialAudioHrtfDirectivityType;
-  SpatialAudioHrtfDirectivityType               = (
+  SpatialAudioHrtfDirectivityType = (
     SpatialAudioHrtfDirectivity_OmniDirectional = 0,  // The sound emission is in all directions.
     SpatialAudioHrtfDirectivity_Cardioid,             // The sound emission is a cardiod shape.
     SpatialAudioHrtfDirectivity_Cone                  // The sound emission is a cone.
-  );
+    );
 
   PSpatialAudioHrtfEnvironmentType = ^SpatialAudioHrtfEnvironmentType;
-  SpatialAudioHrtfEnvironmentType     = (
+  SpatialAudioHrtfEnvironmentType = (
     SpatialAudioHrtfEnvironment_Small = 0,  // A small room.
     SpatialAudioHrtfEnvironment_Medium,     // A medium-sized room.
     SpatialAudioHrtfEnvironment_Large,      // A large enclosed space.
     SpatialAudioHrtfEnvironment_Outdoors,   // An outdoor space.
     SpatialAudioHrtfEnvironment_Average     // Reserved. Do not use.
-  );
+    );
 
   PSpatialAudioHrtfDistanceDecayType = ^SpatialAudioHrtfDistanceDecayType;
-  SpatialAudioHrtfDistanceDecayType            = (
+  SpatialAudioHrtfDistanceDecayType = (
     SpatialAudioHrtfDistanceDecay_NaturalDecay = 0,  // Simulates natural decay with distance, as constrained by minimum and maximum gain distance limits. Drops to silence at rolloff distance.
     SpatialAudioHrtfDistanceDecay_CustomDecay        // Used to set up a custom gain curve, within the maximum and minimum gain limit.
-  );
+    );
 
-//#pragma pack(push, 1)
-{$ALIGN 1}
+  //#pragma pack(push, 1)
+  {$ALIGN 1}
 
-  {$ALIGN 4} // Native float records and the directivity union have 4-byte alignment.
+  {$ALIGN 4}
+  // Native float records and the directivity union have 4-byte alignment.
   PSpatialAudioHrtfDirectivity = ^SpatialAudioHrtfDirectivity;
+
   SpatialAudioHrtfDirectivity = record
     _Type: SpatialAudioHrtfDirectivityType;  // Indicates the type of directivity.
     Scaling: FLOAT;                          // A normalized value between zero and one. Specifies the amount of linear interpolation between omnidirectional sound and the full directivity pattern, where 0 is fully omnidirectional and 1 is fully directional.
   end;
 
   PSpatialAudioHrtfDirectivityCardioid = ^SpatialAudioHrtfDirectivityCardioid;
+
   SpatialAudioHrtfDirectivityCardioid = record
     directivity: SpatialAudioHrtfDirectivity;
     Order: FLOAT;
   end;
 
   PSpatialAudioHrtfDirectivityCone = ^SpatialAudioHrtfDirectivityCone;
+
   SpatialAudioHrtfDirectivityCone = record
     directivity: SpatialAudioHrtfDirectivity;
     InnerAngle: FLOAT;
@@ -149,6 +154,7 @@ type
   end;
 
   PSpatialAudioHrtfDistanceDecay = ^SpatialAudioHrtfDistanceDecay;
+
   SpatialAudioHrtfDistanceDecay = record
     _Type: SpatialAudioHrtfDistanceDecayType; // The Type of decay behavior, natural or custom.
     MaxGain: FLOAT;                           // The maximum gain limit applied at any distance. Applies to both natural and custom decay. This value is specified in dB, with a range from -96 to 12 inclusive. The default value is 12 dB.
@@ -162,8 +168,10 @@ type
   PSpatialAudioHrtfOrientation = ^SpatialAudioHrtfOrientation;
   // Indicates the orientation of an HRTF directivity object. This is a row-major 3x3 rotation matrix.
 
-  {$ALIGN 8} // Activation records also contain native pointers/handles.
+  {$ALIGN 8}
+  // Activation records also contain native pointers/handles.
   PSpatialAudioHrtfActivationParams = ^SpatialAudioHrtfActivationParams;
+
   SpatialAudioHrtfActivationParams = record
     ObjectFormat: PWAVEFORMATEX;                            // Format descriptor for a single spatial audio objects. All objects must have the same format and must be of type WAVEFORMATEX or WAVEFORMATEXTENSIBLE.
     StaticObjectTypeMask: AudioObjectType;                  // (static channel bed mask) mask of static audio object type that are allowed
@@ -180,6 +188,7 @@ type
 
 
   PSpatialAudioHrtfActivationParams2 = ^SpatialAudioHrtfActivationParams2;
+
   SpatialAudioHrtfActivationParams2 = record
     ObjectFormat: PWAVEFORMATEX;                            // Format descriptor for a single spatial audio objects. All objects must have the same format and must be of type WAVEFORMATEX or WAVEFORMATEXTENSIBLE.
     StaticObjectTypeMask: AudioObjectType;                 // (static channel bed mask) mask of static audio object type that are allowed
@@ -196,9 +205,10 @@ type
   end;
 
 
-//#pragma pack(pop) set back to initial alignment
+  //#pragma pack(pop) set back to initial alignment
   {$IFNDEF WIN32}
-    {$ALIGN 8} // for Win64
+  {$ALIGN 8}
+  // for Win64
   {$ENDIF}
 
 
@@ -206,7 +216,7 @@ type
   // ====================================
   //
   ISpatialAudioObjectForHrtf = interface(ISpatialAudioObjectBase)
-  ['{D7436ADE-1978-4E14-ABA0-555BD8EB83B4}']
+    ['{D7436ADE-1978-4E14-ABA0-555BD8EB83B4}']
     // The position of the sound relative to the listener.
     function SetPosition(x: FLOAT;
                          y: FLOAT;
@@ -227,6 +237,7 @@ type
     // Specifies the directional shape of the sound emitter, omni-directional, Cardioid, or cone
     function SetDirectivity(directivity: PSpatialAudioHrtfDirectivityUnion): HResult; stdcall;
   end;
+
   IID_ISpatialAudioObjectForHrtf = ISpatialAudioObjectForHrtf;
 
 
@@ -234,11 +245,12 @@ type
   // ================================================
   //
   ISpatialAudioObjectRenderStreamForHrtf = interface(ISpatialAudioObjectRenderStreamBase)
-  ['{E08DEEF9-5363-406E-9FDC-080EE247BBE0}']
+    ['{E08DEEF9-5363-406E-9FDC-080EE247BBE0}']
     // Activation method for Microsoft Hrtf Spatial Audio Objects
     function ActivateSpatialAudioObjectForHrtf(_type: AudioObjectType;
                                                out audioObject: ISpatialAudioObjectForHrtf): HResult; stdcall;
   end;
+
   IID_ISpatialAudioObjectRenderStreamForHrtf = ISpatialAudioObjectRenderStreamForHrtf;
 
 
@@ -248,6 +260,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

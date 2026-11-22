@@ -69,7 +69,7 @@ interface
 
 uses
   MfPlayerSample.Platform,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -88,55 +88,57 @@ uses
   MfPCXConstants;
 
 type
-  TMFCallBack = class(TInterfacedPersistent, IMFAsyncCallback)
-    private
-      m_TimerResolution: LongWord;
-      m_hnsClockTime: MFTIME;
-      m_hwndOwner: HWnd;
-      m_TimerFlags: DWord;
-      m_CancellationObject: IUnknown;
+  TMFCallBack = class(TInterfacedPersistent,
+                      IMFAsyncCallback)
 
-      // The Timer object that must be initiated by owner's PresentationClock
-      MfTimer: IMFTimer;
+  private
+    m_TimerResolution: LongWord;
+    m_hnsClockTime: MFTIME;
+    m_hwndOwner: HWnd;
+    m_TimerFlags: DWord;
+    m_CancellationObject: IUnknown;
 
-      procedure SetTimerResolution(aValue: LongWord);
-      function GetClockProperties(): MFCLOCK_PROPERTIES;
+    // The Timer object that must be initiated by owner's PresentationClock
+    MfTimer: IMFTimer;
 
-    public
+    procedure SetTimerResolution(aValue: LongWord);
+    function GetClockProperties(): MFCLOCK_PROPERTIES;
 
-      // Provides configuration information to the dispatching thread for a callback.
-      // Implementation of this method is optional.
-      function GetParameters(out pdwFlags: DWord;
-                             out pdwQueue: DWord): HResult; stdcall;
+  public
 
-      // Called when an asynchronous operation is completed.
-      // Implementation of this method is required.
-      function Invoke(pAsyncResult: IMFAsyncResult): HResult; stdcall;
+    // Provides configuration information to the dispatching thread for a callback.
+    // Implementation of this method is optional.
+    function GetParameters(out pdwFlags: DWord;
+                           out pdwQueue: DWord): HResult; stdcall;
 
-      // Returns the PresentationClock state
-      function GetPresentationClockState(): MFCLOCK_STATE;
+    // Called when an asynchronous operation is completed.
+    // Implementation of this method is required.
+    function Invoke(pAsyncResult: IMFAsyncResult): HResult; stdcall;
 
-      // Fires the loop that sets a timer invoking a callback at the specified - TimerResolution - time.
-      // NOTE: The PresentationClock.Gettime is relative to when the clock was last started.
-      //       The timer will only work if the presentationclock is running.
-      //       Otherwise the result will be any of these:
-      //         MFCLOCK_STATE_INVALID, MFCLOCK_STATE_STOPPED or MFCLOCK_STATE_PAUSED.
-      function SetTimer(ClockTime: LONGLONG;
-                        dwFlags: DWord; // Absolute = 0, Relative = DWord(MFTIMER_RELATIVE)
-                        CancellationObject: PIUnknown): HResult;
+    // Returns the PresentationClock state
+    function GetPresentationClockState(): MFCLOCK_STATE;
 
-      // Cancels a timer that was set using the IMFTimer.SetTimer method.
-      function CancelTimer(const CancellationObject: IUnknown): HResult;
+    // Fires the loop that sets a timer invoking a callback at the specified - TimerResolution - time.
+    // NOTE: The PresentationClock.Gettime is relative to when the clock was last started.
+    //       The timer will only work if the presentationclock is running.
+    //       Otherwise the result will be any of these:
+    //         MFCLOCK_STATE_INVALID, MFCLOCK_STATE_STOPPED or MFCLOCK_STATE_PAUSED.
+    function SetTimer(ClockTime: LONGLONG;
+                      dwFlags: DWord; // Absolute = 0, Relative = DWord(MFTIMER_RELATIVE)
+      CancellationObject: PIUnknown): HResult;
 
-      // Constructor, destructor
-      // These are public methods in Delphi.
-      constructor Create(OwnerHandle: HWnd); overload;
-      procedure BeforeDestruction(); override;
-      destructor Destroy(); override;
+    // Cancels a timer that was set using the IMFTimer.SetTimer method.
+    function CancelTimer(const CancellationObject: IUnknown): HResult;
 
-      property ClockProperties: MFCLOCK_PROPERTIES read GetClockProperties;
-      property TimerResolution: LongWord read m_TimerResolution write SetTimerResolution default 1;
-      property ClockTime: MFTIME read m_hnsClockTime;
+    // Constructor, destructor
+    // These are public methods in Delphi.
+    constructor Create(OwnerHandle: HWnd); overload;
+    procedure BeforeDestruction(); override;
+    destructor Destroy(); override;
+
+    property ClockProperties: MFCLOCK_PROPERTIES read GetClockProperties;
+    property TimerResolution: LongWord read m_TimerResolution write SetTimerResolution default 1;
+    property ClockTime: MFTIME read m_hnsClockTime;
 
   end;
 
@@ -147,7 +149,9 @@ implementation
 
 
 constructor TMFCallBack.Create(OwnerHandle: HWnd);
+
 begin
+
   inherited Create();
 
   // Check if the presentationclock is created.
@@ -158,14 +162,16 @@ begin
   m_TimerResolution := 1000000; // 100 ms in presentation-clock units.
   // Create timer object, if it fails, raise exception
   if FAILED(MFPresentationClock.QueryInterface(IID_IMFTimer,
-                                               MfTimer)) then
+    MfTimer)) then
     raise Exception.Create('The PresentationClock failed to create the timer interface.');
 
 end;
 
 
 procedure TMFCallBack.BeforeDestruction();
+
 begin
+
   MFPresentationClock.Stop();
   MfTimer := Nil;
   inherited BeforeDestruction();
@@ -173,7 +179,9 @@ end;
 
 
 destructor TMFCallBack.Destroy();
+
 begin
+
   inherited Destroy();
 end;
 
@@ -183,7 +191,9 @@ end;
 // Implementation of this method is optional.
 function TMFCallBack.GetParameters(out pdwFlags: DWord;
                                    out pdwQueue: DWord): HRESULT;
+
 begin
+
   Result := E_NOTIMPL;
 end;
 
@@ -194,6 +204,7 @@ var
   hr: HResult;
 
 begin
+
   hr := S_OK;
 
 
@@ -207,49 +218,51 @@ begin
       Exit(E_POINTER);
     end;
 
-try
-  hr := MfTimer.SetTimer(m_TimerFlags, // Absolute or Relative
-                         TimerResolution,
-                         IMFAsyncCallback(Self),
-                         nil,
-                         @m_CancellationObject);
+  try
+    hr := MfTimer.SetTimer(m_TimerFlags, // Absolute or Relative
+      TimerResolution,
+                           IMFAsyncCallback(Self),
+                           nil,
+                           @m_CancellationObject);
 
-  // The timer's return code is one of those:
-  //   S_OK = The method succeeded.
-  //   MF_E_SHUTDOWN = The clock was shut down.
-  //   MF_S_CLOCK_STOPPED = The method succeeded, but the clock is stopped.
-  // NOTE: If the clock is stopped, the method returns MF_S_CLOCK_STOPPED.
-  //       The callback will not be invoked until the clock is started.
+    // The timer's return code is one of those:
+    //   S_OK = The method succeeded.
+    //   MF_E_SHUTDOWN = The clock was shut down.
+    //   MF_S_CLOCK_STOPPED = The method succeeded, but the clock is stopped.
+    // NOTE: If the clock is stopped, the method returns MF_S_CLOCK_STOPPED.
+    //       The callback will not be invoked until the clock is started.
 
-  if (hr = S_OK) then
-    begin
-      // Gets the clocktime in 100-nano second units.
-      hr := MFPresentationClock.GetTime(m_hnsClockTime);
-      // Send a message to the owner to update the ontimer depending objects.
-      PostMessage(m_hwndOwner,
-                  WM_TIMERNOTIFY,
-                  WPARAM(GetPresentationClockState()),
-                  LPARAM(hr));
-    end;
+    if (hr = S_OK) then
+      begin
+        // Gets the clocktime in 100-nano second units.
+        hr := MFPresentationClock.GetTime(m_hnsClockTime);
+        // Send a message to the owner to update the ontimer depending objects.
+        PostMessage(m_hwndOwner,
+                    WM_TIMERNOTIFY,
+                    WPARAM(GetPresentationClockState()),
+                    LPARAM(hr));
+      end;
 
-  if (hr = MF_S_CLOCK_STOPPED) then
-    begin
-      //
-    end;
+    if (hr = MF_S_CLOCK_STOPPED) then
+      begin
+        //
+      end;
 
- if (hr = MF_E_SHUTDOWN) then
-    begin
-      hr := CancelTimer(m_CancellationObject);
-    end;
+    if (hr = MF_E_SHUTDOWN) then
+      begin
+        hr := CancelTimer(m_CancellationObject);
+      end;
 
-finally
-  Result := hr;
-end;
+  finally
+    Result := hr;
+  end;
 end;
 
 
 function TMFCallBack.GetPresentationClockState(): MFCLOCK_STATE;
+
 begin
+
   {void} MFPresentationClock.GetState(0,
                                       Result);
 end;
@@ -262,18 +275,19 @@ var
   hr: HResult;
 
 begin
+
   hr := S_OK;
   m_TimerFlags := dwFlags;
   if (GetPresentationClockState() = MFCLOCK_STATE_RUNNING) then
-    try
-      hr := MfTimer.SetTimer(dwFlags,   // Absolute = 0, Relative = DWord(MFTIMER_RELATIVE)
-                             ClockTime, // 0 = Immediate
-                             Self,
-                             Nil,
-                             CancellationObject);
-    except
-      Application.HandleException(Self);
-    end
+  try
+    hr := MfTimer.SetTimer(dwFlags,   // Absolute = 0, Relative = DWord(MFTIMER_RELATIVE)
+      ClockTime, // 0 = Immediate
+      Self,
+                           Nil,
+                           CancellationObject);
+  except
+    Application.HandleException(Self);
+  end
   else
     hr := MF_S_CLOCK_STOPPED;
 
@@ -284,25 +298,29 @@ end;
 function TMFCallBack.CancelTimer(const CancellationObject: IUnknown): HResult;
 var
   hr: HResult;
+
 begin
+
   hr := S_OK;
-try
-  // NOTE: Because the timer is dispatched asynchronously,
-  // the application's timer callback might get invoked even if this method succeeds.
-  if Assigned(MfTimer) then
-    hr := MfTimer.CancelTimer(CancellationObject);
-  Result := hr;
-except
-  Result := hr;
-  Application.HandleException(Self);
-end;
+  try
+    // NOTE: Because the timer is dispatched asynchronously,
+    // the application's timer callback might get invoked even if this method succeeds.
+    if Assigned(MfTimer) then
+      hr := MfTimer.CancelTimer(CancellationObject);
+    Result := hr;
+  except
+    Result := hr;
+    Application.HandleException(Self);
+  end;
 end;
 
 
 // PRIVATE METHODS /////////////////////////////////////////////////////////////
 
 procedure TMFCallBack.SetTimerResolution(aValue: LongWord);
+
 begin
+
   m_TimerResolution := aValue;
 end;
 
@@ -312,6 +330,7 @@ var
   ClockProps: MFCLOCK_PROPERTIES;
 
 begin
+
   MFPresentationClock.GetProperties(ClockProps);
   Result := ClockProps;
 end;

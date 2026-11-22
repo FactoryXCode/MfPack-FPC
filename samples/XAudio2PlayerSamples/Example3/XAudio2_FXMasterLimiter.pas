@@ -68,7 +68,7 @@ interface
 
 uses
   MfEncodeAudio.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   Classes,
@@ -78,7 +78,6 @@ uses
   WinApi.DirectX.XAudio2.XAudio2,
   WinApi.DirectX.XAudio2.XAPO,
   WinApi.DirectX.XAudio2.XAPOFx;
-
 
 type
 
@@ -100,7 +99,9 @@ type
 }
 
 
-  TFxMasterLimiter = class(TInterfacedObject, IXAPOParameters)
+  TFxMasterLimiter = class(TInterfacedObject,
+                           IXAPOParameters)
+
   private
     pvMasterLimiterparams: FXMASTERINGLIMITER_PARAMETERS;
 
@@ -132,7 +133,9 @@ implementation
 
 
 constructor TFxMasterLimiter.Create();
+
 begin
+
   inherited;
 
   pvMasterLimiterparams.Release := FXMASTERINGLIMITER_DEFAULT_RELEASE;
@@ -141,7 +144,9 @@ end;
 
 
 destructor TFxMasterLimiter.Destroy();
+
 begin
+
   if Assigned(XAPOMasterLimiter) then
     XAPOMasterLimiter := nil;
   inherited;
@@ -153,6 +158,7 @@ var
   hr: HResult;
 
 begin
+
   // Remove previous XAPO.
   if Assigned(XAPOMasterLimiter) then
     XAPOMasterLimiter := nil;
@@ -167,24 +173,34 @@ end;
 
 procedure TFxMasterLimiter.SetParameters(pParameters: Pointer;
                                          ParameterByteSize: UINT32);
+
 begin
+
   if (pParameters <> nil) and (ParameterByteSize = SizeOf(pvMasterLimiterparams)) then
-    Move(pParameters^,pvMasterLimiterparams,ParameterByteSize);
+    Move(pParameters^,
+         pvMasterLimiterparams,
+         ParameterByteSize);
 end;
 
 
 procedure TFxMasterLimiter.GetParameters(pParameters: Pointer;
                                          ParameterByteSize: UINT32);
+
 begin
+
   if (pParameters <> nil) and (ParameterByteSize = SizeOf(pvMasterLimiterparams)) then
-    Move(pvMasterLimiterparams,pParameters^,ParameterByteSize);
+    Move(pvMasterLimiterparams,
+         pParameters^,
+         ParameterByteSize);
 end;
 
 
 procedure TFxMasterLimiter.OnSetParameters(pParameters: Pointer;
                                            ParameterByteSize: UINT32);
+
 begin
-//
+
+  //
 end;
 
 end.

@@ -85,7 +85,9 @@ uses
   MfCastMediaInterfaces;
 
 type
-  TMfCastWindowPreviewSink = class(TInterfacedObject, IMfCastPreviewSink)
+  TMfCastWindowPreviewSink = class(TInterfacedObject,
+                                   IMfCastPreviewSink)
+
   private
     FLock: TCriticalSection;
     FWindow: HWND;
@@ -95,7 +97,7 @@ type
     FAudioChannels: UINT32;
     FAudioSamplesPerSecond: UINT32;
     FAudioBitsPerSample: UINT32;
-    FQueuedAudio: TList<Pointer>;
+    FQueuedAudio: TList < Pointer > ;
     FPendingAudio: TBytes;
 
     procedure ClearWindow(const AWindow: HWND);
@@ -132,12 +134,15 @@ implementation
 
 type
   PMfCastWaveBuffer = ^TMfCastWaveBuffer;
+
   TMfCastWaveBuffer = record
     Header: WAVEHDR;
     Data: TBytes;
   end;
 
+
 constructor TMfCastWindowPreviewSink.Create();
+
 begin
 
   inherited Create();
@@ -150,12 +155,13 @@ begin
   FAudioChannels := 0;
   FAudioSamplesPerSecond := 0;
   FAudioBitsPerSample := 0;
-  FQueuedAudio := TList<Pointer>.Create();
+  FQueuedAudio := (TList < Pointer > .Create());
   FPendingAudio := nil;
 end;
 
 
 destructor TMfCastWindowPreviewSink.Destroy();
+
 begin
 
   SetWindow(0);
@@ -191,7 +197,7 @@ begin
 
   try
     if GetClientRect(AWindow,
-                     ClientRect) then
+      ClientRect) then
       FillRect(DC,
                ClientRect,
                HBRUSH(GetStockObject(BLACK_BRUSH)));
@@ -264,6 +270,7 @@ function TMfCastWindowPreviewSink.QueueAudioBufferLocked(const AData: Pointer;
 var
   WaveBuffer: PMfCastWaveBuffer;
   MmResult: UINT;
+
 begin
 
   Result := S_OK;
@@ -358,6 +365,7 @@ end;
 
 
 function TMfCastWindowPreviewSink.IsEnabled(): Boolean;
+
 begin
 
   FLock.Acquire();
@@ -371,7 +379,8 @@ end;
 
 
 function TMfCastWindowPreviewSink.ConfigureVideo(const AWidth: UINT32;
-                                                  const AHeight: UINT32): HRESULT;
+                                                 const AHeight: UINT32): HRESULT;
+
 begin
 
   if (AWidth = 0) or (AHeight = 0) then
@@ -403,8 +412,8 @@ var
 begin
 
   if (AChannels = 0) or
-     (ASamplesPerSecond = 0) or
-     (ABitsPerSample = 0) then
+    (ASamplesPerSecond = 0) or
+    (ABitsPerSample = 0) then
     begin
       Result := E_INVALIDARG;
       Exit;
@@ -420,9 +429,9 @@ begin
       end;
 
     if (FWaveOut <> 0) and
-       (FAudioChannels = AChannels) and
-       (FAudioSamplesPerSecond = ASamplesPerSecond) and
-       (FAudioBitsPerSample = ABitsPerSample) then
+      (FAudioChannels = AChannels) and
+      (FAudioSamplesPerSecond = ASamplesPerSecond) and
+      (FAudioBitsPerSample = ABitsPerSample) then
       begin
         ReleaseCompletedAudioLocked();
         Result := S_OK;
@@ -531,11 +540,11 @@ begin
       // one as a separate WaveOut header makes playback sensitive to scheduler
       // jitter. Coalesce them into stable 100 ms device buffers.
       TargetLength := (FAudioSamplesPerSecond * FAudioChannels *
-                       (FAudioBitsPerSample div 8)) div 10;
-      if TargetLength = 0 then
+        (FAudioBitsPerSample div 8)) div 10;
+      if (TargetLength = 0) then
         TargetLength := CurrentLength;
 
-      while Cardinal(Length(FPendingAudio)) >= TargetLength do
+      while (Cardinal(Length(FPendingAudio)) >= TargetLength) do
         begin
           Result := QueueAudioBufferLocked(@FPendingAudio[0],
                                            TargetLength);
@@ -543,7 +552,7 @@ begin
             Exit;
 
           RemainingLength := Length(FPendingAudio) - Integer(TargetLength);
-          if RemainingLength > 0 then
+          if (RemainingLength > 0) then
             Move(FPendingAudio[TargetLength],
                  FPendingAudio[0],
                  RemainingLength);
@@ -562,6 +571,7 @@ end;
 
 
 function TMfCastWindowPreviewSink.PauseAudio(): HRESULT;
+
 begin
 
   FLock.Acquire();
@@ -578,6 +588,7 @@ end;
 
 
 function TMfCastWindowPreviewSink.ResumeAudio(): HRESULT;
+
 begin
 
   FLock.Acquire();
@@ -681,7 +692,7 @@ begin
 
       try
         if not GetClientRect(Window,
-                             ClientRect) then
+          ClientRect) then
           begin
             Result := HRESULT_FROM_WIN32(GetLastError());
             Exit;
@@ -750,31 +761,30 @@ begin
             SetStretchBltMode(MemoryDC,
                               HALFTONE);
 
-            if StretchDIBits(MemoryDC,
-                             DestinationX,
-                             DestinationY,
-                             DestinationWidth,
-                             DestinationHeight,
-                             0,
-                             0,
-                             Integer(VideoWidth),
-                             Integer(VideoHeight),
-                             Data,
-                             BitmapInfo,
-                             DIB_RGB_COLORS,
-                             SRCCOPY) = -1 then
+            if (StretchDIBits(MemoryDC,
+              DestinationX,
+              DestinationY,
+              DestinationWidth,
+              DestinationHeight,
+              0,
+              0,
+              Integer(VideoWidth),
+              Integer(VideoHeight),
+              Data,
+              BitmapInfo,
+              DIB_RGB_COLORS,
+              SRCCOPY) = -1) then
               Result := E_FAIL
-            else
-              if not BitBlt(DC,
-                            0,
-                            0,
-                            ClientWidth,
-                            ClientHeight,
-                            MemoryDC,
-                            0,
-                            0,
-                            SRCCOPY) then
-                Result := HRESULT_FROM_WIN32(GetLastError());
+            else if not BitBlt(DC,
+              0,
+              0,
+              ClientWidth,
+              ClientHeight,
+              MemoryDC,
+              0,
+              0,
+              SRCCOPY) then
+              Result := HRESULT_FROM_WIN32(GetLastError());
 
           finally
             SelectObject(MemoryDC,

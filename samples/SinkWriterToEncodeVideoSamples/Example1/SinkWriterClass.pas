@@ -68,7 +68,7 @@ interface
 
 uses
   MfEncodeAudio.Platform,
-{Winapi}
+  {Winapi}
   Windows,
   WinApi.ComBaseApi,
   WinApi.WinApiTypes,
@@ -84,7 +84,7 @@ uses
 
 const
   // Format constants
-  VIDEO_WIDTH  = 640;
+  VIDEO_WIDTH = 640;
   VIDEO_HEIGHT = 480;
   VIDEO_FPS = 30;
   VIDEO_BIT_RATE = 800000;
@@ -92,6 +92,7 @@ const
 type
 
   TSampleSinkWriter = class(TObject)
+
   private
     VIDEO_FRAME_DURATION: UINT64;
     VIDEO_ENCODING_FORMAT: TGUID;
@@ -126,14 +127,18 @@ implementation
 
 
 constructor TSampleSinkWriter.Create();
+
 begin
+
   inherited Create();
 
 end;
 
 
 destructor TSampleSinkWriter.Destroy();
+
 begin
+
   videoFrameBuffer := nil;
   inherited Destroy();
 end;
@@ -158,6 +163,7 @@ var
   rtStart: HNSTIME;
 
 begin
+
   VIDEO_FRAME_DURATION := 10 * 1000 * 1000 div VIDEO_FPS;
   VIDEO_ENCODING_FORMAT := gEncodingFormat;
   VIDEO_INPUT_FORMAT := MFVideoFormat_RGB32;
@@ -171,7 +177,7 @@ begin
   rtStart := 0;
 
   // Set all pixels to green
-  for i := 0 to VIDEO_PELS -1 do
+  for i := 0 to VIDEO_PELS - 1 do
     videoFrameBuffer[i] := $0000FF00;
 
   hr := InitializeSinkWriter(sExt,
@@ -181,7 +187,7 @@ begin
   if SUCCEEDED(hr) then
     begin
       // Send frames to the sink writer.
-      for i := 0 to VIDEO_FRAME_COUNT -1 do
+      for i := 0 to VIDEO_FRAME_COUNT - 1 do
         begin
           hr := WriteFrame(pSinkWriter,
                            stream,
@@ -230,8 +236,8 @@ var
 
 begin
 
-
-  OutputName := Format('output_%s.%s',[sEncFormat,sExt]);
+  OutputName := Format('output_%s.%s',
+                       [sEncFormat, sExt]);
   hr := MFCreateSinkWriterFromURL(PWideChar(OutputName),
                                   nil,
                                   nil,
@@ -326,8 +332,8 @@ begin
   // Return the pointer to the caller.
   if SUCCEEDED(hr) then
     begin
-       ppWriter := pSinkWriter;
-       pStreamIndex := streamIndex;
+      ppWriter := pSinkWriter;
+      pStreamIndex := streamIndex;
     end;
 
   Result := hr;
@@ -376,6 +382,7 @@ var
   cbBuffer: DWORD;
 
 begin
+
   cbWidth := 4 * VIDEO_WIDTH;
   cbBuffer := DWord(cbWidth * VIDEO_HEIGHT);
 
@@ -391,14 +398,14 @@ begin
 
   if SUCCEEDED(hr) then
     begin
-        hr := MFCopyImage(pData,                      // Destination buffer.
-                          cbWidth,                    // Destination stride.
-                          PByte(videoFrameBuffer),    // First row in source image.
-                          cbWidth,                    // Source stride.
-                          cbWidth,                    // Image width in bytes.
-                          VIDEO_HEIGHT                // Image height in pixels.
-                         );
-     end;
+      hr := MFCopyImage(pData,                      // Destination buffer.
+        cbWidth,                    // Destination stride.
+        PByte(videoFrameBuffer),    // First row in source image.
+        cbWidth,                    // Source stride.
+        cbWidth,                    // Image width in bytes.
+        VIDEO_HEIGHT                // Image height in pixels.
+        );
+    end;
 
   if Assigned(pBuffer) then
     pBuffer.Unlock();

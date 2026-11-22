@@ -80,9 +80,9 @@ interface
 
 uses
   MfSmallSamplesPlatform,
-LMessages,
+  LMessages,
   LCLIntf,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -121,18 +121,20 @@ type
     Timer1: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    
+
     procedure butStartClick(Sender: TObject);
     procedure butCancelClick(Sender: TObject);
     procedure lblGetSourceFileClick(Sender: TObject);
     procedure lblSetTartgetFileClick(Sender: TObject);
     procedure tbPriorityChange(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure Timer1Timer(Sender: TObject);
 
   private
     FWorker: TThread;
     procedure ExtractionDone(var Message: TLMessage); message WM_APP + 901;
+
   private
     FEngine: TAudioClipClass;
     FCancelEvent: TEvent;
@@ -153,59 +155,117 @@ var
 
 
 implementation
-uses WinApi.ComBaseApi, WinApi.ActiveX.ObjBase, Math;
+
+uses
+  WinApi.ComBaseApi,
+  WinApi.ActiveX.ObjBase,
+  Math;
+
 type
- TClipWorker = class(TThread)
- private
-  FEngine: TAudioClipClass;
-  FCancel: THandle;
-  FWindow: HWND;
- protected
-  procedure Execute; override;
- public
-  Status: HResult;
-  constructor Create(Engine: TAudioClipClass;Cancel: THandle;Window: HWND);
- end;
-constructor TClipWorker.Create(Engine: TAudioClipClass;Cancel: THandle;Window: HWND);
-begin inherited Create(True);FEngine:=Engine;FCancel:=Cancel;FWindow:=Window;FreeOnTerminate:=False;end;
-procedure TClipWorker.Execute;
-var Mask: TFPUExceptionMask; HR: HResult;
-begin
- Mask:=GetExceptionMask;SetExceptionMask([exInvalidOp,exDenormalized,exZeroDivide,exOverflow,exUnderflow,exPrecision]);
- HR:=CoInitializeEx(nil,COINIT_MULTITHREADED);Status:=HR;
- try
-  if SUCCEEDED(HR) then begin
-   try Status:=FEngine.ExtractSoundClip(FCancel,nil);except Status:=E_UNEXPECTED;end;
+  TClipWorker = class(TThread)
+
+  private
+    FEngine: TAudioClipClass;
+    FCancel: THandle;
+    FWindow: HWND;
+
+  protected
+    procedure Execute; override;
+
+  public
+    Status: HResult;
+    constructor Create(Engine: TAudioClipClass;
+                       Cancel: THandle;
+                       Window: HWND);
   end;
- finally
-  if SUCCEEDED(HR) then CoUninitialize;
-  ClearExceptions(False);SetExceptionMask(Mask);
- end;
- PostMessageW(FWindow,WM_APP+901,0,0);
-end;
-procedure TAudioClipExfrm.ExtractionDone(var Message: TLMessage);
-var HR: HResult;
+
+
+constructor TClipWorker.Create(Engine: TAudioClipClass;
+                               Cancel: THandle;
+                               Window: HWND);
+
 begin
- if FWorker=nil then Exit;
- FWorker.WaitFor;HR:=TClipWorker(FWorker).Status;
- FreeAndNil(FWorker);FreeAndNil(FEngine);
- if SUCCEEDED(HR) then lblStatus.Caption:='Extraction complete!'
- else lblStatus.Caption:=Format('Extraction ended (0x%x)',[HR]);
- UpdateUIBusy(False);
+
+  inherited Create(True);
+  FEngine := Engine;
+  FCancel := Cancel;
+  FWindow := Window;
+  FreeOnTerminate := False;
+end;
+
+
+procedure TClipWorker.Execute;
+var
+  Mask: TFPUExceptionMask;
+  HR: HResult;
+
+begin
+
+  Mask := GetExceptionMask;
+  SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
+  HR := CoInitializeEx(nil,
+                       COINIT_MULTITHREADED);
+  Status := HR;
+  try
+    if SUCCEEDED(HR) then
+      begin
+        try
+          Status := FEngine.ExtractSoundClip(FCancel,
+                                             nil);
+        except
+          Status := E_UNEXPECTED;
+        end;
+      end;
+  finally
+    if SUCCEEDED(HR) then
+      CoUninitialize;
+    ClearExceptions(False);
+    SetExceptionMask(Mask);
+  end;
+  PostMessageW(FWindow,
+               WM_APP + 901,
+               0,
+               0);
+end;
+
+
+procedure TAudioClipExfrm.ExtractionDone(var Message: TLMessage);
+var
+  HR: HResult;
+
+begin
+
+  if (FWorker = nil) then
+    Exit;
+  FWorker.WaitFor;
+  HR := TClipWorker(FWorker).Status;
+  FreeAndNil(FWorker);
+  FreeAndNil(FEngine);
+  if SUCCEEDED(HR) then
+    lblStatus.Caption := 'Extraction complete!'
+  else
+    lblStatus.Caption := Format('Extraction ended (0x%x)',
+                                [HR]);
+  UpdateUIBusy(False);
 end;
 
 {$R *.lfm}
 
 
 
-procedure TAudioClipExfrm.FormCloseQuery(Sender: TObject;var CanClose: Boolean);
+procedure TAudioClipExfrm.FormCloseQuery(Sender: TObject;
+                                         var CanClose: Boolean);
+
 begin
- if Assigned(FCancelEvent) then FCancelEvent.SetEvent;
- CanClose:=True;
+
+  if Assigned(FCancelEvent) then
+    FCancelEvent.SetEvent;
+  CanClose := True;
 end;
 
 
 procedure TAudioClipExfrm.FormCreate(Sender: TObject);
+
 begin
 
   FCancelEvent := TEvent.Create(nil,
@@ -217,10 +277,18 @@ end;
 
 
 procedure TAudioClipExfrm.FormDestroy(Sender: TObject);
+
 begin
- if Assigned(FCancelEvent) then FCancelEvent.SetEvent;
- if FWorker<>nil then begin FWorker.WaitFor;FreeAndNil(FWorker);end;
- FreeAndNil(FEngine);FreeAndNil(FCancelEvent);
+
+  if Assigned(FCancelEvent) then
+    FCancelEvent.SetEvent;
+  if (FWorker <> nil) then
+    begin
+      FWorker.WaitFor;
+      FreeAndNil(FWorker);
+    end;
+  FreeAndNil(FEngine);
+  FreeAndNil(FCancelEvent);
 end;
 
 
@@ -254,7 +322,8 @@ begin
       lblTargetFile.Caption := dlg.FileName;
 
     if (dlg.FileName = '') then
-      lblTargetFile.Caption := ChangeFileExt(UnicodeString(lblSourceFile.Caption), '.wav');
+      lblTargetFile.Caption := ChangeFileExt(UnicodeString(lblSourceFile.Caption),
+                                             '.wav');
 
   finally
     dlg.Free;
@@ -263,7 +332,9 @@ end;
 
 
 procedure TAudioClipExfrm.tbPriorityChange(Sender: TObject);
+
 begin
+
   FThrottle := tbPriority.Position;
   if Assigned(FEngine) then
     FEngine.SamplingPriority := FThrottle;
@@ -271,17 +342,22 @@ end;
 
 
 procedure TAudioClipExfrm.Timer1Timer(Sender: TObject);
+
 begin
+
   if Assigned(FEngine) then
     begin
       pbProgress.Position := FEngine.ProgressPercent;
-      lblStatus.Caption := Format('Processing... %d%% (%d KB)', [FEngine.ProgressPercent, FEngine.ProgressBytes div 1024]);
+      lblStatus.Caption := Format('Processing... %d%% (%d KB)',
+                                  [FEngine.ProgressPercent, FEngine.ProgressBytes div 1024]);
     end;
 end;
 
 
 procedure TAudioClipExfrm.UpdateUIBusy(ABusy: Boolean);
+
 begin
+
   butStart.Enabled := not ABusy;
   butCancel.Enabled := ABusy;
   lblGetSourceFile.Enabled := not ABusy;
@@ -290,20 +366,33 @@ end;
 
 
 procedure TAudioClipExfrm.butStartClick(Sender: TObject);
+
 begin
- if FWorker<>nil then Exit;
- if (Trim(lblSourceFile.Caption)='') or (Trim(lblTargetFile.Caption)='') then Exit;
- FCancelEvent.ResetEvent;FreeAndNil(FEngine);
- FEngine:=TAudioClipClass.Create;
- FEngine.SourceFile:=lblSourceFile.Caption;FEngine.OutputFile:=lblTargetFile.Caption;FEngine.SamplingPriority:=FThrottle;
- pbProgress.Position:=0;lblStatus.Caption:='Extracting...';UpdateUIBusy(True);
- FWorker:=TClipWorker.Create(FEngine,THandle(FCancelEvent.Handle),Handle);
- FWorker.Start;
+
+  if (FWorker <> nil) then
+    Exit;
+  if (Trim(lblSourceFile.Caption) = '') or (Trim(lblTargetFile.Caption) = '') then
+    Exit;
+  FCancelEvent.ResetEvent;
+  FreeAndNil(FEngine);
+  FEngine := TAudioClipClass.Create;
+  FEngine.SourceFile := lblSourceFile.Caption;
+  FEngine.OutputFile := lblTargetFile.Caption;
+  FEngine.SamplingPriority := FThrottle;
+  pbProgress.Position := 0;
+  lblStatus.Caption := 'Extracting...';
+  UpdateUIBusy(True);
+  FWorker := TClipWorker.Create(FEngine,
+                                THandle(FCancelEvent.Handle),
+                                Handle);
+  FWorker.Start;
 end;
 
 
 procedure TAudioClipExfrm.butCancelClick(Sender: TObject);
+
 begin
+
   if Assigned(FCancelEvent) then
     begin
       FCancelEvent.SetEvent;
@@ -312,14 +401,20 @@ begin
 end;
 
 
-procedure TAudioClipExfrm.WorkerComplete(Sender: TObject;Success: Boolean;HResultCode: HResult);
+procedure TAudioClipExfrm.WorkerComplete(Sender: TObject;
+                                         Success: Boolean;
+                                         HResultCode: HResult);
+
 begin
- // The owned worker posts completion only after extraction has fully returned.
+
+  // The owned worker posts completion only after extraction has fully returned.
 end;
 
 
 procedure TAudioClipExfrm.Reset();
+
 begin
+
   lblTime.Caption := '00:00:00';
   lblStatus.Caption := 'Ready.';
   pbProgress.Position := 0;

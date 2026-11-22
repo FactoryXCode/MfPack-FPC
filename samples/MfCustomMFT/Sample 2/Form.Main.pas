@@ -69,7 +69,7 @@ interface
 uses
   LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -127,7 +127,8 @@ type
     FTrackBarWindowProc: TWndMethod;
 
     procedure TrackBarWindowProc(var Message: TLMessage);
-    procedure CheckHr(const AOperation: string; const AHr: HResult);
+    procedure CheckHr(const AOperation: string;
+                      const AHr: HResult);
     procedure CloseVideo();
     procedure ConfigureForCurrentType;
     procedure OpenVideo(const AFileName: string);
@@ -147,12 +148,14 @@ implementation
 uses
   MfGrayscaleMFT;
 
-{$R *.lfm}
+  {$R *.lfm}
 
 const
   BYTES_PER_PIXEL = 4;
 
+
 procedure TfrmMain.FormCreate(Sender: TObject);
+
 begin
 
   FSourceBitmap := TBitmap.Create;
@@ -171,6 +174,7 @@ end;
 
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
+
 begin
 
   if Assigned(FTrackBarWindowProc) then
@@ -182,7 +186,9 @@ begin
 end;
 
 
-procedure TfrmMain.CheckHr(const AOperation: string; const AHr: HResult);
+procedure TfrmMain.CheckHr(const AOperation: string;
+                           const AHr: HResult);
+
 begin
 
   if FAILED(AHr) then
@@ -192,13 +198,17 @@ end;
 
 
 procedure TfrmMain.CloseVideo();
+
 begin
 
   if Assigned(FTransform) then
     begin
-      FTransform.ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, 0);
-      FTransform.ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, 0);
-      FTransform.ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, 0);
+      FTransform.ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH,
+                                0);
+      FTransform.ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM,
+                                0);
+      FTransform.ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING,
+                                0);
     end;
 
   FTransform := nil;
@@ -233,7 +243,7 @@ begin
   FStride := Integer(FWidth) * BYTES_PER_PIXEL;
 
   if SUCCEEDED(FReaderType.GetUINT32(MF_MT_DEFAULT_STRIDE,
-                                     StrideValue)) then
+    StrideValue)) then
     FStride := Integer(StrideValue);
 
   if (FStride = 0) then
@@ -286,8 +296,8 @@ begin
                              1));
 
   CheckHr('Enable Source Reader video processing',
-    Attributes.SetUINT32(MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING,
-                         1));
+          Attributes.SetUINT32(MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING,
+                               1));
 
   CheckHr('MFCreateSourceReaderFromURL',
           MFCreateSourceReaderFromURL(PWideChar(AFileName),
@@ -444,7 +454,7 @@ begin
     if ((Flags and MF_SOURCE_READERF_ERROR) <> 0) then
       raise Exception.Create('The Source Reader reported a streaming error.');
 
-    if (Flags and MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) <> 0 then
+    if ((Flags and MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) <> 0) then
       begin
         memLog.Lines.Add('The decoded media type changed. Reconfiguring.');
         ConfigureForCurrentType;
@@ -496,11 +506,11 @@ begin
   imgOutput.Picture.Assign(FOutputBitmap);
 
   lblSummary.Caption := Format('Frame at %.3f seconds',
-    [TimeStamp / 10000000.0]);
+                               [TimeStamp / 10000000.0]);
 
   memLog.Lines.Add(Format('Frame at %.3f s: Source Reader -> ProcessInput -> ProcessOutput ' +
-                          '(%d earlier frames skipped).',
-    [TimeStamp / 10000000.0, FramesSkipped]));
+    '(%d earlier frames skipped).',
+                          [TimeStamp / 10000000.0, FramesSkipped]));
 end;
 
 
@@ -555,6 +565,7 @@ end;
 
 
 procedure TfrmMain.btnOpenClick(Sender: TObject);
+
 begin
 
   if not dlgOpenVideo.Execute then
@@ -574,6 +585,7 @@ end;
 
 
 procedure TfrmMain.tbPositionChange(Sender: TObject);
+
 begin
 
   UpdatePositionLabel();
@@ -581,6 +593,7 @@ end;
 
 
 procedure TfrmMain.TrackBarWindowProc(var message: TLMessage);
+
 begin
 
   FTrackBarWindowProc(message);

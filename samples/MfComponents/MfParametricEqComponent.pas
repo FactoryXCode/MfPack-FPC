@@ -69,7 +69,6 @@ unit MfParametricEqComponent;
 interface
 
 uses
-
   Windows,
   {System}
   Classes,
@@ -85,6 +84,7 @@ uses
 type
 
   TMfParametricEqEffect = class(TMfWasApiFxComponentBase)
+
   private
 
     FMft: IMFTransform;
@@ -162,6 +162,7 @@ implementation
 
 
 procedure Register;
+
 begin
 
   RegisterComponents('MfPack Core Audio Samples',
@@ -170,13 +171,14 @@ end;
 
 
 constructor TMfParametricEqEffect.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
 
 
   OutputDebugStringW(PChar(Format('TMfParametricEqEffect.Create Self=%p',
-                                 [Pointer(Self)])));
+                                  [Pointer(Self)])));
 
 
   // Defaults (match your MFT defaults)
@@ -200,6 +202,7 @@ end;
 
 
 procedure TMfParametricEqEffect.AfterConstruction();
+
 begin
 
   inherited;
@@ -209,6 +212,7 @@ end;
 
 
 destructor TMfParametricEqEffect.Destroy();
+
 begin
 
   // Release interface views first.
@@ -224,6 +228,7 @@ end;
 
 
 procedure TMfParametricEqEffect.CheckForMft();
+
 begin
 
   if (FMftObj <> nil) then
@@ -239,6 +244,7 @@ end;
 
 
 function TMfParametricEqEffect.GetMftInstance(): IMFTransform;
+
 begin
 
   Result := FMft;
@@ -246,6 +252,7 @@ end;
 
 
 procedure TMfParametricEqEffect.PushAllToMft();
+
 begin
 
   if IsDesigning() then
@@ -275,6 +282,7 @@ end;
 
 
 procedure TMfParametricEqEffect.SetEnabled(Value: Boolean);
+
 begin
 
   FEnabled := Value;
@@ -288,6 +296,7 @@ end;
 
 
 procedure TMfParametricEqEffect.SetGainDb(Value: Single);
+
 begin
 
   FGainDb := Value;
@@ -301,6 +310,7 @@ end;
 
 
 procedure TMfParametricEqEffect.SetCenterFreqHz(Value: Single);
+
 begin
 
   FCenterFreqHz := Value;
@@ -314,6 +324,7 @@ end;
 
 
 procedure TMfParametricEqEffect.SetQ(Value: Single);
+
 begin
 
   FQ := Value;
@@ -330,6 +341,7 @@ end;
 
 
 procedure TMfParametricEqEffect.SetBandwidthOctaves(Value: Single);
+
 begin
 
   FBandwidthOctaves := Value;
@@ -343,6 +355,7 @@ end;
 
 
 procedure TMfParametricEqEffect.SetRampMode(Value: TMfRampMode);
+
 begin
 
   FRampMode := Value;
@@ -356,6 +369,7 @@ end;
 
 
 procedure TMfParametricEqEffect.SetRampTimeMs(Value: Integer);
+
 begin
 
   FRampTimeMs := Value;
@@ -369,6 +383,7 @@ end;
 
 
 procedure TMfParametricEqEffect.SetTruePeakGuard(Value: Boolean);
+
 begin
 
   FTruePeakGuard := Value;
@@ -382,6 +397,7 @@ end;
 
 
 procedure TMfParametricEqEffect.SetTruePeakCeilingDbTP(Value: Single);
+
 begin
 
   FTruePeakCeilingDbTP := Value;
@@ -395,6 +411,7 @@ end;
 
 
 procedure TMfParametricEqEffect.SetTruePeakOversample(Value: Integer);
+
 begin
 
   FTruePeakOversample := Value;
@@ -409,6 +426,7 @@ end;
 
 function TMfParametricEqEffect.GetCurrentCoeffs(out C: TBiquadCoeffs;
                                                 out SampleRate: Double): Boolean;
+
 begin
 
   if IsDesigning() then
@@ -422,15 +440,16 @@ end;
 
 function TMfParametricEqEffect.GetTargetCoeffs(out C: TBiquadCoeffs;
                                                out SampleRate: Double): Boolean;
+
 begin
 
   if IsDesigning() then
     Exit(False);
 
   CheckForMft();
-  Result := Assigned(FIns) and FIns.GetTargetCoeffs(C, SampleRate);
+  Result := Assigned(FIns) and FIns.GetTargetCoeffs(C,
+                                                    SampleRate);
 end;
 
 
 end.
-

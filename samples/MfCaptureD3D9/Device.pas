@@ -69,7 +69,7 @@ interface
 
 uses
   MfCapturePlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinApiTypes,
   {System}
@@ -87,22 +87,21 @@ uses
   {Project}
   VideoBufferLock;
 
-
 const
   NUM_BACK_BUFFERS = UINT(2);
 
 
 
-// Conversion methods //////////////////////////////////////////////////////////
+  // Conversion methods //////////////////////////////////////////////////////////
 
-// Procedural type (similar to the C language function pointer).
+  // Procedural type (similar to the C language function pointer).
 type
-   IMAGE_TRANSFORM_FN = procedure(pDest: PByte;
-                                  lDestStride: LONG;
-                                  pSrc: PByte;
-                                  lSrcStride: LONG;
-                                  dwWidthInPixels: DWORD;
-                                  dwHeightInPixels: DWORD);
+  IMAGE_TRANSFORM_FN = procedure(pDest: PByte;
+                                 lDestStride: LONG;
+                                 pSrc: PByte;
+                                 lSrcStride: LONG;
+                                 dwWidthInPixels: DWORD;
+                                 dwHeightInPixels: DWORD);
 
   TConversionFunction = record
     subtype: TGuid;
@@ -113,44 +112,45 @@ type
 
   // Procedures that match IMAGE_TRANSFORM_FN
 
-  procedure TransformImage_RGB24(pDest: PByte;
-                                 lDestStride: LONG;
-                                 pSrc: PByte;
-                                 lSrcStride: LONG;
-                                 dwWidthInPixels: DWORD;
-                                 dwHeightInPixels: DWORD);
+procedure TransformImage_RGB24(pDest: PByte;
+                               lDestStride: LONG;
+                               pSrc: PByte;
+                               lSrcStride: LONG;
+                               dwWidthInPixels: DWORD;
+                               dwHeightInPixels: DWORD);
 
-  procedure TransformImage_RGB32(pDest: PByte;
-                                 lDestStride: LONG;
-                                 pSrc: PByte;
-                                 lSrcStride: LONG;
-                                 dwWidthInPixels: DWORD;
-                                 dwHeightInPixels: DWORD);
+procedure TransformImage_RGB32(pDest: PByte;
+                               lDestStride: LONG;
+                               pSrc: PByte;
+                               lSrcStride: LONG;
+                               dwWidthInPixels: DWORD;
+                               dwHeightInPixels: DWORD);
 
-  procedure TransformImage_YUY2(pDest: PByte;
-                                lDestStride: LONG;
-                                pSrc: PByte;
-                                lSrcStride: LONG;
-                                dwWidthInPixels: DWORD;
-                                dwHeightInPixels: DWORD);
+procedure TransformImage_YUY2(pDest: PByte;
+                              lDestStride: LONG;
+                              pSrc: PByte;
+                              lSrcStride: LONG;
+                              dwWidthInPixels: DWORD;
+                              dwHeightInPixels: DWORD);
 
-  procedure TransformImage_NV12(pDest: PByte;
-                                lDestStride: LONG;
-                                pSrc: PByte;
-                                lSrcStride: LONG;
-                                dwWidthInPixels: DWORD;
-                                dwHeightInPixels: DWORD);
+procedure TransformImage_NV12(pDest: PByte;
+                              lDestStride: LONG;
+                              pSrc: PByte;
+                              lSrcStride: LONG;
+                              dwWidthInPixels: DWORD;
+                              dwHeightInPixels: DWORD);
 
 
 var
   g_FormatConversions: TFormatConversions;
   g_cFormats: DWORD; // this will be set in procedure InitConversionProcs()
 
-////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////
 
 type
 
   TDrawDevice = class
+
   private
     m_hwnd: HWND;
     m_d3dpp: D3DPRESENT_PARAMETERS;
@@ -161,8 +161,8 @@ type
     m_Interlace: MFVideoInterlaceMode;
     m_RcDest: TRect;        // Destination rectangle
 
-    m_pD3D:       IDirect3D9;
-    m_pDevice:    IDirect3DDevice9;
+    m_pD3D: IDirect3D9;
+    m_pDevice: IDirect3DDevice9;
     m_pSwapChain: IDirect3DSwapChain9;
 
     // Drawing
@@ -199,40 +199,43 @@ type
   end;
 
 
-  // Helpers
-  function LetterBoxRect(rcSrc: TRect;
-                         rcDst: TRect): TRect;
+// Helpers
+function LetterBoxRect(rcSrc: TRect;
+                       rcDst: TRect): TRect;
 
-  function CorrectAspectRatio(src: TRect;
-                              srcPAR: MFRatio): TRect;
+function CorrectAspectRatio(src: TRect;
+                            srcPAR: MFRatio): TRect;
 
-  function GetDefaultStride(pType: IMFMediaType;
-                            out plStride: LONG): HResult;
+function GetDefaultStride(pType: IMFMediaType;
+                          out plStride: LONG): HResult;
 
-  // Rect helpers
-  // function GetTRectWidth(r: TRECT): LONG;
-  // function GetTRectHeight(r: TRECT): LONG;
+// Rect helpers
+// function GetTRectWidth(r: TRECT): LONG;
+// function GetTRectHeight(r: TRECT): LONG;
 
-  // initialize the image transform procedures
-  procedure InitTransformImages();
+// initialize the image transform procedures
+procedure InitTransformImages();
 
 
 implementation
 
 
 procedure InitTransformImages();
-begin
-   SetLength(g_FormatConversions, 4);
-   g_cFormats := Length(g_FormatConversions);
 
-   g_FormatConversions[0].subtype := MFVideoFormat_RGB32;
-   g_FormatConversions[0].xform := @TransformImage_RGB32;
-   g_FormatConversions[1].subtype := MFVideoFormat_RGB24;
-   g_FormatConversions[1].xform := @TransformImage_RGB24;
-   g_FormatConversions[2].subtype := MFVideoFormat_YUY2;
-   g_FormatConversions[2].xform := @TransformImage_YUY2;
-   g_FormatConversions[3].subtype := MFVideoFormat_NV12;
-   g_FormatConversions[3].xform := @TransformImage_NV12;
+begin
+
+  SetLength(g_FormatConversions,
+            4);
+  g_cFormats := Length(g_FormatConversions);
+
+  g_FormatConversions[0].subtype := MFVideoFormat_RGB32;
+  g_FormatConversions[0].xform := @TransformImage_RGB32;
+  g_FormatConversions[1].subtype := MFVideoFormat_RGB24;
+  g_FormatConversions[1].xform := @TransformImage_RGB24;
+  g_FormatConversions[2].subtype := MFVideoFormat_YUY2;
+  g_FormatConversions[2].xform := @TransformImage_YUY2;
+  g_FormatConversions[3].subtype := MFVideoFormat_NV12;
+  g_FormatConversions[3].xform := @TransformImage_NV12;
 end;
 
 
@@ -242,7 +245,9 @@ end;
 // Constructor
 //-------------------------------------------------------------------
 constructor TDrawDevice.Create();
+
 begin
+
   inherited Create();
 
   m_hwnd := 0;
@@ -274,7 +279,9 @@ end;
 // Release all Direct3D resources.
 //-------------------------------------------------------------------
 destructor TDrawDevice.Destroy();
+
 begin
+
   DestroyDevice();
   inherited Destroy();
 end;
@@ -332,22 +339,22 @@ begin
     begin
       if (hr = -2005530516) then  // This is a well known error if one or more D3DPRESENT_PARAMETERS parameters have an incorrect value.
         MessageBoxW(0,
-                   lpwstr('Error: Failed to create D3D device'),
-                   lpwstr('DirectX is unable to create a device with current D3DPRESENT_PARAMETERS settings.'),
-                   MB_ICONHAND)
+                    lpwstr('Error: Failed to create D3D device'),
+                    lpwstr('DirectX is unable to create a device with current D3DPRESENT_PARAMETERS settings.'),
+                    MB_ICONHAND)
       else
         MessageBoxW(0,
-                   lpwstr('Error: Failed to create D3D device'),
-                   lpwstr('Unkown error ' + IntToStr(hr)),
-                   MB_ICONHAND);
+                    lpwstr('Error: Failed to create D3D device'),
+                    lpwstr('Unkown error ' + IntToStr(hr)),
+                    MB_ICONHAND);
       goto done;
     end;
 
   m_hwnd := hw;
   m_d3dpp := pp;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -367,6 +374,7 @@ label
   done;
 
 begin
+
   hr := m_pD3D.GetAdapterDisplayMode(D3DADAPTER_DEFAULT,
                                      mode);
 
@@ -390,15 +398,15 @@ begin
   D3DParams.hDeviceWindow := hw;
   D3DParams.BackBufferFormat := Mode.Format; // D3DFMT_X8R8G8B8 = 22
   D3DParams.Flags := D3DPRESENTFLAG_VIDEO or D3DPRESENTFLAG_DEVICECLIP or
-              D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+    D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
   D3DParams.PresentationInterval := D3DPRESENT_INTERVAL_IMMEDIATE;
   D3DParams.BackBufferCount := NUM_BACK_BUFFERS;
 
   D3DParams.MultiSampleType := D3DMULTISAMPLE_NONE;
   D3DParams.MultiSampleQuality := 0;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -447,8 +455,8 @@ begin
       UpdateDestinationRect();
     end;
 
-done:
-   Result := hr;
+  done:
+    Result := hr;
 end;
 
 //-------------------------------------------------------------------
@@ -457,7 +465,9 @@ end;
 // Release all Direct3D resources.
 //-------------------------------------------------------------------
 procedure TDrawDevice.DestroyDevice();
+
 begin
+
   SafeRelease(m_pSwapChain);
   SafeRelease(m_pDevice);
   SafeRelease(m_pD3D);
@@ -484,7 +494,7 @@ begin
 
   // Find the video subtype.
   hr := pType.GetGUID(MF_MT_SUBTYPE,
-                     subtype);
+                      subtype);
 
   if FAILED(hr) then
     goto done;
@@ -513,8 +523,8 @@ begin
   // Get the interlace mode. Default: assume progressive.
 
   m_interlace := MFVideoInterlaceMode(MFGetAttributeUINT32(pType,
-                                      MF_MT_INTERLACE_MODE,
-                                      MFVideoInterlace_Progressive));
+                                                           MF_MT_INTERLACE_MODE,
+                                                           MFVideoInterlace_Progressive));
 
   // Get the image stride.
   hr := GetDefaultStride(pType,
@@ -550,12 +560,12 @@ begin
 
   UpdateDestinationRect();
 
-done:
-  if FAILED(hr) then
-    begin
-      m_format := D3DFMT_UNKNOWN;
-      m_convertFn := nil;
-    end;
+  done:
+    if FAILED(hr) then
+      begin
+        m_format := D3DFMT_UNKNOWN;
+        m_convertFn := nil;
+      end;
   Result := hr;
 end;
 
@@ -666,12 +676,12 @@ begin
                           0,
                           nil);
 
-done:
-  if Assigned(VideoBufferLock) then
-    begin
-      FreeAndNil(VideoBufferLock); // MUST DO!!! Otherwise the buffer stays in locked state and
-                                   // OnReadSample will halt after approx 10 samples (because of an exhausted sample pool)
-    end;
+  done:
+    if Assigned(VideoBufferLock) then
+      begin
+        FreeAndNil(VideoBufferLock); // MUST DO!!! Otherwise the buffer stays in locked state and
+        // OnReadSample will halt after approx 10 samples (because of an exhausted sample pool)
+      end;
 
   pbScanline0 := nil;
   Result := hr;
@@ -687,10 +697,13 @@ end;
 function TDrawDevice.IsFormatSupported(subtype: REFGUID): BOOL;
 var
   i: Integer;
+
 begin
-  Result:= False;
-  for i:= 0 to g_cFormats -1 do
-    Result:= IsEqualGuid(subtype, g_FormatConversions[i].subtype);
+
+  Result := False;
+  for i := 0 to g_cFormats - 1 do
+    Result := IsEqualGuid(subtype,
+                          g_FormatConversions[i].subtype);
 end;
 
 //-------------------------------------------------------------------
@@ -700,15 +713,17 @@ end;
 //-------------------------------------------------------------------
 function TDrawDevice.GetFormat(index: DWORD;
                                out pSubtype: TGUID): HResult;
-begin
- if (index < g_cFormats) then
-   begin
-     pSubtype:= g_FormatConversions[index].subtype;
-     Result:= S_OK;
-     Exit;
-   end;
 
-  Result:= MF_E_NO_MORE_TYPES;
+begin
+
+  if (index < g_cFormats) then
+    begin
+      pSubtype := g_FormatConversions[index].subtype;
+      Result := S_OK;
+      Exit;
+    end;
+
+  Result := MF_E_NO_MORE_TYPES;
 end;
 
 // private ---------------------------------------------------------------------
@@ -735,26 +750,27 @@ begin
 
   case DWORD(hr) of
 
-    D3D_OK:                     begin
-                                  hr := S_OK;
-                                end;
+      D3D_OK: begin
+        hr := S_OK;
+      end;
 
     D3DERR_DEVICELOST,
-    D3DERR_DEVICEREMOVED:       begin
-                                  hr := S_OK;
-                                end;
+      D3DERR_DEVICEREMOVED: begin
+        hr := S_OK;
+      end;
 
-    D3DERR_DEVICENOTRESET:      begin
-                                  hr := ResetDevice();
-                                end;
+      D3DERR_DEVICENOTRESET: begin
+        hr := ResetDevice();
+      end;
 
-    D3DERR_DRIVERINTERNALERROR: begin
-                                  hr := ResetDevice();
-                                end;
+      D3DERR_DRIVERINTERNALERROR: begin
+        hr := ResetDevice();
+      end;
 
-    else                        begin
-                                  // Some other failure.
-                                end;
+    else
+      begin
+        // Some other failure.
+      end;
   end;
 
   Result := hr;
@@ -770,9 +786,10 @@ var
   i: Integer;
 
 begin
+
   m_convertFn := nil;
 
-  for i := 0 to g_cFormats -1 do
+  for i := 0 to g_cFormats - 1 do
     begin
       if IsEqualGuid(g_FormatConversions[i].subtype, subtype) then
         begin
@@ -822,6 +839,7 @@ var
   rcSrc: TRect;
 
 begin
+
   rcSrc.Top := 0;
   rcSrc.Left := 0;
   rcSrc.Right := m_srcWidth;
@@ -859,20 +877,20 @@ var
 
 begin
 
-{$POINTERMATH ON}
+  {$POINTERMATH ON}
 
-  for y := 0 to dwHeightInPixels -1 do
+  for y := 0 to dwHeightInPixels - 1 do
     begin
 
       pSrcPel := PRGBTRIPLE(pSrc);
       pDestPel := PDWORD(pDest);
 
-      for x := 0 to dwWidthInPixels -1 do
+      for x := 0 to dwWidthInPixels - 1 do
         begin
           pDestPel[x] := D3DCOLOR_XRGB(pSrcPel[x].rgbtRed,
                                        pSrcPel[x].rgbtGreen,
                                        pSrcPel[x].rgbtBlue
-                                       );
+            );
 
           // or like this:
           //
@@ -887,12 +905,14 @@ begin
 
         end;
 
-      inc(pSrc, lSrcStride);   // or if you like, pSrc:= pSrc + lSrcStride;
-      inc(pDest, lDestStride); // or if you like, pDest:= pDest + lDestStride;
+      inc(pSrc,
+          lSrcStride);   // or if you like, pSrc:= pSrc + lSrcStride;
+      inc(pDest,
+          lDestStride); // or if you like, pDest:= pDest + lDestStride;
 
-   end;
+    end;
 
-{$POINTERMATH OFF}
+  {$POINTERMATH OFF}
 
 end;
 
@@ -910,6 +930,7 @@ procedure TransformImage_RGB32(pDest: PByte;
                                lSrcStride: LONG;
                                dwWidthInPixels: DWORD;
                                dwHeightInPixels: DWORD);
+
 begin
 
   MFCopyImage(pDest,
@@ -947,9 +968,9 @@ var
 
 begin
 
-{$POINTERMATH ON}
+  {$POINTERMATH ON}
 
-  for y := 0 to dwHeightInPixels -1 do
+  for y := 0 to dwHeightInPixels - 1 do
     begin
       pDestPel := PRGBQUAD(pDest);
       pSrcPel := PWORD(pSrc);
@@ -964,17 +985,24 @@ begin
           y1 := int(LOBYTE(pSrcPel[x + 1]));
           v0 := int(HIBYTE(pSrcPel[x + 1]));
 
-          pDestPel[x] := ConvertYCrCbToRGB(y0, v0, u0);
-          pDestPel[x + 1] := ConvertYCrCbToRGB(y1, v0, u0);
+          pDestPel[x] := ConvertYCrCbToRGB(y0,
+                                           v0,
+                                           u0);
+          pDestPel[x + 1] := ConvertYCrCbToRGB(y1,
+                                               v0,
+                                               u0);
 
-          Inc(x, 2);
+          Inc(x,
+              2);
         end;
 
-      Inc(pSrc, lSrcStride);
-      Inc(pDest, lDestStride);
-  end;
+      Inc(pSrc,
+          lSrcStride);
+      Inc(pDest,
+          lDestStride);
+    end;
 
-{$POINTERMATH OFF}
+  {$POINTERMATH OFF}
 
 end;
 
@@ -1000,7 +1028,7 @@ var
 
 begin
 
-{$POINTERMATH ON}
+  {$POINTERMATH ON}
 
   lpBitsY := pSrc;
   lpBitsCb := lpBitsY + (dwHeightInPixels * Dword(lsrcStride));
@@ -1029,49 +1057,69 @@ begin
       cb := Int(lpLineCb[0]);
       cr := Int(lpLineCr[0]);
 
-      r := ConvertYCrCbToRGB(y0, cr, cb);
+      r := ConvertYCrCbToRGB(y0,
+                             cr,
+                             cb);
       lpDibLine1[0] := r.rgbBlue;
       lpDibLine1[1] := r.rgbGreen;
       lpDibLine1[2] := r.rgbRed;
       lpDibLine1[3] := 0; // Alpha
 
-      r := ConvertYCrCbToRGB(y1, cr, cb);
+      r := ConvertYCrCbToRGB(y1,
+                             cr,
+                             cb);
       lpDibLine1[4] := r.rgbBlue;
       lpDibLine1[5] := r.rgbGreen;
       lpDibLine1[6] := r.rgbRed;
       lpDibLine1[7] := 0; // Alpha
 
-      r := ConvertYCrCbToRGB(y2, cr, cb);
+      r := ConvertYCrCbToRGB(y2,
+                             cr,
+                             cb);
       lpDibLine2[0] := r.rgbBlue;
       lpDibLine2[1] := r.rgbGreen;
       lpDibLine2[2] := r.rgbRed;
       lpDibLine2[3] := 0; // Alpha
 
-      r := ConvertYCrCbToRGB(y3, cr, cb);
+      r := ConvertYCrCbToRGB(y3,
+                             cr,
+                             cb);
       lpDibLine2[4] := r.rgbBlue;
       lpDibLine2[5] := r.rgbGreen;
       lpDibLine2[6] := r.rgbRed;
       lpDibLine2[7] := 0; // Alpha
 
-      inc(lpLineY1, 2);
-      inc(lpLineY2, 2);
-      inc(lpLineCr, 2);
-      inc(lpLineCb, 2);
+      inc(lpLineY1,
+          2);
+      inc(lpLineY2,
+          2);
+      inc(lpLineCr,
+          2);
+      inc(lpLineCb,
+          2);
 
-      inc(lpDibLine1, 8);
-      inc(lpDibLine2, 8);
+      inc(lpDibLine1,
+          8);
+      inc(lpDibLine2,
+          8);
 
-      inc(x, 2);
+      inc(x,
+          2);
 
     until (X = dwWidthInPixels);
 
-    inc(pDest, (2 * ldestStride));
-    inc(lpBitsY, (2 * lsrcStride));
-    inc(lpBitsCr, lsrcStride);
-    inc(lpBitsCb, lsrcStride);
-    inc(Y, 2);
+    inc(pDest,
+        (2 * ldestStride));
+    inc(lpBitsY,
+        (2 * lsrcStride));
+    inc(lpBitsCr,
+        lsrcStride);
+    inc(lpBitsCb,
+        lsrcStride);
+    inc(Y,
+        2);
   until (Y = dwHeightInPixels);
-{$POINTERMATH OFF}
+  {$POINTERMATH OFF}
 end;
 
 
@@ -1109,18 +1157,22 @@ begin
   iDstHeight := rcDst.Height;
 
   if (MulDiv(iSrcWidth,
-             iDstHeight,
-             iSrcHeight) <= iDstWidth) then
+    iDstHeight,
+    iSrcHeight) <= iDstWidth) then
     begin
       // Column letter boxing ("pillar box")
-      iDstLBWidth := MulDiv(iDstHeight, iSrcWidth, iSrcHeight);
+      iDstLBWidth := MulDiv(iDstHeight,
+                            iSrcWidth,
+                            iSrcHeight);
       iDstLBHeight := iDstHeight;
     end
   else
     begin
       // Row letter boxing.
       iDstLBWidth := iDstWidth;
-      iDstLBHeight := MulDiv(iDstWidth, iSrcHeight, iSrcWidth);
+      iDstLBHeight := MulDiv(iDstWidth,
+                             iSrcHeight,
+                             iSrcWidth);
     end;
 
   // Create a centered rectangle within the current destination rect
@@ -1133,7 +1185,8 @@ begin
           lleft + iDstLBWidth,
           ltop + iDstLBHeight);
 
-  CopyTRectToTRect(rc, Result);
+  CopyTRectToTRect(rc,
+                   Result);
 end;
 
 
@@ -1152,6 +1205,7 @@ var
   rc: TRect;
 
 begin
+
   // Start with a rectangle the same size as src, but offset to the origin (0,0).
   rc.Left := 0;
   rc.Top := 0;
@@ -1178,7 +1232,7 @@ begin
         end;
     end;
   // else: PAR is 1:1, which is a no-op.
-  Result:= rc;
+  Result := rc;
 end;
 
 
@@ -1199,11 +1253,12 @@ var
   uiheight: UINT32;
 
 begin
-  lStride:= 0;
+
+  lStride := 0;
 
   // Try to get the default stride from the media type.
-  hr:= pType.GetUINT32(MF_MT_DEFAULT_STRIDE,
-                       UINT32(lStride));
+  hr := pType.GetUINT32(MF_MT_DEFAULT_STRIDE,
+                        UINT32(lStride));
   if FAILED(hr) then
     begin
       // Attribute not set. Try to calculate the default stride.

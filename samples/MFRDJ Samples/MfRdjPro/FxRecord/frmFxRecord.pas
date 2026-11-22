@@ -67,7 +67,7 @@ interface
 
 uses
   FxProxy.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -139,7 +139,8 @@ type
     procedure SourceModeChanged(Sender: TObject);
 
     procedure FormCreate(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure btnStartClick(Sender: TObject);
     procedure btnStopClick(Sender: TObject);
     procedure btnClearLogClick(Sender: TObject);
@@ -164,7 +165,8 @@ type
     procedure UpdateButtons();
     procedure UpdateAudioControls();
     procedure SetRecorderControlsEnabled(const AEnabled: Boolean);
-    procedure BrowseForFolder(AEdit: TEdit; const ACaption: string);
+    procedure BrowseForFolder(AEdit: TEdit;
+                              const ACaption: string);
     procedure FxRecordNotice(var AMessage: TMessage); message WM_FXRECORD_NOTICE;
 
   end;
@@ -197,12 +199,13 @@ begin
 
   Directory := Trim(AEdit.Text);
 
-  if FxSelectDirectory(ACaption,'',Directory) then
+  if FxSelectDirectory(ACaption, '', Directory) then
     AEdit.Text := Directory;
 end;
 
 
 procedure TfrmFxRecord.btnBrowseStreamClick(Sender: TObject);
+
 begin
 
   BrowseForFolder(edStreamPath,
@@ -211,6 +214,7 @@ end;
 
 
 procedure TfrmFxRecord.btnBrowseArchiveClick(Sender: TObject);
+
 begin
 
   BrowseForFolder(edArchivePath,
@@ -221,6 +225,7 @@ end;
 procedure TfrmFxRecord.FormCreate(Sender: TObject);
 var
   I: Integer;
+
 begin
 
   FMonitor := nil;
@@ -228,7 +233,7 @@ begin
 
   for I := 1 to FxParamCount - 1 do
     if SameText(FxParamStr(I),
-                '--config') then
+      '--config') then
       FConfigFileName := ExpandFileName(FxParamStr(I + 1));
 
   LoadFxRecordSettings(FConfigFileName,
@@ -240,8 +245,9 @@ begin
   GetSettings();
 
   if not AppendFxRecordLog(FConfigFileName, 'INFO', 'Desktop application started.') then
-    ShowMessage('Cannot write ' + ChangeFileExt(FConfigFileName, '.log') +
-                '. Grant this Windows account write access to the configuration folder.');
+    ShowMessage('Cannot write ' + ChangeFileExt(FConfigFileName,
+                                                '.log') +
+      '. Grant this Windows account write access to the configuration folder.');
 
   AddLog('FxRecord is ready. Configuration: ' + FConfigFileName);
   AddLog('Recorder settings are ready. Press Start when configuration is complete.');
@@ -249,15 +255,16 @@ begin
   // Explicit command-line startup is reserved for unattended/service testing.
   //  Normal desktop startup always waits for the administrator.
   if FindCmdLineSwitch('start',
-                       ['-',
-                       '/'],
-                       True) then
+    ['-',
+    '/'],
+    True) then
     StartMonitor();
 end;
 
 
 procedure TfrmFxRecord.FormCloseQuery(Sender: TObject;
                                       var CanClose: Boolean);
+
 begin
 
   StopMonitor();
@@ -266,11 +273,14 @@ end;
 
 
 procedure TfrmFxRecord.AddLog(const AText: string);
+
 begin
 
-  AppendFxRecordLog(FConfigFileName, 'INFO', AText);
+  AppendFxRecordLog(FConfigFileName,
+                    'INFO',
+                    AText);
   memLog.Lines.Add(FormatDateTime('hh:nn:ss',
-                                  Now) + '  ' + AText);
+                                  Now) + '  ' + AText);
 
   while (memLog.Lines.Count > 1000) do
     memLog.Lines.Delete(0);
@@ -280,6 +290,7 @@ end;
 
 
 procedure TfrmFxRecord.GetSettings();
+
 begin
 
   if SameText(FSettings.SourceMode, 'PublicUrl') then
@@ -313,8 +324,8 @@ begin
   case FSettings.Mp3SampleRate of
     48000: cbMp3Rate.ItemIndex := 1;
     32000: cbMp3Rate.ItemIndex := 2;
-  else
-    cbMp3Rate.ItemIndex := 0;
+    else
+      cbMp3Rate.ItemIndex := 0;
   end;
 
   cbMp3BitRate.ItemIndex := cbMp3BitRate.Items.IndexOf(IntToStr(FSettings.Mp3BitRateKbps));
@@ -337,12 +348,13 @@ end;
 
 
 function TfrmFxRecord.SetSettings(out AError: string): Boolean;
+
 begin
 
   Result := False;
   AError := '';
 
-  if cbSourceMode.ItemIndex = 1 then
+  if (cbSourceMode.ItemIndex = 1) then
     begin
       FSettings.SourceMode := 'PublicUrl';
       FSettings.StreamUrl := Trim(edStreamPath.Text);
@@ -358,7 +370,13 @@ begin
 
     if SameText(FSettings.SourceMode, 'PublicUrl') then
       FSettings.StreamUrl := NormalizeFxRecordStreamUrl(FSettings.StreamUrl);
-  except on E: Exception do begin AError := E.Message; Exit end end;
+  except
+    on E: Exception do
+      begin
+        AError := E.Message;
+        Exit
+      end
+  end;
 
   FSettings.ArchivePath := Trim(edArchivePath.Text);
   FSettings.OutputProfile := cbOutputProfile.Text;
@@ -367,17 +385,16 @@ begin
     0: FSettings.Mp3SampleRate := 44100;
     1: FSettings.Mp3SampleRate := 48000;
     2: FSettings.Mp3SampleRate := 32000;
-  else
-    FSettings.Mp3SampleRate := 0;
+    else
+      FSettings.Mp3SampleRate := 0;
   end;
 
   if (cbAacRate.ItemIndex = 0) then
     FSettings.AacSampleRate := 44100
+  else if (cbAacRate.ItemIndex = 1) then
+    FSettings.AacSampleRate := 48000
   else
-    if (cbAacRate.ItemIndex = 1) then
-      FSettings.AacSampleRate := 48000
-    else
-      FSettings.AacSampleRate := 0;
+    FSettings.AacSampleRate := 0;
 
   FSettings.Mp3BitRateKbps := StrToIntDef(cbMp3BitRate.Text,
                                           0);
@@ -385,14 +402,14 @@ begin
                                           0);
 
   if SameText(FSettings.OutputProfile,
-              'AVI-H264-MP3') and ((FSettings.Mp3SampleRate = 0) or (cbMp3BitRate.ItemIndex < 0)) then
+    'AVI-H264-MP3') and ((FSettings.Mp3SampleRate = 0) or (cbMp3BitRate.ItemIndex < 0)) then
     begin
       AError := 'Select an MP3 sample rate and bitrate.';
       Exit;
     end;
 
   if SameText(FSettings.OutputProfile,
-              'MP4-H264-AAC') and ((FSettings.AacSampleRate = 0) or (cbAacBitRate.ItemIndex < 0)) then
+    'MP4-H264-AAC') and ((FSettings.AacSampleRate = 0) or (cbAacBitRate.ItemIndex < 0)) then
     begin
       AError := 'Select an AAC sample rate and bitrate (96-192 kbps).';
       Exit;
@@ -417,31 +434,24 @@ begin
 
   if SameText(FSettings.SourceMode, 'LocalFolder') and (FSettings.StreamPath = '') then
     AError := 'Stream folder is required.'
-  else
-    if (FSettings.ArchivePath = '') then
-      AError := 'Archive folder is required.'
-    else
-      if (FSettings.FragmentDuration <= 0) then
-        AError := 'Fragment duration must be greater than zero.'
-      else
-        if (FSettings.RetentionDays <= 0) then
-          AError := 'Retention days must be greater than zero.'
-        else
-          if (FSettings.CriticalFreeGB <= 0) or (FSettings.WarningFreeGB < FSettings.CriticalFreeGB) then
-            AError := 'Disk warning must be greater than or equal to the critical value.'
-          else
-            if not SameText(FSettings.OutputProfile,
-                            'SourceCopy') and
-               not SameText(FSettings.OutputProfile,
-                            'MP4-H264-AAC') and
-               not SameText(FSettings.OutputProfile,
-                            'AVI-H264-MP3') then
-              AError := 'This output profile is not implemented yet.';
+  else if (FSettings.ArchivePath = '') then
+    AError := 'Archive folder is required.'
+  else if (FSettings.FragmentDuration <= 0) then
+    AError := 'Fragment duration must be greater than zero.'
+  else if (FSettings.RetentionDays <= 0) then
+    AError := 'Retention days must be greater than zero.'
+  else if (FSettings.CriticalFreeGB <= 0) or (FSettings.WarningFreeGB < FSettings.CriticalFreeGB) then
+    AError := 'Disk warning must be greater than or equal to the critical value.'
+  else if not SameText(FSettings.OutputProfile,
+    'SourceCopy') and not SameText(FSettings.OutputProfile,
+                                   'MP4-H264-AAC') and not SameText(FSettings.OutputProfile,
+                                                                    'AVI-H264-MP3') then
+    AError := 'This output profile is not implemented yet.';
 
   if (AError <> '') then
     Exit;
 
-  Result := AError = '';
+  Result := (AError = '');
 end;
 
 
@@ -461,7 +471,9 @@ begin
     end;
 
   FSettings.Enabled := True;
-  FMonitor := TFxRecordMonitor.Create(Handle, FSettings, FConfigFileName);
+  FMonitor := TFxRecordMonitor.Create(Handle,
+                                      FSettings,
+                                      FConfigFileName);
   FMonitor.Start();
   lblState.Caption := 'MONITORING';
   UpdateButtons();
@@ -469,6 +481,7 @@ end;
 
 
 procedure TfrmFxRecord.StopMonitor();
+
 begin
 
   if not Assigned(FMonitor) then
@@ -498,6 +511,7 @@ end;
 
 
 procedure TfrmFxRecord.cbOutputProfileChange(Sender: TObject);
+
 begin
 
   UpdateAudioControls();
@@ -505,6 +519,7 @@ end;
 
 
 procedure TfrmFxRecord.SourceModeChanged(Sender: TObject);
+
 begin
 
   if SameText(FSettings.SourceMode, 'PublicUrl') then
@@ -512,12 +527,13 @@ begin
   else
     FSettings.StreamPath := Trim(edStreamPath.Text);
 
-  if cbSourceMode.ItemIndex = 1 then
+  if (cbSourceMode.ItemIndex = 1) then
     begin
       FSettings.SourceMode := 'PublicUrl';
       lblStreamPath.Caption := 'HLS playlist URL';
       edStreamPath.Text := FSettings.StreamUrl;
-      if edStreamPath.Text = '' then edStreamPath.Text := 'https://factoryxradio.asuscomm.com/';
+      if (edStreamPath.Text = '') then
+        edStreamPath.Text := 'https://factoryxradio.asuscomm.com/';
     end
   else
     begin
@@ -526,8 +542,9 @@ begin
       edStreamPath.Text := FSettings.StreamPath;
     end;
 
-  btnBrowseStream.Enabled := cbSourceMode.ItemIndex = 0;
+  btnBrowseStream.Enabled := (cbSourceMode.ItemIndex = 0);
 end;
+
 
 procedure TfrmFxRecord.UpdateAudioControls();
 var
@@ -581,8 +598,8 @@ begin
       fnWarning: Prefix := 'WARNING: ';
       fnCritical: Prefix := 'CRITICAL: ';
       fnRecovery: Prefix := 'RECOVERY: ';
-    else
-      Prefix := '';
+      else
+        Prefix := '';
     end;
 
     AddLog(Prefix + Item^.Text);
@@ -594,6 +611,7 @@ end;
 
 
 procedure TfrmFxRecord.btnStartClick(Sender: TObject);
+
 begin
 
   StartMonitor();
@@ -601,6 +619,7 @@ end;
 
 
 procedure TfrmFxRecord.btnStopClick(Sender: TObject);
+
 begin
 
   StopMonitor();
@@ -608,6 +627,7 @@ end;
 
 
 procedure TfrmFxRecord.edStreamPathChange(Sender: TObject);
+
 begin
 
   FSettings.StreamPath := Trim(edStreamPath.Text);
@@ -615,6 +635,7 @@ end;
 
 
 procedure TfrmFxRecord.edArchivePathChange(Sender: TObject);
+
 begin
 
   FSettings.ArchivePath := Trim(edArchivePath.Text);
@@ -622,6 +643,7 @@ end;
 
 
 procedure TfrmFxRecord.btnClearLogClick(Sender: TObject);
+
 begin
 
   memLog.Clear();
@@ -629,21 +651,21 @@ end;
 
 
 procedure TfrmFxRecord.btnOpenArchiveClick(Sender: TObject);
+
 begin
 
-  if not SysUtils.DirectoryExists(FSettings.ArchivePath) and
-     not SysUtils.ForceDirectories(FSettings.ArchivePath) then
+  if not SysUtils.DirectoryExists(FSettings.ArchivePath) and not SysUtils.ForceDirectories(FSettings.ArchivePath) then
     begin
       ShowMessage('The archive folder cannot be created:' + sLineBreak + FSettings.ArchivePath);
       Exit;
     end;
 
   if (ShellExecute(Handle,
-                   'open',
-                   PChar(FSettings.ArchivePath),
-                   nil,
-                   nil,
-                   SW_SHOWNORMAL) <= 32) then
+    'open',
+    PChar(FSettings.ArchivePath),
+    nil,
+    nil,
+    SW_SHOWNORMAL) <= 32) then
     ShowMessage('Windows Explorer could not open:' + sLineBreak + FSettings.ArchivePath);
 end;
 
@@ -677,6 +699,7 @@ end;
 
 
 procedure TfrmFxRecord.btnCloseClick(Sender: TObject);
+
 begin
 
   Close();

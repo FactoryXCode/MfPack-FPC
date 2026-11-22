@@ -112,13 +112,16 @@ const
 type
 
   TFxServeStatusThread = class(TThread)
+
   private
     FWindowHandle: HWND;
     FMachineName: string;
     FServiceName: string;
     FManager: SC_HANDLE;
+
   protected
     procedure Execute(); override;
+
   public
     constructor Create(const AWindowHandle: HWND;
                        const AMachineName: string;
@@ -271,8 +274,9 @@ type
     function CheckRemoteRestartPending(out APending: Boolean;
                                        out AError: string): Boolean;
     function ConfigureWindowsUpdatePolicy(out ADescription,
-                                                AError: string): Boolean;
+                                          AError: string): Boolean;
     function ReadWindowsUpdatePolicy(out ADescription: string): Boolean;
+
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy(); override;
@@ -325,12 +329,12 @@ begin
         #10: Result := Result + '\n';
         #12: Result := Result + '\f';
         #13: Result := Result + '\r';
-      else
-        if Ord(C) < 32 then
-          Result := Result + Format('\u%.4x',
-                                    [Ord(C)])
         else
-          Result := Result + C;
+          if (Ord(C) < 32) then
+            Result := Result + Format('\u%.4x',
+                                      [Ord(C)])
+          else
+            Result := Result + C;
       end;
     end;
 
@@ -340,33 +344,36 @@ end;
 
 procedure ReplaceFileAtomically(const ATemporaryFileName: string;
                                 const ATargetFileName: string);
+
 begin
 
   if not MoveFileExW(PChar(ATemporaryFileName),
-                    PChar(ATargetFileName),
-                    MOVEFILE_REPLACE_EXISTING or $8) then
+    PChar(ATargetFileName),
+    MOVEFILE_REPLACE_EXISTING or $8) then
     raise Exception.CreateFmt('Could not replace %s: %s',
                               [ATargetFileName,
-                               SysErrorMessage(GetLastError)]);
+      SysErrorMessage(GetLastError)]);
 end;
 
 
 procedure BackupFile(const AFileName: string);
+
 begin
 
-  if FileExists(AFileName) and
-     not CopyFileW(PChar(AFileName),
-                  PChar(AFileName + '.bak'),
-                  False) then
+  if FileExists(AFileName) and not CopyFileW(PChar(AFileName),
+    PChar(AFileName + '.bak'),
+    False) then
     raise Exception.CreateFmt('Could not create backup %s: %s',
                               [AFileName + '.bak',
-                               SysErrorMessage(GetLastError)]);
+      SysErrorMessage(GetLastError)]);
 end;
+
 
 constructor TFxServeStatusThread.Create(const AWindowHandle: HWND;
                                         const AMachineName: string;
                                         const AServiceName: string;
                                         const AManager: SC_HANDLE);
+
 begin
 
   inherited Create(True);
@@ -380,6 +387,7 @@ end;
 
 
 destructor TFxServeStatusThread.Destroy();
+
 begin
 
   if (FManager <> 0) then
@@ -423,12 +431,12 @@ begin
 
         if (FMachineName = '') then
           Manager := OpenSCManagerW(nil,
-                                   nil,
-                                   SC_MANAGER_CONNECT)
+                                    nil,
+                                    SC_MANAGER_CONNECT)
         else
           Manager := OpenSCManagerW(PChar(FMachineName),
-                                   nil,
-                                   SC_MANAGER_CONNECT);
+                                    nil,
+                                    SC_MANAGER_CONNECT);
 
         StatusResult^.ConnectionMilliseconds := GetTickCount() - StartTick;
       end;
@@ -437,14 +445,14 @@ begin
       begin
         ErrorCode := GetLastError;
         StatusResult^.ErrorText := 'OpenSCManager failed: ' +
-                                   SysErrorMessage(ErrorCode);
+          SysErrorMessage(ErrorCode);
       end
     else
       begin
         StartTick := GetTickCount();
         Service := OpenServiceW(Manager,
-                               PChar(FServiceName),
-                               SERVICE_QUERY_STATUS);
+                                PChar(FServiceName),
+                                SERVICE_QUERY_STATUS);
 
         if (Service = 0) then
           begin
@@ -454,7 +462,7 @@ begin
               StatusResult^.ErrorText := 'FxServe service is not installed.'
             else
               StatusResult^.ErrorText := 'OpenService failed: ' +
-                                         SysErrorMessage(ErrorCode);
+                SysErrorMessage(ErrorCode);
           end
         else
           begin
@@ -463,10 +471,9 @@ begin
             BytesNeeded := 0;
 
             if QueryServiceStatusEx(Service,
-                                    SC_STATUS_PROCESS_INFO,
-                                    @Status,
-                                    SizeOf(Status),
-                                    BytesNeeded) then
+              SC_STATUS_PROCESS_INFO, @Status,
+              SizeOf(Status),
+              BytesNeeded) then
               begin
                 StatusResult^.Success := True;
                 StatusResult^.State := Status.dwCurrentState;
@@ -478,7 +485,7 @@ begin
               begin
                 ErrorCode := GetLastError;
                 StatusResult^.ErrorText := 'QueryServiceStatusEx failed: ' +
-                                           SysErrorMessage(ErrorCode);
+                  SysErrorMessage(ErrorCode);
               end;
           end;
 
@@ -505,9 +512,9 @@ begin
     end;
 
   if not PostMessage(FWindowHandle,
-                     WM_FXSERVE_STATUS_COMPLETE,
-                     0,
-                     LPARAM(StatusResult)) then
+    WM_FXSERVE_STATUS_COMPLETE,
+    0,
+    LPARAM(StatusResult)) then
     begin
       if (StatusResult^.Manager <> 0) then
         CloseServiceHandle(StatusResult^.Manager);
@@ -558,6 +565,7 @@ function CryptGenRandom(hProv: HCRYPTPROV;
 type
 
   TConfigEditorForm = class(TForm)
+
   private
     FMemo: TMemo;
     FFileName: string;
@@ -569,6 +577,7 @@ type
                              const AFileName: string);
 
   end;
+
 
 constructor TConfigEditorForm.CreateEditor(AOwner: TComponent;
                                            const AFileName: string);
@@ -653,7 +662,7 @@ var
 
 begin
 
-  Result := Length(A) = Length(B);
+  Result := (Length(A) = Length(B));
 
   if not Result then
     Exit;
@@ -663,7 +672,7 @@ begin
   for I := 0 to High(A) do
     Difference := Difference or (A[I] xor B[I]);
 
-  Result := Difference = 0;
+  Result := (Difference = 0);
 end;
 
 
@@ -682,33 +691,30 @@ begin
   HashLength := Length(Result);
 
   if not CryptAcquireContext(Provider,
-                             nil,
-                             nil,
-                             PROV_RSA_AES,
-                             CRYPT_VERIFYCONTEXT) then
+    nil,
+    nil,
+    PROV_RSA_AES,
+    CRYPT_VERIFYCONTEXT) then
     RaiseLastOSError();
 
   try
     if not CryptCreateHash(Provider,
-                           CALG_SHA_256,
-                           0,
-                           0,
-                           Hash) then
+      CALG_SHA_256,
+      0,
+      0,
+      Hash) then
       RaiseLastOSError();
 
     try
-      if (Length(ABytes) > 0) and
-         not CryptHashData(Hash,
-                           @ABytes[0],
-                           Length(ABytes),
-                           0) then
+      if (Length(ABytes) > 0) and not CryptHashData(Hash, @ABytes[0],
+        Length(ABytes),
+        0) then
         RaiseLastOSError();
 
       if not CryptGetHashParam(Hash,
-                               HP_HASHVAL,
-                               @Result[0],
-                               HashLength,
-                               0) then
+        HP_HASHVAL, @Result[0],
+        HashLength,
+        0) then
         RaiseLastOSError();
 
       SetLength(Result,
@@ -738,17 +744,15 @@ begin
             ACount);
 
   if not CryptAcquireContext(Provider,
-                             nil,
-                             nil,
-                             PROV_RSA_AES,
-                             CRYPT_VERIFYCONTEXT) then
+    nil,
+    nil,
+    PROV_RSA_AES,
+    CRYPT_VERIFYCONTEXT) then
     RaiseLastOSError();
 
   try
-    if (ACount > 0) and
-       not CryptGenRandom(Provider,
-                          ACount,
-                          @Result[0]) then
+    if (ACount > 0) and not CryptGenRandom(Provider,
+      ACount, @Result[0]) then
       RaiseLastOSError();
 
   finally
@@ -778,6 +782,7 @@ end;
 
 function CombineBytes(const A: TBytes;
                       const B: TBytes): TBytes;
+
 begin
 
   SetLength(Result,
@@ -803,8 +808,8 @@ begin
 
   BackupName := FFileName + '.bak';
   if FileExists(FFileName) and not CopyFileW(PChar(FFileName),
-                                            PChar(BackupName),
-                                            False) then
+    PChar(BackupName),
+    False) then
     raise Exception.Create('Could not create configuration backup: ' + SysErrorMessage(GetLastError));
 
   FMemo.Lines.SaveToFile(FFileName);
@@ -813,6 +818,7 @@ end;
 
 
 constructor TfrmFxServeAdmin.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
@@ -836,10 +842,10 @@ begin
 
   if HandleAllocated then
     while PeekMessage(Message,
-                      Handle,
-                      WM_FXSERVE_STATUS_COMPLETE,
-                      WM_FXSERVE_STATUS_COMPLETE,
-                      PM_REMOVE) do
+        Handle,
+        WM_FXSERVE_STATUS_COMPLETE,
+        WM_FXSERVE_STATUS_COMPLETE,
+        PM_REMOVE) do
       begin
         StatusResult := PFxServeServiceStatus(Message.lParam);
 
@@ -865,6 +871,7 @@ end;
 
 
 procedure TfrmFxServeAdmin.AfterConstruction();
+
 begin
 
   inherited AfterConstruction();
@@ -889,6 +896,7 @@ end;
 
 
 procedure TfrmFxServeAdmin.AddLog(const AText: string);
+
 begin
 
   FLogMemo.Lines.Add(FormatDateTime('hh:nn:ss',
@@ -898,6 +906,7 @@ end;
 
 
 procedure TfrmFxServeAdmin.BeginBusy(const AAction: string);
+
 begin
 
   if FBusy then
@@ -917,12 +926,13 @@ end;
 
 
 procedure TfrmFxServeAdmin.EndBusy();
+
 begin
 
   if not FBusy then
     Exit;
 
-  if FStatusBar.Caption = FBusyCaption then
+  if (FStatusBar.Caption = FBusyCaption) then
     FStatusBar.Caption := FStatusBeforeBusy;
 
   FBusyCaption := '';
@@ -948,7 +958,7 @@ begin
     Registry.RootKey := HKEY_CURRENT_USER;
 
     if Registry.OpenKeyReadOnly(REGISTRY_SECURITY_KEY) and
-       Registry.ValueExists(AName) then
+      Registry.ValueExists(AName) then
       Result := Registry.ReadString(AName);
 
   finally
@@ -970,7 +980,7 @@ begin
     Registry.RootKey := HKEY_CURRENT_USER;
 
     if not Registry.OpenKey(REGISTRY_SECURITY_KEY,
-                            True) then
+      True) then
       raise Exception.Create('Could not open the FxServeAdmin security registry key.');
 
     Registry.WriteString(AName,
@@ -988,15 +998,15 @@ var
 
 begin
 
-  Result := ReadSecurityValue('Hash') <> '';
+  Result := (ReadSecurityValue('Hash') <> '');
 
   if Result then
     Exit;
 
   if (MessageDlg('No admin password has been configured yet. Create one now?',
-                 mtConfirmation,
-                 [mbYes, mbNo],
-                 0) <> mrYes) then
+    mtConfirmation,
+    [mbYes, mbNo],
+    0) <> mrYes) then
     Exit(False);
 
   Result := PromptNewPassword(Password);
@@ -1021,8 +1031,8 @@ begin
     Exit;
 
   if not PromptPassword('FxServe Admin',
-                        'Enter admin password:',
-                        Password) then
+    'Enter admin password:',
+    Password) then
     Exit;
 
   Result := VerifyPassword(Password);
@@ -1054,7 +1064,7 @@ begin
     Dialog.ActiveControl := Dialog.edtPassword;
     Dialog.Position := poScreenCenter;
 
-    Result := Dialog.ShowModal = mrOk;
+    Result := (Dialog.ShowModal = mrOk);
 
     if Result then
       APassword := Dialog.edtPassword.Text;
@@ -1076,8 +1086,8 @@ begin
   APassword := '';
 
   if not PromptPassword('Create Admin Password',
-                        'New password (use at least 6 characters):',
-                        First) then
+    'New password (use at least 6 characters):',
+    First) then
     Exit;
 
   if (Length(First) < 6) then
@@ -1090,8 +1100,8 @@ begin
     end;
 
   if not PromptPassword('Create Admin Password',
-                        'Confirm password:',
-                        Second) then
+    'Confirm password:',
+    Second) then
     Exit;
 
   if (First <> Second) then
@@ -1196,7 +1206,7 @@ begin
     Registry.RootKey := HKEY_CURRENT_USER;
 
     if not Registry.OpenKey(REGISTRY_KEY,
-                            True) then
+      True) then
       raise Exception.Create('Could not open the FxServeAdmin registry key.');
 
     Registry.WriteString('Server',
@@ -1220,18 +1230,20 @@ end;
 function TfrmFxServeAdmin.PreferredWebService(): string;
 var
   Registry: TRegistry;
+
 begin
+
   Result := DEFAULT_SERVICE;
   Registry := TRegistry.Create(KEY_READ);
   try
     Registry.RootKey := HKEY_CURRENT_USER;
     if Registry.OpenKeyReadOnly(REGISTRY_KEY) and
-       Registry.ValueExists('PreferredWebService') then
+      Registry.ValueExists('PreferredWebService') then
       Result := Trim(Registry.ReadString('PreferredWebService'));
   finally
     Registry.Free();
   end;
-  if Result = '' then
+  if (Result = '') then
     Result := DEFAULT_SERVICE;
 end;
 
@@ -1240,13 +1252,16 @@ procedure TfrmFxServeAdmin.StorePreferredWebService(
   const AServiceName: string);
 var
   Registry: TRegistry;
+
 begin
+
   Registry := TRegistry.Create(KEY_WRITE);
   try
     Registry.RootKey := HKEY_CURRENT_USER;
     if not Registry.OpenKey(REGISTRY_KEY, True) then
       raise Exception.Create('Could not save the preferred web service.');
-    Registry.WriteString('PreferredWebService', Trim(AServiceName));
+    Registry.WriteString('PreferredWebService',
+                         Trim(AServiceName));
   finally
     Registry.Free();
   end;
@@ -1254,8 +1269,10 @@ end;
 
 
 function TfrmFxServeAdmin.ConfigureNamedServiceResilience(
-  const AServiceName: string; const AStartType: DWORD;
-  const ADelayedStart: Boolean; const ADependencies: string): Boolean;
+  const AServiceName: string;
+                                                          const AStartType: DWORD;
+                                                          const ADelayedStart: Boolean;
+                                                          const ADependencies: string): Boolean;
 var
   Manager: SC_HANDLE;
   Service: SC_HANDLE;
@@ -1265,7 +1282,9 @@ var
   FailureActions: SERVICE_FAILURE_ACTIONS;
   Dependencies: string;
   DependenciesPointer: PChar;
+
 begin
+
   Result := False;
   if not OpenNamedServiceHandle(AServiceName,
     SERVICE_CHANGE_CONFIG or SERVICE_QUERY_STATUS, Manager, Service, True) then
@@ -1273,7 +1292,7 @@ begin
   try
     DependenciesPointer := nil;
     Dependencies := '';
-    if ADependencies <> '' then
+    if (ADependencies <> '') then
       begin
         Dependencies := ADependencies + #0#0;
         DependenciesPointer := PChar(Dependencies);
@@ -1283,7 +1302,7 @@ begin
       nil) then
       begin
         AddLog('Could not change startup for ' + AServiceName + ': ' +
-               SysErrorMessage(GetLastError));
+          SysErrorMessage(GetLastError));
         Exit;
       end;
 
@@ -1292,7 +1311,7 @@ begin
       SERVICE_CONFIG_DELAYED_AUTO_START_INFO, @DelayedInfo) then
       begin
         AddLog('Could not configure delayed start for ' + AServiceName +
-               ': ' + SysErrorMessage(GetLastError));
+          ': ' + SysErrorMessage(GetLastError));
         Exit;
       end;
 
@@ -1302,15 +1321,16 @@ begin
     Actions[1].Delay := 60000;
     Actions[2].Type_ := SC_ACTION_RESTART;
     Actions[2].Delay := 60000;
-    FillChar(FailureActions, SizeOf(FailureActions), 0);
+    FillChar(FailureActions,
+             SizeOf(FailureActions),
+             0);
     FailureActions.dwResetPeriod := 86400;
     FailureActions.cActions := Length(Actions);
     FailureActions.lpsaActions := @Actions[0];
-    if not ChangeServiceConfig2W(Service, SERVICE_CONFIG_FAILURE_ACTIONS,
-                                @FailureActions) then
+    if not ChangeServiceConfig2W(Service, SERVICE_CONFIG_FAILURE_ACTIONS, @FailureActions) then
       begin
         AddLog('Could not configure recovery for ' + AServiceName + ': ' +
-               SysErrorMessage(GetLastError));
+          SysErrorMessage(GetLastError));
         Exit;
       end;
     FailureFlag.fFailureActionsOnNonCrashFailures := True;
@@ -1318,7 +1338,7 @@ begin
       SERVICE_CONFIG_FAILURE_ACTIONS_FLAG, @FailureFlag) then
       begin
         AddLog('Could not enable recovery for all failures on ' +
-               AServiceName + ': ' + SysErrorMessage(GetLastError));
+          AServiceName + ': ' + SysErrorMessage(GetLastError));
         Exit;
       end;
     Result := True;
@@ -1337,11 +1357,13 @@ var
   ProcessId: DWORD;
   Win32ExitCode: DWORD;
   ServiceExitCode: DWORD;
+
 begin
+
   if not QueryNamedServiceState(APreferredService, State, ProcessId,
     Win32ExitCode, ServiceExitCode, False) then
     raise Exception.Create('The preferred web service is not installed: ' +
-                           APreferredService);
+      APreferredService);
 
   if SameText(APreferredService, 'FxServe') then
     OtherService := 'caddy'
@@ -1350,13 +1372,14 @@ begin
   else
     OtherService := '';
 
-  if OtherService <> '' then
+  if (OtherService <> '') then
     begin
       if QueryNamedServiceState(OtherService, State, ProcessId,
         Win32ExitCode, ServiceExitCode, False) then
         begin
           StopNamedService(OtherService);
-          ConfigureNamedServiceResilience(OtherService, SERVICE_DEMAND_START,
+          ConfigureNamedServiceResilience(OtherService,
+                                          SERVICE_DEMAND_START,
                                           False);
           AddLog(OtherService + ' will remain available for manual use.');
         end;
@@ -1366,7 +1389,7 @@ begin
     SERVICE_AUTO_START, False) then
     raise Exception.Create('Could not configure ' + APreferredService + '.');
   AddLog(APreferredService +
-         ' is the preferred automatic web service with failure recovery.');
+    ' is the preferred automatic web service with failure recovery.');
   StorePreferredWebService(APreferredService);
 
   if QueryNamedServiceState('FxRecord', State, ProcessId, Win32ExitCode,
@@ -1376,7 +1399,7 @@ begin
         True, APreferredService + #0 + 'Tcpip') then
         raise Exception.Create('Could not configure FxRecord resilience.');
       AddLog('FxRecord uses delayed automatic start after ' +
-             APreferredService + ' and TCP/IP.');
+        APreferredService + ' and TCP/IP.');
     end
   else
     AddLog('FxRecord service is not installed yet. Run FxRecord.exe --install on the server, then apply Boot safety again.');
@@ -1389,11 +1412,13 @@ end;
 
 
 function TfrmFxServeAdmin.CheckRemoteRestartPending(out APending: Boolean;
-  out AError: string): Boolean;
+                                                    out AError: string): Boolean;
 var
   Registry: TRegistry;
   Machine: string;
+
 begin
+
   Result := False;
   APending := False;
   AError := '';
@@ -1423,13 +1448,16 @@ end;
 
 
 function TfrmFxServeAdmin.ConfigureWindowsUpdatePolicy(
-  out ADescription, AError: string): Boolean;
+  out ADescription,
+                                                       AError: string): Boolean;
 var
   Registry: TRegistry;
   Machine: string;
   InstallationType: string;
   OptionValue: Integer;
+
 begin
+
   Result := False;
   ADescription := '';
   AError := '';
@@ -1452,7 +1480,7 @@ begin
             InstallationType := Registry.ReadString('InstallationType');
           Registry.CloseKey();
         end;
-      if Pos('SERVER', UpperCase(InstallationType)) > 0 then
+      if (Pos('SERVER', UpperCase(InstallationType)) > 0) then
         OptionValue := 7
       else
         OptionValue := 2;
@@ -1463,13 +1491,17 @@ begin
           AError := 'The Windows Update policy key could not be opened.';
           Exit;
         end;
-      Registry.WriteInteger('NoAutoUpdate', 0);
-      Registry.WriteInteger('AUOptions', OptionValue);
-      Registry.WriteInteger('AlwaysAutoRebootAtScheduledTime', 0);
-      Registry.WriteInteger('NoAutoRebootWithLoggedOnUsers', 1);
+      Registry.WriteInteger('NoAutoUpdate',
+                            0);
+      Registry.WriteInteger('AUOptions',
+                            OptionValue);
+      Registry.WriteInteger('AlwaysAutoRebootAtScheduledTime',
+                            0);
+      Registry.WriteInteger('NoAutoRebootWithLoggedOnUsers',
+                            1);
       Registry.CloseKey();
 
-      if OptionValue = 7 then
+      if (OptionValue = 7) then
         ADescription := 'Windows Server: notify before installation and notify before restart (option 7).'
       else
         ADescription := 'Windows: notify before download and installation (option 2).';
@@ -1490,7 +1522,9 @@ var
   Registry: TRegistry;
   Machine: string;
   OptionValue: Integer;
+
 begin
+
   Result := False;
   ADescription := 'not configured';
   Registry := TRegistry.Create(KEY_READ or KEY_WOW64_64KEY);
@@ -1500,15 +1534,15 @@ begin
     if (Machine <> '') and not Registry.RegistryConnect(Machine) then
       Exit;
     if not Registry.OpenKeyReadOnly(
-      '\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU') or
-       not Registry.ValueExists('AUOptions') then
+      '\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU') or not Registry.ValueExists('AUOptions') then
       Exit;
     OptionValue := Registry.ReadInteger('AUOptions');
     case OptionValue of
       2: ADescription := 'admin approval required before download (option 2)';
       7: ADescription := 'admin approval required before install/restart (server option 7)';
-    else
-      ADescription := Format('automatic-update option %d', [OptionValue]);
+      else
+        ADescription := Format('automatic-update option %d',
+                               [OptionValue]);
     end;
     Result := (OptionValue = 2) or (OptionValue = 7);
   finally
@@ -1543,8 +1577,8 @@ begin
   PublicHost := LowerCase(Trim(FPublicHostEdit.Text));
 
   while (Copy(ServerName,
-              1,
-              2) = '\\') do
+      1,
+      2) = '\\') do
     Delete(ServerName,
            1,
            2);
@@ -1553,15 +1587,21 @@ begin
     raise Exception.Create('The configured FxServe share is not available.');
 
   if (ServerName = '') or
-     (Pos('\', ServerName) > 0) or
-     (Pos('/', ServerName) > 0) then
+    (Pos('\',
+         ServerName) > 0) or
+    (Pos('/',
+         ServerName) > 0) then
     raise Exception.Create('Enter a valid Windows server name.');
 
   if (PublicHost = '') or
-     (Pos(' ', PublicHost) > 0) or
-     (Pos('/', PublicHost) > 0) or
-     (Pos('\', PublicHost) > 0) or
-     (Pos(':', PublicHost) > 0) then
+    (Pos(' ',
+         PublicHost) > 0) or
+    (Pos('/',
+         PublicHost) > 0) or
+    (Pos('\',
+         PublicHost) > 0) or
+    (Pos(':',
+         PublicHost) > 0) then
     raise Exception.Create('Enter only the public hostname, without https://, a port, or a path.');
 
   ConfigName := Share + 'FxServe.ini';
@@ -1576,11 +1616,11 @@ begin
     FxDeleteFile(ConfigTemporaryName);
 
   if not CopyFileW(PChar(ConfigName),
-                  PChar(ConfigTemporaryName),
-                  False) then
+    PChar(ConfigTemporaryName),
+    False) then
     raise Exception.CreateFmt('Could not prepare %s for editing: %s',
                               [ConfigName,
-                               SysErrorMessage(GetLastError)]);
+      SysErrorMessage(GetLastError)]);
 
   try
     Ini := TMemIniFile.Create(ConfigTemporaryName);
@@ -1590,8 +1630,8 @@ begin
                       'HostName',
                       PublicHost);
       WebRoot := Trim(Ini.ReadString('Server',
-                                    'WebRoot',
-                                    '.\www'));
+                                     'WebRoot',
+                                     '.\www'));
       Ini.UpdateFile();
     finally
       Ini.Free;
@@ -1601,9 +1641,9 @@ begin
     ReplaceFileAtomically(ConfigTemporaryName,
                           ConfigName);
 
-    if ExtractFileDrive(WebRoot) = '' then
+    if (ExtractFileDrive(WebRoot) = '') then
       WebRoot := ExpandFileName(IncludeTrailingPathDelimiter(
-                                  ExtractFileDir(ConfigName)) + WebRoot);
+        ExtractFileDir(ConfigName)) + WebRoot);
 
     if not ForceDirectories(WebRoot) then
       raise Exception.Create('Could not create the configured web root: ' + WebRoot);
@@ -1657,21 +1697,21 @@ begin
   Result := Trim(FServerEdit.Text);
 
   while (Copy(Result,
-              1,
-              2) = '\\') do
+      1,
+      2) = '\\') do
     Delete(Result,
            1,
            2);
 
   if (Result = '') or
-     SameText(Result,
-              '.') or
-     SameText(Result,
-              'localhost') or
-     SameText(Result,
-              '127.0.0.1') or
-     SameText(Result,
-              '::1') then
+    SameText(Result,
+             '.') or
+    SameText(Result,
+             'localhost') or
+    SameText(Result,
+             '127.0.0.1') or
+    SameText(Result,
+             '::1') then
     begin
       Result := '';
       Exit;
@@ -1680,9 +1720,9 @@ begin
   ComputerNameLength := Length(ComputerName);
 
   if GetComputerNameW(@ComputerName[0],
-                     ComputerNameLength) and
-     SameText(Result,
-              string(ComputerName)) then
+    ComputerNameLength) and
+    SameText(Result,
+             string(ComputerName)) then
     begin
       Result := '';
       Exit;
@@ -1698,6 +1738,7 @@ end;
 function TfrmFxServeAdmin.OpenServiceHandle(const AAccess: DWORD;
                                             out AManager: SC_HANDLE;
                                             out AService: SC_HANDLE): Boolean;
+
 begin
 
   Result := OpenNamedServiceHandle(DEFAULT_SERVICE,
@@ -1717,6 +1758,7 @@ var
   Machine: string;
 
 begin
+
   Result := False;
   AManager := 0;
   AService := 0;
@@ -1731,12 +1773,12 @@ begin
 
   if (Machine = '') then
     AManager := OpenSCManagerW(nil,
-                              nil,
-                              SC_MANAGER_CONNECT)
+                               nil,
+                               SC_MANAGER_CONNECT)
   else
     AManager := OpenSCManagerW(PChar(Machine),
-                              nil,
-                              SC_MANAGER_CONNECT);
+                               nil,
+                               SC_MANAGER_CONNECT);
 
   if (AManager = 0) then
     begin
@@ -1746,12 +1788,12 @@ begin
     end;
 
   AService := OpenServiceW(AManager,
-                          PChar(Trim(AServiceName)),
-                          AAccess);
+                           PChar(Trim(AServiceName)),
+                           AAccess);
 
   if (AService = 0) then
     begin
-      if GetLastError = ERROR_SERVICE_DOES_NOT_EXIST then
+      if (GetLastError = ERROR_SERVICE_DOES_NOT_EXIST) then
         begin
           if ALogFailure then
             AddLog('Service is not installed: ' + AServiceName)
@@ -1762,18 +1804,20 @@ begin
             AddLog('OpenService failed for ' + AServiceName + ': ' + SysErrorMessage(GetLastError));
         end;
 
-    CloseServiceHandle(AManager);
-    AManager := 0;
-    Exit;
+      CloseServiceHandle(AManager);
+      AManager := 0;
+      Exit;
     end;
 
   Result := True;
 end;
 
 
-function TfrmFxServeAdmin.QueryServiceState(out AState, AProcessId,
+function TfrmFxServeAdmin.QueryServiceState(out AState,
+                                            AProcessId,
                                             AWin32ExitCode,
                                             AServiceExitCode: DWORD): Boolean;
+
 begin
 
   Result := QueryNamedServiceState(DEFAULT_SERVICE,
@@ -1805,10 +1849,10 @@ begin
   Result := False;
 
   if not OpenNamedServiceHandle(AServiceName,
-                                SERVICE_QUERY_STATUS,
-                                Manager,
-                                Service,
-                                ALogFailure) then
+    SERVICE_QUERY_STATUS,
+    Manager,
+    Service,
+    ALogFailure) then
     Exit;
 
   try
@@ -1828,9 +1872,8 @@ begin
         AWin32ExitCode := Status.dwWin32ExitCode;
         AServiceExitCode := Status.dwServiceSpecificExitCode;
       end
-    else
-      if ALogFailure then
-        AddLog('QueryServiceStatusEx failed for ' + AServiceName + ': ' + SysErrorMessage(GetLastError));
+    else if ALogFailure then
+      AddLog('QueryServiceStatusEx failed for ' + AServiceName + ': ' + SysErrorMessage(GetLastError));
 
   finally
     CloseServiceHandle(Service);
@@ -1840,6 +1883,7 @@ end;
 
 
 function TfrmFxServeAdmin.StateText(const AState: DWORD): string;
+
 begin
 
   case AState of
@@ -1850,14 +1894,15 @@ begin
     SERVICE_CONTINUE_PENDING: Result := 'Continue pending';
     SERVICE_PAUSE_PENDING: Result := 'Pause pending';
     SERVICE_PAUSED: Result := 'Paused';
-  else
-    Result := 'Unknown';
+    else
+      Result := 'Unknown';
   end;
 end;
 
 
 function TfrmFxServeAdmin.ExitText(const AWin32ExitCode,
                                    AServiceExitCode: DWORD): string;
+
 begin
 
   Result := '';
@@ -1886,9 +1931,9 @@ var
 begin
 
   if QueryServiceState(State,
-                       ProcessId,
-                       Win32ExitCode,
-                       ServiceExitCode) then
+    ProcessId,
+    Win32ExitCode,
+    ServiceExitCode) then
     begin
       Text := StateText(State);
       Failure := ExitText(Win32ExitCode,
@@ -1924,9 +1969,8 @@ begin
   btnStatus.Enabled := False;
   Machine := ServerMachineName();
 
-  if (FStatusManager <> 0) and
-     not SameText(FStatusManagerMachine,
-                  Machine) then
+  if (FStatusManager <> 0) and not SameText(FStatusManagerMachine,
+    Machine) then
     begin
       CloseServiceHandle(FStatusManager);
       FStatusManager := 0;
@@ -2013,7 +2057,7 @@ begin
 
     AddLog(Format('Status timing: connection %d ms, query %d ms.',
                   [StatusResult^.ConnectionMilliseconds,
-                   StatusResult^.QueryMilliseconds]));
+      StatusResult^.QueryMilliseconds]));
 
     FStatusBar.Repaint();
 
@@ -2041,11 +2085,11 @@ begin
 
   repeat
     if QueryNamedServiceState(AServiceName,
-                              State,
-                              ProcessId,
-                              Win32ExitCode,
-                              ServiceExitCode,
-                              False) and (State = AState) then
+      State,
+      ProcessId,
+      Win32ExitCode,
+      ServiceExitCode,
+      False) and (State = AState) then
       Exit(True);
 
     Sleep(250);
@@ -2068,17 +2112,17 @@ begin
   Result := False;
 
   if not OpenNamedServiceHandle(AServiceName,
-                                SERVICE_START or SERVICE_QUERY_STATUS,
-                                Manager,
-                                Service,
-                                True) then
+    SERVICE_START or SERVICE_QUERY_STATUS,
+    Manager,
+    Service,
+    True) then
     Exit;
 
   try
     Args := nil;
     if StartServiceW(Service,
-                    0,
-                    Args) then
+      0,
+      Args) then
       AddLog('Start command sent: ' + AServiceName)
     else
       begin
@@ -2119,10 +2163,10 @@ begin
   Result := False;
 
   if not OpenNamedServiceHandle(AServiceName,
-                                SERVICE_STOP or SERVICE_QUERY_STATUS,
-                                Manager,
-                                Service,
-                                True) then
+    SERVICE_STOP or SERVICE_QUERY_STATUS,
+    Manager,
+    Service,
+    True) then
     Exit;
 
   try
@@ -2130,8 +2174,8 @@ begin
                SizeOf(Status));
 
     if ControlService(Service,
-                      SERVICE_CONTROL_STOP,
-                      Status) then
+      SERVICE_CONTROL_STOP,
+      Status) then
       AddLog('Stop command sent: ' + AServiceName)
     else
       begin
@@ -2161,6 +2205,7 @@ end;
 
 
 procedure TfrmFxServeAdmin.StartFxServe();
+
 begin
 
   StartNamedService(DEFAULT_SERVICE);
@@ -2169,6 +2214,7 @@ end;
 
 
 procedure TfrmFxServeAdmin.StopFxServe;
+
 begin
 
   StopNamedService(DEFAULT_SERVICE);
@@ -2177,6 +2223,7 @@ end;
 
 
 procedure TfrmFxServeAdmin.RestartFxServe();
+
 begin
 
   StopFxServe();
@@ -2217,8 +2264,8 @@ begin
   Share := IncludeTrailingPathDelimiter(Trim(FShareEdit.Text));
 
   if (ServiceName = '') or
-     (Command = '') or
-     (Share = '') then
+    (Command = '') or
+    (Share = '') then
     begin
       AddLog('Service, share and server-local path are required.');
       Exit;
@@ -2232,12 +2279,12 @@ begin
 
   if (Machine = '') then
     Manager := OpenSCManagerW(nil,
-                             nil,
-                             SC_MANAGER_CONNECT or SC_MANAGER_CREATE_SERVICE)
+                              nil,
+                              SC_MANAGER_CONNECT or SC_MANAGER_CREATE_SERVICE)
   else
     Manager := OpenSCManagerW(PChar(Machine),
-                             nil,
-                             SC_MANAGER_CONNECT or SC_MANAGER_CREATE_SERVICE);
+                              nil,
+                              SC_MANAGER_CONNECT or SC_MANAGER_CREATE_SERVICE);
 
 
   if (Manager = 0) then
@@ -2250,18 +2297,18 @@ begin
 
   try
     Service := CreateServiceW(Manager,
-                             PChar(ServiceName),
-                             'FactoryX FxServe',
-                             SERVICE_ALL_ACCESS,
-                             SERVICE_WIN32_OWN_PROCESS,
-                             SERVICE_AUTO_START,
-                             SERVICE_ERROR_NORMAL,
-                             PChar(Command),
-                             nil,
-                             nil,
-                             nil,
-                             nil,
-                             nil);
+                              PChar(ServiceName),
+                              'FactoryX FxServe',
+                              SERVICE_ALL_ACCESS,
+                              SERVICE_WIN32_OWN_PROCESS,
+                              SERVICE_AUTO_START,
+                              SERVICE_ERROR_NORMAL,
+                              PChar(Command),
+                              nil,
+                              nil,
+                              nil,
+                              nil,
+                              nil);
 
     if (Service = 0) then
       begin
@@ -2285,7 +2332,7 @@ begin
   end;
 
   if ConfigureNamedServiceResilience(ServiceName, SERVICE_AUTO_START,
-                                     False) then
+    False) then
     begin
       StorePreferredWebService(ServiceName);
       AddLog('FxServe automatic startup and failure recovery configured.');
@@ -2301,9 +2348,10 @@ var
   Service: SC_HANDLE;
 
 begin
+
   if not OpenServiceHandle($00010000 or SERVICE_STOP or SERVICE_QUERY_STATUS,
-                           Manager,
-                           Service) then
+    Manager,
+    Service) then
     Exit;
 
   try
@@ -2320,6 +2368,7 @@ end;
 
 
 function TfrmFxServeAdmin.ConfigFileName(): string;
+
 begin
 
   Result := IncludeTrailingPathDelimiter(Trim(FShareEdit.Text)) + 'FxServe.ini';
@@ -2327,6 +2376,7 @@ end;
 
 
 function TfrmFxServeAdmin.LogFileName(): string;
+
 begin
 
   Result := IncludeTrailingPathDelimiter(Trim(FShareEdit.Text)) + 'FxServe.log';
@@ -2345,15 +2395,16 @@ var
   ErrorCode: DWORD;
 
 begin
+
   Result := False;
   AStatus := 0;
   AError := '';
 
   Session := InternetOpenW('FxServeAdmin/1.0',
-                          INTERNET_OPEN_TYPE_PRECONFIG,
-                          nil,
-                          nil,
-                          0);
+                           INTERNET_OPEN_TYPE_PRECONFIG,
+                           nil,
+                           nil,
+                           0);
 
   if (Session = nil) then
     begin
@@ -2387,11 +2438,11 @@ begin
                       SizeOf(Timeout));
 
     Request := InternetOpenUrlW(Session,
-                               PChar(AUrl),
-                               nil,
-                               0,
-                               INTERNET_FLAG_RELOAD or INTERNET_FLAG_NO_CACHE_WRITE,
-                               0);
+                                PChar(AUrl),
+                                nil,
+                                0,
+                                INTERNET_FLAG_RELOAD or INTERNET_FLAG_NO_CACHE_WRITE,
+                                0);
 
     if (Request = nil) then
       begin
@@ -2410,19 +2461,18 @@ begin
       Index := 0;
 
       if not HttpQueryInfoW(Request,
-                           HTTP_QUERY_STATUS_CODE or HTTP_QUERY_FLAG_NUMBER,
-                           @AStatus,
-                           StatusSize,
-                           Index) then
-      begin
-        ErrorCode := GetLastError;
-        AError := SysErrorMessage(ErrorCode);
+        HTTP_QUERY_STATUS_CODE or HTTP_QUERY_FLAG_NUMBER, @AStatus,
+        StatusSize,
+        Index) then
+        begin
+          ErrorCode := GetLastError;
+          AError := SysErrorMessage(ErrorCode);
 
-        if (AError = '') then
-          AError := Format('Windows error %d',
-                           [ErrorCode]);
-        Exit;
-      end;
+          if (AError = '') then
+            AError := Format('Windows error %d',
+                             [ErrorCode]);
+          Exit;
+        end;
 
       Result := True;
 
@@ -2445,6 +2495,7 @@ var
   Address: PInAddr;
 
 begin
+
   Result := False;
   AIPv4Address := '';
 
@@ -2452,7 +2503,7 @@ begin
     Exit;
 
   if (WSAStartup($0202,
-                WsaData) <> 0) then
+    WsaData) <> 0) then
     Exit;
 
   try
@@ -2460,9 +2511,9 @@ begin
     HostEntry := gethostbyname(PAnsiChar(HostName));
 
     if not Assigned(HostEntry) or
-        (HostEntry^.h_addrtype <> AF_INET) or not
-        Assigned(HostEntry^.h_addr_list) or not
-        Assigned(HostEntry^.h_addr_list^) then
+      (HostEntry^.h_addrtype <> AF_INET) or not
+      Assigned(HostEntry^.h_addr_list) or not
+      Assigned(HostEntry^.h_addr_list^) then
       Exit;
 
     Address := PInAddr(HostEntry^.h_addr_list^);
@@ -2477,21 +2528,23 @@ end;
 
 
 function HttpStatusText(const AStatus: DWORD): string;
+
 begin
 
   if (AStatus >= 200) and (AStatus < 300) then
-    Result := Format('OK (HTTP %d)', [AStatus])
+    Result := Format('OK (HTTP %d)',
+                     [AStatus])
+  else if (AStatus >= 300) and (AStatus < 400) then
+    Result := Format('Redirect (HTTP %d)',
+                     [AStatus])
   else
-    if (AStatus >= 300) and (AStatus < 400) then
-      Result := Format('Redirect (HTTP %d)',
-                       [AStatus])
-    else
-      Result := Format('Problem (HTTP %d)',
-                      [AStatus]);
+    Result := Format('Problem (HTTP %d)',
+                     [AStatus]);
 end;
 
 
 procedure TfrmFxServeAdmin.StatusClick(Sender: TObject);
+
 begin
 
   BeginServiceStatusQuery();
@@ -2499,6 +2552,7 @@ end;
 
 
 procedure TfrmFxServeAdmin.StartClick(Sender: TObject);
+
 begin
 
   BeginBusy('starting FxServe.');
@@ -2512,12 +2566,13 @@ end;
 
 
 procedure TfrmFxServeAdmin.StopClick(Sender: TObject);
+
 begin
 
-  if MessageDlg('Stop the FxServe service?',
-                mtConfirmation,
-                 [mbYes, mbNo],
-                 0) = mrYes then
+  if (MessageDlg('Stop the FxServe service?',
+    mtConfirmation,
+    [mbYes, mbNo],
+    0) = mrYes) then
     begin
       BeginBusy('stopping FxServe.');
 
@@ -2531,12 +2586,13 @@ end;
 
 
 procedure TfrmFxServeAdmin.RestartClick(Sender: TObject);
+
 begin
 
-  if MessageDlg('Restart the FxServe service?',
-                mtConfirmation,
-                 [mbYes, mbNo],
-                 0) = mrYes then
+  if (MessageDlg('Restart the FxServe service?',
+    mtConfirmation,
+    [mbYes, mbNo],
+    0) = mrYes) then
     begin
       BeginBusy('restarting FxServe.');
 
@@ -2550,12 +2606,13 @@ end;
 
 
 procedure TfrmFxServeAdmin.InstallClick(Sender: TObject);
+
 begin
 
-  if MessageDlg('Install the FxServe service?'#13#10#13#10 + BuildServiceCommand,
-                 mtConfirmation,
-                  [mbYes, mbNo],
-                  0) = mrYes then
+  if (MessageDlg('Install the FxServe service?'#13#10#13#10 + BuildServiceCommand,
+    mtConfirmation,
+    [mbYes, mbNo],
+    0) = mrYes) then
     begin
       BeginBusy('installing the FxServe service.');
 
@@ -2569,13 +2626,14 @@ end;
 
 
 procedure TfrmFxServeAdmin.UninstallClick(Sender: TObject);
+
 begin
 
-  if MessageDlg('Uninstall the FxServe service registration?'#13#10 +
-                'Files will not be deleted.',
-                mtWarning,
-                 [mbYes, mbNo],
-                 0) = mrYes then
+  if (MessageDlg('Uninstall the FxServe service registration?'#13#10 +
+    'Files will not be deleted.',
+    mtWarning,
+    [mbYes, mbNo],
+    0) = mrYes) then
     begin
       BeginBusy('uninstalling the FxServe service.');
 
@@ -2589,18 +2647,20 @@ end;
 
 
 procedure TfrmFxServeAdmin.OpenFolderClick(Sender: TObject);
+
 begin
 
- ShellExecute(Handle,
-              'open',
-              PChar(Trim(FShareEdit.Text)),
-              nil,
-              nil,
-              SW_SHOWNORMAL);
+  ShellExecute(Handle,
+               'open',
+               PChar(Trim(FShareEdit.Text)),
+               nil,
+               nil,
+               SW_SHOWNORMAL);
 end;
 
 
 procedure TfrmFxServeAdmin.OpenLogClick(Sender: TObject);
+
 begin
 
   if not FileExists(LogFileName) then
@@ -2662,32 +2722,32 @@ begin
   try
     Server := Trim(FServerEdit.Text);
 
-  if (Server = '') then
-    Server := '127.0.0.1';
+    if (Server = '') then
+      Server := '127.0.0.1';
 
-  if not TryResolveIPv4Address(Server,
-                               LanAddress) then
-    LanAddress := Server;
+    if not TryResolveIPv4Address(Server,
+      LanAddress) then
+      LanAddress := Server;
 
-  Url := 'http://' + LanAddress + ':8080/stream/live.json';
-  DisplayUrl := 'http://' + Server + ':8080/stream/live.json';
+    Url := 'http://' + LanAddress + ':8080/stream/live.json';
+    DisplayUrl := 'http://' + Server + ':8080/stream/live.json';
 
-  if HttpGetStatus(Url, Status, ErrorText) then
-    AddLog(Format('Live manifest: %s - %s',
-                  [HttpStatusText(Status), DisplayUrl]))
-  else
-    AddLog('Live manifest check failed: ' + ErrorText);
+    if HttpGetStatus(Url, Status, ErrorText) then
+      AddLog(Format('Live manifest: %s - %s',
+                    [HttpStatusText(Status), DisplayUrl]))
+    else
+      AddLog('Live manifest check failed: ' + ErrorText);
 
     if (Trim(FPublicHostEdit.Text) <> '') then
-    begin
-      Url := 'https://' + Trim(FPublicHostEdit.Text) + '/';
+      begin
+        Url := 'https://' + Trim(FPublicHostEdit.Text) + '/';
 
-      if HttpGetStatus(Url, Status, ErrorText) then
-        AddLog(Format('Public HTTPS: %s - %s',
-                      [HttpStatusText(Status), Url]))
-      else
-        AddLog('Public HTTPS check failed: ' + ErrorText);
-    end;
+        if HttpGetStatus(Url, Status, ErrorText) then
+          AddLog(Format('Public HTTPS: %s - %s',
+                        [HttpStatusText(Status), Url]))
+        else
+          AddLog('Public HTTPS check failed: ' + ErrorText);
+      end;
 
     PreferredService := PreferredWebService();
     if QueryNamedServiceState(PreferredService, ServiceState, ProcessId,
@@ -2730,28 +2790,35 @@ end;
 procedure TfrmFxServeAdmin.BootSafetyClick(Sender: TObject);
 var
   PreferredService: string;
+
 begin
+
   PreferredService := PreferredWebService();
   if not FxInputQuery('Boot safety',
     'Windows service name of the preferred web server:',
     PreferredService) then
     Exit;
   PreferredService := Trim(PreferredService);
-  if PreferredService = '' then
+  if (PreferredService = '') then
     begin
-      MessageDlg('Enter a Windows service name.', mtError, [mbOK], 0);
+      MessageDlg('Enter a Windows service name.',
+                 mtError,
+                 [mbOK],
+                 0);
       Exit;
     end;
   if SameText(PreferredService, 'FxRecord') then
     begin
       MessageDlg('FxRecord cannot be selected as the web server.',
-                 mtError, [mbOK], 0);
+                 mtError,
+                 [mbOK],
+                 0);
       Exit;
     end;
-  if MessageDlg('Configure ' + PreferredService +
+  if (MessageDlg('Configure ' + PreferredService +
     ' as the automatic web service and configure FxRecord for delayed automatic startup?'#13#10#13#10 +
     'If the alternative FxServe/Caddy service is installed, it will be stopped and changed to manual startup.',
-    mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    mtConfirmation, [mbYes, mbNo], 0) <> mrYes) then
     Exit;
 
   BeginBusy('configuring boot safety.');
@@ -2763,7 +2830,10 @@ begin
       on E: Exception do
         begin
           AddLog('Boot safety failed: ' + E.Message);
-          MessageDlg(E.Message, mtError, [mbOK], 0);
+          MessageDlg(E.Message,
+                     mtError,
+                     [mbOK],
+                     0);
         end;
     end;
   finally
@@ -2776,12 +2846,14 @@ procedure TfrmFxServeAdmin.UpdatePolicyClick(Sender: TObject);
 var
   Description: string;
   ErrorText: string;
+
 begin
-  if MessageDlg(
+
+  if (MessageDlg(
     'Require administrator approval before Windows downloads or installs updates on the configured server?'#13#10#13#10 +
     'Windows Update remains enabled. The administrator must regularly install security updates during a maintenance window.'#13#10#13#10 +
     'A domain policy can override this local setting.',
-    mtConfirmation, [mbYes, mbNo], 0) <> mrYes then
+    mtConfirmation, [mbYes, mbNo], 0) <> mrYes) then
     Exit;
 
   BeginBusy('configuring the Windows Update policy.');
@@ -2789,12 +2861,18 @@ begin
     if ConfigureWindowsUpdatePolicy(Description, ErrorText) then
       begin
         AddLog('Windows Update policy configured: ' + Description);
-        MessageDlg(Description, mtInformation, [mbOK], 0);
+        MessageDlg(Description,
+                   mtInformation,
+                   [mbOK],
+                   0);
       end
     else
       begin
         AddLog('Windows Update policy failed: ' + ErrorText);
-        MessageDlg(ErrorText, mtError, [mbOK], 0);
+        MessageDlg(ErrorText,
+                   mtError,
+                   [mbOK],
+                   0);
       end;
   finally
     EndBusy();
@@ -2841,6 +2919,7 @@ end;
 
 
 procedure TfrmFxServeAdmin.SaveClick(Sender: TObject);
+
 begin
 
   BeginBusy('saving and applying the FxServe settings.');
@@ -2874,8 +2953,8 @@ var
 begin
 
   if not PromptPassword('Change Admin Password',
-                        'Current password:',
-                        OldPassword) then
+    'Current password:',
+    OldPassword) then
     Exit;
 
   if not VerifyPassword(OldPassword) then
@@ -2899,13 +2978,13 @@ end;
 //=================
 {$WARN SYMBOL_PLATFORM OFF}
 
-function CryptAcquireContext; external advapi32 name 'CryptAcquireContextW' ;
-function CryptReleaseContext; external advapi32 name 'CryptReleaseContext' ;
-function CryptCreateHash; external advapi32 name 'CryptCreateHash' ;
-function CryptHashData; external advapi32 name 'CryptHashData' ;
-function CryptGetHashParam; external advapi32 name 'CryptGetHashParam' ;
-function CryptDestroyHash; external advapi32 name 'CryptDestroyHash' ;
-function CryptGenRandom; external advapi32 name 'CryptGenRandom' ;
+function CryptAcquireContext; external advapi32 name 'CryptAcquireContextW';
+function CryptReleaseContext; external advapi32 name 'CryptReleaseContext';
+function CryptCreateHash; external advapi32 name 'CryptCreateHash';
+function CryptHashData; external advapi32 name 'CryptHashData';
+function CryptGetHashParam; external advapi32 name 'CryptGetHashParam';
+function CryptDestroyHash; external advapi32 name 'CryptDestroyHash';
+function CryptGenRandom; external advapi32 name 'CryptGenRandom';
 
 {$WARN SYMBOL_PLATFORM ON}
 

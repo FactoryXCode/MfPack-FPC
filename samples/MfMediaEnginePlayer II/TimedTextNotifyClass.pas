@@ -70,8 +70,8 @@ interface
 uses
   LMessages,
   LCLIntf,
-Classes,
-{WinApi}
+  Classes,
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -88,19 +88,20 @@ Classes,
 
 const
   WM_TIMEDTEXTNOTIFY = WM_USER + 1002;
-  WM_ERROR_TIMEDTEXTNOTYFY  = WM_USER + 1003;
+  WM_ERROR_TIMEDTEXTNOTYFY = WM_USER + 1003;
 
   // SubtitleFileExtensions
-   EXT_WEBVTT    = '.vtt';   // See: https://www.w3.org/TR/webvtt1/
-   EXT_SUBRIP    = '.srt';
-   EXT_SUBVIEWER = '.sub';   // > not implemented
-   EXT_YOUTUBE   = '.sbv';   // > not implemented
-   EXT_SAMI      = '.smi';
+  EXT_WEBVTT = '.vtt';   // See: https://www.w3.org/TR/webvtt1/
+  EXT_SUBRIP = '.srt';
+  EXT_SUBVIEWER = '.sub';   // > not implemented
+  EXT_YOUTUBE = '.sbv';   // > not implemented
+  EXT_SAMI = '.smi';
 
 type
 
   // Error
   PTimedTxtError = ^TTimedTxtError;
+
   TTimedTxtError = record
     errorCode: MF_TIMED_TEXT_ERROR_CODE;
     TrackReadyState: MF_TIMED_TEXT_TRACK_READY_STATE;
@@ -109,6 +110,7 @@ type
   end;
 
   PTextPacket = ^TTextPacket;
+
   TTextPacket = record
     Kind: Integer;
     CueEvent: MF_TIMED_TEXT_CUE_EVENT;
@@ -118,21 +120,29 @@ type
     ErrorHR: HRESULT;
     Track: DWORD;
   end;
-  TcTimedTextNotify = class(TInterfacedObject, IMFTimedTextNotify)
+
+  TcTimedTextNotify = class(TInterfacedObject,
+                            IMFTimedTextNotify)
+
   private
 
     FDispatchWindow: HWND;
     FClosing: Boolean;
     FTimedText: IMFTimedText;
     procedure DispatchMessage(var Msg: TLMessage);
-    procedure DeliverCue(cueEvent: MF_TIMED_TEXT_CUE_EVENT; currentTime: Double; cue: IMFTimedTextCue);
-    procedure DeliverError(errorCode: MF_TIMED_TEXT_ERROR_CODE; extendedErrorCode: HResult; sourceTrackId: DWORD);
+    procedure DeliverCue(cueEvent: MF_TIMED_TEXT_CUE_EVENT;
+                         currentTime: Double;
+                         cue: IMFTimedTextCue);
+    procedure DeliverError(errorCode: MF_TIMED_TEXT_ERROR_CODE;
+                           extendedErrorCode: HResult;
+                           sourceTrackId: DWORD);
+
   private
     gv_url: string;
     gv_label: PWideChar;
     gv_lang: PWideChar;
     gv_Handle: THandle;  // handle to caller
-    
+
     ttnmsg_text: string;   // Returned text from callback.
     ttnmsg_Font: TFont;    // Returned text font.
     ttnmsg_Lines: DWord;   // Returned textlines from callback.
@@ -229,10 +239,12 @@ constructor TcTimedTextNotify.Create(const url: string;
                                      pclabel: PWideChar;
                                      pclang: PWideChar;
                                      CallerHandle: HWND);
+
 begin
+
   inherited Create();
 
-  FDispatchWindow:=LCLIntf.AllocateHWnd(DispatchMessage);
+  FDispatchWindow := LCLIntf.AllocateHWnd(DispatchMessage);
   gv_url := url;
   gv_label := pclabel;
   gv_lang := pclang;
@@ -250,9 +262,12 @@ end;
 
 // DESTRUCTOR
 destructor TcTimedTextNotify.Destroy();
+
 begin
+
   Detach;
-  if FDispatchWindow<>0 then LCLIntf.DeallocateHWnd(FDispatchWindow);
+  if (FDispatchWindow <> 0) then
+    LCLIntf.DeallocateHWnd(FDispatchWindow);
   FreeAndNil(ttnmsg_Font);
 
   inherited Destroy();
@@ -260,78 +275,153 @@ end;
 
 
 procedure TcTimedTextNotify.Detach;
-var Msg: TMsg;
+var
+  Msg: TMsg;
+
 begin
- FClosing:=True;gv_Handle:=0;FTimedText:=nil;
- if FDispatchWindow<>0 then
-  while PeekMessageW(Msg,FDispatchWindow,WM_APP+78,WM_APP+78,PM_REMOVE) do Dispose(PTextPacket(Msg.LParam));
+
+  FClosing := True;
+  gv_Handle := 0;
+  FTimedText := nil;
+  if (FDispatchWindow <> 0) then
+    while PeekMessageW(Msg, FDispatchWindow, WM_APP + 78, WM_APP + 78, PM_REMOVE) do
+      Dispose(PTextPacket(Msg.LParam));
 end;
+
+
 procedure TcTimedTextNotify.SelectWhenReady(const TimedText: IMFTimedText);
-begin FTimedText:=TimedText;end;
+
+begin
+
+  FTimedText := TimedText;
+end;
+
+
 procedure TcTimedTextNotify.DispatchMessage(var Msg: TLMessage);
-var Packet: PTextPacket;
+var
+  Packet: PTextPacket;
+
 begin
- if Msg.Msg=WM_APP+79 then begin
-  if not FClosing and Assigned(FTimedText) then FTimedText.SelectTrack(DWORD(Msg.WParam),True);
-  Msg.Result:=0;Exit;
- end;
- if Msg.Msg=WM_APP+78 then begin
-  Packet:=PTextPacket(Msg.LParam);
-  try
-   if not FClosing then
-    if Packet.Kind=0 then DeliverCue(Packet.CueEvent,Packet.CurrentTime,Packet.Cue)
-    else if Packet.Kind=1 then DeliverError(Packet.ErrorCode,Packet.ErrorHR,Packet.Track)
-    else if Assigned(FTimedText) then FTimedText.SelectTrack(Packet.Track,True);
-  finally Dispose(Packet);end;
-  Msg.Result:=0;
- end else Msg.Result:=DefWindowProcW(FDispatchWindow,Msg.Msg,Msg.WParam,Msg.LParam);
+
+  if (Msg.Msg = WM_APP + 79) then
+    begin
+      if not FClosing and Assigned(FTimedText) then
+        FTimedText.SelectTrack(DWORD(Msg.WParam),
+                               True);
+      Msg.Result := 0;
+      Exit;
+    end;
+  if (Msg.Msg = WM_APP + 78) then
+    begin
+      Packet := PTextPacket(Msg.LParam);
+      try
+        if not FClosing then
+          if (Packet.Kind = 0) then
+            DeliverCue(Packet.CueEvent,
+                       Packet.CurrentTime,
+                       Packet.Cue)
+          else if (Packet.Kind = 1) then
+            DeliverError(Packet.ErrorCode,
+                         Packet.ErrorHR,
+                         Packet.Track)
+          else if Assigned(FTimedText) then
+            FTimedText.SelectTrack(Packet.Track,
+                                   True);
+      finally
+        Dispose(Packet);
+      end;
+      Msg.Result := 0;
+    end
+  else
+    Msg.Result := DefWindowProcW(FDispatchWindow,
+                                 Msg.Msg,
+                                 Msg.WParam,
+                                 Msg.LParam);
 end;
-procedure TcTimedTextNotify.Cue(cueEvent: MF_TIMED_TEXT_CUE_EVENT; currentTime: Double; cue: IMFTimedTextCue);
-var Packet: PTextPacket;
+
+
+procedure TcTimedTextNotify.Cue(cueEvent: MF_TIMED_TEXT_CUE_EVENT;
+                                currentTime: Double;
+                                cue: IMFTimedTextCue);
+var
+  Packet: PTextPacket;
+
 begin
- if FClosing then Exit;
- New(Packet);Packet.Kind:=0;Packet.CueEvent:=cueEvent;Packet.CurrentTime:=currentTime;Packet.Cue:=cue;
- if not PostMessageW(FDispatchWindow,WM_APP+78,0,LPARAM(Packet)) then Dispose(Packet);
+
+  if FClosing then
+    Exit;
+  New(Packet);
+  Packet.Kind := 0;
+  Packet.CueEvent := cueEvent;
+  Packet.CurrentTime := currentTime;
+  Packet.Cue := cue;
+  if not PostMessageW(FDispatchWindow, WM_APP + 78, 0, LPARAM(Packet)) then
+    Dispose(Packet);
 end;
-procedure TcTimedTextNotify.Error(errorCode: MF_TIMED_TEXT_ERROR_CODE; extendedErrorCode: HResult; sourceTrackId: DWORD);
-var Packet: PTextPacket;
+
+
+procedure TcTimedTextNotify.Error(errorCode: MF_TIMED_TEXT_ERROR_CODE;
+                                  extendedErrorCode: HResult;
+                                  sourceTrackId: DWORD);
+var
+  Packet: PTextPacket;
+
 begin
- if FClosing then Exit;
- New(Packet);Packet.Kind:=1;Packet.ErrorCode:=errorCode;Packet.ErrorHR:=extendedErrorCode;Packet.Track:=sourceTrackId;
- if not PostMessageW(FDispatchWindow,WM_APP+78,0,LPARAM(Packet)) then Dispose(Packet);
+
+  if FClosing then
+    Exit;
+  New(Packet);
+  Packet.Kind := 1;
+  Packet.ErrorCode := errorCode;
+  Packet.ErrorHR := extendedErrorCode;
+  Packet.Track := sourceTrackId;
+  if not PostMessageW(FDispatchWindow, WM_APP + 78, 0, LPARAM(Packet)) then
+    Dispose(Packet);
 end;
 // callback methods
 
 procedure TcTimedTextNotify.TrackAdded(trackId: DWORD);
+
 begin
-  if FClosing then Exit;
-  if not PostMessageW(FDispatchWindow,WM_APP+79,trackId,0) then Exit;
+
+  if FClosing then
+    Exit;
+  if not PostMessageW(FDispatchWindow, WM_APP + 79, trackId, 0) then
+    Exit;
 end;
 
 
 procedure TcTimedTextNotify.TrackRemoved(trackId: DWORD);
+
 begin
+
   bTrackAdded := (trackId = ttnmsg_TrackId);
 end;
 
 
 procedure TcTimedTextNotify.TrackSelected(trackId: DWORD;
                                           selected: BOOL);
+
 begin
+
   // Not implemented
 end;
 
 
 procedure TcTimedTextNotify.TrackReadyStateChanged(trackId: DWORD);
+
 begin
- // trackId identifies the changed track; it is not a ready-state enumeration.
+
+  // trackId identifies the changed track; it is not a ready-state enumeration.
 end;
 
 
 procedure TcTimedTextNotify.DeliverError(errorCode: MF_TIMED_TEXT_ERROR_CODE;
-                                  extendedErrorCode: HResult;
-                                  sourceTrackId: DWORD);
+                                         extendedErrorCode: HResult;
+                                         sourceTrackId: DWORD);
+
 begin
+
   FTimedTxtError.errorCode := errorCode;
   FTimedTxtError.extendedErrorCode := extendedErrorCode;
   FTimedTxtError.sourceTrackId := sourceTrackId;
@@ -341,8 +431,8 @@ end;
 
 
 procedure TcTimedTextNotify.DeliverCue(cueEvent: MF_TIMED_TEXT_CUE_EVENT;
-                                currentTime: Double;
-                                cue: IMFTimedTextCue);
+                                       currentTime: Double;
+                                       cue: IMFTimedTextCue);
 var
   trackKind: MF_TIMED_TEXT_TRACK_KIND;
   fText: IMFTimedTextFormattedText;
@@ -354,100 +444,109 @@ var
 
 begin
 
-try
-  // When playing stops, there is nothing to do here.
-  if (cueEvent = MF_TIMED_TEXT_CUE_EVENT_CLEAR) then
-    begin
-      ttnmsg_text := '';
-      Exit;
-    end;
+  try
+    // When playing stops, there is nothing to do here.
+    if (cueEvent = MF_TIMED_TEXT_CUE_EVENT_CLEAR) then
+      begin
+        ttnmsg_text := '';
+        Exit;
+      end;
 
-  // check what type of file we are dealing with
-  trackKind := cue.GetCueKind();
+    // check what type of file we are dealing with
+    trackKind := cue.GetCueKind();
 
-  case Ord(trackKind) of
-    // MF_TIMED_TEXT_TRACK_KIND_SUBTITLES
-    1: begin
-         ttnmsg_Lines := 0;
-         ttnmsg_TrackId := cue.GetId();
-         // Each track is called on the start and end time.
-         // On the end of the timespan we erase the subtitle.
-         if (cueEvent = MF_TIMED_TEXT_CUE_EVENT_INACTIVE) then
-           ttnmsg_text := ''
-         else
-           begin
-             // Get number of subtitlelines
-             ttnmsg_Lines := cue.GetLineCount();  // Zero based index!
+    case Ord(trackKind) of
+      // MF_TIMED_TEXT_TRACK_KIND_SUBTITLES
+        1: begin
+          ttnmsg_Lines := 0;
+          ttnmsg_TrackId := cue.GetId();
+          // Each track is called on the start and end time.
+          // On the end of the timespan we erase the subtitle.
+          if (cueEvent = MF_TIMED_TEXT_CUE_EVENT_INACTIVE) then
+            ttnmsg_text := ''
+          else
+            begin
+              // Get number of subtitlelines
+              ttnmsg_Lines := cue.GetLineCount();  // Zero based index!
 
-             // If there are multiple lines, we have to itterate through them
-             for i := 0 to Integer(ttnmsg_Lines) -1 do
-               begin
-                 cue.GetLine(i,
-                             fText);
+              // If there are multiple lines, we have to itterate through them
+              for i := 0 to Integer(ttnmsg_Lines) - 1 do
+                begin
+                  cue.GetLine(i,
+                              fText);
 
-                 {hr :=} fText.GetText(TxtBuffer);
+                  {hr :=} fText.GetText(TxtBuffer);
 
-                 if (i = 0) then
-                   ttnmsg_text := TxtBuffer
-                 else if (i > 0) then
-                   ttnmsg_text := ttnmsg_text + chr(13) + TxtBuffer;
-              end;
+                  if (i = 0) then
+                    ttnmsg_text := TxtBuffer
+                  else if (i > 0) then
+                    ttnmsg_text := ttnmsg_text + chr(13) + TxtBuffer;
+                end;
 
-             // Gets the number of subformats in the formatted timed-text object.
-             if Assigned(fText) then SubFmtCount := fText.GetSubformattingCount() else SubFmtCount:=0;
+              // Gets the number of subformats in the formatted timed-text object.
+              if Assigned(fText) then
+                SubFmtCount := fText.GetSubformattingCount()
+              else
+                SubFmtCount := 0;
 
-             for i := 0 to Integer(SubFmtCount) -1 do
-               begin
-                 // font style  Note; If no fontstyle can be found, result will be <> S_OK
-                 hr := fText.GetSubformatting(i,
-                                              dwFirstChar,
-                                              dwLength,
-                                              fstyle);
+              for i := 0 to Integer(SubFmtCount) - 1 do
+                begin
+                  // font style  Note; If no fontstyle can be found, result will be <> S_OK
+                  hr := fText.GetSubformatting(i,
+                                               dwFirstChar,
+                                               dwLength,
+                                               fstyle);
 
-                // If fstyle <> nil or hr <> 0, there are no fontstyle definitions
-                if SUCCEEDED(hr) then
-                  SetFontProperties(fstyle); // set font properties
-               end;
-         end; // MF_TIMED_TEXT_TRACK_KIND_SUBTITLES
-    end;
-  end; // case
+                  // If fstyle <> nil or hr <> 0, there are no fontstyle definitions
+                  if SUCCEEDED(hr) then
+                    SetFontProperties(fstyle); // set font properties
+                end;
+            end; // MF_TIMED_TEXT_TRACK_KIND_SUBTITLES
+        end;
+    end; // case
 
-  // Get new time info
-  ttnmsg_startTime := cue.GetStartTime();
-  ttnmsg_durTime := cue.GetDuration();
-  ttnmsg_endTime := ttnmsg_startTime + ttnmsg_durTime;
+    // Get new time info
+    ttnmsg_startTime := cue.GetStartTime();
+    ttnmsg_durTime := cue.GetDuration();
+    ttnmsg_endTime := ttnmsg_startTime + ttnmsg_durTime;
 
-finally
-  // Send message to the window we got the HWND (gv_Handle) from.
-  NotifyUpdate();
-end;
+  finally
+    // Send message to the window we got the HWND (gv_Handle) from.
+    NotifyUpdate();
+  end;
 end;
 
 
 procedure TcTimedTextNotify.Reset();
+
 begin
+
   // Not implemented
 end;
 
 
 // Send text and properties to caller.
 procedure TcTimedTextNotify.NotifyUpdate();
+
 begin
+
   // Send a message to the caller a text event occured.
   SendMessageW(gv_Handle,
-              WM_TIMEDTEXTNOTIFY,
-              WPARAM(1),
-              0);
+               WM_TIMEDTEXTNOTIFY,
+               WPARAM(1),
+               0);
 end;
 
 // Send an error notification to the caller.
 procedure TcTimedTextNotify.SendErrorNotification(aLParam: LPARAM);
+
 begin
+
   // Send a message to the caller an error event occured.
   SendMessageW(gv_Handle,
-              WM_ERROR_TIMEDTEXTNOTYFY,
-              WPARAM(PPTimedTxtError),
-              LPARAM(1));
+               WM_ERROR_TIMEDTEXTNOTYFY,
+               WPARAM(PPTimedTxtError),
+               LPARAM(1));
 end;
 
 
@@ -470,7 +569,8 @@ begin
   hr := fstyle.GetColor(argb);
   if SUCCEEDED(hr) then
     begin
-      CopyMFARGBToTColor(argb, fgColor);
+      CopyMFARGBToTColor(argb,
+                         fgColor);
       ttnmsg_Font.Color := fgColor;
     end
   else
@@ -489,13 +589,14 @@ begin
     ttnmsg_Font.Style := [];
 
   // Size
-  hr := fstyle.GetFontSize(fSize, fSizeType);
+  hr := fstyle.GetFontSize(fSize,
+                           fSizeType);
   if SUCCEEDED(hr) then
     begin
       if (fSizeType = MF_TIMED_TEXT_UNIT_TYPE_PIXELS) then
         ttnmsg_Font.Size := Trunc(fSize)
       else if (fSizeType = MF_TIMED_TEXT_UNIT_TYPE_PERCENTAGE) then
-        ttnmsg_Font.Size := ttnmsg_Font.Size * Trunc(fSize/100);
+        ttnmsg_Font.Size := ttnmsg_Font.Size * Trunc(fSize / 100);
     end
   else
     ttnmsg_Font.Size := 14;
@@ -510,8 +611,8 @@ begin
       else if (fttStyle = MF_TIMED_TEXT_FONT_STYLE_ITALIC) then
         ttnmsg_Font.Style := ttnmsg_Font.Style + [fsItalic]
       else // MF_TIMED_TEXT_FONT_STYLE_OBLIQUE  Delphi has no slightly sloped styles,
-           // So we keep it by Italic
-           ttnmsg_Font.Style := ttnmsg_Font.Style + [fsItalic];
+        // So we keep it by Italic
+        ttnmsg_Font.Style := ttnmsg_Font.Style + [fsItalic];
     end
   else
     ttnmsg_Font.Style := [];
@@ -529,50 +630,75 @@ end;
 
 // Getters and setters /////////////////////////////////////////////////////////
 function TcTimedTextNotify.GetLiveText(): string;
+
 begin
+
   Result := string(ttLiveText);
 end;
 
+
 procedure TcTimedTextNotify.SetLiveText(value: string);
+
 begin
+
   if (ttLiveText <> value) then
     ttLiveText := value;
 end;
 
+
 function TcTimedTextNotify.GetSubTitle(): string;
+
 begin
+
   Result := String(ttnmsg_text);
 end;
 
+
 procedure TcTimedTextNotify.SetSubTitle(value: string);
+
 begin
+
   if (ttnmsg_text <> value) then
     ttnmsg_text := LPWSTR(value);
 end;
 
+
 function TcTimedTextNotify.GetLines(): DWord;
+
 begin
+
   Result := ttnmsg_Lines;
 end;
 
+
 function TcTimedTextNotify.GetFont(): TFont;
+
 begin
+
   Result := ttnmsg_Font;
 end;
 
 
 function TcTimedTextNotify.GetStartTime(): Double;
+
 begin
+
   Result := ttnmsg_startTime;
 end;
 
+
 function TcTimedTextNotify.GetEndTime(): Double;
+
 begin
+
   Result := ttnmsg_endTime;
 end;
 
+
 function TcTimedTextNotify.GetTimeSpan(): Double;
+
 begin
+
   Result := ttnmsg_durTime;
 end;
 

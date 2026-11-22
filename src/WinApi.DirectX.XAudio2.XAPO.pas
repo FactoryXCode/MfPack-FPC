@@ -158,48 +158,49 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
 
 
-//--------------<D-E-F-I-N-I-T-I-O-N-S>-------------------------------------//
+  //--------------<D-E-F-I-N-I-T-I-O-N-S>-------------------------------------//
 
 
 const
 
   // XAPO error codes
-  FACILITY_XAPO                       = $897;
-  XAPO_E_FORMAT_UNSUPPORTED           = $88970001;  // requested audio format unsupported
+  FACILITY_XAPO = $897;
+  XAPO_E_FORMAT_UNSUPPORTED = $88970001;  // requested audio format unsupported
 
   // supported number of channels (samples per frame) range
-  XAPO_MIN_CHANNELS                   = 1;
-  XAPO_MAX_CHANNELS                   = 64;
+  XAPO_MIN_CHANNELS = 1;
+  XAPO_MAX_CHANNELS = 64;
 
   // supported framerate range
-  XAPO_MIN_FRAMERATE                  = 1000;
-{ 10.0.28000.0  }
-  XAPO_MAX_FRAMERATE                  = 384000;
+  XAPO_MIN_FRAMERATE = 1000;
+  { 10.0.28000.0  }
+  XAPO_MAX_FRAMERATE = 384000;
 
   // unicode string length, including terminator, used with XAPO_REGISTRATION_PROPERTIES
-  XAPO_REGISTRATION_STRING_LENGTH     = 256;
+  XAPO_REGISTRATION_STRING_LENGTH = 256;
 
 
   // XAPO property flags, used with XAPO_REGISTRATION_PROPERTIES.Flags:
   // Number of channels of input and output buffers must match,
   // applies to XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS.pFormat.
-  XAPO_FLAG_CHANNELS_MUST_MATCH       = $00000001;
+  XAPO_FLAG_CHANNELS_MUST_MATCH = $00000001;
 
   // Framerate of input and output buffers must match,
   // applies to XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS.pFormat.
-  XAPO_FLAG_FRAMERATE_MUST_MATCH      = $00000002;
+  XAPO_FLAG_FRAMERATE_MUST_MATCH = $00000002;
 
   // Bit depth of input and output buffers must match,
   // applies to XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS.pFormat.
   // Container size of input and output buffers must also match if
   // XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS.pFormat is WAVEFORMATEXTENSIBLE.
-  XAPO_FLAG_BITSPERSAMPLE_MUST_MATCH  = $00000004;
+  XAPO_FLAG_BITSPERSAMPLE_MUST_MATCH = $00000004;
 
   // Number of input and output buffers must match,
   // applies to XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS.
@@ -208,7 +209,7 @@ const
   // equal XAPO_REGISTRATION_PROPERTIES.MinOutputBufferCount and
   // XAPO_REGISTRATION_PROPERTIES.MaxInputBufferCount must equal
   // XAPO_REGISTRATION_PROPERTIES.MaxOutputBufferCount when used.
-  XAPO_FLAG_BUFFERCOUNT_MUST_MATCH    = $00000008;
+  XAPO_FLAG_BUFFERCOUNT_MUST_MATCH = $00000008;
 
   // XAPO must be run in-place.  Use this flag only if your DSP
   // implementation cannot process separate input and output buffers.
@@ -223,7 +224,7 @@ const
   // though the input buffer count must equal the output buffer count.
   // When multiple input/output buffers are used, the XAPO may assume
   // input buffer [N] equals output buffer [N] for in-place processing.
-  XAPO_FLAG_INPLACE_REQUIRED          = $00000020;
+  XAPO_FLAG_INPLACE_REQUIRED = $00000020;
 
   // XAPO may be run in-place.  If the XAPO is used in a chain
   // such that the requirements for XAPO_FLAG_INPLACE_REQUIRED are met,
@@ -237,10 +238,10 @@ const
   // in-place.  Thus the same implementation may be conveniently reused
   // for various input/output configurations, while taking advantage of
   // in-place processing when possible.
-  XAPO_FLAG_INPLACE_SUPPORTED         = $00000010;
+  XAPO_FLAG_INPLACE_SUPPORTED = $00000010;
 
 
-//--------------<D-A-T-A---T-Y-P-E-S>---------------------------------------//
+  //--------------<D-A-T-A---T-Y-P-E-S>---------------------------------------//
   //#pragma pack(push, 1) // set packing alignment to ensure consistency across arbitrary build environments
   // The default alignment is 8 bytes (quad word) for win64 and 1 byte for win32, unless the project alignment settings are changed.
   // Disable field aligned. All record and class structures will be packed.
@@ -252,6 +253,7 @@ type
 
   PPXAPO_REGISTRATION_PROPERTIES = ^PXAPO_REGISTRATION_PROPERTIES;
   PXAPO_REGISTRATION_PROPERTIES = ^XAPO_REGISTRATION_PROPERTIES;
+
   XAPO_REGISTRATION_PROPERTIES = record
     clsid: CLSID;                                                         // COM class ID, used with CoCreate
     FriendlyName: array[0..XAPO_REGISTRATION_STRING_LENGTH - 1] of WideChar;    // friendly name unicode string
@@ -276,6 +278,7 @@ type
   // IXAPO.Process would have to handle for the respective buffer.
 
   PXAPO_LOCKFORPROCESS_BUFFER_PARAMETERS = ^XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS;
+
   XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS = record
     pFormat: PWAVEFORMATEX;   // buffer audio format
     MaxFrameCount: UINT32;    // maximum number of frames in respective buffer that IXAPO::Process would have to handle, irrespective of dynamic variable settings, can be 0
@@ -304,9 +307,10 @@ type
 
   PXAPO_BUFFER_FLAGS = ^XAPO_BUFFER_FLAGS;
   XAPO_BUFFER_FLAGS = DWord;
+
 const
   XAPO_BUFFER_SILENT = XAPO_BUFFER_FLAGS(0);     // silent data should be assumed, respective memory may be uninitialized
-  XAPO_BUFFER_VALID  = XAPO_BUFFER_FLAGS(1);     // arbitrary data should be assumed (may or may not be silent frames), respective memory initialized
+  XAPO_BUFFER_VALID = XAPO_BUFFER_FLAGS(1);     // arbitrary data should be assumed (may or may not be silent frames), respective memory initialized
 
 type
 
@@ -326,39 +330,40 @@ type
   // the respective XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS.MaxFrameCount.
 
   PXAPO_PROCESS_BUFFER_PARAMETERS = ^XAPO_PROCESS_BUFFER_PARAMETERS;
+
   XAPO_PROCESS_BUFFER_PARAMETERS = record
     pBuffer: Pointer;           // audio data buffer, must be non-NULL
     BufferFlags: XAPO_BUFFER_FLAGS;   // describes assumed content of pBuffer, does not affect ValidFrameCount
     ValidFrameCount: UINT32;    // number of frames of valid data, must be within respective [0, XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS.MaxFrameCount], always XAPO_LOCKFORPROCESS_BUFFER_PARAMETERS.MaxFrameCount for CBR/user-defined XAPOs, does not affect BufferFlags
   end;
 
-//-------------- <M-A-C-R-O-S> -----------------------------------------------//
-    // Memory allocation macros that allow one module to allocate memory and
-    // another to free it, by guaranteeing that the same heap manager is used
-    // regardless of differences between build environments of the two modules.
-    //
-    // Used by IXAPO methods that must allocate arbitrary sized structures
-    // such as WAVEFORMATEX that are subsequently returned to the application.
-    //
-    // Remarks:
-    //   XAPOFree and XAPOAlloc are memory allocation macros that allow one module to
-    //   allocate memory and another to free it,
-    //   by guaranteeing that the same heap manager is used regardless of
-    //   differences between the build environments of the two modules.
+  //-------------- <M-A-C-R-O-S> -----------------------------------------------//
+  // Memory allocation macros that allow one module to allocate memory and
+  // another to free it, by guaranteeing that the same heap manager is used
+  // regardless of differences between build environments of the two modules.
+  //
+  // Used by IXAPO methods that must allocate arbitrary sized structures
+  // such as WAVEFORMATEX that are subsequently returned to the application.
+  //
+  // Remarks:
+  //   XAPOFree and XAPOAlloc are memory allocation macros that allow one module to
+  //   allocate memory and another to free it,
+  //   by guaranteeing that the same heap manager is used regardless of
+  //   differences between the build environments of the two modules.
 
-    // function XAPOAlloc.
-    // Memory allocation macro used by IXAPO methods that must allocate
-    // arbitrary sized structures that are subsequently returned to the application.
-    // Size, in bytes, of the memory block to be allocated.
-    function XAPOAlloc(size: SIZE_T): Pointer;
+// function XAPOAlloc.
+// Memory allocation macro used by IXAPO methods that must allocate
+// arbitrary sized structures that are subsequently returned to the application.
+// Size, in bytes, of the memory block to be allocated.
+function XAPOAlloc(size: SIZE_T): Pointer;
 
-    // Procedure used to free memory allocated with the XAPOAlloc function.
-    // p, Pointer to the memory block to be freed.
-    procedure XAPOFree(p: Pointer);
+// Procedure used to free memory allocated with the XAPOAlloc function.
+// p, Pointer to the memory block to be freed.
+procedure XAPOFree(p: Pointer);
 
 
 type
-//-------------- <I-N-T-E-R-F-A-C-E-S> ---------------------------------------//
+  //-------------- <I-N-T-E-R-F-A-C-E-S> ---------------------------------------//
 
 
 
@@ -368,7 +373,7 @@ type
   // DSP code, allowing it to be easily plugged into an XAudio2 effect chain.
   //
   IXAPO = interface(IUnknown)
-  ['{A410B984-9839-4819-A0BE-2856AE6B3ADB}']
+    ['{A410B984-9839-4819-A0BE-2856AE6B3ADB}']
     // DESCRIPTION:
     //  Allocates a copy of the registration properties of the XAPO.
     //
@@ -637,6 +642,7 @@ type
     function CalcOutputFrames(InputFrameCount: UINT32): UINT32; stdcall;
 
   end;
+
   IID_IXAPO = IXAPO;
 
 
@@ -647,7 +653,7 @@ type
   // effect-specific parameters.
   //
   IXAPOParameters = interface(IUnknown)
-  ['{26D95C66-80F2-499A-AD54-5AE7F01C6D98}']
+    ['{26D95C66-80F2-499A-AD54-5AE7F01C6D98}']
     // DESCRIPTION:
     //  Sets effect-specific parameters.
     //
@@ -688,13 +694,15 @@ type
                             ParameterByteSize: UINT32); stdcall;
 
   end;
+
   IID_IXAPOParameters = IXAPOParameters;
 
   //set allignment back to default
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   // Additional Prototypes for ALL interfaces
@@ -706,15 +714,20 @@ implementation
 
 
 function XAPOAlloc(size: SIZE_T): Pointer;
+
 begin
-  Result:= CoTaskMemAlloc(size);
+
+  Result := CoTaskMemAlloc(size);
 end;
 
+
 procedure XAPOFree(p: Pointer);
+
 begin
+
   CoTaskMemFree(p);
 end;
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

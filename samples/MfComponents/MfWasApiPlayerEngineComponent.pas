@@ -94,6 +94,7 @@ const
 type
 
   TMfWasApiPlayerEngine = class(TComponent)
+
   private
 
     FEngine: TWasApiEngine;
@@ -312,6 +313,7 @@ implementation
 
 
 procedure Register;
+
 begin
 
   RegisterComponents('MfPack Core Audio Samples',
@@ -321,6 +323,7 @@ end;
 { TMfWasApiPlayerEngine }
 
 constructor TMfWasApiPlayerEngine.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
@@ -343,6 +346,7 @@ end;
 
 
 destructor TMfWasApiPlayerEngine.Destroy();
+
 begin
 
   // During application shutdown, queued engine callbacks may still arrive on the UI thread.
@@ -374,7 +378,7 @@ begin
       except
         // ignore during shutdown
       end;
-  end;
+    end;
 
   FreeAndNil(FEngine);
   inherited;
@@ -382,6 +386,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.CanRaiseToOwner(): Boolean;
+
 begin
 
   // Never raise events at design-time.
@@ -401,6 +406,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.Loaded();
+
 begin
 
   inherited;
@@ -412,6 +418,7 @@ end;
 
 procedure TMfWasApiPlayerEngine.Notification(AComponent: TComponent;
                                              Operation: TOperation);
+
 begin
 
   inherited Notification(AComponent,
@@ -423,6 +430,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.AttachEngineCallbacks;
+
 begin
 
   if not Assigned(FEngine) then
@@ -438,6 +446,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.CheckForEngine();
+
 begin
 
   if not Assigned(FEngine) then
@@ -460,6 +469,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SyncRackHook();
+
 begin
 
   if not Assigned(FEngine) then
@@ -474,6 +484,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SyncStoredPropertiesToEngine();
+
 begin
 
   if not Assigned(FEngine) then
@@ -498,6 +509,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetUseDefaultDevice(const Value: Boolean);
+
 begin
 
   if (FUseDefaultDevice = Value) then
@@ -511,6 +523,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetDeviceRole(const Value: ERole);
+
 begin
 
   if (FDeviceRole = Value) then
@@ -524,9 +537,10 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetDeviceId(const Value: string);
+
 begin
 
-  if (lstrcmpiW(PWideChar(FDeviceId),PWideChar(Value)) = 0) then
+  if (lstrcmpiW(PWideChar(FDeviceId), PWideChar(Value)) = 0) then
     Exit;
 
   FDeviceId := Value;
@@ -544,6 +558,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetDeviceIndex(const Value: Integer);
+
 begin
 
   if (FDeviceIndex = Value) then
@@ -557,6 +572,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetDeviceName(const Value: string);
+
 begin
 
   // Readable label only. The engine owns the actual resolved device name.
@@ -565,6 +581,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetCueEnabled(const Value: Boolean);
+
 begin
 
   if (FCueEnabled = Value) then
@@ -578,6 +595,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetCueUseDefaultDevice(const Value: Boolean);
+
 begin
 
   if (FCueUseDefaultDevice = Value) then
@@ -591,6 +609,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetCueDeviceRole(const Value: ERole);
+
 begin
 
   if (FCueDeviceRole = Value) then
@@ -604,9 +623,10 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetCueDeviceId(const Value: string);
+
 begin
 
-  if (lstrcmpiW(PWideChar(FCueDeviceId),PWideChar(Value)) = 0) then
+  if (lstrcmpiW(PWideChar(FCueDeviceId), PWideChar(Value)) = 0) then
     Exit;
 
   FCueDeviceId := Value;
@@ -624,6 +644,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetCueMuted(const Value: Boolean);
+
 begin
 
   if (FCueMuted = Value) then
@@ -637,6 +658,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.GetCueMuted(): Boolean;
+
 begin
 
   if Assigned(FEngine) then
@@ -647,6 +669,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetRack(const Value: TMfWasApiEffectsRack);
+
 begin
 
   if (FRack = Value) then
@@ -667,6 +690,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.GetDeviceState(): TDeviceState;
+
 begin
 
   if Assigned(FEngine) then
@@ -677,6 +701,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.GetSoundChannels(): Word;
+
 begin
 
   if Assigned(FEngine) then
@@ -688,7 +713,9 @@ end;
 
 // ---- engine -> component event forwarders ----
 
-procedure TMfWasApiPlayerEngine.EngineStateChanged(Sender: TObject; const NewState: TDeviceState);
+procedure TMfWasApiPlayerEngine.EngineStateChanged(Sender: TObject;
+                                                   const NewState: TDeviceState);
+
 begin
 
   if not CanRaiseToOwner then
@@ -701,8 +728,9 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.EngineError(Sender: TObject;
-                                           const Msg: string;
-                                           const Hr: HRESULT);
+                                            const Msg: string;
+                                            const Hr: HRESULT);
+
 begin
 
   if not CanRaiseToOwner then
@@ -716,6 +744,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.EngineReady(Sender: TObject);
+
 begin
 
   if not CanRaiseToOwner then
@@ -729,6 +758,7 @@ end;
 procedure TMfWasApiPlayerEngine.EngineProcessed(Sender: TObject;
                                                 const Position100ns: Int64;
                                                 const RawPosition: UInt64);
+
 begin
 
   if not CanRaiseToOwner then
@@ -742,6 +772,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.EngineEnded(Sender: TObject);
+
 begin
 
   if not CanRaiseToOwner() then
@@ -755,10 +786,12 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.EngineOutputPcm(Sender: TObject;
-                                               pData: PByte;
-                                               const ByteCount: DWORD;
-                                               Wfx: PWAVEFORMATEX);
+                                                pData: PByte;
+                                                const ByteCount: DWORD;
+                                                Wfx: PWAVEFORMATEX);
+
 begin
+
   // Note: Called on the engine thread.
   if Assigned(FOnOutputPcm) then
     FOnOutputPcm(Self,
@@ -769,9 +802,10 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.EngineProcessPcm(Sender: TObject;
-                                                pData: PByte;
-                                                const ByteCount: DWORD;
-                                                pwfx: PWAVEFORMATEX);
+                                                 pData: PByte;
+                                                 const ByteCount: DWORD;
+                                                 pwfx: PWAVEFORMATEX);
+
 begin
 
   // Note: Called on the engine thread.
@@ -795,6 +829,7 @@ function TMfWasApiPlayerEngine.EngineFillPcm(Sender: TObject;
                                              const ByteCount: DWORD;
                                              pwfx: PWAVEFORMATEX;
                                              out Flags: DWORD): HRESULT;
+
 begin
 
   Flags := 0;
@@ -813,6 +848,7 @@ end;
 
 function TMfWasApiPlayerEngine.OpenFile(const audiofile: UnicodeString;
                                         fileDuration100ns: LONGLONG): HRESULT;
+
 begin
 
   CheckForEngine();
@@ -827,6 +863,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.Start(): HRESULT;
+
 begin
 
   CheckForEngine();
@@ -844,6 +881,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.Stop(): HRESULT;
+
 begin
 
   // Do not auto-create the engine just to stop it.
@@ -863,6 +901,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.WaitForStop(TimeoutMs: DWORD = 100): HRESULT;
+
 begin
 
   // Do not auto-create the engine just to wait for it.
@@ -884,6 +923,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.Pause(): HRESULT;
+
 begin
 
   CheckForEngine();
@@ -897,6 +937,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.SeekTo(const Pos100ns: Int64): HRESULT;
+
 begin
 
   CheckForEngine();
@@ -911,6 +952,7 @@ end;
 
 function TMfWasApiPlayerEngine.SetVolumes(pVolLeft,
                                           pVolRight: Single): HRESULT;
+
 begin
 
   CheckForEngine();
@@ -926,6 +968,7 @@ end;
 
 function TMfWasApiPlayerEngine.SetVolumesAsync(pVolLeft,
                                                pVolRight: Single): HRESULT;
+
 begin
 
   CheckForEngine();
@@ -940,7 +983,9 @@ end;
 
 
 function TMfWasApiPlayerEngine.Mute(pActive: Boolean): Boolean;
+
 begin
+
   CheckForEngine();
 
   if not Assigned(FEngine) then
@@ -952,7 +997,9 @@ end;
 
 
 function TMfWasApiPlayerEngine.CueMute(pActive: Boolean): Boolean;
+
 begin
+
   CheckForEngine();
 
   if not Assigned(FEngine) then
@@ -965,7 +1012,9 @@ end;
 
 procedure TMfWasApiPlayerEngine.SetMeterFaderGains(const GainL,
                                                    GainR: Single);
+
 begin
+
   CheckForEngine();
 
   if not Assigned(FEngine) then
@@ -978,7 +1027,9 @@ end;
 
 procedure TMfWasApiPlayerEngine.GetMeterFaderGains(out GainL,
                                                    GainR: Single);
+
 begin
+
   CheckForEngine();
 
   if not Assigned(FEngine) then
@@ -994,9 +1045,10 @@ end;
 
 
 function TMfWasApiPlayerEngine.SwitchOutputDevice(const ADeviceId: string;
-                                                 const AUseDefaultDevice: Boolean;
-                                                 const ARole: ERole;
-                                                 const AutoResume: Boolean): HRESULT;
+                                                  const AUseDefaultDevice: Boolean;
+                                                  const ARole: ERole;
+                                                  const AutoResume: Boolean): HRESULT;
+
 begin
 
   CheckForEngine();
@@ -1020,6 +1072,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetUseDefaultOutputDevice(const ARole: ERole);
+
 begin
 
   CheckForEngine();
@@ -1035,6 +1088,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetOutputDeviceId(const ADeviceId: string);
+
 begin
 
   CheckForEngine();
@@ -1052,6 +1106,7 @@ end;
 function TMfWasApiPlayerEngine.ReadOutputPcmFloat32(const Frames: Integer;
                                                     const OutBuffer: PSingle;
                                                     out Flags: DWORD): HRESULT;
+
 begin
 
   CheckForEngine();
@@ -1067,6 +1122,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.ClearEffects();
+
 begin
 
   CheckForEngine();
@@ -1079,6 +1135,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.AddEffect(const Mft: IMFTransform);
+
 begin
 
   CheckForEngine();
@@ -1091,6 +1148,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetEffects(const Effects: array of IMFTransform);
+
 begin
 
   CheckForEngine();
@@ -1103,6 +1161,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetPitchPercent(const Pct: Double);
+
 begin
 
   CheckForEngine();
@@ -1115,6 +1174,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetPitchSlider(const SliderPos: Integer);
+
 begin
 
   CheckForEngine();
@@ -1127,6 +1187,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.GetPitchRangePct: Double;
+
 begin
 
   CheckForEngine();
@@ -1139,6 +1200,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetPitchRangePct(const Value: Double);
+
 begin
 
   CheckForEngine();
@@ -1149,6 +1211,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.GetPitchDetentPct: Double;
+
 begin
 
   CheckForEngine();
@@ -1161,6 +1224,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetPitchDetentPct(const Value: Double);
+
 begin
 
   CheckForEngine();
@@ -1171,6 +1235,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.GetPitchAutoZeroPct: Double;
+
 begin
 
   CheckForEngine();
@@ -1183,6 +1248,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetPitchAutoZeroPct(const Value: Double);
+
 begin
 
   CheckForEngine();
@@ -1193,6 +1259,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.GetPitchRampMs: Integer;
+
 begin
 
   CheckForEngine();
@@ -1203,7 +1270,9 @@ begin
     Result := 50;
 end;
 
+
 procedure TMfWasApiPlayerEngine.SetPitchRampMs(const Value: Integer);
+
 begin
 
   CheckForEngine();
@@ -1214,6 +1283,7 @@ end;
 
 
 function TMfWasApiPlayerEngine.GetVarispeedEnabled: LongBool;
+
 begin
 
   CheckForEngine();
@@ -1226,6 +1296,7 @@ end;
 
 
 procedure TMfWasApiPlayerEngine.SetVarispeedEnabled(const Value: LongBool);
+
 begin
 
   CheckForEngine();

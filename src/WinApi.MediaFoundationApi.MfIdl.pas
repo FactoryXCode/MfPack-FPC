@@ -93,7 +93,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -111,28 +112,28 @@ const
 
 const
 
-  MF_SOURCE_PRESENTATION_PROVIDER_SERVICE   : TGUID = '{e002aadc-f4af-4ee5-9847-053edf840426}';
-  MF_WVC1_PROG_SINGLE_SLICE_CONTENT         : TGUID = '{67EC2559-0F2F-4420-A4DD-2F8EE7A5738B}';
-  MF_PROGRESSIVE_CODING_CONTENT             : TGUID = '{8F020EEA-1508-471F-9DA6-507D7CFA40DB}';
-  MF_NALU_LENGTH_SET                        : TGUID = '{A7911D53-12A4-4965-AE70-6EADD6FF0551}';
-  MF_NALU_LENGTH_INFORMATION                : TGUID = '{19124E7C-AD4B-465F-BB18-20186287B6AF}';
-  MF_USER_DATA_PAYLOAD                      : TGUID = '{d1d4985d-dc92-457a-b3a0-651a33a31047}';
+  MF_SOURCE_PRESENTATION_PROVIDER_SERVICE: TGUID = '{e002aadc-f4af-4ee5-9847-053edf840426}';
+  MF_WVC1_PROG_SINGLE_SLICE_CONTENT: TGUID = '{67EC2559-0F2F-4420-A4DD-2F8EE7A5738B}';
+  MF_PROGRESSIVE_CODING_CONTENT: TGUID = '{8F020EEA-1508-471F-9DA6-507D7CFA40DB}';
+  MF_NALU_LENGTH_SET: TGUID = '{A7911D53-12A4-4965-AE70-6EADD6FF0551}';
+  MF_NALU_LENGTH_INFORMATION: TGUID = '{19124E7C-AD4B-465F-BB18-20186287B6AF}';
+  MF_USER_DATA_PAYLOAD: TGUID = '{d1d4985d-dc92-457a-b3a0-651a33a31047}';
 
-  MF_MPEG4SINK_SPSPPS_PASSTHROUGH           : TGUID = '{5601a134-2005-4ad2-b37d-22a6c554deb2}';
-  MF_MPEG4SINK_MOOV_BEFORE_MDAT             : TGUID = '{f672e3ac-e1e6-4f10-b5ec-5f3b30828816}';
-  MF_MPEG4SINK_MINIMUM_PROPERTIES_SIZE      : TGUID = '{dca1ed52-450e-4a22-8c62-4ed452f7a187}';
-  MF_MPEG4SINK_MIN_FRAGMENT_DURATION        : TGUID = '{a30b570c-8efd-45e8-94fe-27c84b5bdff6}';
-  MF_MPEG4SINK_MAX_CODED_SEQUENCES_PER_FRAGMENT  : TGUID = '{fc1b3bd6-692d-4ce5-9299-738aa5463e9a}';
+  MF_MPEG4SINK_SPSPPS_PASSTHROUGH: TGUID = '{5601a134-2005-4ad2-b37d-22a6c554deb2}';
+  MF_MPEG4SINK_MOOV_BEFORE_MDAT: TGUID = '{f672e3ac-e1e6-4f10-b5ec-5f3b30828816}';
+  MF_MPEG4SINK_MINIMUM_PROPERTIES_SIZE: TGUID = '{dca1ed52-450e-4a22-8c62-4ed452f7a187}';
+  MF_MPEG4SINK_MIN_FRAGMENT_DURATION: TGUID = '{a30b570c-8efd-45e8-94fe-27c84b5bdff6}';
+  MF_MPEG4SINK_MAX_CODED_SEQUENCES_PER_FRAGMENT: TGUID = '{fc1b3bd6-692d-4ce5-9299-738aa5463e9a}';
 
 
-  MF_SESSION_TOPOLOADER                     : TGUID = '{1e83d482-1f1c-4571-0845-88f4b2181f71}';
-  MF_SESSION_GLOBAL_TIME                    : TGUID = '{1e83d482-1f1c-4571-0845-88f4b2181f72}';
-  MF_SESSION_QUALITY_MANAGER                : TGUID = '{1e83d482-1f1c-4571-0845-88f4b2181f73}';
-  MF_SESSION_CONTENT_PROTECTION_MANAGER     : TGUID = '{1e83d482-1f1c-4571-0845-88f4b2181f74}';
-  MF_SESSION_SERVER_CONTEXT                 : TGUID = '{afe5b291-50fa-46e8-b9be-0c0c3ce4b3a5}';
-  MF_SESSION_REMOTE_SOURCE_MODE             : TGUID = '{f4033ef4-9bb3-4378-941f-85a0856bc244}';
-  MF_SESSION_APPROX_EVENT_OCCURRENCE_TIME   : TGUID = '{190e852f-6238-42d1-b5af-69ea338ef850}';
-  MF_PMP_SERVER_CONTEXT                     : TGUID = '{2f00c910-d2cf-4278-8b6a-d077fac3a25f}';
+  MF_SESSION_TOPOLOADER: TGUID = '{1e83d482-1f1c-4571-0845-88f4b2181f71}';
+  MF_SESSION_GLOBAL_TIME: TGUID = '{1e83d482-1f1c-4571-0845-88f4b2181f72}';
+  MF_SESSION_QUALITY_MANAGER: TGUID = '{1e83d482-1f1c-4571-0845-88f4b2181f73}';
+  MF_SESSION_CONTENT_PROTECTION_MANAGER: TGUID = '{1e83d482-1f1c-4571-0845-88f4b2181f74}';
+  MF_SESSION_SERVER_CONTEXT: TGUID = '{afe5b291-50fa-46e8-b9be-0c0c3ce4b3a5}';
+  MF_SESSION_REMOTE_SOURCE_MODE: TGUID = '{f4033ef4-9bb3-4378-941f-85a0856bc244}';
+  MF_SESSION_APPROX_EVENT_OCCURRENCE_TIME: TGUID = '{190e852f-6238-42d1-b5af-69ea338ef850}';
+  MF_PMP_SERVER_CONTEXT: TGUID = '{2f00c910-d2cf-4278-8b6a-d077fac3a25f}';
 
 
   // enum __MIDL___MIDL_itf_mfidl_0000_0001_0001
@@ -144,361 +145,515 @@ type
   PMF_RESOLUTION = ^__MIDL___MIDL_itf_mfidl_0000_0001_0001;
   __MIDL___MIDL_itf_mfidl_0000_0001_0001 = DWord;
   MF_RESOLUTION = __MIDL___MIDL_itf_mfidl_0000_0001_0001;
+
 const
   MF_RESOLUTION_MEDIASOURCE = MF_RESOLUTION($1);
-  MF_RESOLUTION_BYTESTREAM  = MF_RESOLUTION($2);
-  MF_RESOLUTION_CONTENT_DOES_NOT_HAVE_TO_MATCH_EXTENSION_OR_MIME_TYPE  = MF_RESOLUTION($10);
-  MF_RESOLUTION_KEEP_BYTE_STREAM_ALIVE_ON_FAIL  = MF_RESOLUTION($20);
-  MF_RESOLUTION_DISABLE_LOCAL_PLUGINS  = MF_RESOLUTION($40);
-  MF_RESOLUTION_PLUGIN_CONTROL_POLICY_APPROVED_ONLY  = MF_RESOLUTION($80);
-  MF_RESOLUTION_PLUGIN_CONTROL_POLICY_WEB_ONLY  = MF_RESOLUTION($100);
+  MF_RESOLUTION_BYTESTREAM = MF_RESOLUTION($2);
+  MF_RESOLUTION_CONTENT_DOES_NOT_HAVE_TO_MATCH_EXTENSION_OR_MIME_TYPE = MF_RESOLUTION($10);
+  MF_RESOLUTION_KEEP_BYTE_STREAM_ALIVE_ON_FAIL = MF_RESOLUTION($20);
+  MF_RESOLUTION_DISABLE_LOCAL_PLUGINS = MF_RESOLUTION($40);
+  MF_RESOLUTION_PLUGIN_CONTROL_POLICY_APPROVED_ONLY = MF_RESOLUTION($80);
+  MF_RESOLUTION_PLUGIN_CONTROL_POLICY_WEB_ONLY = MF_RESOLUTION($100);
   MF_RESOLUTION_PLUGIN_CONTROL_POLICY_WEB_ONLY_EDGEMODE = MF_RESOLUTION($200);
   MF_RESOLUTION_READ = MF_RESOLUTION($10000);
   MF_RESOLUTION_WRITE = MF_RESOLUTION($20000);
 
 
-  MFPKEY_SourceOpenMonitor          : PROPERTYKEY = (fmtid: (D1: $074d4637;
-                                                     D2: $b5ae;
-                                                     D3: $465d;
-                                                     D4: ($af, $17, $1a, $53, $8d, $28, $59, $dd));
-                                                     pid: $02);
+  MFPKEY_SourceOpenMonitor: PROPERTYKEY = (fmtid: (D1: $074d4637;
+    D2: $b5ae;
+    D3: $465d;
+    D4: ($af,
+         $17,
+         $1a,
+         $53,
+         $8d,
+         $28,
+         $59,
+         $dd));
+    pid: $02);
 
-  MFPKEY_ASFMediaSource_ApproxSeek  : PROPERTYKEY = (fmtid: (D1: $b4cd270f;
-                                                     D2: $244d;
-                                                     D3: $4969;
-                                                     D4: ($bb, $92, $3f, $0f, $b8, $31, $6f, $10));
-                                                     pid: $01);
+  MFPKEY_ASFMediaSource_ApproxSeek: PROPERTYKEY = (fmtid: (D1: $b4cd270f;
+    D2: $244d;
+    D3: $4969;
+    D4: ($bb,
+         $92,
+         $3f,
+         $0f,
+         $b8,
+         $31,
+         $6f,
+         $10));
+    pid: $01);
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
   MFPKEY_ASFMediaSource_IterativeSeekIfNoIndex: PROPERTYKEY = (fmtid: (D1: $170b65dc;
-                                                                       D2: $4a4e;
-                                                                       D3: $407a;
-                                                                       D4: ($ac, $22, $57, $7f, $50, $e4, $a3, $7c));
-                                                                       pid: $01);
+    D2: $4a4e;
+    D3: $407a;
+    D4: ($ac,
+         $22,
+         $57,
+         $7f,
+         $50,
+         $e4,
+         $a3,
+         $7c));
+    pid: $01);
 
   MFPKEY_ASFMediaSource_IterativeSeek_Max_Count: PROPERTYKEY = (fmtid: (D1: $170b65dc;
-                                                                        D2: $4a4e;
-                                                                        D3: $407a;
-                                                                        D4: ($ac, $22, $57, $7f, $50, $e4, $a3, $7c));
-                                                                        pid: $02);
+    D2: $4a4e;
+    D3: $407a;
+    D4: ($ac,
+         $22,
+         $57,
+         $7f,
+         $50,
+         $e4,
+         $a3,
+         $7c));
+    pid: $02);
 
   MFPKEY_ASFMediaSource_IterativeSeek_Tolerance_In_MilliSecond: PROPERTYKEY = (fmtid: (D1: $170b65dc;
-                                                                                       D2: $4a4e;
-                                                                                       D3: $407a;
-                                                                                       D4: ($ac, $22, $57, $7f, $50, $e4, $a3, $7c));
-                                                                                       pid: $03);
+    D2: $4a4e;
+    D3: $407a;
+    D4: ($ac,
+         $22,
+         $57,
+         $7f,
+         $50,
+         $e4,
+         $a3,
+         $7c));
+    pid: $03);
 
   MFPKEY_Content_DLNA_Profile_ID: PROPERTYKEY = (fmtid: (D1: $cfa31b45;
-                                                         D2: $525d;
-                                                         D3: $4998;
-                                                         D4: ($bb, $44, $3f, $7d, $81, $54, $2f, $a4));
-                                                         pid: $01);
+    D2: $525d;
+    D3: $4998;
+    D4: ($bb,
+         $44,
+         $3f,
+         $7d,
+         $81,
+         $54,
+         $2f,
+         $a4));
+    pid: $01);
 
-  MFPKEY_MediaSource_DisableReadAhead : PROPERTYKEY = (fmtid: (D1: $26366c14;
-                                                               D2: $c5bf;
-                                                               D3: $4c76;
-                                                               D4: ($88, $7b, $9f, $17, $54, $db, $5f, $9));
-                                                               pid: $01);
+  MFPKEY_MediaSource_DisableReadAhead: PROPERTYKEY = (fmtid: (D1: $26366c14;
+    D2: $c5bf;
+    D3: $4c76;
+    D4: ($88,
+         $7b,
+         $9f,
+         $17,
+         $54,
+         $db,
+         $5f,
+         $9));
+    pid: $01);
 
-  MFPKEY_SBESourceMode :  PROPERTYKEY = (fmtid: ( D1: $3fae10bb;
-                                                  D2: $f859;
-                                                  D3: $4192;
-                                                  D4: ($b5, $62, $18, $68, $d3, $da, $3a, $02));
-                                                  pid: 01);
+  MFPKEY_SBESourceMode: PROPERTYKEY = (fmtid: (D1: $3fae10bb;
+    D2: $f859;
+    D3: $4192;
+    D4: ($b5,
+         $62,
+         $18,
+         $68,
+         $d3,
+         $da,
+         $3a,
+         $02));
+    pid: 01);
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-//#if (WINVER >= _WIN32_WINNT_WIN8)
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
 
-  MFPKEY_PMP_Creation_Callback                  :  PROPERTYKEY = (fmtid: (D1: $28bb4de2;
-                                                                          D2: $26a2;
-                                                                          D3: $4870;
-                                                                          D4: ($b7, $20, $d2, $6b, $be, $b1, $49, $42));
-                                                                          pid: 01);
+  MFPKEY_PMP_Creation_Callback: PROPERTYKEY = (fmtid: (D1: $28bb4de2;
+    D2: $26a2;
+    D3: $4870;
+    D4: ($b7,
+         $20,
+         $d2,
+         $6b,
+         $be,
+         $b1,
+         $49,
+         $42));
+    pid: 01);
 
-  MFPKEY_HTTP_ByteStream_Enable_Urlmon          :  PROPERTYKEY = (fmtid: (D1: $eda8afdf;
-                                                                          D2: $c171;
-                                                                          D3: $417f;
-                                                                          D4: ($8d, $17, $2e, $09, $18, $30, $32, $92));
-                                                                          pid: 01);
+  MFPKEY_HTTP_ByteStream_Enable_Urlmon: PROPERTYKEY = (fmtid: (D1: $eda8afdf;
+    D2: $c171;
+    D3: $417f;
+    D4: ($8d,
+         $17,
+         $2e,
+         $09,
+         $18,
+         $30,
+         $32,
+         $92));
+    pid: 01);
 
-  MFPKEY_HTTP_ByteStream_Urlmon_Bind_Flags      :  PROPERTYKEY = (fmtid: (D1: $eda8afdf;
-                                                                          D2: $c171;
-                                                                          D3: $417f;
-                                                                          D4: ($8d, $17, $2e, $09, $18, $30, $32, $92));
-                                                                          pid: 02);
+  MFPKEY_HTTP_ByteStream_Urlmon_Bind_Flags: PROPERTYKEY = (fmtid: (D1: $eda8afdf;
+    D2: $c171;
+    D3: $417f;
+    D4: ($8d,
+         $17,
+         $2e,
+         $09,
+         $18,
+         $30,
+         $32,
+         $92));
+    pid: 02);
 
-  MFPKEY_HTTP_ByteStream_Urlmon_Security_Id     :  PROPERTYKEY = (fmtid: (D1: $eda8afdf;
-                                                                          D2: $c171;
-                                                                          D3: $417f;
-                                                                          D4: ($8d, $17, $2e, $09, $18, $30, $32, $92));
-                                                                          pid: 03);
+  MFPKEY_HTTP_ByteStream_Urlmon_Security_Id: PROPERTYKEY = (fmtid: (D1: $eda8afdf;
+    D2: $c171;
+    D3: $417f;
+    D4: ($8d,
+         $17,
+         $2e,
+         $09,
+         $18,
+         $30,
+         $32,
+         $92));
+    pid: 03);
 
-  MFPKEY_HTTP_ByteStream_Urlmon_Window          :  PROPERTYKEY = (fmtid: (D1: $eda8afdf;
-                                                                          D2: $c171;
-                                                                          D3: $417f;
-                                                                          D4: ($8d, $17, $2e, $09, $18, $30, $32, $92));
-                                                                          pid: 04);
+  MFPKEY_HTTP_ByteStream_Urlmon_Window: PROPERTYKEY = (fmtid: (D1: $eda8afdf;
+    D2: $c171;
+    D3: $417f;
+    D4: ($8d,
+         $17,
+         $2e,
+         $09,
+         $18,
+         $30,
+         $32,
+         $92));
+    pid: 04);
 
-  MFPKEY_HTTP_ByteStream_Urlmon_Callback_QueryService :  PROPERTYKEY = (fmtid: (D1: $eda8afdf;
-                                                                                D2: $c171;
-                                                                                D3: $417f;
-                                                                                D4: ($8d, $17, $2e, $09, $18, $30, $32, $92));
-                                                                                pid: 05);
+  MFPKEY_HTTP_ByteStream_Urlmon_Callback_QueryService: PROPERTYKEY = (fmtid: (D1: $eda8afdf;
+    D2: $c171;
+    D3: $417f;
+    D4: ($8d,
+         $17,
+         $2e,
+         $09,
+         $18,
+         $30,
+         $32,
+         $92));
+    pid: 05);
 
-  MFPKEY_MediaProtectionSystemId                :  PROPERTYKEY = (fmtid: (D1: $636b271d;
-                                                                          D2: $ddc7;
-                                                                          D3: $49e9;
-                                                                          D4: ($a6, $c6, $47, $38, $59, $62, $e5, $bd));
-                                                                          pid: 01);
+  MFPKEY_MediaProtectionSystemId: PROPERTYKEY = (fmtid: (D1: $636b271d;
+    D2: $ddc7;
+    D3: $49e9;
+    D4: ($a6,
+         $c6,
+         $47,
+         $38,
+         $59,
+         $62,
+         $e5,
+         $bd));
+    pid: 01);
 
-  MFPKEY_MediaProtectionSystemContext           :  PROPERTYKEY = (fmtid: (D1: $636b271d;
-                                                                          D2: $ddc7;
-                                                                          D3: $49e9;
-                                                                          D4: ($a6, $c6, $47, $38, $59, $62, $e5, $bd));
-                                                                          pid: 02);
+  MFPKEY_MediaProtectionSystemContext: PROPERTYKEY = (fmtid: (D1: $636b271d;
+    D2: $ddc7;
+    D3: $49e9;
+    D4: ($a6,
+         $c6,
+         $47,
+         $38,
+         $59,
+         $62,
+         $e5,
+         $bd));
+    pid: 02);
 
-  MFPKEY_MediaProtectionSystemIdMapping         :  PROPERTYKEY = (fmtid: (D1: $636b271d;
-                                                                          D2: $ddc7;
-                                                                          D3: $49e9;
-                                                                          D4: ($a6, $c6, $47, $38, $59, $62, $e5, $bd));
-                                                                          pid: 03);
+  MFPKEY_MediaProtectionSystemIdMapping: PROPERTYKEY = (fmtid: (D1: $636b271d;
+    D2: $ddc7;
+    D3: $49e9;
+    D4: ($a6,
+         $c6,
+         $47,
+         $38,
+         $59,
+         $62,
+         $e5,
+         $bd));
+    pid: 03);
 
-  MFPKEY_MediaProtectionContainerGuid           :  PROPERTYKEY = (fmtid: (D1: $42af3d7c;
-                                                                          D2: $00cf;
-                                                                          D3: $4a0f;
-                                                                          D4: ($81, $f0, $ad, $f5, $24, $a5, $a5, $b5));
-                                                                          pid: 1);
+  MFPKEY_MediaProtectionContainerGuid: PROPERTYKEY = (fmtid: (D1: $42af3d7c;
+    D2: $00cf;
+    D3: $4a0f;
+    D4: ($81,
+         $f0,
+         $ad,
+         $f5,
+         $24,
+         $a5,
+         $a5,
+         $b5));
+    pid: 1);
 
-  MFPKEY_MediaProtectionSystemContextsPerTrack  :  PROPERTYKEY = (fmtid: (D1: $4454b092;
-                                                                          D2: $d3da;
-                                                                          D3: $49b0;
-                                                                          D4: ($84, $52, $68, $50, $c7, $db, $76, $4d));
-                                                                          pid: 03);
+  MFPKEY_MediaProtectionSystemContextsPerTrack: PROPERTYKEY = (fmtid: (D1: $4454b092;
+    D2: $d3da;
+    D3: $49b0;
+    D4: ($84,
+         $52,
+         $68,
+         $50,
+         $c7,
+         $db,
+         $76,
+         $4d));
+    pid: 03);
 
-  MFPKEY_HTTP_ByteStream_Download_Mode          :  PROPERTYKEY = (fmtid: (D1: $817f11b7;
-                                                                          D2: $a982;
-                                                                          D3: $46ec;
-                                                                          D4: ($a4, $49, $ef, $58, $ae, $d5, $3c, $a8));
-                                                                          pid: 01);
+  MFPKEY_HTTP_ByteStream_Download_Mode: PROPERTYKEY = (fmtid: (D1: $817f11b7;
+    D2: $a982;
+    D3: $46ec;
+    D4: ($a4,
+         $49,
+         $ef,
+         $58,
+         $ae,
+         $d5,
+         $3c,
+         $a8));
+    pid: 01);
 
-  MFPKEY_HTTP_ByteStream_Caching_Mode           :  PROPERTYKEY = (fmtid: (D1: $86a2403e;
-                                                                          D2: $c78b;
-                                                                          D3: $44d7;
-                                                                          D4: ($8b, $c8, $ff, $72, $58, $11, $75, $08));
-                                                                          pid: 01);
+  MFPKEY_HTTP_ByteStream_Caching_Mode: PROPERTYKEY = (fmtid: (D1: $86a2403e;
+    D2: $c78b;
+    D3: $44d7;
+    D4: ($8b,
+         $c8,
+         $ff,
+         $72,
+         $58,
+         $11,
+         $75,
+         $08));
+    pid: 01);
 
-  MFPKEY_HTTP_ByteStream_Cache_Limit            :  PROPERTYKEY = (fmtid: (D1: $86a2403e;
-                                                                          D2: $c78b;
-                                                                          D3: $44d7;
-                                                                          D4: ($8b, $c8, $ff, $72, $58, $11, $75, $08));
-                                                                          pid: 02);
+  MFPKEY_HTTP_ByteStream_Cache_Limit: PROPERTYKEY = (fmtid: (D1: $86a2403e;
+    D2: $c78b;
+    D3: $44d7;
+    D4: ($8b,
+         $c8,
+         $ff,
+         $72,
+         $58,
+         $11,
+         $75,
+         $08));
+    pid: 02);
 
 
 
 
+  //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN8)
+  MF_TIME_FORMAT_ENTRY_RELATIVE: TGUID = '{4399f178-46d3-4504-afda-20d32e9ba360}';
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-  MF_TIME_FORMAT_ENTRY_RELATIVE                 :  TGUID = '{4399f178-46d3-4504-afda-20d32e9ba360}';
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
+  MF_SOURCE_STREAM_SUPPORTS_HW_CONNECTION: TGUID = '{a38253aa-6314-42fd-a3ce-bb27b6859946}';
+  MF_STREAM_SINK_SUPPORTS_HW_CONNECTION: TGUID = '{9b465cbf-0597-4f9e-9f3c-b97eeef90359}';
+  MF_STREAM_SINK_SUPPORTS_ROTATION: TGUID = '{b3e96280-bd05-41a5-97ad-8a7fee24b912}';
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
-//#if (WINVER >= _WIN32_WINNT_WIN8)
-  MF_SOURCE_STREAM_SUPPORTS_HW_CONNECTION       :  TGUID = '{a38253aa-6314-42fd-a3ce-bb27b6859946}';
-  MF_STREAM_SINK_SUPPORTS_HW_CONNECTION         :  TGUID = '{9b465cbf-0597-4f9e-9f3c-b97eeef90359}';
-  MF_STREAM_SINK_SUPPORTS_ROTATION              :  TGUID = '{b3e96280-bd05-41a5-97ad-8a7fee24b912}';
-
-//#endif // (WINVER >= _WIN32_WINNT_WIN8)
-
-  MEDIASINK_FIXED_STREAMS               = $00000001;
-  MEDIASINK_CANNOT_MATCH_CLOCK          = $00000002;
-  MEDIASINK_RATELESS                    = $00000004;
-  MEDIASINK_CLOCK_REQUIRED              = $00000008;
-  MEDIASINK_CAN_PREROLL                 = $00000010;
+  MEDIASINK_FIXED_STREAMS = $00000001;
+  MEDIASINK_CANNOT_MATCH_CLOCK = $00000002;
+  MEDIASINK_RATELESS = $00000004;
+  MEDIASINK_CLOCK_REQUIRED = $00000008;
+  MEDIASINK_CAN_PREROLL = $00000010;
   MEDIASINK_REQUIRE_REFERENCE_MEDIATYPE = $00000020;
 
 
 type
   MF_TRANSFER_VIDEO_FRAME_FLAGS = DWord;
+
 const
-  MF_TRANSFER_VIDEO_FRAME_DEFAULT    = MF_TRANSFER_VIDEO_FRAME_FLAGS(0);
-  MF_TRANSFER_VIDEO_FRAME_STRETCH    = MF_TRANSFER_VIDEO_FRAME_FLAGS(1);
+  MF_TRANSFER_VIDEO_FRAME_DEFAULT = MF_TRANSFER_VIDEO_FRAME_FLAGS(0);
+  MF_TRANSFER_VIDEO_FRAME_STRETCH = MF_TRANSFER_VIDEO_FRAME_FLAGS(1);
   MF_TRANSFER_VIDEO_FRAME_IGNORE_PAR = MF_TRANSFER_VIDEO_FRAME_FLAGS(2);
 
 
 const
-  MF_SINK_VIDEO_PTS                              :  TGUID = '{2162bde7-421e-4b90-9b33-e58fbf1d58b6}';
-  MF_SINK_VIDEO_NATIVE_WIDTH                     :  TGUID = '{e6d6a707-1505-4747-9b10-72d2d158cb3a}';
-  MF_SINK_VIDEO_NATIVE_HEIGHT                    :  TGUID = '{f0ca6705-490c-43e8-941c-c0b3206b9a65}';
-  MF_SINK_VIDEO_DISPLAY_ASPECT_RATIO_NUMERATOR   :  TGUID = '{d0f33b22-b78a-4879-b455-f03ef3fa82cd}';
-  MF_SINK_VIDEO_DISPLAY_ASPECT_RATIO_DENOMINATOR :  TGUID = '{6ea1eb97-1fe0-4f10-a6e4-1f4f661564e0}';
-  MF_BD_MVC_PLANE_OFFSET_METADATA                :  TGUID = '{62a654e4-b76c-4901-9823-2cb615d47318}';
-  MF_LUMA_KEY_ENABLE                             :  TGUID = '{7369820f-76de-43ca-9284-47b8f37e0649}';
-  MF_LUMA_KEY_LOWER                              :  TGUID = '{93d7b8d5-0b81-4715-aea0-8725871621e9}';
-  MF_LUMA_KEY_UPPER                              :  TGUID = '{d09f39bb-4602-4c31-a706-a12171a5110a}';
-  MF_USER_EXTENDED_ATTRIBUTES                    :  TGUID = '{c02abac6-feb2-4541-922f-920b43702722}';
-  MF_INDEPENDENT_STILL_IMAGE                     :  TGUID = '{ea12af41-0710-42c9-a127-daa3e78483a5}';
+  MF_SINK_VIDEO_PTS: TGUID = '{2162bde7-421e-4b90-9b33-e58fbf1d58b6}';
+  MF_SINK_VIDEO_NATIVE_WIDTH: TGUID = '{e6d6a707-1505-4747-9b10-72d2d158cb3a}';
+  MF_SINK_VIDEO_NATIVE_HEIGHT: TGUID = '{f0ca6705-490c-43e8-941c-c0b3206b9a65}';
+  MF_SINK_VIDEO_DISPLAY_ASPECT_RATIO_NUMERATOR: TGUID = '{d0f33b22-b78a-4879-b455-f03ef3fa82cd}';
+  MF_SINK_VIDEO_DISPLAY_ASPECT_RATIO_DENOMINATOR: TGUID = '{6ea1eb97-1fe0-4f10-a6e4-1f4f661564e0}';
+  MF_BD_MVC_PLANE_OFFSET_METADATA: TGUID = '{62a654e4-b76c-4901-9823-2cb615d47318}';
+  MF_LUMA_KEY_ENABLE: TGUID = '{7369820f-76de-43ca-9284-47b8f37e0649}';
+  MF_LUMA_KEY_LOWER: TGUID = '{93d7b8d5-0b81-4715-aea0-8725871621e9}';
+  MF_LUMA_KEY_UPPER: TGUID = '{d09f39bb-4602-4c31-a706-a12171a5110a}';
+  MF_USER_EXTENDED_ATTRIBUTES: TGUID = '{c02abac6-feb2-4541-922f-920b43702722}';
+  MF_INDEPENDENT_STILL_IMAGE: TGUID = '{ea12af41-0710-42c9-a127-daa3e78483a5}';
 
 
 
-  MF_TOPOLOGY_PROJECTSTART                      : TGUID = '{7ed3f802-86bb-4b3f-b7e4-7cb43afd4b80}';
-  MF_TOPOLOGY_PROJECTSTOP                       : TGUID = '{7ed3f803-86bb-4b3f-b7e4-7cb43afd4b80}';
-  MF_TOPOLOGY_NO_MARKIN_MARKOUT                 : TGUID = '{7ed3f804-86bb-4b3f-b7e4-7cb43afd4b80}';
+  MF_TOPOLOGY_PROJECTSTART: TGUID = '{7ed3f802-86bb-4b3f-b7e4-7cb43afd4b80}';
+  MF_TOPOLOGY_PROJECTSTOP: TGUID = '{7ed3f803-86bb-4b3f-b7e4-7cb43afd4b80}';
+  MF_TOPOLOGY_NO_MARKIN_MARKOUT: TGUID = '{7ed3f804-86bb-4b3f-b7e4-7cb43afd4b80}';
 
-  MF_TOPOLOGY_DXVA_MODE                         : TGUID = '{1e8d34f6-f5ab-4e23-bb88-874aa3a1a74d}';
-  MF_TOPOLOGY_ENABLE_XVP_FOR_PLAYBACK           : TGUID = '{1967731f-cd78-42fc-b026-0992a56e5693}';
-  MF_TOPOLOGY_STATIC_PLAYBACK_OPTIMIZATIONS     : TGUID = '{b86cac42-f5ab-4e23-bb88-874aa3a1a74d}';
-  MF_TOPOLOGY_PLAYBACK_MAX_DIMS                 : TGUID = '{5715cf19-5768-44aa-ad6e-8721f1b0f9bb}';
+  MF_TOPOLOGY_DXVA_MODE: TGUID = '{1e8d34f6-f5ab-4e23-bb88-874aa3a1a74d}';
+  MF_TOPOLOGY_ENABLE_XVP_FOR_PLAYBACK: TGUID = '{1967731f-cd78-42fc-b026-0992a56e5693}';
+  MF_TOPOLOGY_STATIC_PLAYBACK_OPTIMIZATIONS: TGUID = '{b86cac42-f5ab-4e23-bb88-874aa3a1a74d}';
+  MF_TOPOLOGY_PLAYBACK_MAX_DIMS: TGUID = '{5715cf19-5768-44aa-ad6e-8721f1b0f9bb}';
 
-  MF_TOPOLOGY_HARDWARE_MODE                     : TGUID = '{d2d362fd-4e4f-4191-a579-c618b66706af}';
-  MF_TOPOLOGY_PLAYBACK_FRAMERATE                : TGUID = '{c164737a-c2b1-4553-83bb-5a526072448f}';
-  MF_TOPOLOGY_DYNAMIC_CHANGE_NOT_ALLOWED        : TGUID = '{d529950b-d484-4527-a9cd-b1909532b5b0}';
-  MF_TOPOLOGY_ENUMERATE_SOURCE_TYPES            : TGUID = '{6248c36d-5d0b-4f40-a0bb-b0b305f77698}';
-  MF_TOPOLOGY_START_TIME_ON_PRESENTATION_SWITCH : TGUID = '{c8cc113f-7951-4548-aad6-9ed6202e62b3}';
+  MF_TOPOLOGY_HARDWARE_MODE: TGUID = '{d2d362fd-4e4f-4191-a579-c618b66706af}';
+  MF_TOPOLOGY_PLAYBACK_FRAMERATE: TGUID = '{c164737a-c2b1-4553-83bb-5a526072448f}';
+  MF_TOPOLOGY_DYNAMIC_CHANGE_NOT_ALLOWED: TGUID = '{d529950b-d484-4527-a9cd-b1909532b5b0}';
+  MF_TOPOLOGY_ENUMERATE_SOURCE_TYPES: TGUID = '{6248c36d-5d0b-4f40-a0bb-b0b305f77698}';
+  MF_TOPOLOGY_START_TIME_ON_PRESENTATION_SWITCH: TGUID = '{c8cc113f-7951-4548-aad6-9ed6202e62b3}';
 
-//#if (WINVER >= _WIN32_WINNT_WIN8)
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
 
-  MF_DISABLE_LOCALLY_REGISTERED_PLUGINS         :  TGUID = '{66b16da9-add4-47e0-a16b-5af1fb483634}';
-  MF_LOCAL_PLUGIN_CONTROL_POLICY                :  TGUID = '{d91b0085-c86d-4f81-8822-8c68e1d7fa04}';
+  MF_DISABLE_LOCALLY_REGISTERED_PLUGINS: TGUID = '{66b16da9-add4-47e0-a16b-5af1fb483634}';
+  MF_LOCAL_PLUGIN_CONTROL_POLICY: TGUID = '{d91b0085-c86d-4f81-8822-8c68e1d7fa04}';
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN8)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
-  MF_TOPONODE_FLUSH                             :  TGUID = '{494bbce8-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_FLUSH: TGUID = '{494bbce8-b031-4e38-97c4-d5422dd618dc}';
 
-  MF_TOPONODE_DRAIN                             :  TGUID = '{494bbce9-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_D3DAWARE                          :  TGUID = '{494bbced-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPOLOGY_RESOLUTION_STATUS                 :  TGUID = '{494bbcde-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_ERRORCODE                         :  TGUID = '{494bbcee-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_CONNECT_METHOD                    :  TGUID = '{494bbcf1-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_LOCKED                            :  TGUID = '{494bbcf7-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_WORKQUEUE_ID                      :  TGUID = '{494bbcf8-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_WORKQUEUE_MMCSS_CLASS             :  TGUID = '{494bbcf9-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_DECRYPTOR                         :  TGUID = '{494bbcfa-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_DISCARDABLE                       :  TGUID = '{494bbcfb-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_ERROR_MAJORTYPE                   :  TGUID = '{494bbcfd-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_ERROR_SUBTYPE                     :  TGUID = '{494bbcfe-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_WORKQUEUE_MMCSS_TASKID            :  TGUID = '{494bbcff-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_WORKQUEUE_MMCSS_PRIORITY          :  TGUID = '{5001f840-2816-48f4-9364-ad1ef661a123}';
-  MF_TOPONODE_WORKQUEUE_ITEM_PRIORITY           :  TGUID = '{a1ff99be-5e97-4a53-b494-568c642c0ff3}';
-  MF_TOPONODE_MARKIN_HERE                       :  TGUID = '{494bbd00-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_MARKOUT_HERE                      :  TGUID = '{494bbd01-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_DECODER                           :  TGUID = '{494bbd02-b031-4e38-97c4-d5422dd618dc}';
-  MF_TOPONODE_MEDIASTART                        :  TGUID = '{835c58ea-e075-4bc7-bcba-4de000df9ae6}';
-  MF_TOPONODE_MEDIASTOP                         :  TGUID = '{835c58eb-e075-4bc7-bcba-4de000df9ae6}';
-  MF_TOPONODE_SOURCE                            :  TGUID = '{835c58ec-e075-4bc7-bcba-4de000df9ae6}';
-  MF_TOPONODE_PRESENTATION_DESCRIPTOR           :  TGUID = '{835c58ed-e075-4bc7-bcba-4de000df9ae6}';
-  MF_TOPONODE_STREAM_DESCRIPTOR                 :  TGUID = '{835c58ee-e075-4bc7-bcba-4de000df9ae6}';
-  MF_TOPONODE_SEQUENCE_ELEMENTID                :  TGUID = '{835c58ef-e075-4bc7-bcba-4de000df9ae6}';
-  MF_TOPONODE_TRANSFORM_OBJECTID                :  TGUID = '{88dcc0c9-293e-4e8b-9aeb-0ad64cc016b0}';
-  MF_TOPONODE_STREAMID                          :  TGUID = '{14932f9b-9087-4bb4-8412-5167145cbe04}';
-  MF_TOPONODE_NOSHUTDOWN_ON_REMOVE              :  TGUID = '{14932f9c-9087-4bb4-8412-5167145cbe04}';
-  MF_TOPONODE_RATELESS                          :  TGUID = '{14932f9d-9087-4bb4-8412-5167145cbe04}';
-  MF_TOPONODE_DISABLE_PREROLL                   :  TGUID = '{14932f9e-9087-4bb4-8412-5167145cbe04}';
-  MF_TOPONODE_PRIMARYOUTPUT                     :  TGUID = '{6304ef99-16b2-4ebe-9d67-e4c539b3a259}';
+  MF_TOPONODE_DRAIN: TGUID = '{494bbce9-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_D3DAWARE: TGUID = '{494bbced-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPOLOGY_RESOLUTION_STATUS: TGUID = '{494bbcde-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_ERRORCODE: TGUID = '{494bbcee-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_CONNECT_METHOD: TGUID = '{494bbcf1-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_LOCKED: TGUID = '{494bbcf7-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_WORKQUEUE_ID: TGUID = '{494bbcf8-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_WORKQUEUE_MMCSS_CLASS: TGUID = '{494bbcf9-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_DECRYPTOR: TGUID = '{494bbcfa-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_DISCARDABLE: TGUID = '{494bbcfb-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_ERROR_MAJORTYPE: TGUID = '{494bbcfd-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_ERROR_SUBTYPE: TGUID = '{494bbcfe-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_WORKQUEUE_MMCSS_TASKID: TGUID = '{494bbcff-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_WORKQUEUE_MMCSS_PRIORITY: TGUID = '{5001f840-2816-48f4-9364-ad1ef661a123}';
+  MF_TOPONODE_WORKQUEUE_ITEM_PRIORITY: TGUID = '{a1ff99be-5e97-4a53-b494-568c642c0ff3}';
+  MF_TOPONODE_MARKIN_HERE: TGUID = '{494bbd00-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_MARKOUT_HERE: TGUID = '{494bbd01-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_DECODER: TGUID = '{494bbd02-b031-4e38-97c4-d5422dd618dc}';
+  MF_TOPONODE_MEDIASTART: TGUID = '{835c58ea-e075-4bc7-bcba-4de000df9ae6}';
+  MF_TOPONODE_MEDIASTOP: TGUID = '{835c58eb-e075-4bc7-bcba-4de000df9ae6}';
+  MF_TOPONODE_SOURCE: TGUID = '{835c58ec-e075-4bc7-bcba-4de000df9ae6}';
+  MF_TOPONODE_PRESENTATION_DESCRIPTOR: TGUID = '{835c58ed-e075-4bc7-bcba-4de000df9ae6}';
+  MF_TOPONODE_STREAM_DESCRIPTOR: TGUID = '{835c58ee-e075-4bc7-bcba-4de000df9ae6}';
+  MF_TOPONODE_SEQUENCE_ELEMENTID: TGUID = '{835c58ef-e075-4bc7-bcba-4de000df9ae6}';
+  MF_TOPONODE_TRANSFORM_OBJECTID: TGUID = '{88dcc0c9-293e-4e8b-9aeb-0ad64cc016b0}';
+  MF_TOPONODE_STREAMID: TGUID = '{14932f9b-9087-4bb4-8412-5167145cbe04}';
+  MF_TOPONODE_NOSHUTDOWN_ON_REMOVE: TGUID = '{14932f9c-9087-4bb4-8412-5167145cbe04}';
+  MF_TOPONODE_RATELESS: TGUID = '{14932f9d-9087-4bb4-8412-5167145cbe04}';
+  MF_TOPONODE_DISABLE_PREROLL: TGUID = '{14932f9e-9087-4bb4-8412-5167145cbe04}';
+  MF_TOPONODE_PRIMARYOUTPUT: TGUID = '{6304ef99-16b2-4ebe-9d67-e4c539b3a259}';
 
-  MFCLOCK_FREQUENCY_HNS         = 10000000;
-  MFCLOCK_TOLERANCE_UNKNOWN     = 50000;
-  MFCLOCK_JITTER_ISR            = 1000;
-  MFCLOCK_JITTER_DPC            = 4000;
-  MFCLOCK_JITTER_PASSIVE        = 10000;
+  MFCLOCK_FREQUENCY_HNS = 10000000;
+  MFCLOCK_TOLERANCE_UNKNOWN = 50000;
+  MFCLOCK_JITTER_ISR = 1000;
+  MFCLOCK_JITTER_DPC = 4000;
+  MFCLOCK_JITTER_PASSIVE = 10000;
 
   PRESENTATION_CURRENT_POSITION = $7FFFFFFFFFFFFFFF;
 
-  MF_PD_PMPHOST_CONTEXT                         : TGUID = '{6c990d31-bb8e-477a-8598-0d5d96fcd88a}';   // IUnknown
-  MF_PD_APP_CONTEXT                             : TGUID = '{6c990d32-bb8e-477a-8598-0d5d96fcd88a}';   // IUnknown
+  MF_PD_PMPHOST_CONTEXT: TGUID = '{6c990d31-bb8e-477a-8598-0d5d96fcd88a}';   // IUnknown
+  MF_PD_APP_CONTEXT: TGUID = '{6c990d32-bb8e-477a-8598-0d5d96fcd88a}';   // IUnknown
 
-  MF_PD_DURATION                                : TGUID = '{6c990d33-bb8e-477a-8598-0d5d96fcd88a}';   // UINT64
-  MF_PD_TOTAL_FILE_SIZE                         : TGUID = '{6c990d34-bb8e-477a-8598-0d5d96fcd88a}';   // UINT64
-  MF_PD_AUDIO_ENCODING_BITRATE                  : TGUID = '{6c990d35-bb8e-477a-8598-0d5d96fcd88a}';   // UINT32
-  MF_PD_VIDEO_ENCODING_BITRATE                  : TGUID = '{6c990d36-bb8e-477a-8598-0d5d96fcd88a}';   // UINT32
-  MF_PD_MIME_TYPE                               : TGUID = '{6c990d37-bb8e-477a-8598-0d5d96fcd88a}';   // Wide-character string
-  MF_PD_LAST_MODIFIED_TIME                      : TGUID = '{6c990d38-bb8e-477a-8598-0d5d96fcd88a}';   // Byte array
+  MF_PD_DURATION: TGUID = '{6c990d33-bb8e-477a-8598-0d5d96fcd88a}';   // UINT64
+  MF_PD_TOTAL_FILE_SIZE: TGUID = '{6c990d34-bb8e-477a-8598-0d5d96fcd88a}';   // UINT64
+  MF_PD_AUDIO_ENCODING_BITRATE: TGUID = '{6c990d35-bb8e-477a-8598-0d5d96fcd88a}';   // UINT32
+  MF_PD_VIDEO_ENCODING_BITRATE: TGUID = '{6c990d36-bb8e-477a-8598-0d5d96fcd88a}';   // UINT32
+  MF_PD_MIME_TYPE: TGUID = '{6c990d37-bb8e-477a-8598-0d5d96fcd88a}';   // Wide-character string
+  MF_PD_LAST_MODIFIED_TIME: TGUID = '{6c990d38-bb8e-477a-8598-0d5d96fcd88a}';   // Byte array
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
-  MF_PD_PLAYBACK_ELEMENT_ID                     : TGUID = '{6c990d39-bb8e-477a-8598-0d5d96fcd88a}';   // UINT32
-  MF_PD_PREFERRED_LANGUAGE                      : TGUID = '{6c990d3A-bb8e-477a-8598-0d5d96fcd88a}';   // WCHAR
-  MF_PD_PLAYBACK_BOUNDARY_TIME                  : TGUID = '{6c990d3b-bb8e-477a-8598-0d5d96fcd88a}';   // UINT64
-  MF_PD_AUDIO_ISVARIABLEBITRATE                 : TGUID = '{33026ee0-e387-4582-ae0a-34a2ad3baa18}';   // UINT32
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
+  MF_PD_PLAYBACK_ELEMENT_ID: TGUID = '{6c990d39-bb8e-477a-8598-0d5d96fcd88a}';   // UINT32
+  MF_PD_PREFERRED_LANGUAGE: TGUID = '{6c990d3A-bb8e-477a-8598-0d5d96fcd88a}';   // WCHAR
+  MF_PD_PLAYBACK_BOUNDARY_TIME: TGUID = '{6c990d3b-bb8e-477a-8598-0d5d96fcd88a}';   // UINT64
+  MF_PD_AUDIO_ISVARIABLEBITRATE: TGUID = '{33026ee0-e387-4582-ae0a-34a2ad3baa18}';   // UINT32
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-//#if (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
-  MF_PD_ADAPTIVE_STREAMING                      : TGUID = '{EA0D5D97-29F9-488B-AE6B-7D6B4136112B}';   // UINT32 (treat as BOOL)
-//#endif // (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
+  //#if (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
+  MF_PD_ADAPTIVE_STREAMING: TGUID = '{EA0D5D97-29F9-488B-AE6B-7D6B4136112B}';   // UINT32 (treat as BOOL)
+  //#endif // (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
 
 
-  MF_SD_LANGUAGE                                : TGUID = '{00af2180-bdc2-423c-abca-f503593bc121}';
-  MF_SD_PROTECTED                               : TGUID = '{00af2181-bdc2-423c-abca-f503593bc121}';
-  MF_SD_STREAM_NAME                             : TGUID = '{4f1b099d-d314-41e5-a781-7fefaa4c501f}';
-  MF_SD_MUTUALLY_EXCLUSIVE                      : TGUID = '{023ef79c-388d-487f-ac17-696cd6e3c6f5}';
+  MF_SD_LANGUAGE: TGUID = '{00af2180-bdc2-423c-abca-f503593bc121}';
+  MF_SD_PROTECTED: TGUID = '{00af2181-bdc2-423c-abca-f503593bc121}';
+  MF_SD_STREAM_NAME: TGUID = '{4f1b099d-d314-41e5-a781-7fefaa4c501f}';
+  MF_SD_MUTUALLY_EXCLUSIVE: TGUID = '{023ef79c-388d-487f-ac17-696cd6e3c6f5}';
 
-  MF_ACTIVATE_CUSTOM_VIDEO_MIXER_CLSID          : TGUID = '{ba491360-be50-451e-95ab-6d4accc7dad8}';
-  MF_ACTIVATE_CUSTOM_VIDEO_MIXER_ACTIVATE       : TGUID = '{ba491361-be50-451e-95ab-6d4accc7dad8}';
-  MF_ACTIVATE_CUSTOM_VIDEO_MIXER_FLAGS          : TGUID = '{ba491362-be50-451e-95ab-6d4accc7dad8}';
-  MF_ACTIVATE_CUSTOM_VIDEO_PRESENTER_CLSID      : TGUID = '{ba491364-be50-451e-95ab-6d4accc7dad8}';
-  MF_ACTIVATE_CUSTOM_VIDEO_PRESENTER_ACTIVATE   : TGUID = '{ba491365-be50-451e-95ab-6d4accc7dad8}';
-  MF_ACTIVATE_CUSTOM_VIDEO_PRESENTER_FLAGS      : TGUID = '{ba491366-be50-451e-95ab-6d4accc7dad8}';
+  MF_ACTIVATE_CUSTOM_VIDEO_MIXER_CLSID: TGUID = '{ba491360-be50-451e-95ab-6d4accc7dad8}';
+  MF_ACTIVATE_CUSTOM_VIDEO_MIXER_ACTIVATE: TGUID = '{ba491361-be50-451e-95ab-6d4accc7dad8}';
+  MF_ACTIVATE_CUSTOM_VIDEO_MIXER_FLAGS: TGUID = '{ba491362-be50-451e-95ab-6d4accc7dad8}';
+  MF_ACTIVATE_CUSTOM_VIDEO_PRESENTER_CLSID: TGUID = '{ba491364-be50-451e-95ab-6d4accc7dad8}';
+  MF_ACTIVATE_CUSTOM_VIDEO_PRESENTER_ACTIVATE: TGUID = '{ba491365-be50-451e-95ab-6d4accc7dad8}';
+  MF_ACTIVATE_CUSTOM_VIDEO_PRESENTER_FLAGS: TGUID = '{ba491366-be50-451e-95ab-6d4accc7dad8}';
 
-  MF_ACTIVATE_CUSTOM_MIXER_ALLOWFAIL      = $1;
-  MF_ACTIVATE_CUSTOM_PRESENTER_ALLOWFAIL  = $1;
+  MF_ACTIVATE_CUSTOM_MIXER_ALLOWFAIL = $1;
+  MF_ACTIVATE_CUSTOM_PRESENTER_ALLOWFAIL = $1;
 
-  MF_ACTIVATE_MFT_LOCKED                        : TGUID = '{c1f6093c-7f65-4fbd-9e39-5faec3c4fbd7}';
-  MF_ACTIVATE_VIDEO_WINDOW                      : TGUID = '{9a2dbbdd-f57e-4162-82b9-6831377682d3}';
+  MF_ACTIVATE_MFT_LOCKED: TGUID = '{c1f6093c-7f65-4fbd-9e39-5faec3c4fbd7}';
+  MF_ACTIVATE_VIDEO_WINDOW: TGUID = '{9a2dbbdd-f57e-4162-82b9-6831377682d3}';
 
-  MF_AUDIO_RENDERER_ATTRIBUTE_FLAGS             : TGUID = '{ede4b5e0-f805-4d6c-99b3-db01bf95dfab}';
+  MF_AUDIO_RENDERER_ATTRIBUTE_FLAGS: TGUID = '{ede4b5e0-f805-4d6c-99b3-db01bf95dfab}';
 
 
   MF_AUDIO_RENDERER_ATTRIBUTE_FLAGS_CROSSPROCESS = $1;
-  MF_AUDIO_RENDERER_ATTRIBUTE_FLAGS_NOPERSIST    = $2;
+  MF_AUDIO_RENDERER_ATTRIBUTE_FLAGS_NOPERSIST = $2;
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
   MF_AUDIO_RENDERER_ATTRIBUTE_FLAGS_DONT_ALLOW_FORMAT_CHANGES = $4;
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
 
-  MF_AUDIO_RENDERER_ATTRIBUTE_SESSION_ID        : TGUID = '{ede4b5e3-f805-4d6c-99b3-db01bf95dfab}';
-  MF_AUDIO_RENDERER_ATTRIBUTE_ENDPOINT_ID       : TGUID = '{b10aaec3-ef71-4cc3-b873-05a9a08b9f8e}';
-  MF_AUDIO_RENDERER_ATTRIBUTE_ENDPOINT_ROLE     : TGUID = '{6ba644ff-27c5-4d02-9887-c28619fdb91b}';
-  MF_AUDIO_RENDERER_ATTRIBUTE_STREAM_CATEGORY   : TGUID = '{a9770471-92ec-4df4-94fe-81c36f0c3a7a}';
+  MF_AUDIO_RENDERER_ATTRIBUTE_SESSION_ID: TGUID = '{ede4b5e3-f805-4d6c-99b3-db01bf95dfab}';
+  MF_AUDIO_RENDERER_ATTRIBUTE_ENDPOINT_ID: TGUID = '{b10aaec3-ef71-4cc3-b873-05a9a08b9f8e}';
+  MF_AUDIO_RENDERER_ATTRIBUTE_ENDPOINT_ROLE: TGUID = '{6ba644ff-27c5-4d02-9887-c28619fdb91b}';
+  MF_AUDIO_RENDERER_ATTRIBUTE_STREAM_CATEGORY: TGUID = '{a9770471-92ec-4df4-94fe-81c36f0c3a7a}';
 
-  MFENABLETYPE_WMDRMV1_LicenseAcquisition       : TGUID = '{4ff6eeaf-0b43-4797-9b85-abf31815e7b0}';
-  MFENABLETYPE_WMDRMV7_LicenseAcquisition       : TGUID = '{003306df-4a06-4884-a097-ef6d22ec84a3}';
-  MFENABLETYPE_WMDRMV7_Individualization        : TGUID = '{acd2c84a-b303-4f65-bc2c-2c848d01a989}';
-  MFENABLETYPE_MF_UpdateRevocationInformation   : TGUID = '{e558b0b5-b3c4-44a0-924c-50d178932385}';
-  MFENABLETYPE_MF_UpdateUntrustedComponent      : TGUID = '{9879f3d6-cee2-48e6-b573-9767ab172f16}';
-  MFENABLETYPE_MF_RebootRequired                : TGUID = '{6d4d3d4b-0ece-4652-8b3a-f2d24260d887}';
+  MFENABLETYPE_WMDRMV1_LicenseAcquisition: TGUID = '{4ff6eeaf-0b43-4797-9b85-abf31815e7b0}';
+  MFENABLETYPE_WMDRMV7_LicenseAcquisition: TGUID = '{003306df-4a06-4884-a097-ef6d22ec84a3}';
+  MFENABLETYPE_WMDRMV7_Individualization: TGUID = '{acd2c84a-b303-4f65-bc2c-2c848d01a989}';
+  MFENABLETYPE_MF_UpdateRevocationInformation: TGUID = '{e558b0b5-b3c4-44a0-924c-50d178932385}';
+  MFENABLETYPE_MF_UpdateUntrustedComponent: TGUID = '{9879f3d6-cee2-48e6-b573-9767ab172f16}';
+  MFENABLETYPE_MF_RebootRequired: TGUID = '{6d4d3d4b-0ece-4652-8b3a-f2d24260d887}';
 
 
   // Structs that contain information about revoked or unsigned binaries,
   // returned by the IMFContentEnabler.GetEnableData() method of
   // the Revocation content enabler
 
-{$IFNDEF MFRR_INFO_VERSION}
+  {$IFNDEF MFRR_INFO_VERSION}
   MFRR_INFO_VERSION = 0;
-{$ENDIF}
+  {$ENDIF}
 
   // The values for MFRR_COMPONENT_HASH_INFO.ulReason
   //=================================================
-  MF_USER_MODE_COMPONENT_LOAD         = $00000001;
-  MF_KERNEL_MODE_COMPONENT_LOAD       = $00000002;
-  MF_GRL_LOAD_FAILED                  = $00000010;
-  MF_INVALID_GRL_SIGNATURE            = $00000020;
-  MF_GRL_ABSENT                       = $00001000;
-  MF_COMPONENT_REVOKED                = $00002000;
-  MF_COMPONENT_INVALID_EKU            = $00004000;
-  MF_COMPONENT_CERT_REVOKED           = $00008000;
-  MF_COMPONENT_INVALID_ROOT           = $00010000;
-  MF_COMPONENT_HS_CERT_REVOKED        = $00020000;
-  MF_COMPONENT_LS_CERT_REVOKED        = $00040000;
-  MF_BOOT_DRIVER_VERIFICATION_FAILED  = $00100000;
-  MF_TEST_SIGNED_COMPONENT_LOADING    = $01000000;
-  MF_MINCRYPT_FAILURE                 = $10000000;
+  MF_USER_MODE_COMPONENT_LOAD = $00000001;
+  MF_KERNEL_MODE_COMPONENT_LOAD = $00000002;
+  MF_GRL_LOAD_FAILED = $00000010;
+  MF_INVALID_GRL_SIGNATURE = $00000020;
+  MF_GRL_ABSENT = $00001000;
+  MF_COMPONENT_REVOKED = $00002000;
+  MF_COMPONENT_INVALID_EKU = $00004000;
+  MF_COMPONENT_CERT_REVOKED = $00008000;
+  MF_COMPONENT_INVALID_ROOT = $00010000;
+  MF_COMPONENT_HS_CERT_REVOKED = $00020000;
+  MF_COMPONENT_LS_CERT_REVOKED = $00040000;
+  MF_BOOT_DRIVER_VERIFICATION_FAILED = $00100000;
+  MF_TEST_SIGNED_COMPONENT_LOADING = $01000000;
+  MF_MINCRYPT_FAILURE = $10000000;
 
 
   //STR_HASH_LEN: Number of characters required to represent a SHA-1 hash
@@ -506,52 +661,52 @@ const
   //Each byte of a SHA-1 hash takes two characters to represent, and
   //we add in two leading characters "$" as well as the NULL terminator
 
-  SHA_HASH_LEN                        = 20;
-  STR_HASH_LEN                        = ((SHA_HASH_LEN * 2) + 3);
+  SHA_HASH_LEN = 20;
+  STR_HASH_LEN = ((SHA_HASH_LEN * 2) + 3);
 
 
-  MF_METADATA_PROVIDER_SERVICE                  : TGUID = '{db214084-58a4-4d2e-b84f-6f755b2f7a0d}';
-  MF_PROPERTY_HANDLER_SERVICE                   : TGUID = '{a3face02-32b8-41dd-90e7-5fef7c8991b5}';
+  MF_METADATA_PROVIDER_SERVICE: TGUID = '{db214084-58a4-4d2e-b84f-6f755b2f7a0d}';
+  MF_PROPERTY_HANDLER_SERVICE: TGUID = '{a3face02-32b8-41dd-90e7-5fef7c8991b5}';
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
-  MF_TIMECODE_SERVICE                           : TGUID = '{a0d502a7-0eb3-4885-b1b9-9feb0d083454}';
+  MF_TIMECODE_SERVICE: TGUID = '{a0d502a7-0eb3-4885-b1b9-9feb0d083454}';
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-  MR_POLICY_VOLUME_SERVICE                      : TGUID = '{1abaa2ac-9d3b-47c6-ab48-c59506de784d}';
+  MR_POLICY_VOLUME_SERVICE: TGUID = '{1abaa2ac-9d3b-47c6-ab48-c59506de784d}';
 
-//#if (WINVER >= _WIN32_WINNT_WIN8)
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
 
-  MR_CAPTURE_POLICY_VOLUME_SERVICE              : TGUID = '{24030acd-107a-4265-975c-414e33e65f2a}';
+  MR_CAPTURE_POLICY_VOLUME_SERVICE: TGUID = '{24030acd-107a-4265-975c-414e33e65f2a}';
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN8)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
-  MR_AUDIO_POLICY_SERVICE                       : TGUID = '{911fd737-6775-4ab0-a614-297862fdac88}';
+  MR_AUDIO_POLICY_SERVICE: TGUID = '{911fd737-6775-4ab0-a614-297862fdac88}';
 
-  MF_SAMPLEGRABBERSINK_SAMPLE_TIME_OFFSET       : TGUID = '{62e3d776-8100-4e03-a6e8-bd3857ac9c47}';
+  MF_SAMPLEGRABBERSINK_SAMPLE_TIME_OFFSET: TGUID = '{62e3d776-8100-4e03-a6e8-bd3857ac9c47}';
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
-  MF_SAMPLEGRABBERSINK_IGNORE_CLOCK             : TGUID = '{0efda2c0-0b69-4e2e-ab8d-46dcbff7d25d}';
+  MF_SAMPLEGRABBERSINK_IGNORE_CLOCK: TGUID = '{0efda2c0-0b69-4e2e-ab8d-46dcbff7d25d}';
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-  MF_QUALITY_SERVICES                           : TGUID = '{b7e2be11-2f96-4640-b52c-282365bdf16c}';
+  MF_QUALITY_SERVICES: TGUID = '{b7e2be11-2f96-4640-b52c-282365bdf16c}';
 
-  MF_WORKQUEUE_SERVICES                         : TGUID = '{8e37d489-41e0-413a-9068-287c886d8dda}';
+  MF_WORKQUEUE_SERVICES: TGUID = '{8e37d489-41e0-413a-9068-287c886d8dda}';
 
-  MF_QUALITY_NOTIFY_PROCESSING_LATENCY          : TGUID = '{f6b44af8-604d-46fe-a95d-45479b10c9bc}';
-  MF_QUALITY_NOTIFY_SAMPLE_LAG                  : TGUID = '{30d15206-ed2a-4760-be17-eb4a9f12295c}';
+  MF_QUALITY_NOTIFY_PROCESSING_LATENCY: TGUID = '{f6b44af8-604d-46fe-a95d-45479b10c9bc}';
+  MF_QUALITY_NOTIFY_SAMPLE_LAG: TGUID = '{30d15206-ed2a-4760-be17-eb4a9f12295c}';
 
 
-  MFSEQUENCER_INVALID_ELEMENT_ID      = MAXDW; // all bits set.
+  MFSEQUENCER_INVALID_ELEMENT_ID = MAXDW; // all bits set.
 
 
   // Sequencer constants
   //////////////////////
 
-  MF_TIME_FORMAT_SEGMENT_OFFSET                 : TGUID = '{c8b8be77-869c-431d-812e-169693f65a39}';
+  MF_TIME_FORMAT_SEGMENT_OFFSET: TGUID = '{c8b8be77-869c-431d-812e-169693f65a39}';
   // MF_TIME_FORMAT_SEGMENT_OFFSET can be used as the pguidTimeFormat argument
   // to IMFMediaSession.Start and IMFMediaSource.Start to indicate that
   // playback should start at a given offset relative to a sequencer element.
@@ -559,235 +714,235 @@ const
   // MFCreateSequencerSegmentOffset.
 
 
-  MF_TOPONODE_ATTRIBUTE_EDITOR_SERVICE          : TGUID = '{65656e1a-077f-4472-83ef-316f11d5087a}';
+  MF_TOPONODE_ATTRIBUTE_EDITOR_SERVICE: TGUID = '{65656e1a-077f-4472-83ef-316f11d5087a}';
 
-  MFNETSOURCE_SSLCERTIFICATE_MANAGER            : TGUID = '{55e6cb27-e69b-4267-940c-2d7ec5bb8a0f}';
+  MFNETSOURCE_SSLCERTIFICATE_MANAGER: TGUID = '{55e6cb27-e69b-4267-940c-2d7ec5bb8a0f}';
 
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
-  MFNETSOURCE_RESOURCE_FILTER                   :  TGUID = '{815d0ff6-265a-4477-9e46-7b80ad80b5fb}';
+  MFNETSOURCE_RESOURCE_FILTER: TGUID = '{815d0ff6-265a-4477-9e46-7b80ad80b5fb}';
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-  MFNET_SAVEJOB_SERVICE                         : TGUID = '{b85a587f-3d02-4e52-9565-55d3ec1e7ff7}';
+  MFNET_SAVEJOB_SERVICE: TGUID = '{b85a587f-3d02-4e52-9565-55d3ec1e7ff7}';
 
-  MFNETSOURCE_STATISTICS_SERVICE                : TGUID = '{3cb1f275-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_STATISTICS                        : TGUID = '{3cb1f274-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_STATISTICS_SERVICE: TGUID = '{3cb1f275-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_STATISTICS: TGUID = '{3cb1f274-0505-4c5d-ae71-0a556344efa1}';
 
-  MFNETSOURCE_BUFFERINGTIME                     : TGUID = '{3cb1f276-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_ACCELERATEDSTREAMINGDURATION      : TGUID = '{3cb1f277-0505-0c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_BUFFERINGTIME: TGUID = '{3cb1f276-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_ACCELERATEDSTREAMINGDURATION: TGUID = '{3cb1f277-0505-0c5d-ae71-0a556344efa1}';
   MFNETSOURCE_MAXUDPACCELERATEDSTREAMINGDURATION: TGUID = '{4aab2879-bbe1-4994-9ff0-5495bd250129}';
-  MFNETSOURCE_MAXBUFFERTIMEMS                   : TGUID = '{408b24e6-4038-4401-b5b2-fe701a9ebf10}';
-  MFNETSOURCE_CONNECTIONBANDWIDTH               : TGUID = '{3cb1f278-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_CACHEENABLED                      : TGUID = '{3cb1f279-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_AUTORECONNECTLIMIT                : TGUID = '{3cb1f27a-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_RESENDSENABLED                    : TGUID = '{3cb1f27b-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_THINNINGENABLED                   : TGUID = '{3cb1f27c-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_PROTOCOL                          : TGUID = '{3cb1f27d-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_TRANSPORT                         : TGUID = '{3cb1f27e-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_MAXBUFFERTIMEMS: TGUID = '{408b24e6-4038-4401-b5b2-fe701a9ebf10}';
+  MFNETSOURCE_CONNECTIONBANDWIDTH: TGUID = '{3cb1f278-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_CACHEENABLED: TGUID = '{3cb1f279-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_AUTORECONNECTLIMIT: TGUID = '{3cb1f27a-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_RESENDSENABLED: TGUID = '{3cb1f27b-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_THINNINGENABLED: TGUID = '{3cb1f27c-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_PROTOCOL: TGUID = '{3cb1f27d-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_TRANSPORT: TGUID = '{3cb1f27e-0505-4c5d-ae71-0a556344efa1}';
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
-  MFNETSOURCE_PREVIEWMODEENABLED                : TGUID = '{3cb1f27f-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_PREVIEWMODEENABLED: TGUID = '{3cb1f27f-0505-4c5d-ae71-0a556344efa1}';
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-  MFNETSOURCE_CREDENTIAL_MANAGER                : TGUID = '{3cb1f280-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_PPBANDWIDTH                       : TGUID = '{3cb1f281-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_AUTORECONNECTPROGRESS             : TGUID = '{3cb1f282-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_PROXYLOCATORFACTORY               : TGUID = '{3cb1f283-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_BROWSERUSERAGENT                  : TGUID = '{3cb1f28b-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_BROWSERWEBPAGE                    : TGUID = '{3cb1f28c-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_PLAYERVERSION                     : TGUID = '{3cb1f28d-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_PLAYERID                          : TGUID = '{3cb1f28e-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_HOSTEXE                           : TGUID = '{3cb1f28f-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_HOSTVERSION                       : TGUID = '{3cb1f291-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_PLAYERUSERAGENT                   : TGUID = '{3cb1f292-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_CREDENTIAL_MANAGER: TGUID = '{3cb1f280-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_PPBANDWIDTH: TGUID = '{3cb1f281-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_AUTORECONNECTPROGRESS: TGUID = '{3cb1f282-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_PROXYLOCATORFACTORY: TGUID = '{3cb1f283-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_BROWSERUSERAGENT: TGUID = '{3cb1f28b-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_BROWSERWEBPAGE: TGUID = '{3cb1f28c-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_PLAYERVERSION: TGUID = '{3cb1f28d-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_PLAYERID: TGUID = '{3cb1f28e-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_HOSTEXE: TGUID = '{3cb1f28f-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_HOSTVERSION: TGUID = '{3cb1f291-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_PLAYERUSERAGENT: TGUID = '{3cb1f292-0505-4c5d-ae71-0a556344efa1}';
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
-  MFNETSOURCE_CLIENTGUID                        : TGUID = '{60a2c4a6-f197-4c14-a5bf-88830d2458af}';
+  MFNETSOURCE_CLIENTGUID: TGUID = '{60a2c4a6-f197-4c14-a5bf-88830d2458af}';
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-  MFNETSOURCE_LOGURL                            : TGUID = '{3cb1f293-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_ENABLE_UDP                        : TGUID = '{3cb1f294-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_ENABLE_TCP                        : TGUID = '{3cb1f295-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_ENABLE_MSB                        : TGUID = '{3cb1f296-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_ENABLE_RTSP                       : TGUID = '{3cb1f298-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_ENABLE_HTTP                       : TGUID = '{3cb1f299-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_ENABLE_STREAMING                  : TGUID = '{3cb1f290-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_ENABLE_DOWNLOAD                   : TGUID = '{3cb1f29d-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_UDP_PORT_RANGE                    : TGUID = '{3cb1f29a-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_PROXYINFO                         : TGUID = '{3cb1f29b-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_DRMNET_LICENSE_REPRESENTATION     : TGUID = '{47eae1bd-bdfe-42e2-82f3-54a48c17962d}';
-  MFNETSOURCE_PROXYSETTINGS                     : TGUID = '{3cb1f287-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_PROXYHOSTNAME                     : TGUID = '{3cb1f284-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_PROXYPORT                         : TGUID = '{3cb1f288-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_PROXYEXCEPTIONLIST                : TGUID = '{3cb1f285-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_PROXYBYPASSFORLOCAL               : TGUID = '{3cb1f286-0505-4c5d-ae71-0a556344efa1}';
-  MFNETSOURCE_PROXYRERUNAUTODETECTION           : TGUID = '{3cb1f289-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_LOGURL: TGUID = '{3cb1f293-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_ENABLE_UDP: TGUID = '{3cb1f294-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_ENABLE_TCP: TGUID = '{3cb1f295-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_ENABLE_MSB: TGUID = '{3cb1f296-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_ENABLE_RTSP: TGUID = '{3cb1f298-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_ENABLE_HTTP: TGUID = '{3cb1f299-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_ENABLE_STREAMING: TGUID = '{3cb1f290-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_ENABLE_DOWNLOAD: TGUID = '{3cb1f29d-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_UDP_PORT_RANGE: TGUID = '{3cb1f29a-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_PROXYINFO: TGUID = '{3cb1f29b-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_DRMNET_LICENSE_REPRESENTATION: TGUID = '{47eae1bd-bdfe-42e2-82f3-54a48c17962d}';
+  MFNETSOURCE_PROXYSETTINGS: TGUID = '{3cb1f287-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_PROXYHOSTNAME: TGUID = '{3cb1f284-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_PROXYPORT: TGUID = '{3cb1f288-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_PROXYEXCEPTIONLIST: TGUID = '{3cb1f285-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_PROXYBYPASSFORLOCAL: TGUID = '{3cb1f286-0505-4c5d-ae71-0a556344efa1}';
+  MFNETSOURCE_PROXYRERUNAUTODETECTION: TGUID = '{3cb1f289-0505-4c5d-ae71-0a556344efa1}';
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
-  MFNETSOURCE_STREAM_LANGUAGE                   : TGUID = '{9ab44318-f7cd-4f2d-8d6d-fa35b492cecb}';
-  MFNETSOURCE_LOGPARAMS                         : TGUID = '{64936ae8-9418-453a-8cda-3e0a668b353b}';
+  MFNETSOURCE_STREAM_LANGUAGE: TGUID = '{9ab44318-f7cd-4f2d-8d6d-fa35b492cecb}';
+  MFNETSOURCE_LOGPARAMS: TGUID = '{64936ae8-9418-453a-8cda-3e0a668b353b}';
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-//#if (WINVER >= _WIN32_WINNT_WIN8)
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
 
-  MFNETSOURCE_PEERMANAGER                       : TGUID = '{48b29adb-febf-45ee-a9bf-efb81c492efc}';
-  MFNETSOURCE_FRIENDLYNAME                      : TGUID = '{5b2a7757-bc6b-447e-aa06-0dda1c646e2f}';
+  MFNETSOURCE_PEERMANAGER: TGUID = '{48b29adb-febf-45ee-a9bf-efb81c492efc}';
+  MFNETSOURCE_FRIENDLYNAME: TGUID = '{5b2a7757-bc6b-447e-aa06-0dda1c646e2f}';
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN8)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
-  MF_BYTESTREAMHANDLER_ACCEPTS_SHARE_WRITE      : TGUID = '{a6e1f733-3001-4915-8150-1558a2180ec8}';
+  MF_BYTESTREAMHANDLER_ACCEPTS_SHARE_WRITE: TGUID = '{a6e1f733-3001-4915-8150-1558a2180ec8}';
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-  MF_BYTESTREAM_SERVICE                         : TGUID = '{ab025e2b-16d9-4180-a127-ba6c70156161}';
+  MF_BYTESTREAM_SERVICE: TGUID = '{ab025e2b-16d9-4180-a127-ba6c70156161}';
 
-  MFOUTPUTATTRIBUTE_DIGITAL                   = DWORD($00000001);
+  MFOUTPUTATTRIBUTE_DIGITAL = DWORD($00000001);
   MFOUTPUTATTRIBUTE_NONSTANDARDIMPLEMENTATION = DWORD($00000002);
-  MFOUTPUTATTRIBUTE_VIDEO                     = DWORD($00000004);
-  MFOUTPUTATTRIBUTE_COMPRESSED                = DWORD($00000008);
-  MFOUTPUTATTRIBUTE_SOFTWARE                  = DWORD($00000010);
-  MFOUTPUTATTRIBUTE_BUS                       = DWORD($00000020);
-  MFOUTPUTATTRIBUTE_BUSIMPLEMENTATION         = DWORD($0000FF00);
+  MFOUTPUTATTRIBUTE_VIDEO = DWORD($00000004);
+  MFOUTPUTATTRIBUTE_COMPRESSED = DWORD($00000008);
+  MFOUTPUTATTRIBUTE_SOFTWARE = DWORD($00000010);
+  MFOUTPUTATTRIBUTE_BUS = DWORD($00000020);
+  MFOUTPUTATTRIBUTE_BUSIMPLEMENTATION = DWORD($0000FF00);
 
 
-  MFCONNECTOR_SPDIF                             : TGUID = '{0b94a712-ad3e-4cee-83ce-ce32e3db6522}';
-  MFCONNECTOR_UNKNOWN                           : TGUID = '{ac3aef5c-ce43-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_PCI                               : TGUID = '{ac3aef5d-ce43-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_PCIX                              : TGUID = '{ac3aef5e-ce43-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_PCI_Express                       : TGUID = '{ac3aef5f-ce43-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_AGP                               : TGUID = '{ac3aef60-ce43-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_SPDIF: TGUID = '{0b94a712-ad3e-4cee-83ce-ce32e3db6522}';
+  MFCONNECTOR_UNKNOWN: TGUID = '{ac3aef5c-ce43-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_PCI: TGUID = '{ac3aef5d-ce43-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_PCIX: TGUID = '{ac3aef5e-ce43-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_PCI_Express: TGUID = '{ac3aef5f-ce43-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_AGP: TGUID = '{ac3aef60-ce43-11d9-92db-000bdb28ff98}';
 
 
-  MFCONNECTOR_VGA                               : TGUID = '{57cd5968-ce47-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_SVIDEO                            : TGUID = '{57cd5969-ce47-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_COMPOSITE                         : TGUID = '{57cd596a-ce47-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_COMPONENT                         : TGUID = '{57cd596b-ce47-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_DVI                               : TGUID = '{57cd596c-ce47-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_HDMI                              : TGUID = '{57cd596d-ce47-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_LVDS                              : TGUID = '{57cd596e-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_VGA: TGUID = '{57cd5968-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_SVIDEO: TGUID = '{57cd5969-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_COMPOSITE: TGUID = '{57cd596a-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_COMPONENT: TGUID = '{57cd596b-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_DVI: TGUID = '{57cd596c-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_HDMI: TGUID = '{57cd596d-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_LVDS: TGUID = '{57cd596e-ce47-11d9-92db-000bdb28ff98}';
   // The GUID 57cd596f-ce47-11d9-92db-000bdb28ff98 is reserved for TMDS
-  MFCONNECTOR_D_JPN                             : TGUID = '{57cd5970-ce47-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_SDI                               : TGUID = '{57cd5971-ce47-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_DISPLAYPORT_EXTERNAL              : TGUID = '{57cd5972-ce47-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_DISPLAYPORT_EMBEDDED              : TGUID = '{57cd5973-ce47-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_UDI_EXTERNAL                      : TGUID = '{57cd5974-ce47-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_UDI_EMBEDDED                      : TGUID = '{57cd5975-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_D_JPN: TGUID = '{57cd5970-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_SDI: TGUID = '{57cd5971-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_DISPLAYPORT_EXTERNAL: TGUID = '{57cd5972-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_DISPLAYPORT_EMBEDDED: TGUID = '{57cd5973-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_UDI_EXTERNAL: TGUID = '{57cd5974-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_UDI_EMBEDDED: TGUID = '{57cd5975-ce47-11d9-92db-000bdb28ff98}';
   // The GUID 57cd5976-ce47-11d9-92db-000bdb28ff98 is reserved
-  MFCONNECTOR_MIRACAST                          : TGUID = '{57cd5977-ce47-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_TRANSPORT_AGNOSTIC_DIGITAL_MODE_A : TGUID = '{57cd5978-ce47-11d9-92db-000bdb28ff98}';
-  MFCONNECTOR_TRANSPORT_AGNOSTIC_DIGITAL_MODE_B : TGUID = '{57cd5979-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_MIRACAST: TGUID = '{57cd5977-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_TRANSPORT_AGNOSTIC_DIGITAL_MODE_A: TGUID = '{57cd5978-ce47-11d9-92db-000bdb28ff98}';
+  MFCONNECTOR_TRANSPORT_AGNOSTIC_DIGITAL_MODE_B: TGUID = '{57cd5979-ce47-11d9-92db-000bdb28ff98}';
 
-// #if (NTDDI_VERSION >= NTDDI_WIN10_VB)
+  // #if (NTDDI_VERSION >= NTDDI_WIN10_VB)
   // MF_POLICY_ID
   // Data type: UINT32 (treat as BOOL)
   // An identifier that can be set on an IMFOutputPolicy.
   // The value can be recieved from the MEPolicySet media event. It is stored as a VT_UI4
   // type payload in the MEPolicySet event.
   // {B160C24D-C059-48F1-A901-9EE298A9A8C3}
-  MF_POLICY_ID                                  : TGUID = '{B160C24D-C059-48F1-A901-9EE298A9A8C3}';
-// #endif // (NTDDI_VERSION >= NTDDI_WIN10_VB)
+  MF_POLICY_ID: TGUID = '{B160C24D-C059-48F1-A901-9EE298A9A8C3}';
+  // #endif // (NTDDI_VERSION >= NTDDI_WIN10_VB)
 
-  MFPROTECTION_DISABLE                          : TGUID = '{8cc6d81b-fec6-4d8f-964b-cfba0b0dad0d}';
-  MFPROTECTION_CONSTRICTVIDEO                   : TGUID = '{193370ce-c5e4-4c3a-8a66-6959b4da4442}';
-  MFPROTECTION_CONSTRICTVIDEO_NOOPM             : TGUID = '{a580e8cd-c247-4957-b983-3c2eebd1ff59}';
+  MFPROTECTION_DISABLE: TGUID = '{8cc6d81b-fec6-4d8f-964b-cfba0b0dad0d}';
+  MFPROTECTION_CONSTRICTVIDEO: TGUID = '{193370ce-c5e4-4c3a-8a66-6959b4da4442}';
+  MFPROTECTION_CONSTRICTVIDEO_NOOPM: TGUID = '{a580e8cd-c247-4957-b983-3c2eebd1ff59}';
 
-  MFPROTECTION_CONSTRICTAUDIO                   : TGUID = '{ffc99b44-df48-4e16-8e66-096892c1578a}';
-  MFPROTECTION_TRUSTEDAUDIODRIVERS              : TGUID = '{65bdf3d2-0168-4816-a533-55d47b027101}';
-  MFPROTECTION_HDCP                             : TGUID = '{AE7CC03D-C828-4021-acb7-d578d27aaf13}';
-  MFPROTECTION_CGMSA                            : TGUID = '{E57E69E9-226B-4d31-B4E3-D3DB008736DD}';
-  MFPROTECTION_ACP                              : TGUID = '{c3fd11c6-f8b7-4d20-b008-1db17d61f2da}';
-  MFPROTECTION_WMDRMOTA                         : TGUID = '{a267a6a1-362e-47d0-8805-4628598a23e4}';
-  MFPROTECTION_FFT                              : TGUID = '{462a56b2-2866-4bb6-980d-6d8d9edb1a8c}';
-  MFPROTECTION_PROTECTED_SURFACE                : TGUID = '{4f5d9566-e742-4a25-8d1f-d287b5fa0ade}';
-  MFPROTECTION_DISABLE_SCREEN_SCRAPE            : TGUID = '{a21179a4-b7cd-40d8-9614-8ef2371ba78d}';
-  MFPROTECTION_VIDEO_FRAMES                     : TGUID = '{36a59cbc-7401-4a8c-bc20-46a7c9e597f0}';
-  MFPROTECTION_HARDWARE                         : TGUID = '{4ee7f0c1-9ed7-424f-b6be-996b33528856}';
-  MFPROTECTION_HDCP_WITH_TYPE_ENFORCEMENT       : TGUID = '{a4a585e8-ed60-442d-814d-db4d4220a06d}';
+  MFPROTECTION_CONSTRICTAUDIO: TGUID = '{ffc99b44-df48-4e16-8e66-096892c1578a}';
+  MFPROTECTION_TRUSTEDAUDIODRIVERS: TGUID = '{65bdf3d2-0168-4816-a533-55d47b027101}';
+  MFPROTECTION_HDCP: TGUID = '{AE7CC03D-C828-4021-acb7-d578d27aaf13}';
+  MFPROTECTION_CGMSA: TGUID = '{E57E69E9-226B-4d31-B4E3-D3DB008736DD}';
+  MFPROTECTION_ACP: TGUID = '{c3fd11c6-f8b7-4d20-b008-1db17d61f2da}';
+  MFPROTECTION_WMDRMOTA: TGUID = '{a267a6a1-362e-47d0-8805-4628598a23e4}';
+  MFPROTECTION_FFT: TGUID = '{462a56b2-2866-4bb6-980d-6d8d9edb1a8c}';
+  MFPROTECTION_PROTECTED_SURFACE: TGUID = '{4f5d9566-e742-4a25-8d1f-d287b5fa0ade}';
+  MFPROTECTION_DISABLE_SCREEN_SCRAPE: TGUID = '{a21179a4-b7cd-40d8-9614-8ef2371ba78d}';
+  MFPROTECTION_VIDEO_FRAMES: TGUID = '{36a59cbc-7401-4a8c-bc20-46a7c9e597f0}';
+  MFPROTECTION_HARDWARE: TGUID = '{4ee7f0c1-9ed7-424f-b6be-996b33528856}';
+  MFPROTECTION_HDCP_WITH_TYPE_ENFORCEMENT: TGUID = '{a4a585e8-ed60-442d-814d-db4d4220a06d}';
 
 
   MFPROTECTIONATTRIBUTE_CONSTRICTVIDEO_IMAGESIZE: TGUID = '{008476fc-4b58-4d80-a790-e7297673161d}';
-  MFPROTECTIONATTRIBUTE_HDCP_SRM                : TGUID = '{6f302107-3477-4468-8a08-eef9db10e20f}';
+  MFPROTECTIONATTRIBUTE_HDCP_SRM: TGUID = '{6f302107-3477-4468-8a08-eef9db10e20f}';
 
-  MF_SampleProtectionSalt                       : TGUID = '{5403deee-b9ee-438f-aa83-3804997e569d}';
+  MF_SampleProtectionSalt: TGUID = '{5403deee-b9ee-438f-aa83-3804997e569d}';
 
-  MF_SAMI_SERVICE                               : TGUID = '{49a89ae7-b4d9-4ef2-aa5c-f65a3e05ae4e}';
-  MF_PD_SAMI_STYLELIST                          : TGUID = '{e0b73c7f-486d-484e-9872-4de5192a7bf8}';
+  MF_SAMI_SERVICE: TGUID = '{49a89ae7-b4d9-4ef2-aa5c-f65a3e05ae4e}';
+  MF_PD_SAMI_STYLELIST: TGUID = '{e0b73c7f-486d-484e-9872-4de5192a7bf8}';
   // Contains the Synchronized Accessible Media Interchange (SAMI) language name that is defined for the stream.
   // This attribute is present in the stream descriptors returned from the SAMI media source.
-  MF_SD_SAMI_LANGUAGE                           : TGUID = '{36fcb98a-6cd0-44cb-acb9-a8f5600dd0bb}';
+  MF_SD_SAMI_LANGUAGE: TGUID = '{36fcb98a-6cd0-44cb-acb9-a8f5600dd0bb}';
 
-  MF_TRANSCODE_CONTAINERTYPE                    : TGUID = '{150ff23f-4abc-478b-ac4f-e1916fba1cca}';
-  MFTranscodeContainerType_ASF                  : TGUID = '{430f6f6e-b6bf-4fc1-a0bd-9ee46eee2afb}';
-  MFTranscodeContainerType_MPEG4                : TGUID = '{dc6cd05d-b9d0-40ef-bd35-fa622c1ab28a}';
-  MFTranscodeContainerType_MP3                  : TGUID = '{e438b912-83f1-4de6-9e3a-9ffbc6dd24d1}';
-  MFTranscodeContainerType_FLAC                 : TGUID = '{31344aa3-05a9-42b5-901b-8e9d4257f75e}';
-  MFTranscodeContainerType_3GP                  : TGUID = '{34c50167-4472-4f34-9ea0-c49fbacf037d}';
-  MFTranscodeContainerType_AC3                  : TGUID = '{6d8d91c3-8c91-4ed1-8742-8c347d5b44d0}';
-  MFTranscodeContainerType_ADTS                 : TGUID = '{132fd27d-0f02-43de-a301-38fbbbb3834e}';
-  MFTranscodeContainerType_MPEG2                : TGUID = '{bfc2dbf9-7bb4-4f8f-afde-e112c44ba882}';
-  MFTranscodeContainerType_WAVE                 : TGUID = '{64c3453c-0f26-4741-be63-87bdf8bb935b}';
-  MFTranscodeContainerType_AVI                  : TGUID = '{7edfe8af-402f-4d76-a33c-619fd157d0f1}';
+  MF_TRANSCODE_CONTAINERTYPE: TGUID = '{150ff23f-4abc-478b-ac4f-e1916fba1cca}';
+  MFTranscodeContainerType_ASF: TGUID = '{430f6f6e-b6bf-4fc1-a0bd-9ee46eee2afb}';
+  MFTranscodeContainerType_MPEG4: TGUID = '{dc6cd05d-b9d0-40ef-bd35-fa622c1ab28a}';
+  MFTranscodeContainerType_MP3: TGUID = '{e438b912-83f1-4de6-9e3a-9ffbc6dd24d1}';
+  MFTranscodeContainerType_FLAC: TGUID = '{31344aa3-05a9-42b5-901b-8e9d4257f75e}';
+  MFTranscodeContainerType_3GP: TGUID = '{34c50167-4472-4f34-9ea0-c49fbacf037d}';
+  MFTranscodeContainerType_AC3: TGUID = '{6d8d91c3-8c91-4ed1-8742-8c347d5b44d0}';
+  MFTranscodeContainerType_ADTS: TGUID = '{132fd27d-0f02-43de-a301-38fbbbb3834e}';
+  MFTranscodeContainerType_MPEG2: TGUID = '{bfc2dbf9-7bb4-4f8f-afde-e112c44ba882}';
+  MFTranscodeContainerType_WAVE: TGUID = '{64c3453c-0f26-4741-be63-87bdf8bb935b}';
+  MFTranscodeContainerType_AVI: TGUID = '{7edfe8af-402f-4d76-a33c-619fd157d0f1}';
 
-//#if (WINVER >= _WIN32_WINNT_WIN8)
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
 
-  MFTranscodeContainerType_FMPEG4               : TGUID = '{9ba876f1-419f-4b77-a1e0-35959d9d4004}';
+  MFTranscodeContainerType_FMPEG4: TGUID = '{9ba876f1-419f-4b77-a1e0-35959d9d4004}';
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN8)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
-  MF_TRANSCODE_SKIP_METADATA_TRANSFER           : TGUID = '{4e4469ef-b571-4959-8f83-3dcfba33a393}';
-  MF_TRANSCODE_TOPOLOGYMODE                     : TGUID = '{3e3df610-394a-40b2-9dea-3bab650bebf2}';
+  MF_TRANSCODE_SKIP_METADATA_TRANSFER: TGUID = '{4e4469ef-b571-4959-8f83-3dcfba33a393}';
+  MF_TRANSCODE_TOPOLOGYMODE: TGUID = '{3e3df610-394a-40b2-9dea-3bab650bebf2}';
 
-  MF_TRANSCODE_ADJUST_PROFILE                   : TGUID = '{9c37c21b-060f-487c-a690-80d7f50d1c72}';
+  MF_TRANSCODE_ADJUST_PROFILE: TGUID = '{9c37c21b-060f-487c-a690-80d7f50d1c72}';
 
-  MF_TRANSCODE_ENCODINGPROFILE                  : TGUID = '{6947787c-f508-4ea9-b1e9-a1fe3a49fbc9}';
-  MF_TRANSCODE_QUALITYVSSPEED                   : TGUID = '{98332df8-03cd-476b-89fa-3f9e442dec9f}';
-  MF_TRANSCODE_DONOT_INSERT_ENCODER             : TGUID = '{f45aa7ce-ab24-4012-a11b-dc8220201410}';
+  MF_TRANSCODE_ENCODINGPROFILE: TGUID = '{6947787c-f508-4ea9-b1e9-a1fe3a49fbc9}';
+  MF_TRANSCODE_QUALITYVSSPEED: TGUID = '{98332df8-03cd-476b-89fa-3f9e442dec9f}';
+  MF_TRANSCODE_DONOT_INSERT_ENCODER: TGUID = '{f45aa7ce-ab24-4012-a11b-dc8220201410}';
 
-  MF_VIDEO_PROCESSOR_ALGORITHM                  : TGUID = '{4a0a1e1f-272c-4fb6-9eb1-db330cbc97ca}';
-  MF_XVP_DISABLE_FRC                            : TGUID = '{2c0afa19-7a97-4d5a-9ee8-16d4fc518d8c}';
+  MF_VIDEO_PROCESSOR_ALGORITHM: TGUID = '{4a0a1e1f-272c-4fb6-9eb1-db330cbc97ca}';
+  MF_XVP_DISABLE_FRC: TGUID = '{2c0afa19-7a97-4d5a-9ee8-16d4fc518d8c}';
 
-//#if (WINVER >= _WIN32_WINNT_WINBLUE)
-  MF_XVP_CALLER_ALLOCATES_OUTPUT                : TGUID = '{4a2cabc0-0cab-40b1-a1b9-75bc3658f000}';
-//#endif // (WINVER >= _WIN32_WINNT_WINBLUE)
+  //#if (WINVER >= _WIN32_WINNT_WINBLUE)
+  MF_XVP_CALLER_ALLOCATES_OUTPUT: TGUID = '{4a2cabc0-0cab-40b1-a1b9-75bc3658f000}';
+  //#endif // (WINVER >= _WIN32_WINNT_WINBLUE)
 
-  MF_LOCAL_MFT_REGISTRATION_SERVICE             : TGUID = '{ddf5cf9c-4506-45aa-abf0-6d5d94dd1b4a}';
+  MF_LOCAL_MFT_REGISTRATION_SERVICE: TGUID = '{ddf5cf9c-4506-45aa-abf0-6d5d94dd1b4a}';
 
-//#if (WINVER >= _WIN32_WINNT_WINBLUE)
-  MF_WRAPPED_BUFFER_SERVICE                     : TGUID = '{ab544072-c269-4ebc-a552-1c3b32bed5ca}';
-  MF_WRAPPED_SAMPLE_SERVICE                     : TGUID = '{31f52bf2-d03e-4048-80d0-9c1046d87c61}';
-//#endif // (WINVER >= _WIN32_WINNT_WINBLUE)
+  //#if (WINVER >= _WIN32_WINNT_WINBLUE)
+  MF_WRAPPED_BUFFER_SERVICE: TGUID = '{ab544072-c269-4ebc-a552-1c3b32bed5ca}';
+  MF_WRAPPED_SAMPLE_SERVICE: TGUID = '{31f52bf2-d03e-4048-80d0-9c1046d87c61}';
+  //#endif // (WINVER >= _WIN32_WINNT_WINBLUE)
 
-  MF_WRAPPED_OBJECT                             : TGUID = '{2b182c4c-d6ac-49f4-8915-f71887db70cd}';
-  CLSID_HttpSchemePlugin                        : TGUID = '{44cb442b-9da9-49df-b3fd-023777b16e50}';
-  CLSID_UrlmonSchemePlugin                      : TGUID = '{9ec4b4f9-3029-45ad-947b-344de2a249e2}';
+  MF_WRAPPED_OBJECT: TGUID = '{2b182c4c-d6ac-49f4-8915-f71887db70cd}';
+  CLSID_HttpSchemePlugin: TGUID = '{44cb442b-9da9-49df-b3fd-023777b16e50}';
+  CLSID_UrlmonSchemePlugin: TGUID = '{9ec4b4f9-3029-45ad-947b-344de2a249e2}';
 
-  CLSID_NetSchemePlugin                         : TGUID = '{e9f4ebab-d97b-463e-a2b1-c54ee3f9414d}';
+  CLSID_NetSchemePlugin: TGUID = '{e9f4ebab-d97b-463e-a2b1-c54ee3f9414d}';
 
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE                        : TGUID = '{c60ac5fe-252a-478f-a0ef-bc8fa5f7cad3}';
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_HW_SOURCE       : TGUID = '{de7046ba-54d6-4487-a2a4-ec7c0d1bd163}';
-  MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME                      : TGUID = '{60d0e559-52f8-4fa2-bbce-acdb34a8ec01}';
-  MF_DEVSOURCE_ATTRIBUTE_MEDIA_TYPE                         : TGUID = '{56a819ca-0c78-4de4-a0a7-3ddaba0f24d4}';
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_CATEGORY        : TGUID = '{77f0ae69-c3bd-4509-941d-467e4d24899e}';
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK   : TGUID = '{58f0aad8-22bf-4f8a-bb3d-d2c4978c6e2f}';
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_SYMBOLIC_LINK   : TGUID = '{98d24b5e-5930-4614-b5a1-f600f9355a78}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE: TGUID = '{c60ac5fe-252a-478f-a0ef-bc8fa5f7cad3}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_HW_SOURCE: TGUID = '{de7046ba-54d6-4487-a2a4-ec7c0d1bd163}';
+  MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME: TGUID = '{60d0e559-52f8-4fa2-bbce-acdb34a8ec01}';
+  MF_DEVSOURCE_ATTRIBUTE_MEDIA_TYPE: TGUID = '{56a819ca-0c78-4de4-a0a7-3ddaba0f24d4}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_CATEGORY: TGUID = '{77f0ae69-c3bd-4509-941d-467e4d24899e}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK: TGUID = '{58f0aad8-22bf-4f8a-bb3d-d2c4978c6e2f}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_SYMBOLIC_LINK: TGUID = '{98d24b5e-5930-4614-b5a1-f600f9355a78}';
 
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_MAX_BUFFERS     : TGUID = '{7dd9b730-4f2d-41d5-8f95-0cc9a912ba26}';
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_ENDPOINT_ID     : TGUID = '{30da9258-feb9-47a7-a453-763a7a8e1c5f}';
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_ROLE            : TGUID = '{bc9d118e-8c67-4a18-85d4-12d300400552}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_MAX_BUFFERS: TGUID = '{7dd9b730-4f2d-41d5-8f95-0cc9a912ba26}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_ENDPOINT_ID: TGUID = '{30da9258-feb9-47a7-a453-763a7a8e1c5f}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_ROLE: TGUID = '{bc9d118e-8c67-4a18-85d4-12d300400552}';
   // MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_PROVIDER_DEVICE_ID
   // Data type: STRING
   // Contains a device Id for a provider
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_PROVIDER_DEVICE_ID : TGUID = '{36689d42-a06c-40ae-84cf-f5a034067cc4}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_PROVIDER_DEVICE_ID: TGUID = '{36689d42-a06c-40ae-84cf-f5a034067cc4}';
 
 
   // MF_DEVSOURCE_ATTRIBUTE_SOURCE_XADDRESS
@@ -796,25 +951,25 @@ const
   // Contains a XADDRESS of KSCATEGORY_NETWORK_CAMERA that
   // can be obtained from the PKEY_PNPX_XAddrs from a KSCATEGORY_NETWORK_CAMERA
   // or Web Services on Devices (WSD) xaddrs parameter, currently only supports ONVIF cameras.
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_XADDRESS : TGUID = '{BCA0BE52-C327-44C7-9B7D-7FA8D9B5BCDA}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_XADDRESS: TGUID = '{BCA0BE52-C327-44C7-9B7D-7FA8D9B5BCDA}';
 
   // MF_DEVSOURCE_ATTRIBUTE_SOURCE_RTSP_URL
   // {9D7B40D2-3617-4043-93E3-8D6DA9BB3492}
   // Data type: STRING
   // Currently only RTSP urls are supported as an initialization parameter.
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_STREAM_URL : TGUID = '{9D7B40D2-3617-4043-93E3-8D6DA9BB3492}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_STREAM_URL: TGUID = '{9D7B40D2-3617-4043-93E3-8D6DA9BB3492}';
 
   // MF_DEVSOURCE_ATTRIBUTE_SOURCE_USERNAME
   // {05D01ADD-949F-46EB-BC8E-8B0D2B32D79D}
   // Data type: STRING
   // Attribute contains a username to use for authentication.
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_USERNAME :  TGUID = '{05D01ADD-949F-46EB-BC8E-8B0D2B32D79D}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_USERNAME: TGUID = '{05D01ADD-949F-46EB-BC8E-8B0D2B32D79D}';
 
   // MF_DEVSOURCE_ATTRIBUTE_SOURCE_PASSWORD
   // {A0FD7E16-42D9-49DF-84C0-E82C5EAB8874}
   // Data type: STRING
   // Attribute contains a password to use for authentication.
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_PASSWORD :  TGUID = '{A0FD7E16-42D9-49DF-84C0-E82C5EAB8874}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_PASSWORD: TGUID = '{A0FD7E16-42D9-49DF-84C0-E82C5EAB8874}';
 
   // {7A213AA7-866F-414A-8C1A-275C7283A395}
   // CLSID_FrameServerNetworkCameraSource
@@ -822,7 +977,7 @@ const
   // provides functionality to stream and control KSCATEGORY_NETWORK_CAMERA.
   // CLSID_FrameServerNetworkCameraSource is only supported using the Windows service FrameServer
   // and requires FrameServer for control and media flow, all other uses are not supported.
-  CLSID_FrameServerNetworkCameraSource :  TGUID = '{7A213AA7-866F-414A-8C1A-275C7283A395}';
+  CLSID_FrameServerNetworkCameraSource: TGUID = '{7A213AA7-866F-414A-8C1A-275C7283A395}';
 
   // CLSID_CameraConfigurationManager
   //
@@ -830,57 +985,58 @@ const
   // IMFCameraConfigurationManager.
   //
   // {6C92B540-5854-4A17-92B6-AC89C96E9683}
-  CLSID_CameraConfigurationManager : TGUID = '{6C92B540-5854-4A17-92B6-AC89C96E9683}';
+  CLSID_CameraConfigurationManager: TGUID = '{6C92B540-5854-4A17-92B6-AC89C96E9683}';
 
 
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_GUID            : TGUID = '{14dd9a1c-7cff-41be-b1b9-ba1ac6ecb571}';
-  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID            : TGUID = '{8ac3587a-4ae7-42d8-99e0-0a6013eef90f}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_GUID: TGUID = '{14dd9a1c-7cff-41be-b1b9-ba1ac6ecb571}';
+  MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID: TGUID = '{8ac3587a-4ae7-42d8-99e0-0a6013eef90f}';
 
-  MF_DEVICESTREAM_IMAGE_STREAM                              : TGUID = '{a7ffb865-e7b2-43b0-9f6f-9af2a0e50fc0}';
-  MF_DEVICESTREAM_INDEPENDENT_IMAGE_STREAM                  : TGUID = '{03eeec7e-d605-4576-8b29-6580b490d7d3}';
-  MF_DEVICESTREAM_STREAM_ID                                 : TGUID = '{11bd5120-d124-446b-88e6-17060257fff9}';
-  MF_DEVICESTREAM_STREAM_CATEGORY                           : TGUID = '{2939e7b8-a62e-4579-b674-d4073dfabbba}';
+  MF_DEVICESTREAM_IMAGE_STREAM: TGUID = '{a7ffb865-e7b2-43b0-9f6f-9af2a0e50fc0}';
+  MF_DEVICESTREAM_INDEPENDENT_IMAGE_STREAM: TGUID = '{03eeec7e-d605-4576-8b29-6580b490d7d3}';
+  MF_DEVICESTREAM_STREAM_ID: TGUID = '{11bd5120-d124-446b-88e6-17060257fff9}';
+  MF_DEVICESTREAM_STREAM_CATEGORY: TGUID = '{2939e7b8-a62e-4579-b674-d4073dfabbba}';
 
   // {1CB378E9-B279-41D4-AF97-34A243E68320}
   // MF_DEVICESTREAM_FRAMESERVER_SHARED
   // Data type: UINT32
   // this attribute, when set on a stream, explicitly marks the stream as shared by the frame server.
-  MF_DEVICESTREAM_FRAMESERVER_SHARED                        : TGUID = '{1CB378E9-B279-41D4-AF97-34A243E68320}';
+  MF_DEVICESTREAM_FRAMESERVER_SHARED: TGUID = '{1CB378E9-B279-41D4-AF97-34A243E68320}';
   // MF_DEVICESTREAM_TRANSFORM_STREAM_ID
   // Data type: UINT32
   // This attribute represents the stream's MFT stream id
   // {e63937b7-daaf-4d49-815f-d826f8ad31e7}
-  MF_DEVICESTREAM_TRANSFORM_STREAM_ID                       : TGUID = '{e63937b7-daaf-4d49-815f-d826f8ad31e7}';
+  MF_DEVICESTREAM_TRANSFORM_STREAM_ID: TGUID = '{e63937b7-daaf-4d49-815f-d826f8ad31e7}';
 
-  MF_DEVICESTREAM_EXTENSION_PLUGIN_CLSID                    : TGUID = '{048e6558-60c4-4173-bd5b-6a3ca2896aee}';
-  MF_DEVICEMFT_EXTENSION_PLUGIN_CLSID                       : TGUID = '{844dbae0-34fa-48a0-a783-8e696fb1c9a8}';
+  MF_DEVICESTREAM_EXTENSION_PLUGIN_CLSID: TGUID = '{048e6558-60c4-4173-bd5b-6a3ca2896aee}';
+  MF_DEVICEMFT_EXTENSION_PLUGIN_CLSID: TGUID = '{844dbae0-34fa-48a0-a783-8e696fb1c9a8}';
 
-  MF_DEVICESTREAM_EXTENSION_PLUGIN_CONNECTION_POINT         : TGUID = '{37f9375c-e664-4ea4-aae4-cb6d1daca1f4}';
-  MF_DEVICESTREAM_TAKEPHOTO_TRIGGER                         : TGUID = '{1d180e34-538c-4fbb-a75a-859af7d261a6}';
-  MF_DEVICESTREAM_MAX_FRAME_BUFFERS                         : TGUID = '{1684cebe-3175-4985-882c-0efd3e8ac11e}';
+  MF_DEVICESTREAM_EXTENSION_PLUGIN_CONNECTION_POINT: TGUID = '{37f9375c-e664-4ea4-aae4-cb6d1daca1f4}';
+  MF_DEVICESTREAM_TAKEPHOTO_TRIGGER: TGUID = '{1d180e34-538c-4fbb-a75a-859af7d261a6}';
+  MF_DEVICESTREAM_MAX_FRAME_BUFFERS: TGUID = '{1684cebe-3175-4985-882c-0efd3e8ac11e}';
 
-  MF_DEVICEMFT_CONNECTED_FILTER_KSCONTROL                   : TGUID = '{6a2c4fa6-d179-41cd-9523-822371ea40e5}';
-  MF_DEVICEMFT_CONNECTED_PIN_KSCONTROL                      : TGUID = '{e63310f7-b244-4ef8-9a7d-24c74e32ebd0}';
-  MF_DEVICE_THERMAL_STATE_CHANGED                           : TGUID = '{70ccd0af-fc9f-4deb-a875-9fecd16c5bd4}';
-  MFSampleExtension_DeviceTimestamp                         : TGUID = '{8f3e35e7-2dcd-4887-8622-2a58baa652b0}';
-  MFSampleExtension_Spatial_CameraViewTransform             : TGUID = '{4e251fa4-830f-4770-859a-4b8d99aa809b}';
-  MFSampleExtension_Spatial_CameraCoordinateSystem          : TGUID = '{9d13c82f-2199-4e67-91cd-d1a4181f2534}';
-  MFSampleExtension_Spatial_CameraProjectionTransform       : TGUID = '{47f9fcb5-2a02-4f26-a477-792fdf95886a}';
+  MF_DEVICEMFT_CONNECTED_FILTER_KSCONTROL: TGUID = '{6a2c4fa6-d179-41cd-9523-822371ea40e5}';
+  MF_DEVICEMFT_CONNECTED_PIN_KSCONTROL: TGUID = '{e63310f7-b244-4ef8-9a7d-24c74e32ebd0}';
+  MF_DEVICE_THERMAL_STATE_CHANGED: TGUID = '{70ccd0af-fc9f-4deb-a875-9fecd16c5bd4}';
+  MFSampleExtension_DeviceTimestamp: TGUID = '{8f3e35e7-2dcd-4887-8622-2a58baa652b0}';
+  MFSampleExtension_Spatial_CameraViewTransform: TGUID = '{4e251fa4-830f-4770-859a-4b8d99aa809b}';
+  MFSampleExtension_Spatial_CameraCoordinateSystem: TGUID = '{9d13c82f-2199-4e67-91cd-d1a4181f2534}';
+  MFSampleExtension_Spatial_CameraProjectionTransform: TGUID = '{47f9fcb5-2a02-4f26-a477-792fdf95886a}';
 
 
   // {40871C59-AB40-471F-8DC3-1F259D862479}
-  CLSID_MPEG2ByteStreamPlugin                               : TGUID = '{40871C59-AB40-471F-8DC3-1F259D862479}';
+  CLSID_MPEG2ByteStreamPlugin: TGUID = '{40871C59-AB40-471F-8DC3-1F259D862479}';
 
   // {f09992f7-9fba-4c4a-a37f-8c47b4e1dfe7}
-  MF_MEDIASOURCE_SERVICE                                    : TGUID = '{f09992f7-9fba-4c4a-a37f-8c47b4e1dfe7}';
+  MF_MEDIASOURCE_SERVICE: TGUID = '{f09992f7-9fba-4c4a-a37f-8c47b4e1dfe7}';
 
   // {014A5031-2F05-4C6A-9F9C-7D0DC4EDA5F4}
-  MF_ACCESS_CONTROLLED_MEDIASOURCE_SERVICE                  : TGUID = '{14a50310-2f05-4c6a-9f9c-7d0dc4eda5f4}';
+  MF_ACCESS_CONTROLLED_MEDIASOURCE_SERVICE: TGUID = '{14a50310-2f05-4c6a-9f9c-7d0dc4eda5f4}';
 
 
 type
 
   PMFCONTENTPROTECTIONDEVICE_INPUT_DATA = ^_MFCONTENTPROTECTIONDEVICE_INPUT_DATA;
+
   _MFCONTENTPROTECTIONDEVICE_INPUT_DATA = record
     HWProtectionFunctionID: DWORD;
     PrivateDataByteCount: DWORD;
@@ -891,6 +1047,7 @@ type
   MFCONTENTPROTECTIONDEVICE_INPUT_DATA = _MFCONTENTPROTECTIONDEVICE_INPUT_DATA;
 
   PMFCONTENTPROTECTIONDEVICE_OUTPUT_DATA = ^_MFCONTENTPROTECTIONDEVICE_OUTPUT_DATA;
+
   _MFCONTENTPROTECTIONDEVICE_OUTPUT_DATA = record
     PrivateDataByteCount: DWORD;
     MaxHWProtectionDataByteCount: DWORD;
@@ -910,6 +1067,7 @@ const
 type
 
   PMFCONTENTPROTECTIONDEVICE_REALTIMECLIENT_DATA = ^_MFCONTENTPROTECTIONDEVICE_REALTIMECLIENT_DATA;
+
   _MFCONTENTPROTECTIONDEVICE_REALTIMECLIENT_DATA = record
     TaskIndex: DWORD;
     ClassName: array[0..MAX_PATH - 1] of LPWSTR;
@@ -951,48 +1109,48 @@ type
 
 const
 
-  MF_RATE_CONTROL_SERVICE                       : TGUID = '{866fa297-b802-4bf8-9dc9-5e3b6a9f53c9}';
-  MR_STREAM_VOLUME_SERVICE                      : TGUID = '{f8b5fa2f-32ef-46f5-b172-1321212fb2c4}';
+  MF_RATE_CONTROL_SERVICE: TGUID = '{866fa297-b802-4bf8-9dc9-5e3b6a9f53c9}';
+  MR_STREAM_VOLUME_SERVICE: TGUID = '{f8b5fa2f-32ef-46f5-b172-1321212fb2c4}';
 
-  MFNETSOURCE_HTTP_DOWNLOAD_SESSION_PROVIDER    : TGUID = '{7d55081e-307d-4d6d-a663-a93be97c4b5c}';
+  MFNETSOURCE_HTTP_DOWNLOAD_SESSION_PROVIDER: TGUID = '{7d55081e-307d-4d6d-a663-a93be97c4b5c}';
 
-  MF_UNKNOWN_DURATION                 = 0;
+  MF_UNKNOWN_DURATION = 0;
 
-  MF_SD_VIDEO_SPHERICAL                         : TGUID =  '{a51da449-3fdc-478c-bcb5-30be76595f55}';
-  MF_SD_VIDEO_SPHERICAL_FORMAT                  : TGUID =  '{4a8fc407-6ea1-46c8-b567-6971d4a139c3}';
-  MF_SD_VIDEO_SPHERICAL_INITIAL_VIEWDIRECTION   : TGUID =  '{11d25a49-bb62-467f-9db1-c17165716c49}';
+  MF_SD_VIDEO_SPHERICAL: TGUID = '{a51da449-3fdc-478c-bcb5-30be76595f55}';
+  MF_SD_VIDEO_SPHERICAL_FORMAT: TGUID = '{4a8fc407-6ea1-46c8-b567-6971d4a139c3}';
+  MF_SD_VIDEO_SPHERICAL_INITIAL_VIEWDIRECTION: TGUID = '{11d25a49-bb62-467f-9db1-c17165716c49}';
 
-//#if (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
+  //#if (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
 
-  MF_ST_MEDIASOURCE_COLLECTION          : TGUID = '{616DE972-83AD-4950-8170-630D19CBE307}';
-  MF_DEVICESTREAM_FILTER_KSCONTROL      : TGUID = '{46783CCA-3DF5-4923-A9EF-36B7223EDDE0}';
-  MF_DEVICESTREAM_PIN_KSCONTROL         : TGUID = '{EF3EF9A7-87F2-48CA-BE02-674878918E98}';
-  MF_DEVICESTREAM_SOURCE_ATTRIBUTES     : TGUID = '{2F8CB617-361B-434F-85EA-99A03E1CE4E0}';
-  MF_DEVICESTREAM_FRAMESERVER_HIDDEN    : TGUID = '{F402567B-4D91-4179-96D1-74C8480C2034}';
-  MF_STF_VERSION_INFO                   : TGUID = '{6770BD39-EF82-44EE-A49B-934BEB24AEF7}';
-  MF_STF_VERSION_DATE                   : TGUID = '{31A165D5-DF67-4095-8E44-8868FC20DBFD}';
-  MF_DEVICESTREAM_REQUIRED_CAPABILITIES : TGUID = '{6D8B957E-7CF6-43F4-AF56-9C0E1E4FCBE1}';
-  MF_DEVICESTREAM_REQUIRED_SDDL         : TGUID = '{331AE85D-C0D3-49BA-83BA-82A12D63CDD6}';
-//#end if
+  MF_ST_MEDIASOURCE_COLLECTION: TGUID = '{616DE972-83AD-4950-8170-630D19CBE307}';
+  MF_DEVICESTREAM_FILTER_KSCONTROL: TGUID = '{46783CCA-3DF5-4923-A9EF-36B7223EDDE0}';
+  MF_DEVICESTREAM_PIN_KSCONTROL: TGUID = '{EF3EF9A7-87F2-48CA-BE02-674878918E98}';
+  MF_DEVICESTREAM_SOURCE_ATTRIBUTES: TGUID = '{2F8CB617-361B-434F-85EA-99A03E1CE4E0}';
+  MF_DEVICESTREAM_FRAMESERVER_HIDDEN: TGUID = '{F402567B-4D91-4179-96D1-74C8480C2034}';
+  MF_STF_VERSION_INFO: TGUID = '{6770BD39-EF82-44EE-A49B-934BEB24AEF7}';
+  MF_STF_VERSION_DATE: TGUID = '{31A165D5-DF67-4095-8E44-8868FC20DBFD}';
+  MF_DEVICESTREAM_REQUIRED_CAPABILITIES: TGUID = '{6D8B957E-7CF6-43F4-AF56-9C0E1E4FCBE1}';
+  MF_DEVICESTREAM_REQUIRED_SDDL: TGUID = '{331AE85D-C0D3-49BA-83BA-82A12D63CDD6}';
+  //#end if
 
-  MF_XVP_SAMPLE_LOCK_TIMEOUT            : TGUID = '{aa4ddb29-5134-4363-ac72-83ec4bc10426}';
+  MF_XVP_SAMPLE_LOCK_TIMEOUT: TGUID = '{aa4ddb29-5134-4363-ac72-83ec4bc10426}';
 
 type
 
   // ActiveX pointers
   // ================
 
-{$IFNDEF _PIStream_DEFINED}
+  {$IFNDEF _PIStream_DEFINED}
   PIStream = ^IStream;
-{$DEFINE _PIStream_DEFINED}
-{$ENDIF}
+  {$DEFINE _PIStream_DEFINED}
+  {$ENDIF}
 
   // MFTIME
   // ======
   // DECLARED IN MfpTypes
 
 
-//--------------------- Types and records ------------------------------------
+  //--------------------- Types and records ------------------------------------
 
   // MFMEDIASOURCE_CHARACTERISTICS
   // Defines the characteristics of a media source.
@@ -1001,15 +1159,16 @@ type
   PMFMEDIASOURCE_CHARACTERISTICS = ^MFMEDIASOURCE_CHARACTERISTICS;
   _MFMEDIASOURCE_CHARACTERISTICS = type DWord;
   MFMEDIASOURCE_CHARACTERISTICS = _MFMEDIASOURCE_CHARACTERISTICS;
+
 const
-  MFMEDIASOURCE_IS_LIVE                    = MFMEDIASOURCE_CHARACTERISTICS($1);
-  MFMEDIASOURCE_CAN_SEEK                   = MFMEDIASOURCE_CHARACTERISTICS($2);
-  MFMEDIASOURCE_CAN_PAUSE                  = MFMEDIASOURCE_CHARACTERISTICS($4);
-  MFMEDIASOURCE_HAS_SLOW_SEEK              = MFMEDIASOURCE_CHARACTERISTICS($8);
+  MFMEDIASOURCE_IS_LIVE = MFMEDIASOURCE_CHARACTERISTICS($1);
+  MFMEDIASOURCE_CAN_SEEK = MFMEDIASOURCE_CHARACTERISTICS($2);
+  MFMEDIASOURCE_CAN_PAUSE = MFMEDIASOURCE_CHARACTERISTICS($4);
+  MFMEDIASOURCE_HAS_SLOW_SEEK = MFMEDIASOURCE_CHARACTERISTICS($8);
   MFMEDIASOURCE_HAS_MULTIPLE_PRESENTATIONS = MFMEDIASOURCE_CHARACTERISTICS($10);    // >= Win 7
-  MFMEDIASOURCE_CAN_SKIPFORWARD            = MFMEDIASOURCE_CHARACTERISTICS($20);    // >= Win 7
-  MFMEDIASOURCE_CAN_SKIPBACKWARD           = MFMEDIASOURCE_CHARACTERISTICS($40);    // >= Win 7
-  MFMEDIASOURCE_DOES_NOT_USE_NETWORK       = MFMEDIASOURCE_CHARACTERISTICS($80);    // >= Win 8
+  MFMEDIASOURCE_CAN_SKIPFORWARD = MFMEDIASOURCE_CHARACTERISTICS($20);    // >= Win 7
+  MFMEDIASOURCE_CAN_SKIPBACKWARD = MFMEDIASOURCE_CHARACTERISTICS($40);    // >= Win 7
+  MFMEDIASOURCE_DOES_NOT_USE_NETWORK = MFMEDIASOURCE_CHARACTERISTICS($80);    // >= Win 8
 
   // MFCLOCK_RELATIONAL_FLAGS
   // Jitter values are always negative.
@@ -1020,6 +1179,7 @@ type
   PMFCLOCK_RELATIONAL_FLAGS = ^_MFCLOCK_RELATIONAL_FLAGS;
   _MFCLOCK_RELATIONAL_FLAGS = DWord;
   MFCLOCK_RELATIONAL_FLAGS = _MFCLOCK_RELATIONAL_FLAGS;
+
 const
   MFCLOCK_RELATIONAL_FLAG_JITTER_NEVER_AHEAD = MFCLOCK_RELATIONAL_FLAGS($1);
 
@@ -1028,22 +1188,25 @@ type
   PMfClockCharacteristicsFlags = ^MFCLOCK_CHARACTERISTICS_FLAGS;
   _MFCLOCK_CHARACTERISTICS_FLAGS = DWord;
   MFCLOCK_CHARACTERISTICS_FLAGS = _MFCLOCK_CHARACTERISTICS_FLAGS;
+
 const
   MFCLOCK_CHARACTERISTICS_FLAG_FREQUENCY_10MHZ = MFCLOCK_CHARACTERISTICS_FLAGS($2);
-  MFCLOCK_CHARACTERISTICS_FLAG_ALWAYS_RUNNING  = MFCLOCK_CHARACTERISTICS_FLAGS($4);
+  MFCLOCK_CHARACTERISTICS_FLAG_ALWAYS_RUNNING = MFCLOCK_CHARACTERISTICS_FLAGS($4);
   MFCLOCK_CHARACTERISTICS_FLAG_IS_SYSTEM_CLOCK = MFCLOCK_CHARACTERISTICS_FLAGS($8);
 
 type
   PMFSESSION_SETTOPOLOGY_FLAGS = ^MFSESSION_SETTOPOLOGY_FLAGS;
   MFSESSION_SETTOPOLOGY_FLAGS = DWord;
+
 const
-    MFSESSION_SETTOPOLOGY_IMMEDIATE     = MFSESSION_SETTOPOLOGY_FLAGS($1);
-    MFSESSION_SETTOPOLOGY_NORESOLUTION  = MFSESSION_SETTOPOLOGY_FLAGS($2);
-    MFSESSION_SETTOPOLOGY_CLEAR_CURRENT = MFSESSION_SETTOPOLOGY_FLAGS($4);
+  MFSESSION_SETTOPOLOGY_IMMEDIATE = MFSESSION_SETTOPOLOGY_FLAGS($1);
+  MFSESSION_SETTOPOLOGY_NORESOLUTION = MFSESSION_SETTOPOLOGY_FLAGS($2);
+  MFSESSION_SETTOPOLOGY_CLEAR_CURRENT = MFSESSION_SETTOPOLOGY_FLAGS($4);
 
 type
   PMFSESSION_GETFULLTOPOLOGY_FLAG = ^MFSESSION_GETFULLTOPOLOGY_FLAG;
   MFSESSION_GETFULLTOPOLOGY_FLAG = DWord;
+
 const
   MFSESSION_GETFULLTOPOLOGY_CURRENT = MFSESSION_GETFULLTOPOLOGY_FLAG($1);
 
@@ -1051,24 +1214,26 @@ const
 type
   PMFPMPSESSION_CREATION_FLAGS = ^MFPMPSESSION_CREATION_FLAGS;
   MFPMPSESSION_CREATION_FLAGS = DWord;
-const
-    MFPMPSESSION_UNPROTECTED_PROCESS = MFPMPSESSION_CREATION_FLAGS($1);
-    MFPMPSESSION_IN_PROCESS          = MFPMPSESSION_CREATION_FLAGS($2);
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+const
+  MFPMPSESSION_UNPROTECTED_PROCESS = MFPMPSESSION_CREATION_FLAGS($1);
+  MFPMPSESSION_IN_PROCESS = MFPMPSESSION_CREATION_FLAGS($2);
+
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 type
   PMF_QUALITY_ADVISE_FLAGS = ^MF_QUALITY_ADVISE_FLAGS;
   PMfQualityAdviseFlags = ^MF_QUALITY_ADVISE_FLAGS;
-  _MF_QUALITY_ADVISE_FLAGS    = DWord;
+  _MF_QUALITY_ADVISE_FLAGS = DWord;
   MF_QUALITY_ADVISE_FLAGS = _MF_QUALITY_ADVISE_FLAGS;
+
 const
   MF_QUALITY_CANNOT_KEEP_UP = MF_QUALITY_ADVISE_FLAGS($1);
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
 
-/// <summary>
-///     ID for topology node.
-/// </summary>
+  /// <summary>
+  ///     ID for topology node.
+  /// </summary>
 type
   TOPOID = UInt64;
 
@@ -1078,28 +1243,43 @@ type
   /// IMFGetService::GetService
   /// </summary>
 const
-  MF_ACOUSTIC_ECHO_CANCELLATION_CONTROL_SERVICE : TGUID = (D1: $7f6c3b29;
-                                                           D2: $2d12;
-                                                           D3: $4f6f;
-                                                           D4: ($ac, $05, $c1, $a8, $9b, $8d, $52, $88));
+  MF_ACOUSTIC_ECHO_CANCELLATION_CONTROL_SERVICE: TGUID = (D1: $7f6c3b29;
+    D2: $2d12;
+    D3: $4f6f;
+    D4: ($ac,
+         $05,
+         $c1,
+         $a8,
+         $9b,
+         $8d,
+         $52,
+         $88));
 
   /// <summary>
   /// Use this service GUID to retrieve the IAudioEffectsManager interface through the capture MFMediaSource's
   /// IMFGetService.GetService
   /// </summary>
 const
-  MF_AUDIO_EFFECTS_MANAGER_SERVICE : TGUID = (D1: $1f541943;
-                                              D2: $d5df;
-                                              D3: $455e;
-                                              D4: ($a2, $e5, $7d, $64, $d3, $bb, $bd, $b5));
+  MF_AUDIO_EFFECTS_MANAGER_SERVICE: TGUID = (D1: $1f541943;
+    D2: $d5df;
+    D3: $455e;
+    D4: ($a2,
+         $e5,
+         $7d,
+         $64,
+         $d3,
+         $bb,
+         $bd,
+         $b5));
 
 
 type
   PMFSequencerTopologyFlags = ^MFSequencerTopologyFlags;
-  _MFSequencerTopologyFlags     = DWord;
+  _MFSequencerTopologyFlags = DWord;
   MFSequencerTopologyFlags = _MFSequencerTopologyFlags;
+
 const
-    SequencerTopologyFlags_Last = MFSequencerTopologyFlags($1);
+  SequencerTopologyFlags_Last = MFSequencerTopologyFlags($1);
 
 
   // IMFNetCredentialCache
@@ -1109,18 +1289,20 @@ type
   PMFNetCredentialRequirements = ^MFNetCredentialRequirements;
   _MFNetCredentialRequirements = DWord;
   MFNetCredentialRequirements = _MFNetCredentialRequirements;
+
 const
-    REQUIRE_PROMPT        = MFNetCredentialRequirements($1);
-    REQUIRE_SAVE_SELECTED = MFNetCredentialRequirements($2);
+  REQUIRE_PROMPT = MFNetCredentialRequirements($1);
+  REQUIRE_SAVE_SELECTED = MFNetCredentialRequirements($2);
 
 
 type
   PMFNetCredentialOptions = ^MFNetCredentialOptions;
   _MFNetCredentialOptions = DWord;
   MFNetCredentialOptions = _MFNetCredentialOptions;
+
 const
-  MFNET_CREDENTIAL_SAVE             = MFNetCredentialOptions($1);
-  MFNET_CREDENTIAL_DONT_CACHE       = MFNetCredentialOptions($2);
+  MFNET_CREDENTIAL_SAVE = MFNetCredentialOptions($1);
+  MFNET_CREDENTIAL_DONT_CACHE = MFNetCredentialOptions($2);
   MFNET_CREDENTIAL_ALLOW_CLEAR_TEXT = MFNetCredentialOptions($4);
 
 
@@ -1128,9 +1310,10 @@ type
   PMFNetAuthenticationFlags = ^MFNetAuthenticationFlags;
   _MFNetAuthenticationFlags = DWord;
   MFNetAuthenticationFlags = _MFNetAuthenticationFlags;
+
 const
-  MFNET_AUTHENTICATION_PROXY          = MFNetAuthenticationFlags($1);
-  MFNET_AUTHENTICATION_CLEAR_TEXT     = MFNetAuthenticationFlags($2);
+  MFNET_AUTHENTICATION_PROXY = MFNetAuthenticationFlags($1);
+  MFNET_AUTHENTICATION_CLEAR_TEXT = MFNetAuthenticationFlags($2);
   MFNET_AUTHENTICATION_LOGGED_ON_USER = MFNetAuthenticationFlags($4);
 
 
@@ -1141,24 +1324,26 @@ type
   PMF_CONNECT_METHOD = ^MF_CONNECT_METHOD;
   _MF_CONNECT_METHOD = UINT32;
   MF_CONNECT_METHOD = _MF_CONNECT_METHOD;
+
 const
-    MF_CONNECT_DIRECT                          = MF_CONNECT_METHOD(0);
-    MF_CONNECT_ALLOW_CONVERTER                 = MF_CONNECT_METHOD($1);
-    MF_CONNECT_ALLOW_DECODER                   = MF_CONNECT_METHOD($3);
-    MF_CONNECT_RESOLVE_INDEPENDENT_OUTPUTTYPES = MF_CONNECT_METHOD($4);
-    MF_CONNECT_AS_OPTIONAL                     = MF_CONNECT_METHOD($10000);
-    MF_CONNECT_AS_OPTIONAL_BRANCH              = MF_CONNECT_METHOD($20000);
+  MF_CONNECT_DIRECT = MF_CONNECT_METHOD(0);
+  MF_CONNECT_ALLOW_CONVERTER = MF_CONNECT_METHOD($1);
+  MF_CONNECT_ALLOW_DECODER = MF_CONNECT_METHOD($3);
+  MF_CONNECT_RESOLVE_INDEPENDENT_OUTPUTTYPES = MF_CONNECT_METHOD($4);
+  MF_CONNECT_AS_OPTIONAL = MF_CONNECT_METHOD($10000);
+  MF_CONNECT_AS_OPTIONAL_BRANCH = MF_CONNECT_METHOD($20000);
 
 type
   PMF_TOPOLOGY_RESOLUTION_STATUS_FLAGS = ^MF_TOPOLOGY_RESOLUTION_STATUS_FLAGS;
   _MF_TOPOLOGY_RESOLUTION_STATUS_FLAGS = UINT32;
   MF_TOPOLOGY_RESOLUTION_STATUS_FLAGS = _MF_TOPOLOGY_RESOLUTION_STATUS_FLAGS;
-const
-    MF_TOPOLOGY_RESOLUTION_SUCCEEDED            = MF_TOPOLOGY_RESOLUTION_STATUS_FLAGS(0);
-    MF_OPTIONAL_NODE_REJECTED_MEDIA_TYPE        = MF_TOPOLOGY_RESOLUTION_STATUS_FLAGS($1);
-    MF_OPTIONAL_NODE_REJECTED_PROTECTED_PROCESS = MF_TOPOLOGY_RESOLUTION_STATUS_FLAGS($2);
 
-//
+const
+  MF_TOPOLOGY_RESOLUTION_SUCCEEDED = MF_TOPOLOGY_RESOLUTION_STATUS_FLAGS(0);
+  MF_OPTIONAL_NODE_REJECTED_MEDIA_TYPE = MF_TOPOLOGY_RESOLUTION_STATUS_FLAGS($1);
+  MF_OPTIONAL_NODE_REJECTED_PROTECTED_PROCESS = MF_TOPOLOGY_RESOLUTION_STATUS_FLAGS($2);
+
+  //
 
 
 
@@ -1192,7 +1377,7 @@ type
   // =========================
   //
   IMFMediaSession = interface(IMFMediaEventGenerator)
-  ['{90377834-21D0-4dee-8214-BA2E3E6C1127}']
+    ['{90377834-21D0-4dee-8214-BA2E3E6C1127}']
     function SetTopology(const dwSetTopologyFlags: MFSESSION_SETTOPOLOGY_FLAGS;
                          Topology: IMFTopology): HResult; stdcall;
 
@@ -1219,19 +1404,19 @@ type
     // When the method completes, the Media Session sends an MESessionStarted event.
 
     function Pause(): HResult; stdcall;  // Pauses the Media Session.
-                                         // This method pauses the presentation clock.
-                                         // This method is asynchronous.
-                                         // When the operation completes, the Media Session sends an MESessionPaused event.
-                                         // Note: This method fails if the Media Session is stopped!
+    // This method pauses the presentation clock.
+    // This method is asynchronous.
+    // When the operation completes, the Media Session sends an MESessionPaused event.
+    // Note: This method fails if the Media Session is stopped!
 
     function Stop(): HResult; stdcall;   // Stops the mediasession. This method is asynchronous.
-                                         // When the operation completes, the Media Session sends an MESessionStopped event.
+    // When the operation completes, the Media Session sends an MESessionStopped event.
 
     function Close(): HResult; stdcall;  // Closes the Media Session and releases all of the resources it is using.
 
     function Shutdown(): HResult; stdcall;  // Shuts down the Media Session and releases all the resources used by the Media Session.
-                                            // Call this method when you are done using the Media Session, before the final call to IUnknown._Release.
-                                            // Otherwise, your application will leak memory.
+    // Call this method when you are done using the Media Session, before the final call to IUnknown._Release.
+    // Otherwise, your application will leak memory.
 
     function GetClock(out ppClock: IMFClock): HResult; stdcall;
 
@@ -1242,16 +1427,17 @@ type
                              out ppFullTopology: IMFTopology): HResult; stdcall;
 
   end;
+
   IID_IMFMediaSession = IMFMediaSession;
 
 
   PMfObjectType = ^MF_OBJECT_TYPE;
   PMF_OBJECT_TYPE = ^MF_OBJECT_TYPE;
-  MF_OBJECT_TYPE          = (
+  MF_OBJECT_TYPE = (
     MF_OBJECT_MEDIASOURCE = 0,
-    MF_OBJECT_BYTESTREAM  = (MF_OBJECT_MEDIASOURCE + 1),
-    MF_OBJECT_INVALID     = (MF_OBJECT_BYTESTREAM + 1)
-  );
+                    MF_OBJECT_BYTESTREAM = (MF_OBJECT_MEDIASOURCE + 1),
+                    MF_OBJECT_INVALID = (MF_OBJECT_BYTESTREAM + 1)
+    );
 
 
   // interface IMFSourceResolver
@@ -1259,44 +1445,45 @@ type
   IMFSourceResolver = interface(IUnknown)
     ['{FBE5A32D-A497-4b61-BB85-97B1A848A6E3}']
 
-      function CreateObjectFromURL(const pwszURL: LPCWSTR;
-                                   dwFlags: DWord;
-                                   pProps: IPropertyStore; // can be nil
-                                   {out} var pObjectType: MF_OBJECT_TYPE;
-                                   out ppObject: IUnknown): HResult; stdcall;
+    function CreateObjectFromURL(const pwszURL: LPCWSTR;
+                                 dwFlags: DWord;
+                                 pProps: IPropertyStore; // can be nil
+    {out} var pObjectType: MF_OBJECT_TYPE;
+                                 out ppObject: IUnknown): HResult; stdcall;
 
-      function CreateObjectFromByteStream(pByteStream: IMFByteStream;
-                                          const pwszURL: LPCWSTR; // can be nil
-                                          dwFlags: DWord;
-                                          pProps: IPropertyStore; // can be nil
-                                          out pObjectType: MF_OBJECT_TYPE;
-                                          out ppObject: IUnknown): HResult; stdcall;
-
-      function BeginCreateObjectFromURL(const pwszURL: LPCWSTR;
-                                        dwFlags: DWord;
+    function CreateObjectFromByteStream(pByteStream: IMFByteStream;
+                                        const pwszURL: LPCWSTR; // can be nil
+      dwFlags: DWord;
                                         pProps: IPropertyStore; // can be nil
-                                        out ppIUnknownCancelCookie: IUnknown;
-                                        pCallback: IMFAsyncCallback;
-                                        punkState: IUnknown): HResult; stdcall;
+      out pObjectType: MF_OBJECT_TYPE;
+                                        out ppObject: IUnknown): HResult; stdcall;
 
-      function EndCreateObjectFromURL(pResult: IMFAsyncResult;
-                                      out pObjectType: MF_OBJECT_TYPE;
-                                      out ppObject: IUnknown): HResult; stdcall;
+    function BeginCreateObjectFromURL(const pwszURL: LPCWSTR;
+                                      dwFlags: DWord;
+                                      pProps: IPropertyStore; // can be nil
+      out ppIUnknownCancelCookie: IUnknown;
+                                      pCallback: IMFAsyncCallback;
+                                      punkState: IUnknown): HResult; stdcall;
 
-      function BeginCreateObjectFromByteStream(pByteStream: IMFByteStream;
-                                               const pwszURL: LPCWSTR;
-                                               dwFlags: DWord;
-                                               pProps: IPropertyStore; // can be nil
-                                               out ppIUnknownCancelCookie: IUnknown;
-                                               pCallback: IMFAsyncCallback;
-                                               punkState: IUnknown): HResult; stdcall;
+    function EndCreateObjectFromURL(pResult: IMFAsyncResult;
+                                    out pObjectType: MF_OBJECT_TYPE;
+                                    out ppObject: IUnknown): HResult; stdcall;
 
-      function EndCreateObjectFromByteStream(pResult: IMFAsyncResult;
-                                             out pObjectType: MF_OBJECT_TYPE;
-                                             out ppObject: IUnknown): HResult; stdcall;
+    function BeginCreateObjectFromByteStream(pByteStream: IMFByteStream;
+                                             const pwszURL: LPCWSTR;
+                                             dwFlags: DWord;
+                                             pProps: IPropertyStore; // can be nil
+      out ppIUnknownCancelCookie: IUnknown;
+                                             pCallback: IMFAsyncCallback;
+                                             punkState: IUnknown): HResult; stdcall;
 
-      function CancelObjectCreation(pIUnknownCancelCookie: IUnknown): HResult; stdcall;
+    function EndCreateObjectFromByteStream(pResult: IMFAsyncResult;
+                                           out pObjectType: MF_OBJECT_TYPE;
+                                           out ppObject: IUnknown): HResult; stdcall;
+
+    function CancelObjectCreation(pIUnknownCancelCookie: IUnknown): HResult; stdcall;
   end;
+
   IID_IMFSourceResolver = IMFSourceResolver;
 
 
@@ -1307,48 +1494,50 @@ type
   IMFMediaSource = interface(IMFMediaEventGenerator)
     ['{279A808D-AEC7-40C8-9C6B-A6B492C78A66}']
 
-      function GetCharacteristics({out} pdwCharacteristics: PDWord): HResult; stdcall;
-      // Receives a bitwise OR of zero or more flags from the MFMEDIASOURCE_CHARACTERISTICS enumeration.
+    function GetCharacteristics({out} pdwCharacteristics: PDWord): HResult; stdcall;
+    // Receives a bitwise OR of zero or more flags from the MFMEDIASOURCE_CHARACTERISTICS enumeration.
 
-      function CreatePresentationDescriptor(out ppPresentationDescriptor: IMFPresentationDescriptor): HResult; stdcall;
+    function CreatePresentationDescriptor(out ppPresentationDescriptor: IMFPresentationDescriptor): HResult; stdcall;
 
-      function Start(pPresentationDescriptor: IMFPresentationDescriptor;
-                     const pguidTimeFormat: TGuid;
-                     const pvarStartPosition: PROPVARIANT): HResult; stdcall;
+    function Start(pPresentationDescriptor: IMFPresentationDescriptor;
+                   const pguidTimeFormat: TGuid;
+                   const pvarStartPosition: PROPVARIANT): HResult; stdcall;
 
-      function Stop(): HResult; stdcall;
+    function Stop(): HResult; stdcall;
 
-      function Pause(): HResult; stdcall;
+    function Pause(): HResult; stdcall;
 
-      function Shutdown(): HResult; stdcall;
+    function Shutdown(): HResult; stdcall;
 
   end;
+
   IID_IMFMediaSource = IMFMediaSource;
 
-//#if (WINVER >= _WIN32_WINNT_WIN8)
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
   // Interface IMFMediaSourceEx
   // ==========================
   //
   IMFMediaSourceEx = interface(IMFMediaSource)
     ['{3C9B2EB9-86D5-4514-A394-F56664F9F0D8}']
 
-      function GetSourceAttributes(out ppAttributes: IMFAttributes): HResult; stdcall;
-      // Gets an attribute store for the media source.
+    function GetSourceAttributes(out ppAttributes: IMFAttributes): HResult; stdcall;
+    // Gets an attribute store for the media source.
 
-      function GetStreamAttributes(const dwStreamIdentifier: DWORD;
-                                   out ppAttributes: IMFAttributes): HResult; stdcall;
-      // Gets an attribute store for a stream on the media source.
+    function GetStreamAttributes(const dwStreamIdentifier: DWORD;
+                                 out ppAttributes: IMFAttributes): HResult; stdcall;
+    // Gets an attribute store for a stream on the media source.
 
-      function SetD3DManager(pManager: IUnknown): HResult; stdcall;
-      // Sets a pointer to the Microsoft DirectX Graphics Infrastructure (DXGI) Device Manager on the media source.
-      // [in] pManager
-      // A pointer to the IUnknown interface of the DXGI Manager.
-      // The media source should query this pointer for the IMFDXGIDeviceManager interface.
+    function SetD3DManager(pManager: IUnknown): HResult; stdcall;
+    // Sets a pointer to the Microsoft DirectX Graphics Infrastructure (DXGI) Device Manager on the media source.
+    // [in] pManager
+    // A pointer to the IUnknown interface of the DXGI Manager.
+    // The media source should query this pointer for the IMFDXGIDeviceManager interface.
 
-   end;
+  end;
+
   IID_IMFMediaSourceEx = IMFMediaSourceEx;
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN8)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
 
   // Interface IMFClockConsumer
@@ -1364,12 +1553,13 @@ type
   IMFClockConsumer = interface(IUnknown)
     ['{6ef2a662-47c0-4666-b13d-cbb717f2fa2c}']
 
-      function SetPresentationClock(pPresentationClock: IMFPresentationClock): HResult; stdcall;
-      // Called by the media pipeline to get an instance of IMFPresentationClock.
+    function SetPresentationClock(pPresentationClock: IMFPresentationClock): HResult; stdcall;
+    // Called by the media pipeline to get an instance of IMFPresentationClock.
 
-      function GetPresentationClock(out ppPresentationClock: IMFPresentationClock): HResult; stdcall;
-      // Called by the media pipeline to provide the app with an instance of IMFPresentationClock.
+    function GetPresentationClock(out ppPresentationClock: IMFPresentationClock): HResult; stdcall;
+    // Called by the media pipeline to provide the app with an instance of IMFPresentationClock.
   end;
+
   IID_IMFClockConsumer = IMFClockConsumer;
 
 
@@ -1378,7 +1568,7 @@ type
   // Streams are created when a media source is started.
   // For each stream, the media source sends an MENewStream event with a pointer to the stream's IMFMediaStream interface.
   IMFMediaStream = interface(IMFMediaEventGenerator)
-  ['{D182108F-4EC6-443f-AA42-A71106EC825F}']
+    ['{D182108F-4EC6-443f-AA42-A71106EC825F}']
 
     function GetMediaSource(out ppMediaSource: IMFMediaSource): HResult; stdcall;
     // Retrieves a pointer to the media source that created this media stream.
@@ -1390,14 +1580,16 @@ type
     // Requests a sample from the media source.
 
   end;
+
   IID_IMFMediaStream = IMFMediaStream;
 
 
   // Interface IMFMediaSink
   // ======================
   PIMFMediaSink = ^IMFMediaSink;
+
   IMFMediaSink = interface(IUnknown)
-  ['{6ef2a660-47c0-4666-b13d-cbb717f2fa2c}']
+    ['{6ef2a660-47c0-4666-b13d-cbb717f2fa2c}']
 
     function GetCharacteristics(out pdwCharacteristics: PDWord): HResult; stdcall;
 
@@ -1422,22 +1614,23 @@ type
     function Shutdown(): HResult; stdcall;
 
   end;
+
   IID_IMFMediaSink = IMFMediaSink;
 
 
   PMFSTREAMSINK_MARKER_TYPE = ^MFSTREAMSINK_MARKER_TYPE;
-  _MFSTREAMSINK_MARKER_TYPE          = (
-    MFSTREAMSINK_MARKER_DEFAULT      = 0,
-    MFSTREAMSINK_MARKER_ENDOFSEGMENT = (MFSTREAMSINK_MARKER_DEFAULT  + 1),
-    MFSTREAMSINK_MARKER_TICK         = (MFSTREAMSINK_MARKER_ENDOFSEGMENT  + 1),
-    MFSTREAMSINK_MARKER_EVENT        = (MFSTREAMSINK_MARKER_TICK  + 1)
-  );
+  _MFSTREAMSINK_MARKER_TYPE = (
+    MFSTREAMSINK_MARKER_DEFAULT = 0,
+                               MFSTREAMSINK_MARKER_ENDOFSEGMENT = (MFSTREAMSINK_MARKER_DEFAULT + 1),
+                               MFSTREAMSINK_MARKER_TICK = (MFSTREAMSINK_MARKER_ENDOFSEGMENT + 1),
+                               MFSTREAMSINK_MARKER_EVENT = (MFSTREAMSINK_MARKER_TICK + 1)
+    );
   MFSTREAMSINK_MARKER_TYPE = _MFSTREAMSINK_MARKER_TYPE;
 
   // Interface IMFStreamSink
   // =======================
   IMFStreamSink = interface(IMFMediaEventGenerator)
-  ['{0A97B3CF-8E7C-4a3d-8F8C-0C843DC247FB}']
+    ['{0A97B3CF-8E7C-4a3d-8F8C-0C843DC247FB}']
     function GetMediaSink(out ppMediaSink: IMFMediaSink): HResult; stdcall;
 
     function GetIdentifier(out pdwIdentifier: DWord): HResult; stdcall;
@@ -1453,13 +1646,14 @@ type
     function Flush(): HResult; stdcall;
 
   end;
+
   IID_IMFStreamSink = IMFStreamSink;
 
 
   // Interface IMFVideoSampleAllocator
   // =================================
   IMFVideoSampleAllocator = interface(IUnknown)
-  ['{86cbc910-e533-4751-8e3b-f19b5b806a03}']
+    ['{86cbc910-e533-4751-8e3b-f19b5b806a03}']
 
     function SetDirectXManager(pManager: IUnknown): HResult; stdcall;
 
@@ -1471,28 +1665,31 @@ type
     function AllocateSample(out ppSample: IMFSample): HResult; stdcall;
 
   end;
+
   IID_IMFVideoSampleAllocator = IMFVideoSampleAllocator;
 
 
   // Interface IMFVideoSampleAllocatorNotify
   // =======================================
   IMFVideoSampleAllocatorNotify = interface(IUnknown)
-  ['{A792CDBE-C374-4e89-8335-278E7B9956A4}']
+    ['{A792CDBE-C374-4e89-8335-278E7B9956A4}']
 
     function NotifyRelease(): HResult; stdcall;
 
   end;
+
   IID_IMFVideoSampleAllocatorNotify = IMFVideoSampleAllocatorNotify;
 
 
   // Interface IMFVideoSampleAllocatorNotifyEx
   // =========================================
   IMFVideoSampleAllocatorNotifyEx = interface(IMFVideoSampleAllocatorNotify)
-  ['{3978AA1A-6D5B-4B7F-A340-90899189AE34}']
+    ['{3978AA1A-6D5B-4B7F-A340-90899189AE34}']
 
     function NotifyPrune(sample: IMFSample): HResult; stdcall;
 
   end;
+
   IID_IMFVideoSampleAllocatorNotifyEx = IMFVideoSampleAllocatorNotifyEx;
 
 
@@ -1500,59 +1697,62 @@ type
   // Interface IMFVideoSampleAllocatorCallback
   // =========================================
   IMFVideoSampleAllocatorCallback = interface(IUnknown)
-  ['{992388B4-3372-4f67-8B6F-C84C071F4751}']
+    ['{992388B4-3372-4f67-8B6F-C84C071F4751}']
 
     function SetCallback(pNotify: IMFVideoSampleAllocatorNotify): HResult; stdcall;
 
     function GetFreeSampleCount(out plSamples: LONG): HResult; stdcall;
 
   end;
+
   IID_IMFVideoSampleAllocatorCallback = IMFVideoSampleAllocatorCallback;
 
 
   // Interface IMFVideoSampleAllocatorEx
   // ===================================
   IMFVideoSampleAllocatorEx = interface(IMFVideoSampleAllocator)
-  ['{545b3a48-3283-4f62-866f-a62d8f598f9f}']
+    ['{545b3a48-3283-4f62-866f-a62d8f598f9f}']
     function InitializeSampleAllocatorEx(cInitialSamples: DWORD;
                                          cMaximumSamples: DWORD;
                                          pAttributes: IMFAttributes;
                                          pMediaType: IMFMediaType): HResult; stdcall;
 
   end;
+
   IID_IMFVideoSampleAllocatorEx = IMFVideoSampleAllocatorEx;
 
-//#if (WINVER >= _WIN32_WINNT_WINBLUE) // = WIN10
+  //#if (WINVER >= _WIN32_WINNT_WINBLUE) // = WIN10
 
   // Interface IMFDXGIDeviceManagerSource
   // ====================================
   IMFDXGIDeviceManagerSource = interface(IUnknown)
-  ['{20bc074b-7a8d-4609-8c3b-64a0a3b5d7ce}']
+    ['{20bc074b-7a8d-4609-8c3b-64a0a3b5d7ce}']
 
     function GetManager(out ppManager: IMFDXGIDeviceManager): HResult; stdcall;
 
   end;
+
   IID_IMFDXGIDeviceManagerSource = IMFDXGIDeviceManagerSource;
 
-//#endif // (WINVER >= _WIN32_WINNT_WINBLUE) // = WIN10
+  //#endif // (WINVER >= _WIN32_WINNT_WINBLUE) // = WIN10
 
-//#if (WINVER >= _WIN32_WINNT_WIN8)
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
 
   // Specifies how to rotate a video image.
   PMF_VIDEO_PROCESSOR_ROTATION = ^MF_VIDEO_PROCESSOR_ROTATION;
   _MF_VIDEO_PROCESSOR_ROTATION = (
-    ROTATION_NONE   = 0,                 // Do not rotate the image.
+    ROTATION_NONE = 0,                 // Do not rotate the image.
     ROTATION_NORMAL = 1                  // Rotate the image to the correct viewing orientation.
-  );
+    );
   MF_VIDEO_PROCESSOR_ROTATION = _MF_VIDEO_PROCESSOR_ROTATION;
 
   // Specifies how to flip a video image.
   PMF_VIDEO_PROCESSOR_MIRROR = ^_MF_VIDEO_PROCESSOR_MIRROR;
   _MF_VIDEO_PROCESSOR_MIRROR = (
-    MIRROR_NONE       = 0,            // Do not flip the image.
+    MIRROR_NONE = 0,            // Do not flip the image.
     MIRROR_HORIZONTAL = 1,            // Flip the image horizontally.
-    MIRROR_VERTICAL   = 2             // Flip the image vertically.
-  );
+    MIRROR_VERTICAL = 2             // Flip the image vertically.
+    );
   MF_VIDEO_PROCESSOR_MIRROR = _MF_VIDEO_PROCESSOR_MIRROR;
 
 
@@ -1561,59 +1761,61 @@ type
   IMFVideoProcessorControl = interface(IUnknown)
     ['{A3F675D5-6119-4f7f-A100-1D8B280F0EFB}']
 
-      function SetBorderColor(pBorderColor: MFARGB): HResult; stdcall;
+    function SetBorderColor(pBorderColor: MFARGB): HResult; stdcall;
 
-      function SetSourceRectangle(pSrcRect: TRect): HResult; stdcall;
+    function SetSourceRectangle(pSrcRect: TRect): HResult; stdcall;
 
-      function SetDestinationRectangle(pDstRect: TRect): HResult; stdcall;
+    function SetDestinationRectangle(pDstRect: TRect): HResult; stdcall;
 
-      function SetMirror(eMirror: MF_VIDEO_PROCESSOR_MIRROR): HResult; stdcall;
+    function SetMirror(eMirror: MF_VIDEO_PROCESSOR_MIRROR): HResult; stdcall;
 
-      function SetRotation(eRotation: MF_VIDEO_PROCESSOR_ROTATION): HResult; stdcall;
+    function SetRotation(eRotation: MF_VIDEO_PROCESSOR_ROTATION): HResult; stdcall;
 
-      function SetConstrictionSize(pConstrictionSize: SIZE): HResult; stdcall;
+    function SetConstrictionSize(pConstrictionSize: SIZE): HResult; stdcall;
 
   end;
+
   IID_IMFVideoProcessorControl = IMFVideoProcessorControl;
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN8)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
-//#if (WINVER >= _WIN32_WINNT_WINBLUE)
+  //#if (WINVER >= _WIN32_WINNT_WINBLUE)
 
   // Interface IMFVideoProcessorControl2
   // ===================================
   IMFVideoProcessorControl2 = interface(IMFVideoProcessorControl)
     ['{BDE633D3-E1DC-4a7f-A693-BBAE399C4A20}']
 
-      function SetRotationOverride(uiRotation: UINT): HResult; stdcall;
+    function SetRotationOverride(uiRotation: UINT): HResult; stdcall;
 
-      function EnableHardwareEffects(fEnabled: BOOL): HResult; stdcall;
+    function EnableHardwareEffects(fEnabled: BOOL): HResult; stdcall;
 
-      function GetSupportedHardwareEffects(out puiSupport: UINT): HResult; stdcall;
+    function GetSupportedHardwareEffects(out puiSupport: UINT): HResult; stdcall;
 
   end;
+
   IID_IMFVideoProcessorControl2 = IMFVideoProcessorControl2;
 
-// #endif // (WINVER >= _WIN32_WINNT_WINBLUE)
+  // #endif // (WINVER >= _WIN32_WINNT_WINBLUE)
 
 
-// (WINVER >= _WIN32_WINNT_WIN10)
+  // (WINVER >= _WIN32_WINNT_WIN10)
 
   PMFVideoSphericalFormat = ^MFVideoSphericalFormat;
   _MFVideoSphericalFormat = (
-    MFVideoSphericalFormat_Unsupported     = 0,
-    MFVideoSphericalFormat_Equirectangular = 1,
-    MFVideoSphericalFormat_CubeMap         = 2,
-    MFVideoSphericalFormat_3DMesh          = 3
-  );
+    MFVideoSphericalFormat_Unsupported = 0,
+                             MFVideoSphericalFormat_Equirectangular = 1,
+                             MFVideoSphericalFormat_CubeMap = 2,
+                             MFVideoSphericalFormat_3DMesh = 3
+    );
   MFVideoSphericalFormat = _MFVideoSphericalFormat;
 
 
   PMFVideoSphericalProjectionMode = ^MFVideoSphericalProjectionMode;
-  MFVideoSphericalProjectionMode             = (
+  MFVideoSphericalProjectionMode = (
     MFVideoSphericalProjectionMode_Spherical = 0,
-    MFVideoSphericalProjectionMode_Flat      = (MFVideoSphericalProjectionMode_Spherical  + 1)
-  );
+                                    MFVideoSphericalProjectionMode_Flat = (MFVideoSphericalProjectionMode_Spherical + 1)
+    );
 
 
   // Interface IMFVideoProcessorControl3
@@ -1621,25 +1823,26 @@ type
   IMFVideoProcessorControl3 = interface(IMFVideoProcessorControl2)
     ['{2424B3F2-EB23-40f1-91AA-74BDDEEA0883}']
 
-      function GetNaturalOutputType(ppType: IMFMediaType): HRESULT; stdcall;
+    function GetNaturalOutputType(ppType: IMFMediaType): HRESULT; stdcall;
 
-      function EnableSphericalVideoProcessing(fEnable: BOOL;
-                                              eFormat: MFVideoSphericalFormat;
-                                              eProjectionMode: MFVideoSphericalProjectionMode): HResult; stdcall;
+    function EnableSphericalVideoProcessing(fEnable: BOOL;
+                                            eFormat: MFVideoSphericalFormat;
+                                            eProjectionMode: MFVideoSphericalProjectionMode): HResult; stdcall;
 
-      function SetSphericalVideoProperties(X: Single;
-                                           Y: Single;
-                                           Z: Single;
-                                           W: Single;
-                                           fieldOfView: Single): HResult; stdcall;
+    function SetSphericalVideoProperties(X: Single;
+                                         Y: Single;
+                                         Z: Single;
+                                         W: Single;
+                                         fieldOfView: Single): HResult; stdcall;
 
-      function SetOutputDevice(var pOutputDevice: IUnknown): HResult; stdcall;
+    function SetOutputDevice(var pOutputDevice: IUnknown): HResult; stdcall;
 
   end;
+
   IID_IMFVideoProcessorControl3 = IMFVideoProcessorControl3;
 
 
-// #if (NTDDI_VERSION >= NTDDI_WIN10_VB)
+  // #if (NTDDI_VERSION >= NTDDI_WIN10_VB)
 
   // Interface IMFVideoRendererEffectControl
   // Configuration interface for Video Renderer Effects
@@ -1658,8 +1861,9 @@ type
     // </param>
     function OnAppServiceConnectionEstablished(pAppServiceConnection: IUnknown): HResult; stdcall;
   end;
+
   IID_IMFVideoRendererEffectControl = IMFVideoRendererEffectControl;
-// #endif // (WINVER >= NTDDI_WIN10_VB)
+  // #endif // (WINVER >= NTDDI_WIN10_VB)
 
 
   // Interface IMFTopology
@@ -1690,45 +1894,46 @@ type
     function GetOutputNodeCollection(out ppCollection: IMFCollection): HResult; stdcall;
 
   end;
+
   IID_IMFTopology = IMFTopology;
 
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
   PMFTOPOLOGY_DXVA_MODE = ^MFTOPOLOGY_DXVA_MODE;
-  cwMFTOPOLOGY_DXVA_MODE    = (
+  cwMFTOPOLOGY_DXVA_MODE = (
     MFTOPOLOGY_DXVA_DEFAULT = 0,
-    MFTOPOLOGY_DXVA_NONE    = 1,
-    MFTOPOLOGY_DXVA_FULL    = 2
-  );
+                            MFTOPOLOGY_DXVA_NONE = 1,
+                            MFTOPOLOGY_DXVA_FULL = 2
+    );
   MFTOPOLOGY_DXVA_MODE = cwMFTOPOLOGY_DXVA_MODE;
 
 
   PMFTOPOLOGY_HARDWARE_MODE = ^MFTOPOLOGY_HARDWARE_MODE;
   cwMFTOPOLOGY_HARDWARE_MODE = (
-    MFTOPOLOGY_HWMODE_SOFTWARE_ONLY     = 0,
-    MFTOPOLOGY_HWMODE_USE_HARDWARE      = 1,
-    MFTOPOLOGY_HWMODE_USE_ONLY_HARDWARE = 2
-  );
+    MFTOPOLOGY_HWMODE_SOFTWARE_ONLY = 0,
+                                MFTOPOLOGY_HWMODE_USE_HARDWARE = 1,
+                                MFTOPOLOGY_HWMODE_USE_ONLY_HARDWARE = 2
+    );
   MFTOPOLOGY_HARDWARE_MODE = cwMFTOPOLOGY_HARDWARE_MODE;
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
 
   PMF_TOPOLOGY_TYPE = ^MF_TOPOLOGY_TYPE;
-  MF_TOPOLOGY_TYPE                = (
-    MF_TOPOLOGY_OUTPUT_NODE       =  0,   // Output node. Represents a media sink in the topology.
-    MF_TOPOLOGY_SOURCESTREAM_NODE =  (MF_TOPOLOGY_OUTPUT_NODE + 1), // Source node. Represents a media stream in the topology.
-    MF_TOPOLOGY_TRANSFORM_NODE    =  (MF_TOPOLOGY_SOURCESTREAM_NODE + 1), // Transform node. Represents a Media Foundation Transform (MFT) in the topology.
-    MF_TOPOLOGY_TEE_NODE          =  (MF_TOPOLOGY_TRANSFORM_NODE + 1), // Tee node.
-                                                                      // A tee node does not hold a pointer to an object.
-                                                                      // Instead, it represents a fork in the stream.
-                                                                      // A tee node has one input and multiple outputs,
-                                                                      // and samples from the upstream node are delivered to
-                                                                      // all of the downstream nodes.
+  MF_TOPOLOGY_TYPE = (
+    MF_TOPOLOGY_OUTPUT_NODE = 0,   // Output node. Represents a media sink in the topology.
+    MF_TOPOLOGY_SOURCESTREAM_NODE = (MF_TOPOLOGY_OUTPUT_NODE + 1), // Source node. Represents a media stream in the topology.
+    MF_TOPOLOGY_TRANSFORM_NODE = (MF_TOPOLOGY_SOURCESTREAM_NODE + 1), // Transform node. Represents a Media Foundation Transform (MFT) in the topology.
+    MF_TOPOLOGY_TEE_NODE = (MF_TOPOLOGY_TRANSFORM_NODE + 1), // Tee node.
+    // A tee node does not hold a pointer to an object.
+    // Instead, it represents a fork in the stream.
+    // A tee node has one input and multiple outputs,
+    // and samples from the upstream node are delivered to
+    // all of the downstream nodes.
 
-    MF_TOPOLOGY_MAX               =  MAXDWORD // $ffffffff   Reserved.
-  );
+    MF_TOPOLOGY_MAX = MAXDWORD // $ffffffff   Reserved.
+    );
 
 
 
@@ -1766,7 +1971,7 @@ type
                       out ppUpstreamNode: IMFTopologyNode;
                       out pdwOutputIndexOnUpstreamNode: DWord): HResult; stdcall;
 
-    function GetOutput(dwOutputIndex : DWord;
+    function GetOutput(dwOutputIndex: DWord;
                        out ppDownstreamNode: IMFTopologyNode;
                        out pdwInputIndexOnDownstreamNode: DWord): HResult; stdcall;
 
@@ -1785,24 +1990,25 @@ type
     function CloneFrom(pNode: IMFTopologyNode): HResult; stdcall;
 
   end;
+
   IID_IMFTopologyNode = IMFTopologyNode;
 
 
   PMF_TOPONODE_FLUSH_MODE = ^MF_TOPONODE_FLUSH_MODE;
-  _MF_TOPONODE_FLUSH_MODE    = (
+  _MF_TOPONODE_FLUSH_MODE = (
     MF_TOPONODE_FLUSH_ALWAYS = 0,
-    MF_TOPONODE_FLUSH_SEEK   = (MF_TOPONODE_FLUSH_ALWAYS  + 1),
-    MF_TOPONODE_FLUSH_NEVER  = (MF_TOPONODE_FLUSH_SEEK  + 1)
-  );
+                             MF_TOPONODE_FLUSH_SEEK = (MF_TOPONODE_FLUSH_ALWAYS + 1),
+                             MF_TOPONODE_FLUSH_NEVER = (MF_TOPONODE_FLUSH_SEEK + 1)
+    );
   MF_TOPONODE_FLUSH_MODE = _MF_TOPONODE_FLUSH_MODE;
 
 
   PMF_TOPONODE_DRAIN_MODE = ^MF_TOPONODE_DRAIN_MODE;
-  _MF_TOPONODE_DRAIN_MODE     = (
+  _MF_TOPONODE_DRAIN_MODE = (
     MF_TOPONODE_DRAIN_DEFAULT = 0,
-    MF_TOPONODE_DRAIN_ALWAYS  = (MF_TOPONODE_DRAIN_DEFAULT  + 1),
-    MF_TOPONODE_DRAIN_NEVER   = (MF_TOPONODE_DRAIN_ALWAYS  + 1)
-  );
+                             MF_TOPONODE_DRAIN_ALWAYS = (MF_TOPONODE_DRAIN_DEFAULT + 1),
+                             MF_TOPONODE_DRAIN_NEVER = (MF_TOPONODE_DRAIN_ALWAYS + 1)
+    );
   MF_TOPONODE_DRAIN_MODE = _MF_TOPONODE_DRAIN_MODE;
 
 
@@ -1810,29 +2016,31 @@ type
   // Interface IMFGetService
   // =======================
   IMFGetService = interface(IUnknown)
-  ['{fa993888-4383-415a-a930-dd472a8cf6f7}']
+    ['{fa993888-4383-415a-a930-dd472a8cf6f7}']
 
     function GetService(const guidService: TGUID;
                         const riid: TGUID;
                         out ppvObject: Pointer {LPVOID}): HResult; stdcall;
 
   end;
+
   IID_IMFGetService = IMFGetService;
 
 
   PMF_CLOCK_STATE = ^MF_CLOCK_STATE;
   PMfclockState = ^MFCLOCK_STATE;
-  _MFCLOCK_STATE          = (
+  _MFCLOCK_STATE = (
     MFCLOCK_STATE_INVALID = 0,
-    MFCLOCK_STATE_RUNNING = (MFCLOCK_STATE_INVALID + 1),
-    MFCLOCK_STATE_STOPPED = (MFCLOCK_STATE_RUNNING + 1),
-    MFCLOCK_STATE_PAUSED  = (MFCLOCK_STATE_STOPPED + 1)
-  );
+                    MFCLOCK_STATE_RUNNING = (MFCLOCK_STATE_INVALID + 1),
+                    MFCLOCK_STATE_STOPPED = (MFCLOCK_STATE_RUNNING + 1),
+                    MFCLOCK_STATE_PAUSED = (MFCLOCK_STATE_STOPPED + 1)
+    );
   MFCLOCK_STATE = _MFCLOCK_STATE;
   MF_CLOCK_STATE = MFCLOCK_STATE;   // An issue as defined in SDK 7.0
 
 
   PMFCLOCK_PROPERTIES = ^MFCLOCK_PROPERTIES;
+
   _MFCLOCK_PROPERTIES = record
     qwCorrelationRate: UInt64;
     guidClockId: TGuid;
@@ -1840,8 +2048,9 @@ type
     qwClockFrequency: UInt64;
     dwClockTolerance: DWORD;
     dwClockJitter: DWORD;
-    public
-      procedure Copy(out destProps: _MFCLOCK_PROPERTIES);
+
+  public
+    procedure Copy(out destProps: _MFCLOCK_PROPERTIES);
   end;
   MFCLOCK_PROPERTIES = _MFCLOCK_PROPERTIES;
 
@@ -1865,13 +2074,14 @@ type
     function GetProperties(out pClockProperties: MFCLOCK_PROPERTIES): HResult; stdcall;
 
   end;
+
   IID_IMFClock = IMFClock;
 
 
   // Interface IMFPresentationClock
   // ==============================
   IMFPresentationClock = interface(IMFClock)
-  ['{868CE85C-8EA9-4f55-AB82-B009A910A805}']
+    ['{868CE85C-8EA9-4f55-AB82-B009A910A805}']
 
     function SetTimeSource(pTimeSource: IMFPresentationTimeSource): HResult; stdcall;
 
@@ -1893,24 +2103,26 @@ type
     function Pause(): HResult; stdcall;
 
   end;
+
   IID_IMFPresentationClock = IMFPresentationClock;
 
 
   // Interface IMFPresentationTimeSource
   // ===================================
   IMFPresentationTimeSource = interface(IUnknown)
-  ['{7FF12CCE-F76F-41c2-863B-1666C8E5E139}']
+    ['{7FF12CCE-F76F-41c2-863B-1666C8E5E139}']
 
     function GetUnderlyingClock(out ppClock: IMFClock): HResult; stdcall;
 
   end;
+
   IID_IMFPresentationTimeSource = IMFPresentationTimeSource;
 
 
   // Interface IMFClockStateSink
   // ===========================
   IMFClockStateSink = interface(IUnknown)
-  ['{F6696E82-74F7-4f3d-A178-8A5E09C3659F}']
+    ['{F6696E82-74F7-4f3d-A178-8A5E09C3659F}']
 
     function OnClockStart(hnsSystemTime: MFTIME;
                           llClockStartOffset: LongLong): HResult; stdcall;
@@ -1925,13 +2137,14 @@ type
                             flRate: Single): HResult; stdcall;
 
   end;
+
   IID_IMFClockStateSink = IMFClockStateSink;
 
 
   // Interface IMFPresentationDescriptor
   // ===================================
   IMFPresentationDescriptor = interface(IMFAttributes)
-  ['{03cb2711-24d7-4db6-a17f-f3a7a479a536}']
+    ['{03cb2711-24d7-4db6-a17f-f3a7a479a536}']
 
     function GetStreamDescriptorCount(out pdwDescriptorCount: DWord): HResult; stdcall;
 
@@ -1946,29 +2159,31 @@ type
     function Clone(out ppPresentationDescriptor: IMFPresentationDescriptor): HResult; stdcall;
 
   end;
+
   IID_IMFPresentationDescriptor = IMFPresentationDescriptor;
 
 
   // Interface IMFStreamDescriptor
   // =============================
   IMFStreamDescriptor = interface(IMFAttributes)
-  ['{56c03d9c-9dbb-45f5-ab4b-d80f47c05938}']
+    ['{56c03d9c-9dbb-45f5-ab4b-d80f47c05938}']
 
     function GetStreamIdentifier(out pdwStreamIdentifier: DWord): HResult; stdcall;
 
     function GetMediaTypeHandler(out ppMediaTypeHandler: IMFMediaTypeHandler): HResult; stdcall;
 
   end;
+
   IID_IMFStreamDescriptor = IMFStreamDescriptor;
 
 
   // Interface IMFMediaTypeHandler
   // =============================
   IMFMediaTypeHandler = interface(IUnknown)
-  ['{e93dcf6c-4b07-4e1e-8123-aa16ed6eadf5}']
+    ['{e93dcf6c-4b07-4e1e-8123-aa16ed6eadf5}']
 
     function IsMediaTypeSupported(pMediaType: IMFMediaType;
-                                  {out} ppMediaType: IMFMediaType): HResult; stdcall;
+    {out} ppMediaType: IMFMediaType): HResult; stdcall;
 
     function GetMediaTypeCount(out pdwTypeCount: DWord): HResult; stdcall;
 
@@ -1982,63 +2197,67 @@ type
     function GetMajorType(out pguidMajorType: TGuid): HResult; stdcall;
 
   end;
+
   IID_IMFMediaTypeHandler = IMFMediaTypeHandler;
 
 
   // Interface IMFTimer
   // ==================
   IMFTimer = interface(IUnknown)
-  ['{e56e4cbd-8f70-49d8-a0f8-edb3d6ab9bf2}']
+    ['{e56e4cbd-8f70-49d8-a0f8-edb3d6ab9bf2}']
 
     function SetTimer(dwFlags: DWord;
                       llClockTime: LONGLONG;
                       pCallback: IMFAsyncCallback;
                       punkState: IUnknown;
-                      {out} ppunkKey: PIUnknown): HResult; stdcall;
+    {out} ppunkKey: PIUnknown): HResult; stdcall;
 
     function CancelTimer(punkKey: IUnknown): HResult; stdcall;
 
   end;
+
   IID_IMFTimer = IMFTimer;
 
 
   PMFSHUTDOWN_STATUS = ^MFSHUTDOWN_STATUS;
   _MFSHUTDOWN_STATUS = (
     MFSHUTDOWN_INITIATED = 0,
-    MFSHUTDOWN_COMPLETED = ( MFSHUTDOWN_INITIATED + 1 )
-  );
-  MFSHUTDOWN_STATUS=_MFSHUTDOWN_STATUS;
+                        MFSHUTDOWN_COMPLETED = (MFSHUTDOWN_INITIATED + 1)
+    );
+  MFSHUTDOWN_STATUS = _MFSHUTDOWN_STATUS;
 
 
   // Interface IMFShutdown
   // =====================
   IMFShutdown = interface(IUnknown)
-  ['{97ec2ea4-0e42-4937-97ac-9d6d328824e1}']
+    ['{97ec2ea4-0e42-4937-97ac-9d6d328824e1}']
 
     function Shutdown(): HResult; stdcall;
 
     function GetShutdownStatus(out pStatus: MFSHUTDOWN_STATUS): HResult; stdcall;
 
   end;
+
   IID_IMFShutdown = IMFShutdown;
 
 
   // Interface IMFTopoLoader
   // =======================
   IMFTopoLoader = interface(IUnknown)
-  ['{DE9A6157-F660-4643-B56A-DF9F7998C7CD}']
+    ['{DE9A6157-F660-4643-B56A-DF9F7998C7CD}']
 
     function Load(pInputTopo: IMFTopology;
                   out ppOutputTopo: IMFTopology;
                   pCurrentTopo: IMFTopology): HResult; stdcall;
   end;
+
   IID_IMFTopoLoader = IMFTopoLoader;
 
 
   // Interface IMFContentProtectionManager
   // =====================================
   IMFContentProtectionManager = interface(IUnknown)
-  ['{ACF92459-6A61-42bd-B57C-B43E51203CB0}']
+    ['{ACF92459-6A61-42bd-B57C-B43E51203CB0}']
 
     function BeginEnableContent(pEnablerActivate: IMFActivate;
                                 pTopo: IMFTopology;
@@ -2048,22 +2267,23 @@ type
     function EndEnableContent(pResult: IMFAsyncResult): HResult; stdcall;
 
   end;
+
   IID_IMFContentProtectionManager = IMFContentProtectionManager;
 
 
   PMF_URL_TRUST_STATUS = ^MF_URL_TRUST_STATUS;
   cwMF_URL_TRUST_STATUS = (
     MF_LICENSE_URL_UNTRUSTED = 0,
-    MF_LICENSE_URL_TRUSTED   = (MF_LICENSE_URL_UNTRUSTED + 1),
-    MF_LICENSE_URL_TAMPERED  = (MF_LICENSE_URL_TRUSTED + 1)
-  );
+                           MF_LICENSE_URL_TRUSTED = (MF_LICENSE_URL_UNTRUSTED + 1),
+                           MF_LICENSE_URL_TAMPERED = (MF_LICENSE_URL_TRUSTED + 1)
+    );
   MF_URL_TRUST_STATUS = cwMF_URL_TRUST_STATUS;
 
 
   // Interface IMFContentEnabler
   // ===========================
   IMFContentEnabler = interface(IUnknown)
-  ['{D3C4EF59-49CE-4381-9071-D5BCD044C770}']
+    ['{D3C4EF59-49CE-4381-9071-D5BCD044C770}']
 
     function GetEnableType(out pType: TGuid): HResult; stdcall;
 
@@ -2083,30 +2303,34 @@ type
     function Cancel(): HResult; stdcall;
 
   end;
+
   IID_IMFContentEnabler = IMFContentEnabler;
 
 
   PMFRR_COMPONENT_HASH_INFO = ^MFRR_COMPONENT_HASH_INFO;
+
   _MFRR_COMPONENT_HASH_INFO = record
     ulReason: DWORD; // Reason for failure (revoked or unsigned or badly signed).
     rgHeaderHash: array[0..STR_HASH_LEN - 1] of LPWSTR; // Header hash of the component
     rgPublicKeyHash: array[0..STR_HASH_LEN - 1] of LPWSTR; // Hash of public key if one of the certificates
-                                                           // in the signing certificate chain is revoked
+    // in the signing certificate chain is revoked
     wszName: array[0..MAX_PATH - 1] of LPWSTR; // Component name (full path name)
   end;
   MFRR_COMPONENT_HASH_INFO = _MFRR_COMPONENT_HASH_INFO;
 
 
   PMFRR_COMPONENTS = ^MFRR_COMPONENTS;
+
   _MFRR_COMPONENTS = record
     dwRRInfoVersion: DWORD; // Version number
     dwRRComponents: DWORD; // Number of components in list
     pRRComponents: MFRR_COMPONENT_HASH_INFO;  // points to the end of this structure that has
-                                              // allocated memory for the array of component info structures
+    // allocated memory for the array of component info structures
   end;
   MFRR_COMPONENTS = _MFRR_COMPONENTS;
 
   PASF_FLAT_PICTURE = ^ASF_FLAT_PICTURE;
+
   _ASFFlatPicture = record
     //
     // Direct mapped fields
@@ -2120,7 +2344,7 @@ type
   // interface IMFMetadata
   // =====================
   IMFMetadata = interface(IUnknown)
-  ['{F88CFB8C-EF16-4991-B450-CB8C69E51704}']
+    ['{F88CFB8C-EF16-4991-B450-CB8C69E51704}']
 
     function SetLanguage(pwszRFC1766: LPCWSTR): HResult; stdcall;
 
@@ -2139,34 +2363,36 @@ type
     function GetAllPropertyNames(out ppvNames: PROPVARIANT): HResult; stdcall;
 
   end;
+
   IID_IMFMetadata = IMFMetadata;
 
 
   // Interface IMFMetadataProvider
   // =============================
   IMFMetadataProvider = interface(IUnknown)
-  ['{56181D2D-E221-4adb-B1C8-3CEE6A53F76F}']
+    ['{56181D2D-E221-4adb-B1C8-3CEE6A53F76F}']
 
     function GetMFMetadata(pPresentationDescriptor: IMFPresentationDescriptor;
                            dwStreamIdentifier: DWord;
                            dwFlags: DWord;
                            out ppMFMetadata: IMFMetadata): HResult; stdcall;
   end;
+
   IID_IMFMetadataProvider = IMFMetadataProvider;
 
 
   PMFRATE_DIRECTION = ^MFRATE_DIRECTION;
   _MFRATE_DIRECTION = (
     MFRATE_FORWARD = 0,
-    MFRATE_REVERSE = (MFRATE_FORWARD + 1)
-  );
+                       MFRATE_REVERSE = (MFRATE_FORWARD + 1)
+    );
   MFRATE_DIRECTION = _MFRATE_DIRECTION;
 
 
   // Interface IMFRateSupport
   // ========================
   IMFRateSupport = interface(IUnknown)
-  ['{0a9ccdbc-d797-4563-9667-94ec5d79292d}']
+    ['{0a9ccdbc-d797-4563-9667-94ec5d79292d}']
 
     function GetSlowestRate(eDirection: MFRATE_DIRECTION;
                             const fThin: BOOL;
@@ -2181,13 +2407,14 @@ type
                              pflNearestSupportedRate: PFLOAT = nil): HResult; stdcall;
 
   end;
+
   IID_IMFRateSupport = IMFRateSupport;
 
 
   // interface IMFRateControl
   // ========================
   IMFRateControl = interface(IUnknown)
-  ['{88ddcd21-03c3-4275-91ed-55ee3929328f}']
+    ['{88ddcd21-03c3-4275-91ed-55ee3929328f}']
 
     function SetRate(const fThin: BOOL;
                      flRate: FLOAT): HRESULT; stdcall;
@@ -2196,14 +2423,15 @@ type
                      var flRate: FLOAT): HRESULT; stdcall;
 
   end;
+
   IID_IMFRateControl = IMFRateControl;
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
   // Interface IMFTimecodeTranslate
   // ==============================
   IMFTimecodeTranslate = interface(IUnknown)
-  ['{ab9d8661-f7e8-4ef4-9861-89f334f94e74}']
+    ['{ab9d8661-f7e8-4ef4-9861-89f334f94e74}']
 
     function BeginConvertTimecodeToHNS(const pPropVarTimecode: PROPVARIANT;
                                        pCallback: IMFAsyncCallback;
@@ -2220,18 +2448,19 @@ type
                                      out pPropVarTimecode: PROPVARIANT): HResult; stdcall;
 
   end;
+
   IID_IMFTimecodeTranslate = IMFTimecodeTranslate;
 
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-//#if (WINVER >= _WIN32_WINNT_WIN8)
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
 
   // Interface IMFSeekInfo
   // =====================
   //
   IMFSeekInfo = interface(IUnknown)
-  ['{26AFEA53-D9ED-42B5-AB80-E64F9EE34779}']
+    ['{26AFEA53-D9ED-42B5-AB80-E64F9EE34779}']
 
     function GetNearestKeyFrames(const pguidTimeFormat: TGUID;
                                  const pvarStartPosition: PROPVARIANT;
@@ -2239,16 +2468,17 @@ type
                                  out pvarNextKeyFrame: PROPVARIANT): HResult; stdcall;
 
   end;
+
   IID_IMFSeekInfo = IMFSeekInfo;
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN8)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
 
   // Interface IMFSimpleAudioVolume
   // ==============================
   //
   IMFSimpleAudioVolume = interface(IUnknown)
-  ['{089EDF13-CF71-4338-8D13-9E569DBDC319}']
+    ['{089EDF13-CF71-4338-8D13-9E569DBDC319}']
 
     function SetMasterVolume(fLevel: FLOAT): HResult; stdcall;
 
@@ -2258,6 +2488,7 @@ type
 
     function GetMute(out pbMute: BOOL): HResult; stdcall;   //No need to convert to 4 byte BOOL
   end;
+
   IID_IMFSimpleAudioVolume = IMFSimpleAudioVolume;
 
 
@@ -2266,7 +2497,7 @@ type
   // ==============================
   //
   IMFAudioStreamVolume = interface(IUnknown)
-  ['{76B1BBDB-4EC8-4f36-B106-70A9316DF593}']
+    ['{76B1BBDB-4EC8-4f36-B106-70A9316DF593}']
     function GetChannelCount(out pdwCount: UINT32): HResult; stdcall;
 
     function SetChannelVolume(dwIndex: UINT32;
@@ -2293,7 +2524,7 @@ type
 
 
     function GetAllVolumes(dwCount: UINT32;
-                           {out} pfVolumes: PFloat): HResult; stdcall;
+    {out} pfVolumes: PFloat): HResult; stdcall;
     // This function fills the array with the volume level for each channel in the stream.
     // Parameters
     // dwCount [in, out]
@@ -2306,6 +2537,7 @@ type
     // method writes the volume levels for the individual channels.
     // Volume levels are in the range 0.0 to 1.0.
   end;
+
   IID_IMFAudioStreamVolume = IMFAudioStreamVolume;
 
 
@@ -2313,7 +2545,7 @@ type
   // Interface IMFAudioPolicy
   // ========================
   IMFAudioPolicy = interface(IUnknown)
-  ['{a0638c2b-6465-4395-9ae7-a321a9fd2856}']
+    ['{a0638c2b-6465-4395-9ae7-a321a9fd2856}']
 
     function SetGroupingParam(const rguidClass: REFGUID): HResult; stdcall;
 
@@ -2328,15 +2560,16 @@ type
     function GetIconPath(out pszPath: LPWSTR): HResult; stdcall;
 
   end;
+
   IID_IMFAudioPolicy = IMFAudioPolicy;
 
 
   // Interface IMFSampleGrabberSinkCallback
   // ======================================
   IMFSampleGrabberSinkCallback = interface(IUnknown)
-  ['{8C7B80BF-EE42-4b59-B1DF-55668E1BDCA8}']
+    ['{8C7B80BF-EE42-4b59-B1DF-55668E1BDCA8}']
 
-    function OnSetPresentationClock(pPresentationClock:  IMFPresentationClock): HResult; stdcall;
+    function OnSetPresentationClock(pPresentationClock: IMFPresentationClock): HResult; stdcall;
 
     function OnProcessSample(const guidMajorMediaType: REFGUID;
                              dwSampleFlags: DWord;
@@ -2348,15 +2581,16 @@ type
     function OnShutdown(): HResult; stdcall;
 
   end;
+
   IID_IMFSampleGrabberSinkCallback = IMFSampleGrabberSinkCallback;
 
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
   // Interface IMFSampleGrabberSinkCallback2
   // =======================================
   IMFSampleGrabberSinkCallback2 = interface(IMFSampleGrabberSinkCallback)   //modified t19122012b, Reported by eric.c.fortier, Oct 5, 2012
-  ['{ca86aa50-c46e-429e-ab27-16d6ac6844cb}']
+    ['{ca86aa50-c46e-429e-ab27-16d6ac6844cb}']
 
     function onProcessSampleEx(const guidMajorMediaType: REFGUID;
                                dwSampleFlags: DWord;
@@ -2365,16 +2599,17 @@ type
                                pSampleBuffer: PByte;
                                pAttributes: IMFAttributes): HResult; stdcall;
   end;
+
   IID_IMFSampleGrabberSinkCallback2 = IMFSampleGrabberSinkCallback2;
 
-//#endif (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif (WINVER >= _WIN32_WINNT_WIN7)
 
 
 
   // Interface IMFWorkQueueServices
   // ==============================
   IMFWorkQueueServices = interface(IUnknown)
-  ['{35FE1BB8-A3A9-40fe-BBEC-EB569C9CCCA3}']
+    ['{35FE1BB8-A3A9-40fe-BBEC-EB569C9CCCA3}']
 
     function BeginRegisterTopologyWorkQueuesWithMMCSS(pCallback: IMFAsyncCallback;
                                                       pState: IUnknown): HResult; stdcall;
@@ -2416,6 +2651,7 @@ type
                                              out pdwTaskId: DWord): HResult; stdcall;
 
   end;
+
   IID_IMFWorkQueueServices = IMFWorkQueueServices;
 
 
@@ -2423,45 +2659,46 @@ type
   // ================================
   IMFWorkQueueServicesEx = interface(IMFWorkQueueServices)
     ['{96bf961b-40fe-42f1-ba9d-320238b49700}']
-      function GetTopologyWorkQueueMMCSSPriority(dwTopologyWorkQueueId: DWORD;
-                                                 out plPriority: LONG): HResult; stdcall;
+    function GetTopologyWorkQueueMMCSSPriority(dwTopologyWorkQueueId: DWORD;
+                                               out plPriority: LONG): HResult; stdcall;
 
-      function BeginRegisterPlatformWorkQueueWithMMCSSEx(dwPlatformWorkQueue: DWORD;
-                                                         wszClass: PWideChar;
-                                                         dwTaskId: DWORD;
-                                                         lPriority: LONG;
-                                                         pCallback: IMFAsyncCallback;
-                                                         pState: IUnknown): HResult; stdcall;
+    function BeginRegisterPlatformWorkQueueWithMMCSSEx(dwPlatformWorkQueue: DWORD;
+                                                       wszClass: PWideChar;
+                                                       dwTaskId: DWORD;
+                                                       lPriority: LONG;
+                                                       pCallback: IMFAsyncCallback;
+                                                       pState: IUnknown): HResult; stdcall;
 
-      function GetPlatformWorkQueueMMCSSPriority(dwPlatformWorkQueueId: DWORD;
-                                                 out plPriority: LONG): HResult; stdcall;
+    function GetPlatformWorkQueueMMCSSPriority(dwPlatformWorkQueueId: DWORD;
+                                               out plPriority: LONG): HResult; stdcall;
 
-   end;
+  end;
+
   IID_IMFWorkQueueServicesEx = IMFWorkQueueServicesEx;
 
 
   PMF_QUALITY_DROP_MODE = ^MF_QUALITY_DROP_MODE;
   _MF_QUALITY_DROP_MODE = (
     MF_DROP_MODE_NONE = 0,
-    MF_DROP_MODE_1    = $1,
-    MF_DROP_MODE_2    = $2,
-    MF_DROP_MODE_3    = $3,
-    MF_DROP_MODE_4    = $4,
-    MF_DROP_MODE_5    = $5,
-    MF_NUM_DROP_MODES = $6
-  );
+                           MF_DROP_MODE_1 = $1,
+                           MF_DROP_MODE_2 = $2,
+                           MF_DROP_MODE_3 = $3,
+                           MF_DROP_MODE_4 = $4,
+                           MF_DROP_MODE_5 = $5,
+                           MF_NUM_DROP_MODES = $6
+    );
   MF_QUALITY_DROP_MODE = _MF_QUALITY_DROP_MODE;
 
   PMF_QUALITY_LEVEL = ^MF_QUALITY_LEVEL;
-  _MF_QUALITY_LEVEL           = (
-    MF_QUALITY_NORMAL         = 0,
-    MF_QUALITY_NORMAL_MINUS_1 = $1,
-    MF_QUALITY_NORMAL_MINUS_2 = $2,
-    MF_QUALITY_NORMAL_MINUS_3 = $3,
-    MF_QUALITY_NORMAL_MINUS_4 = $4,
-    MF_QUALITY_NORMAL_MINUS_5 = $5,
-    MF_NUM_QUALITY_LEVELS     = $6
-  );
+  _MF_QUALITY_LEVEL = (
+    MF_QUALITY_NORMAL = 0,
+                       MF_QUALITY_NORMAL_MINUS_1 = $1,
+                       MF_QUALITY_NORMAL_MINUS_2 = $2,
+                       MF_QUALITY_NORMAL_MINUS_3 = $3,
+                       MF_QUALITY_NORMAL_MINUS_4 = $4,
+                       MF_QUALITY_NORMAL_MINUS_5 = $5,
+                       MF_NUM_QUALITY_LEVELS = $6
+    );
   MF_QUALITY_LEVEL = _MF_QUALITY_LEVEL;
 
 
@@ -2471,7 +2708,7 @@ type
   // Adjusts playback quality.
   // This interface is exposed by the quality manager.
   IMFQualityManager = interface(IUnknown)
-  ['{8D009D86-5B9F-4115-B1FC-9F80D52AB8AB}']
+    ['{8D009D86-5B9F-4115-B1FC-9F80D52AB8AB}']
 
     function NotifyTopology(pTopology: IMFTopology): HResult; stdcall;
     // Called when the Media Session is about to start playing a new topology.
@@ -2497,13 +2734,14 @@ type
     // Called when the Media Session is shutting down.
 
   end;
+
   IID_IMFQualityManager = IMFQualityManager;
 
 
   // Interface IMFQualityAdvise
   // ==========================
   IMFQualityAdvise = interface(IUnknown)
-  ['{EC15E2E9-E36B-4f7c-8758-77D452EF4CE7}']
+    ['{EC15E2E9-E36B-4f7c-8758-77D452EF4CE7}']
     function SetDropMode(eDropMode: MF_QUALITY_DROP_MODE): HResult; stdcall;
 
     function SetQualityLevel(eQualityLevel: MF_QUALITY_LEVEL): HResult; stdcall;
@@ -2515,6 +2753,7 @@ type
     function DropTime(hnsAmountToDrop: LONGLONG): HResult; stdcall;
 
   end;
+
   IID_IMFQualityAdvise = IMFQualityAdvise;
 
 
@@ -2523,23 +2762,25 @@ type
   IMFQualityAdvise2 = interface(IMFQualityAdvise)
     ['{F3706F0D-8EA2-4886-8000-7155E9EC2EAE}']
 
-      function NotifyQualityEvent(pEvent: IMFMediaEvent;
-                                  out pdwFlags: PDWORD): HResult; stdcall;
+    function NotifyQualityEvent(pEvent: IMFMediaEvent;
+                                out pdwFlags: PDWORD): HResult; stdcall;
 
-   end;
+  end;
+
   IID_IMFQualityAdvise2 = IMFQualityAdvise2;
 
 
   // Interface IMFQualityAdviseLimits
   // ================================
   IMFQualityAdviseLimits = interface(IUnknown)
-  ['{dfcd8e4d-30b5-4567-acaa-8eb5b7853dc9}']
+    ['{dfcd8e4d-30b5-4567-acaa-8eb5b7853dc9}']
 
     function GetMaximumDropMode(out peDropMode: MF_QUALITY_DROP_MODE): HResult; stdcall;
 
     function GetMinimumQualityLevel(out peQualityLevel: MF_QUALITY_LEVEL): HResult; stdcall;
 
   end;
+
   IID_IMFQualityAdviseLimits = IMFQualityAdviseLimits;
 
 
@@ -2548,7 +2789,7 @@ type
   // Notifies a pipeline object to register itself with the Multimedia Class Scheduler Service (MMCSS).
   // Any pipeline object that creates worker threads should implement this interface.
   IMFRealTimeClient = interface(IUnknown)
-  ['{2347D60B-3FB5-480c-8803-8DF3ADCD3EF0}']
+    ['{2347D60B-3FB5-480c-8803-8DF3ADCD3EF0}']
 
     function RegisterThreads(dwTaskIndex: DWORD;
                              wszClass: LPCWSTR): HResult; stdcall;
@@ -2558,26 +2799,28 @@ type
     function SetWorkQueue(dwWorkQueueId: DWORD): HResult; stdcall;
 
   end;
+
   IID_IMFRealTimeClient = IMFRealTimeClient;
 
 
-//#if (WINVER >= _WIN32_WINNT_WIN8)
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
 
   // interface IMFRealTimeClientEx
   // =============================
   IMFRealTimeClientEx = interface(IUnknown)
     ['{03910848-AB16-4611-B100-17B88AE2F248}']
 
-      function RegisterThreadsEx(var pdwTaskIndex: DWORD;
-                                 wszClassName: PWideChar;
-                                 lBasePriority: LONG): HResult; stdcall;
+    function RegisterThreadsEx(var pdwTaskIndex: DWORD;
+                               wszClassName: PWideChar;
+                               lBasePriority: LONG): HResult; stdcall;
 
-      function UnregisterThreads(): HResult; stdcall;
+    function UnregisterThreads(): HResult; stdcall;
 
-      function SetWorkQueueEx(dwMultithreadedWorkQueueId: DWORD;
-                              lWorkItemBasePriority: LONG): HResult; stdcall;
+    function SetWorkQueueEx(dwMultithreadedWorkQueueId: DWORD;
+                            lWorkItemBasePriority: LONG): HResult; stdcall;
 
   end;
+
   IID_IMFRealTimeClientEx = IMFRealTimeClientEx;
 
   // Media Foundation sequence playback interfaces
@@ -2591,7 +2834,7 @@ type
   // Interface IMFSequencerSource
   // ============================
   IMFSequencerSource = interface(IUnknown)
-  ['{197CD219-19CB-4de1-A64C-ACF2EDCBE59E}']
+    ['{197CD219-19CB-4de1-A64C-ACF2EDCBE59E}']
 
     function AppendTopology(pTopology: IMFTopology;
                             dwFlags: DWord;
@@ -2610,29 +2853,32 @@ type
                                  dwFlags: DWord): HResult; stdcall;
 
   end;
+
   IID_IMFSequencerSource = IMFSequencerSource;
 
 
   // Interface IMFMediaSourceTopologyProvider
   // ========================================
   IMFMediaSourceTopologyProvider = interface(IUnknown)
-  ['{0E1D6009-C9F3-442d-8C51-A42D2D49452F}']
+    ['{0E1D6009-C9F3-442d-8C51-A42D2D49452F}']
 
     function GetMediaSourceTopology(pPresentationDescriptor: IMFPresentationDescriptor;
                                     out ppTopology: IMFTopology): HResult; stdcall;
 
   end;
+
   IID_IMFMediaSourceTopologyProvider = IMFMediaSourceTopologyProvider;
 
 
   // interface IMFMediaSourcePresentationProvider
   // ============================================
   IMFMediaSourcePresentationProvider = interface(IUnknown)
-  ['{0E1D600a-C9F3-442d-8C51-A42D2D49452F}']
+    ['{0E1D600a-C9F3-442d-8C51-A42D2D49452F}']
 
-    function ForceEndOfPresentation(PresentationDescriptor: IMFPresentationDescriptor ): HRESULT; stdcall;
+    function ForceEndOfPresentation(PresentationDescriptor: IMFPresentationDescriptor): HRESULT; stdcall;
 
   end;
+
   IID_IMFMediaSourcePresentationProvider = IMFMediaSourcePresentationProvider;
 
 
@@ -2640,15 +2886,16 @@ type
   // This structure is used in IMFTopologyNodeAttributeEditor.UpdateNodeAttributes.
   // NodeId indicate which node's attributes to update.
   PMFTOPONODE_ATTRIBUTE_UPDATE = ^MFTOPONODE_ATTRIBUTE_UPDATE;
+
   _MFTOPONODE_ATTRIBUTE_UPDATE = record
-      NodeId:           TOPOID;   // The identifier of the topology node to update. To get the identifier of a topology node, call IMFTopologyNode.GetTopoNodeID.
-      guidAttributeKey: TGUID;    // GUID that specifies the attribute to update.
-      attrType:         MF_ATTRIBUTE_TYPE;  // Attribute type, specified as a member of the MF_ATTRIBUTE_TYPE enumeration.
-      case Integer of
-        Ord(MF_ATTRIBUTE_UINT32): (u32: UINT32); // Attribute value (unsigned 32-bit integer). This member is used when attrType equals MF_ATTRIBUTE_UINT32.
-        Ord(MF_ATTRIBUTE_UINT64): (u64: UINT64); // Attribute value (unsigned 64-bit integer). This member is used when attrType equals MF_ATTRIBUTE_UINT64. See Remarks.
-        Ord(MF_ATTRIBUTE_DOUBLE): (d: Double);   // Attribute value (floating point). This member is used when attrType equals MF_ATTRIBUTE_DOUBLE.
-      end;
+    NodeId: TOPOID;   // The identifier of the topology node to update. To get the identifier of a topology node, call IMFTopologyNode.GetTopoNodeID.
+    guidAttributeKey: TGUID;    // GUID that specifies the attribute to update.
+    attrType: MF_ATTRIBUTE_TYPE;  // Attribute type, specified as a member of the MF_ATTRIBUTE_TYPE enumeration.
+    case Integer of
+      Ord(MF_ATTRIBUTE_UINT32): (u32: UINT32); // Attribute value (unsigned 32-bit integer). This member is used when attrType equals MF_ATTRIBUTE_UINT32.
+      Ord(MF_ATTRIBUTE_UINT64): (u64: UINT64); // Attribute value (unsigned 64-bit integer). This member is used when attrType equals MF_ATTRIBUTE_UINT64. See Remarks.
+      Ord(MF_ATTRIBUTE_DOUBLE): (d: Double);   // Attribute value (floating point). This member is used when attrType equals MF_ATTRIBUTE_DOUBLE.
+  end;
   MFTOPONODE_ATTRIBUTE_UPDATE = _MFTOPONODE_ATTRIBUTE_UPDATE;
   // Remarks
   //  Due to an error in the structure declaration, the u64 member is declared as
@@ -2664,16 +2911,18 @@ type
   // In the current implementation, the only supported property is MF_TOPONODE_MEDIASTOP.
   // Pipeline will ignore all other properties.
   IMFTopologyNodeAttributeEditor = interface(IUnknown)
-  ['{676aa6dd-238a-410d-bb99-65668d01605a}']
+    ['{676aa6dd-238a-410d-bb99-65668d01605a}']
     function UpdateNodeAttributes(TopoId: TOPOID; // Reserved.
-                                  cUpdates: DWORD; // The number of elements in the pUpdates array.
-                                  pUpdates: PMFTOPONODE_ATTRIBUTE_UPDATE  // Pointer to an array of MFTOPONODE_ATTRIBUTE_UPDATE structures. Each element of the array updates one attribute on a node.
-                                  ): HResult; stdcall;
+      cUpdates: DWORD; // The number of elements in the pUpdates array.
+      pUpdates: PMFTOPONODE_ATTRIBUTE_UPDATE  // Pointer to an array of MFTOPONODE_ATTRIBUTE_UPDATE structures. Each element of the array updates one attribute on a node.
+      ): HResult; stdcall;
   end;
+
   IID_IMFTopologyNodeAttributeEditor = IMFTopologyNodeAttributeEditor;
 
 
   PMF_LEAKY_BUCKET_PAIR = ^MF_LEAKY_BUCKET_PAIR;
+
   _MF_LEAKY_BUCKET_PAIR = record
     dwBitrate: DWORD;
     msBufferWindow: DWORD;
@@ -2682,6 +2931,7 @@ type
 
 
   PMFBYTESTREAM_BUFFERING_PARAMS = ^MFBYTESTREAM_BUFFERING_PARAMS;
+
   _MFBYTESTREAM_BUFFERING_PARAMS = record
     cbTotalFileSize: QWORD;
     cbPlayableDataSize: QWORD;
@@ -2698,7 +2948,7 @@ type
   // interface IMFByteStreamBuffering
   // ================================
   IMFByteStreamBuffering = interface(IUnknown)
-  ['{6d66d782-1d4f-4db7-8c63-cb8c77f1ef5e}']
+    ['{6d66d782-1d4f-4db7-8c63-cb8c77f1ef5e}']
 
     function SetBufferingParams(pParams: MFBYTESTREAM_BUFFERING_PARAMS): HResult; stdcall;
 
@@ -2707,6 +2957,7 @@ type
     function StopBuffering(): HResult; stdcall;
 
   end;
+
   IID_IMFByteStreamBuffering = IMFByteStreamBuffering;
 
 
@@ -2715,9 +2966,10 @@ type
   IMFByteStreamCacheControl = interface(IUnknown)
     ['{F5042EA4-7A96-4a75-AA7B-2BE1EF7F88D5}']
 
-      function StopBackgroundTransfer(): HResult; stdcall;
+    function StopBackgroundTransfer(): HResult; stdcall;
 
   end;
+
   IID_IMFByteStreamCacheControl = IMFByteStreamCacheControl;
 
 
@@ -2726,22 +2978,24 @@ type
   IMFByteStreamTimeSeek = interface(IUnknown)
     ['{64976BFA-FB61-4041-9069-8C9A5F659BEB}']
 
-      function IsTimeSeekSupported(out pfTimeSeekIsSupported: BOOL): HResult; stdcall;
+    function IsTimeSeekSupported(out pfTimeSeekIsSupported: BOOL): HResult; stdcall;
 
-      function TimeSeek(const qwTimePosition: QWORD): HResult; stdcall;
+    function TimeSeek(const qwTimePosition: QWORD): HResult; stdcall;
 
-      function GetTimeSeekResult(out pqwStartTime: QWORD;
-                                 out pqwStopTime: QWORD;
-                                 out pqwDuration: QWORD): HResult; stdcall;
+    function GetTimeSeekResult(out pqwStartTime: QWORD;
+                               out pqwStopTime: QWORD;
+                               out pqwDuration: QWORD): HResult; stdcall;
 
   end;
+
   IID_IMFByteStreamTimeSeek = IMFByteStreamTimeSeek;
 
 
-//#if (WINVER >= _WIN32_WINNT_WIN8)
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
 
 
   PMF_BYTE_STREAM_CACHE_RANGE = ^MF_BYTE_STREAM_CACHE_RANGE;
+
   MF_BYTE_STREAM_CACHE_RANGE = record
     qwStartOffset: QWORD;
     qwEndOffset: QWORD;
@@ -2753,23 +3007,24 @@ type
   IMFByteStreamCacheControl2 = interface(IMFByteStreamCacheControl)
     ['{71CE469C-F34B-49EA-A56B-2D2A10E51149}']
 
-      function GetByteRanges(out pcRanges: DWORD;
-                             out ppRanges: PMF_BYTE_STREAM_CACHE_RANGE): HResult; stdcall;
+    function GetByteRanges(out pcRanges: DWORD;
+                           out ppRanges: PMF_BYTE_STREAM_CACHE_RANGE): HResult; stdcall;
 
-      function SetCacheLimit(qwBytes: QWORD): HResult; stdcall;
+    function SetCacheLimit(qwBytes: QWORD): HResult; stdcall;
 
-      function IsBackgroundTransferActive(var pfActive: BOOL): HResult; stdcall;
+    function IsBackgroundTransferActive(var pfActive: BOOL): HResult; stdcall;
 
   end;
+
   IID_IMFByteStreamCacheControl2 = IMFByteStreamCacheControl2;
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN8)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
 
   // Interface IMFNetCredential
   // ==========================
   IMFNetCredential = interface(IUnknown)
-  ['{5b87ef6a-7ed8-434f-ba0e-184fac1628d1}']
+    ['{5b87ef6a-7ed8-434f-ba0e-184fac1628d1}']
 
     function SetUser(pbData: PByte;
                      cbData: DWord;
@@ -2790,11 +3045,13 @@ type
     function LoggedOnUser(out pfLoggedOnUser: BOOL): HResult; stdcall;
 
   end;
+
   IID_IMFNetCredential = IMFNetCredential;
 
 
   // IMFNetCredentialManager
   PMFNetCredentialManagerGetParam = ^MFNetCredentialManagerGetParam;
+
   _MFNetCredentialManagerGetParam = record
     hrOp: HResult;
     fAllowLoggedOnUser: BOOL;
@@ -2811,7 +3068,7 @@ type
   // Interface IMFNetCredentialManager
   // =================================
   IMFNetCredentialManager = interface(IUnknown)
-  ['{5b87ef6b-7ed8-434f-ba0e-184fac1628d1}']
+    ['{5b87ef6b-7ed8-434f-ba0e-184fac1628d1}']
 
     function BeginGetCredentials(pParam: MFNetCredentialManagerGetParam;
                                  pCallback: IMFAsyncCallback;
@@ -2823,7 +3080,8 @@ type
     function SetGood(pCred: IMFNetCredential;
                      const fGood: BOOL): HResult; stdcall;
 
-   end;
+  end;
+
   IID_IMFNetCredentialManager = IMFNetCredentialManager;
 
 
@@ -2832,28 +3090,29 @@ type
   IMFNetCredentialCache = interface(IUnknown)
     ['{5b87ef6c-7ed8-434f-ba0e-184fac1628d1}']
 
-      function GetCredential(pszUrl: LPCWSTR;
-                             pszRealm: LPCWSTR;
-                             dwAuthenticationFlags: DWORD;
-                             out ppCred: IMFNetCredential;
-                             out pdwRequirementsFlags: DWORD): HResult; stdcall;
+    function GetCredential(pszUrl: LPCWSTR;
+                           pszRealm: LPCWSTR;
+                           dwAuthenticationFlags: DWORD;
+                           out ppCred: IMFNetCredential;
+                           out pdwRequirementsFlags: DWORD): HResult; stdcall;
 
-      function SetGood(pCred: IMFNetCredential;
-                       fGood: BOOL): HResult; stdcall;
+    function SetGood(pCred: IMFNetCredential;
+                     fGood: BOOL): HResult; stdcall;
 
-      function SetUserOptions(pCred: IMFNetCredential;
-                              dwOptionsFlags: DWORD): HResult; stdcall;
+    function SetUserOptions(pCred: IMFNetCredential;
+                            dwOptionsFlags: DWORD): HResult; stdcall;
 
   end;
+
   IID_IMFNetCredentialCache = IMFNetCredentialCache;
 
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
   // Interface IMFSSLCertificateManager
   // ==================================
   IMFSSLCertificateManager = interface(IUnknown)
-  ['{61f7d887-1230-4a8b-aeba-8ad434d1a64d}']
+    ['{61f7d887-1230-4a8b-aeba-8ad434d1a64d}']
 
     function GetClientCertificate(pszURL: LPCWSTR;
                                   out ppbData: PByte;
@@ -2876,6 +3135,7 @@ type
                                  out pfIsGood: BOOL): HResult; stdcall;
 
   end;
+
   IID_IMFSSLCertificateManager = IMFSSLCertificateManager;
 
 
@@ -2884,33 +3144,35 @@ type
   IMFNetResourceFilter = interface(IUnknown)
     ['{091878a3-bf11-4a5c-bc9f-33995b06ef2d}']
 
-      function OnRedirect(pszUrl: PWideChar;
-                          out pvbCancel: VARIANT_BOOL): HResult; stdcall;
+    function OnRedirect(pszUrl: PWideChar;
+                        out pvbCancel: VARIANT_BOOL): HResult; stdcall;
 
-      function OnSendingRequest(pszUrl: PWideChar): HResult; stdcall;
+    function OnSendingRequest(pszUrl: PWideChar): HResult; stdcall;
 
   end;
+
   IID_IMFNetResourceFilter = IMFNetResourceFilter;
 
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
 
   // interface IMFSourceOpenMonitor
   // ==============================
   IMFSourceOpenMonitor = interface(IUnknown)
-  ['{059054B3-027C-494C-A27D-9113291CF87F}']
+    ['{059054B3-027C-494C-A27D-9113291CF87F}']
 
     function OnSourceEvent(pEvent: IMFMediaEvent): HResult; stdcall;
 
   end;
+
   IID_IMFSourceOpenMonitor = IMFSourceOpenMonitor;
 
 
   // Interface IMFNetProxyLocator
   // ============================
   IMFNetProxyLocator = interface(IUnknown)
-  ['{e9cd0383-a268-4bb4-82de-658d53574d41}']
+    ['{e9cd0383-a268-4bb4-82de-658d53574d41}']
 
     function FindFirstProxy(pszHost: LPCWSTR;
                             pszUrl: LPCWSTR;
@@ -2926,25 +3188,27 @@ type
     function Clone(out ppProxyLocator: IMFNetProxyLocator): HResult; stdcall;
 
   end;
+
   IID_IMFNetProxyLocator = IMFNetProxyLocator;
 
 
   // Interface IMFNetProxyLocatorFactory
   // ===================================
   IMFNetProxyLocatorFactory = interface(IUnknown)
-  ['{e9cd0384-a268-4bb4-82de-658d53574d41}']
+    ['{e9cd0384-a268-4bb4-82de-658d53574d41}']
 
     function CreateProxyLocator(pszProtocol: LPCWSTR;
                                 out ppProxyLocator: IMFNetProxyLocator): HResult; stdcall;
 
   end;
+
   IID_IMFNetProxyLocatorFactory = IMFNetProxyLocatorFactory;
 
 
   // Interface IMFSaveJob
   // ====================
   IMFSaveJob = interface(IUnknown)
-  ['{e9931663-80bf-4c6e-98af-5dcf58747d1f}']
+    ['{e9931663-80bf-4c6e-98af-5dcf58747d1f}']
 
     function BeginSave(pStream: IMFByteStream;
                        pCallback: IMFAsyncCallback;
@@ -2957,24 +3221,25 @@ type
     function GetProgress(out pdwPercentComplete: DWord): HResult; stdcall;
 
   end;
+
   IID_IMFSaveJob = IMFSaveJob;
 
 
   PMFNETSOURCE_PROTOCOL_TYPE = ^MFNETSOURCE_PROTOCOL_TYPE;
   _MFNETSOURCE_PROTOCOL_TYPE = (
     MFNETSOURCE_UNDEFINED = 0,
-    MFNETSOURCE_HTTP      = $1,
-    MFNETSOURCE_RTSP      = $2,
-    MFNETSOURCE_FILE      = $3,
-    MFNETSOURCE_MULTICAST = $4
-  );
+                                MFNETSOURCE_HTTP = $1,
+                                MFNETSOURCE_RTSP = $2,
+                                MFNETSOURCE_FILE = $3,
+                                MFNETSOURCE_MULTICAST = $4
+    );
   MFNETSOURCE_PROTOCOL_TYPE = _MFNETSOURCE_PROTOCOL_TYPE;
 
 
   // Interface IMFNetSchemeHandlerConfig
   // ===================================
   IMFNetSchemeHandlerConfig = interface(IUnknown)
-  ['{7BE19E73-C9BF-468a-AC5A-A5E8653BEC87}']
+    ['{7BE19E73-C9BF-468a-AC5A-A5E8653BEC87}']
 
     function GetNumberOfSupportedProtocols(out pcProtocols: ULONG): HResult; stdcall;
 
@@ -2984,73 +3249,74 @@ type
     function ResetProtocolRolloverSettings(): HResult; stdcall;
 
   end;
+
   IID_IMFNetSchemeHandlerConfig = IMFNetSchemeHandlerConfig;
 
 
   PMFNETSOURCE_TRANSPORT_TYPE = ^MFNETSOURCE_TRANSPORT_TYPE;
   _MFNETSOURCE_TRANSPORT_TYPE = (
     MFNETSOURCE_UDP = 0,
-    MFNETSOURCE_TCP = (MFNETSOURCE_UDP + 1)
-  );
+                                 MFNETSOURCE_TCP = (MFNETSOURCE_UDP + 1)
+    );
   MFNETSOURCE_TRANSPORT_TYPE = _MFNETSOURCE_TRANSPORT_TYPE;
 
   PMFNETSOURCE_CACHE_STATE = ^MFNETSOURCE_CACHE_STATE;
-  _MFNETSOURCE_CACHE_STATE            = (
-    MFNETSOURCE_CACHE_UNAVAILABLE     = 0,
-    MFNETSOURCE_CACHE_ACTIVE_WRITING  = (MFNETSOURCE_CACHE_UNAVAILABLE + 1),
-    MFNETSOURCE_CACHE_ACTIVE_COMPLETE = (MFNETSOURCE_CACHE_ACTIVE_WRITING + 1)
-  );
+  _MFNETSOURCE_CACHE_STATE = (
+    MFNETSOURCE_CACHE_UNAVAILABLE = 0,
+                              MFNETSOURCE_CACHE_ACTIVE_WRITING = (MFNETSOURCE_CACHE_UNAVAILABLE + 1),
+                              MFNETSOURCE_CACHE_ACTIVE_COMPLETE = (MFNETSOURCE_CACHE_ACTIVE_WRITING + 1)
+    );
   MFNETSOURCE_CACHE_STATE = _MFNETSOURCE_CACHE_STATE;
 
   PMFNETSOURCE_STATISTICS_IDS = ^MFNETSOURCE_STATISTICS_IDS;
-  _MFNETSOURCE_STATISTICS_IDS               = (
-    MFNETSOURCE_RECVPACKETS_ID              = 0,
-    MFNETSOURCE_LOSTPACKETS_ID              = (MFNETSOURCE_RECVPACKETS_ID + 1),
-    MFNETSOURCE_RESENDSREQUESTED_ID         = (MFNETSOURCE_LOSTPACKETS_ID + 1),
-    MFNETSOURCE_RESENDSRECEIVED_ID          = (MFNETSOURCE_RESENDSREQUESTED_ID + 1),
-    MFNETSOURCE_RECOVEREDBYECCPACKETS_ID    = (MFNETSOURCE_RESENDSRECEIVED_ID + 1),
-    MFNETSOURCE_RECOVEREDBYRTXPACKETS_ID    = (MFNETSOURCE_RECOVEREDBYECCPACKETS_ID + 1),
-    MFNETSOURCE_OUTPACKETS_ID               = (MFNETSOURCE_RECOVEREDBYRTXPACKETS_ID + 1),
-    MFNETSOURCE_RECVRATE_ID                 = (MFNETSOURCE_OUTPACKETS_ID + 1),
-    MFNETSOURCE_AVGBANDWIDTHBPS_ID          = (MFNETSOURCE_RECVRATE_ID + 1),
-    MFNETSOURCE_BYTESRECEIVED_ID            = (MFNETSOURCE_AVGBANDWIDTHBPS_ID + 1),
-    MFNETSOURCE_PROTOCOL_ID                 = (MFNETSOURCE_BYTESRECEIVED_ID + 1),
-    MFNETSOURCE_TRANSPORT_ID                = (MFNETSOURCE_PROTOCOL_ID + 1),
-    MFNETSOURCE_CACHE_STATE_ID              = (MFNETSOURCE_TRANSPORT_ID + 1),
-    MFNETSOURCE_LINKBANDWIDTH_ID            = (MFNETSOURCE_CACHE_STATE_ID + 1),
-    MFNETSOURCE_CONTENTBITRATE_ID           = (MFNETSOURCE_LINKBANDWIDTH_ID + 1),
-    MFNETSOURCE_SPEEDFACTOR_ID              = (MFNETSOURCE_CONTENTBITRATE_ID + 1),
-    MFNETSOURCE_BUFFERSIZE_ID               = (MFNETSOURCE_SPEEDFACTOR_ID + 1),
-    MFNETSOURCE_BUFFERPROGRESS_ID           = (MFNETSOURCE_BUFFERSIZE_ID + 1),
-    MFNETSOURCE_LASTBWSWITCHTS_ID           = (MFNETSOURCE_BUFFERPROGRESS_ID + 1),
-    MFNETSOURCE_SEEKRANGESTART_ID           = (MFNETSOURCE_LASTBWSWITCHTS_ID + 1),
-    MFNETSOURCE_SEEKRANGEEND_ID             = (MFNETSOURCE_SEEKRANGESTART_ID + 1),
-    MFNETSOURCE_BUFFERINGCOUNT_ID           = (MFNETSOURCE_SEEKRANGEEND_ID + 1),
-    MFNETSOURCE_INCORRECTLYSIGNEDPACKETS_ID = (MFNETSOURCE_BUFFERINGCOUNT_ID + 1),
-    MFNETSOURCE_SIGNEDSESSION_ID            = (MFNETSOURCE_INCORRECTLYSIGNEDPACKETS_ID + 1),
-    MFNETSOURCE_MAXBITRATE_ID               = (MFNETSOURCE_SIGNEDSESSION_ID + 1),
-    MFNETSOURCE_RECEPTION_QUALITY_ID        = (MFNETSOURCE_MAXBITRATE_ID + 1),
-    MFNETSOURCE_RECOVEREDPACKETS_ID         = (MFNETSOURCE_RECEPTION_QUALITY_ID + 1),
-    MFNETSOURCE_VBR_ID                      = (MFNETSOURCE_RECOVEREDPACKETS_ID + 1),
-    MFNETSOURCE_DOWNLOADPROGRESS_ID         = (MFNETSOURCE_VBR_ID + 1),
-    MFNETSOURCE_UNPREDEFINEDPROTOCOLNAME_ID = (MFNETSOURCE_DOWNLOADPROGRESS_ID + 1)
-  );
+  _MFNETSOURCE_STATISTICS_IDS = (
+    MFNETSOURCE_RECVPACKETS_ID = 0,
+                                 MFNETSOURCE_LOSTPACKETS_ID = (MFNETSOURCE_RECVPACKETS_ID + 1),
+                                 MFNETSOURCE_RESENDSREQUESTED_ID = (MFNETSOURCE_LOSTPACKETS_ID + 1),
+                                 MFNETSOURCE_RESENDSRECEIVED_ID = (MFNETSOURCE_RESENDSREQUESTED_ID + 1),
+                                 MFNETSOURCE_RECOVEREDBYECCPACKETS_ID = (MFNETSOURCE_RESENDSRECEIVED_ID + 1),
+                                 MFNETSOURCE_RECOVEREDBYRTXPACKETS_ID = (MFNETSOURCE_RECOVEREDBYECCPACKETS_ID + 1),
+                                 MFNETSOURCE_OUTPACKETS_ID = (MFNETSOURCE_RECOVEREDBYRTXPACKETS_ID + 1),
+                                 MFNETSOURCE_RECVRATE_ID = (MFNETSOURCE_OUTPACKETS_ID + 1),
+                                 MFNETSOURCE_AVGBANDWIDTHBPS_ID = (MFNETSOURCE_RECVRATE_ID + 1),
+                                 MFNETSOURCE_BYTESRECEIVED_ID = (MFNETSOURCE_AVGBANDWIDTHBPS_ID + 1),
+                                 MFNETSOURCE_PROTOCOL_ID = (MFNETSOURCE_BYTESRECEIVED_ID + 1),
+                                 MFNETSOURCE_TRANSPORT_ID = (MFNETSOURCE_PROTOCOL_ID + 1),
+                                 MFNETSOURCE_CACHE_STATE_ID = (MFNETSOURCE_TRANSPORT_ID + 1),
+                                 MFNETSOURCE_LINKBANDWIDTH_ID = (MFNETSOURCE_CACHE_STATE_ID + 1),
+                                 MFNETSOURCE_CONTENTBITRATE_ID = (MFNETSOURCE_LINKBANDWIDTH_ID + 1),
+                                 MFNETSOURCE_SPEEDFACTOR_ID = (MFNETSOURCE_CONTENTBITRATE_ID + 1),
+                                 MFNETSOURCE_BUFFERSIZE_ID = (MFNETSOURCE_SPEEDFACTOR_ID + 1),
+                                 MFNETSOURCE_BUFFERPROGRESS_ID = (MFNETSOURCE_BUFFERSIZE_ID + 1),
+                                 MFNETSOURCE_LASTBWSWITCHTS_ID = (MFNETSOURCE_BUFFERPROGRESS_ID + 1),
+                                 MFNETSOURCE_SEEKRANGESTART_ID = (MFNETSOURCE_LASTBWSWITCHTS_ID + 1),
+                                 MFNETSOURCE_SEEKRANGEEND_ID = (MFNETSOURCE_SEEKRANGESTART_ID + 1),
+                                 MFNETSOURCE_BUFFERINGCOUNT_ID = (MFNETSOURCE_SEEKRANGEEND_ID + 1),
+                                 MFNETSOURCE_INCORRECTLYSIGNEDPACKETS_ID = (MFNETSOURCE_BUFFERINGCOUNT_ID + 1),
+                                 MFNETSOURCE_SIGNEDSESSION_ID = (MFNETSOURCE_INCORRECTLYSIGNEDPACKETS_ID + 1),
+                                 MFNETSOURCE_MAXBITRATE_ID = (MFNETSOURCE_SIGNEDSESSION_ID + 1),
+                                 MFNETSOURCE_RECEPTION_QUALITY_ID = (MFNETSOURCE_MAXBITRATE_ID + 1),
+                                 MFNETSOURCE_RECOVEREDPACKETS_ID = (MFNETSOURCE_RECEPTION_QUALITY_ID + 1),
+                                 MFNETSOURCE_VBR_ID = (MFNETSOURCE_RECOVEREDPACKETS_ID + 1),
+                                 MFNETSOURCE_DOWNLOADPROGRESS_ID = (MFNETSOURCE_VBR_ID + 1),
+                                 MFNETSOURCE_UNPREDEFINEDPROTOCOLNAME_ID = (MFNETSOURCE_DOWNLOADPROGRESS_ID + 1)
+    );
   MFNETSOURCE_STATISTICS_IDS = _MFNETSOURCE_STATISTICS_IDS;
 
   PMFNET_PROXYSETTINGS = ^MFNET_PROXYSETTINGS;
-  _MFNET_PROXYSETTINGS         = (
-    MFNET_PROXYSETTING_NONE    = 0,
-    MFNET_PROXYSETTING_MANUAL  = 1,
-    MFNET_PROXYSETTING_AUTO    = 2,
-    MFNET_PROXYSETTING_BROWSER = 3
-  );
+  _MFNET_PROXYSETTINGS = (
+    MFNET_PROXYSETTING_NONE = 0,
+                          MFNET_PROXYSETTING_MANUAL = 1,
+                          MFNET_PROXYSETTING_AUTO = 2,
+                          MFNET_PROXYSETTING_BROWSER = 3
+    );
   MFNET_PROXYSETTINGS = _MFNET_PROXYSETTINGS;
 
 
   // Interface IMFSchemeHandler
   // ==========================
   IMFSchemeHandler = interface(IUnknown)
-  ['{6D4C7B74-52A0-4bb7-B0DB-55F29F47A668}']
+    ['{6D4C7B74-52A0-4bb7-B0DB-55F29F47A668}']
 
     function BeginCreateObject(pwszURL: LPCWSTR;
                                dwFlags: DWord;
@@ -3066,13 +3332,14 @@ type
     function CancelObjectCreation(pIUnknownCancelCookie: IUnknown): HResult; stdcall;
 
   end;
+
   IID_IMFSchemeHandler = IMFSchemeHandler;
 
 
   // interface IMFByteStreamHandler
   // ==============================
   IMFByteStreamHandler = interface(IUnknown)
-  ['{BB420AA4-765B-4a1f-91FE-D6A8A143924C}']
+    ['{BB420AA4-765B-4a1f-91FE-D6A8A143924C}']
 
     function BeginCreateObject(pByteStream: IMFByteStream;
                                pwszURL: LPCWSTR;
@@ -3091,18 +3358,20 @@ type
     function GetMaxNumberOfBytesRequiredForResolution(out pqwBytes: QWORD): HResult; stdcall;
 
   end;
+
   IID_IMFByteStreamHandler = IMFByteStreamHandler;
 
 
   // Interface IMFTrustedInput
   // =========================
   IMFTrustedInput = interface(IUnknown)
-  ['{542612C4-A1B8-4632-B521-DE11EA64A0B0}']
+    ['{542612C4-A1B8-4632-B521-DE11EA64A0B0}']
 
     function GetInputTrustAuthority(const dwStreamID: DWord;
                                     const riid: REFIID;
                                     out ppunkObject: IUnknown): HResult; stdcall;
   end;
+
   IID_IMFTrustedInput = IMFTrustedInput;
 
 
@@ -3111,6 +3380,7 @@ type
   MFPOLICYMANAGER_ACTION = _MFPOLICYMANAGER_ACTION;
 
   PMFINPUTTRUSTAUTHORITY_ACCESS_ACTION = ^MFINPUTTRUSTAUTHORITY_ACCESS_ACTION;
+
   _MFINPUTTRUSTAUTHORITY_ACTION = record
     Action: MFPOLICYMANAGER_ACTION;
     pbTicket: PByte;
@@ -3119,6 +3389,7 @@ type
   MFINPUTTRUSTAUTHORITY_ACCESS_ACTION = _MFINPUTTRUSTAUTHORITY_ACTION;
 
   PMFINPUTTRUSTAUTHORITY_ACCESS_PARAMS = ^MFINPUTTRUSTAUTHORITY_ACCESS_PARAMS;
+
   _MFINPUTTRUSTAUTHORITY_ACCESS_PARAMS = record
     dwSize: DWORD;
     dwVer: DWORD;
@@ -3135,7 +3406,7 @@ type
   // Interface IMFInputTrustAuthority
   // ================================
   IMFInputTrustAuthority = interface(IUnknown)
-  ['{D19F8E98-B126-4446-890C-5DCB7AD71453}']
+    ['{D19F8E98-B126-4446-890C-5DCB7AD71453}']
 
     function GetDecrypter(const riid: REFIID;
                           out ppv: Pointer): HResult; stdcall;
@@ -3153,13 +3424,14 @@ type
     function Reset(): HResult; stdcall;
 
   end;
+
   IID_IMFInputTrustAuthority = IMFInputTrustAuthority;
 
 
   // Interface IMFTrustedOutput
   // ==========================
   IMFTrustedOutput = interface(IUnknown)
-  ['{D19F8E95-B126-4446-890C-5DCB7AD71453}']
+    ['{D19F8E95-B126-4446-890C-5DCB7AD71453}']
 
     function GetOutputTrustAuthorityCount(out pcOutputTrustAuthorities: DWord): HResult; stdcall;
 
@@ -3169,13 +3441,14 @@ type
     function IsFinal(out pfIsFinal: BOOL): HResult; stdcall;
 
   end;
+
   IID_IMFTrustedOutput = IMFTrustedOutput;
 
 
   // interface IMFOutputTrustAuthority
   // =================================
   IMFOutputTrustAuthority = interface(IUnknown)
-  ['{D19F8E94-B126-4446-890C-5DCB7AD71453}']
+    ['{D19F8E94-B126-4446-890C-5DCB7AD71453}']
 
     function GetAction(out Action: MFPOLICYMANAGER_ACTION): HRESULT; stdcall;
 
@@ -3185,13 +3458,14 @@ type
                        out cbTicket: DWORD): HRESULT; stdcall;
 
   end;
+
   IID_IMFOutputTrustAuthority = IMFOutputTrustAuthority;
 
 
   // Interface IMFOutputPolicy
   // =========================
   IMFOutputPolicy = interface(IUnknown)
-  ['{7F00F10A-DAED-41AF-AB26-5FDFA4DFBA3C}']
+    ['{7F00F10A-DAED-41AF-AB26-5FDFA4DFBA3C}']
 
     function GenerateRequiredSchemas(dwAttributes: DWord;
                                      const guidOutputSubType: TGuid;
@@ -3204,13 +3478,14 @@ type
     function GetMinimumGRLVersion(out pdwMinimumGRLVersion: DWord): HResult; stdcall;
 
   end;
+
   IID_IMFOutputPolicy = IMFOutputPolicy;
 
 
   // Interface IMFOutputSchema
   // =========================
   IMFOutputSchema = interface(IUnknown)
-  ['{7BE0FC5B-ABD9-44FB-A5C8-F50136E71599}']
+    ['{7BE0FC5B-ABD9-44FB-A5C8-F50136E71599}']
 
     function GetSchemaType(out pguidSchemaType: TGuid): HResult; stdcall;
 
@@ -3219,45 +3494,46 @@ type
     function GetOriginatorID(out pguidOriginatorID: TGuid): HResult; stdcall;
 
   end;
+
   IID_IMFOutputSchema = IMFOutputSchema;
 
 
   PMF_OPM_CGMSA_PROTECTION_LEVEL = ^MF_OPM_CGMSA_PROTECTION_LEVEL;
-  _MF_OPM_CGMSA_PROTECTION_LEVEL                 = (
-    MF_OPM_CGMSA_OFF                             = 0,
-    MF_OPM_CGMSA_COPY_FREELY                     = $1,
-    MF_OPM_CGMSA_COPY_NO_MORE                    = $2,
-    MF_OPM_CGMSA_COPY_ONE_GENERATION             = $3,
-    MF_OPM_CGMSA_COPY_NEVER                      = $4,
-    MF_OPM_CGMSA_REDISTRIBUTION_CONTROL_REQUIRED = $8
-  );
+  _MF_OPM_CGMSA_PROTECTION_LEVEL = (
+    MF_OPM_CGMSA_OFF = 0,
+                                    MF_OPM_CGMSA_COPY_FREELY = $1,
+                                    MF_OPM_CGMSA_COPY_NO_MORE = $2,
+                                    MF_OPM_CGMSA_COPY_ONE_GENERATION = $3,
+                                    MF_OPM_CGMSA_COPY_NEVER = $4,
+                                    MF_OPM_CGMSA_REDISTRIBUTION_CONTROL_REQUIRED = $8
+    );
   MF_OPM_CGMSA_PROTECTION_LEVEL = _MF_OPM_CGMSA_PROTECTION_LEVEL;
 
   PMF_OPM_ACP_PROTECTION_LEVEL = ^MF_OPM_ACP_PROTECTION_LEVEL;
   _MF_OPM_ACP_PROTECTION_LEVEL = (
-    MF_OPM_ACP_OFF         = 0,
-    MF_OPM_ACP_LEVEL_ONE   = 1,
-    MF_OPM_ACP_LEVEL_TWO   = 2,
-    MF_OPM_ACP_LEVEL_THREE = 3,
-    MF_OPM_ACP_FORCE_ULONG = $7FFFFFFF
-  );
+    MF_OPM_ACP_OFF = 0,
+                                  MF_OPM_ACP_LEVEL_ONE = 1,
+                                  MF_OPM_ACP_LEVEL_TWO = 2,
+                                  MF_OPM_ACP_LEVEL_THREE = 3,
+                                  MF_OPM_ACP_FORCE_ULONG = $7FFFFFFF
+    );
   MF_OPM_ACP_PROTECTION_LEVEL = _MF_OPM_ACP_PROTECTION_LEVEL;
 
   PMFAudioConstriction = ^MFAudioConstriction;
-  _MFAudioConstriction       = (
-    MFaudioConstrictionOff   = 0,
-    MFaudioConstriction48_16 = (MFaudioConstrictionOff  + 1),
-    MFaudioConstriction44_16 = (MFaudioConstriction48_16  + 1),
-    MFaudioConstriction14_14 = (MFaudioConstriction44_16  + 1),
-    MFaudioConstrictionMute  = (MFaudioConstriction14_14  + 1)
-  );
+  _MFAudioConstriction = (
+    MFaudioConstrictionOff = 0,
+                          MFaudioConstriction48_16 = (MFaudioConstrictionOff + 1),
+                          MFaudioConstriction44_16 = (MFaudioConstriction48_16 + 1),
+                          MFaudioConstriction14_14 = (MFaudioConstriction44_16 + 1),
+                          MFaudioConstrictionMute = (MFaudioConstriction14_14 + 1)
+    );
   MFAudioConstriction = _MFAudioConstriction;
 
 
   // Interface IMFSecureChannel
   // ==========================
   IMFSecureChannel = interface(IUnknown)
-  ['{d0ae555d-3b12-4d97-b060-0990bc5aeb67}']
+    ['{d0ae555d-3b12-4d97-b060-0990bc5aeb67}']
 
     function GetCertificate(out ppCert: PByte;
                             out pcbCert: DWORD): HResult; stdcall;
@@ -3265,23 +3541,24 @@ type
     function SetupSession(pbEncryptedSessionKey: PByte;
                           cbSessionKey: DWORD): HResult; stdcall;
 
-   end;
+  end;
+
   IID_IMFSecureChannel = IMFSecureChannel;
 
   PSAMPLE_PROTECTION_VERSION = ^SAMPLE_PROTECTION_VERSION;
-  SAMPLE_PROTECTION_VERSION              = (
-    SAMPLE_PROTECTION_VERSION_NO         = 0,
-    SAMPLE_PROTECTION_VERSION_BASIC_LOKI = 1,
-    SAMPLE_PROTECTION_VERSION_SCATTER    = 2,
-    SAMPLE_PROTECTION_VERSION_RC4        = 3,
-    SAMPLE_PROTECTION_VERSION_AES128CTR  = 4
-  );
+  SAMPLE_PROTECTION_VERSION = (
+    SAMPLE_PROTECTION_VERSION_NO = 0,
+                               SAMPLE_PROTECTION_VERSION_BASIC_LOKI = 1,
+                               SAMPLE_PROTECTION_VERSION_SCATTER = 2,
+                               SAMPLE_PROTECTION_VERSION_RC4 = 3,
+                               SAMPLE_PROTECTION_VERSION_AES128CTR = 4
+    );
 
 
   // Interface IMFSampleProtection
   // =============================
   IMFSampleProtection = interface(IUnknown)
-  ['{8e36395f-c7b9-43c4-a54d-512b4af63c95}']
+    ['{8e36395f-c7b9-43c4-a54d-512b4af63c95}']
 
     function GetInputProtectionVersion(out pdwVersion: DWord): HResult; stdcall;
 
@@ -3304,36 +3581,39 @@ type
                                  const cbSeed: DWord): HResult; stdcall;
 
   end;
+
   IID_IMFSampleProtection = IMFSampleProtection;
 
 
   // interface IMFMediaSinkPreroll
   // =============================
   IMFMediaSinkPreroll = interface(IUnknown)
-  ['{5dfd4b2a-7674-4110-a4e6-8a68fd5f3688}']
+    ['{5dfd4b2a-7674-4110-a4e6-8a68fd5f3688}']
 
     function NotifyPreroll(hnsUpcomingStartTime: MFTIME): HRESULT; stdcall;
 
   end;
+
   IID_IMFMediaSinkPreroll = IMFMediaSinkPreroll;
 
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
   // Interface IMFFinalizableMediaSink
   // =================================
   IMFFinalizableMediaSink = interface(IUnknown)
     ['{EAECB74A-9A50-42ce-9541-6A7F57AA4AD7}']
 
-      function BeginFinalize(pCallback: IMFAsyncCallback;
-                             punkState: IUnknown): HResult; stdcall;
+    function BeginFinalize(pCallback: IMFAsyncCallback;
+                           punkState: IUnknown): HResult; stdcall;
 
-      function EndFinalize(pResult: IMFAsyncResult): HResult; stdcall;
+    function EndFinalize(pResult: IMFAsyncResult): HResult; stdcall;
 
   end;
+
   IID_IMFFinalizableMediaSink = IMFFinalizableMediaSink;
 
-//#endif // (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
 
   // interface IMFStreamingSinkConfig
@@ -3341,10 +3621,11 @@ type
   IMFStreamingSinkConfig = interface(IUnknown)
     ['{9db7aa41-3cc5-40d4-8509-555804ad34cc}']
 
-      function StartStreaming(fSeekOffsetIsByteOffset: BOOL;
-                              qwSeekOffset: QWORD): HRESULT; stdcall;
+    function StartStreaming(fSeekOffsetIsByteOffset: BOOL;
+                            qwSeekOffset: QWORD): HRESULT; stdcall;
 
   end;
+
   IID_IMFStreamingSinkConfig = IMFStreamingSinkConfig;
 
 
@@ -3356,15 +3637,16 @@ type
   IMFRemoteProxy = interface(IUnknown)
     ['{994e23ad-1cc2-493c-b9fa-46f1cb040fa4}']
 
-      function GetRemoteObject(const riid: REFIID;
-                               out ppv: Pointer): HResult; stdcall;
-      // Retrieves a pointer to the remote object for which this object is a proxy.
-
-      function GetRemoteHost(const riid: REFIID;
+    function GetRemoteObject(const riid: REFIID;
                              out ppv: Pointer): HResult; stdcall;
-      // Retrieves a pointer to the object that is hosting this proxy.
+    // Retrieves a pointer to the remote object for which this object is a proxy.
+
+    function GetRemoteHost(const riid: REFIID;
+                           out ppv: Pointer): HResult; stdcall;
+    // Retrieves a pointer to the object that is hosting this proxy.
 
   end;
+
   IID_IMFRemoteProxy = IMFRemoteProxy;
 
 
@@ -3373,13 +3655,14 @@ type
   IMFObjectReferenceStream = interface(IUnknown)
     ['{09EF5BE3-C8A7-469e-8B70-73BF25BB193F}']
 
-      function SaveReference(const riid: REFIID;
-                             pUnk: IUnknown): HRESULT; stdcall;
+    function SaveReference(const riid: REFIID;
+                           pUnk: IUnknown): HRESULT; stdcall;
 
-      function LoadReference(const riid: REFIID;
-                             out ppv: Pointer): HRESULT; stdcall;
+    function LoadReference(const riid: REFIID;
+                           out ppv: Pointer): HRESULT; stdcall;
 
   end;
+
   IID_IMFObjectReferenceStream = IMFObjectReferenceStream;
 
 
@@ -3388,34 +3671,36 @@ type
   IMFPMPHost = interface(IUnknown)
     ['{F70CA1A9-FDC7-4782-B994-ADFFB1C98606}']
 
-      function LockProcess(): HResult; stdcall;
+    function LockProcess(): HResult; stdcall;
 
-      function UnlockProcess(): HResult; stdcall;
+    function UnlockProcess(): HResult; stdcall;
 
-      function CreateObjectByCLSID(const clsid: REFCLSID;
-                                   pStream: IStream;
-                                   const riid: REFIID;
-                                   out ppv: Pointer): HResult; stdcall;
+    function CreateObjectByCLSID(const clsid: REFCLSID;
+                                 pStream: IStream;
+                                 const riid: REFIID;
+                                 out ppv: Pointer): HResult; stdcall;
 
   end;
+
   IID_IMFPMPHost = IMFPMPHost;
 
 
   // Interface IMFPMPClient
   // ======================
   IMFPMPClient = interface(IUnknown)
-  ['{6C4E655D-EAD8-4421-B6B9-54DCDBBDF820}']
+    ['{6C4E655D-EAD8-4421-B6B9-54DCDBBDF820}']
 
     function SetPMPHost(pPMPHost: IMFPMPHost): HResult; stdcall;
 
   end;
+
   IID_IMFPMPClient = IMFPMPClient;
 
 
   // Interface IMFPMPServer
   // ======================
   IMFPMPServer = interface(IUnknown)
-  ['{994e23af-1cc2-493c-b9fa-46f1cb040fa4}']
+    ['{994e23af-1cc2-493c-b9fa-46f1cb040fa4}']
 
     function LockProcess(): HResult; stdcall;
 
@@ -3426,24 +3711,26 @@ type
                                  out ppObject): HResult; stdcall;
 
   end;
+
   IID_IMFPMPServer = IMFPMPServer;
 
 
   // Interface IMFRemoteDesktopPlugin
   // ================================
   IMFRemoteDesktopPlugin = interface(IUnknown)
-  ['{1cde6309-cae0-4940-907e-c1ec9c3d1d4a}']
+    ['{1cde6309-cae0-4940-907e-c1ec9c3d1d4a}']
 
     function UpdateTopology(var Topology: IMFTopology): HRESULT; stdcall;
 
   end;
+
   IID_IMFRemoteDesktopPlugin = IMFRemoteDesktopPlugin;
 
 
   // Interface IMFSAMIStyle
   // ======================
   IMFSAMIStyle = interface(IUnknown)
-  ['{A7E025DD-5303-4a62-89D6-E747E1EFAC73}']
+    ['{A7E025DD-5303-4a62-89D6-E747E1EFAC73}']
 
     function GetStyleCount(out pdwCount: DWord): HResult; stdcall;
     // Gets the total number of styles
@@ -3459,10 +3746,11 @@ type
     // Gets the currently selected style.
     // The returned string must be deallocated using CoTaskMemFree().
   end;
+
   IID_IMFSAMIStyle = IMFSAMIStyle;
 
 
-//#if (WINVER >= _WIN32_WINNT_WIN7)
+  //#if (WINVER >= _WIN32_WINNT_WIN7)
 
   // Interface IMFTranscodeProfile
   // =============================
@@ -3475,7 +3763,7 @@ type
   // The configured transcode profile is passed to MFCreateTranscodeTopology,
   // which creates the transcode topology with the appropriate settings.
   IMFTranscodeProfile = interface(IUnknown)
-  ['{4ADFDBA3-7AB0-4953-A62B-461E7FF3DA1E}']
+    ['{4ADFDBA3-7AB0-4953-A62B-461E7FF3DA1E}']
 
     function SetAudioAttributes(pAttrs: IMFAttributes): HResult; stdcall;
 
@@ -3490,33 +3778,35 @@ type
     function GetContainerAttributes(out ppAttrs: IMFAttributes): HResult; stdcall;
 
   end;
+
   IID_IMFTranscodeProfile = IMFTranscodeProfile;
 
-//#endif (WINVER >= _WIN32_WINNT_WIN7)
+  //#endif (WINVER >= _WIN32_WINNT_WIN7)
 
 
   PMF_TRANSCODE_TOPOLOGYMODE_FLAGS = ^MF_TRANSCODE_TOPOLOGYMODE_FLAGS;
-  _MF_TRANSCODE_TOPOLOGYMODE_FLAGS             = (
-    MF_TRANSCODE_TOPOLOGYMODE_SOFTWARE_ONLY    = 0,
-    MF_TRANSCODE_TOPOLOGYMODE_HARDWARE_ALLOWED = 1
-  );
+  _MF_TRANSCODE_TOPOLOGYMODE_FLAGS = (
+    MF_TRANSCODE_TOPOLOGYMODE_SOFTWARE_ONLY = 0,
+                                      MF_TRANSCODE_TOPOLOGYMODE_HARDWARE_ALLOWED = 1
+    );
   MF_TRANSCODE_TOPOLOGYMODE_FLAGS = _MF_TRANSCODE_TOPOLOGYMODE_FLAGS;
 
   PMF_TRANSCODE_ADJUST_PROFILE_FLAGS = ^MF_TRANSCODE_ADJUST_PROFILE_FLAGS;
-  _MF_TRANSCODE_ADJUST_PROFILE_FLAGS                  = (
-    MF_TRANSCODE_ADJUST_PROFILE_DEFAULT               = 0,
-    MF_TRANSCODE_ADJUST_PROFILE_USE_SOURCE_ATTRIBUTES = 1
-  );
+  _MF_TRANSCODE_ADJUST_PROFILE_FLAGS = (
+    MF_TRANSCODE_ADJUST_PROFILE_DEFAULT = 0,
+                                        MF_TRANSCODE_ADJUST_PROFILE_USE_SOURCE_ATTRIBUTES = 1
+    );
   MF_TRANSCODE_ADJUST_PROFILE_FLAGS = _MF_TRANSCODE_ADJUST_PROFILE_FLAGS;
 
   PMF_VIDEO_PROCESSOR_ALGORITHM_TYPE = ^MF_VIDEO_PROCESSOR_ALGORITHM_TYPE;
-  _MF_VIDEO_PROCESSOR_ALGORITHM_TYPE         = (
-    MF_VIDEO_PROCESSOR_ALGORITHM_DEFAULT     = 0,
-    MF_VIDEO_PROCESSOR_ALGORITHM_MRF_CRF_444 = 1
-  );
+  _MF_VIDEO_PROCESSOR_ALGORITHM_TYPE = (
+    MF_VIDEO_PROCESSOR_ALGORITHM_DEFAULT = 0,
+                                        MF_VIDEO_PROCESSOR_ALGORITHM_MRF_CRF_444 = 1
+    );
   MF_VIDEO_PROCESSOR_ALGORITHM_TYPE = _MF_VIDEO_PROCESSOR_ALGORITHM_TYPE;
 
   PMF_TRANSCODE_SINK_INFO = ^MF_TRANSCODE_SINK_INFO;
+
   _MF_TRANSCODE_SINK_INFO = record
     dwVideoStreamID: DWORD;
     pVideoMediaType: IMFMediaType;
@@ -3529,7 +3819,7 @@ type
   // Interface IMFTranscodeSinkInfoProvider
   // =======================================
   IMFTranscodeSinkInfoProvider = interface(IUnknown)
-  ['{8CFFCD2E-5A03-4a3a-AFF7-EDCD107C620E}']
+    ['{8CFFCD2E-5A03-4a3a-AFF7-EDCD107C620E}']
 
     function SetOutputFile(pwszFileName: LPCWSTR): HResult; stdcall;
 
@@ -3540,22 +3830,25 @@ type
     function GetSinkInfo(out pSinkInfo: MF_TRANSCODE_SINK_INFO): HResult; stdcall;
 
   end;
+
   IID_IMFTranscodeSinkInfoProvider = IMFTranscodeSinkInfoProvider;
 
 
   // Interface IMFFieldOfUseMFTUnlock
   // ================================
   IMFFieldOfUseMFTUnlock = interface(IUnknown)
-  ['{508E71D3-EC66-4fc3-8775-B4B9ED6BA847}']
+    ['{508E71D3-EC66-4fc3-8775-B4B9ED6BA847}']
 
     function Unlock(pUnkMFT: IUnknown): HResult; stdcall;
 
   end;
+
   IID_IMFFieldOfUseMFTUnlock = IMFFieldOfUseMFTUnlock;
 
 
   PMftRegistrationInfo = ^_MFT_REGISTRATION_INFO;
   PMFT_REGISTRATION_INFO = ^MFT_REGISTRATION_INFO;
+
   _MFT_REGISTRATION_INFO = record
     clsid: CLSID;
     guidCategory: TGUID;
@@ -3572,21 +3865,22 @@ type
   // Interface IMFLocalMFTRegistration
   // =================================
   IMFLocalMFTRegistration = interface(IUnknown)
-  ['{149c4d73-b4be-4f8d-8b87-079e926b6add}']
+    ['{149c4d73-b4be-4f8d-8b87-079e926b6add}']
 
     function RegisterMFTs(pMFTs: MFT_REGISTRATION_INFO;
                           cMFTs: DWord): HResult; stdcall;
 
   end;
+
   IID_IMFLocalMFTRegistration = IMFLocalMFTRegistration;
 
-//#if (WINVER >= _WIN32_WINNT_WIN8)
+  //#if (WINVER >= _WIN32_WINNT_WIN8)
 
 
   // Interface IMFCapturePhotoConfirmationInterface
   // ==============================================
   IMFCapturePhotoConfirmation = interface(IUnknown)
-  ['{19f68549-ca8a-4706-a4ef-481dbc95e12c}']
+    ['{19f68549-ca8a-4706-a4ef-481dbc95e12c}']
 
     function SetPhotoConfirmationCallback(pNotificationCallback: IMFAsyncCallback): HResult; stdcall;
 
@@ -3597,6 +3891,7 @@ type
     function GetPixelFormat(out subtype: TGUID): HResult; stdcall;
 
   end;
+
   IID_IMFCapturePhotoConfirmation = IMFCapturePhotoConfirmation;
 
 
@@ -3605,16 +3900,17 @@ type
   IMFPMPHostApp = interface(IUnknown)
     ['{84d2054a-3aa1-4728-a3b0-440a418cf49c}']
 
-      function LockProcess(): HResult; stdcall;
+    function LockProcess(): HResult; stdcall;
 
-      function UnlockProcess(): HResult; stdcall;
+    function UnlockProcess(): HResult; stdcall;
 
-      function ActivateClassById(id: LPCWSTR;
-                                 pStream: IStream;
-                                 const riid: REFIID;
-                                 out ppv: Pointer): HResult; stdcall;
+    function ActivateClassById(id: LPCWSTR;
+                               pStream: IStream;
+                               const riid: REFIID;
+                               out ppv: Pointer): HResult; stdcall;
 
   end;
+
   IID_IMFPMPHostApp = IMFPMPHostApp;
 
 
@@ -3626,24 +3922,26 @@ type
   IMFPMPClientApp = interface(IUnknown)
     ['{c004f646-be2c-48f3-93a2-a0983eba1108}']
 
-      function SetPMPHost(pPMPHost: IMFPMPHostApp): HResult; stdcall;
-      // Sets a pointer to the IMFPMPHostApp interface allowing a media source to
-      // create objects in the PMP process.
+    function SetPMPHost(pPMPHost: IMFPMPHostApp): HResult; stdcall;
+    // Sets a pointer to the IMFPMPHostApp interface allowing a media source to
+    // create objects in the PMP process.
 
   end;
+
   IID_IMFPMPClientApp = IMFPMPClientApp;
 
 
-//#if (WINVER >= _WIN32_WINNT_WINBLUE)
+  //#if (WINVER >= _WIN32_WINNT_WINBLUE)
 
   // Interface IMFMediaStreamSourceSampleRequest
   // ===========================================
   IMFMediaStreamSourceSampleRequest = interface(IUnknown)
     ['{380b9af9-a85b-4e78-a2af-ea5ce645c6b4}']
 
-      function SetSample(value: IMFSample): HResult; stdcall;
+    function SetSample(value: IMFSample): HResult; stdcall;
 
   end;
+
   IID_IMFMediaStreamSourceSampleRequest = IMFMediaStreamSourceSampleRequest;
 
 
@@ -3652,14 +3950,15 @@ type
   IMFTrackedSample = interface(IUnknown)
     ['{245BF8E9-0755-40f7-88A5-AE0F18D55E17}']
 
-      function SetAllocator(pSampleAllocator: IMFAsyncCallback;
-                            pUnkState: IUnknown): HResult; stdcall;
+    function SetAllocator(pSampleAllocator: IMFAsyncCallback;
+                          pUnkState: IUnknown): HResult; stdcall;
 
   end;
+
   IID_IMFTrackedSample = IMFTrackedSample;
 
 
-//#endif // (WINVER >= _WIN32_WINNT_WINBLUE)
+  //#endif // (WINVER >= _WIN32_WINNT_WINBLUE)
 
 
   // Interface IMFProtectedEnvironmentAccess
@@ -3667,15 +3966,16 @@ type
   IMFProtectedEnvironmentAccess = interface(IUnknown)
     ['{ef5dc845-f0d9-4ec9-b00c-cb5183d38434}']
 
-      function Call(inputLength: UINT32;
-                    input: PByte;
-                    outputLength: UINT32;
-                    out output: PByte): HResult; stdcall;
+    function Call(inputLength: UINT32;
+                  input: PByte;
+                  outputLength: UINT32;
+                  out output: PByte): HResult; stdcall;
 
-      function ReadGRL(out outputLength: UINT32;
-                       out output: PByte): HResult; stdcall;
+    function ReadGRL(out outputLength: UINT32;
+                     out output: PByte): HResult; stdcall;
 
   end;
+
   IID_IMFProtectedEnvironmentAccess = IMFProtectedEnvironmentAccess;
 
 
@@ -3684,10 +3984,11 @@ type
   IMFSignedLibrary = interface(IUnknown)
     ['{4a724bca-ff6a-4c07-8e0d-7a358421cf06}']
 
-      function GetProcedureAddress(name: LPCWSTR;
-                                   out address): HResult; stdcall;
+    function GetProcedureAddress(name: LPCWSTR;
+                                 out address): HResult; stdcall;
 
   end;
+
   IID_IMFSignedLibrary = IMFSignedLibrary;
 
 
@@ -3696,16 +3997,17 @@ type
   IMFSystemId = interface(IUnknown)
     ['{fff4af3a-1fc1-4ef9-a29b-d26c49e2f31a}']
 
-      function GetData(out size: UINT32;
-                       out data: PByte): HResult; stdcall;
+    function GetData(out size: UINT32;
+                     out data: PByte): HResult; stdcall;
 
-      function Setup(stage: UINT32;
-                     cbIn: UINT32;
-                     pbIn: PByte;
-                     out pcbOut: UINT32;
-                     out ppbOut: PByte): HResult; stdcall;
+    function Setup(stage: UINT32;
+                   cbIn: UINT32;
+                   pbIn: PByte;
+                   out pcbOut: UINT32;
+                   out ppbOut: PByte): HResult; stdcall;
 
   end;
+
   IID_IMFSystemId = IMFSystemId;
 
 
@@ -3714,16 +4016,17 @@ type
   IMFContentProtectionDevice = interface(IUnknown)
     ['{E6257174-A060-4C9A-A088-3B1B471CAD28}']
 
-      function InvokeFunction(FunctionId: DWORD;
-                              InputBufferByteCount: DWORD;
-                              InputBuffer: PByte;
-                              var OutputBufferByteCount: DWORD;
-                              out OutputBuffer: PByte): HResult; stdcall;
+    function InvokeFunction(FunctionId: DWORD;
+                            InputBufferByteCount: DWORD;
+                            InputBuffer: PByte;
+                            var OutputBufferByteCount: DWORD;
+                            out OutputBuffer: PByte): HResult; stdcall;
 
-      function GetPrivateDataByteCount(out PrivateInputByteCount: DWORD;
-                                       out PrivateOutputByteCount: DWORD): HResult; stdcall;
+    function GetPrivateDataByteCount(out PrivateInputByteCount: DWORD;
+                                     out PrivateOutputByteCount: DWORD): HResult; stdcall;
 
   end;
+
   IID_IMFContentProtectionDevice = IMFContentProtectionDevice;
 
 
@@ -3732,22 +4035,24 @@ type
   IMFContentDecryptorContext = interface(IUnknown)
     ['{7EC4B1BD-43FB-4763-85D2-64FCB5C5F4CB}']
 
-      function InitializeHardwareKey(InputPrivateDataByteCount: UINT;
-                                     InputPrivateData: Pointer;
-                                     out OutputPrivateData: UINT64): HResult; stdcall;
+    function InitializeHardwareKey(InputPrivateDataByteCount: UINT;
+                                   InputPrivateData: Pointer;
+                                   out OutputPrivateData: UINT64): HResult; stdcall;
 
   end;
+
   IID_IMFContentDecryptorContext = IMFContentDecryptorContext;
 
 
   PMFTIMER_FLAGS = ^MFTIMER_FLAGS;
-  cwMFTIMER_FLAGS    = (
+  cwMFTIMER_FLAGS = (
     MFTIMER_RELATIVE = $1
-  );
+    );
   MFTIMER_FLAGS = cwMFTIMER_FLAGS;
 
 
   PASF_FLAT_SYNCHRONISED_LYRICS = ^ASF_FLAT_SYNCHRONISED_LYRICS;
+
   _ASFFlatSynchronisedLyrics = record
     // Direct mapped fields
     bTimeStampFormat: PByte;
@@ -3759,27 +4064,28 @@ type
 
   PMF_MEDIAKEYSESSION_TYPE = ^MF_MEDIAKEYSESSION_TYPE;
   MF_MEDIAKEYSESSION_TYPE = (
-    MF_MEDIAKEYSESSION_TYPE_TEMPORARY                   = 0,
-    MF_MEDIAKEYSESSION_TYPE_PERSISTENT_LICENSE          = (MF_MEDIAKEYSESSION_TYPE_TEMPORARY + 1),
-    MF_MEDIAKEYSESSION_TYPE_PERSISTENT_RELEASE_MESSAGE  = (MF_MEDIAKEYSESSION_TYPE_PERSISTENT_LICENSE + 1),
-    MF_MEDIAKEYSESSION_TYPE_PERSISTENT_USAGE_RECORD     = (MF_MEDIAKEYSESSION_TYPE_PERSISTENT_RELEASE_MESSAGE + 1 )
-  );
+    MF_MEDIAKEYSESSION_TYPE_TEMPORARY = 0,
+                             MF_MEDIAKEYSESSION_TYPE_PERSISTENT_LICENSE = (MF_MEDIAKEYSESSION_TYPE_TEMPORARY + 1),
+                             MF_MEDIAKEYSESSION_TYPE_PERSISTENT_RELEASE_MESSAGE = (MF_MEDIAKEYSESSION_TYPE_PERSISTENT_LICENSE + 1),
+                             MF_MEDIAKEYSESSION_TYPE_PERSISTENT_USAGE_RECORD = (MF_MEDIAKEYSESSION_TYPE_PERSISTENT_RELEASE_MESSAGE + 1)
+    );
 
 
   PMF_MEDIAKEY_STATUS = ^MF_MEDIAKEY_STATUS;
   MF_MEDIAKEY_STATUS = (
-    MF_MEDIAKEY_STATUS_USABLE             = 0,
-    MF_MEDIAKEY_STATUS_EXPIRED            = (MF_MEDIAKEY_STATUS_USABLE + 1),
-    MF_MEDIAKEY_STATUS_OUTPUT_DOWNSCALED  = (MF_MEDIAKEY_STATUS_EXPIRED + 1),
-    MF_MEDIAKEY_STATUS_OUTPUT_NOT_ALLOWED = (MF_MEDIAKEY_STATUS_OUTPUT_DOWNSCALED + 1) ,
-    MF_MEDIAKEY_STATUS_STATUS_PENDING     = (MF_MEDIAKEY_STATUS_OUTPUT_NOT_ALLOWED + 1),
-    MF_MEDIAKEY_STATUS_INTERNAL_ERROR     = (MF_MEDIAKEY_STATUS_STATUS_PENDING + 1),
-    MF_MEDIAKEY_STATUS_RELEASED           = (MF_MEDIAKEY_STATUS_INTERNAL_ERROR + 1),
-    MF_MEDIAKEY_STATUS_OUTPUT_RESTRICTED = (MF_MEDIAKEY_STATUS_RELEASED + 1)
-  );
+    MF_MEDIAKEY_STATUS_USABLE = 0,
+                        MF_MEDIAKEY_STATUS_EXPIRED = (MF_MEDIAKEY_STATUS_USABLE + 1),
+                        MF_MEDIAKEY_STATUS_OUTPUT_DOWNSCALED = (MF_MEDIAKEY_STATUS_EXPIRED + 1),
+                        MF_MEDIAKEY_STATUS_OUTPUT_NOT_ALLOWED = (MF_MEDIAKEY_STATUS_OUTPUT_DOWNSCALED + 1),
+                        MF_MEDIAKEY_STATUS_STATUS_PENDING = (MF_MEDIAKEY_STATUS_OUTPUT_NOT_ALLOWED + 1),
+                        MF_MEDIAKEY_STATUS_INTERNAL_ERROR = (MF_MEDIAKEY_STATUS_STATUS_PENDING + 1),
+                        MF_MEDIAKEY_STATUS_RELEASED = (MF_MEDIAKEY_STATUS_INTERNAL_ERROR + 1),
+                        MF_MEDIAKEY_STATUS_OUTPUT_RESTRICTED = (MF_MEDIAKEY_STATUS_RELEASED + 1)
+    );
 
 
   PMFMediaKeyStatus = ^MFMediaKeyStatus;
+
   MFMediaKeyStatus = record
     pbKeyId: PByte;
     cbKeyId: UINT;
@@ -3789,12 +4095,12 @@ type
 
   PMF_MEDIAKEYSESSION_MESSAGETYPE = ^MF_MEDIAKEYSESSION_MESSAGETYPE;
   PMfMediakeysessionMessagetype = ^MF_MEDIAKEYSESSION_MESSAGETYPE;
-  MF_MEDIAKEYSESSION_MESSAGETYPE                             = (
-    MF_MEDIAKEYSESSION_MESSAGETYPE_LICENSE_REQUEST           = 0,
-    MF_MEDIAKEYSESSION_MESSAGETYPE_LICENSE_RENEWAL           = 1,
-    MF_MEDIAKEYSESSION_MESSAGETYPE_LICENSE_RELEASE           = 2,
-    MF_MEDIAKEYSESSION_MESSAGETYPE_INDIVIDUALIZATION_REQUEST = 3
-  );
+  MF_MEDIAKEYSESSION_MESSAGETYPE = (
+    MF_MEDIAKEYSESSION_MESSAGETYPE_LICENSE_REQUEST = 0,
+                                    MF_MEDIAKEYSESSION_MESSAGETYPE_LICENSE_RENEWAL = 1,
+                                    MF_MEDIAKEYSESSION_MESSAGETYPE_LICENSE_RELEASE = 2,
+                                    MF_MEDIAKEYSESSION_MESSAGETYPE_INDIVIDUALIZATION_REQUEST = 3
+    );
 
   // This enum maps to the W3C cross origin settings (CORS) attribute used by the HTML5 media element:
   //  * Omitted Attribute -- No CORS state.
@@ -3804,19 +4110,20 @@ type
 
   PMF_CROSS_ORIGIN_POLICY = ^_MF_CROSS_ORIGIN_POLICY;
   PMfCrossOriginPolicy = ^_MF_CROSS_ORIGIN_POLICY;
-  _MF_CROSS_ORIGIN_POLICY                  = (
-    MF_CROSS_ORIGIN_POLICY_NONE            = 0,
-    MF_CROSS_ORIGIN_POLICY_ANONYMOUS       = 1,
-    MF_CROSS_ORIGIN_POLICY_USE_CREDENTIALS = 2
-  );
+  _MF_CROSS_ORIGIN_POLICY = (
+    MF_CROSS_ORIGIN_POLICY_NONE = 0,
+                             MF_CROSS_ORIGIN_POLICY_ANONYMOUS = 1,
+                             MF_CROSS_ORIGIN_POLICY_USE_CREDENTIALS = 2
+    );
   MF_CROSS_ORIGIN_POLICY = _MF_CROSS_ORIGIN_POLICY;
 
 
-// #if (WINVER >= _WIN32_WINNT_WIN10)
+  // #if (WINVER >= _WIN32_WINNT_WIN10)
 
 
   PMF_VIDEO_SPHERICAL_VIEWDIRECTION = ^_MF_VIDEO_SPHERICAL_VIEWDIRECTION;
   PMfVideoSphericalViewdirection = ^_MF_VIDEO_SPHERICAL_VIEWDIRECTION;
+
   _MF_VIDEO_SPHERICAL_VIEWDIRECTION = record
     iHeading: Integer;
     iPitch: Integer;
@@ -3834,7 +4141,7 @@ type
   //  * GetSourceOrigin() returns the W3C origin of the HTML5 media element.  Use CoTaskMemFree to free the string.
   //  * IsSameOrigin() returns True when the specified URL has the same origin as the HTML5 media element.
   IMFNetCrossOriginSupport = interface(IUnknown)
-  ['{bc2b7d44-a72d-49d5-8376-1480dee58b22}']
+    ['{bc2b7d44-a72d-49d5-8376-1480dee58b22}']
 
     function GetCrossOriginPolicy(out pPolicy: MF_CROSS_ORIGIN_POLICY): HResult; stdcall;
 
@@ -3844,13 +4151,14 @@ type
                           out pfIsSameOrigin: BOOL): HResult; stdcall;
 
   end;
+
   IID_IMFNetCrossOriginSupport = IMFNetCrossOriginSupport;
 
 
   // Interface IMFHttpDownloadRequest
   // ===============================
   IMFHttpDownloadRequest = interface(IUnknown)
-  ['{F779FDDF-26E7-4270-8A8B-B983D1859DE0}']
+    ['{F779FDDF-26E7-4270-8A8B-B983D1859DE0}']
 
     function AddHeader(szHeader: LPWSTR): HResult; stdcall;
 
@@ -3898,13 +4206,14 @@ type
     function Close(): HResult; stdcall;
 
   end;
+
   IID_IMFHttpDownloadRequest = IMFHttpDownloadRequest;
 
 
   // Interface IMFHttpDownloadSession
   // ================================
   IMFHttpDownloadSession = interface(IUnknown)
-  ['{71FA9A2C-53CE-4662-A132-1A7E8CBF62DB}']
+    ['{71FA9A2C-53CE-4662-A132-1A7E8CBF62DB}']
 
     function SetServer(szServerName: LPWSTR;
                        nPort: DWORD): HResult; stdcall;
@@ -3919,89 +4228,95 @@ type
     function Close(): HResult; stdcall;
 
   end;
+
   IID_IMFHttpDownloadSession = IMFHttpDownloadSession;
 
 
   // Interface IMFHttpDownloadSessionProvider
   // ========================================
   IMFHttpDownloadSessionProvider = interface(IUnknown)
-  ['{1B4CF4B9-3A16-4115-839D-03CC5C99DF01}']
+    ['{1B4CF4B9-3A16-4115-839D-03CC5C99DF01}']
 
     function CreateHttpDownloadSession(wszScheme: LPWSTR;
                                        out ppDownloadSession: IMFHttpDownloadSession): HResult; stdcall;
 
   end;
+
   IID_IMFHttpDownloadSessionProvider = IMFHttpDownloadSessionProvider;
 
 
   // Interface IMFMediaSource2
   // =========================
   IMFMediaSource2 = interface(IMFMediaSourceEx)
-  ['{FBB03414-D13B-4786-8319-5AC51FC0A136}']
+    ['{FBB03414-D13B-4786-8319-5AC51FC0A136}']
 
     function SetMediaType(const dwStreamID: DWORD;
                           pMediaType: IMFMediaType): HResult; stdcall;
 
   end;
+
   IID_IMFMediaSource2 = IMFMediaSource2;
 
 
   // Interface IMFMediaStream2
   // =========================
   IMFMediaStream2 = interface(IMFMediaStream)
-  ['{C5BC37D6-75C7-46A1-A132-81B5F723C20F}']
+    ['{C5BC37D6-75C7-46A1-A132-81B5F723C20F}']
 
     function SetStreamState(value: MF_STREAM_STATE): HResult; stdcall;
 
     function GetStreamState(out value: MF_STREAM_STATE): HResult; stdcall;
 
   end;
+
   IID_IMFMediaStream2 = IMFMediaStream2;
 
-//#if (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
+  //#if (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
 
   PMFSensorDeviceType = ^_MFSensorDeviceType;
   _MFSensorDeviceType = (
-    MFSensorDeviceType_Unknown         = 0,
-    MFSensorDeviceType_Device          = (MFSensorDeviceType_Unknown  + 1),
-    MFSensorDeviceType_MediaSource     = (MFSensorDeviceType_Device  + 1),
-    MFSensorDeviceType_FrameProvider   = (MFSensorDeviceType_MediaSource  + 1),
-    MFSensorDeviceType_SensorTransform = (MFSensorDeviceType_FrameProvider  + 1)
-  );
+    MFSensorDeviceType_Unknown = 0,
+                         MFSensorDeviceType_Device = (MFSensorDeviceType_Unknown + 1),
+                         MFSensorDeviceType_MediaSource = (MFSensorDeviceType_Device + 1),
+                         MFSensorDeviceType_FrameProvider = (MFSensorDeviceType_MediaSource + 1),
+                         MFSensorDeviceType_SensorTransform = (MFSensorDeviceType_FrameProvider + 1)
+    );
   MFSensorDeviceType = _MFSensorDeviceType;
 
 
   PMFSensorStreamType = ^_MFSensorStreamType;
   _MFSensorStreamType = (
     MFSensorStreamType_Unknown = 0,
-    MFSensorStreamType_Input   = (MFSensorStreamType_Unknown  + 1),
-    MFSensorStreamType_Output  = (MFSensorStreamType_Input  + 1)
-  );
+                         MFSensorStreamType_Input = (MFSensorStreamType_Unknown + 1),
+                         MFSensorStreamType_Output = (MFSensorStreamType_Input + 1)
+    );
   MFSensorStreamType = _MFSensorStreamType;
 
 
   PMFSensorDeviceMode = ^_MFSensorDeviceMode;
   _MFSensorDeviceMode = (
     MFSensorDeviceMode_Controller = 0,
-    MFSensorDeviceMode_Shared     = (MFSensorDeviceMode_Controller  + 1)
-  );
+                         MFSensorDeviceMode_Shared = (MFSensorDeviceMode_Controller + 1)
+    );
   MFSensorDeviceMode = _MFSensorDeviceMode;
 
 
-//endif // (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
+  //endif // (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
 
-// WIN10  April 2018 update
-// __MIDL___MIDL_itf_mfidl_0000_0114_0001
+  // WIN10  April 2018 update
+  // __MIDL___MIDL_itf_mfidl_0000_0114_0001
   PSENSORPROFILEID = ^SENSORPROFILEID;
+
   SENSORPROFILEID = record
     _Type: TGUID;
     Index: UINT32;
     Unused: UINT32;
   end;
 
-// WIN10 October 2018 update Redstone 5
+  // WIN10 October 2018 update Redstone 5
 
   PMFCameraIntrinsicCameraModel = ^TMFCameraIntrinsicCameraModel;
+
   _MFCameraIntrinsic_CameraModel = record
     FocalLength_x: FLOAT;
     FocalLength_y: FLOAT;
@@ -4013,6 +4328,7 @@ type
 
 
   PMFCameraIntrinsicDistortionModel6KT = ^MFCameraIntrinsic_DistortionModel6KT;
+
   _MFCameraIntrinsic_DistortionModel6KT = record
     Radial_k1: FLOAT;
     Radial_k2: FLOAT;
@@ -4027,6 +4343,7 @@ type
 
 
   PMFCameraIntrinsicDistortionModelArcTan = ^MFCameraIntrinsic_DistortionModelArcTan;
+
   _MFCameraIntrinsic_DistortionModelArcTan = record
     Radial_k0: FLOAT;
     DistortionCenter_x: FLOAT;
@@ -4038,14 +4355,15 @@ type
 
 
   PMFCameraIntrinsicDistortionModelType = ^MFCameraIntrinsic_DistortionModelType;
-  _MFCameraIntrinsic_DistortionModelType         = (
-    MFCameraIntrinsic_DistortionModelType_6KT    = 0,
-    MFCameraIntrinsic_DistortionModelType_ArcTan = (MFCameraIntrinsic_DistortionModelType_6KT  + 1)
-  );
+  _MFCameraIntrinsic_DistortionModelType = (
+    MFCameraIntrinsic_DistortionModelType_6KT = 0,
+                                            MFCameraIntrinsic_DistortionModelType_ArcTan = (MFCameraIntrinsic_DistortionModelType_6KT + 1)
+    );
   MFCameraIntrinsic_DistortionModelType = _MFCameraIntrinsic_DistortionModelType;
 
 
   PMFExtendedCameraIntrinsicIntrinsicModel = ^MFExtendedCameraIntrinsic_IntrinsicModel;
+
   _MFExtendedCameraIntrinsic_IntrinsicModel = record
     Width: UINT32;
     Height: UINT32;
@@ -4054,16 +4372,16 @@ type
   end;
   MFExtendedCameraIntrinsic_IntrinsicModel = _MFExtendedCameraIntrinsic_IntrinsicModel;
 
- //END  WIN10 October 2018 update Redstone 5
+  //END  WIN10 October 2018 update Redstone 5
 
 
-//#if (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
+  //#if (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
 
 
   // Interface IMFSensorDevice
   // =========================
   IMFSensorDevice = interface(IUnknown)
-  ['{FB9F48F2-2A18-4E28-9730-786F30F04DC4}']
+    ['{FB9F48F2-2A18-4E28-9730-786F30F04DC4}']
 
     function GetDeviceId(out pDeviceId: ULONGLONG): HResult; stdcall;
 
@@ -4089,13 +4407,14 @@ type
     function GetSensorDeviceMode(out peMode: MFSensorDeviceMode): HResult; stdcall;
 
   end;
+
   IID_IMFSensorDevice = IMFSensorDevice;
 
 
   // Interface IMFSensorGroup
   // =========================
   IMFSensorGroup = interface(IUnknown)
-  ['{4110243A-9757-461F-89F1-F22345BCAB4E}']
+    ['{4110243A-9757-461F-89F1-F22345BCAB4E}']
 
     function GetSymbolicLink(out SymbolicLink: LPWSTR;
                              cchSymbolicLink: LONG;
@@ -4117,13 +4436,14 @@ type
     function CreateMediaSource(out ppSource: IMFMediaSource): HResult; stdcall;
 
   end;
+
   IID_IMFSensorGroup = IMFSensorGroup;
 
 
   // Interface IMFSensorStream
   // =========================
   IMFSensorStream = interface(IMFAttributes)
-  ['{E9A42171-C56E-498A-8B39-EDA5A070B7FC}']
+    ['{E9A42171-C56E-498A-8B39-EDA5A070B7FC}']
 
     function GetMediaTypeCount(out pdwCount: DWORD): HResult; stdcall;
 
@@ -4133,13 +4453,14 @@ type
     function CloneSensorStream(out ppStream: IMFSensorStream): HResult; stdcall;
 
   end;
+
   IID_IMFSensorStream = IMFSensorStream;
 
 
   // interface IMFSensorTransformFactory
   // ===================================
   IMFSensorTransformFactory = interface(IUnknown)
-  ['{EED9C2EE-66B4-4F18-A697-AC7D3960215C}']
+    ['{EED9C2EE-66B4-4F18-A697-AC7D3960215C}']
 
     function GetFactoryAttributes(out ppAttributes: IMFAttributes): HResult; stdcall;
 
@@ -4159,15 +4480,16 @@ type
                              out ppDeviceMFT: IMFDeviceTransform {see: MfPack.MFTransform}): HResult; stdcall;
 
   end;
+
   IID_IMFSensorTransformFactory = IMFSensorTransformFactory;
 
 
-// WIN10 April 2018 update
+  // WIN10 April 2018 update
 
   // Interface IMFSensorProfile
   // ===========================
   IMFSensorProfile = interface(IUnknown)
-  ['{22F765D1-8DAB-4107-846D-56BAF72215E7}']
+    ['{22F765D1-8DAB-4107-846D-56BAF72215E7}']
 
     function GetProfileId(out pId: SENSORPROFILEID): HRESULT; stdcall;
 
@@ -4176,42 +4498,44 @@ type
 
     function IsMediaTypeSupported(StreamId: UINT32;
                                   pMediaType: IMFMediaType;
-                                  out  pfSupported: BOOL): HRESULT; stdcall;
+                                  out pfSupported: BOOL): HRESULT; stdcall;
 
     function AddBlockedControl(wzBlockedControl: LPWSTR): HRESULT; stdcall;
 
   end;
+
   IID_IMFSensorProfile = IMFSensorProfile;
 
 
   // Interface IMFSensorProfileCollection
   // ====================================
   IMFSensorProfileCollection = interface(IUnknown)
-  ['{C95EA55B-0187-48BE-9353-8D2507662351}']
+    ['{C95EA55B-0187-48BE-9353-8D2507662351}']
 
-      function GetProfileCount(): DWORD; stdcall;
+    function GetProfileCount(): DWORD; stdcall;
 
-      function GetProfile(Index: DWORD;
-                          out ppProfile: IMFSensorProfile): HRESULT; stdcall;
+    function GetProfile(Index: DWORD;
+                        out ppProfile: IMFSensorProfile): HRESULT; stdcall;
 
-      function AddProfile(pProfile: IMFSensorProfile): HRESULT; stdcall;
+    function AddProfile(pProfile: IMFSensorProfile): HRESULT; stdcall;
 
-      function FindProfile(ProfileId: PSENSORPROFILEID;
-                           out ppProfile: IMFSensorProfile): HRESULT; stdcall;
+    function FindProfile(ProfileId: PSENSORPROFILEID;
+                         out ppProfile: IMFSensorProfile): HRESULT; stdcall;
 
-      function RemoveProfileByIndex(Index: DWORD): HRESULT; stdcall;
+    function RemoveProfileByIndex(Index: DWORD): HRESULT; stdcall;
 
-      function RemoveProfile(ProfileId: SENSORPROFILEID): HRESULT; stdcall;
+    function RemoveProfile(ProfileId: SENSORPROFILEID): HRESULT; stdcall;
   end;
+
   IID_IMFSensorProfileCollection = IMFSensorProfileCollection;
 
-// END WIN10 April 2018 update
+  // END WIN10 April 2018 update
 
 
   // Interface IMFSensorProcessActivity
   // ==================================
   IMFSensorProcessActivity = interface(IUnknown)
-  ['{39DC7F4A-B141-4719-813C-A7F46162A2B8}']
+    ['{39DC7F4A-B141-4719-813C-A7F46162A2B8}']
 
     function GetProcessId(out pPID: ULONG): HResult; stdcall;
 
@@ -4222,13 +4546,14 @@ type
     function GetReportTime(out pft: FILETIME): HResult; stdcall;
 
   end;
+
   IID_IMFSensorProcessActivity = IMFSensorProcessActivity;
 
 
   // Interface IMFSensorActivityReport
   // ==================================
   IMFSensorActivityReport = interface(IUnknown)
-  ['{3E8C4BE1-A8C2-4528-90DE-2851BDE5FEAD}']
+    ['{3E8C4BE1-A8C2-4528-90DE-2851BDE5FEAD}']
 
     function GetFriendlyName(out FriendlyName: LPWSTR;
                              cchFriendlyName: ULONG;
@@ -4244,13 +4569,14 @@ type
                                 out ppProcessActivity: IMFSensorProcessActivity): HResult; stdcall;
 
   end;
+
   IID_IMFSensorActivityReport = IMFSensorActivityReport;
 
 
   // Interface IMFSensorActivitiesReport
   // ===================================
   IMFSensorActivitiesReport = interface(IUnknown)
-  ['{683F7A5E-4A19-43CD-B1A9-DBF4AB3F7777}']
+    ['{683F7A5E-4A19-43CD-B1A9-DBF4AB3F7777}']
 
     function GetCount(out pcCount: ULONG): HResult; stdcall;
 
@@ -4261,33 +4587,36 @@ type
                                            out sensorActivityReport: IMFSensorActivityReport): HResult; stdcall;
 
   end;
+
   IID_IMFSensorActivitiesReport = IMFSensorActivitiesReport;
 
 
   // Interface IMFSensorActivitiesReportCallback
   // ===========================================
   IMFSensorActivitiesReportCallback = interface(IUnknown)
-  ['{DE5072EE-DBE3-46DC-8A87-B6F631194751}']
+    ['{DE5072EE-DBE3-46DC-8A87-B6F631194751}']
 
     function OnActivitiesReport(sensorActivitiesReport: IMFSensorActivitiesReport): HResult; stdcall;
 
   end;
+
   IID_IMFSensorActivitiesReportCallback = IMFSensorActivitiesReportCallback;
 
 
   // Interface IMFSensorActivityMonitor
   // ==================================
   IMFSensorActivityMonitor = interface(IUnknown)
-  ['{D0CEF145-B3F4-4340-A2E5-7A5080CA05CB}']
+    ['{D0CEF145-B3F4-4340-A2E5-7A5080CA05CB}']
 
     function Start(): HResult; stdcall;
 
     function Stop(): HResult; stdcall;
 
   end;
+
   IID_IMFSensorActivityMonitor = IMFSensorActivityMonitor;
 
- //#endif // (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
+  //#endif // (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
 
 
   // WIN10 October 2018 update Redstone 5
@@ -4295,7 +4624,7 @@ type
   // Interface IMFExtendedCameraIntrinsicModel
   // =========================================
   IMFExtendedCameraIntrinsicModel = interface(IUnknown)
-  ['{5C595E64-4630-4231-855A-12842F733245}']
+    ['{5C595E64-4630-4231-855A-12842F733245}']
 
     function GetModel(out pIntrinsicModel: MFExtendedCameraIntrinsic_IntrinsicModel): HResult; stdcall;
 
@@ -4304,39 +4633,42 @@ type
     function GetDistortionModelType(Out pDistortionModelType: MFCameraIntrinsic_DistortionModelType): HResult; stdcall;
 
   end;
+
   IID_IMFExtendedCameraIntrinsicModel = IMFExtendedCameraIntrinsicModel;
 
 
   // Interface IMFExtendedCameraIntrinsicsDistortionModel6KT
   // =======================================================
   IMFExtendedCameraIntrinsicsDistortionModel6KT = interface(IUnknown)
-  ['{74C2653B-5F55-4EB1-9F0F-18B8F68B7D3D}']
+    ['{74C2653B-5F55-4EB1-9F0F-18B8F68B7D3D}']
 
     function GetDistortionModel(out pDistortionModel: MFCameraIntrinsic_DistortionModel6KT): HResult; stdcall;
 
     function SetDistortionModel(pDistortionModel: MFCameraIntrinsic_DistortionModel6KT): HResult; stdcall;
 
   end;
+
   IID_IMFExtendedCameraIntrinsicsDistortionModel6KT = IMFExtendedCameraIntrinsicsDistortionModel6KT;
 
 
   // Interface IMFExtendedCameraIntrinsicsDistortionModelArcTan
   // ==========================================================
   IMFExtendedCameraIntrinsicsDistortionModelArcTan = interface(IUnknown)
-  ['{812D5F95-B572-45DC-BAFC-AE24199DDDA8}']
+    ['{812D5F95-B572-45DC-BAFC-AE24199DDDA8}']
 
     function GetDistortionModel(out pDistortionModel: MFCameraIntrinsic_DistortionModelArcTan): HResult; stdcall;
 
     function SetDistortionModel(pDistortionModel: MFCameraIntrinsic_DistortionModelArcTan): HResult; stdcall;
 
   end;
+
   IID_IMFExtendedCameraIntrinsicsDistortionModelArcTan = IMFExtendedCameraIntrinsicsDistortionModelArcTan;
 
 
   // Interface IMFExtendedCameraIntrinsics
   // =====================================
   IMFExtendedCameraIntrinsics = interface(IUnknown)
-  ['{687F6DAC-6987-4750-A16A-734D1E7A10FE}']
+    ['{687F6DAC-6987-4750-A16A-734D1E7A10FE}']
 
     function InitializeFromBuffer(pbBuffer: PBYTE;
                                   dwBufferSize: DWORD): HResult; stdcall;
@@ -4354,12 +4686,13 @@ type
     function AddIntrinsicModel(pIntrinsicModel: IMFExtendedCameraIntrinsicModel): HResult; stdcall;
 
   end;
+
   IID_IMFExtendedCameraIntrinsics = IMFExtendedCameraIntrinsics;
 
-// End WIN10 Redstone 5
+  // End WIN10 Redstone 5
 
 
-// NTDDI_VERSION >= NTDDI_WIN10_VB   // Win10 may 2020 update
+  // NTDDI_VERSION >= NTDDI_WIN10_VB   // Win10 may 2020 update
 
 
   // Interface IMFExtendedCameraControl
@@ -4367,7 +4700,7 @@ type
   // ==================================
   //
   IMFExtendedCameraControl = interface(IUnknown)
-  ['{38E33520-FCA1-4845-A27A-68B7C6AB3789}']
+    ['{38E33520-FCA1-4845-A27A-68B7C6AB3789}']
     // <summary>
     // Queries for property capabilities.
     // </summary>
@@ -4416,6 +4749,7 @@ type
     function CommitSettings(): HRESULT; stdcall;
 
   end;
+
   IID_IMFExtendedCameraControl = IMFExtendedCameraControl;
 
 
@@ -4425,7 +4759,7 @@ type
   // =====================================
   //
   IMFExtendedCameraController = interface(IUnknown)
-  ['{B91EBFEE-CA03-4AF4-8A82-A31752F4A0FC}']
+    ['{B91EBFEE-CA03-4AF4-8A82-A31752F4A0FC}']
     /// <summary>
     /// Allows an app to get the current camera's extended property controls
     /// </summary>
@@ -4444,6 +4778,7 @@ type
                                       out ppControl: IMFExtendedCameraControl): HRESULT; stdcall;
 
   end;
+
   IID_IMFExtendedCameraController = IMFExtendedCameraController;
 
 
@@ -4452,7 +4787,7 @@ type
   // ================================
   //
   IMFRelativePanelReport = interface(IUnknown)
-  ['{F25362EA-2C0E-447F-81E2-755914CDC0C3}']
+    ['{F25362EA-2C0E-447F-81E2-755914CDC0C3}']
     // <summary>
     // Allows an app to get the current relative panel value
     // </summary>
@@ -4463,6 +4798,7 @@ type
     // </param>
     function GetRelativePanel(out panel: ULONG): HRESULT; stdcall;
   end;
+
   IID_IMFRelativePanelReport = IMFRelativePanelReport;
 
 
@@ -4470,7 +4806,7 @@ type
   // ================================
   //
   IMFRelativePanelWatcher = interface(IMFShutdown)
-  ['{421AF7F6-573E-4AD0-8FDA-2E57CEDB18C6}']
+    ['{421AF7F6-573E-4AD0-8FDA-2E57CEDB18C6}']
     function BeginGetReport(pCallback: IMFAsyncCallback;
                             pState: IUnknown): HRESULT; stdcall;
 
@@ -4485,9 +4821,10 @@ type
     // </param>
     function GetReport(out ppRelativePanelReport: IMFRelativePanelReport): HRESULT; stdcall;
   end;
+
   IID_IMFRelativePanelWatcher = IMFRelativePanelWatcher;
 
-// end NTDDI_VERSION >= NTDDI_WIN10_VB
+  // end NTDDI_VERSION >= NTDDI_WIN10_VB
 
 
   // Interface IMFVideoCaptureSampleAllocator
@@ -4496,7 +4833,7 @@ type
   // ========================================
   //
   IMFVideoCaptureSampleAllocator = interface(IMFVideoSampleAllocator)
-  ['{725B77C7-CA9F-4FE5-9D72-9946BF9B3C70}']
+    ['{725B77C7-CA9F-4FE5-9D72-9946BF9B3C70}']
     // <param name="cbSampleSize">
     // Sample size in bytes.
     // The actual sample size used by the allocator is the maximum of
@@ -4536,6 +4873,7 @@ type
                                               pAttributes: IMFAttributes;
                                               pMediaType: IMFMediaType): HResult; stdcall;
   end;
+
   IID_IMFVideoCaptureSampleAllocator = IMFVideoCaptureSampleAllocator;
 
 
@@ -4544,11 +4882,11 @@ type
   //     The enumeration type defines video capture sample allocator mode
   // </summary>
   PMFSampleAllocatorUsage = ^TMFSampleAllocatorUsage;
-  MFSampleAllocatorUsage                         = (
+  MFSampleAllocatorUsage = (
     MFSampleAllocatorUsage_UsesProvidedAllocator = 0,
-    MFSampleAllocatorUsage_UsesCustomAllocator   = 1,
-    MFSampleAllocatorUsage_DoesNotAllocate       = 2
-  );
+                            MFSampleAllocatorUsage_UsesCustomAllocator = 1,
+                            MFSampleAllocatorUsage_DoesNotAllocate = 2
+    );
   TMFSampleAllocatorUsage = MFSampleAllocatorUsage;
 
 
@@ -4559,7 +4897,7 @@ type
   // ===================================
   //
   IMFSampleAllocatorControl = interface(IUnknown)
-  ['{DA62B958-3A38-4A97-BD27-149C640C0771}']
+    ['{DA62B958-3A38-4A97-BD27-149C640C0771}']
     // <summary>
     // Sets the default sample allocator to use for the specified output stream.
     // When this allocator is in use, the sample allocator usage value is
@@ -4595,65 +4933,66 @@ type
                                out pdwInputStreamID: DWORD;
                                out peUsage: MFSampleAllocatorUsage): HResult; stdcall;
   end;
+
   IID_IMFSampleAllocatorControl = IMFSampleAllocatorControl;
 
 
 const
 
-  MF_CONTENT_DECRYPTOR_SERVICE          : TGUID = '{68a72927-fc7b-44ee-85f4-7c51bd55a659}';
-  MF_CONTENT_PROTECTION_DEVICE_SERVICE  : TGUID = '{ff58436f-76a0-41fe-b566-10cc53962edd}';
+  MF_CONTENT_DECRYPTOR_SERVICE: TGUID = '{68a72927-fc7b-44ee-85f4-7c51bd55a659}';
+  MF_CONTENT_PROTECTION_DEVICE_SERVICE: TGUID = '{ff58436f-76a0-41fe-b566-10cc53962edd}';
 
 
-//#if (WINVER >= _WIN32_WINNT_WINTHRESHOLD)  // Win 8
+  //#if (WINVER >= _WIN32_WINNT_WINTHRESHOLD)  // Win 8
 
-  MF_SD_AUDIO_ENCODER_DELAY        : TGUID = '{8e85422c-73de-403f-9a35-550ad6e8b951}';
-  MF_SD_AUDIO_ENCODER_PADDING      : TGUID = '{529c7f2c-ac4b-4e3f-bfc3-0902194982cb}';
-  CLSID_MSH264DecoderMFT           : TGUID = '{62CE7E72-4C71-4d20-B15D-452831A87D9D}';
-  CLSID_MSH264EncoderMFT           : TGUID = '{6ca50344-051a-4ded-9779-a43305165e35}';
-  CLSID_MSDDPlusDecMFT             : TGUID = '{177C0AFE-900B-48d4-9E4C-57ADD250B3D4}';
-  CLSID_MP3DecMediaObject          : TGUID = '{bbeea841-0a63-4f52-a7ab-a9b3a84ed38a}';
-  CLSID_MSAACDecMFT                : TGUID = '{32d186a7-218f-4c75-8876-dd77273a8999}';
-  CLSID_MSH265DecoderMFT           : TGUID = '{420A51A3-D605-430C-B4FC-45274FA6C562}';
-  CLSID_WMVDecoderMFT              : TGUID = '{82d353df-90bd-4382-8bc2-3f6192b76e34}';
-  CLSID_WMADecMediaObject          : TGUID = '{2eeb4adf-4578-4d10-bca7-bb955f56320a}';
-  CLSID_MSMPEGAudDecMFT            : TGUID = '{70707B39-B2CA-4015-ABEA-F8447D22D88B}';
-  CLSID_MSMPEGDecoderMFT           : TGUID = '{2D709E52-123F-49b5-9CBC-9AF5CDE28FB9}';
-  CLSID_AudioResamplerMediaObject  : TGUID = '{f447b69e-1884-4a7e-8055-346f74d6edb3}';
-  CLSID_MSVPxDecoder               : TGUID = '{E3AAF548-C9A4-4C6E-234D-5ADA374B0000}';
+  MF_SD_AUDIO_ENCODER_DELAY: TGUID = '{8e85422c-73de-403f-9a35-550ad6e8b951}';
+  MF_SD_AUDIO_ENCODER_PADDING: TGUID = '{529c7f2c-ac4b-4e3f-bfc3-0902194982cb}';
+  CLSID_MSH264DecoderMFT: TGUID = '{62CE7E72-4C71-4d20-B15D-452831A87D9D}';
+  CLSID_MSH264EncoderMFT: TGUID = '{6ca50344-051a-4ded-9779-a43305165e35}';
+  CLSID_MSDDPlusDecMFT: TGUID = '{177C0AFE-900B-48d4-9E4C-57ADD250B3D4}';
+  CLSID_MP3DecMediaObject: TGUID = '{bbeea841-0a63-4f52-a7ab-a9b3a84ed38a}';
+  CLSID_MSAACDecMFT: TGUID = '{32d186a7-218f-4c75-8876-dd77273a8999}';
+  CLSID_MSH265DecoderMFT: TGUID = '{420A51A3-D605-430C-B4FC-45274FA6C562}';
+  CLSID_WMVDecoderMFT: TGUID = '{82d353df-90bd-4382-8bc2-3f6192b76e34}';
+  CLSID_WMADecMediaObject: TGUID = '{2eeb4adf-4578-4d10-bca7-bb955f56320a}';
+  CLSID_MSMPEGAudDecMFT: TGUID = '{70707B39-B2CA-4015-ABEA-F8447D22D88B}';
+  CLSID_MSMPEGDecoderMFT: TGUID = '{2D709E52-123F-49b5-9CBC-9AF5CDE28FB9}';
+  CLSID_AudioResamplerMediaObject: TGUID = '{f447b69e-1884-4a7e-8055-346f74d6edb3}';
+  CLSID_MSVPxDecoder: TGUID = '{E3AAF548-C9A4-4C6E-234D-5ADA374B0000}';
   // CLSID_MSOpusDecoder
   // Opus decoder MFT
   // {63e17c10-2d43-4c42-8fe3-8d8b63e46a6a}
-  CLSID_MSOpusDecoder              : TGUID = '{63e17c10-2d43-4c42-8fe3-8d8b63e46a6a}';
+  CLSID_MSOpusDecoder: TGUID = '{63e17c10-2d43-4c42-8fe3-8d8b63e46a6a}';
 
   // CLSID_VideoProcessorMFT
   // Standard MF video processor component (a.k.a: XVP)
   // {88753B26-5B24-49bd-B2E7-0C445C78C982}
-//#if (WINVER < _WIN32_WINNT_WINTHRESHOLD)
-  CLSID_VideoProcessorMFT          : TGUID = '{88753b26-5b24-49bd-b2e7-0c445c78c982}';
-//#endif // (WINVER < _WIN32_WINNT_WINTHRESHOLD)
+  //#if (WINVER < _WIN32_WINNT_WINTHRESHOLD)
+  CLSID_VideoProcessorMFT: TGUID = '{88753b26-5b24-49bd-b2e7-0c445c78c982}';
+  //#endif // (WINVER < _WIN32_WINNT_WINTHRESHOLD)
 
 
   // The property ID for the IMFNetCrossOriginSupport callback object in a source resolver's IPropertyStore.
   // Can be a member of the MF_MEDIA_ENGINE_SOURCE_RESOLVER_CONFIG_STORE's IPropertyStore.
   // Can also belong to the IPropertyStore passed to IMFSchemeHandler.BeginCreateObject().
-  MFNETSOURCE_CROSS_ORIGIN_SUPPORT : TGUID = '{9842207c-b02c-4271-a2fc-72e49308e5c2}';
+  MFNETSOURCE_CROSS_ORIGIN_SUPPORT: TGUID = '{9842207c-b02c-4271-a2fc-72e49308e5c2}';
 
-//endif // (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
+  //endif // (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
 
-//  TODO_WIN32_WINNT_REDSTONE
+  //  TODO_WIN32_WINNT_REDSTONE
 
-//#if (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
+  //#if (WINVER >= _WIN32_WINNT_WINTHRESHOLD)
 
 const
   // MF_SD_MEDIASOURCE_STATUS
   // Type: MF_MEDIASOURCE_STATUS_INFO
   // {1913678B-FC0F-44DA-8F43-1BA3B526F4AE}
-  MF_SD_MEDIASOURCE_STATUS          : TGUID = '{1913678b-fc0f-44da-8f43-1ba3b526f4ae}';
+  MF_SD_MEDIASOURCE_STATUS: TGUID = '{1913678b-fc0f-44da-8f43-1ba3b526f4ae}';
 
   // MF_MEDIASOURCE_EXPOSE_ALL_STREAMS
   // Type: boolean
   // {E7F250B8-8FD9-4A09-B6C1-6A315C7C720E}
-  MF_MEDIASOURCE_EXPOSE_ALL_STREAMS : TGUID = '{e7f250b8-8fd9-4a09-b6c1-6a315c7c720e}';
+  MF_MEDIASOURCE_EXPOSE_ALL_STREAMS: TGUID = '{e7f250b8-8fd9-4a09-b6c1-6a315c7c720e}';
 
 
   // Additional Prototypes for ALL interfaces
@@ -4669,461 +5008,461 @@ type
 
 
 
-//////////////// FUNCTIONS /////////////////////////////////////////////////////
+  //////////////// FUNCTIONS /////////////////////////////////////////////////////
 
-  function MFCreateSensorGroup(SensorGroupSymbolicLink: LPCWSTR;
-                               out ppSensorGroup: IMFSensorGroup): HResult; stdcall;
+function MFCreateSensorGroup(SensorGroupSymbolicLink: LPCWSTR;
+                             out ppSensorGroup: IMFSensorGroup): HResult; stdcall;
 
-  function MFCreateSensorStream(StreamId: DWORD;
-                                pAttributes: IMFAttributes;
-                                pMediaTypeCollection: IMFCollection;
-                                out ppStream: IMFSensorStream): HResult; stdcall;
+function MFCreateSensorStream(StreamId: DWORD;
+                              pAttributes: IMFAttributes;
+                              pMediaTypeCollection: IMFCollection;
+                              out ppStream: IMFSensorStream): HResult; stdcall;
 
-  function MFCreateSensorActivityMonitor(pCallback: IMFSensorActivitiesReportCallback;
-                                         out ppActivityMonitor: IMFSensorActivityMonitor): HResult; stdcall;
+function MFCreateSensorActivityMonitor(pCallback: IMFSensorActivitiesReportCallback;
+                                       out ppActivityMonitor: IMFSensorActivityMonitor): HResult; stdcall;
 
-  function MFCreateSensorProfile(const ProfileType: REFGUID;
-                                 ProfileIndex: UINT32;
-                                 Constraints: PWideChar;
-                                 out ppProfile: IMFSensorProfile): HResult; stdcall;
+function MFCreateSensorProfile(const ProfileType: REFGUID;
+                               ProfileIndex: UINT32;
+                               Constraints: PWideChar;
+                               out ppProfile: IMFSensorProfile): HResult; stdcall;
 
-  function MFCreateSensorProfileCollection(out ppSensorProfile: IMFSensorProfileCollection): HResult; stdcall;
+function MFCreateSensorProfileCollection(out ppSensorProfile: IMFSensorProfileCollection): HResult; stdcall;
 
 
-  // MFCreateMediaSession
-  //
-  // Creates the Media Session in the application's process.
-  // If your application does not play protected content,
-  // you can use this function to create the Media Session in the application's process.
-  // To use the Media Session for protected content, you must call MFCreatePMPMediaSession.
-  // pConfiguration > Pointer to the IMFAttributes interface.
-  // This parameter can be Nil.
-  // You can use the pConfiguration parameter to specify any of the following attributes:
-  //  MF_SESSION_GLOBAL_TIME
-  //  MF_SESSION_QUALITY_MANAGER
-  //  MF_SESSION_TOPOLOADER
-  //  MF_LOW_LATENCY
-  //
-  // ppMS > Receives a pointer (C++) to the Media Session's IMFMediaSession interface.
-  // The caller must release the interface.
-  // Before releasing the last reference to the IMFMediaSession pointer,
-  // the application must call the IMFMediaSession.Shutdown method.
-  function MFCreateMediaSession(pConfiguration: IMFAttributes;
-                                out ppMediaSession: IMFMediaSession): HResult; stdcall;
+// MFCreateMediaSession
+//
+// Creates the Media Session in the application's process.
+// If your application does not play protected content,
+// you can use this function to create the Media Session in the application's process.
+// To use the Media Session for protected content, you must call MFCreatePMPMediaSession.
+// pConfiguration > Pointer to the IMFAttributes interface.
+// This parameter can be Nil.
+// You can use the pConfiguration parameter to specify any of the following attributes:
+//  MF_SESSION_GLOBAL_TIME
+//  MF_SESSION_QUALITY_MANAGER
+//  MF_SESSION_TOPOLOADER
+//  MF_LOW_LATENCY
+//
+// ppMS > Receives a pointer (C++) to the Media Session's IMFMediaSession interface.
+// The caller must release the interface.
+// Before releasing the last reference to the IMFMediaSession pointer,
+// the application must call the IMFMediaSession.Shutdown method.
+function MFCreateMediaSession(pConfiguration: IMFAttributes;
+                              out ppMediaSession: IMFMediaSession): HResult; stdcall;
 
-  // MFCreatePMPMediaSession
-  //
-  // Creates an instance of the Media Session inside a Protected Media Path (PMP) process.
-  // Parameters
-  //  dwCreationFlags
-  //    A member of the MFPMPSESSION_CREATION_FLAGS enumeration that specifies how to create the session object.
-  //  pConfiguration
-  //    A pointer to the IMFAttributes interface. This parameter can be NULL. See Remarks.
-  //  ppMediaSession
-  //    Receives a pointer to the PMP Media Session's IMFMediaSession interface.
-  //    The caller must release the interface. Before releasing the last reference to the IMFMediaSession pointer,
-  //    the application must call the IMFMediaSession.Shutdown method.
-  //  ppEnablerActivate
-  //    Receives a pointer to the IMFActivate interface or the value NULL.
-  //    If non-NIL, the caller must release the interface. See Remarks.
+// MFCreatePMPMediaSession
+//
+// Creates an instance of the Media Session inside a Protected Media Path (PMP) process.
+// Parameters
+//  dwCreationFlags
+//    A member of the MFPMPSESSION_CREATION_FLAGS enumeration that specifies how to create the session object.
+//  pConfiguration
+//    A pointer to the IMFAttributes interface. This parameter can be NULL. See Remarks.
+//  ppMediaSession
+//    Receives a pointer to the PMP Media Session's IMFMediaSession interface.
+//    The caller must release the interface. Before releasing the last reference to the IMFMediaSession pointer,
+//    the application must call the IMFMediaSession.Shutdown method.
+//  ppEnablerActivate
+//    Receives a pointer to the IMFActivate interface or the value NULL.
+//    If non-NIL, the caller must release the interface. See Remarks.
 
-  //  Remarks
-  //    You can use the pConfiguration parameter to set any of the following attributes:
+//  Remarks
+//    You can use the pConfiguration parameter to set any of the following attributes:
 
-  //    MF_SESSION_CONTENT_PROTECTION_MANAGER
-  //    MF_SESSION_GLOBAL_TIME
-  //    MF_SESSION_QUALITY_MANAGER
-  //    MF_SESSION_REMOTE_SOURCE_MODE
-  //    MF_SESSION_SERVER_CONTEXT
-  //    MF_SESSION_TOPOLOADER
-  //  If this function cannot create the PMP Media Session because a trusted binary was revoked,
-  //  the ppEnablerActivate parameter receives an IMFActivate interface pointer.
-  //  The application can use this pointer to create a content enabler object,
-  //  which can then be used to download an updated binary:
-  //
-  //  Call IMFActivate.ActivateObject with the interface identifier IID_IMFContentEnabler to get
-  //  an IMFContentEnabler interface pointer.
-  //  Use that interface to download the updated binary.
-  //  Call MFCreatePMPMediaSession again.
-  //  If the function successfully creates the PMP Media Session, the ppEnablerActivate parameter receives the value NULL.
+//    MF_SESSION_CONTENT_PROTECTION_MANAGER
+//    MF_SESSION_GLOBAL_TIME
+//    MF_SESSION_QUALITY_MANAGER
+//    MF_SESSION_REMOTE_SOURCE_MODE
+//    MF_SESSION_SERVER_CONTEXT
+//    MF_SESSION_TOPOLOADER
+//  If this function cannot create the PMP Media Session because a trusted binary was revoked,
+//  the ppEnablerActivate parameter receives an IMFActivate interface pointer.
+//  The application can use this pointer to create a content enabler object,
+//  which can then be used to download an updated binary:
+//
+//  Call IMFActivate.ActivateObject with the interface identifier IID_IMFContentEnabler to get
+//  an IMFContentEnabler interface pointer.
+//  Use that interface to download the updated binary.
+//  Call MFCreatePMPMediaSession again.
+//  If the function successfully creates the PMP Media Session, the ppEnablerActivate parameter receives the value NULL.
 
-  //  Do not make calls to the PMP Media Session from a thread that is processing a window message sent from another thread.
-  //  To test whether the current thread falls into this category, call InSendMessage.
-  function MFCreatePMPMediaSession(dwCreationFlags: DWORD;
-                                   pConfiguration: IMFAttributes;
-                                   out ppMediaSession: IMFMediaSession;
-                                   out ppEnablerActivate: IMFActivate): HResult; stdcall;
+//  Do not make calls to the PMP Media Session from a thread that is processing a window message sent from another thread.
+//  To test whether the current thread falls into this category, call InSendMessage.
+function MFCreatePMPMediaSession(dwCreationFlags: DWORD;
+                                 pConfiguration: IMFAttributes;
+                                 out ppMediaSession: IMFMediaSession;
+                                 out ppEnablerActivate: IMFActivate): HResult; stdcall;
 
-  function MFCreateSourceResolver(out ppISourceResolver: IMFSourceResolver): HResult; stdcall;
+function MFCreateSourceResolver(out ppISourceResolver: IMFSourceResolver): HResult; stdcall;
 
-  // This API is not supported and may be altered or unavailable in the future.
-  // Instead, applications should use the PSCreateMemoryPropertyStore function to create property stores.
-  // PSCreateMemoryPropertyStore is located at propsys.h
-  function CreatePropertyStore(out ppStore: IPropertyStore): HResult; stdcall;
+// This API is not supported and may be altered or unavailable in the future.
+// Instead, applications should use the PSCreateMemoryPropertyStore function to create property stores.
+// PSCreateMemoryPropertyStore is located at propsys.h
+function CreatePropertyStore(out ppStore: IPropertyStore): HResult; stdcall;
 
-  function MFGetSupportedSchemes(out pPropVarSchemeArray: PROPVARIANT): HResult; stdcall;
+function MFGetSupportedSchemes(out pPropVarSchemeArray: PROPVARIANT): HResult; stdcall;
 
-  function MFGetSupportedMimeTypes(out pPropVarMimeTypeArray: PROPVARIANT): HResult; stdcall;
+function MFGetSupportedMimeTypes(out pPropVarMimeTypeArray: PROPVARIANT): HResult; stdcall;
 
-  function MFCreateTopology(out ppTopo: IMFTopology): HResult; stdcall;
+function MFCreateTopology(out ppTopo: IMFTopology): HResult; stdcall;
 
-  // MFCreateTopologyNode
-  //
-  // Creates a topology node.
-  // Parameters
-  //  NodeType [in]
-  //    The type of node to create, specified as a member of the MF_TOPOLOGY_TYPE enumeration.
-  //  ppNode [out]
-  //    Receives a pointer to the node's IMFTopologyNode interface.
-  //    The caller must release the interface.
-  function MFCreateTopologyNode(NodeType: MF_TOPOLOGY_TYPE;
-                                out ppNode: IMFTopologyNode): HResult; stdcall;
+// MFCreateTopologyNode
+//
+// Creates a topology node.
+// Parameters
+//  NodeType [in]
+//    The type of node to create, specified as a member of the MF_TOPOLOGY_TYPE enumeration.
+//  ppNode [out]
+//    Receives a pointer to the node's IMFTopologyNode interface.
+//    The caller must release the interface.
+function MFCreateTopologyNode(NodeType: MF_TOPOLOGY_TYPE;
+                              out ppNode: IMFTopologyNode): HResult; stdcall;
 
 
 
 //#if (WINVER >= _WIN32_WINNT_WIN7)
 
-  function MFGetTopoNodeCurrentType(pNode: IMFTopologyNode;
-                                    dwStreamIndex: DWORD;
-                                    fOutput: BOOL;
-                                    out ppType: IMFMediaType): HResult; stdcall;
+function MFGetTopoNodeCurrentType(pNode: IMFTopologyNode;
+                                  dwStreamIndex: DWORD;
+                                  fOutput: BOOL;
+                                  out ppType: IMFMediaType): HResult; stdcall;
 
 //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-  function MFGetService(punkObject: IUnknown;
-                        const guidService: REFGUID;
-                        const riid: REFIID;
-                        out ppvObject: LPVOID): HResult; stdcall;
+function MFGetService(punkObject: IUnknown;
+                      const guidService: REFGUID;
+                      const riid: REFIID;
+                      out ppvObject: LPVOID): HResult; stdcall;
 
-  function MFGetSystemTime(): MFTIME; stdcall;
+function MFGetSystemTime(): MFTIME; stdcall;
 
-  function MFCreatePresentationClock(out ppPresentationClock: IMFPresentationClock): HResult; stdcall;
+function MFCreatePresentationClock(out ppPresentationClock: IMFPresentationClock): HResult; stdcall;
 
-  function MFCreateSystemTimeSource(out ppSystemTimeSource: IMFPresentationTimeSource): HResult; stdcall;
+function MFCreateSystemTimeSource(out ppSystemTimeSource: IMFPresentationTimeSource): HResult; stdcall;
 
-  function MFCreatePresentationDescriptor(cStreamDescriptors: DWORD;
-                                          apStreamDescriptors: PIMFStreamDescriptor;  // pointer to array of IMFStreamDescriptor
-                                          out ppPresentationDescriptor: IMFPresentationDescriptor): HResult; stdcall;
+function MFCreatePresentationDescriptor(cStreamDescriptors: DWORD;
+                                        apStreamDescriptors: PIMFStreamDescriptor;  // pointer to array of IMFStreamDescriptor
+  out ppPresentationDescriptor: IMFPresentationDescriptor): HResult; stdcall;
 
-  function MFRequireProtectedEnvironment(pPresentationDescriptor: IMFPresentationDescriptor): HResult; stdcall;
+function MFRequireProtectedEnvironment(pPresentationDescriptor: IMFPresentationDescriptor): HResult; stdcall;
 
-  function MFSerializePresentationDescriptor(pPD: IMFPresentationDescriptor;
-                                             out pcbData: DWORD;
-                                             out ppbData: PByte): HResult; stdcall;
+function MFSerializePresentationDescriptor(pPD: IMFPresentationDescriptor;
+                                           out pcbData: DWORD;
+                                           out ppbData: PByte): HResult; stdcall;
 
-  function MFDeserializePresentationDescriptor(cbData: DWORD;
-                                               pbData: PByte;
-                                               out ppPD: IMFPresentationDescriptor): HResult; stdcall;
+function MFDeserializePresentationDescriptor(cbData: DWORD;
+                                             pbData: PByte;
+                                             out ppPD: IMFPresentationDescriptor): HResult; stdcall;
 
-  function MFCreateStreamDescriptor(dwStreamIdentifier: DWORD;  // Stream identifier.
-                                    cMediaTypes: DWORD;         // Number of elements in the apMediaTypes array.
-                                    apMediaTypes: PIMFMediaType; // Pointer to an array of IMFMediaType interface pointers. These pointers are used to initialize the media type handler for the stream descriptor.
-                                    out ppDescriptor: IMFStreamDescriptor): HResult; stdcall;
+function MFCreateStreamDescriptor(dwStreamIdentifier: DWORD;  // Stream identifier.
+  cMediaTypes: DWORD;         // Number of elements in the apMediaTypes array.
+  apMediaTypes: PIMFMediaType; // Pointer to an array of IMFMediaType interface pointers. These pointers are used to initialize the media type handler for the stream descriptor.
+  out ppDescriptor: IMFStreamDescriptor): HResult; stdcall;
 
-  function MFCreateStreamDescriptor2(dwStreamIdentifier: DWORD;  // Stream identifier.
-                                     cMediaTypes: DWORD;         // Number of elements in the apMediaTypes array.
-                                     apMediaTypes: PIMFMediaType; // Array of IMFMediaType interfaces. These are used to initialize the media type handler for the stream descriptor.
-                                     out ppDescriptor: IMFStreamDescriptor): HResult; stdcall;  // Receives a pointer to the IMFStreamDescriptor interface of the new stream descriptor. The caller must release the interface.
+function MFCreateStreamDescriptor2(dwStreamIdentifier: DWORD;  // Stream identifier.
+  cMediaTypes: DWORD;         // Number of elements in the apMediaTypes array.
+  apMediaTypes: PIMFMediaType; // Array of IMFMediaType interfaces. These are used to initialize the media type handler for the stream descriptor.
+  out ppDescriptor: IMFStreamDescriptor): HResult; stdcall;  // Receives a pointer to the IMFStreamDescriptor interface of the new stream descriptor. The caller must release the interface.
 
 
-  function MFCreateSimpleTypeHandler(out ppHandler: IMFMediaTypeHandler): HResult; stdcall;
+function MFCreateSimpleTypeHandler(out ppHandler: IMFMediaTypeHandler): HResult; stdcall;
 
-  function MFShutdownObject(pUnk: IUnknown): HResult; stdcall;
+function MFShutdownObject(pUnk: IUnknown): HResult; stdcall;
 
-  function MFCreateAudioRenderer(pAudioAttributes: IMFAttributes;
-                                 out ppSink: IMFMediaSink): HResult; stdcall;
+function MFCreateAudioRenderer(pAudioAttributes: IMFAttributes;
+                               out ppSink: IMFMediaSink): HResult; stdcall;
 
-  function MFCreateAudioRendererActivate(out ppActivate: IMFActivate): HResult; stdcall;
+function MFCreateAudioRendererActivate(out ppActivate: IMFActivate): HResult; stdcall;
 
-  function MFCreateVideoRendererActivate(const hwndVideo: HWND;
-                                         out ppActivate: IMFActivate): HResult; stdcall;
+function MFCreateVideoRendererActivate(const hwndVideo: HWND;
+                                       out ppActivate: IMFActivate): HResult; stdcall;
 
 //#if (WINVER >= _WIN32_WINNT_WIN7)
 
-  function MFCreateMPEG4MediaSink(pIByteStream: IMFByteStream;
-                                  pVideoMediaType: IMFMediaType;
-                                  pAudioMediaType: IMFMediaType;
-                                  {out} ppIMediaSink: PIMFMediaSink): HResult; stdcall;
-
-  function MFCreate3GPMediaSink(pIByteStream: IMFByteStream;
+function MFCreateMPEG4MediaSink(pIByteStream: IMFByteStream;
                                 pVideoMediaType: IMFMediaType;
                                 pAudioMediaType: IMFMediaType;
-                                out ppIMediaSink: IMFMediaSink): HResult; stdcall;
+  {out} ppIMediaSink: PIMFMediaSink): HResult; stdcall;
 
-  function MFCreateMP3MediaSink(pTargetByteStream: IMFByteStream;
-                                {out} ppMediaSink: PIMFMediaSink): HResult; stdcall;
+function MFCreate3GPMediaSink(pIByteStream: IMFByteStream;
+                              pVideoMediaType: IMFMediaType;
+                              pAudioMediaType: IMFMediaType;
+                              out ppIMediaSink: IMFMediaSink): HResult; stdcall;
+
+function MFCreateMP3MediaSink(pTargetByteStream: IMFByteStream;
+  {out} ppMediaSink: PIMFMediaSink): HResult; stdcall;
 
 //#endif // (WINVER >= _WIN32_WINNT_WIN7
 
 //#if (WINVER >= _WIN32_WINNT_WIN8)
 
-  function MFCreateAC3MediaSink(pTargetByteStream: IMFByteStream;
-                                pAudioMediaType: IMFMediaType;
-                                {out} ppMediaSink: PIMFMediaSink): HResult; stdcall;
+function MFCreateAC3MediaSink(pTargetByteStream: IMFByteStream;
+                              pAudioMediaType: IMFMediaType;
+  {out} ppMediaSink: PIMFMediaSink): HResult; stdcall;
 
-  function MFCreateADTSMediaSink(pTargetByteStream: IMFByteStream;
+function MFCreateADTSMediaSink(pTargetByteStream: IMFByteStream;
+                               pAudioMediaType: IMFMediaType;
+  {out} ppMediaSink: PIMFMediaSink): HResult; stdcall;
+
+function MFCreateMuxSink(const guidOutputSubType: TGUID;
+                         pOutputAttributes: IMFAttributes;
+                         pOutputByteStream: IMFByteStream;
+  {out} ppMuxSink: PIMFMediaSink): HResult; stdcall;
+
+function MFCreateFMPEG4MediaSink(pIByteStream: IMFByteStream;
+                                 pVideoMediaType: IMFMediaType;
                                  pAudioMediaType: IMFMediaType;
-                                 {out} ppMediaSink: PIMFMediaSink): HResult; stdcall;
-
-  function MFCreateMuxSink(const guidOutputSubType: TGUID;
-                           pOutputAttributes: IMFAttributes;
-                           pOutputByteStream: IMFByteStream;
-                           {out} ppMuxSink: PIMFMediaSink): HResult; stdcall;
-
-  function MFCreateFMPEG4MediaSink(pIByteStream: IMFByteStream;
-                                   pVideoMediaType: IMFMediaType;
-                                   pAudioMediaType: IMFMediaType;
-                                   {out} ppIMediaSink: PIMFMediaSink): HResult; stdcall;
+  {out} ppIMediaSink: PIMFMediaSink): HResult; stdcall;
 
 //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
 //#if (WINVER >= _WIN32_WINNT_WINBLUE) //win 10
 
-  function MFCreateAVIMediaSink(pIByteStream: IMFByteStream;
-                                pVideoMediaType: IMFMediaType;
-                                pAudioMediaType: IMFMediaType;
-                                {out} ppIMediaSink: PIMFMediaSink): HResult; stdcall;
+function MFCreateAVIMediaSink(pIByteStream: IMFByteStream;
+                              pVideoMediaType: IMFMediaType;
+                              pAudioMediaType: IMFMediaType;
+  {out} ppIMediaSink: PIMFMediaSink): HResult; stdcall;
 
-  function MFCreateWAVEMediaSink(pTargetByteStream: IMFByteStream;
-                                 pAudioMediaType: IMFMediaType;
-                                 {out} ppMediaSink: PIMFMediaSink): HResult; stdcall;
+function MFCreateWAVEMediaSink(pTargetByteStream: IMFByteStream;
+                               pAudioMediaType: IMFMediaType;
+  {out} ppMediaSink: PIMFMediaSink): HResult; stdcall;
 
 //#endif // (WINVER >= _WIN32_WINNT_WINBLUE)
 
 
-  function MFCreateTopoLoader(out ppObj: IMFTopoLoader): HResult; stdcall;
+function MFCreateTopoLoader(out ppObj: IMFTopoLoader): HResult; stdcall;
 
-  function MFCreateSampleGrabberSinkActivate(pIMFMediaType: IMFMediaType;
-                                             pIMFSampleGrabberSinkCallback: IMFSampleGrabberSinkCallback;
-                                             out ppIActivate: IMFActivate): HResult; stdcall;
+function MFCreateSampleGrabberSinkActivate(pIMFMediaType: IMFMediaType;
+                                           pIMFSampleGrabberSinkCallback: IMFSampleGrabberSinkCallback;
+                                           out ppIActivate: IMFActivate): HResult; stdcall;
 
-  function MFCreateStandardQualityManager(out ppQualityManager: IMFQualityManager): HResult; stdcall;
+function MFCreateStandardQualityManager(out ppQualityManager: IMFQualityManager): HResult; stdcall;
 
-  function MFCreateSequencerSource(pReserved: IUnknown;
-                                   out ppSequencerSource: IMFSequencerSource): HResult; stdcall;
+function MFCreateSequencerSource(pReserved: IUnknown;
+                                 out ppSequencerSource: IMFSequencerSource): HResult; stdcall;
 
 
-  function MFCreateSequencerSegmentOffset(dwId: MFSequencerElementId;
-                                          hnsOffset: MFTIME;
-                                          out pvarSegmentOffset: PROPVARIANT): HResult; stdcall;
+function MFCreateSequencerSegmentOffset(dwId: MFSequencerElementId;
+                                        hnsOffset: MFTIME;
+                                        out pvarSegmentOffset: PROPVARIANT): HResult; stdcall;
 
 //#if (WINVER >= _WIN32_WINNT_WIN7)
 
-  function MFCreateAggregateSource(pSourceCollection: IMFCollection;
-                                   out ppAggSource: IMFMediaSource): HResult; stdcall;
+function MFCreateAggregateSource(pSourceCollection: IMFCollection;
+                                 out ppAggSource: IMFMediaSource): HResult; stdcall;
 
 //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
-  function MFCreateCredentialCache(out ppCache: IMFNetCredentialCache): HResult; stdcall;
+function MFCreateCredentialCache(out ppCache: IMFNetCredentialCache): HResult; stdcall;
 
-  function MFCreateProxyLocator(pszProtocol: PWideChar;
-                                pProxyConfig: IPropertyStore;
-                                out ppProxyLocator: IMFNetProxyLocator): HResult; stdcall;
+function MFCreateProxyLocator(pszProtocol: PWideChar;
+                              pProxyConfig: IPropertyStore;
+                              out ppProxyLocator: IMFNetProxyLocator): HResult; stdcall;
 
-  function MFCreateNetSchemePlugin(const riid: REFIID;
-                                   out ppvHandler: LPVOID): HResult; stdcall;
+function MFCreateNetSchemePlugin(const riid: REFIID;
+                                 out ppvHandler: LPVOID): HResult; stdcall;
 
 
-  // Converted macro's
+// Converted macro's
 
-  function MAKE_MFPROTECTIONDATA_DISABLE(const Disable: BOOL): DWORD; inline;
+function MAKE_MFPROTECTIONDATA_DISABLE(const Disable: BOOL): DWORD; inline;
 
-  function EXTRACT_MFPROTECTIONDATA_DISABLE_ON(Data: DWORD): BOOL; inline;
+function EXTRACT_MFPROTECTIONDATA_DISABLE_ON(Data: DWORD): BOOL; inline;
 
-  function EXTRACT_MFPROTECTIONDATA_DISABLE_RESERVED(Data: DWORD): DWORD; inline;
+function EXTRACT_MFPROTECTIONDATA_DISABLE_RESERVED(Data: DWORD): DWORD; inline;
 
-  function MAKE_MFPROTECTIONDATA_CONSTRICTAUDIO(Level: DWORD): DWORD; inline;
+function MAKE_MFPROTECTIONDATA_CONSTRICTAUDIO(Level: DWORD): DWORD; inline;
 
-  function EXTRACT_MFPROTECTIONDATA_CONSTRICTAUDIO_LEVEL(Data: DWORD): DWORD; inline;
+function EXTRACT_MFPROTECTIONDATA_CONSTRICTAUDIO_LEVEL(Data: DWORD): DWORD; inline;
 
-  function EXTRACT_MFPROTECTIONDATA_CONSTRICTAUDIO_RESERVED(Data: DWORD): DWORD; inline;
+function EXTRACT_MFPROTECTIONDATA_CONSTRICTAUDIO_RESERVED(Data: DWORD): DWORD; inline;
 
-  function MAKE_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS(TestCertificateEnable: BOOL;
-                                                     DigitalOutputDisable: BOOL;
-                                                     DrmLevel: DWORD): DWORD; inline;
+function MAKE_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS(TestCertificateEnable: BOOL;
+                                                   DigitalOutputDisable: BOOL;
+                                                   DrmLevel: DWORD): DWORD; inline;
 
-  function MAKE_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS2(TestCertificateEnable: BOOL;
-                                                      DigitalOutputDisable: BOOL;
-                                                      CopyOK: BOOL;
-                                                      DrmLevel: DWORD): DWORD; inline;
+function MAKE_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS2(TestCertificateEnable: BOOL;
+                                                    DigitalOutputDisable: BOOL;
+                                                    CopyOK: BOOL;
+                                                    DrmLevel: DWORD): DWORD; inline;
 
-  function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_DRMLEVEL(Data: DWORD): DWORD; inline;
+function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_DRMLEVEL(Data: DWORD): DWORD; inline;
 
-  function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_DIGITALOUTPUTDISABLE(Data: DWORD): BOOL; inline;
+function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_DIGITALOUTPUTDISABLE(Data: DWORD): BOOL; inline;
 
-  function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_TESTCERTIFICATEENABLE(Data: DWORD): BOOL; inline;
+function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_TESTCERTIFICATEENABLE(Data: DWORD): BOOL; inline;
 
 //#if (WINVER >= _WIN32_WINNT_WIN7)
 
-  function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_COPYOK(Data: DWORD): BOOL; inline;
+function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_COPYOK(Data: DWORD): BOOL; inline;
 
-  function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_RESERVED(Data: DWORD): DWORD; inline;
+function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_RESERVED(Data: DWORD): DWORD; inline;
 
 //Else
 
-  function _EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_RESERVED(Data: DWORD): DWORD; inline;
+function _EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_RESERVED(Data: DWORD): DWORD; inline;
 
 //#endif // (WINVER >= _WIN32_WINNT_WIN7)
 
 
-  function MFCreatePMPServer(dwCreationFlags: DWORD;
-                             out ppPMPServer: IMFPMPServer): HResult; stdcall;
+function MFCreatePMPServer(dwCreationFlags: DWORD;
+                           out ppPMPServer: IMFPMPServer): HResult; stdcall;
 
-  function MFCreateRemoteDesktopPlugin(out ppPlugin: IMFRemoteDesktopPlugin): HResult; stdcall;
+function MFCreateRemoteDesktopPlugin(out ppPlugin: IMFRemoteDesktopPlugin): HResult; stdcall;
 
-  function CreateNamedPropertyStore(out ppStore: INamedPropertyStore): HResult; stdcall;
+function CreateNamedPropertyStore(out ppStore: INamedPropertyStore): HResult; stdcall;
 
 
 //#if (WINVER >= _WIN32_WINNT_WIN7)
 
-  function MFCreateSampleCopierMFT(out ppCopierMFT: IMFTransform): HResult; stdcall;
+function MFCreateSampleCopierMFT(out ppCopierMFT: IMFTransform): HResult; stdcall;
 
 //#endif (WINVER >= _WIN32_WINNT_WIN7)
 
-  function MFCreateTranscodeTopology(pSrc: IMFMediaSource;
-                                     pwszOutputFilePath: LPCWSTR;
-                                     pProfile: IMFTranscodeProfile;
-                                     out ppTranscodeTopo: IMFTopology): HResult; stdcall;
+function MFCreateTranscodeTopology(pSrc: IMFMediaSource;
+                                   pwszOutputFilePath: LPCWSTR;
+                                   pProfile: IMFTranscodeProfile;
+                                   out ppTranscodeTopo: IMFTopology): HResult; stdcall;
 
-  function MFCreateTranscodeProfile(out ppTranscodeProfile: IMFTranscodeProfile): HResult; stdcall;
+function MFCreateTranscodeProfile(out ppTranscodeProfile: IMFTranscodeProfile): HResult; stdcall;
 
 //#if (WINVER >= _WIN32_WINNT_WIN8)
 
-  function MFCreateTranscodeTopologyFromByteStream(pSrc: IMFMediaSource;
-                                                   pOutputStream: IMFByteStream;
-                                                   var pProfile: IMFTranscodeProfile;
-                                                   var ppTranscodeTopo: IMFTopology): HResult; stdcall;
+function MFCreateTranscodeTopologyFromByteStream(pSrc: IMFMediaSource;
+                                                 pOutputStream: IMFByteStream;
+                                                 var pProfile: IMFTranscodeProfile;
+                                                 var ppTranscodeTopo: IMFTopology): HResult; stdcall;
 
 //#endif // (WINVER >= _WIN32_WINNT_WIN8)
 
 
-  function MFTranscodeGetAudioOutputAvailableTypes(const guidSubType: REFGUID;
-                                                   dwMFTFlags: DWord;
-                                                   pCodecConfig: IMFAttributes;
-                                                   out ppAvailableTypes: IMFCollection): HResult; stdcall;
+function MFTranscodeGetAudioOutputAvailableTypes(const guidSubType: REFGUID;
+                                                 dwMFTFlags: DWord;
+                                                 pCodecConfig: IMFAttributes;
+                                                 out ppAvailableTypes: IMFCollection): HResult; stdcall;
 
-  function MFCreateTranscodeSinkActivate(out ppActivate: IMFActivate): HResult; stdcall;
+function MFCreateTranscodeSinkActivate(out ppActivate: IMFActivate): HResult; stdcall;
 
 
 
 //#if (WINVER >= _WIN32_WINNT_WINBLUE)
 
-  function MFCreateTrackedSample(out ppMFSample: IMFTrackedSample): HResult; stdcall;
+function MFCreateTrackedSample(out ppMFSample: IMFTrackedSample): HResult; stdcall;
 
-  function MFCreateMFByteStreamOnStream(pStream: IStream;
-                                        out ppByteStream: IMFByteStream): HResult; stdcall;
+function MFCreateMFByteStreamOnStream(pStream: IStream;
+                                      out ppByteStream: IMFByteStream): HResult; stdcall;
 
-  function MFCreateStreamOnMFByteStream(var pByteStream: IMFByteStream;
-                                        var ppStream: IStream): HResult; stdcall;
+function MFCreateStreamOnMFByteStream(var pByteStream: IMFByteStream;
+                                      var ppStream: IStream): HResult; stdcall;
 
 
-  function MFCreateMFByteStreamOnStreamEx(var punkStream: IUnknown;
-                                          var ppByteStream: IMFByteStream): HResult; stdcall;
+function MFCreateMFByteStreamOnStreamEx(var punkStream: IUnknown;
+                                        var ppByteStream: IMFByteStream): HResult; stdcall;
 
-  function MFCreateStreamOnMFByteStreamEx(var pByteStream: IMFByteStream;
-                                          const riid: REFIID;
-                                          ppv: Pointer): HResult; stdcall;
+function MFCreateStreamOnMFByteStreamEx(var pByteStream: IMFByteStream;
+                                        const riid: REFIID;
+                                        ppv: Pointer): HResult; stdcall;
 
-  function MFCreateMediaTypeFromProperties(var punkStream: IUnknown;
-                                           var ppMediaType: IMFMediaType): HResult; stdcall;
+function MFCreateMediaTypeFromProperties(var punkStream: IUnknown;
+                                         var ppMediaType: IMFMediaType): HResult; stdcall;
 
-  function MFCreatePropertiesFromMediaType(var pMediaType: IMFMediaType;
-                                           const riid: REFIID;
-                                           ppv: Pointer): HResult; stdcall;
+function MFCreatePropertiesFromMediaType(var pMediaType: IMFMediaType;
+                                         const riid: REFIID;
+                                         ppv: Pointer): HResult; stdcall;
 
 //#endif // (WINVER >= _WIN32_WINNT_WINBLUE)
 
 
-  // Enumerates a list of audio or video capture devices.
-  function MFEnumDeviceSources(pAttributes: IMFAttributes;
-                               out pppSourceActivate: PIMFActivate; // Pointer to array of IMFActivate
-                               out pcSourceActivate: UINT32): HResult; stdcall;
+// Enumerates a list of audio or video capture devices.
+function MFEnumDeviceSources(pAttributes: IMFAttributes;
+                             out pppSourceActivate: PIMFActivate; // Pointer to array of IMFActivate
+  out pcSourceActivate: UINT32): HResult; stdcall;
 
-  // pAttributes [in]
-  //   Pointer to an attribute store that contains search criteria.
-  //   To create the attribute store, call MFCreateAttributes.
-  //   Set one or more of the following attributes on the attribute store:
-  //   - MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE - Specifies whether to enumerate audio or video devices. (Required.)
-  //   - MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_ROLE - For audio capture devices, specifies the device role. (Optional.)
-  //   - MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_CATEGORY - For video capture devices, specifies the device category. (Optional.)
+// pAttributes [in]
+//   Pointer to an attribute store that contains search criteria.
+//   To create the attribute store, call MFCreateAttributes.
+//   Set one or more of the following attributes on the attribute store:
+//   - MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE - Specifies whether to enumerate audio or video devices. (Required.)
+//   - MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_ROLE - For audio capture devices, specifies the device role. (Optional.)
+//   - MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_CATEGORY - For video capture devices, specifies the device category. (Optional.)
 
-  // pppSourceActivate [out]
-  //   Receives a pointer to array of IMFActivate interfaces.
-  //   Each pointer represents an activation object for a media source.
-  //   The function allocates the memory for the array.
-  //   The caller must release the pointers in the array and call CoTaskMemFree to free the memory for the array.
+// pppSourceActivate [out]
+//   Receives a pointer to array of IMFActivate interfaces.
+//   Each pointer represents an activation object for a media source.
+//   The function allocates the memory for the array.
+//   The caller must release the pointers in the array and call CoTaskMemFree to free the memory for the array.
 
-  // pcSourceActivate [out]
-  //   Receives the number of elements in the pppSourceActivate array.
-  //   If no capture devices match the search criteria, this parameter receives the value 0.
+// pcSourceActivate [out]
+//   Receives the number of elements in the pppSourceActivate array.
+//   If no capture devices match the search criteria, this parameter receives the value 0.
 
-  function MFCreateDeviceSource(pAttributes: IMFAttributes;
-                                out ppSource: IMFMediaSource): HResult; stdcall;
+function MFCreateDeviceSource(pAttributes: IMFAttributes;
+                              out ppSource: IMFMediaSource): HResult; stdcall;
 
-  function MFCreateDeviceSourceActivate(pAttributes: IMFAttributes;
-                                        out ppActivate: IMFActivate): HResult; stdcall;
+function MFCreateDeviceSourceActivate(pAttributes: IMFAttributes;
+                                      out ppActivate: IMFActivate): HResult; stdcall;
 
-  function MFCreateProtectedEnvironmentAccess(out ppAccess: IMFProtectedEnvironmentAccess): HResult; stdcall;
+function MFCreateProtectedEnvironmentAccess(out ppAccess: IMFProtectedEnvironmentAccess): HResult; stdcall;
 
-  function MFLoadSignedLibrary(pszName: LPWSTR;
-                               out ppLib: IMFSignedLibrary): HResult; stdcall;
+function MFLoadSignedLibrary(pszName: LPWSTR;
+                             out ppLib: IMFSignedLibrary): HResult; stdcall;
 
-  function MFGetSystemId(out ppId: IMFSystemId): HResult; stdcall;
+function MFGetSystemId(out ppId: IMFSystemId): HResult; stdcall;
 
-  function MFGetLocalId(verifier: PByte;
-                        size: UINT32;
-                        out id: PWideChar): HResult; stdcall;
+function MFGetLocalId(verifier: PByte;
+                      size: UINT32;
+                      out id: PWideChar): HResult; stdcall;
 
-  function MFCreateContentProtectionDevice(const ProtectionSystemId: REFGUID;
-                                           out ContentProtectionDevice: IMFContentProtectionDevice): HResult; stdcall;
+function MFCreateContentProtectionDevice(const ProtectionSystemId: REFGUID;
+                                         out ContentProtectionDevice: IMFContentProtectionDevice): HResult; stdcall;
 
-  function MFIsContentProtectionDeviceSupported(const ProtectionSystemId: REFGUID;
-                                                out isSupported: BOOL): HResult; stdcall;
+function MFIsContentProtectionDeviceSupported(const ProtectionSystemId: REFGUID;
+                                              out isSupported: BOOL): HResult; stdcall;
 
-  function MFCreateContentDecryptorContext(const guidMediaProtectionSystemId: REFGUID;
-                                           pD3DManager: IMFDXGIDeviceManager;
-                                           pContentProtectionDevice: IMFContentProtectionDevice;
-                                           out ppContentDecryptorContext: IMFContentDecryptorContext): HResult; stdcall;
+function MFCreateContentDecryptorContext(const guidMediaProtectionSystemId: REFGUID;
+                                         pD3DManager: IMFDXGIDeviceManager;
+                                         pContentProtectionDevice: IMFContentProtectionDevice;
+                                         out ppContentDecryptorContext: IMFContentDecryptorContext): HResult; stdcall;
 
 const
-  MFStreamExtension_ExtendedCameraIntrinsics : TGUID = '{aa74b3df-9a2c-48d6-8393-5bd1c1a81e6e}';
-  MFSampleExtension_ExtendedCameraIntrinsics : TGUID = '{560bc4a5-4de0-4113-9cdc-832db974f03d}';
+  MFStreamExtension_ExtendedCameraIntrinsics: TGUID = '{aa74b3df-9a2c-48d6-8393-5bd1c1a81e6e}';
+  MFSampleExtension_ExtendedCameraIntrinsics: TGUID = '{560bc4a5-4de0-4113-9cdc-832db974f03d}';
 
-// if (NTDDI_VERSION >= NTDDI_WIN10_NI)
+  // if (NTDDI_VERSION >= NTDDI_WIN10_NI)
 
   // {94DD0C30-28C7-4EFB-9D6B-812300FB0C7F}
   // KSPROPERTYSETID_ANYCAMERACONTROL
   // This represents that a control is contained in a custom property set
-  KSPROPERTYSETID_ANYCAMERACONTROL :  TGUID = '{94DD0C30-28C7-4EFB-9D6B-812300FB0C7F}';
+  KSPROPERTYSETID_ANYCAMERACONTROL: TGUID = '{94DD0C30-28C7-4EFB-9D6B-812300FB0C7F}';
 
-// end (NTDDI_VERSION >= NTDDI_WIN10_NI)
+  // end (NTDDI_VERSION >= NTDDI_WIN10_NI)
 
 
-//#if (NTDDI_VERSION >= NTDDI_WIN10_RS5)
+  //#if (NTDDI_VERSION >= NTDDI_WIN10_RS5)
 
-  function MFCreateExtendedCameraIntrinsics(out ppExtendedCameraIntrinsics: IMFExtendedCameraIntrinsics): HResult; stdcall;
+function MFCreateExtendedCameraIntrinsics(out ppExtendedCameraIntrinsics: IMFExtendedCameraIntrinsics): HResult; stdcall;
 
-  function MFCreateExtendedCameraIntrinsicModel(distortionModelType: MFCameraIntrinsic_DistortionModelType;
-                                                out ppExtendedCameraIntrinsicModel: IMFExtendedCameraIntrinsicModel): HResult; stdcall;
+function MFCreateExtendedCameraIntrinsicModel(distortionModelType: MFCameraIntrinsic_DistortionModelType;
+                                              out ppExtendedCameraIntrinsicModel: IMFExtendedCameraIntrinsicModel): HResult; stdcall;
 
 // end NTDDI_VERSION >= NTDDI_WIN10_RS5
 
 // NTDDI_VERSION >= NTDDI_WIN10_VB
-  // <summary>
-  // Allows an app to create a Relative Panel Watcher
-  // </summary>
-  // <param name = "videoDeviceId">
-  // string symbolic link name of the video capture device
-  // </param>
-  // <param name = "displayMonitorDeviceId">
-  // string symbolic link name of the display monitor device
-  // </param>
-  // <param name = "ppRelativePanelWatcher"
-  // IMFRelativePanelWatcher pointer, representing the watcher
-  // </param>
-  function MFCreateRelativePanelWatcher(videoDeviceId: PCWSTR;
-                                        displayMonitorDeviceId: PCWSTR;
-                                        out ppRelativePanelWatcher: IMFRelativePanelWatcher): HResult; stdcall;
+// <summary>
+// Allows an app to create a Relative Panel Watcher
+// </summary>
+// <param name = "videoDeviceId">
+// string symbolic link name of the video capture device
+// </param>
+// <param name = "displayMonitorDeviceId">
+// string symbolic link name of the display monitor device
+// </param>
+// <param name = "ppRelativePanelWatcher"
+// IMFRelativePanelWatcher pointer, representing the watcher
+// </param>
+function MFCreateRelativePanelWatcher(videoDeviceId: PCWSTR;
+                                      displayMonitorDeviceId: PCWSTR;
+                                      out ppRelativePanelWatcher: IMFRelativePanelWatcher): HResult; stdcall;
 
 // end NTDDI_VERSION >= NTDDI_WIN10_VB
 
@@ -5138,11 +5477,11 @@ type
   // </summary>
 
   PMFCameraOcclusionState = ^MFCameraOcclusionState;
-  MFCameraOcclusionState                            = (
-    MFCameraOcclusionState_Open                     = $0,
-    MFCameraOcclusionState_OccludedByLid            = $1,
-    MFCameraOcclusionState_OccludedByCameraHardware = $2
-  );
+  MFCameraOcclusionState = (
+    MFCameraOcclusionState_Open = $0,
+                            MFCameraOcclusionState_OccludedByLid = $1,
+                            MFCameraOcclusionState_OccludedByCameraHardware = $2
+    );
 
   // IMFCameraOcclusionStateReport Interface
   // =======================================
@@ -5150,7 +5489,7 @@ type
   // adn is used to get the most recent camera occlusion state for the camera under monitoring.
   //
   IMFCameraOcclusionStateReport = interface(IUnknown)
-  ['{1640B2CF-74DA-4462-A43B-B76D3BDC1434}']
+    ['{1640B2CF-74DA-4462-A43B-B76D3BDC1434}']
 
     // This function will get the most recent occlusion state for the camera that's being monitored.
     // <param name = "occlusionState">
@@ -5158,6 +5497,7 @@ type
     // </param>
     function GetOcclusionState(out occlusionState: DWORD): HRESULT; stdcall;
   end;
+
   IID_IMFCameraOcclusionStateReport = IMFCameraOcclusionStateReport;
 
 
@@ -5167,13 +5507,14 @@ type
   // an IMFCameraOcclusionStateMonitor object.
   //
   IMFCameraOcclusionStateReportCallback = interface(IUnknown)
-  ['{6E5841C7-3889-4019-9035-783FB19B5948}']
+    ['{6E5841C7-3889-4019-9035-783FB19B5948}']
     // This function will be called when the monitor detects that the occlusion state has changed.
     // <param name = "occlusionStateReport">
     // Pointer to the IMFCameraOcclusionStateReport interface that is used to get the most recent state.
     // </param>
     function OnOcclusionStateReport(occlusionStateReport: IMFCameraOcclusionStateReport): HRESULT; stdcall;
   end;
+
   IID_IMFCameraOcclusionStateReportCallback = IMFCameraOcclusionStateReportCallback;
 
 
@@ -5182,7 +5523,7 @@ type
   // This interface represents the main camera occlusion state monitor object.
   //
   IMFCameraOcclusionStateMonitor = interface(IUnknown)
-  ['{CC692F46-C697-47E2-A72D-7B064617749B}']
+    ['{CC692F46-C697-47E2-A72D-7B064617749B}']
     // This function will start the monitor and will immediately cause
     // OnOcclusionStateReport callback funtion to be called with the current state information.
     function Start(): HRESULT; stdcall;
@@ -5194,12 +5535,13 @@ type
     // is combination MFCameraOcclusionState flags. MFCameraOcclusionState_Open is always supported.
     function GetSupportedStates(): HRESULT; stdcall;
   end;
+
   IID_IMFCameraOcclusionStateMonitor = IMFCameraOcclusionStateMonitor;
 
-{END NTDDI_VERSION >= NTDDI_WIN10_CO}
+  {END NTDDI_VERSION >= NTDDI_WIN10_CO}
 
 
-{IF (NTDDI_VERSION >= NTDDI_WIN10_NI}
+  {IF (NTDDI_VERSION >= NTDDI_WIN10_NI}
 
 type
 
@@ -5210,7 +5552,7 @@ type
   // A client passes an implmented instance of this interface when creating a monitor
   // </summary>
   IMFCameraControlNotify = interface(IUnknown)
-  ['{E8F2540D-558A-4449-8B64-4863467A9FE8}']
+    ['{E8F2540D-558A-4449-8B64-4863467A9FE8}']
     // This method represents the notification callback for changes to controls.
     //
     // <param name = "controlSet">
@@ -5235,6 +5577,7 @@ type
     procedure OnError(hrStatus: HResult); stdcall;
 
   end;
+
   IID_IMFCameraControlNotify = IMFCameraControlNotify;
 
 
@@ -5244,7 +5587,7 @@ type
   // This interface represents the main camera control monitor object.
   //
   IMFCameraControlMonitor = interface(IUnknown)
-  ['{4D46F2C9-28BA-4970-8C7B-1F0C9D80AF69}']
+    ['{4D46F2C9-28BA-4970-8C7B-1F0C9D80AF69}']
     // This function will start the monitor. The monitor will call OnChange on Subscriptions linked to changed controls
     //If called when Monitor is already started or has shutdown, method will return error MF_E_INVALIDREQUEST
 
@@ -5279,16 +5622,18 @@ type
     procedure Shutdown();
 
   end;
+
   IID_IMFCameraControlMonitor = IMFCameraControlMonitor;
 
 
   PMF_CAMERA_CONTROL_CONFIGURATION_TYPE = ^MF_CAMERA_CONTROL_CONFIGURATION_TYPE;
-  MF_CAMERA_CONTROL_CONFIGURATION_TYPE            = (
+  MF_CAMERA_CONTROL_CONFIGURATION_TYPE = (
     MF_CAMERA_CONTROL_CONFIGURATION_TYPE_PRESTART = 0,
-    MF_CAMERA_CONTROL_CONFIGURATION_TYPE_POSTSTART );
+                                          MF_CAMERA_CONTROL_CONFIGURATION_TYPE_POSTSTART);
 
 
   PMF_CAMERA_CONTROL_RANGE_INFO = ^MF_CAMERA_CONTROL_RANGE_INFO;
+
   MF_CAMERA_CONTROL_RANGE_INFO = record
     minValue: LONG;
     maxValue: LONG;
@@ -5297,10 +5642,10 @@ type
   end;
 
 
-   // Interface IMFCameraControlDefaults
-   //===================================
-   IMFCameraControlDefaults = interface(IUnknown)
-   ['{75510662-B034-48F4-88A7-8DE61DAA4AF9}']
+  // Interface IMFCameraControlDefaults
+  //===================================
+  IMFCameraControlDefaults = interface(IUnknown)
+    ['{75510662-B034-48F4-88A7-8DE61DAA4AF9}']
 
     // <summary>
     // Gets the configuration type (pre-start or post-start).  Some
@@ -5318,7 +5663,7 @@ type
     // indicate the control is a pre-start control, caller must
     // assume the control is post-start).
     // </summary>
-    function GetType(): MF_CAMERA_CONTROL_CONFIGURATION_TYPE;  stdcall;
+    function GetType(): MF_CAMERA_CONTROL_CONFIGURATION_TYPE; stdcall;
 
     // <summary>
     // The legacy PROPSETID_VIDCAP_VIDEOPROCAMP and
@@ -5358,13 +5703,14 @@ type
     function UnlockControlData(): HResult; stdcall;
 
   end;
+
   IID_IMFCameraControlDefaults = IMFCameraControlDefaults;
 
 
   // Interface IMFCameraControlDefaultsCollection
   //=============================================
   IMFCameraControlDefaultsCollection = interface(IMFAttributes)
-  ['{92D43D0F-54A8-4BAE-96DA-356D259A5C26}']
+    ['{92D43D0F-54A8-4BAE-96DA-356D259A5C26}']
 
     /// <summary>
     /// Return the number of controls currently in the collection.
@@ -5424,13 +5770,14 @@ type
     function RemoveAllControls(): HResult; stdcall;
 
   end;
+
   IID_IMFCameraControlDefaultsCollection = IMFCameraControlDefaultsCollection;
 
 
   // Interface IMFCameraConfigurationManager
   //========================================
   IMFCameraConfigurationManager = interface(IUnknown)
-  ['{A624F617-4704-4206-8A6D-EBDA4A093985}']
+    ['{A624F617-4704-4206-8A6D-EBDA4A093985}']
 
     /// Loads the camera control defaults as specified by the
     /// MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK in
@@ -5458,6 +5805,7 @@ type
     procedure Shutdown(); stdcall;
 
   end;
+
   IID_IMFCameraConfigurationManager = IMFCameraConfigurationManager;
 
 
@@ -5465,6 +5813,7 @@ type
   // #if (NTDDI_VERSION >= NTDDI_WIN11_ZN)
 
   PDetectedFaceBound = ^DetectedFaceBound;
+
   DetectedFaceBound = record
     sizeInBytes: DWORD;              // Size in bytes to next DetectedFaceBound
     normalizedXPosition: Single;     // Normalized between 0.0 - 1.0
@@ -5486,6 +5835,7 @@ type
                                     detectedFaceBounds: PDetectedFaceBound);
 
   end;
+
   IID_IMFFaceDetectionTransformCallback = IMFFaceDetectionTransformCallback;
 
 
@@ -5501,6 +5851,7 @@ type
     function ClearDetectionCallback(callbackToken: Pointer): HResult; stdcall;
 
   end;
+
   IID_IMFFaceDetectionTransform = IMFFaceDetectionTransform;
 
 
@@ -5512,7 +5863,7 @@ const
   /// interface.
   ///
   /// {C1E565E2-F2DE-4537-9612-2F30A160EB5C}
-  CLSID_FaceDetectionMFT : TGUID = '{c1e565e2-f2de-4537-9612-2f30a160eb5c}';
+  CLSID_FaceDetectionMFT: TGUID = '{c1e565e2-f2de-4537-9612-2f30a160eb5c}';
 
   /// CLSID_FrameServerClassFactory
   ///
@@ -5529,7 +5880,7 @@ const
   /// create an IMFMediaSource for the camera.
   ///
   /// {9A93092C-9CDC-49B8-8349-CBCF3145FE0A}
-  CLSID_FrameServerClassFactory : TGUID = '{9A93092C-9CDC-49B8-8349-CBCF3145FE0A}';
+  CLSID_FrameServerClassFactory: TGUID = '{9A93092C-9CDC-49B8-8349-CBCF3145FE0A}';
 
   /// MF_CAMERASOURCE_PROVIDE_SELECTED_PROFILE_ON_START
   ///
@@ -5550,7 +5901,7 @@ const
   /// unnecessary profile changes.
   ///
   /// {A9B46058-82F2-4E5C-BF6E-25B4B09F22ED}
-  MF_CAMERASOURCE_PROVIDE_SELECTED_PROFILE_ON_START : TGUID = '{A9B46058-82F2-4E5C-BF6E-25B4B09F22ED}';
+  MF_CAMERASOURCE_PROVIDE_SELECTED_PROFILE_ON_START: TGUID = '{A9B46058-82F2-4E5C-BF6E-25B4B09F22ED}';
 
   /// MF_DEVSOURCE_ATTRIBUTE_FRAMESERVER_SHARE_MODE
   ///
@@ -5569,60 +5920,60 @@ const
   /// 1 - Shared mode instance.
   ///
   /// {44d1a9bc-2999-4238-ae43-0730ceb2ab1b}
-  MF_DEVSOURCE_ATTRIBUTE_FRAMESERVER_SHARE_MODE : TGUID = '{44d1a9bc-2999-4238-ae43-0730ceb2ab1b}';
+  MF_DEVSOURCE_ATTRIBUTE_FRAMESERVER_SHARE_MODE: TGUID = '{44d1a9bc-2999-4238-ae43-0730ceb2ab1b}';
 
 
-// if NTDDI_VERSION >= NTDDI_WIN10_NI
+  // if NTDDI_VERSION >= NTDDI_WIN10_NI
 
-  // Allows app to create Camera Occlusion State Monitor for the given camera device.
-  // The symbolicLink should be from the camera that is already activated, otherwise
-  // the state information is not guaranteed to be correct.
-  // <param name = "symbolicLink">
-  // String symbolic link name of the video capture device that is active.
-  // </param>
-  // <param name = "callback">
-  // Pointer to an object that implements the callback interface.
-  // </param>
-  // <param name = "occlusionStateMonitor">
-  // Specifies a pointer to a variable where theIMFCameraOcclusionStateMonitor object
-  // will be stored.
-  // </param>
-  function MFCreateCameraOcclusionStateMonitor(symbolicLink: PWideChar;
-                                               callback: IMFCameraOcclusionStateReportCallback;
-                                               out occlusionStateMonitor: IMFCameraOcclusionStateMonitor): HRESULT; stdcall;
+// Allows app to create Camera Occlusion State Monitor for the given camera device.
+// The symbolicLink should be from the camera that is already activated, otherwise
+// the state information is not guaranteed to be correct.
+// <param name = "symbolicLink">
+// String symbolic link name of the video capture device that is active.
+// </param>
+// <param name = "callback">
+// Pointer to an object that implements the callback interface.
+// </param>
+// <param name = "occlusionStateMonitor">
+// Specifies a pointer to a variable where theIMFCameraOcclusionStateMonitor object
+// will be stored.
+// </param>
+function MFCreateCameraOcclusionStateMonitor(symbolicLink: PWideChar;
+                                             callback: IMFCameraOcclusionStateReportCallback;
+                                             out occlusionStateMonitor: IMFCameraOcclusionStateMonitor): HRESULT; stdcall;
 
 
 {if NTDDI_VERSION >= NTDDI_WIN10_NI}
-  // function MFCreateCameraControlMonitor
-  //======================================
-  // <summary>
-  // Allows app to create CameraControlMonitor.
-  // If provided symbolic link name does not match a camera device, then method will return E_INVALIDARG
-  // </summary>
-  // <param name = "symbolicLink">
-  // String symbolic link name of the video capture device that is active.
-  // </param>
-  // <param name = "callback">
-  // Pointer to an object that implements the callback interface.
-  // </param>
-  // <param name = "ppCameraControlMonitor">
-  // Specifies a pointer to a variable where the IMFCameraControlMonitor object
-  // will be stored.
-  // </param>
-  function  MFCreateCameraControlMonitor(symbolicLink: PWideChar;
-                                         callback: IMFCameraControlNotify;
-                                         out ppCameraControlMonitor: IMFCameraControlMonitor): HResult; stdcall;
+// function MFCreateCameraControlMonitor
+//======================================
+// <summary>
+// Allows app to create CameraControlMonitor.
+// If provided symbolic link name does not match a camera device, then method will return E_INVALIDARG
+// </summary>
+// <param name = "symbolicLink">
+// String symbolic link name of the video capture device that is active.
+// </param>
+// <param name = "callback">
+// Pointer to an object that implements the callback interface.
+// </param>
+// <param name = "ppCameraControlMonitor">
+// Specifies a pointer to a variable where the IMFCameraControlMonitor object
+// will be stored.
+// </param>
+function MFCreateCameraControlMonitor(symbolicLink: PWideChar;
+                                      callback: IMFCameraControlNotify;
+                                      out ppCameraControlMonitor: IMFCameraControlMonitor): HResult; stdcall;
 {endif NTDDI_VERSION >= NTDDI_WIN10_NI}
 
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 const
   MfIdlLib1 = 'Mf.dll';
@@ -5634,112 +5985,112 @@ const
   //        The Microsoft documents suggest Mf.dll, but that is false.
   MfIdlLib5 = 'mfsrcsnk.dll';
 
-  function MFCreateSensorGroup;            external MfIdlLib3 name 'MFCreateSensorGroup' ;
-  function MFCreateSensorStream;           external MfIdlLib3 name 'MFCreateSensorStream' ;
-  function MFCreateSensorActivityMonitor;  external MfIdlLib3 name 'MFCreateSensorActivityMonitor' ;
-  function MFCreateSensorProfile;          external MfIdlLib3 name 'MFCreateSensorProfile' ;
-  function MFCreateSensorProfileCollection; external MfIdlLib3 name 'MFCreateSensorProfileCollection' ;
+function MFCreateSensorGroup; external MfIdlLib3 name 'MFCreateSensorGroup';
+function MFCreateSensorStream; external MfIdlLib3 name 'MFCreateSensorStream';
+function MFCreateSensorActivityMonitor; external MfIdlLib3 name 'MFCreateSensorActivityMonitor';
+function MFCreateSensorProfile; external MfIdlLib3 name 'MFCreateSensorProfile';
+function MFCreateSensorProfileCollection; external MfIdlLib3 name 'MFCreateSensorProfileCollection';
 
-  function MFCreateMediaSession;           external MfIdlLib1 name 'MFCreateMediaSession' ;
-  function MFCreatePMPMediaSession;        external MfIdlLib1 name 'MFCreatePMPMediaSession' ;
-  function MFCreateSourceResolver;         external MfIdlLib1 name 'MFCreateSourceResolver' ;
-  function MFCreateTopologyNode;           external MfIdlLib1 name 'MFCreateTopologyNode' ;
-  function MFGetTopoNodeCurrentType;       external MfIdlLib1 name 'MFGetTopoNodeCurrentType' ;
+function MFCreateMediaSession; external MfIdlLib1 name 'MFCreateMediaSession';
+function MFCreatePMPMediaSession; external MfIdlLib1 name 'MFCreatePMPMediaSession';
+function MFCreateSourceResolver; external MfIdlLib1 name 'MFCreateSourceResolver';
+function MFCreateTopologyNode; external MfIdlLib1 name 'MFCreateTopologyNode';
+function MFGetTopoNodeCurrentType; external MfIdlLib1 name 'MFGetTopoNodeCurrentType';
 
-  function MFGetSystemTime;                external MfIdlLib1 name 'MFGetSystemTime' ;
+function MFGetSystemTime; external MfIdlLib1 name 'MFGetSystemTime';
 
-  function MFCreateTopology;               external MfIdlLib1 name 'MFCreateTopology' ;
-  function MFCreateTopoLoader;             external MfIdlLib1 name 'MFCreateTopoLoader' ;
+function MFCreateTopology; external MfIdlLib1 name 'MFCreateTopology';
+function MFCreateTopoLoader; external MfIdlLib1 name 'MFCreateTopoLoader';
 
-  function MFShutdownObject;               external MfIdlLib1 name 'MFShutdownObject' ;
-  function MFCreateAudioRenderer;          external MfIdlLib1 name 'MFCreateAudioRenderer' ;
-  function MFCreateVideoRendererActivate;  external MfIdlLib1 name 'MFCreateVideoRendererActivate' ;
-  function MFCreateAudioRendererActivate;  external MfIdlLib1 name 'MFCreateAudioRendererActivate' ;
-  function MFGetService;                   external MfIdlLib1 name 'MFGetService' ;
-  function MFCreatePresentationClock;      external MfIdlLib1 name 'MFCreatePresentationClock' ;
+function MFShutdownObject; external MfIdlLib1 name 'MFShutdownObject';
+function MFCreateAudioRenderer; external MfIdlLib1 name 'MFCreateAudioRenderer';
+function MFCreateVideoRendererActivate; external MfIdlLib1 name 'MFCreateVideoRendererActivate';
+function MFCreateAudioRendererActivate; external MfIdlLib1 name 'MFCreateAudioRendererActivate';
+function MFGetService; external MfIdlLib1 name 'MFGetService';
+function MFCreatePresentationClock; external MfIdlLib1 name 'MFCreatePresentationClock';
 
-  function MFCreateSystemTimeSource;       external MfIdlLib2 name 'MFCreateSystemTimeSource' ;
+function MFCreateSystemTimeSource; external MfIdlLib2 name 'MFCreateSystemTimeSource';
 
-  function CreatePropertyStore;            external MfIdlLib2 name 'CreatePropertyStore' ;
-  function MFGetSupportedSchemes;          external MfIdlLib1 name 'MFGetSupportedSchemes' ;
-  function MFGetSupportedMimeTypes;        external MfIdlLib1 name 'MFGetSupportedMimeTypes' ;
-  function MFCreateSequencerSource;        external MfIdlLib1 name 'MFCreateSequencerSource' ;
-  function MFCreateSequencerSegmentOffset; external MfIdlLib1 name 'MFCreateSequencerSegmentOffset' ;
+function CreatePropertyStore; external MfIdlLib2 name 'CreatePropertyStore';
+function MFGetSupportedSchemes; external MfIdlLib1 name 'MFGetSupportedSchemes';
+function MFGetSupportedMimeTypes; external MfIdlLib1 name 'MFGetSupportedMimeTypes';
+function MFCreateSequencerSource; external MfIdlLib1 name 'MFCreateSequencerSource';
+function MFCreateSequencerSegmentOffset; external MfIdlLib1 name 'MFCreateSequencerSegmentOffset';
 
-  function MFCreatePresentationDescriptor;      external MfIdlLib2 name 'MFCreatePresentationDescriptor' ;
+function MFCreatePresentationDescriptor; external MfIdlLib2 name 'MFCreatePresentationDescriptor';
 
-  function MFRequireProtectedEnvironment;       external MfIdlLib1 name 'MFRequireProtectedEnvironment' ;
+function MFRequireProtectedEnvironment; external MfIdlLib1 name 'MFRequireProtectedEnvironment';
 
-  function MFSerializePresentationDescriptor;   external MfIdlLib1 name 'MFSerializePresentationDescriptor' ;
-  function MFDeserializePresentationDescriptor; external MfIdlLib1 name 'MFDeserializePresentationDescriptor' ;
-  function MFCreateStreamDescriptor;            external MfIdlLib2 name 'MFCreateStreamDescriptor' ;
-  function MFCreateStreamDescriptor2;           external MfIdlLib2 name 'MFCreateStreamDescriptor' ;
+function MFSerializePresentationDescriptor; external MfIdlLib1 name 'MFSerializePresentationDescriptor';
+function MFDeserializePresentationDescriptor; external MfIdlLib1 name 'MFDeserializePresentationDescriptor';
+function MFCreateStreamDescriptor; external MfIdlLib2 name 'MFCreateStreamDescriptor';
+function MFCreateStreamDescriptor2; external MfIdlLib2 name 'MFCreateStreamDescriptor';
 
-  function MFCreateSimpleTypeHandler;           external MfIdlLib1 name 'MFCreateSimpleTypeHandler' ;
+function MFCreateSimpleTypeHandler; external MfIdlLib1 name 'MFCreateSimpleTypeHandler';
 
-  function MFCreateMPEG4MediaSink;        external MfIdlLib1 name 'MFCreateMPEG4MediaSink' ;
-  function MFCreateFMPEG4MediaSink;       external MfIdlLib1 name 'MFCreateFMPEG4MediaSink' ;
-  function MFCreate3GPMediaSink;          external MfIdlLib1 name 'MFCreate3GPMediaSink' ;
-  function MFCreateMP3MediaSink;          external MfIdlLib1 name 'MFCreateMP3MediaSink' ;
-  function MFCreateAC3MediaSink;          external MfIdlLib1 name 'MFCreateAC3MediaSink' ;
-  function MFCreateADTSMediaSink;         external MfIdlLib1 name 'MFCreateADTSMediaSink' ;
-  function MFCreateMuxSink;               external MfIdlLib1 name 'MFCreateMuxSink' ;
-  function MFCreateAVIMediaSink;          external MfIdlLib5 name 'MFCreateAVIMediaSink' ;
-  function MFCreateWAVEMediaSink;         external MfIdlLib5 name 'MFCreateWAVEMediaSink' ;
+function MFCreateMPEG4MediaSink; external MfIdlLib1 name 'MFCreateMPEG4MediaSink';
+function MFCreateFMPEG4MediaSink; external MfIdlLib1 name 'MFCreateFMPEG4MediaSink';
+function MFCreate3GPMediaSink; external MfIdlLib1 name 'MFCreate3GPMediaSink';
+function MFCreateMP3MediaSink; external MfIdlLib1 name 'MFCreateMP3MediaSink';
+function MFCreateAC3MediaSink; external MfIdlLib1 name 'MFCreateAC3MediaSink';
+function MFCreateADTSMediaSink; external MfIdlLib1 name 'MFCreateADTSMediaSink';
+function MFCreateMuxSink; external MfIdlLib1 name 'MFCreateMuxSink';
+function MFCreateAVIMediaSink; external MfIdlLib5 name 'MFCreateAVIMediaSink';
+function MFCreateWAVEMediaSink; external MfIdlLib5 name 'MFCreateWAVEMediaSink';
 
-  function MFCreateSampleGrabberSinkActivate; external MfIdlLib1 name 'MFCreateSampleGrabberSinkActivate' ;
-  function MFCreateStandardQualityManager;    external MfIdlLib1 name 'MFCreateStandardQualityManager' ;
-  function MFCreateAggregateSource;           external MfIdlLib1 name 'MFCreateAggregateSource' ;
-  function MFCreateCredentialCache;           external MfIdlLib1 name 'MFCreateCredentialCache' ;
-  function MFCreateProxyLocator;              external MfIdlLib1 name 'MFCreateProxyLocator' ;
-  function MFCreateNetSchemePlugin;           external MfIdlLib1 name 'MFCreateNetSchemePlugin' ;
-  function MFCreatePMPServer;                 external MfIdlLib1 name 'MFCreatePMPServer' ;
+function MFCreateSampleGrabberSinkActivate; external MfIdlLib1 name 'MFCreateSampleGrabberSinkActivate';
+function MFCreateStandardQualityManager; external MfIdlLib1 name 'MFCreateStandardQualityManager';
+function MFCreateAggregateSource; external MfIdlLib1 name 'MFCreateAggregateSource';
+function MFCreateCredentialCache; external MfIdlLib1 name 'MFCreateCredentialCache';
+function MFCreateProxyLocator; external MfIdlLib1 name 'MFCreateProxyLocator';
+function MFCreateNetSchemePlugin; external MfIdlLib1 name 'MFCreateNetSchemePlugin';
+function MFCreatePMPServer; external MfIdlLib1 name 'MFCreatePMPServer';
 
-  function MFCreateRemoteDesktopPlugin;       external MfIdlLib1 name 'MFCreateRemoteDesktopPlugin' ;
-  function CreateNamedPropertyStore;          external MfIdlLib1 name 'CreateNamedPropertyStore' ;
-  function MFCreateSampleCopierMFT;           external MfIdlLib1 name 'MFCreateSampleCopierMFT' ;
+function MFCreateRemoteDesktopPlugin; external MfIdlLib1 name 'MFCreateRemoteDesktopPlugin';
+function CreateNamedPropertyStore; external MfIdlLib1 name 'CreateNamedPropertyStore';
+function MFCreateSampleCopierMFT; external MfIdlLib1 name 'MFCreateSampleCopierMFT';
 
-  function MFCreateTranscodeProfile;          external MfIdlLib1 name 'MFCreateTranscodeProfile' ;
-  function MFCreateTranscodeTopology;         external MfIdlLib1 name 'MFCreateTranscodeTopology' ;
-  function MFCreateTranscodeTopologyFromByteStream; external MfIdlLib1 name 'MFCreateTranscodeTopologyFromByteStream' ;
-  function MFTranscodeGetAudioOutputAvailableTypes; external MfIdlLib1 name 'MFTranscodeGetAudioOutputAvailableTypes' ;
-  function MFCreateTranscodeSinkActivate;           external MfIdlLib1 name 'MFCreateTranscodeSinkActivate' ;
+function MFCreateTranscodeProfile; external MfIdlLib1 name 'MFCreateTranscodeProfile';
+function MFCreateTranscodeTopology; external MfIdlLib1 name 'MFCreateTranscodeTopology';
+function MFCreateTranscodeTopologyFromByteStream; external MfIdlLib1 name 'MFCreateTranscodeTopologyFromByteStream';
+function MFTranscodeGetAudioOutputAvailableTypes; external MfIdlLib1 name 'MFTranscodeGetAudioOutputAvailableTypes';
+function MFCreateTranscodeSinkActivate; external MfIdlLib1 name 'MFCreateTranscodeSinkActivate';
 
-  function MFCreateTrackedSample;           external MfIdlLib2 name 'MFCreateTrackedSample' ;
-  function MFCreateMFByteStreamOnStream;    external MfIdlLib2 name 'MFCreateMFByteStreamOnStream' ;
-  function MFCreateStreamOnMFByteStream;    external MfIdlLib2 name 'MFCreateStreamOnMFByteStream' ;
-  function MFCreateMFByteStreamOnStreamEx;  external MfIdlLib2 name 'MFCreateMFByteStreamOnStreamEx' ;
-  function MFCreateStreamOnMFByteStreamEx;  external MfIdlLib2 name 'MFCreateStreamOnMFByteStreamEx' ;
-  function MFCreateMediaTypeFromProperties; external MfIdlLib2 name 'MFCreateMediaTypeFromProperties' ;
-  function MFCreatePropertiesFromMediaType; external MfIdlLib2 name 'MFCreatePropertiesFromMediaType' ;
+function MFCreateTrackedSample; external MfIdlLib2 name 'MFCreateTrackedSample';
+function MFCreateMFByteStreamOnStream; external MfIdlLib2 name 'MFCreateMFByteStreamOnStream';
+function MFCreateStreamOnMFByteStream; external MfIdlLib2 name 'MFCreateStreamOnMFByteStream';
+function MFCreateMFByteStreamOnStreamEx; external MfIdlLib2 name 'MFCreateMFByteStreamOnStreamEx';
+function MFCreateStreamOnMFByteStreamEx; external MfIdlLib2 name 'MFCreateStreamOnMFByteStreamEx';
+function MFCreateMediaTypeFromProperties; external MfIdlLib2 name 'MFCreateMediaTypeFromProperties';
+function MFCreatePropertiesFromMediaType; external MfIdlLib2 name 'MFCreatePropertiesFromMediaType';
 
-  function MFEnumDeviceSources;             external MfIdlLib1 name 'MFEnumDeviceSources' ;
+function MFEnumDeviceSources; external MfIdlLib1 name 'MFEnumDeviceSources';
 
-  function MFCreateDeviceSource;            external MfIdlLib1 name 'MFCreateDeviceSource' ;
-  function MFCreateDeviceSourceActivate;    external MfIdlLib1 name 'MFCreateDeviceSourceActivate' ;
+function MFCreateDeviceSource; external MfIdlLib1 name 'MFCreateDeviceSource';
+function MFCreateDeviceSourceActivate; external MfIdlLib1 name 'MFCreateDeviceSourceActivate';
 
-  function MFCreateProtectedEnvironmentAccess; external MfIdlLib1 name 'MFCreateProtectedEnvironmentAccess' ;
-  function MFLoadSignedLibrary;                external MfIdlLib1 name 'MFLoadSignedLibrary' ;
-  function MFGetSystemId;                      external MfIdlLib1 name 'MFGetSystemId' ;
-  function MFGetLocalId;                       external MfIdlLib1 name 'MFGetLocalId' ;
+function MFCreateProtectedEnvironmentAccess; external MfIdlLib1 name 'MFCreateProtectedEnvironmentAccess';
+function MFLoadSignedLibrary; external MfIdlLib1 name 'MFLoadSignedLibrary';
+function MFGetSystemId; external MfIdlLib1 name 'MFGetSystemId';
+function MFGetLocalId; external MfIdlLib1 name 'MFGetLocalId';
 
-  function MFCreateContentProtectionDevice;      external MfIdlLib2 name 'MFCreateContentProtectionDevice' ;
-  function MFIsContentProtectionDeviceSupported; external MfIdlLib2 name 'MFIsContentProtectionDeviceSupported' ;
-  function MFCreateContentDecryptorContext;      external MfIdlLib2 name 'MFCreateContentDecryptorContext' ;
+function MFCreateContentProtectionDevice; external MfIdlLib2 name 'MFCreateContentProtectionDevice';
+function MFIsContentProtectionDeviceSupported; external MfIdlLib2 name 'MFIsContentProtectionDeviceSupported';
+function MFCreateContentDecryptorContext; external MfIdlLib2 name 'MFCreateContentDecryptorContext';
 
-  // NTDDI_VERSION >= NTDDI_WIN10_RS5
-  function MFCreateExtendedCameraIntrinsics;     external MfIdlLib4 name 'MFCreateExtendedCameraIntrinsics' ;
-  function MFCreateExtendedCameraIntrinsicModel; external MfIdlLib4 name 'MFCreateExtendedCameraIntrinsicModel' ;
-  // end NTDDI_VERSION >= NTDDI_WIN10_RS5
+// NTDDI_VERSION >= NTDDI_WIN10_RS5
+function MFCreateExtendedCameraIntrinsics; external MfIdlLib4 name 'MFCreateExtendedCameraIntrinsics';
+function MFCreateExtendedCameraIntrinsicModel; external MfIdlLib4 name 'MFCreateExtendedCameraIntrinsicModel';
+// end NTDDI_VERSION >= NTDDI_WIN10_RS5
 
-  // NTDDI_VERSION >= NTDDI_WIN10_VB
-  function MFCreateRelativePanelWatcher;         external MfIdlLib3 name 'MFCreateRelativePanelWatcher' ;
-  // end NTDDI_VERSION >= NTDDI_WIN10_VB
+// NTDDI_VERSION >= NTDDI_WIN10_VB
+function MFCreateRelativePanelWatcher; external MfIdlLib3 name 'MFCreateRelativePanelWatcher';
+// end NTDDI_VERSION >= NTDDI_WIN10_VB
 
-  // NTDDI_VERSION >= NTDDI_WIN10_NI
-  function MFCreateCameraOcclusionStateMonitor;  external MfIdlLib3 name 'MFCreateCameraOcclusionStateMonitor' ;
-  function MFCreateCameraControlMonitor;         external MfIdlLib3 name 'MFCreateCameraControlMonitor' ;
-  // end NTDDI_VERSION >= NTDDI_WIN10_VB
+// NTDDI_VERSION >= NTDDI_WIN10_NI
+function MFCreateCameraOcclusionStateMonitor; external MfIdlLib3 name 'MFCreateCameraOcclusionStateMonitor';
+function MFCreateCameraControlMonitor; external MfIdlLib3 name 'MFCreateCameraControlMonitor';
+// end NTDDI_VERSION >= NTDDI_WIN10_VB
 
 
 
@@ -5747,48 +6098,62 @@ const
 ///// INTERNAL FUNCTIONS ///////////////////////////////////////////////////////
 
 function MAKE_MFPROTECTIONDATA_DISABLE(const Disable: BOOL): DWORD; inline;
+
 begin
+
   if (Disable = True) then
-    Result:= $00000001
+    Result := $00000001
   else
     Result := 0;
 end;
 
 
 function EXTRACT_MFPROTECTIONDATA_DISABLE_ON(Data: DWORD): BOOL; inline;
+
 begin
+
   Result := BOOL((Data and $00000001) <> 0);
 end;
 
 
 function EXTRACT_MFPROTECTIONDATA_DISABLE_RESERVED(Data: DWORD): DWORD; inline;
+
 begin
+
   Result := ((Data and $FFFFFFFE) shr 1);
 end;
 
 
 function MAKE_MFPROTECTIONDATA_CONSTRICTAUDIO(Level: DWORD): DWORD; inline;
+
 begin
+
   Result := Level;
 end;
 
 
 function EXTRACT_MFPROTECTIONDATA_CONSTRICTAUDIO_LEVEL(Data: DWORD): DWORD; inline;
+
 begin
+
   Result := Data and $000000FF;
 end;
 
 
 function EXTRACT_MFPROTECTIONDATA_CONSTRICTAUDIO_RESERVED(Data: DWORD): DWORD; inline;
+
 begin
+
   Result := (Data and $FFFFFF00) shr 8;
 end;
 
 
 function MAKE_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS(TestCertificateEnable: BOOL;
-                                                     DigitalOutputDisable: BOOL;
-                                                     DrmLevel: DWORD): DWORD; inline;
+                                                   DigitalOutputDisable: BOOL;
+                                                   DrmLevel: DWORD): DWORD; inline;
+
 begin
+
   Result := 0;   //init
 
   if (TestCertificateEnable = True) then
@@ -5802,20 +6167,22 @@ end;
 
 
 function MAKE_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS2(TestCertificateEnable: BOOL;
-                                                      DigitalOutputDisable: BOOL;
-                                                      CopyOK: BOOL;
-                                                      DrmLevel: DWORD): DWORD; inline;
+                                                    DigitalOutputDisable: BOOL;
+                                                    CopyOK: BOOL;
+                                                    DrmLevel: DWORD): DWORD; inline;
+
 begin
+
   Result := 0; // init
 
   if (TestCertificateEnable = True) then
-    Result:= $20000;
+    Result := $20000;
 
   if (DigitalOutputDisable = True) then
-    Result:= Result or $10000;
+    Result := Result or $10000;
 
   if (CopyOK = True) then
-    Result:= Result or $40000;
+    Result := Result or $40000;
 
   // final
   Result := Result or DrmLevel;
@@ -5823,44 +6190,58 @@ end;
 
 
 function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_DRMLEVEL(Data: DWORD): DWORD; inline;
+
 begin
+
   Result := (Data and $0000FFFF);
 end;
 
 
 function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_DIGITALOUTPUTDISABLE(Data: DWORD): BOOL; inline;
+
 begin
+
   Result := BOOL(0 <> (Data and $10000));
 end;
 
 
 function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_TESTCERTIFICATEENABLE(Data: DWORD): BOOL; inline;
+
 begin
+
   Result := BOOL(0 <> (Data and $20000));
 end;
 
 
 function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_COPYOK(Data: DWORD): BOOL; inline;
+
 begin
+
   Result := BOOL(0 <> (Data and $40000));
 end;
 
 
 function EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_RESERVED(Data: DWORD): DWORD; inline;
+
 begin
+
   Result := ((Data and $FFF80000) shr 19);
 end;
 
 // Else
 
 function _EXTRACT_MFPROTECTIONDATA_TRUSTEDAUDIODRIVERS_RESERVED(Data: DWORD): DWORD; inline;
+
 begin
+
   Result := ((Data and $FFF80000) shr 18);
 end;
 
 
 procedure MFCLOCK_PROPERTIES.Copy(out destProps: MFCLOCK_PROPERTIES);
+
 begin
+
   destProps.qwCorrelationRate := qwCorrelationRate;
   destProps.guidClockId := guidClockId;
   destProps.dwClockFlags := dwClockFlags;

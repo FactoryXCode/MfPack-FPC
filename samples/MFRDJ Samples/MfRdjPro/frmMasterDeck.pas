@@ -65,11 +65,12 @@ unit frmMasterDeck;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -339,6 +340,7 @@ end;
 
 
 procedure TMasterDeckFrm.FormCreate(Sender: TObject);
+
 begin
 
   // Do not request Handle here. This DFM uses OldCreateOrder, so FormCreate can
@@ -348,6 +350,7 @@ end;
 
 
 procedure TMasterDeckFrm.FormDestroy(Sender: TObject);
+
 begin
 
   if FRecordingInternal then
@@ -358,6 +361,7 @@ end;
 
 
 procedure TMasterDeckFrm.FormShow(Sender: TObject);
+
 begin
 
   // No form caption. FormShow runs after DFM streaming and MDI activation, so
@@ -377,6 +381,7 @@ end;
 
 
 procedure TMasterDeckFrm.btnPflMuteClick(Sender: TObject);
+
 begin
 
   epPFL.Mute := btnPflMute.Checked;
@@ -384,6 +389,7 @@ end;
 
 
 procedure TMasterDeckFrm.SetMasterDeviceId(const ADeviceId: string);
+
 begin
 
   FMasterDeviceId := ADeviceId;
@@ -410,12 +416,12 @@ begin
 
   if (bal < 0) then
     gainR := 1.0 - (Abs(bal) * 0.01)
-  else
-    if (bal > 0) then
-      gainL := 1.0 - (bal * 0.01);
+  else if (bal > 0) then
+    gainL := 1.0 - (bal * 0.01);
 
   if Assigned(MainMDIFrm) then
-    MainMDIFrm.SetHeosMasterGains(baseL * gainL, baseR * gainR);
+    MainMDIFrm.SetHeosMasterGains(baseL * gainL,
+                                  baseR * gainR);
 
   epMaster.SetChannelScalarVolume(0,
                                   baseL * gainL);
@@ -425,6 +431,7 @@ end;
 
 
 procedure TMasterDeckFrm.tbBalanceDblClick(Sender: TObject);
+
 begin
 
   tbBalance.AnimateTrackBarToPosition(0,
@@ -510,9 +517,8 @@ begin
 
   if (volScalar > 1.0) then
     volScalar := 1.0
-  else
-    if (volScalar < 0.0) then
-      volScalar := 0.0;
+  else if (volScalar < 0.0) then
+    volScalar := 0.0;
 
   epPFL.MasterScalarVolume := volScalar;
 
@@ -537,6 +543,7 @@ end;
 
 
 procedure TMasterDeckFrm.UpdateRecordingUi();
+
 begin
 
   if FRecordingInternal then
@@ -548,23 +555,22 @@ begin
       edFileName.Enabled := False;
       lblRecorderStatus.Caption := 'Recording internal mixer audio.';
     end
+  else if Assigned(prAudioRecorder) and (prAudioRecorder.DeviceState = Capturing) then
+    begin
+
+      btnRecord.Caption := 'Stop';
+      btnRecord.Enabled := True;
+      btnSelectAudiDevice.Enabled := False;
+      edFileName.Enabled := False;
+
+    end
   else
-    if Assigned(prAudioRecorder) and (prAudioRecorder.DeviceState = Capturing) then
-      begin
+    begin
 
-        btnRecord.Caption := 'Stop';
-        btnRecord.Enabled := True;
-        btnSelectAudiDevice.Enabled := False;
-        edFileName.Enabled := False;
-
-      end
-    else
-      begin
-
-        btnRecord.Caption := 'Start';
-        btnSelectAudiDevice.Enabled := True;
-        edFileName.Enabled := True;
-      end;
+      btnRecord.Caption := 'Start';
+      btnSelectAudiDevice.Enabled := True;
+      edFileName.Enabled := True;
+    end;
 
   chkPreFx.Enabled := IsInternalMixerSourceSelected() and (Tag = 0);
   chkPostFx.Enabled := IsInternalMixerSourceSelected() and (Tag = 0);
@@ -572,11 +578,12 @@ end;
 
 
 function TMasterDeckFrm.IsInternalMixerSourceSelected(): Boolean;
+
 begin
 
   Result := (prEndPoint = nil) and
-            SameText(Trim(WideCharToString(prDeviceName)),
-                     RDJ_MASTER_INPUT_NAME);
+    SameText(Trim(WideCharToString(prDeviceName)),
+             RDJ_MASTER_INPUT_NAME);
 end;
 
 
@@ -607,7 +614,7 @@ begin
     end;
 
   // Check dir
-  if not DirectoryExists(setup.AudioRecordingsPath) or (setup.AudioRecordingsPath = '')  then
+  if not DirectoryExists(setup.AudioRecordingsPath) or (setup.AudioRecordingsPath = '') then
     begin
 
       if not CreateDir(setup.AudioRecordingsPath) then
@@ -629,13 +636,13 @@ begin
               if (prOrgFileName = prFileName) then
                 prFileName := Format('%s(%d)',
                                      [edFileName.Text,
-                                      i])
+                  i])
               else
                 begin
 
                   prFileName := Format('%s(%d)',
                                        [prOrgFileName,
-                                        i]);
+                    i]);
 
                   edFileName.Text := prFileName;
                 end;
@@ -654,6 +661,7 @@ end;
 
 
 procedure TMasterDeckFrm.chkPostFxClick(Sender: TObject);
+
 begin
 
   if Assigned(MainMDIFrm) then
@@ -662,6 +670,7 @@ end;
 
 
 procedure TMasterDeckFrm.chkPreFxClick(Sender: TObject);
+
 begin
 
   if Assigned(MainMDIFrm) then
@@ -672,6 +681,7 @@ end;
 // Audio recorder --------------------------------------------------------------
 
 procedure TMasterDeckFrm.OnCapturingStartEvent(Sender: TObject);
+
 begin
 
   tmrTime.Enabled := True;
@@ -706,12 +716,11 @@ begin
       lblRecorderStatus.Caption := Format('Capturing stopped. Captured %f Mb.',
                                           [prAudioRecorder.BytesCaptured / (1000 * 1000)]);
     end
-  else
-    if (Status = Error) then
-      begin
-        lblRecorderStatus.Caption := Format('Capturing stopped because of an error (hr = %d).',
-                                            [E_FAIL]);
-      end;
+  else if (Status = Error) then
+    begin
+      lblRecorderStatus.Caption := Format('Capturing stopped because of an error (hr = %d).',
+                                          [E_FAIL]);
+    end;
 
   btnRecord.Caption := 'Start';
   btnSelectAudiDevice.Enabled := True;
@@ -720,6 +729,7 @@ end;
 
 
 function TMasterDeckFrm.CreateEngine(): Boolean;
+
 begin
 
   // Destroy an existing capture engine.
@@ -762,6 +772,7 @@ end;
 
 
 procedure TMasterDeckFrm.RemoveEngine();
+
 begin
 
   if Assigned(prAudioRecorder) then
@@ -779,6 +790,7 @@ end;
 
 
 procedure TMasterDeckFrm.btnSelectAudiDeviceClick(Sender: TObject);
+
 begin
 
   // Create the dialog if it's not allready done.
@@ -864,8 +876,8 @@ begin
     end;
 
   if MainMDIFrm.StartInternalMixerRecording(AFileName,
-                                            RecPre,
-                                            RecPost) then
+    RecPre,
+    RecPost) then
     begin
 
       FRecordingInternal := True;
@@ -898,6 +910,7 @@ end;
 
 
 procedure TMasterDeckFrm.StopInternalRecorder();
+
 begin
 
   if Assigned(MainMDIFrm) then
@@ -982,6 +995,7 @@ end;
 
 
 procedure TMasterDeckFrm.StopEndpointRecorder();
+
 begin
 
   if Assigned(prAudioRecorder) then
@@ -1009,6 +1023,7 @@ end;
 
 
 procedure TMasterDeckFrm.btnRecordClick(Sender: TObject);
+
 begin
 
   if (Tag = 1) then
@@ -1034,6 +1049,7 @@ end;
 
 
 procedure TMasterDeckFrm.tmrTimeTimer(Sender: TObject);
+
 begin
 
   if FTimerRunning then

@@ -66,11 +66,12 @@ unit MfIcecastServerManager;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinSock,
   WinInet,
@@ -95,6 +96,7 @@ type
                                    AState: TMfIcecastServerState) of object;
 
   TMfIcecastServerManager = class
+
   private
 
     FExePath: string;
@@ -181,6 +183,7 @@ implementation
 { TMfIcecastServerManager }
 
 constructor TMfIcecastServerManager.Create{(AOwner: TComponent)};
+
 begin
 
   inherited {Create(AOwner)};
@@ -214,6 +217,7 @@ end;
 
 
 destructor TMfIcecastServerManager.Destroy();
+
 begin
 
   Stop();
@@ -227,6 +231,7 @@ end;
 
 
 function TMfIcecastServerManager.FileExistsSafe(const AFileName: string): Boolean;
+
 begin
 
   Result := (AFileName <> '') and FileExists(AFileName);
@@ -234,15 +239,17 @@ end;
 
 
 function TMfIcecastServerManager.IsUncPath(const APath: string): Boolean;
+
 begin
 
   Result := (Length(APath) >= 2) and
-            (APath[1] = '\') and
-            (APath[2] = '\');
+    (APath[1] = '\') and
+    (APath[2] = '\');
 end;
 
 
 function TMfIcecastServerManager.IsProbeOnlyMode(): Boolean;
+
 begin
 
   // Remote/server mode:
@@ -255,6 +262,7 @@ end;
 
 
 procedure TMfIcecastServerManager.SetState(const AValue: TMfIcecastServerState);
+
 begin
 
   if (FState = AValue) then
@@ -266,6 +274,7 @@ end;
 
 
 procedure TMfIcecastServerManager.EmitStateChanged;
+
 begin
 
   if Assigned(FOnStateChanged) then
@@ -275,6 +284,7 @@ end;
 
 
 procedure TMfIcecastServerManager.EmitLog(const AText: string);
+
 begin
 
   if Assigned(FOnLog) then
@@ -284,6 +294,7 @@ end;
 
 
 function TMfIcecastServerManager.GetStatusText(): string;
+
 begin
 
   case FState of
@@ -296,7 +307,7 @@ begin
     issRunningNotReady:
       Result := Format('Running (not ready yet) [%s:%d]',
                        [FHost,
-                        FPort]);
+        FPort]);
 
     issReady:
       Result := Format('Ready on port %d',
@@ -304,8 +315,8 @@ begin
 
     issStopping:
       Result := 'Stopping';
-  else
-    Result := 'Unknown';
+    else
+      Result := 'Unknown';
   end;
 end;
 
@@ -336,6 +347,7 @@ end;
 }
 
 function TMfIcecastServerManager.BuildCommandLine(): string;
+
 begin
 
   Result := '"' + FExePath + '"';
@@ -353,7 +365,6 @@ var
   WorkDir: string;
 
 begin
-
 
   if not FileExistsSafe(FExePath) then
     raise Exception.CreateFmt('Icecast executable not found: %s',
@@ -377,14 +388,13 @@ begin
   SA.lpSecurityDescriptor := nil;
 
   if not CreatePipe(FStdOutRead,
-                    FStdOutWrite,
-                    @SA,
-                    0) then
+    FStdOutWrite, @SA,
+    0) then
     RaiseLastOSError;
 
   if not SetHandleInformation(FStdOutRead,
-                              HANDLE_FLAG_INHERIT,
-                              0) then
+    HANDLE_FLAG_INHERIT,
+    0) then
     RaiseLastOSError;
 
   FStdErrWrite := FStdOutWrite;
@@ -408,15 +418,15 @@ begin
   CreationFlags := NORMAL_PRIORITY_CLASS or CREATE_NO_WINDOW or CREATE_NEW_PROCESS_GROUP;
 
   if not CreateProcessW(nil,
-                       PChar(CmdLine),
-                       nil,
-                       nil,
-                       True,
-                       CreationFlags,
-                       nil,
-                       PChar(WorkDir),
-                       FStartupInfo,
-                       FProcessInfo) then
+    PChar(CmdLine),
+    nil,
+    nil,
+    True,
+    CreationFlags,
+    nil,
+    PChar(WorkDir),
+    FStartupInfo,
+    FProcessInfo) then
     begin
 
       ClosePipeHandles();
@@ -434,13 +444,14 @@ begin
 
   EmitLog(Format('[Icecast] Started. PID=%d  Command=%s',
                  [FProcessInfo.dwProcessId,
-                  CmdLine]));
+    CmdLine]));
 
   Result := S_OK;
 end;
 
 
 procedure TMfIcecastServerManager.ClosePipeHandles;
+
 begin
 
   if (FStdOutRead <> 0) then
@@ -467,6 +478,7 @@ end;
 
 
 procedure TMfIcecastServerManager.CloseProcessHandles;
+
 begin
 
   if (FProcessInfo.hThread <> 0) then
@@ -489,6 +501,7 @@ end;
 
 
 function TMfIcecastServerManager.Start: HRESULT;
+
 begin
 
   Result := S_OK;
@@ -509,7 +522,7 @@ begin
 
       EmitLog(Format('[Icecast] Remote/server mode. Monitoring %s:%d; process start disabled.',
                      [FHost,
-                      FPort]));
+        FPort]));
       SetState(issRunningNotReady);
       FPollTimer.Enabled := True;
       Exit(S_OK);
@@ -530,11 +543,11 @@ begin
   except
 
     on E: Exception do
-    begin
-      EmitLog('[Icecast] Start failed: ' + E.Message);
-      SetState(issStopped);
-      Result := E_FAIL;
-    end;
+      begin
+        EmitLog('[Icecast] Start failed: ' + E.Message);
+        SetState(issStopped);
+        Result := E_FAIL;
+      end;
   end;
 end;
 
@@ -582,6 +595,7 @@ end;
 
 
 procedure TMfIcecastServerManager.Stop(AppIsShuttingDown: Boolean = False);
+
 begin
 
   FLastStopWasManual := True;
@@ -623,7 +637,9 @@ begin
   end;
 end;
 
+
 procedure TMfIcecastServerManager.Restart();
+
 begin
 
   if IsProbeOnlyMode() then
@@ -652,9 +668,9 @@ begin
     begin
 
       Result := FPollTimer.Enabled and
-                (FState in [issStarting,
-                            issRunningNotReady,
-                            issReady]);
+        (FState in [issStarting,
+        issRunningNotReady,
+        issReady]);
       Exit;
     end;
 
@@ -669,7 +685,7 @@ begin
           if not FLastReady then
             EmitLog(Format('[Icecast] Remote server ready on %s:%d',
                            [FHost,
-                            FPort]));
+              FPort]));
           FLastReady := True;
           SetState(issReady);
         end
@@ -690,7 +706,7 @@ begin
 
   ExitCode := 0;
   if not GetExitCodeProcess(FProcessInfo.hProcess,
-                            ExitCode) then
+    ExitCode) then
     Exit(False);
 
   Result := (ExitCode = STILL_ACTIVE);
@@ -711,11 +727,10 @@ begin
 
   BytesAvail := 0;
   if not PeekNamedPipe(FStdOutRead,
-                       nil,
-                       0,
-                       nil,
-                       @BytesAvail,
-                       nil) then
+    nil,
+    0,
+    nil, @BytesAvail,
+    nil) then
     Exit;
 
   while (BytesAvail > 0) do
@@ -723,10 +738,10 @@ begin
 
       BytesRead := 0;
       if not ReadFile(FStdOutRead,
-                      Buffer[0],
-                      SizeOf(Buffer) - 1,
-                      BytesRead,
-                     nil) then
+        Buffer[0],
+        SizeOf(Buffer) - 1,
+        BytesRead,
+        nil) then
         Break;
 
       if (BytesRead = 0) then
@@ -741,11 +756,10 @@ begin
 
       BytesAvail := 0;
       if not PeekNamedPipe(FStdOutRead,
-                           nil,
-                           0,
-                           nil,
-                           @BytesAvail,
-                           nil) then
+        nil,
+        0,
+        nil, @BytesAvail,
+        nil) then
         Break;
     end;
 end;
@@ -769,15 +783,15 @@ begin
 
   Result := False;
 
-  if WSAStartup($0202,
-                WsaData) <> 0 then
+  if (WSAStartup($0202,
+    WsaData) <> 0) then
     Exit;
   try
 
     Sock := socket(AF_INET,
                    SOCK_STREAM,
                    IPPROTO_TCP);
-    if Sock = INVALID_SOCKET then
+    if (Sock = INVALID_SOCKET) then
       Exit;
 
     try
@@ -803,8 +817,8 @@ begin
           // This keeps the probe useful in public/server setups.
           HostEnt := gethostbyname(PAnsiChar(HostAnsi));
           if (HostEnt = nil) or
-             (HostEnt^.h_addr_list = nil) or
-             (HostEnt^.h_addr_list^ = nil) then
+            (HostEnt^.h_addr_list = nil) or
+            (HostEnt^.h_addr_list^ = nil) then
             Exit;
 
           Move(HostEnt^.h_addr_list^^,
@@ -829,18 +843,18 @@ begin
                        nil,
                        @Tv);
 
-      if SelRes > 0 then
-      begin
-        ErrLen := SizeOf(Err);
-        Err := 0;
-        getsockopt(Sock,
-                   SOL_SOCKET,
-                   SO_ERROR,
-                   @Err,
-                   ErrLen);
+      if (SelRes > 0) then
+        begin
+          ErrLen := SizeOf(Err);
+          Err := 0;
+          getsockopt(Sock,
+                     SOL_SOCKET,
+                     SO_ERROR,
+                     @Err,
+                     ErrLen);
 
-        Result := (Err = 0);
-      end;
+          Result := (Err = 0);
+        end;
     finally
       closesocket(Sock);
     end;
@@ -866,15 +880,15 @@ begin
 
   Url := Format('http://%s:%d%s',
                 [FHost,
-                 FPort,
-                 FHttpPath]);
+    FPort,
+    FHttpPath]);
 
   hInet := InternetOpen('CarmenIcecastProbe',
                         INTERNET_OPEN_TYPE_PRECONFIG,
                         nil,
                         nil,
                         0);
-  if hInet = nil then
+  if (hInet = nil) then
     Exit;
 
   try
@@ -897,14 +911,14 @@ begin
                       SizeOf(TimeoutMs));
 
     hUrl := InternetOpenUrlW(hInet,
-                            PChar(Url),
-                            nil,
-                            0,
-                            INTERNET_FLAG_RELOAD or
-                            INTERNET_FLAG_NO_CACHE_WRITE or
-                            INTERNET_FLAG_PRAGMA_NOCACHE,
-                            0);
-    if hUrl = nil then
+                             PChar(Url),
+                             nil,
+                             0,
+                             INTERNET_FLAG_RELOAD or
+      INTERNET_FLAG_NO_CACHE_WRITE or
+      INTERNET_FLAG_PRAGMA_NOCACHE,
+                             0);
+    if (hUrl = nil) then
       Exit;
 
     try
@@ -954,25 +968,25 @@ begin
 
   ReadAvailableOutput();
 
-  if FPendingRestartTick <> 0 then
-  begin
+  if (FPendingRestartTick <> 0) then
+    begin
 
-    if (GetTickCount >= FPendingRestartTick) then
-      begin
+      if (GetTickCount >= FPendingRestartTick) then
+        begin
 
-        FPendingRestartTick := 0;
-        EmitLog('[Icecast] Auto-restarting...');
-        Start();
-      end;
-    Exit;
-  end;
+          FPendingRestartTick := 0;
+          EmitLog('[Icecast] Auto-restarting...');
+          Start();
+        end;
+      Exit;
+    end;
 
   if (FProcessInfo.hProcess = 0) then
     Exit;
 
   ExitCode := 0;
   if not GetExitCodeProcess(FProcessInfo.hProcess,
-                            ExitCode) then
+    ExitCode) then
     Exit;
 
   if (ExitCode <> STILL_ACTIVE) then
@@ -1004,7 +1018,7 @@ begin
       if not FLastReady then
         EmitLog(Format('[Icecast] Server ready on %s:%d',
                        [FHost,
-                        FPort]));
+          FPort]));
       FLastReady := True;
       SetState(issReady);
     end
@@ -1020,6 +1034,7 @@ end;
 
 
 procedure TMfIcecastServerManager.PollTimerTick(Sender: TObject);
+
 begin
 
   CheckProcess();

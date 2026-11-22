@@ -68,7 +68,7 @@ interface
 
 uses
   MfEncodeAudio.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {VCL}
@@ -126,7 +126,8 @@ type
                          aCol: Integer);
     // Grid sorting methods (Author: Peter Below)
     procedure SortStringgrid(byColumn: LongInt;
-                             ascending: Boolean );
+                             ascending: Boolean);
+
   public
     { Public declarations }
     iSelectedFormat: Integer;
@@ -149,10 +150,15 @@ implementation
 
 
 procedure TAudioFormatDlg.butOkClick(Sender: TObject);
+
 begin
-  if Length(aAudioFmts) = 0 then Exit;
-  iSelectedFormat := StrToIntDef(sgAudioFormats.Cells[4,sgAudioFormats.Row],-1);
-  if (iSelectedFormat < 0) or (iSelectedFormat >= Length(aAudioFmts)) then Exit;
+
+  if (Length(aAudioFmts) = 0) then
+    Exit;
+  iSelectedFormat := StrToIntDef(sgAudioFormats.Cells[4, sgAudioFormats.Row],
+                                 -1);
+  if (iSelectedFormat < 0) or (iSelectedFormat >= Length(aAudioFmts)) then
+    Exit;
   GetFormatDescription();
   ModalResult := mrOk;
 end;
@@ -163,10 +169,11 @@ var
   i: Integer;
 
 begin
+
   // Reset the array
-  if Length(aAudioFmts) > 0 then
+  if (Length(aAudioFmts) > 0) then
     begin
-      for i := 0 to Length(aAudioFmts) -1 do
+      for i := 0 to Length(aAudioFmts) - 1 do
         aAudioFmts[i].Reset;
       SetLength(aAudioFmts,
                 0);
@@ -175,38 +182,49 @@ end;
 
 
 procedure TAudioFormatDlg.sgAudioFormatsClick(Sender: TObject);
+
 begin
-  if Length(aAudioFmts) = 0 then Exit;
-  iSelectedFormat := StrToIntDef(sgAudioFormats.Cells[4,sgAudioFormats.Row],-1);
-  if (iSelectedFormat < 0) or (iSelectedFormat >= Length(aAudioFmts)) then Exit;
+
+  if (Length(aAudioFmts) = 0) then
+    Exit;
+  iSelectedFormat := StrToIntDef(sgAudioFormats.Cells[4, sgAudioFormats.Row],
+                                 -1);
+  if (iSelectedFormat < 0) or (iSelectedFormat >= Length(aAudioFmts)) then
+    Exit;
 
 
   if (aAudioFmts[iSelectedFormat].wcSubFormat = 'MFAudioFormat_AAC') then
     begin
       //
       stxtExtraInfo.Caption := '             AAC PayLoad: ' + IntToStr(aAudioFmts[iSelectedFormat].unAACPayload) + CRLF +
-                               ' AAC PayLoad Description: ' + string(aAudioFmts[iSelectedFormat].wsAACPayloadDescription) + CRLF +
-                               '       AAC Profile Level: ' + IntToStr(aAudioFmts[iSelectedFormat].unAACProfileLevel) + CRLF +
-                               ' AAC Profile Description: ' + string(aAudioFmts[iSelectedFormat].wsAACProfileLevelDescription);
+        ' AAC PayLoad Description: ' + string(aAudioFmts[iSelectedFormat].wsAACPayloadDescription) + CRLF +
+        '       AAC Profile Level: ' + IntToStr(aAudioFmts[iSelectedFormat].unAACProfileLevel) + CRLF +
+        ' AAC Profile Description: ' + string(aAudioFmts[iSelectedFormat].wsAACProfileLevelDescription);
     end;
 end;
 
 
 procedure TAudioFormatDlg.sgAudioFormatsDblClick(Sender: TObject);
+
 begin
+
   sgAudioFormatsClick(Self);
   butOkClick(Self);
 end;
 
 
 procedure TAudioFormatDlg.butSaveToFileClick(Sender: TObject);
+
 begin
+
   SaveAudioFmtsToFile();
 end;
 
 
 procedure TAudioFormatDlg.FormCreate(Sender: TObject);
+
 begin
+
   {$IFDEF DEBUG}
   butSaveToFile.Visible := True;
   {$ELSE}
@@ -216,31 +234,40 @@ end;
 
 
 procedure TAudioFormatDlg.FormDestroy(Sender: TObject);
+
 begin
+
   fAudioCodecDescription.Free;
 end;
 
 
 procedure TAudioFormatDlg.FormShow(Sender: TObject);
+
 begin
+
   sgAudioFormats.Row := 0;
-  if fAudioCodecDescription = nil then fAudioCodecDescription := TStringList.Create();
+  if (fAudioCodecDescription = nil) then
+    fAudioCodecDescription := TStringList.Create();
 end;
 
 
 function TAudioFormatDlg.GetAudioFormats(const AudioFormat: TGuid): HResult;
 var
   hr: HResult;
+
 begin
+
   ResetAudioFormatArray();
   // Get the encoder formats from the selected audioformat.
   hr := GetWinAudioEncoderFormats(AudioFormat,
                                   (MFT_ENUM_FLAG_ALL and (not MFT_ENUM_FLAG_FIELDOFUSE)) or
-                                  MFT_ENUM_FLAG_SORTANDFILTER,
+    MFT_ENUM_FLAG_SORTANDFILTER,
                                   aAudioFmts);
-  if FAILED(hr) then ResetAudioFormatArray();
+  if FAILED(hr) then
+    ResetAudioFormatArray();
   Populate();
-  if SUCCEEDED(hr) and (Length(aAudioFmts) = 0) then hr := E_FAIL;
+  if SUCCEEDED(hr) and (Length(aAudioFmts) = 0) then
+    hr := E_FAIL;
 
   Result := hr;
 end;
@@ -256,13 +283,14 @@ var
   aChannels: string;
 
 begin
+
   fAudioCodecDescription.Clear();
   stxtExtraInfo.Caption := '';
 
   if bGetAll then
     begin
       iBegin := 0;
-      iEnd := Length(aAudioFmts) -1;
+      iEnd := Length(aAudioFmts) - 1;
     end
   else
     begin
@@ -287,15 +315,23 @@ begin
       fAudioCodecDescription.Append(CRLF);
 
       case aAudioFmts[i].unChannels of
-        1: fAudioCodecDescription.Append(Format('                Channels: %d (Mono)', [aAudioFmts[i].unChannels]));
-        2: fAudioCodecDescription.Append(Format('                Channels: %d (Stereo)', [aAudioFmts[i].unChannels]));
-        3: fAudioCodecDescription.Append(Format('                Channels: %d (2.1)', [aAudioFmts[i].unChannels]));
-        5: fAudioCodecDescription.Append(Format('                Channels: %d (4.1)', [aAudioFmts[i].unChannels]));
-        6: fAudioCodecDescription.Append(Format('                Channels: %d (5.1)', [aAudioFmts[i].unChannels]));
-        7: fAudioCodecDescription.Append(Format('                Channels: %d (6.1)', [aAudioFmts[i].unChannels]));
-        8: fAudioCodecDescription.Append(Format('                Channels: %d (7.1)', [aAudioFmts[i].unChannels]));
+        1: fAudioCodecDescription.Append(Format('                Channels: %d (Mono)',
+                                                [aAudioFmts[i].unChannels]));
+        2: fAudioCodecDescription.Append(Format('                Channels: %d (Stereo)',
+                                                [aAudioFmts[i].unChannels]));
+        3: fAudioCodecDescription.Append(Format('                Channels: %d (2.1)',
+                                                [aAudioFmts[i].unChannels]));
+        5: fAudioCodecDescription.Append(Format('                Channels: %d (4.1)',
+                                                [aAudioFmts[i].unChannels]));
+        6: fAudioCodecDescription.Append(Format('                Channels: %d (5.1)',
+                                                [aAudioFmts[i].unChannels]));
+        7: fAudioCodecDescription.Append(Format('                Channels: %d (6.1)',
+                                                [aAudioFmts[i].unChannels]));
+        8: fAudioCodecDescription.Append(Format('                Channels: %d (7.1)',
+                                                [aAudioFmts[i].unChannels]));
         else
-          fAudioCodecDescription.Append(Format('                Channels: %d', [aAudioFmts[i].unChannels]));
+          fAudioCodecDescription.Append(Format('                Channels: %d',
+                                               [aAudioFmts[i].unChannels]));
       end; //case
 
       GetSpeakersLayOut(aAudioFmts[i].unChannelMask,
@@ -304,13 +340,22 @@ begin
 
       fAudioCodecDescription.Append('          Channel Matrix: ' + aLayout);
 
-      fAudioCodecDescription.Append('       Sample Rate (kHz): ' + FloatToStrF((aAudioFmts[i].unSamplesPerSec / 1000), ffGeneral, 4, 3));
-      fAudioCodecDescription.Append(' Float Sample Rate (kHz): ' + FloatToStrF((aAudioFmts[i].dblFloatSamplePerSec / 1000), ffGeneral, 4, 3));
+      fAudioCodecDescription.Append('       Sample Rate (kHz): ' + FloatToStrF((aAudioFmts[i].unSamplesPerSec / 1000),
+                                                                               ffGeneral,
+                                                                               4,
+                                                                               3));
+      fAudioCodecDescription.Append(' Float Sample Rate (kHz): ' + FloatToStrF((aAudioFmts[i].dblFloatSamplePerSec / 1000),
+                                                                               ffGeneral,
+                                                                               4,
+                                                                               3));
       fAudioCodecDescription.Append('       Samples Per Block: ' + IntToStr(aAudioFmts[i].unSamplesPerBlock));
       fAudioCodecDescription.Append('   Valid Bits Per Sample: ' + IntToStr(aAudioFmts[i].unValidBitsPerSample));
       fAudioCodecDescription.Append('         Bits Per Sample: ' + IntToStr(aAudioFmts[i].unBitsPerSample));
       fAudioCodecDescription.Append('         Block Alignment: ' + IntToStr(aAudioFmts[i].unBlockAlignment));
-      fAudioCodecDescription.Append('          Bitrate (kbps): ' + FloatToStrF((aAudioFmts[i].unAvgBytesPerSec * 8) / 1000, ffGeneral, 4, 3));
+      fAudioCodecDescription.Append('          Bitrate (kbps): ' + FloatToStrF((aAudioFmts[i].unAvgBytesPerSec * 8) / 1000,
+                                                                               ffGeneral,
+                                                                               4,
+                                                                               3));
 
       fAudioCodecDescription.Append(CRLF);
 
@@ -332,11 +377,12 @@ var
   sl: TStringlist;
 
 begin
-  sl :=  TStringlist.Create();
 
-  for i := 0 to Length(aAudioFmts) -1 do
+  sl := TStringlist.Create();
+
+  for i := 0 to Length(aAudioFmts) - 1 do
     begin
-      sTmp :=        '================== Index: ' + IntToStr(i) + ' ======================' + #13;
+      sTmp := '================== Index: ' + IntToStr(i) + ' ======================' + #13;
       sTmp := sTmp + '            Major Format: ' + aAudioFmts[i].wcMajorFormat + #13;
       sTmp := sTmp + '              Sub Format: ' + aAudioFmts[i].wcSubFormat + #13;
       sTmp := sTmp + '                  FOURCC: ' + aAudioFmts[i].wcFormatTag + #13;
@@ -367,7 +413,8 @@ begin
       sl.Append(sTmp);
     end;
 
-  sl.SaveToFile(Format('Formats %s.txt', [aAudioFmts[0].wcSubFormat]));
+  sl.SaveToFile(Format('Formats %s.txt',
+                       [aAudioFmts[0].wcSubFormat]));
   FreeAndNil(sl);
 end;
 
@@ -377,19 +424,21 @@ var
   i: Integer;
 
 begin
+
   // Clear the grid
   for i := 0 to sgAudioFormats.ColCount - 1 do
     sgAudioFormats.Cols[i].Clear;
   sgAudioFormats.RowCount := 1;
 
-  butOk.Enabled := Length(aAudioFmts) > 0;
-  if Length(aAudioFmts) = 0 then
+  butOk.Enabled := (Length(aAudioFmts) > 0);
+  if (Length(aAudioFmts) = 0) then
     begin
       iSelectedFormat := -1;
       lblAudioFmt.Caption := 'No audio encoder formats available';
       Exit;
     end;
-  lblAudioFmt.Caption := Format('%s  %s',[aAudioFmts[0].wcFormatTag, aAudioFmts[0].wsDescr]);
+  lblAudioFmt.Caption := Format('%s  %s',
+                                [aAudioFmts[0].wcFormatTag, aAudioFmts[0].wsDescr]);
 
   // We need the following arrayvalues to show in the gridcells.
 
@@ -413,7 +462,7 @@ begin
 
   sgAudioFormats.RowCount := Length(aAudioFmts);
 
-  for i := 0 to Length(aAudioFmts) -1 do
+  for i := 0 to Length(aAudioFmts) - 1 do
     begin
 
       // Calculate the bit rate:
@@ -439,32 +488,38 @@ end;
 
 
 procedure TAudioFormatDlg.rbSortAscClick(Sender: TObject);
+
 begin
+
   SortStringgrid(0,
                  True);
 end;
 
 
 procedure TAudioFormatDlg.rbSortDescClick(Sender: TObject);
+
 begin
+
   SortStringgrid(0,
                  False);
 end;
 
 
 procedure TAudioFormatDlg.SortStringgrid(byColumn: LongInt;
-                                         ascending: Boolean );
-  // Helpers
+                                         ascending: Boolean);
+// Helpers
+
   procedure ExchangeGridRows(i: Integer;
                              j: Integer);
   var
     k: Integer;
 
   begin
-    for k := 0 to sgAudioFormats.ColCount -1 Do
+    for k := 0 to sgAudioFormats.ColCount - 1 Do
       sgAudioFormats.Cols[k].Exchange(i,
                                       j);
   end;
+
 
   procedure QuickSort(L: Integer;
                       R: Integer);
@@ -480,10 +535,10 @@ procedure TAudioFormatDlg.SortStringgrid(byColumn: LongInt;
       P := sgAudioFormats.Cells[byColumn, (L + R) shr 1];
       repeat
         while (CompareStr(sgAudioFormats.Cells[byColumn, I],
-                          P) < 0) do
+            P) < 0) do
           Inc(I);
         while (CompareStr(sgAudioFormats.Cells[byColumn, J],
-                          P) > 0) do
+            P) > 0) do
           Dec(J);
         if (I <= J) then
           begin
@@ -496,10 +551,12 @@ procedure TAudioFormatDlg.SortStringgrid(byColumn: LongInt;
       until (I > J);
 
       if (L < J) then
-        QuickSort(L, J);
+        QuickSort(L,
+                  J);
       L := I;
     until (I >= R);
   end;
+
 
   procedure InvertGrid();
   var
@@ -507,7 +564,7 @@ procedure TAudioFormatDlg.SortStringgrid(byColumn: LongInt;
 
   begin
     i := sgAudioFormats.Fixedrows;
-    j := sgAudioFormats.Rowcount -1;
+    j := sgAudioFormats.Rowcount - 1;
     while (i < j) do
       begin
         ExchangeGridRows(i,
@@ -515,22 +572,23 @@ procedure TAudioFormatDlg.SortStringgrid(byColumn: LongInt;
         Inc(i);
         Dec(j);
       end; { While }
-   end;
+  end;
 
 begin
+
   Screen.Cursor := crHourglass;
   sgAudioFormats.Perform(WM_SETREDRAW,
                          0,
                          0);
   try
     QuickSort(sgAudioFormats.FixedRows,
-              sgAudioFormats.Rowcount-1 );
+              sgAudioFormats.Rowcount - 1);
     if not ascending Then
       InvertGrid();
   finally
     sgAudioFormats.Perform(WM_SETREDRAW,
-                 1,
-                 0);
+                           1,
+                           0);
     sgAudioFormats.Refresh;
     Screen.Cursor := crDefault;
   end;
@@ -540,22 +598,28 @@ end;
 procedure TAudioFormatDlg.SortSwitch(var Sender: TStaticText;
                                      aTag: Integer;
                                      aCol: Integer);
+
 begin
-  if Sender.Tag = 0 then
+
+  if (Sender.Tag = 0) then
     begin
-      SortStringgrid(aCol, True);
+      SortStringgrid(aCol,
+                     True);
       Sender.Tag := 1;
     end
   else
     begin
-      SortStringgrid(aCol, False);
+      SortStringgrid(aCol,
+                     False);
       Sender.Tag := 0;
     end;
 end;
 
 
 procedure TAudioFormatDlg.stxtBitRateClick(Sender: TObject);
+
 begin
+
   SortSwitch(stxtBitRate,
              stxtBitRate.Tag,
              0);
@@ -563,7 +627,9 @@ end;
 
 
 procedure TAudioFormatDlg.stxtBitsPerSampleClick(Sender: TObject);
+
 begin
+
   SortSwitch(stxtBitsPerSample,
              stxtBitsPerSample.Tag,
              2);
@@ -571,7 +637,9 @@ end;
 
 
 procedure TAudioFormatDlg.stxtChannelsClick(Sender: TObject);
+
 begin
+
   SortSwitch(stxtSampleRate,
              stxtSampleRate.Tag,
              3);
@@ -579,7 +647,9 @@ end;
 
 
 procedure TAudioFormatDlg.stxtSampleRateClick(Sender: TObject);
+
 begin
+
   SortSwitch(stxtSampleRate,
              stxtSampleRate.Tag,
              1);

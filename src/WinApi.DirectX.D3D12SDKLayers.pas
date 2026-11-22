@@ -76,7 +76,7 @@ interface
 
 
 uses
-  
+
   {WinApi}
   Windows,
   WinApi.WinApiTypes,
@@ -89,7 +89,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -107,18 +108,20 @@ type
   // An interface used to turn on the debug layer.
   //
   ID3D12Debug = Interface(IUnknown)
-  ['{344488B7-6846-474B-B989-F027448245E0}']
+    ['{344488B7-6846-474B-B989-F027448245E0}']
 
     procedure EnableDebugLayer(); stdcall;
   end;
+
   IID_ID3D12Debug = ID3D12Debug;
 
 type
   PD3D12_GPU_BASED_VALIDATION_FLAGS = ^D3D12_GPU_BASED_VALIDATION_FLAGS;
   D3D12_GPU_BASED_VALIDATION_FLAGS = UINT;
+
 const
-    D3D12_GPU_BASED_VALIDATION_FLAGS_NONE                   = D3D12_GPU_BASED_VALIDATION_FLAGS($00);
-    D3D12_GPU_BASED_VALIDATION_FLAGS_DISABLE_STATE_TRACKING = D3D12_GPU_BASED_VALIDATION_FLAGS($01);
+  D3D12_GPU_BASED_VALIDATION_FLAGS_NONE = D3D12_GPU_BASED_VALIDATION_FLAGS($00);
+  D3D12_GPU_BASED_VALIDATION_FLAGS_DISABLE_STATE_TRACKING = D3D12_GPU_BASED_VALIDATION_FLAGS($01);
 
 
 type
@@ -127,7 +130,7 @@ type
   // =======================
   //
   ID3D12Debug1 = Interface(IUnknown)
-  ['{AFFAA4CA-63FE-4D8E-B8AD-159000AF4304}']
+    ['{AFFAA4CA-63FE-4D8E-B8AD-159000AF4304}']
 
     procedure EnableDebugLayer(); stdcall;
 
@@ -135,6 +138,7 @@ type
 
     procedure SetEnableSynchronizedCommandQueueValidation(Enable: BOOL); stdcall;
   end;
+
   IID_ID3D12Debug1 = ID3D12Debug1;
 
 
@@ -142,10 +146,11 @@ type
   // =======================
   //
   ID3D12Debug2 = Interface(IUnknown)
-  ['{93A665C4-A3B2-4E5D-B692-A26AE14E3374}']
+    ['{93A665C4-A3B2-4E5D-B692-A26AE14E3374}']
 
     procedure SetGPUBasedValidationFlags(Flags: D3D12_GPU_BASED_VALIDATION_FLAGS); stdcall;
   end;
+
   IID_ID3D12Debug2 = ID3D12Debug2;
 
 
@@ -153,10 +158,13 @@ type
   // =======================
   //
   ID3D12Debug3 = Interface(ID3D12Debug)
-  ['{5CF4E58F-F671-4FF1-A542-3686E3D153D1}']
+    ['{5CF4E58F-F671-4FF1-A542-3686E3D153D1}']
 
-    procedure SetEnableGPUBasedValidation(Enable: BOOL); stdcall;procedure SetEnableSynchronizedCommandQueueValidation(Enable: BOOL); stdcall;procedure SetGPUBasedValidationFlags(Flags: D3D12_GPU_BASED_VALIDATION_FLAGS); stdcall;
+    procedure SetEnableGPUBasedValidation(Enable: BOOL); stdcall;
+    procedure SetEnableSynchronizedCommandQueueValidation(Enable: BOOL); stdcall;
+    procedure SetGPUBasedValidationFlags(Flags: D3D12_GPU_BASED_VALIDATION_FLAGS); stdcall;
   end;
+
   IID_ID3D12Debug3 = ID3D12Debug3;
 
 
@@ -164,10 +172,11 @@ type
   // =======================
   //
   ID3D12Debug4 = Interface(ID3D12Debug3)
-  ['{014B816E-9EC5-4A2F-A845-FFBE441CE13A}']
+    ['{014B816E-9EC5-4A2F-A845-FFBE441CE13A}']
 
     procedure DisableDebugLayer(); stdcall;
   end;
+
   IID_ID3D12Debug4 = ID3D12Debug4;
 
 
@@ -175,10 +184,11 @@ type
   // =======================
   //
   ID3D12Debug5 = Interface(ID3D12Debug4)
-  ['{548D6B12-09FA-40E0-9069-5DCD589A52C9}']
+    ['{548D6B12-09FA-40E0-9069-5DCD589A52C9}']
 
     procedure SetEnableAutoName(Enable: BOOL); stdcall;
   end;
+
   IID_ID3D12Debug5 = ID3D12Debug5;
 
 
@@ -186,28 +196,37 @@ type
   // =======================
   //
   ID3D12Debug6 = Interface(ID3D12Debug5)
-  ['{82A816D6-5D01-4157-97D0-4975463FD1ED}']
+    ['{82A816D6-5D01-4157-97D0-4975463FD1ED}']
 
     procedure SetForceLegacyBarrierValidation(Enable: BOOL); stdcall;
   end;
+
   IID_ID3D12Debug6 = ID3D12Debug6;
 
 
 const
-  WKPDID_D3DAutoDebugObjectNameW  : TGUID = (D1: $d4902e36;
-                                             D2: $757a;
-                                             D3: $4942;
-                                             D4: ($95, $94, $b6, $76, $9a, $fa, $43, $cd));
+  WKPDID_D3DAutoDebugObjectNameW: TGUID = (D1: $d4902e36;
+    D2: $757a;
+    D3: $4942;
+    D4: ($95,
+         $94,
+         $b6,
+         $76,
+         $9a,
+         $fa,
+         $43,
+         $cd));
 
 
 type
   PD3D12_RLDO_FLAGS = ^D3D12_RLDO_FLAGS;
   D3D12_RLDO_FLAGS = UINT;
+
 const
-    D3D12_RLDO_NONE            = D3D12_RLDO_FLAGS($0);
-    D3D12_RLDO_SUMMARY         = D3D12_RLDO_FLAGS($1);
-    D3D12_RLDO_DETAIL          = D3D12_RLDO_FLAGS($2);
-    D3D12_RLDO_IGNORE_INTERNAL = D3D12_RLDO_FLAGS($4);
+  D3D12_RLDO_NONE = D3D12_RLDO_FLAGS($0);
+  D3D12_RLDO_SUMMARY = D3D12_RLDO_FLAGS($1);
+  D3D12_RLDO_DETAIL = D3D12_RLDO_FLAGS($2);
+  D3D12_RLDO_IGNORE_INTERNAL = D3D12_RLDO_FLAGS($4);
 
 
 type
@@ -216,20 +235,21 @@ type
   D3D12_DEBUG_DEVICE_PARAMETER_TYPE = (D3D12_DEBUG_DEVICE_PARAMETER_FEATURE_FLAGS,
                                        D3D12_DEBUG_DEVICE_PARAMETER_GPU_BASED_VALIDATION_SETTINGS,
                                        D3D12_DEBUG_DEVICE_PARAMETER_GPU_SLOWDOWN_PERFORMANCE_FACTOR,
-                                       { 10.0.28000.0  }
-                                       D3D12_DEBUG_DEVICE_PARAMETER_BYTECODE_VALIDATION_MODE
-                                      );
+    { 10.0.28000.0  }
+    D3D12_DEBUG_DEVICE_PARAMETER_BYTECODE_VALIDATION_MODE
+    );
 
 
 type
   PD3D12_DEBUG_FEATURE = ^D3D12_DEBUG_FEATURE;
   D3D12_DEBUG_FEATURE = UINT;
+
 const
-    D3D12_DEBUG_FEATURE_NONE                                   = D3D12_DEBUG_FEATURE($00);
-    D3D12_DEBUG_FEATURE_ALLOW_BEHAVIOR_CHANGING_DEBUG_AIDS     = D3D12_DEBUG_FEATURE($01);
-    D3D12_DEBUG_FEATURE_CONSERVATIVE_RESOURCE_STATE_TRACKING   = D3D12_DEBUG_FEATURE($02);
-    D3D12_DEBUG_FEATURE_DISABLE_VIRTUALIZED_BUNDLES_VALIDATION = D3D12_DEBUG_FEATURE($04);
-    D3D12_DEBUG_FEATURE_EMULATE_WINDOWS7                       = D3D12_DEBUG_FEATURE($08);
+  D3D12_DEBUG_FEATURE_NONE = D3D12_DEBUG_FEATURE($00);
+  D3D12_DEBUG_FEATURE_ALLOW_BEHAVIOR_CHANGING_DEBUG_AIDS = D3D12_DEBUG_FEATURE($01);
+  D3D12_DEBUG_FEATURE_CONSERVATIVE_RESOURCE_STATE_TRACKING = D3D12_DEBUG_FEATURE($02);
+  D3D12_DEBUG_FEATURE_DISABLE_VIRTUALIZED_BUNDLES_VALIDATION = D3D12_DEBUG_FEATURE($04);
+  D3D12_DEBUG_FEATURE_EMULATE_WINDOWS7 = D3D12_DEBUG_FEATURE($08);
 
 
 type
@@ -240,23 +260,25 @@ type
                                                   D3D12_GPU_BASED_VALIDATION_SHADER_PATCH_MODE_UNGUARDED_VALIDATION,
                                                   D3D12_GPU_BASED_VALIDATION_SHADER_PATCH_MODE_GUARDED_VALIDATION,
                                                   NUM_D3D12_GPU_BASED_VALIDATION_SHADER_PATCH_MODES
-                                                 );
+    );
 
 
 type
   PD3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS = ^D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS;
   D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS = UINT;
+
 const
-    D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAG_NONE                                           = D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS($00);
-    D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAG_FRONT_LOAD_CREATE_TRACKING_ONLY_SHADERS        = D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS($01);
-    D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAG_FRONT_LOAD_CREATE_UNGUARDED_VALIDATION_SHADERS = D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS($02);
-    D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAG_FRONT_LOAD_CREATE_GUARDED_VALIDATION_SHADERS   = D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS($04);
-    D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS_VALID_MASK                                    = D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS($07);
+  D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAG_NONE = D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS($00);
+  D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAG_FRONT_LOAD_CREATE_TRACKING_ONLY_SHADERS = D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS($01);
+  D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAG_FRONT_LOAD_CREATE_UNGUARDED_VALIDATION_SHADERS = D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS($02);
+  D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAG_FRONT_LOAD_CREATE_GUARDED_VALIDATION_SHADERS = D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS($04);
+  D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS_VALID_MASK = D3D12_GPU_BASED_VALIDATION_PIPELINE_STATE_CREATE_FLAGS($07);
 
 
 type
 
   PD3D12_DEBUG_DEVICE_GPU_BASED_VALIDATION_SETTINGS = ^D3D12_DEBUG_DEVICE_GPU_BASED_VALIDATION_SETTINGS;
+
   D3D12_DEBUG_DEVICE_GPU_BASED_VALIDATION_SETTINGS = record
     MaxMessagesPerCommandList: UINT;
     DefaultShaderPatchMode: D3D12_GPU_BASED_VALIDATION_SHADER_PATCH_MODE;
@@ -265,6 +287,7 @@ type
 
 
   PD3D12_DEBUG_DEVICE_GPU_SLOWDOWN_PERFORMANCE_FACTOR = ^D3D12_DEBUG_DEVICE_GPU_SLOWDOWN_PERFORMANCE_FACTOR;
+
   D3D12_DEBUG_DEVICE_GPU_SLOWDOWN_PERFORMANCE_FACTOR = record
     SlowdownFactor: FLOAT;
   end;
@@ -278,7 +301,7 @@ type
   // =============================
   //
   ID3D12DebugDevice1 = Interface(IUnknown)
-  ['{A9B71770-D099-4A65-A698-3DEE10020F88}']
+    ['{A9B71770-D099-4A65-A698-3DEE10020F88}']
 
     function SetDebugParameter(Type_: D3D12_DEBUG_DEVICE_PARAMETER_TYPE;
                                pData: Pointer;
@@ -290,6 +313,7 @@ type
 
     function ReportLiveDeviceObjects(Flags: D3D12_RLDO_FLAGS): HRESULT; stdcall;
   end;
+
   IID_ID3D12DebugDevice1 = ID3D12DebugDevice1;
 
 
@@ -297,7 +321,7 @@ type
   // ============================
   //
   ID3D12DebugDevice = Interface(IUnknown)
-  ['{3FEBD6DD-4973-4787-8194-E45F9E28923E}']
+    ['{3FEBD6DD-4973-4787-8194-E45F9E28923E}']
 
     function SetFeatureMask(Mask: D3D12_DEBUG_FEATURE): HRESULT; stdcall;
 
@@ -305,6 +329,7 @@ type
 
     function ReportLiveDeviceObjects(Flags: D3D12_RLDO_FLAGS): HRESULT; stdcall;
   end;
+
   IID_ID3D12DebugDevice = ID3D12DebugDevice;
 
 
@@ -312,7 +337,7 @@ type
   // =============================
   //
   ID3D12DebugDevice2 = Interface(ID3D12DebugDevice)
-  ['{60ECCBC1-378D-4DF1-894C-F8AC5CE4D7DD}']
+    ['{60ECCBC1-378D-4DF1-894C-F8AC5CE4D7DD}']
 
     function SetDebugParameter(Type_: D3D12_DEBUG_DEVICE_PARAMETER_TYPE;
                                pData: Pointer;
@@ -322,14 +347,22 @@ type
                                pData: Pointer;
                                DataSize: UINT): HRESULT; stdcall;
   end;
+
   IID_ID3D12DebugDevice2 = ID3D12DebugDevice2;
 
 
 const
-  DXGI_DEBUG_D3D12 : TGUID = (D1: $cf59a98c;
-                              D2: $a950;
-                              D3: $4326;
-                              D4: ($91, $ef, $9b, $ba, $a1, $7b, $fd, $95));
+  DXGI_DEBUG_D3D12: TGUID = (D1: $cf59a98c;
+    D2: $a950;
+    D3: $4326;
+    D4: ($91,
+         $ef,
+         $9b,
+         $ba,
+         $a1,
+         $7b,
+         $fd,
+         $95));
 
 
 type
@@ -338,7 +371,7 @@ type
   // ==================================
   //
   ID3D12DebugCommandQueue = Interface(IUnknown)
-  ['{09E0BF36-54AC-484F-8847-4BAEEAB6053A}']
+    ['{09E0BF36-54AC-484F-8847-4BAEEAB6053A}']
 
     function AssertResourceState(pResource: ID3D12Resource;
                                  Subresource: UINT;
@@ -346,6 +379,7 @@ type
 
     //  TODO: Stale  BOOL AssertResourceStateThroughView( [annotation("_In_")] ID3D12View* pView, UINT State );
   end;
+
   IID_ID3D12DebugCommandQueue = ID3D12DebugCommandQueue;
 
 
@@ -355,7 +389,7 @@ type
   // ==================================
   //
   ID3D12DebugCommandQueue1 = Interface(ID3D12DebugCommandQueue)
-  ['{16BE35A2-BFD6-49F2-BCAE-EAAE4AFF862D}']
+    ['{16BE35A2-BFD6-49F2-BCAE-EAAE4AFF862D}']
 
     procedure AssertResourceAccess(pResource: ID3D12Resource;
                                    Subresource: UINT;
@@ -365,16 +399,18 @@ type
                                   Subresource: UINT;
                                   Layout: D3D12_BARRIER_LAYOUT); stdcall;
   end;
+
   IID_ID3D12DebugCommandQueue1 = ID3D12DebugCommandQueue1;
 
   // ==
 
   PD3D12_DEBUG_COMMAND_LIST_PARAMETER_TYPE = ^D3D12_DEBUG_COMMAND_LIST_PARAMETER_TYPE;
   D3D12_DEBUG_COMMAND_LIST_PARAMETER_TYPE = (D3D12_DEBUG_COMMAND_LIST_PARAMETER_GPU_BASED_VALIDATION_SETTINGS
-                                            );
+    );
 
 
   PD3D12_DEBUG_COMMAND_LIST_GPU_BASED_VALIDATION_SETTINGS = ^D3D12_DEBUG_COMMAND_LIST_GPU_BASED_VALIDATION_SETTINGS;
+
   D3D12_DEBUG_COMMAND_LIST_GPU_BASED_VALIDATION_SETTINGS = record
     ShaderPatchMode: D3D12_GPU_BASED_VALIDATION_SHADER_PATCH_MODE;
   end;
@@ -384,7 +420,7 @@ type
   // =================================
   //
   ID3D12DebugCommandList1 = Interface(IUnknown)
-  ['{102CA951-311B-4B01-B11F-ECB83E061B37}']
+    ['{102CA951-311B-4B01-B11F-ECB83E061B37}']
 
     function AssertResourceState(pResource: ID3D12Resource;
                                  Subresource: UINT;
@@ -398,6 +434,7 @@ type
                                pData: Pointer;
                                DataSize: UINT): HRESULT; stdcall;
   end;
+
   IID_ID3D12DebugCommandList1 = ID3D12DebugCommandList1;
 
 
@@ -405,7 +442,7 @@ type
   // ================================
   //
   ID3D12DebugCommandList = Interface(IUnknown)
-  ['{09E0BF36-54AC-484F-8847-4BAEEAB6053F}']
+    ['{09E0BF36-54AC-484F-8847-4BAEEAB6053F}']
 
     function AssertResourceState(pResource: ID3D12Resource;
                                  Subresource: UINT;
@@ -415,6 +452,7 @@ type
 
     function GetFeatureMask(): D3D12_DEBUG_FEATURE; stdcall;
   end;
+
   IID_ID3D12DebugCommandList = ID3D12DebugCommandList;
 
 
@@ -424,7 +462,7 @@ type
   // =================================
   //
   ID3D12DebugCommandList2 = Interface(ID3D12DebugCommandList)
-  ['{AEB575CF-4E06-48BE-BA3B-C450FC96652E}']
+    ['{AEB575CF-4E06-48BE-BA3B-C450FC96652E}']
 
     function SetDebugParameter(Type_: D3D12_DEBUG_COMMAND_LIST_PARAMETER_TYPE;
                                pData: Pointer;
@@ -434,6 +472,7 @@ type
                                pData: Pointer;
                                DataSize: UINT): HRESULT; stdcall;
   end;
+
   IID_ID3D12DebugCommandList2 = ID3D12DebugCommandList2;
 
 
@@ -441,7 +480,7 @@ type
   // =================================
   //
   ID3D12DebugCommandList3 = Interface(ID3D12DebugCommandList2)
-  ['{197D5E15-4D37-4D34-AF78-724CD70FDB1F}']
+    ['{197D5E15-4D37-4D34-AF78-724CD70FDB1F}']
 
     procedure AssertResourceAccess(pResource: ID3D12Resource;
                                    Subresource: UINT;
@@ -451,6 +490,7 @@ type
                                   Subresource: UINT;
                                   Layout: D3D12_BARRIER_LAYOUT); stdcall;
   end;
+
   IID_ID3D12DebugCommandList3 = ID3D12DebugCommandList3;
 
   // ==
@@ -460,7 +500,7 @@ type
   // ================================
   //
   ID3D12SharingContract = Interface(IUnknown)
-  ['{0ADF7D52-929C-4E61-ADDB-FFED30DE66EF}']
+    ['{0ADF7D52-929C-4E61-ADDB-FFED30DE66EF}']
 
     procedure Present(pResource: ID3D12Resource;
                       Subresource: UINT;
@@ -473,6 +513,7 @@ type
 
     procedure EndCapturableWork(const guid: TGUID); stdcall;
   end;
+
   IID_ID3D12SharingContract = ID3D12SharingContract;
 
 
@@ -482,7 +523,7 @@ type
   // ============================================
   //
   ID3D12ManualWriteTrackingResource = Interface(IUnknown)
-  ['{86CA3B85-49AD-4B6E-AED5-EDDB18540F41}']
+    ['{86CA3B85-49AD-4B6E-AED5-EDDB18540F41}']
 
     procedure TrackWrite(Subresource: UINT;
                          pWrittenRange: PD3D12_RANGE); stdcall;
@@ -508,7 +549,7 @@ type
                             D3D12_MESSAGE_CATEGORY_RESOURCE_MANIPULATION,
                             D3D12_MESSAGE_CATEGORY_EXECUTION,
                             D3D12_MESSAGE_CATEGORY_SHADER
-                           );
+    );
 
 
   PD3D12_MESSAGE_SEVERITY = ^D3D12_MESSAGE_SEVERITY;
@@ -517,7 +558,7 @@ type
                             D3D12_MESSAGE_SEVERITY_WARNING,
                             D3D12_MESSAGE_SEVERITY_INFO,
                             D3D12_MESSAGE_SEVERITY_MESSAGE
-                           );
+    );
 
 
   // Unique ID for every error
@@ -530,6 +571,7 @@ type
 
 
   PD3D12_MESSAGE = ^D3D12_MESSAGE;
+
   D3D12_MESSAGE = record
     Category: D3D12_MESSAGE_CATEGORY;
     Severity: D3D12_MESSAGE_SEVERITY;
@@ -540,6 +582,7 @@ type
 
 
   PD3D12_INFO_QUEUE_FILTER_DESC = ^D3D12_INFO_QUEUE_FILTER_DESC;
+
   D3D12_INFO_QUEUE_FILTER_DESC = record
     NumCategories: UINT;
     pCategoryList: PD3D12_MESSAGE_CATEGORY;
@@ -552,6 +595,7 @@ type
 
   // To use, memset to 0, then fill in what you need.
   PD3D12_INFO_QUEUE_FILTER = ^D3D12_INFO_QUEUE_FILTER;
+
   D3D12_INFO_QUEUE_FILTER = record
     AllowList: D3D12_INFO_QUEUE_FILTER_DESC;
     DenyList: D3D12_INFO_QUEUE_FILTER_DESC;
@@ -576,7 +620,7 @@ type
   // ==========================
   //
   ID3D12InfoQueue = Interface(IUnknown)
-  ['{0742A90B-C387-483F-B946-30A7E4E61458}']
+    ['{0742A90B-C387-483F-B946-30A7E4E61458}']
 
     //=========================================================================
     // Methods for configuring how much data is stored in the queue.
@@ -821,15 +865,17 @@ type
 
     function GetMuteDebugOutput(): BOOL; stdcall;
   end;
+
   IID_ID3D12InfoQueue = ID3D12InfoQueue;
 
 
 type
   PD3D12_MESSAGE_CALLBACK_FLAGS = ^D3D12_MESSAGE_CALLBACK_FLAGS;
   D3D12_MESSAGE_CALLBACK_FLAGS = UINT;
+
 const
-    D3D12_MESSAGE_CALLBACK_FLAG_NONE      = D3D12_MESSAGE_CALLBACK_FLAGS($00);
-    D3D12_MESSAGE_CALLBACK_IGNORE_FILTERS = D3D12_MESSAGE_CALLBACK_FLAGS($01);
+  D3D12_MESSAGE_CALLBACK_FLAG_NONE = D3D12_MESSAGE_CALLBACK_FLAGS($00);
+  D3D12_MESSAGE_CALLBACK_IGNORE_FILTERS = D3D12_MESSAGE_CALLBACK_FLAGS($01);
 
 
 type
@@ -845,7 +891,7 @@ type
   // ===========================
   //
   ID3D12InfoQueue1 = Interface(ID3D12InfoQueue)
-  ['{2852DD88-B484-4C0C-B6B1-67168500E600}']
+    ['{2852DD88-B484-4C0C-B6B1-67168500E600}']
 
     function RegisterMessageCallback(CallbackFunc: D3D12MessageFunc;
                                      CallbackFilterFlags: D3D12_MESSAGE_CALLBACK_FLAGS;
@@ -854,6 +900,7 @@ type
 
     function UnregisterMessageCallback(CallbackCookie: DWORD): HRESULT; stdcall;
   end;
+
   IID_ID3D12InfoQueue1 = ID3D12InfoQueue1;
 
 
@@ -1862,7 +1909,7 @@ const
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 const
   D3D12SDKLayersLib = 'd3d12SDKLayers.dll';

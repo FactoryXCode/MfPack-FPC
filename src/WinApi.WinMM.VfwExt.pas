@@ -83,24 +83,25 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 const
 
-  VFW_HIDE_SETTINGS_PAGE              = $00000001;
-  VFW_HIDE_VIDEOSRC_PAGE              = $00000002;
-  VFW_HIDE_CAMERACONTROL_PAGE         = $00000004;
-  VFW_HIDE_ALL_PAGES                  = (VFW_HIDE_SETTINGS_PAGE or
-                                         VFW_HIDE_VIDEOSRC_PAGE or
-                                         VFW_HIDE_CAMERACONTROL_PAGE);
+  VFW_HIDE_SETTINGS_PAGE = $00000001;
+  VFW_HIDE_VIDEOSRC_PAGE = $00000002;
+  VFW_HIDE_CAMERACONTROL_PAGE = $00000004;
+  VFW_HIDE_ALL_PAGES = (VFW_HIDE_SETTINGS_PAGE or
+    VFW_HIDE_VIDEOSRC_PAGE or
+    VFW_HIDE_CAMERACONTROL_PAGE);
 
-  VFW_OEM_ADD_PAGE                    = $80000000;  // If OEM has added any page
+  VFW_OEM_ADD_PAGE = $80000000;  // If OEM has added any page
 
 
-  VFW_USE_DEVICE_HANDLE               = $00000001;
-  VFW_USE_STREAM_HANDLE               = $00000002;
-  VFW_QUERY_DEV_CHANGED               = $00000100;  // if selected_dev == streaming_dev
+  VFW_USE_DEVICE_HANDLE = $00000001;
+  VFW_USE_STREAM_HANDLE = $00000002;
+  VFW_QUERY_DEV_CHANGED = $00000100;  // if selected_dev == streaming_dev
 
 
   //
@@ -142,8 +143,8 @@ type
 
 const
 
-  TARGET_DEVICE_FRIENDLY_NAME         = 'TargetDeviceFriendlyName';  // REG_SZ
-  TARGET_DEVICE_OPEN_EXCLUSIVELY      = 'TargetDeviceOpenExclusively';  // REG_DWORD
+  TARGET_DEVICE_FRIENDLY_NAME = 'TargetDeviceFriendlyName';  // REG_SZ
+  TARGET_DEVICE_OPEN_EXCLUSIVELY = 'TargetDeviceOpenExclusively';  // REG_DWORD
 
   // Additional Prototypes for ALL Interfaces
 
@@ -151,6 +152,6 @@ const
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

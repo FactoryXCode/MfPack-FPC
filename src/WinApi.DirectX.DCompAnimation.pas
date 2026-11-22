@@ -74,9 +74,9 @@ unit WinApi.DirectX.DCompAnimation;
 interface
 
 uses
-  
+
   {WinApi}
-   Windows;
+  Windows;
 
   {$ALIGN ON}
   {$PACKENUM 4}
@@ -84,20 +84,21 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
-//+-----------------------------------------------------------------------------
-//
-//  Interface:
-//      IDCompositionAnimation
-//
-//  Synopsis:
-//      An IDCompositionAnimation interface represents a one-dimensional function that
-//      can be used to animate the value of a property of another DirectComposition object.
-//
-//------------------------------------------------------------------------------
+  //+-----------------------------------------------------------------------------
+  //
+  //  Interface:
+  //      IDCompositionAnimation
+  //
+  //  Synopsis:
+  //      An IDCompositionAnimation interface represents a one-dimensional function that
+  //      can be used to animate the value of a property of another DirectComposition object.
+  //
+  //------------------------------------------------------------------------------
 
 type
 
@@ -105,7 +106,7 @@ type
   // ================================
   //
   IDCompositionAnimation = interface(IUnknown)
-  ['{CBFD91D9-51B2-45e4-B3DE-D19CCFB863C5}']
+    ['{CBFD91D9-51B2-45e4-B3DE-D19CCFB863C5}']
 
     // Resets the animation function so that it contains no segments as when it was first created.
     function Reset(): HResult; stdcall;
@@ -136,6 +137,7 @@ type
                   endValue: Single): HResult; stdcall;
 
   end;
+
   IID_IDCompositionAnimation = IDCompositionAnimation;
 
 
@@ -145,6 +147,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

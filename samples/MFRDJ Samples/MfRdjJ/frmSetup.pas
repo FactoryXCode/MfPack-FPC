@@ -64,13 +64,14 @@ unit frmSetup;
 
 interface
 
-uses WinApi.Coml2Api,
-WinApi.ComBaseApi,
-Rdj.Platform,
-LMessages,
+uses
+  WinApi.Coml2Api,
+  WinApi.ComBaseApi,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Winapi.WinApiTypes,
   WinApi.ActiveX.ObjBase,
@@ -102,6 +103,7 @@ LMessages,
 type
 
   TEndpointItem = class
+
   public
 
     DeviceId: string; // IMMDevice.GetId() string
@@ -288,6 +290,7 @@ uses
 
 
 function StateToTag(const S: DWORD): string;
+
 begin
 
   case S of
@@ -295,8 +298,9 @@ begin
     DEVICE_STATE_DISABLED: Result := '[Disabled]';
     DEVICE_STATE_NOTPRESENT: Result := '[Not present]';
     DEVICE_STATE_UNPLUGGED: Result := '[Unplugged]';
-  else
-    Result := Format('[State 0x%x]', [S]);
+    else
+      Result := Format('[State 0x%x]',
+                       [S]);
   end;
 end;
 
@@ -311,7 +315,9 @@ begin
 
   Result := '';
   Store := nil;
-  FillChar(pv, SizeOf(pv), 0);
+  FillChar(pv,
+           SizeOf(pv),
+           0);
 
   hr := Dev.OpenPropertyStore(STGM_READ,
                               Store);
@@ -485,7 +491,7 @@ begin
         // Icecast -------------------------------------------------------------
         ASetup.Broadcast.Host := Trim(frm.edtBroadcastHost.Text);
         ASetup.Broadcast.Port := StrToIntDef(Trim(frm.edtBroadcastPort.Text),
-                                                  8000);
+                                             8000);
         ASetup.Broadcast.Mount := Trim(frm.edtBroadcastMount.Text);
         ASetup.Broadcast.Username := Trim(frm.edtBroadcastUserName.Text);
         ASetup.Broadcast.Password := frm.edtBroadcastPassword.Text;
@@ -522,9 +528,8 @@ begin
 
         if (ASetup.Broadcast.Mount = '') then
           ASetup.Broadcast.Mount := '/live'
-        else
-          if (ASetup.Broadcast.Mount[1] <> '/') then
-            ASetup.Broadcast.Mount := '/' + ASetup.Broadcast.Mount;
+        else if (ASetup.Broadcast.Mount[1] <> '/') then
+          ASetup.Broadcast.Mount := '/' + ASetup.Broadcast.Mount;
         // Icecast end ---------------------------------------------------------
 
         // Audio recording
@@ -562,7 +567,7 @@ begin
     cur := EnsureRange(Current,
                        1,
                        MAX_CHANNELS);
-      cbChannels.ItemIndex := cur - 1;
+    cbChannels.ItemIndex := cur - 1;
   finally
 
     cbChannels.Items.EndUpdate;
@@ -635,8 +640,8 @@ begin
     // Show all states (active/disabled/unplugged/notpresent)
     hr := Enum.EnumAudioEndpoints(ADataFlow,
                                   DEVICE_STATE_ACTIVE or
-                                  DEVICE_STATE_DISABLED or
-                                  DEVICE_STATE_UNPLUGGED,
+      DEVICE_STATE_DISABLED or
+      DEVICE_STATE_UNPLUGGED,
                                   Coll);
     if FAILED(hr) then
       Exit;
@@ -670,10 +675,11 @@ begin
         Item.DeviceId := IdStr;
         Item.State := St;
 
-        cb.Items.AddObject(Text, Item);
+        cb.Items.AddObject(Text,
+                           Item);
 
         if (CurrentDeviceId <> '') and SameText(CurrentDeviceId,
-                                                IdStr) then
+          IdStr) then
           selIdx := cb.Items.Count - 1;
       end;
 
@@ -702,6 +708,7 @@ end;
 
 
 procedure TfrmSetup.tbAudioBufferDurationChange(Sender: TObject);
+
 begin
 
   lblBuffSize.Caption := Format('%d ms',
@@ -710,6 +717,7 @@ end;
 
 
 procedure TfrmSetup.tbRecCapBufferSizeChange(Sender: TObject);
+
 begin
 
   lblAudioRecBufSize.Caption := Format('%d ms',
@@ -722,6 +730,7 @@ end;
 
 
 procedure TfrmSetup.tbSysLatencyChange(Sender: TObject);
+
 begin
 
   lblSysLatency.Caption := Format('%d ms',
@@ -746,6 +755,7 @@ end;
 
 
 procedure TfrmSetup.btnCaddyCoversPathClick(Sender: TObject);
+
 begin
 
   edtCaddyCoversPath.Text := PickPath(True,
@@ -754,30 +764,34 @@ end;
 
 
 procedure TfrmSetup.btnRecordingsDirNameClick(Sender: TObject);
+
 begin
 
-  edRecordingsDirName.Text :=  ExtractFileName(ExtractFileDir(PickPath(False,
-                                                                       'Recordings Directory'#0'*.*'#0#0)));
+  edRecordingsDirName.Text := ExtractFileName(ExtractFileDir(PickPath(False,
+                                                                      'Recordings Directory'#0'*.*'#0#0)));
 end;
 
 
 procedure TfrmSetup.btnCoversDirNameClick(Sender: TObject);
+
 begin
 
-  edCoversDirName.Text :=  ExtractFileName(ExtractFileDir(PickPath(False,
-                                                                     'Covers Directory'#0'*.*'#0#0)));
+  edCoversDirName.Text := ExtractFileName(ExtractFileDir(PickPath(False,
+                                                                  'Covers Directory'#0'*.*'#0#0)));
 end;
 
 
 procedure TfrmSetup.btnDataBaseDirNameClick(Sender: TObject);
+
 begin
 
-  edDataBaseDirName.Text :=  ExtractFileName(ExtractFileDir(PickPath(False,
-                                                                     'Database Directory'#0'RDJLibrary.db'#0#0)));
+  edDataBaseDirName.Text := ExtractFileName(ExtractFileDir(PickPath(False,
+                                                                    'Database Directory'#0'RDJLibrary.db'#0#0)));
 end;
 
 
 procedure TfrmSetup.btnCancelClick(Sender: TObject);
+
 begin
 
   ModalResult := mrCancel;
@@ -785,6 +799,7 @@ end;
 
 
 procedure TfrmSetup.UpdateCueEnableUi();
+
 begin
 
   cbCueOut.Enabled := chkPfl.Checked;
@@ -800,9 +815,9 @@ var
 begin
 
   if BrowseFile(Handle,
-                AFilter,
-                ADirOnly,
-                filename) then
+    AFilter,
+    ADirOnly,
+    filename) then
     Result := filename
   else
     Result := '';
@@ -810,6 +825,7 @@ end;
 
 
 procedure TfrmSetup.btnGetCaddyConfigPathClick(Sender: TObject);
+
 begin
 
   edtCaddyConfigPath.Text := PickPath(False,
@@ -818,6 +834,7 @@ end;
 
 
 procedure TfrmSetup.btnGetCaddyJsonPathClick(Sender: TObject);
+
 begin
 
   edtCaddyJsonNowPlayingPath.Text := PickPath(False,
@@ -826,6 +843,7 @@ end;
 
 
 procedure TfrmSetup.btnGetCaddyPathClick(Sender: TObject);
+
 begin
 
   edtCaddyPath.Text := PickPath(True,
@@ -834,13 +852,16 @@ end;
 
 
 procedure TfrmSetup.btnGetIceCastConfigPathClick(Sender: TObject);
+
 begin
 
   edtIcecastConfigPath.Text := PickPath(False,
                                         'IceCast Config File'#0'icecast.xml'#0#0);
 end;
 
+
 procedure TfrmSetup.btnGetIceCastExePathClick(Sender: TObject);
+
 begin
 
   edtIcecastExePath.Text := PickPath(False,
@@ -849,6 +870,7 @@ end;
 
 
 procedure TfrmSetup.btnGetIceCastWorkingDirClick(Sender: TObject);
+
 begin
 
   edtIcecastExePath.Text := PickPath(True,
@@ -859,6 +881,7 @@ end;
 
 
 procedure TfrmSetup.btnOkClick(Sender: TObject);
+
 begin
 
   // Quick validation: If PFL enabled, require a selection.
@@ -877,6 +900,7 @@ end;
 
 
 procedure TfrmSetup.chkBroadcastSettingsClick(Sender: TObject);
+
 begin
 
   pnlBroadCastSettings.BringToFront;
@@ -886,6 +910,7 @@ end;
 
 
 procedure TfrmSetup.chkGeneralSettingsClick(Sender: TObject);
+
 begin
 
   pnlGeneralSettings.BringToFront;
@@ -895,6 +920,7 @@ end;
 
 
 procedure TfrmSetup.chkPflClick(Sender: TObject);
+
 begin
 
   UpdateCueEnableUi();
@@ -902,6 +928,7 @@ end;
 
 
 procedure TfrmSetup.FormCreate(Sender: TObject);
+
 begin
 
   UpdateCueEnableUi();
@@ -909,6 +936,7 @@ end;
 
 
 procedure TfrmSetup.FormDestroy(Sender: TObject);
+
 begin
 
   // Free objects stored in combo items.
@@ -939,6 +967,7 @@ end;
 
 
 procedure TfrmSetup.FormShow(Sender: TObject);
+
 begin
 
   //ApplyDarkWindowFrame(Handle);

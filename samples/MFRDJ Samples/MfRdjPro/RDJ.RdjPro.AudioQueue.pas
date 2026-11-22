@@ -66,11 +66,12 @@ unit RDJ.RdjPro.AudioQueue;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   SysUtils,
@@ -78,21 +79,21 @@ LMessages,
   SyncObjs,
   Generics.Collections;
 
-
 type
 
   TRdjProPcmFloatBlock = record
-    Samples: TArray<Single>;
+    Samples: TArray < Single > ;
     Frames: Integer;
     Channels: Integer;
     SampleRate: Integer;
   end;
 
   TRdjProPcmFloatQueue = class
+
   private
 
     FLock: SyncObjs.TCriticalSection;
-    FItems: TQueue<TRdjProPcmFloatBlock>;
+    FItems: TQueue < TRdjProPcmFloatBlock > ;
     FMaxBlocks: Integer;
 
   public
@@ -115,17 +116,19 @@ implementation
 
 
 constructor TRdjProPcmFloatQueue.Create();
+
 begin
 
   inherited Create();
 
   FLock := SyncObjs.TCriticalSection.Create();
-  FItems := TQueue<TRdjProPcmFloatBlock>.Create();
+  FItems := (TQueue < TRdjProPcmFloatBlock > .Create());
   FMaxBlocks := 128;
 end;
 
 
 destructor TRdjProPcmFloatQueue.Destroy();
+
 begin
 
   Clear();
@@ -171,9 +174,9 @@ var
 begin
 
   if (pData = nil) or
-     (Frames <= 0) or
-     (Channels <= 0) or
-     (SampleRate <= 0) then
+    (Frames <= 0) or
+    (Channels <= 0) or
+    (SampleRate <= 0) then
     Exit;
 
   Count := Frames * Channels;
@@ -205,6 +208,7 @@ end;
 
 
 function TRdjProPcmFloatQueue.Pop(out ABlock: TRdjProPcmFloatBlock): Boolean;
+
 begin
 
   Result := False;

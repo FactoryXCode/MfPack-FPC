@@ -101,6 +101,7 @@ const
 
 procedure CheckHr(const AOperation: string;
                   const AHr: HResult);
+
 begin
 
   if FAILED(AHr) then
@@ -111,6 +112,7 @@ end;
 
 procedure WriteFourCC(const AStream: TStream;
                       const AText: AnsiString);
+
 begin
 
   if (Length(AText) <> 4) then
@@ -122,13 +124,17 @@ end;
 
 procedure WriteWord(const AStream: TStream;
                     const AValue: Word);
+
 begin
-  AStream.WriteBuffer(AValue, SizeOf(AValue));
+
+  AStream.WriteBuffer(AValue,
+                      SizeOf(AValue));
 end;
 
 
 procedure WriteDWord(const AStream: TStream;
                      const AValue: Cardinal);
+
 begin
 
   AStream.WriteBuffer(AValue,
@@ -141,6 +147,7 @@ procedure WriteWaveHeader(const AStream: TStream;
                           ARate: Cardinal;
                           ABits: Cardinal;
                           ABlockAlign: Cardinal);
+
 begin
 
   WriteFourCC(AStream,
@@ -186,6 +193,7 @@ end;
 
 procedure FinishWaveHeader(const AStream: TStream;
                            const ADataBytes: UInt64);
+
 begin
 
   if (ADataBytes > High(Cardinal) - 36) then
@@ -200,7 +208,8 @@ begin
 end;
 
 
-function WriteSample(const ASample: IMFSample; const AStream: TStream;
+function WriteSample(const ASample: IMFSample;
+                     const AStream: TStream;
                      const ABlockAlign: Cardinal): Cardinal;
 var
   Buffer: IMFMediaBuffer;
@@ -236,9 +245,12 @@ begin
 end;
 
 
-procedure ProcessAudioFile(const AInputFile, AOutputFile: string;
-                           const ADelayMs, AWetPercent: Cardinal;
-                           out AInputFrames, ATailFrames: UInt64;
+procedure ProcessAudioFile(const AInputFile,
+                           AOutputFile: string;
+                           const ADelayMs,
+                           AWetPercent: Cardinal;
+                           out AInputFrames,
+                           ATailFrames: UInt64;
                            out AFormatDescription: string);
 var
   hr: HResult;
@@ -268,7 +280,7 @@ begin
     raise Exception.Create('Wet mix must be from 0 to 100 percent.');
 
   if SameText(ExpandFileName(AInputFile),
-              ExpandFileName(AOutputFile)) then
+    ExpandFileName(AOutputFile)) then
     raise Exception.Create('Choose a different output file.');
 
   CheckHr('Open source file',
@@ -293,11 +305,11 @@ begin
 
   CheckHr('Request PCM',
           RequestedType.SetGUID(MF_MT_SUBTYPE,
-          MFAudioFormat_PCM));
+                                MFAudioFormat_PCM));
 
   CheckHr('Request 16-bit samples',
           RequestedType.SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
-          16));
+                                  16));
 
   CheckHr('Set decoded media type',
           Reader.SetCurrentMediaType(AudioStream,
@@ -329,10 +341,10 @@ begin
                                AvgBytes));
 
   if ((Channels <> 1) and (Channels <> 2)) or
-     (Bits <> 16) or
-     (Rate = 0) or
-     (BlockAlign <> Channels * 2) or
-     (AvgBytes <> Rate * BlockAlign) then
+    (Bits <> 16) or
+    (Rate = 0) or
+    (BlockAlign <> Channels * 2) or
+    (AvgBytes <> Rate * BlockAlign) then
     raise Exception.Create('The decoded format must be mono or stereo, 16-bit PCM.');
 
   AFormatDescription := Format('%d Hz, %d channel(s), %d-bit PCM',
@@ -341,7 +353,7 @@ begin
   Transform := TMfAudioDelayMFT.Create as IMFTransform;
 
   CheckHr('Get delay attributes',
-           Transform.GetAttributes(Attributes));
+          Transform.GetAttributes(Attributes));
 
   CheckHr('Set delay length',
           Attributes.SetUINT32(MF_AUDIODELAY_DELAY_LENGTH,
@@ -351,9 +363,9 @@ begin
                                AWetPercent));
 
   CheckHr('Set MFT input type',
-           Transform.SetInputType(0,
-                                  ActualType,
-                                  0));
+          Transform.SetInputType(0,
+                                 ActualType,
+                                 0));
 
   CheckHr('Set MFT output type',
           Transform.SetOutputType(0,
@@ -431,7 +443,7 @@ begin
           Inc(AInputFrames,
               Bytes div BlockAlign);
         end;
-      until ((Flags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0);
+    until ((Flags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0);
 
     CheckHr('End of stream',
             Transform.ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM,
@@ -458,17 +470,17 @@ begin
       CheckHr('Process delay tail',
               Hr);
 
-      try
-        if not Assigned(Output.pSample) then
-          raise Exception.Create('The delay tail contained no sample.');
+    try
+      if not Assigned(Output.pSample) then
+        raise Exception.Create('The delay tail contained no sample.');
 
-        Bytes := WriteSample(Output.pSample,
-                             OutputFile,
-                             BlockAlign);
+      Bytes := WriteSample(Output.pSample,
+                           OutputFile,
+                           BlockAlign);
 
-      finally
-        Output.pSample := nil;
-      end;
+    finally
+      Output.pSample := nil;
+    end;
 
       Inc(DataBytes,
           Bytes);

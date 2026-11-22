@@ -92,7 +92,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -106,7 +107,7 @@ const
   //    The clock exposed by this object runs at a fixed frequency.
   //
 
-//type
+  //type
   //Private  Defined in WinApi.WinApiTypes.pas
   //PReferenceTime = ^REFERENCE_TIME;
   //REFERENCE_TIME = LONGLONG;
@@ -114,22 +115,23 @@ const
 
 type
   //-------------------------------------------------------------------------
-    // Description: AudioClient buffer flags
-    //
-    // AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY - The data for this buffer is not correlated
-    //                                          with the data from the previous buffer.
-    // AUDCLNT_BUFFERFLAGS_SILENT             - This data in this buffer should be treated as silence.
-    //
-    // AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR    - The QPC based timestamp reading for this data
-    //                                          buffer does not correlate with the data position.
-    //
+  // Description: AudioClient buffer flags
+  //
+  // AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY - The data for this buffer is not correlated
+  //                                          with the data from the previous buffer.
+  // AUDCLNT_BUFFERFLAGS_SILENT             - This data in this buffer should be treated as silence.
+  //
+  // AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR    - The QPC based timestamp reading for this data
+  //                                          buffer does not correlate with the data position.
+  //
   PAUDCLNT_BUFFERFLAGS = ^AUDCLNT_BUFFERFLAGS;
   _AUDCLNT_BUFFERFLAGS = DWord;
   AUDCLNT_BUFFERFLAGS = _AUDCLNT_BUFFERFLAGS;
+
 const
-  AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY  = AUDCLNT_BUFFERFLAGS($00000001);
-  AUDCLNT_BUFFERFLAGS_SILENT              = AUDCLNT_BUFFERFLAGS($00000002);
-  AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR     = AUDCLNT_BUFFERFLAGS($00000004);
+  AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY = AUDCLNT_BUFFERFLAGS($00000001);
+  AUDCLNT_BUFFERFLAGS_SILENT = AUDCLNT_BUFFERFLAGS($00000002);
+  AUDCLNT_BUFFERFLAGS_TIMESTAMP_ERROR = AUDCLNT_BUFFERFLAGS($00000004);
 
 type
   //-------------------------------------------------------------------------
@@ -153,28 +155,29 @@ type
 
   PAudclntStreamoptions = ^AUDCLNT_STREAMOPTIONS;
   PAUDCLNT_STREAMOPTIONS = ^AUDCLNT_STREAMOPTIONS;
-  AUDCLNT_STREAMOPTIONS        = (
-    AUDCLNT_STREAMOPTIONS_NONE         = $00,
-    AUDCLNT_STREAMOPTIONS_RAW          = $01,
-    AUDCLNT_STREAMOPTIONS_MATCH_FORMAT = $02, // Supported in Windows 10 and later.
-    AUDCLNT_STREAMOPTIONS_AMBISONICS   = $04,
+  AUDCLNT_STREAMOPTIONS = (
+    AUDCLNT_STREAMOPTIONS_NONE = $00,
+                           AUDCLNT_STREAMOPTIONS_RAW = $01,
+                           AUDCLNT_STREAMOPTIONS_MATCH_FORMAT = $02, // Supported in Windows 10 and later.
+    AUDCLNT_STREAMOPTIONS_AMBISONICS = $04,
     // #if(NTDDI_VERSION > NTDDI_WIN11_ZN)
     AUDCLNT_STREAMOPTIONS_POST_VOLUME_LOOPBACK = $08
     //#endif
 
-  );
+    );
 
-    //-------------------------------------------------------------------------
-    // Description: AudioClient properties structure that must precede
-    //              other properties in IAudioClient.SetClientProperties
-    //
-    //  cbSize     - UINT32 size in bytes of this structure.
-    //  bIsOffload - BOOL indicating whether or not to use offload mode.
-    //  eCategory  - AUDIO_STREAM_CATEGORY to be used.
-    //  Options    - A bitfield describing the characteristics of the stream
-    //
+  //-------------------------------------------------------------------------
+  // Description: AudioClient properties structure that must precede
+  //              other properties in IAudioClient.SetClientProperties
+  //
+  //  cbSize     - UINT32 size in bytes of this structure.
+  //  bIsOffload - BOOL indicating whether or not to use offload mode.
+  //  eCategory  - AUDIO_STREAM_CATEGORY to be used.
+  //  Options    - A bitfield describing the characteristics of the stream
+  //
 
   PAudioClientProperties = ^AudioClientProperties;
+
   AudioClientProperties = record
     cbSize: UINT32;
     bIsOffload: BOOL;
@@ -193,7 +196,7 @@ type
   PAMBISONICS_TYPE = ^AMBISONICS_TYPE;
   AMBISONICS_TYPE = (
     AMBISONICS_TYPE_FULL3D = 0
-  );
+    );
 
   //-------------------------------------------------------------------------
   // Description: Enumeration of ambisonics channel ordering
@@ -204,7 +207,7 @@ type
   PAMBISONICS_CHANNEL_ORDERING = ^AMBISONICS_CHANNEL_ORDERING;
   AMBISONICS_CHANNEL_ORDERING = (
     AMBISONICS_CHANNEL_ORDERING_ACN = 0
-  );
+    );
 
   //-------------------------------------------------------------------------
   // Description: Enumeration of ambisonics normalization
@@ -217,8 +220,8 @@ type
   PAMBISONICS_NORMALIZATION = ^AMBISONICS_NORMALIZATION;
   AMBISONICS_NORMALIZATION = (
     AMBISONICS_NORMALIZATION_SN3D = 0,
-    AMBISONICS_NORMALIZATION_N3D
-  );
+                              AMBISONICS_NORMALIZATION_N3D
+    );
 
   // AMBISONICS_PARAM_VERSION_1 1
   // The AMBISONICS_PARAMS initialization structure should be completely filled out
@@ -234,6 +237,7 @@ type
   // given the defined ambisonics_channel_ordering. The sequence of channel_map values should match the channel sequence within the given audio track.
 
   PAMBISONICS_PARAMS = ^AMBISONICS_PARAMS;
+
   AMBISONICS_PARAMS = record
     u32Size: UINT32;
     u32Version: UINT32;
@@ -249,6 +253,7 @@ type
   {Tony}
   // -> IAudioClient3
   PAudioClient3ActivationParams = ^TAudioClient3ActivationParams;
+
   AudioClient3ActivationParams = record
     tracingContextId: TGUID;
   end;
@@ -256,10 +261,10 @@ type
 
   //
   PAUDIO_DUCKING_OPTIONS = ^AUDIO_DUCKING_OPTIONS;
-  AUDIO_DUCKING_OPTIONS                             = (
-    AUDIO_DUCKING_OPTIONS_DEFAULT                   = $00,
-    AUDIO_DUCKING_OPTIONS_DO_NOT_DUCK_OTHER_STREAMS = $01
-  );
+  AUDIO_DUCKING_OPTIONS = (
+    AUDIO_DUCKING_OPTIONS_DEFAULT = $00,
+                           AUDIO_DUCKING_OPTIONS_DO_NOT_DUCK_OTHER_STREAMS = $01
+    );
 
 
   // Interfaces ////////////////////////////////////////////////////////////////
@@ -271,7 +276,7 @@ type
   // audio stream between an audio application and the audio engine (for a shared-mode stream) or
   // the hardware buffer of an audio endpoint device (for an exclusive-mode stream).
   IAudioClient = interface(IUnknown)
-  ['{1CB9AD4C-DBFA-4c32-B178-C2F568A703B2}']
+    ['{1CB9AD4C-DBFA-4c32-B178-C2F568A703B2}']
 
     function Initialize(ShareMode: AUDCLNT_SHAREMODE;
                         StreamFlags: DWord;
@@ -279,7 +284,7 @@ type
                         hnsPeriodicity: REFERENCE_TIME;
                         pFormat: PWAVEFORMATEX;
                         const AudioSessionGuid: LPCGUID {optional, can be nil or a pointer to GUID_NULL}
-                       ): HResult; stdcall;
+      ): HResult; stdcall;
     // Description:
     //
     //  Initializes the audio stream by creating a connection to the Windows Audio System (WAS)
@@ -502,8 +507,8 @@ type
 
     function IsFormatSupported(ShareMode: AUDCLNT_SHAREMODE;
                                pFormat: PWaveFormatEx;
-                               {out} ppClosestMatch: PWaveFormatEx // Exclusive mode can't suggest a "closest match", you have to set this param to nil.
-                              ): HResult; stdcall;
+    {out} ppClosestMatch: PWaveFormatEx // Exclusive mode can't suggest a "closest match", you have to set this param to nil.
+      ): HResult; stdcall;
     // Description:
     //
     //  Provides a way for the user to determine, prior to initialization, whether a given format
@@ -787,6 +792,7 @@ type
     //
 
   end;
+
   IID_IAudioClient = IAudioClient;
 
 
@@ -795,7 +801,7 @@ type
   // Note: Your audio driver needs to support this interface.
   //       When not, you will get error messages like E_NOTIMPL calling methods of this interface.
   IAudioClient2 = interface(IAudioClient)
-  ['{726778CD-F60A-4eda-82DE-E47610CD78AA}']
+    ['{726778CD-F60A-4eda-82DE-E47610CD78AA}']
     function IsOffloadCapable(Category: AUDIO_STREAM_CATEGORY;
                               out pbOffloadCapable: BOOL): HResult; stdcall;
     // Description:
@@ -881,6 +887,7 @@ type
     //
 
   end;
+
   IID_IAudioClient2 = IAudioClient2;
 
 
@@ -913,7 +920,7 @@ type
   // Note: Your audio driver needs to support this interface.
   //       When not, you will get error messages like E_NOTIMPL calling methods of this interface.
   IAudioClient3 = interface(IAudioClient2)
-  ['{7ED4EE07-8E67-4CD4-8C1A-2B7A5987AD42}']
+    ['{7ED4EE07-8E67-4CD4-8C1A-2B7A5987AD42}']
     function GetSharedModeEnginePeriod(pFormat: PWAVEFORMATEX;
                                        out pDefaultPeriodInFrames: UINT32;
                                        out pFundamentalPeriodInFrames: UINT32;
@@ -961,7 +968,7 @@ type
     function InitializeSharedAudioStream(const StreamFlags: DWORD;
                                          PeriodInFrames: UINT32;
                                          const pFormat: PWAVEFORMATEX;
-                                         {optional} const AudioSessionGuid: LPCGUID): HResult; stdcall;
+    {optional} const AudioSessionGuid: LPCGUID): HResult; stdcall;
     // Description:
     //
     //  Initializes a shared stream with the specified periodicity.
@@ -999,6 +1006,7 @@ type
     //  Setting this parameter to Nil is equivalent to passing a pointer to a GUID_NULL value.
 
   end;
+
   IID_IAudioClient3 = IAudioClient3;
 
 
@@ -1007,7 +1015,7 @@ type
   // ============================
   //
   IAudioRenderClient = interface(IUnknown)
-  ['{F294ACFC-3146-4483-A7BF-ADDCA7C260E2}']
+    ['{F294ACFC-3146-4483-A7BF-ADDCA7C260E2}']
     //-------------------------------------------------------------------------
     // Description:
     //
@@ -1091,6 +1099,7 @@ type
                            const dwFlags: DWord): HResult; stdcall;
 
   end;
+
   IID_IAudioRenderClient = IAudioRenderClient;
 
 
@@ -1099,13 +1108,13 @@ type
   // Enables a client to read input data from a capture endpoint buffer.
   //
   IAudioCaptureClient = interface(IUnknown)
-  ['{C8ADBD64-E71E-48a0-A4DE-185C395CD317}']
+    ['{C8ADBD64-E71E-48a0-A4DE-185C395CD317}']
 
     function GetBuffer(out ppData: PByte;
                        out pNumFramesToRead: UINT32;
                        out pdwFlags: AUDCLNT_BUFFERFLAGS;
-                       {out} pu64DevicePosition: PUINT64;
-                       {out} pu64QPCPosition: PUINT64): HResult; stdcall;
+    {out} pu64DevicePosition: PUINT64;
+    {out} pu64QPCPosition: PUINT64): HResult; stdcall;
     //-------------------------------------------------------------------------
     // Description:
     //
@@ -1224,6 +1233,7 @@ type
     //
 
   end;
+
   IID_IAudioCaptureClient = IAudioCaptureClient;
 
 
@@ -1233,7 +1243,7 @@ type
   // Enables a client to monitor a stream's data rate and the current position in the stream.
   //
   IAudioClock = interface(IUnknown)
-  ['{CD63314F-3FBA-4a1b-812C-EF96358728E7}']
+    ['{CD63314F-3FBA-4a1b-812C-EF96358728E7}']
     function GetFrequency(out pu64Frequency: UINT64): HResult; stdcall;  // upd 1/9/2024 Tony.
     // Description:
     //
@@ -1263,7 +1273,7 @@ type
     //
 
     function GetPosition({out} pu64Position: PUINT64;
-                         {out} pu64QPCPosition: PUINT64): HResult; stdcall;   // upd 1/9/2024 Tony.
+    {out} pu64QPCPosition: PUINT64): HResult; stdcall;   // upd 1/9/2024 Tony.
     // Description:
     //
     //  Returns the current clock position
@@ -1327,6 +1337,7 @@ type
     //
 
   end;
+
   IID_IAudioClock = IAudioClock;
 
 
@@ -1336,7 +1347,7 @@ type
   // Is used to get the current device position.
   //
   IAudioClock2 = interface(IUnknown)
-  ['{6f49ff73-6727-49ac-a008-d98cf5e70048}']
+    ['{6f49ff73-6727-49ac-a008-d98cf5e70048}']
     function GetDevicePosition(out DevicePosition: UINT64;
                                out QPCPosition: UINT64): HResult; stdcall;
     // Description:
@@ -1366,6 +1377,7 @@ type
     //    the mix format used by the client.
     //
   end;
+
   IID_IAudioClock2 = IAudioClock2;
 
 
@@ -1375,7 +1387,7 @@ type
   // Is used to adjust the sample rate of a stream.
   //
   IAudioClockAdjustment = interface(IUnknown)
-  ['{f6e4c0a0-46d9-4fb8-be21-57a3ef2b626c}']
+    ['{f6e4c0a0-46d9-4fb8-be21-57a3ef2b626c}']
     //Sets the sample rate of a stream, in frames per second.
     function SetSampleRate(flSampleRate: Float): HResult; stdcall;
     // Description:
@@ -1398,6 +1410,7 @@ type
     //      processing pass that follows the call to SetSampleRate().
     //
   end;
+
   IID_IAudioClockAdjustment = IAudioClockAdjustment;
 
 
@@ -1405,7 +1418,7 @@ type
   // ============================
   //
   ISimpleAudioVolume = interface(IUnknown)
-  ['{87CE5498-68D6-44E5-9215-6DA47EF883D8}']
+    ['{87CE5498-68D6-44E5-9215-6DA47EF883D8}']
     function SetMasterVolume(fLevel: Single;
                              EventContext: LPCGUID): HResult; stdcall;
     // Description:
@@ -1494,6 +1507,7 @@ type
     //
     //
   end;
+
   IID_ISimpleAudioVolume = ISimpleAudioVolume;
 
 
@@ -1505,7 +1519,7 @@ type
   //
   //
   IAudioClientDuckingControl = interface(IUnknown)
-  ['{C789D381-A28C-4168-B28F-D3A837924DC3}']
+    ['{C789D381-A28C-4168-B28F-D3A837924DC3}']
     function SetDuckingOptionsForCurrentStream({in} options: AUDIO_DUCKING_OPTIONS): HResult; stdcall;
     // Description:
     //
@@ -1520,6 +1534,7 @@ type
     //
 
   end;
+
   IID_IAudioClientDuckingControl = IAudioClientDuckingControl;
 
 
@@ -1529,29 +1544,31 @@ type
   // Use IAudioClient.GetService to obtain this interface.
   //
   IAudioViewManagerService = interface(IUnknown)
-  ['{A7A7EF10-1F49-45E0-AD35-612057CC8F74}']
-  //-------------------------------------------------------------------------
-  // Description:
-  //
-  //     Associate the audio stream to a given HWND
-  //
-  // Parameters:
-  //
-  //     hwnd - [in] HWND to be associated with the audio stream
-  //
-  //
+    ['{A7A7EF10-1F49-45E0-AD35-612057CC8F74}']
+    //-------------------------------------------------------------------------
+    // Description:
+    //
+    //     Associate the audio stream to a given HWND
+    //
+    // Parameters:
+    //
+    //     hwnd - [in] HWND to be associated with the audio stream
+    //
+    //
     function SetAudioStreamWindow({in} const _hwnd: HWND): HResult; stdcall;
   end;
+
   IID_IAudioViewManagerService = IAudioViewManagerService;
 
 
   AUDIO_EFFECT_STATE = (
-                        AUDIO_EFFECT_STATE_OFF = 0,
+    AUDIO_EFFECT_STATE_OFF = 0,
                         AUDIO_EFFECT_STATE_ON
-                       );
+    );
 
 
   PAUDIO_EFFECT = ^AUDIO_EFFECT;
+
   AUDIO_EFFECT = record
     id: TGUID;
     canSetState: BOOL;
@@ -1564,9 +1581,10 @@ type
   // ================================================
   //
   IAudioEffectsChangedNotificationClient = interface(IUnknown)
-  ['{A5DED44F-3C5D-4B2B-BD1E-5DC1EE20BBF6}']
+    ['{A5DED44F-3C5D-4B2B-BD1E-5DC1EE20BBF6}']
     function OnAudioEffectsChanged(): HRESULT; stdcall;
   end;
+
   IID_IAudioEffectsChangedNotificationClient = IAudioEffectsChangedNotificationClient;
 
 
@@ -1575,7 +1593,7 @@ type
   // Use IAudioClient.GetService to obtain this interface.
   //
   IAudioEffectsManager = interface(IUnknown)
-  ['{4460B3AE-4B44-4527-8676-7548A8ACD260}']
+    ['{4460B3AE-4B44-4527-8676-7548A8ACD260}']
 
     function RegisterAudioEffectsChangedNotificationCallback(client: IAudioEffectsChangedNotificationClient): HRESULT; stdcall;
 
@@ -1588,6 +1606,7 @@ type
                                  state: AUDIO_EFFECT_STATE): HRESULT; stdcall;
 
   end;
+
   IID_IAudioEffectsManager = IAudioEffectsManager;
 
 
@@ -1595,7 +1614,7 @@ type
   // ============================
   //
   IAudioStreamVolume = interface(IUnknown)
-  ['{93014887-242D-4068-8A15-CF5E93B90FE3}']
+    ['{93014887-242D-4068-8A15-CF5E93B90FE3}']
     function GetChannelCount(out pdwCount: UINT32): HResult; stdcall;
     // Description:
     //
@@ -1700,6 +1719,7 @@ type
     //     OTHER       Other error.
     //
   end;
+
   IID_IAudioStreamVolume = IAudioStreamVolume;
 
 
@@ -1707,7 +1727,7 @@ type
   // =============================
   //
   IChannelAudioVolume = interface(IUnknown)
-  ['{1C158861-B533-4B30-B1CF-E853E51C59B8}']
+    ['{1C158861-B533-4B30-B1CF-E853E51C59B8}']
     function GetChannelCount(out pdwCount: UINT32): HResult; stdcall;
     // Description:
     //
@@ -1808,7 +1828,7 @@ type
     //
 
     function GetAllVolumes(dwCount: UINT32;
-                           {out} pfVolumes: PFLOAT): HResult; stdcall;
+    {out} pfVolumes: PFLOAT): HResult; stdcall;
     // Description:
     //
     //  Get the volume for all audio channels.
@@ -1832,6 +1852,7 @@ type
     //
 
   end;
+
   IID_IChannelAudioVolume = IChannelAudioVolume;
 
 
@@ -1839,7 +1860,7 @@ type
   // =================================
   //
   IAudioAmbisonicsControl = interface(IUnknown)
-  ['{28724C91-DF35-4856-9F76-D6A26413F3DF}']
+    ['{28724C91-DF35-4856-9F76-D6A26413F3DF}']
     //-------------------------------------------------------------------------
     // Description:
     //
@@ -1927,6 +1948,7 @@ type
                          W: FLOAT): HRESULT; stdcall;
 
   end;
+
   IID_IAudioAmbisonicsControl = IAudioAmbisonicsControl;
 
 
@@ -1936,7 +1958,7 @@ type
   // Use IAudioClient.GetService to obtain this interface.
   //
   IAcousticEchoCancellationControl = interface(IUnknown)
-  ['{f4ae25b5-aaa3-437d-b6b3-dbbe2d0e9549}']
+    ['{f4ae25b5-aaa3-437d-b6b3-dbbe2d0e9549}']
 
     function SetEchoCancellationRenderEndpoint(endpointId: PWideChar): HResult; stdcall;
   end;
@@ -1951,85 +1973,90 @@ const
 
   // Since XE2 you have to hardcode this.
 
-  AUDCLNT_E_NOT_INITIALIZED               = $88890001;  //AUDCLNT_ERR($001);
-  AUDCLNT_E_ALREADY_INITIALIZED           = $88890002;  //AUDCLNT_ERR($002);
-  AUDCLNT_E_WRONG_ENDPOINT_TYPE           = $88890003;  //AUDCLNT_ERR($003);
-  AUDCLNT_E_DEVICE_INVALIDATED            = $88890004;  //AUDCLNT_ERR($004);
-  AUDCLNT_E_NOT_STOPPED                   = $88890005;  //AUDCLNT_ERR($005);
-  AUDCLNT_E_BUFFER_TOO_LARGE              = $88890006;  //AUDCLNT_ERR($006);
-  AUDCLNT_E_OUT_OF_ORDER                  = $88890007;  //AUDCLNT_ERR($007);
-  AUDCLNT_E_UNSUPPORTED_FORMAT            = $88890008;  //AUDCLNT_ERR($008);
-  AUDCLNT_E_INVALID_SIZE                  = $88890009;  //AUDCLNT_ERR($009);
-  AUDCLNT_E_DEVICE_IN_USE                 = $8889000a;  //AUDCLNT_ERR($00A);
-  AUDCLNT_E_BUFFER_OPERATION_PENDING      = $8889000b;  //AUDCLNT_ERR($00B);
-  AUDCLNT_E_THREAD_NOT_REGISTERED         = $8889000c;  //AUDCLNT_ERR($00C);
-  AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED    = $8889000e;  //AUDCLNT_ERR($00E);
-  AUDCLNT_E_ENDPOINT_CREATE_FAILED        = $8889000f;  //AUDCLNT_ERR($00F);
-  AUDCLNT_E_SERVICE_NOT_RUNNING           = $88890010;  //AUDCLNT_ERR($010);
-  AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED      = $88890011;  //AUDCLNT_ERR($011);
-  AUDCLNT_E_EXCLUSIVE_MODE_ONLY           = $88890012;  //AUDCLNT_ERR($012);
-  AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL  = $88890013;  //AUDCLNT_ERR($013);
-  AUDCLNT_E_EVENTHANDLE_NOT_SET           = $88890014;  //AUDCLNT_ERR($014);
-  AUDCLNT_E_INCORRECT_BUFFER_SIZE         = $88890015;  //AUDCLNT_ERR($015);
-  AUDCLNT_E_BUFFER_SIZE_ERROR             = $88890016;  //AUDCLNT_ERR($016);
-  AUDCLNT_E_CPUUSAGE_EXCEEDED             = $88890017;  //AUDCLNT_ERR($017);
-  AUDCLNT_E_BUFFER_ERROR                  = $88890018;  //AUDCLNT_ERR($018);
-  AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED       = $88890019;  //AUDCLNT_ERR($019);
-  AUDCLNT_E_INVALID_DEVICE_PERIOD         = $88890020;  //AUDCLNT_ERR($020);
-  AUDCLNT_E_INVALID_STREAM_FLAG           = $88890021;  //AUDCLNT_ERR($021);
-  AUDCLNT_E_ENDPOINT_OFFLOAD_NOT_CAPABLE  = $88890022;  //AUDCLNT_ERR($022)
-  AUDCLNT_E_OUT_OF_OFFLOAD_RESOURCES      = $88890023;  //AUDCLNT_ERR($023)
-  AUDCLNT_E_OFFLOAD_MODE_ONLY             = $88890024;  //AUDCLNT_ERR($024)
-  AUDCLNT_E_NONOFFLOAD_MODE_ONLY          = $88890025;  //AUDCLNT_ERR($025)
-  AUDCLNT_E_RESOURCES_INVALIDATED         = $88890026;  //AUDCLNT_ERR($026)
-  AUDCLNT_E_RAW_MODE_UNSUPPORTED          = $88890027;  //AUDCLNT_ERR($027)
-  AUDCLNT_E_ENGINE_PERIODICITY_LOCKED     = $88890028;  //AUDCLNT_ERR($028)
-  AUDCLNT_E_ENGINE_FORMAT_LOCKED          = $88890029;  //AUDCLNT_ERR($029)
-  AUDCLNT_E_HEADTRACKING_ENABLED          = $88890030;  //AUDCLNT_ERR($030)
-  AUDCLNT_E_HEADTRACKING_UNSUPPORTED      = $88890040;  //AUDCLNT_ERR($040)
-  AUDCLNT_E_EFFECT_NOT_AVAILABLE          = $88890041;  //AUDCLNT_ERR($041)
-  AUDCLNT_E_EFFECT_STATE_READ_ONLY        = $88890042;  //AUDCLNT_ERR($042)
+  AUDCLNT_E_NOT_INITIALIZED = $88890001;  //AUDCLNT_ERR($001);
+  AUDCLNT_E_ALREADY_INITIALIZED = $88890002;  //AUDCLNT_ERR($002);
+  AUDCLNT_E_WRONG_ENDPOINT_TYPE = $88890003;  //AUDCLNT_ERR($003);
+  AUDCLNT_E_DEVICE_INVALIDATED = $88890004;  //AUDCLNT_ERR($004);
+  AUDCLNT_E_NOT_STOPPED = $88890005;  //AUDCLNT_ERR($005);
+  AUDCLNT_E_BUFFER_TOO_LARGE = $88890006;  //AUDCLNT_ERR($006);
+  AUDCLNT_E_OUT_OF_ORDER = $88890007;  //AUDCLNT_ERR($007);
+  AUDCLNT_E_UNSUPPORTED_FORMAT = $88890008;  //AUDCLNT_ERR($008);
+  AUDCLNT_E_INVALID_SIZE = $88890009;  //AUDCLNT_ERR($009);
+  AUDCLNT_E_DEVICE_IN_USE = $8889000a;  //AUDCLNT_ERR($00A);
+  AUDCLNT_E_BUFFER_OPERATION_PENDING = $8889000b;  //AUDCLNT_ERR($00B);
+  AUDCLNT_E_THREAD_NOT_REGISTERED = $8889000c;  //AUDCLNT_ERR($00C);
+  AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED = $8889000e;  //AUDCLNT_ERR($00E);
+  AUDCLNT_E_ENDPOINT_CREATE_FAILED = $8889000f;  //AUDCLNT_ERR($00F);
+  AUDCLNT_E_SERVICE_NOT_RUNNING = $88890010;  //AUDCLNT_ERR($010);
+  AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED = $88890011;  //AUDCLNT_ERR($011);
+  AUDCLNT_E_EXCLUSIVE_MODE_ONLY = $88890012;  //AUDCLNT_ERR($012);
+  AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL = $88890013;  //AUDCLNT_ERR($013);
+  AUDCLNT_E_EVENTHANDLE_NOT_SET = $88890014;  //AUDCLNT_ERR($014);
+  AUDCLNT_E_INCORRECT_BUFFER_SIZE = $88890015;  //AUDCLNT_ERR($015);
+  AUDCLNT_E_BUFFER_SIZE_ERROR = $88890016;  //AUDCLNT_ERR($016);
+  AUDCLNT_E_CPUUSAGE_EXCEEDED = $88890017;  //AUDCLNT_ERR($017);
+  AUDCLNT_E_BUFFER_ERROR = $88890018;  //AUDCLNT_ERR($018);
+  AUDCLNT_E_BUFFER_SIZE_NOT_ALIGNED = $88890019;  //AUDCLNT_ERR($019);
+  AUDCLNT_E_INVALID_DEVICE_PERIOD = $88890020;  //AUDCLNT_ERR($020);
+  AUDCLNT_E_INVALID_STREAM_FLAG = $88890021;  //AUDCLNT_ERR($021);
+  AUDCLNT_E_ENDPOINT_OFFLOAD_NOT_CAPABLE = $88890022;  //AUDCLNT_ERR($022)
+  AUDCLNT_E_OUT_OF_OFFLOAD_RESOURCES = $88890023;  //AUDCLNT_ERR($023)
+  AUDCLNT_E_OFFLOAD_MODE_ONLY = $88890024;  //AUDCLNT_ERR($024)
+  AUDCLNT_E_NONOFFLOAD_MODE_ONLY = $88890025;  //AUDCLNT_ERR($025)
+  AUDCLNT_E_RESOURCES_INVALIDATED = $88890026;  //AUDCLNT_ERR($026)
+  AUDCLNT_E_RAW_MODE_UNSUPPORTED = $88890027;  //AUDCLNT_ERR($027)
+  AUDCLNT_E_ENGINE_PERIODICITY_LOCKED = $88890028;  //AUDCLNT_ERR($028)
+  AUDCLNT_E_ENGINE_FORMAT_LOCKED = $88890029;  //AUDCLNT_ERR($029)
+  AUDCLNT_E_HEADTRACKING_ENABLED = $88890030;  //AUDCLNT_ERR($030)
+  AUDCLNT_E_HEADTRACKING_UNSUPPORTED = $88890040;  //AUDCLNT_ERR($040)
+  AUDCLNT_E_EFFECT_NOT_AVAILABLE = $88890041;  //AUDCLNT_ERR($041)
+  AUDCLNT_E_EFFECT_STATE_READ_ONLY = $88890042;  //AUDCLNT_ERR($042)
   AUDCLNT_E_POST_VOLUME_LOOPBACK_UNSUPPORTED = $88890043; //AUDCLNT_ERR($043)
 
 
-  AUDCLNT_S_BUFFER_EMPTY                  = $88890001;  //AUDCLNT_SUCCESS($001)
-  AUDCLNT_S_THREAD_ALREADY_REGISTERED     = $88890002;  //AUDCLNT_SUCCESS($002)
-  AUDCLNT_S_POSITION_STALLED              = $88890003;  //AUDCLNT_SUCCESS($003)
+  AUDCLNT_S_BUFFER_EMPTY = $88890001;  //AUDCLNT_SUCCESS($001)
+  AUDCLNT_S_THREAD_ALREADY_REGISTERED = $88890002;  //AUDCLNT_SUCCESS($002)
+  AUDCLNT_S_POSITION_STALLED = $88890003;  //AUDCLNT_SUCCESS($003)
 
   {See: IAudioSessionControl2 interface}
-  AUDCLNT_S_NO_SINGLE_PROCESS             = $8889000D;  //AUDCLNT_SUCCESS($00D)
+  AUDCLNT_S_NO_SINGLE_PROCESS = $8889000D;  //AUDCLNT_SUCCESS($00D)
 
 
 
   // Additional Prototypes for ALL interfaces
 
-  // Remarks: HRESULTs are signed 4-byte integers.
-  //          AUDCLNT_ERR is a macro that returns an integer of the format $8890000 + x.
-  //          Example: AUDCLNT_ERR($001) will result in $88900001.
-  function AUDCLNT_ERR(n: LongInt): HRESULT;
-  function AUDCLNT_SUCCESS(n: LongInt): HRESULT;
+// Remarks: HRESULTs are signed 4-byte integers.
+//          AUDCLNT_ERR is a macro that returns an integer of the format $8890000 + x.
+//          Example: AUDCLNT_ERR($001) will result in $88900001.
+function AUDCLNT_ERR(n: LongInt): HRESULT;
+function AUDCLNT_SUCCESS(n: LongInt): HRESULT;
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 
 implementation
 
-  //Implement Additional functions here.
+//Implement Additional functions here.
 
 
 //ERROR HANDLING
 function AUDCLNT_ERR(n: LongInt): HRESULT;
-  begin
-    Result:= MAKE_HRESULT(SEVERITY_ERROR,
-                          FACILITY_AUDCLNT,
-                          n);
-  end;
+
+begin
+
+  Result := MAKE_HRESULT(SEVERITY_ERROR,
+                         FACILITY_AUDCLNT,
+                         n);
+end;
+
 
 function AUDCLNT_SUCCESS(n: LongInt): HRESULT;
-  begin
-    Result:= MAKE_SCODE(SEVERITY_SUCCESS,
-                        FACILITY_AUDCLNT,
-                        n);
-  end;
+
+begin
+
+  Result := MAKE_SCODE(SEVERITY_SUCCESS,
+                       FACILITY_AUDCLNT,
+                       n);
+end;
 
 end.

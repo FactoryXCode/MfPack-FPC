@@ -73,19 +73,19 @@ interface
 uses
   Windows,
   MfCastTypes;
-  
-  function MfCastGetCaptureCapabilities(const ADevice: TMfCastDevice;
-                                        const APreference: TMfCastVideoCodecPreference;
-                                        out ACapabilities: TMfCastCaptureCapabilities): HRESULT;
-  
-  function MfCastReceiverSupportsHEVC(const ADevice: TMfCastDevice): Boolean;
-  
+
+function MfCastGetCaptureCapabilities(const ADevice: TMfCastDevice;
+                                      const APreference: TMfCastVideoCodecPreference;
+                                      out ACapabilities: TMfCastCaptureCapabilities): HRESULT;
+
+function MfCastReceiverSupportsHEVC(const ADevice: TMfCastDevice): Boolean;
+
 
 implementation
 
 uses
-  
-  {WinApi}  
+
+  {WinApi}
   WinApi.WinError,
   {ActiveX}
   WinApi.ActiveX.ObjBase,
@@ -97,32 +97,34 @@ uses
   WinApi.MediaFoundationApi.MfApi,
   WinApi.MediaFoundationApi.MfObjects,
   WinApi.MediaFoundationApi.MfTransform;
-  
-  
+
+
 function ContainsText(const AValue: string;
                       const APart: string): Boolean;
+
 begin
-  
-  Result := Pos(UpperCase(APart), UpperCase(AValue)) > 0;
+
+  Result := (Pos(UpperCase(APart),
+                 UpperCase(AValue)) > 0);
 end;
 
 
 function MfCastReceiverSupportsHEVC(const ADevice: TMfCastDevice): Boolean;
 var
   Model: string;
-  
+
 begin
- 
+
   Model := Trim(ADevice.ModelName);
-  
+
   // Receiver support is deliberately conservative. Generation 1 (H2G2-42),
   // generation 2/3 and an unidentified Android TV receiver are kept on H.264.
   Result := ContainsText(Model,
                          'CHROMECAST ULTRA') or
-            ContainsText(Model,
-                         'CHROMECAST WITH GOOGLE TV') or
-            ContainsText(Model,
-                         'GOOGLE TV STREAMER');
+    ContainsText(Model,
+                 'CHROMECAST WITH GOOGLE TV') or
+    ContainsText(Model,
+                 'GOOGLE TV STREAMER');
 end;
 
 
@@ -161,10 +163,11 @@ begin
 
 
   Hr := MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER,
-
                   MFT_ENUM_FLAG_HARDWARE or MFT_ENUM_FLAG_SORTANDFILTER,
-
-                  @InputType, @OutputType, Activates, Count);
+                  @InputType,
+                  @OutputType,
+                  Activates,
+                  Count);
 
   if FAILED(Hr) then
 
@@ -202,7 +205,7 @@ begin
 
       begin
 
-        if Count > 0 then
+        if (Count > 0) then
 
           for Index := 0 to Count - 1 do
 
@@ -219,14 +222,14 @@ end;
 
 
 
-
 function MfCastGetCaptureCapabilities(const ADevice: TMfCastDevice;
                                       const APreference: TMfCastVideoCodecPreference;
                                       out ACapabilities: TMfCastCaptureCapabilities): HRESULT;
+
 begin
-  
+
   ACapabilities.Reset();
- 
+
   // A zero value can also mean that an older/incomplete mDNS response did not
   // contain a ca field, so retain compatibility by treating zero as unknown.
   // A nonzero value without VIDEO_OUT is definitively an audio-only receiver.
@@ -238,12 +241,12 @@ begin
       Result := S_OK;
       Exit;
     end;
-    
+
   ACapabilities.HardwareH264EncoderAvailable := HasHardwareVideoEncoder(MFVideoFormat_H264);
   ACapabilities.HardwareHEVCEncoderAvailable := HasHardwareVideoEncoder(MFVideoFormat_HEVC);
   ACapabilities.ReceiverSupportsH264 := True;
   ACapabilities.ReceiverSupportsHEVC := MfCastReceiverSupportsHEVC(ADevice);
-  
+
   case APreference of
     cvcpHEVC:
       begin
@@ -254,7 +257,7 @@ begin
             Result := HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
             Exit;
           end;
-          
+
         if not ACapabilities.HardwareHEVCEncoderAvailable then
           begin
             ACapabilities.SelectionReason :=
@@ -262,12 +265,12 @@ begin
             Result := HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
             Exit;
           end;
-          
+
         ACapabilities.SelectedCodec := cvcHEVC;
         ACapabilities.SelectedVideoSubtype := MFVideoFormat_HEVC;
         ACapabilities.SelectionReason := 'HEVC was explicitly requested and is supported by both endpoints.';
       end;
-      
+
     cvcpH264:
       begin
         if not ACapabilities.HardwareH264EncoderAvailable then
@@ -277,34 +280,33 @@ begin
             Result := HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
             Exit;
           end;
-          
+
         ACapabilities.SelectedCodec := cvcH264;
         ACapabilities.SelectedVideoSubtype := MFVideoFormat_H264;
         ACapabilities.SelectionReason := 'Hardware H.264 was explicitly requested.';
       end;
-  else
-    if ACapabilities.ReceiverSupportsHEVC and ACapabilities.HardwareHEVCEncoderAvailable then
-      begin
-        ACapabilities.SelectedCodec := cvcHEVC;
-        ACapabilities.SelectedVideoSubtype := MFVideoFormat_HEVC;
-        ACapabilities.SelectionReason :=
-          'Automatic selection chose hardware HEVC supported by the receiver.';
-      end
     else
-      if ACapabilities.HardwareH264EncoderAvailable then
+      if ACapabilities.ReceiverSupportsHEVC and ACapabilities.HardwareHEVCEncoderAvailable then
+        begin
+          ACapabilities.SelectedCodec := cvcHEVC;
+          ACapabilities.SelectedVideoSubtype := MFVideoFormat_HEVC;
+          ACapabilities.SelectionReason :=
+            'Automatic selection chose hardware HEVC supported by the receiver.';
+        end
+      else if ACapabilities.HardwareH264EncoderAvailable then
         begin
           ACapabilities.SelectedCodec := cvcH264;
           ACapabilities.SelectedVideoSubtype := MFVideoFormat_H264;
           ACapabilities.SelectionReason := 'Automatic selection chose the compatible hardware H.264 fallback.';
-      end
-    else
-      begin
-        ACapabilities.SelectionReason := 'No compatible Media Foundation hardware video encoder is available.';
-        Result := HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
-        Exit;
-      end;
+        end
+      else
+        begin
+          ACapabilities.SelectionReason := 'No compatible Media Foundation hardware video encoder is available.';
+          Result := HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+          Exit;
+        end;
   end;
-  
+
   Result := S_OK;
 end;
 

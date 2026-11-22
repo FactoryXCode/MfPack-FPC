@@ -71,7 +71,7 @@ interface
 
 uses
   SyncObjs,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinApiTypes,
   {System}
@@ -85,19 +85,22 @@ uses
 
 const
   MF_AUDIODELAY_DELAY_LENGTH: TGUID = '{95915546-B07C-4234-A237-1AF27187DEEE}';
-  MF_AUDIODELAY_WET_DRY_MIX: TGUID =  '{72127F43-5878-4EA8-8269-D1AF3BB11CB2}';
+  MF_AUDIODELAY_WET_DRY_MIX: TGUID = '{72127F43-5878-4EA8-8269-D1AF3BB11CB2}';
 
 
 type
 
   // Optional control interface for changing the effect during playback.
   IMfAudioDelayControl = interface(IUnknown)
-  ['{48222613-78FC-4A40-B95B-7E67E22443EE}']
+    ['{48222613-78FC-4A40-B95B-7E67E22443EE}']
     function SetEffect(const ADelayMs: Cardinal;
                        const AWetPercent: Cardinal): HResult; stdcall;
   end;
 
-  TMfAudioDelayMFT = class(TInterfacedObject, IMFTransform, IMfAudioDelayControl)
+  TMfAudioDelayMFT = class(TInterfacedObject,
+                           IMFTransform,
+                           IMfAudioDelayControl)
+
   private
     FLock: SyncObjs.TCriticalSection;
     FInputType: IMFMediaType;
@@ -234,12 +237,16 @@ const
 
 
 constructor TMfAudioDelayMFT.Create;
+
 begin
+
   inherited Create;
   FLock := SyncObjs.TCriticalSection.Create;
 end;
 
+
 destructor TMfAudioDelayMFT.Destroy();
+
 begin
 
   ResetStream(True);
@@ -250,6 +257,7 @@ end;
 
 
 procedure TMfAudioDelayMFT.ResetStream(const AReleaseDelay: Boolean);
+
 begin
 
   FInputSample := nil;
@@ -261,11 +269,12 @@ begin
   if AReleaseDelay then
     SetLength(FDelay,
               0)
-  else
-    if (Length(FDelay) > 0) then
-      FillChar(FDelay[0],
-               Length(FDelay),
-               IfThen(FBits = 8, $80, 0));
+  else if (Length(FDelay) > 0) then
+    FillChar(FDelay[0],
+             Length(FDelay),
+             IfThen(FBits = 8,
+                    $80,
+                    0));
 end;
 
 
@@ -290,30 +299,30 @@ begin
     Exit(E_POINTER);
 
   if FAILED(AType.GetGUID(MF_MT_MAJOR_TYPE,
-                          Major)) or
-     FAILED(AType.GetGUID(MF_MT_SUBTYPE,
-                          Subtype)) or not
-     IsEqualGUID(Major,
-                 MFMediaType_Audio) or not
-     IsEqualGUID(Subtype,
-                 MFAudioFormat_PCM) or
-     FAILED(AType.GetUINT32(MF_MT_AUDIO_NUM_CHANNELS,
-                            AChannels)) or
-     FAILED(AType.GetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,
-                            ARate)) or
-     FAILED(AType.GetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
-                            ABits)) or
-     FAILED(AType.GetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,
-                            ABlockAlign)) or
-     FAILED(AType.GetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
-                            Avg)) then
+    Major)) or
+    FAILED(AType.GetGUID(MF_MT_SUBTYPE,
+                         Subtype)) or not
+    IsEqualGUID(Major,
+                MFMediaType_Audio) or not
+    IsEqualGUID(Subtype,
+                MFAudioFormat_PCM) or
+    FAILED(AType.GetUINT32(MF_MT_AUDIO_NUM_CHANNELS,
+                           AChannels)) or
+    FAILED(AType.GetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,
+                           ARate)) or
+    FAILED(AType.GetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
+                           ABits)) or
+    FAILED(AType.GetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,
+                           ABlockAlign)) or
+    FAILED(AType.GetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
+                           Avg)) then
     Exit(MF_E_INVALIDMEDIATYPE);
 
   if ((AChannels <> 1) and (AChannels <> 2)) or
-     ((ABits <> 8) and (ABits <> 16)) or
-     (ARate = 0) or (ABlockAlign <> AChannels * (ABits div 8)) or
-     (ARate > High(Cardinal) div ABlockAlign) or
-     (Avg <> ARate * ABlockAlign) then
+    ((ABits <> 8) and (ABits <> 16)) or
+    (ARate = 0) or (ABlockAlign <> AChannels * (ABits div 8)) or
+    (ARate > High(Cardinal) div ABlockAlign) or
+    (Avg <> ARate * ABlockAlign) then
     Exit(MF_E_INVALIDMEDIATYPE);
 
   Result := S_OK;
@@ -339,15 +348,16 @@ begin
                                    Rate,
                                    Bits,
                                    Channels)) and
-           (BlockAlign = FBlockAlign) and
-           (Rate = FRate) and
-           (Bits = FBits) and
-           (Channels = FChannels);
+    (BlockAlign = FBlockAlign) and
+    (Rate = FRate) and
+    (Bits = FBits) and
+    (Channels = FChannels);
 end;
 
 
 function TMfAudioDelayMFT.CloneType(const ASource: IMFMediaType;
                                     out ACopy: IMFMediaType): HResult;
+
 begin
 
   ACopy := nil;
@@ -360,6 +370,7 @@ end;
 
 function TMfAudioDelayMFT.ProposedType(const AIndex: DWORD;
                                        out AType: IMFMediaType): HResult;
+
 begin
 
   AType := nil;
@@ -452,7 +463,8 @@ begin
     Exit(S_OK);
 
   try
-    SetLength(NewDelay, Integer(ANewBytes));
+    SetLength(NewDelay,
+              Integer(ANewBytes));
   except
     on EOutOfMemory do
       Exit(E_OUTOFMEMORY);
@@ -460,7 +472,9 @@ begin
 
   FillChar(NewDelay[0],
            ANewBytes,
-           IfThen(FBits = 8, $80, 0));
+           IfThen(FBits = 8,
+                  $80,
+                  0));
 
   // Both buffers represent input history from oldest to newest. Preserve
   // the newest frames when the requested delay changes.
@@ -546,7 +560,7 @@ begin
   Dry := 100 - Wet;
   I := 0;
 
-  while I < Integer(ABytes) do
+  while (I < Integer(ABytes)) do
     begin
       P := @FDelay[FDelayPosition];
 
@@ -678,7 +692,9 @@ begin
   try
     FillChar(Data^,
              Count,
-             IfThen(FBits = 8, $80, 0));
+             IfThen(FBits = 8,
+                    $80,
+                    0));
 
     ProcessPcm(Data,
                Count);
@@ -689,7 +705,8 @@ begin
 
   Result := Buffer.SetCurrentLength(Count);
 
-  if FAILED(Result) then Exit;
+  if FAILED(Result) then
+    Exit;
 
   if FValidTime then
     begin
@@ -724,6 +741,7 @@ function TMfAudioDelayMFT.GetStreamLimits(out pdwInputMinimum: DWORD;
                                           out pdwInputMaximum: DWORD;
                                           out pdwOutputMinimum: DWORD;
                                           out pdwOutputMaximum: DWORD): HResult;
+
 begin
 
   pdwInputMinimum := 1;
@@ -736,6 +754,7 @@ end;
 
 function TMfAudioDelayMFT.GetStreamCount(out pcInputStreams,
                                          pcOutputStreams: DWORD): HResult;
+
 begin
 
   pcInputStreams := 1;
@@ -748,6 +767,7 @@ function TMfAudioDelayMFT.GetStreamIDs(dwInputIDArraySize: DWORD;
                                        pdwInputIDs: WinApi.WinApiTypes.PDWORD;
                                        dwOutputIDArraySize: DWORD;
                                        pdwOutputIDs: WinApi.WinApiTypes.PDWORD): HResult;
+
 begin
 
   Result := E_NOTIMPL;
@@ -756,7 +776,9 @@ end;
 
 function TMfAudioDelayMFT.GetInputStreamInfo(const dwInputStreamID: DWORD;
                                              out pStreamInfo: MFT_INPUT_STREAM_INFO): HResult;
+
 begin
+
   FLock.Enter;
   try
     if (dwInputStreamID <> 0) then
@@ -766,8 +788,8 @@ begin
                SizeOf(pStreamInfo));
 
     pStreamInfo.dwFlags := MFT_INPUT_STREAM_WHOLE_SAMPLES or
-                           MFT_INPUT_STREAM_PROCESSES_IN_PLACE or
-                           MFT_INPUT_STREAM_FIXED_SAMPLE_SIZE;
+      MFT_INPUT_STREAM_PROCESSES_IN_PLACE or
+      MFT_INPUT_STREAM_FIXED_SAMPLE_SIZE;
 
     if Assigned(FInputType) then
       pStreamInfo.cbSize := FBlockAlign;
@@ -781,7 +803,9 @@ end;
 
 function TMfAudioDelayMFT.GetOutputStreamInfo(const dwOutputStreamID: DWORD;
                                               out pStreamInfo: MFT_OUTPUT_STREAM_INFO): HResult;
+
 begin
+
   FLock.Enter;
   try
     if (dwOutputStreamID <> 0) then
@@ -791,8 +815,8 @@ begin
                SizeOf(pStreamInfo));
 
     pStreamInfo.dwFlags := MFT_OUTPUT_STREAM_WHOLE_SAMPLES or
-                           MFT_OUTPUT_STREAM_PROVIDES_SAMPLES or
-                           MFT_OUTPUT_STREAM_FIXED_SAMPLE_SIZE;
+      MFT_OUTPUT_STREAM_PROVIDES_SAMPLES or
+      MFT_OUTPUT_STREAM_FIXED_SAMPLE_SIZE;
 
     if Assigned(FOutputType) then
       pStreamInfo.cbSize := FBlockAlign;
@@ -804,7 +828,9 @@ end;
 
 
 function TMfAudioDelayMFT.GetAttributes(out pAttributes: IMFAttributes): HResult;
+
 begin
+
   FLock.Enter;
   try
     if not Assigned(FAttributes) then
@@ -834,6 +860,7 @@ end;
 
 function TMfAudioDelayMFT.GetInputStreamAttributes(const dwInputStreamID: DWORD;
                                                    out pAttributes: IMFAttributes): HResult;
+
 begin
 
   pAttributes := nil;
@@ -846,6 +873,7 @@ end;
 
 function TMfAudioDelayMFT.GetOutputStreamAttributes(const dwOutputStreamID: DWORD;
                                                     out pAttributes: IMFAttributes): HResult;
+
 begin
 
   pAttributes := nil;
@@ -857,6 +885,7 @@ end;
 
 
 function TMfAudioDelayMFT.DeleteInputStream(dwStreamID: DWORD): HResult;
+
 begin
 
   Result := E_NOTIMPL;
@@ -865,6 +894,7 @@ end;
 
 function TMfAudioDelayMFT.AddInputStreams(cStreams: DWORD;
                                           adwStreamIDs: WinApi.WinApiTypes.PDWORD): HResult;
+
 begin
 
   Result := E_NOTIMPL;
@@ -874,7 +904,9 @@ end;
 function TMfAudioDelayMFT.GetInputAvailableType(const dwInputStreamID: DWORD;
                                                 dwTypeIndex: DWORD;
                                                 out pType: IMFMediaType): HResult;
+
 begin
+
   FLock.Enter;
   try
     pType := nil;
@@ -902,7 +934,9 @@ end;
 function TMfAudioDelayMFT.GetOutputAvailableType(const dwOutputStreamID: DWORD;
                                                  dwTypeIndex: DWORD;
                                                  out pType: IMFMediaType): HResult;
+
 begin
+
   FLock.Enter;
   try
     pType := nil;
@@ -939,6 +973,7 @@ var
   CopyType: IMFMediaType;
 
 begin
+
   FLock.Enter;
   try
     Align := 0;
@@ -1009,6 +1044,7 @@ var
   CopyType: IMFMediaType;
 
 begin
+
   FLock.Enter;
   try
     Align := 0;
@@ -1019,7 +1055,7 @@ begin
     if (dwOutputStreamID <> 0) then
       Exit(MF_E_INVALIDSTREAMNUMBER);
 
-    if (dwFlags and not MFT_SET_TYPE_TEST_ONLY) <> 0 then
+    if ((dwFlags and not MFT_SET_TYPE_TEST_ONLY) <> 0) then
       Exit(E_INVALIDARG);
 
     if ((dwFlags and MFT_SET_TYPE_TEST_ONLY) <> 0) and not Assigned(pType) then
@@ -1072,7 +1108,9 @@ end;
 
 function TMfAudioDelayMFT.GetInputCurrentType(const dwInputStreamID: DWORD;
                                               out pType: IMFMediaType): HResult;
+
 begin
+
   FLock.Enter;
   try
     pType := nil;
@@ -1093,7 +1131,9 @@ end;
 
 function TMfAudioDelayMFT.GetOutputCurrentType(const dwOutputStreamID: DWORD;
                                                out pType: IMFMediaType): HResult;
+
 begin
+
   FLock.Enter;
   try
     pType := nil;
@@ -1114,7 +1154,9 @@ end;
 
 function TMfAudioDelayMFT.GetInputStatus(const dwInputStreamID: DWORD;
                                          out pdwFlags: DWORD): HResult;
+
 begin
+
   FLock.Enter;
   try
     pdwFlags := 0;
@@ -1133,7 +1175,9 @@ end;
 
 
 function TMfAudioDelayMFT.GetOutputStatus(out pdwFlags: DWORD): HResult;
+
 begin
+
   FLock.Enter;
   try
     pdwFlags := 0;
@@ -1150,6 +1194,7 @@ end;
 
 function TMfAudioDelayMFT.SetOutputBounds(hnsLowerBound: LONGLONG;
                                           hnsUpperBound: LONGLONG): HResult;
+
 begin
 
   Result := E_NOTIMPL;
@@ -1158,6 +1203,7 @@ end;
 
 function TMfAudioDelayMFT.ProcessEvent(const dwInputStreamID: DWORD;
                                        pEvent: IMFMediaEvent): HResult;
+
 begin
 
   if (dwInputStreamID <> 0) then
@@ -1168,20 +1214,22 @@ end;
 
 function TMfAudioDelayMFT.ProcessMessage(eMessage: MFT_MESSAGE_TYPE;
                                          ulParam: ULONG_PTR): HResult;
+
 begin
+
   FLock.Enter;
   try
     case eMessage of
-      MFT_MESSAGE_COMMAND_FLUSH:          ResetStream(False);
-      MFT_MESSAGE_NOTIFY_END_STREAMING:   ResetStream(True);
+      MFT_MESSAGE_COMMAND_FLUSH: ResetStream(False);
+      MFT_MESSAGE_NOTIFY_END_STREAMING: ResetStream(True);
       MFT_MESSAGE_NOTIFY_BEGIN_STREAMING: Exit(StartDelay);
       MFT_MESSAGE_COMMAND_DRAIN:
         begin
           if (Length(FDelay) <> 0) then
-          begin
-            FTailBytes := Length(FDelay);
-            FDraining := True;
-          end;
+            begin
+              FTailBytes := Length(FDelay);
+              FDraining := True;
+            end;
         end;
       MFT_MESSAGE_SET_D3D_MANAGER: Exit(E_NOTIMPL);
     end;
@@ -1203,6 +1251,7 @@ var
   Discontinuous: Boolean;
 
 begin
+
   FLock.Enter;
   try
     if (dwInputStreamID <> 0) then
@@ -1215,14 +1264,14 @@ begin
       Exit(E_INVALIDARG);
 
     if not Assigned(FInputType) or not
-       Assigned(FOutputType) or
-       Assigned(FInputSample) or
-       FDraining then
+      Assigned(FOutputType) or
+      Assigned(FInputSample) or
+      FDraining then
       Exit(MF_E_NOTACCEPTING);
 
     Result := StartDelay;
     if FAILED(Result) then
-     Exit;
+      Exit;
 
     Result := pSample.ConvertToContiguousBuffer(@Buffer);
     if FAILED(Result) then
@@ -1236,12 +1285,12 @@ begin
       Exit(MF_E_INVALIDMEDIATYPE);
 
     HasTime := SUCCEEDED(pSample.GetSampleTime(@Time));
-    Discontinuous := MFGetAttributeUINT32(pSample,
+    Discontinuous := (MFGetAttributeUINT32(pSample,
                                            MFSampleExtension_Discontinuity,
-                                           0) <> 0;
+                                           0) <> 0);
     // Allow up to 5 ms for source timestamp rounding between PCM blocks.
     if HasTime and FValidTime and
-       (Abs(Time - FNextTime) > TimeUnitsPerSecond div 200) then
+      (Abs(Time - FNextTime) > TimeUnitsPerSecond div 200) then
       Discontinuous := True;
 
     // A seek can arrive as a pipeline flush, a discontinuity, or a timestamp
@@ -1267,7 +1316,9 @@ function TMfAudioDelayMFT.ProcessOutput(dwFlags: DWORD;
                                         cOutputBufferCount: DWORD;
                                         pOutputSamples: PMFT_OUTPUT_DATA_BUFFER;
                                         out pdwStatus: DWORD): HResult;
+
 begin
+
   FLock.Enter;
   try
     pdwStatus := 0;

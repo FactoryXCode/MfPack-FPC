@@ -152,6 +152,7 @@ type
 
     function Clone(out ppenum: IEnumGUID): HRESULT; stdcall;
   end;
+
   IID_IEnumGUID = IEnumGUID;
   {$EXTERNALSYM IID_IEnumGUID}
 
@@ -175,6 +176,7 @@ type
 
     function Clone(out ppenum: IEnumCATEGORYINFO): HRESULT; stdcall;
   end;
+
   IID_IEnumCATEGORYINFO = IEnumCATEGORYINFO;
   {$EXTERNALSYM IID_IEnumCATEGORYINFO}
 
@@ -210,6 +212,7 @@ type
                                           cCategories: ULONG;
                                           rgcatid: PCATID): HRESULT; stdcall;
   end;
+
   IID_ICatRegister = ICatRegister;
   {$EXTERNALSYM IID_ICatRegister}
 
@@ -248,6 +251,7 @@ type
     function EnumReqCategoriesOfClass(const rclsid: TGUID;
                                       out ppenumCatid: IEnumGUID): HRESULT; stdcall;
   end;
+
   IID_ICatInformation = ICatInformation;
   {$EXTERNALSYM IID_ICatInformation}
 
@@ -295,8 +299,10 @@ const
 
 implementation
 
+
 function IsEqualCATID(const rcatid1: CATID;
                       const rcatid2: CATID): BOOL;
+
 begin
 
   Result := IsEqualGUID(rcatid1,
@@ -304,4 +310,3 @@ begin
 end;
 
 end.
-

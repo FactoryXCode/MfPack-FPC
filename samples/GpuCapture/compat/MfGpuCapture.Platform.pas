@@ -9,7 +9,9 @@ const
 
 implementation
 
-uses Windows,SysUtils;
+uses
+  Windows,
+  SysUtils;
 
 initialization
   SetMultiByteConversionCodePage(CP_UTF8);

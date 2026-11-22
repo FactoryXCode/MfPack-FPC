@@ -67,7 +67,7 @@ interface
 
 uses
   MfLoopbackSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   Classes,
@@ -79,6 +79,7 @@ type
   TUniThreadedTimer = class;
 
   TTimerThread = class(TThread)
+
   private
     { Private declarations }
     FTimer: TUniThreadedTimer;
@@ -101,6 +102,7 @@ type
 
 
   TUniThreadedTimer = class(TComponent)
+
   private
     { Private declarations }
     bEnabled: Boolean;
@@ -135,11 +137,16 @@ implementation
 // TgtTimerThread //////////////////////////////////////////////////////////////
 
 constructor TTimerThread.Create(ATimer: TUniThreadedTimer);
+
 begin
+
   inherited
   Create(True);
   FreeOnTerminate := False;
-  FStopEvent := CreateEventW(nil,True,False,nil);
+  FStopEvent := CreateEventW(nil,
+                             True,
+                             False,
+                             nil);
   isDestroying := False;
   isActive := False;
   FTimer := ATimer;
@@ -147,7 +154,9 @@ end;
 
 
 destructor TTimerThread.Destroy();
+
 begin
+
   isDestroying := True;
   Terminate();
   SetEvent(FStopEvent);
@@ -159,9 +168,11 @@ end;
 
 
 procedure TTimerThread.DoTimer();
+
 begin
+
   if not Terminated and Assigned(FTimer) and FTimer.Enabled and
-     Assigned(FTimer.OnTimerEvent) then
+    Assigned(FTimer.OnTimerEvent) then
     begin
       isActive := True;
       FTimer.OnTimerEvent(FTimer);
@@ -170,11 +181,15 @@ end;
 
 
 procedure TTimerThread.Execute();
+
 begin
+
   while (not Self.Terminated) and (FTimer.Enabled) do
     begin
-      if WaitForSingleObject(FStopEvent,FTimer.Period) <> WAIT_TIMEOUT then Break;
-      TThread.Queue(Self,DoTimer);
+      if (WaitForSingleObject(FStopEvent, FTimer.Period) <> WAIT_TIMEOUT) then
+        Break;
+      TThread.Queue(Self,
+                    DoTimer);
     end;
 end;
 
@@ -182,7 +197,9 @@ end;
 // TUniThreadedTimer ///////////////////////////////////////////////////////////
 
 constructor TUniThreadedTimer.Create(AOwner: TComponent);
+
 begin
+
   inherited Create(AOwner);
   bEnabled := False;
   Period := 100;
@@ -190,7 +207,9 @@ end;
 
 
 destructor TUniThreadedTimer.Destroy();
+
 begin
+
   bEnabled := False;
   UpdateTimer();
 
@@ -199,7 +218,9 @@ end;
 
 
 procedure TUniThreadedTimer.UpdateTimer();
+
 begin
+
   if Assigned(thTimerThread) then
     begin
       thTimerThread.Free();
@@ -215,8 +236,11 @@ end;
 
 
 procedure TUniThreadedTimer.SetEnabled(Value: Boolean);
+
 begin
-  if bEnabled = Value then Exit;
+
+  if (bEnabled = Value) then
+    Exit;
   if Assigned(thTimerThread) then
     thTimerThread.isActive := Value;
 
@@ -226,9 +250,13 @@ end;
 
 
 procedure TUniThreadedTimer.SetTimerPeriod(Value: DWord);
+
 begin
-  if Value = 0 then Value := 1;
-  if Value = dwPeriod then Exit;
+
+  if (Value = 0) then
+    Value := 1;
+  if (Value = dwPeriod) then
+    Exit;
   dwPeriod := Value;
   UpdateTimer();
 end;

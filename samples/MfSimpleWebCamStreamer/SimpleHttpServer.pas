@@ -64,7 +64,7 @@ interface
 
 uses
   MfCaptureSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   WinSock,
@@ -73,7 +73,6 @@ uses
   SysUtils,
   StrUtils,
   SyncObjs;
-
 
 type
 
@@ -89,6 +88,7 @@ type
 
 
   TSimpleHttpServerThread = class(TThread)
+
   private
 
     FOwner: TSimpleHttpServer;
@@ -104,6 +104,7 @@ type
 
 
   TSimpleHttpServer = class
+
   private
 
     FSocket: TSocket;
@@ -155,8 +156,7 @@ type
     property Running: Boolean read FRunning;
     property Port: Word read FPort;
 
-    property DebugDropRequests: Boolean read FDebugDropRequests
-                                        write FDebugDropRequests;
+    property DebugDropRequests: Boolean read FDebugDropRequests write FDebugDropRequests;
 
     property OnGetInit: TSimpleHttpGetBytesEvent read FOnGetInit write FOnGetInit;
     property OnGetFragment: TSimpleHttpGetFragmentEvent read FOnGetFragment write FOnGetFragment;
@@ -172,9 +172,10 @@ const
   HTTP_REQUEST_BUFFER_SIZE = 4096;
 
 
-// TSimpleHttpServerThread
+  // TSimpleHttpServerThread
 
 constructor TSimpleHttpServerThread.Create(AOwner: TSimpleHttpServer);
+
 begin
 
   inherited Create(True);
@@ -185,6 +186,7 @@ end;
 
 
 procedure TSimpleHttpServerThread.Execute();
+
 begin
 
   if Assigned(FOwner) then
@@ -195,6 +197,7 @@ end;
 // TSimpleHttpServer
 
 constructor TSimpleHttpServer.Create();
+
 begin
 
   inherited Create();
@@ -212,6 +215,7 @@ end;
 
 
 destructor TSimpleHttpServer.Destroy();
+
 begin
 
   Stop();
@@ -237,8 +241,8 @@ begin
   if FWinsockReady then
     Exit(True);
 
-  Result := WSAStartup($0202,
-                       WsaData) = 0;
+  Result := (WSAStartup($0202,
+                        WsaData) = 0);
 
   FWinsockReady := Result;
 end;
@@ -258,7 +262,7 @@ begin
                     SOCK_STREAM,
                     IPPROTO_TCP);
 
-  if FSocket = INVALID_SOCKET then
+  if (FSocket = INVALID_SOCKET) then
     Exit;
 
   Reuse := 1;
@@ -279,16 +283,16 @@ begin
   AddrIn^.sin_port := htons(FPort);
   AddrIn^.sin_addr.S_addr := htonl(INADDR_ANY);
 
-  if bind(FSocket,
-          Addr,
-          SizeOf(Addr)) = SOCKET_ERROR then
+  if (bind(FSocket,
+    Addr,
+    SizeOf(Addr)) = SOCKET_ERROR) then
     begin
       CloseListenSocket();
       Exit;
     end;
 
-  if listen(FSocket,
-            SOMAXCONN) = SOCKET_ERROR then
+  if (listen(FSocket,
+    SOMAXCONN) = SOCKET_ERROR) then
     begin
       CloseListenSocket();
       Exit;
@@ -325,6 +329,7 @@ end;
 
 
 function TSimpleHttpServer.Start(const APort: Word): Boolean;
+
 begin
 
   if FRunning then
@@ -356,7 +361,7 @@ var
 begin
 
   if (not FRunning) and
-     (not Assigned(FThread)) then
+    (not Assigned(FThread)) then
     Exit;
 
   FRunning := False;
@@ -368,9 +373,10 @@ begin
   CloseListenSocket();
   FLock.Enter;
   try
-    if FClientSocket <> INVALID_SOCKET then
+    if (FClientSocket <> INVALID_SOCKET) then
       begin
-        shutdown(FClientSocket,2);
+        shutdown(FClientSocket,
+                 2);
         closesocket(FClientSocket);
         FClientSocket := INVALID_SOCKET;
       end;
@@ -401,20 +407,20 @@ begin
   Result := False;
 
   if (ASocket = INVALID_SOCKET) or
-     (ASize <= 0) then
+    (ASize <= 0) then
     Exit;
 
   Buffer := @ABuffer;
   BytesLeft := ASize;
 
-  while BytesLeft > 0 do
+  while (BytesLeft > 0) do
     begin
       BytesSent := send(ASocket,
                         Buffer^,
                         BytesLeft,
                         0);
 
-      if BytesSent = SOCKET_ERROR then
+      if (BytesSent = SOCKET_ERROR) then
         Exit;
 
       Inc(Buffer,
@@ -438,20 +444,20 @@ var
 begin
 
   Header := 'HTTP/1.1 ' + AStatus + #13#10 +
-            'Content-Type: ' + AContentType + #13#10 +
-            'Content-Length: ' + AnsiString(IntToStr(Length(ABody))) + #13#10 +
-            'Cache-Control: no-store, no-cache, must-revalidate' + #13#10 +
-            'Pragma: no-cache' + #13#10 +
-            'Access-Control-Allow-Origin: *' + #13#10 +
-            'Connection: close' + #13#10 +
-            #13#10;
+    'Content-Type: ' + AContentType + #13#10 +
+    'Content-Length: ' + AnsiString(IntToStr(Length(ABody))) + #13#10 +
+    'Cache-Control: no-store, no-cache, must-revalidate' + #13#10 +
+    'Pragma: no-cache' + #13#10 +
+    'Access-Control-Allow-Origin: *' + #13#10 +
+    'Connection: close' + #13#10 +
+    #13#10;
 
   Result := SendAll(ASocket,
                     PAnsiChar(Header)^,
                     Length(Header));
 
   if Result and
-     (Length(ABody) > 0) then
+    (Length(ABody) > 0) then
     Result := SendAll(ASocket,
                       ABody[0],
                       Length(ABody));
@@ -493,6 +499,7 @@ end;
 
 // The MSE GUI
 function TSimpleHttpServer.BuildMsePlayerPage(): string;
+
 begin
 
   Result :=
@@ -1076,7 +1083,7 @@ begin
                Space2 - Space1 - 1);
 
   if (Path = '/') or
-     (Path = '/player.html') then
+    (Path = '/player.html') then
     begin
       SendHtmlResponse(ASocket,
                        BuildMsePlayerPage());
@@ -1088,7 +1095,7 @@ begin
       Data := nil;
 
       if Assigned(FOnGetInit) and FOnGetInit(Data) and
-         (Length(Data) > 0) then
+        (Length(Data) > 0) then
         SendResponse(ASocket,
                      '200 OK',
                      'video/mp4',
@@ -1102,20 +1109,20 @@ begin
     end;
 
   if (Pos('/fragment/',
-         string(Path)) = 1) then
+    string(Path)) = 1) then
     begin
       SequenceText := Copy(string(Path),
                            Length('/fragment/') + 1,
                            MaxInt);
 
       if EndsText('.m4s',
-                  SequenceText) then
+        SequenceText) then
         Delete(SequenceText,
                Length(SequenceText) - Length('.m4s') + 1,
                Length('.m4s'));
 
       if not TryStrToUInt64(SequenceText,
-                            SequenceValue) then
+        SequenceValue) then
         begin
           SendTextResponse(ASocket,
                            '400 Bad Request',
@@ -1126,9 +1133,9 @@ begin
       Data := nil;
 
       if Assigned(FOnGetFragment) and
-         FOnGetFragment(SequenceValue,
-                        Data) and
-         (Length(Data) > 0) then
+        FOnGetFragment(SequenceValue,
+                       Data) and
+        (Length(Data) > 0) then
         SendResponse(ASocket,
                      '200 OK',
                      'video/iso.segment',
@@ -1196,7 +1203,7 @@ begin
       if (ClientSocket = INVALID_SOCKET) then
         begin
           if TThread.CurrentThread.CheckTerminated() or
-             (not FRunning) then
+            (not FRunning) then
             Break;
 
           Continue;
@@ -1204,26 +1211,27 @@ begin
 
       try
         FLock.Enter;
-      try
-        FClientSocket := ClientSocket;
-      finally
-        FLock.Leave;
-      end;
-      if FRunning then
-        HandleClient(ClientSocket);
+        try
+          FClientSocket := ClientSocket;
+        finally
+          FLock.Leave;
+        end;
+        if FRunning then
+          HandleClient(ClientSocket);
 
       finally
         FLock.Enter;
-      try
-        if FClientSocket = ClientSocket then
-          begin
-            FClientSocket := INVALID_SOCKET;
-            shutdown(ClientSocket,2);
-            closesocket(ClientSocket);
-          end;
-      finally
-        FLock.Leave;
-      end;
+        try
+          if (FClientSocket = ClientSocket) then
+            begin
+              FClientSocket := INVALID_SOCKET;
+              shutdown(ClientSocket,
+                       2);
+              closesocket(ClientSocket);
+            end;
+        finally
+          FLock.Leave;
+        end;
       end;
     end;
 end;

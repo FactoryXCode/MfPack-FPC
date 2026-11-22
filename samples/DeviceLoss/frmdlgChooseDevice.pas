@@ -70,7 +70,7 @@ interface
 
 uses
   MfSmallSamplesPlatform,
-{Winapi}
+  {Winapi}
   Windows,
   {System}
   SysUtils,
@@ -100,6 +100,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure butOkClick(Sender: TObject);
     procedure butCancelClick(Sender: TObject);
+
   private
     { Private declarations }
 
@@ -120,17 +121,21 @@ uses
 
 
 procedure TdlgChooseDevice.butCancelClick(Sender: TObject);
+
 begin
+
   ModalResult := 0;
   Close();
 end;
+
 
 procedure TdlgChooseDevice.butOkClick(Sender: TObject);
 var
   i: Integer;
 
 begin
-  for i := 0 to Length(dpa) -1 do
+
+  for i := 0 to Length(dpa) - 1 do
     begin
       if (dpa[i].lpFriendlyName = cbxCaptureDevices.Text) then
         begin
@@ -148,8 +153,9 @@ var
   _i: Integer;
 
 begin
+
   cbxCaptureDevices.Clear;
-  butOk.Enabled:= False;
+  butOk.Enabled := False;
   iSelectedDevice := -1;
 
   hr := EnumCaptureDeviceSources(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID,
@@ -157,17 +163,17 @@ begin
 
   if SUCCEEDED(hr) then
     begin
-      for _i:= 0 to Length(dpa) -1 do
+      for _i := 0 to Length(dpa) - 1 do
         cbxCaptureDevices.Items.Add(dpa[_i].lpFriendlyName);
 
       cbxCaptureDevices.ItemIndex := 0;
       butOk.Enabled := True;
     end
   else
-   begin
-     cbxCaptureDevices.Items.Append('COULD NOT FIND A DEVICE');
-     cbxCaptureDevices.ItemIndex := 0;
-   end;
+    begin
+      cbxCaptureDevices.Items.Append('COULD NOT FIND A DEVICE');
+      cbxCaptureDevices.ItemIndex := 0;
+    end;
 end;
 
 end.

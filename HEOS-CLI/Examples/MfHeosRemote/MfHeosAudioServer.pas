@@ -65,12 +65,13 @@ unit MfHeosAudioServer;
 
 interface
 
-uses MfCastText,
-Rdj.Platform,
-LMessages,
+uses
+  MfCastText,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinSock,
   {System}
@@ -82,6 +83,7 @@ LMessages,
 type
 
   THEOSAudioServer = class(TThread)
+
   private
     FListener: TSocket;
     FFileName: string;
@@ -91,7 +93,7 @@ type
     FPort: Word;
     FLive: Boolean;
     FLock: SyncObjs.TCriticalSection;
-    FData: TQueue<TBytes>;
+    FData: TQueue < TBytes > ;
     FQueuedBytes: Integer;
     FRequests: Integer;
     FLastError: string;
@@ -125,7 +127,7 @@ type
     function LastError(): string;
   end;
 
-  function AudioMime(const FileName: string): string;
+function AudioMime(const FileName: string): string;
 
 
 implementation
@@ -138,6 +140,7 @@ uses
   {Application}
   Heos.Sockets;
 
+
 function AudioMime(const FileName: string): string;
 var
   Ext: string;
@@ -148,23 +151,18 @@ begin
 
   if (Ext = '.mp3') then
     Result := 'audio/mpeg'
+  else if (Ext = '.flac') then
+    Result := 'audio/flac'
+  else if (Ext = '.wav') then
+    Result := 'audio/wav'
+  else if (Ext = '.m4a') or (Ext = '.mp4') then
+    Result := 'audio/mp4'
+  else if (Ext = '.aac') then
+    Result := 'audio/aac'
+  else if (Ext = '.wma') then
+    Result := 'audio/x-ms-wma'
   else
-    if (Ext = '.flac') then
-      Result := 'audio/flac'
-    else
-      if (Ext = '.wav') then
-        Result := 'audio/wav'
-      else
-        if (Ext = '.m4a') or (Ext = '.mp4') then
-          Result := 'audio/mp4'
-        else
-          if (Ext = '.aac') then
-            Result := 'audio/aac'
-          else
-            if (Ext = '.wma') then
-              Result := 'audio/x-ms-wma'
-            else
-              raise Exception.Create('Choose an MP3, FLAC, WAV, AAC, M4A or WMA audio file');
+    raise Exception.Create('Choose an MP3, FLAC, WAV, AAC, M4A or WMA audio file');
 end;
 
 
@@ -187,7 +185,7 @@ begin
   FreeOnTerminate := False;
   FListener := INVALID_SOCKET;
   FLock := SyncObjs.TCriticalSection.Create;
-  FData := TQueue<TBytes>.Create;
+  FData := (TQueue < TBytes > .Create);
   FAddress := LocalAddress;
   FPort := Port;
   FFileName := FileName;
@@ -228,7 +226,7 @@ begin
                          SO_REUSEADDR,
                          PAnsiChar(@Reuse),
                          SizeOf(Reuse)),
-                         'Set audio server socket reuse');
+              'Set audio server socket reuse');
 
   FillChar(Addr,
            SizeOf(Addr),
@@ -242,12 +240,14 @@ begin
   SocketCheck(bind(FListener,
                    Addr,
                    SizeOf(Addr)),
-                   'Bind audio server');
+              'Bind audio server');
 
   // Port zero lets Windows allocate an available listening port.
   AddrSize := SizeOf(Addr);
-  SocketCheck(getsockname(FListener, Addr, AddrSize),
-                'Read audio server port');
+  SocketCheck(getsockname(FListener,
+                          Addr,
+                          AddrSize),
+              'Read audio server port');
   FPort := ntohs(Addr.sin_port);
 
   SocketCheck(listen(FListener,
@@ -257,6 +257,7 @@ end;
 
 
 destructor THEOSAudioServer.Destroy();
+
 begin
 
   Terminate();
@@ -278,6 +279,7 @@ end;
 
 
 function THEOSAudioServer.Url(): string;
+
 begin
 
   Result := Format('http://%s:%d%s',
@@ -286,6 +288,7 @@ end;
 
 
 function THEOSAudioServer.Requests: Integer;
+
 begin
 
   Result := InterlockedCompareExchange(FRequests,
@@ -295,6 +298,7 @@ end;
 
 
 procedure THEOSAudioServer.SetError(const Text: string);
+
 begin
 
   FLock.Acquire;
@@ -307,6 +311,7 @@ end;
 
 
 function THEOSAudioServer.LastError(): string;
+
 begin
 
   FLock.Acquire;
@@ -362,7 +367,7 @@ begin
       if (Code = SOCKET_ERROR) then
         begin
           SetError(Format('HTTP read wait failed (Windows socket error %d)',
-                           [WSAGetLastError]));
+                          [WSAGetLastError]));
           Exit;
         end;
 
@@ -399,7 +404,7 @@ begin
         end;
 
       if (Pos(AnsiString(#13#10#13#10),
-                         Data) > 0) then
+        Data) > 0) then
         begin
           Header := string(Data);
           Result := True;
@@ -455,14 +460,14 @@ begin
       if (Code = SOCKET_ERROR) then
         begin
           SetError(Format('HTTP send wait failed (Windows socket error %d)',
-                           [WSAGetLastError]));
+                          [WSAGetLastError]));
           Exit;
         end;
 
       Sent := WinSock.send(Client,
-                                  P^,
-                                  Count,
-                                  0);
+                           P^,
+                           Count,
+                           0);
 
       if (Sent = SOCKET_ERROR) then
         begin
@@ -510,7 +515,7 @@ begin
         Length(Data));
 
     // Bound memory when the receiver disconnects. Drop whole ADTS batches.
-    while FQueuedBytes > 256 * 1024 do
+    while (FQueuedBytes > 256 * 1024) do
       begin
         Old := FData.Dequeue;
         Dec(FQueuedBytes,
@@ -524,12 +529,13 @@ end;
 
 
 function THEOSAudioServer.Pop(out Data: TBytes): Boolean;
+
 begin
 
   FLock.Acquire;
 
   try
-    Result := FData.Count > 0;
+    Result := (FData.Count > 0);
 
     if Result then
       begin
@@ -555,8 +561,8 @@ begin
     begin
       try
         if not SocketReady(FListener,
-                           False,
-                           100) then
+          False,
+          100) then
           Continue;
 
         Client := accept(FListener,
@@ -570,7 +576,7 @@ begin
           Mode := 1;
 
           if (ioctlsocket(Client,
-                          LongInt(FIONBIO), Mode) = SOCKET_ERROR) then
+            LongInt(FIONBIO), Mode) = SOCKET_ERROR) then
             begin
               SetError(Format('Cannot set HTTP client nonblocking mode (Windows socket error %d)',
                               [WSAGetLastError]));
@@ -584,12 +590,12 @@ begin
           closesocket(Client);
         end;
 
-    except
+      except
 
-      // A failed receiver request must not kill the listener. The next request
-      // can reconnect; UI reports the request count and HEOS result separately.
-      on E: Exception do
-        SetError('Denon audio HTTP: ' + E.Message);
+        // A failed receiver request must not kill the listener. The next request
+        // can reconnect; UI reports the request count and HEOS result separately.
+        on E: Exception do
+          SetError('Denon audio HTTP: ' + E.Message);
       end;
     end;
 end;
@@ -603,7 +609,7 @@ var
   Path: string;
   Range: string;
   Text: string;
-  Lines: TArray<string>;
+  Lines: TArray < string > ;
   N: Integer;
   P: Integer;
   Count: Integer;
@@ -619,9 +625,9 @@ var
   Data: TBytes;
   Buffer: array[0..32767] of Byte;
 
-  // Helper
+// Helper
   function Respond(const Status,
-                    Extra: string): Boolean;
+                   Extra: string): Boolean;
   var
     Response: AnsiString;
 
@@ -636,10 +642,11 @@ var
 begin
 
   if not ReadClientHeader(Client,
-                          Header) then
+    Header) then
     Exit;
 
-  Lines := MfCastSplit(Header,#10);
+  Lines := MfCastSplit(Header,
+                       #10);
   First := Trim(Lines[0]);
 
   P := Pos(' ',
@@ -659,7 +666,7 @@ begin
                1,
                P - 1);
 
-  IsHead := Method = 'HEAD';
+  IsHead := (Method = 'HEAD');
 
   if (Method <> 'GET') and not IsHead then
     begin
@@ -680,7 +687,7 @@ begin
   if FLive then
     begin
       if not Respond('200 OK',
-                       'Content-Type: audio/aac' + #13#10 + 'Cache-Control: no-store' + #13#10 + 'Accept-Ranges: none' + #13#10) then
+        'Content-Type: audio/aac' + #13#10 + 'Cache-Control: no-store' + #13#10 + 'Accept-Ranges: none' + #13#10) then
         Exit;
 
       if IsHead then
@@ -688,7 +695,8 @@ begin
 
       FLock.Acquire;
 
-      try FData.Clear;
+      try
+        FData.Clear;
         FQueuedBytes := 0;
 
       finally
@@ -700,9 +708,8 @@ begin
         begin
           if Pop(Data) then
             begin
-              if not SendClient(Client,
-                                @Data[0],
-                                Length(Data)) then
+              if not SendClient(Client, @Data[0],
+                Length(Data)) then
                 Exit;
             end
           else
@@ -725,7 +732,7 @@ begin
 
     for Text in Lines do
       if StartsText('Range:',
-                    Trim(Text)) then
+        Trim(Text)) then
         Range := Trim(Copy(Trim(Text),
                            7,
                            MaxInt));
@@ -735,8 +742,8 @@ begin
         Partial := True;
 
         if not StartsText('bytes=',
-                          Range) or (Pos(',',
-                                         Range) > 0) then
+          Range) or (Pos(',',
+                         Range) > 0) then
           InvalidRange := True
         else
           begin
@@ -749,35 +756,35 @@ begin
 
             if (P = 0) then
               InvalidRange := True
+            else if (P = 1) then
+              begin
+                if not TryStrToInt64(Copy(Range,
+                  2,
+                  MaxInt),
+                  Suffix) or (Suffix <= 0) then
+                  InvalidRange := True
+                else
+                  begin
+                    StartByte := Total - Suffix;
+                    if (StartByte < 0) then
+                      StartByte := 0;
+                  end;
+              end
             else
-              if (P = 1) then
-                begin
-                  if not TryStrToInt64(Copy(Range,
-                                            2,
-                                            MaxInt),
-                                       Suffix) or (Suffix <= 0) then
-                    InvalidRange := True
-                  else
-                    begin
-                      StartByte := Total - Suffix;
-                      if (StartByte < 0) then
-                        StartByte := 0; end;
-                end
-                  else
-                    begin
-                      if not TryStrToInt64(Copy(Range,
-                                                1,
-                                                P - 1),
-                                           StartByte) then
-                        InvalidRange := True;
+              begin
+                if not TryStrToInt64(Copy(Range,
+                  1,
+                  P - 1),
+                  StartByte) then
+                  InvalidRange := True;
 
-                      if (P < Length(Range)) then
-                        if not TryStrToInt64(Copy(Range,
-                                                  P + 1,
-                                                  MaxInt),
-                                             EndByte) then
-                          InvalidRange := True;
-                    end;
+                if (P < Length(Range)) then
+                  if not TryStrToInt64(Copy(Range,
+                    P + 1,
+                    MaxInt),
+                    EndByte) then
+                    InvalidRange := True;
+              end;
           end;
 
         if (StartByte < 0) or (StartByte >= Total) or (EndByte < StartByte) then
@@ -806,13 +813,12 @@ begin
                                   [StartByte, EndByte, Total]);
 
         if not Respond('206 Partial Content',
-                       Header) then
+          Header) then
           Exit;
       end
-    else
-      if not Respond('200 OK',
-                     Header) then
-        Exit;
+    else if not Respond('200 OK',
+      Header) then
+      Exit;
 
     if IsHead then
       Exit;
@@ -831,14 +837,13 @@ begin
         if (N = 0) then
           Break;
 
-      if not SendClient(Client,
-                        @Buffer[0],
-                        N) then
-        Exit;
+        if not SendClient(Client, @Buffer[0],
+          N) then
+          Exit;
 
-      Dec(Remaining,
-          N);
-    end;
+        Dec(Remaining,
+            N);
+      end;
 
   finally
     FileStream.Free;

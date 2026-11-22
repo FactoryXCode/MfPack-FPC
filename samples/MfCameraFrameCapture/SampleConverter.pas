@@ -63,11 +63,12 @@ unit SampleConverter;
 {$I MfPack.Fpc.inc}
 {$POINTERMATH ON}
 interface
+
 uses
   LMessages,
   LCLIntf,
-WinApi.WinApiTypes,
-{Winapi}
+  WinApi.WinApiTypes,
+  {Winapi}
   Windows,
   WinApi.ActiveX.ObjBase,
   WinApi.MediaFoundationApi.MfApi,
@@ -92,13 +93,14 @@ WinApi.WinApiTypes,
 
 type
   TSampleConverter = class(TPersistent)
+
   protected
     FOutputType: IMFMediaType;
     FTransform: IMFTransform;
     FOnLog: TLogEvent;
-    FSupportedInputs : TArray<TGUID>;
-    FTopDownFormats : TArray<TGUID>;
-    
+    FSupportedInputs: TArray < TGUID > ;
+    FTopDownFormats: TArray < TGUID > ;
+
   private
     function ConvertSampleToRGB(const AInputSample: IMFSample;
                                 out AConvertedSample: IMFSample): Boolean;
@@ -115,7 +117,7 @@ type
     procedure FreeConverter();
     procedure NotifyBeginStreaming();
     procedure SetSupportedInputs();
-    
+
   public
     constructor Create();
     destructor Destroy(); override;
@@ -135,22 +137,29 @@ implementation
 
 
 constructor TSampleConverter.Create();
+
 begin
+
   inherited;
   SetSupportedInputs();
 end;
 
 
 destructor TSampleConverter.Destroy();
+
 begin
+
   FreeConverter();
   inherited;
 end;
 
 
 procedure TSampleConverter.SetSupportedInputs();
+
 begin
-  SetLength(FSupportedInputs, 20);
+
+  SetLength(FSupportedInputs,
+            20);
   FSupportedInputs[0] := MFVideoFormat_ARGB32;
   FSupportedInputs[1] := MFVideoFormat_RGB24;
   FSupportedInputs[2] := MFVideoFormat_RGB32;
@@ -172,7 +181,8 @@ begin
   FSupportedInputs[18] := MFVideoFormat_YV12;
   FSupportedInputs[19] := MFVideoFormat_YVYU;
 
-  SetLength(FTopDownFormats, 3);
+  SetLength(FTopDownFormats,
+            3);
   // Update list as needed for formats that return top-down data.
   FTopDownFormats[0] := MFVideoFormat_AYUV;
   FTopDownFormats[1] := MFVideoFormat_IYUV;
@@ -181,25 +191,30 @@ end;
 
 
 function TSampleConverter.IsTopDown(const ASubFormat: TGUID): Boolean;
+
 begin
-  Result := IndexOf(ASubFormat,
-                    FTopDownFormats) > -1;
+
+  Result := (IndexOf(ASubFormat,
+                     FTopDownFormats) > -1);
 end;
 
 
 function TSampleConverter.IsInputSupported(const AInputFormat: TGUID): Boolean;
+
 begin
-  Result := IndexOf(AInputFormat, 
-                    FSupportedInputs) > -1;
+
+  Result := (IndexOf(AInputFormat,
+                     FSupportedInputs) > -1);
 end;
 
 
 function TSampleConverter.IndexOf(const AInput: TGUID;
                                   const AValues: array of TGUID): Integer;
+
 begin
+
   Result := high(AValues);
-  while (Result >= low(AValues)) and
-        not IsEqualGUID(AInput,AValues[Result]) do
+  while (Result >= low(AValues)) and not IsEqualGUID(AInput, AValues[Result]) do
     Dec(Result);
 end;
 
@@ -212,76 +227,133 @@ var
   Sample: IMFSample;
   Buffer: IMFMediaBuffer;
   Buffer2D: IMF2DBuffer;
-  Data,Top: PByte;
+  Data, Top: PByte;
   Length: DWORD;
   Pitch: LONG;
-  Width,Height,Y: Integer;
+  Width, Height, Y: Integer;
   Header: BITMAPFILEHEADER;
   Info: BITMAPINFOHEADER;
-  Locked2D,Locked: Boolean;
+  Locked2D, Locked: Boolean;
   Bits: UINT32;
+
 begin
+
   Result := False;
   AMemoryStream := nil;
   AError := '';
-  if ASample = nil then begin AError := 'No input sample';Exit;end;
-  Width := AVideoInfo.iVideoWidth;Height := AVideoInfo.iVideoHeight;
-  if (Width <= 0) or (Height <= 0) or (Int64(Width)*Height > (MaxInt-54) div 4) then
-    begin AError := 'Invalid video dimensions';Exit;end;
-  if IsEqualGUID(AVideoInfo.oSubType,MFVideoFormat_RGB32) then Sample := ASample
+  if (ASample = nil) then
+    begin
+      AError := 'No input sample';
+      Exit;
+    end;
+  Width := AVideoInfo.iVideoWidth;
+  Height := AVideoInfo.iVideoHeight;
+  if (Width <= 0) or (Height <= 0) or (Int64(Width) * Height > (MaxInt - 54) div 4) then
+    begin
+      AError := 'Invalid video dimensions';
+      Exit;
+    end;
+  if IsEqualGUID(AVideoInfo.oSubType, MFVideoFormat_RGB32) then
+    Sample := ASample
   else
     begin
-      if FTransform = nil then begin AError := 'Converter is not initialized';Exit;end;
-      if not ConvertSampleToRGB(ASample,Sample) then
-        begin AError := 'Video processor conversion failed';Exit;end;
+      if (FTransform = nil) then
+        begin
+          AError := 'Converter is not initialized';
+          Exit;
+        end;
+      if not ConvertSampleToRGB(ASample, Sample) then
+        begin
+          AError := 'Video processor conversion failed';
+          Exit;
+        end;
     end;
   if FAILED(Sample.ConvertToContiguousBuffer(@Buffer)) then
-    begin AError := 'Cannot access frame buffer';Exit;end;
-  Locked2D := False;Locked := False;
+    begin
+      AError := 'Cannot access frame buffer';
+      Exit;
+    end;
+  Locked2D := False;
+  Locked := False;
   try
-    if SUCCEEDED(Buffer.QueryInterface(IMF2DBuffer,Buffer2D)) then
-      Locked2D := SUCCEEDED(Buffer2D.Lock2D(Top,Pitch));
+    if SUCCEEDED(Buffer.QueryInterface(IMF2DBuffer, Buffer2D)) then
+      Locked2D := SUCCEEDED(Buffer2D.Lock2D(Top,
+                                            Pitch));
     if not Locked2D then
       begin
-        if FAILED(Buffer.Lock(Data,nil,@Length)) then
-          begin AError := 'Cannot lock frame buffer';Exit;end;
-        Locked := True;
-        MFGetStrideForBitmapInfoHeader(MFVideoFormat_RGB32.D1,Width,Pitch);
-        if IsEqualGUID(AVideoInfo.oSubType,MFVideoFormat_RGB32) then
+        if FAILED(Buffer.Lock(Data, nil, @Length)) then
           begin
-            if (AVideoInfo.iStride <> 0) and (AVideoInfo.iStride <> 1) then Pitch := LONG(AVideoInfo.iStride);
+            AError := 'Cannot lock frame buffer';
+            Exit;
+          end;
+        Locked := True;
+        MFGetStrideForBitmapInfoHeader(MFVideoFormat_RGB32.D1,
+                                       Width,
+                                       Pitch);
+        if IsEqualGUID(AVideoInfo.oSubType, MFVideoFormat_RGB32) then
+          begin
+            if (AVideoInfo.iStride <> 0) and (AVideoInfo.iStride <> 1) then
+              Pitch := LONG(AVideoInfo.iStride);
           end
-        else if (FOutputType <> nil) and SUCCEEDED(FOutputType.GetUINT32(MF_MT_DEFAULT_STRIDE,Bits)) then
+        else if (FOutputType <> nil) and SUCCEEDED(FOutputType.GetUINT32(MF_MT_DEFAULT_STRIDE, Bits)) then
           Pitch := LONG(Bits);
-        if (Abs(Int64(Pitch)) < Int64(Width)*4) or
-           (Int64(Length) < Abs(Int64(Pitch))*(Height-1)+Int64(Width)*4) then
-          begin AError := 'Frame buffer is shorter than its dimensions/stride';Exit;end;
+        if (Abs(Int64(Pitch)) < Int64(Width) * 4) or
+          (Int64(Length) < Abs(Int64(Pitch)) * (Height - 1) + Int64(Width) * 4) then
+          begin
+            AError := 'Frame buffer is shorter than its dimensions/stride';
+            Exit;
+          end;
         Top := Data;
-        if Pitch < 0 then Top := PByte(NativeInt(Data)+NativeInt(-Int64(Pitch)*(Height-1)));
+        if (Pitch < 0) then
+          Top := PByte(NativeInt(Data) + NativeInt(-Int64(Pitch) * (Height - 1)));
       end;
-    if Abs(Int64(Pitch)) < Int64(Width)*4 then
-      begin AError := 'Invalid frame pitch';Exit;end;
-    FillChar(Header,SizeOf(Header),0);FillChar(Info,SizeOf(Info),0);
-    Header.bfType := $4D42;Header.bfOffBits := SizeOf(Header)+SizeOf(Info);
-    Header.bfSize := Header.bfOffBits+DWORD(Width*Height*4);
-    Info.biSize := SizeOf(Info);Info.biWidth := Width;Info.biHeight := -Height;
-    Info.biPlanes := 1;Info.biBitCount := 32;Info.biCompression := BI_RGB;Info.biSizeImage := Width*Height*4;
+    if (Abs(Int64(Pitch)) < Int64(Width) * 4) then
+      begin
+        AError := 'Invalid frame pitch';
+        Exit;
+      end;
+    FillChar(Header,
+             SizeOf(Header),
+             0);
+    FillChar(Info,
+             SizeOf(Info),
+             0);
+    Header.bfType := $4D42;
+    Header.bfOffBits := SizeOf(Header) + SizeOf(Info);
+    Header.bfSize := Header.bfOffBits + DWORD(Width * Height * 4);
+    Info.biSize := SizeOf(Info);
+    Info.biWidth := Width;
+    Info.biHeight := -Height;
+    Info.biPlanes := 1;
+    Info.biBitCount := 32;
+    Info.biCompression := BI_RGB;
+    Info.biSizeImage := Width * Height * 4;
     AMemoryStream := TMemoryStream.Create();
     try
-      AMemoryStream.WriteBuffer(Header,SizeOf(Header));AMemoryStream.WriteBuffer(Info,SizeOf(Info));
-      for Y := 0 to Height-1 do
-        AMemoryStream.WriteBuffer(PByte(NativeInt(Top)+NativeInt(Int64(Y)*Pitch))^,Width*4);
+      AMemoryStream.WriteBuffer(Header,
+                                SizeOf(Header));
+      AMemoryStream.WriteBuffer(Info,
+                                SizeOf(Info));
+      for Y := 0 to Height - 1 do
+        AMemoryStream.WriteBuffer(PByte(NativeInt(Top) + NativeInt(Int64(Y) * Pitch))^,
+                                  Width * 4);
       AMemoryStream.Position := 0;
       Result := True;
-    except FreeAndNil(AMemoryStream);raise;end;
+    except
+      FreeAndNil(AMemoryStream);
+      raise;
+    end;
   finally
-    if Locked2D then Buffer2D.Unlock2D();
-    if Locked then Buffer.Unlock();
+    if Locked2D then
+      Buffer2D.Unlock2D();
+    if Locked then
+      Buffer.Unlock();
   end;
 end;
 
 
 function TSampleConverter.GetBMPFileHeader(): BITMAPFILEHEADER;
+
 begin
 
   Result.bfType := Ord('B') or (Ord('M') shl 8); // Type is "BM" for BitMap
@@ -293,6 +365,7 @@ end;
 
 
 function TSampleConverter.GetBMPFileInfo(const AVideoInfo: TVideoFormatInfo): BITMAPINFOHEADER;
+
 begin
 
   // See: https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
@@ -313,6 +386,7 @@ end;
 
 
 procedure TSampleConverter.FreeConverter();
+
 begin
 
   if Assigned(FTransform) then
@@ -323,17 +397,22 @@ end;
 
 function TSampleConverter.UpdateConverter(const AManager: IMFDXGIDeviceManager;
                                           const AInputType: IMFMediaType): Boolean;
+
 begin
+
   Result := CreateTransform(AManager,
                             AInputType);
 
-  if Result then NotifyBeginStreaming;
+  if Result then
+    NotifyBeginStreaming;
 end;
 
 
 function TSampleConverter.CreateTransform(const AManager: IMFDXGIDeviceManager;
                                           const AInputType: IMFMediaType): Boolean;
+
 begin
+
   FreeConverter;
 
   // Create Video Processor MFT
@@ -389,6 +468,7 @@ end;
 
 
 procedure TSampleConverter.NotifyBeginStreaming();
+
 begin
 
   // This should speed up the first frame request.
@@ -413,8 +493,10 @@ begin
 
   QueryPerformanceCounter(iConvertStart);
 
-  if FTransform = nil then Exit(False);
-  if TimerFrequency = 0 then QueryPerformanceFrequency(TimerFrequency);
+  if (FTransform = nil) then
+    Exit(False);
+  if (TimerFrequency = 0) then
+    QueryPerformanceFrequency(TimerFrequency);
   Result := CheckSucceeded(FTransform.ProcessInput(0,
                                                    AInputSample,
                                                    0),
@@ -438,31 +520,37 @@ begin
             oOutputDataBuffer.dwStatus := 0;
             oOutputDataBuffer.pSample := AConvertedSample;
             oOutputDataBuffer.pEvents := nil;
-            oResult := FTransform.ProcessOutput(0, 1, @oOutputDataBuffer, oStatus);
+            oResult := FTransform.ProcessOutput(0,
+                                                1,
+                                                @oOutputDataBuffer,
+                                                oStatus);
             Result := SUCCEEDED(oResult);
 
             // If we don't flush we will get MF_E_NOTACCEPTING on next ProcessInput
-            FTransform.ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, 0);
+            FTransform.ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH,
+                                      0);
           end;
       finally
         SafeRelease(pBufferOut);
       end;
-  end;
+    end;
 
   QueryPerformanceCounter(iConvertEnd);
-  if Assigned(OnLog)  then
-   OnLog(Format('ConvertSampleToRGB took %f milliseconds.',
-               [(iConvertEnd - iConvertStart) / TimerFrequency * 1000]),
-         ltDebug1);
+  if Assigned(OnLog) then
+    OnLog(Format('ConvertSampleToRGB took %f milliseconds.',
+                 [(iConvertEnd - iConvertStart) / TimerFrequency * 1000]),
+          ltDebug1);
 end;
 
 
 function TSampleConverter.CheckSucceeded(AStatus: HRESULT;
                                          const AMethod: string;
                                          ALogFailure: Boolean = True): Boolean;
+
 begin
- Result := SUCCEEDED(AStatus);
- if not Result and Assigned(OnLog) then
+
+  Result := SUCCEEDED(AStatus);
+  if not Result and Assigned(OnLog) then
     OnLog(Format('Method "%s" failed. Error code: %d',
                  [AMethod, AStatus]),
           ltError);

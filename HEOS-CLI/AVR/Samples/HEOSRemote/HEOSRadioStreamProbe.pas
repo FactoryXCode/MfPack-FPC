@@ -63,16 +63,18 @@ unit HEOSRadioStreamProbe;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-Classes,
+  Classes,
   SysUtils;
 
 type
 
   THeosRadioStreamProbe = class(TThread)
+
   private
 
     FUrl: string;
@@ -80,7 +82,8 @@ type
     FLogoUrl: string;
     FResolvedUrl: string;
 
-    function ProbeUrl(const Url: string; ResolveWebsite: Boolean): Boolean;
+    function ProbeUrl(const Url: string;
+                      ResolveWebsite: Boolean): Boolean;
 
   protected
 
@@ -99,13 +102,14 @@ type
 implementation
 
 uses
-
   Windows,
   WinInet,
   StrUtils,
   MfCastRegularExpressions;
 
-function StreamInternetError(const Action: string; ErrorCode: DWORD): string;
+
+function StreamInternetError(const Action: string;
+                             ErrorCode: DWORD): string;
 var
   Buffer: array[0..1023] of Char;
   Text: string;
@@ -115,35 +119,50 @@ begin
   Text := '';
 
   if (FormatMessageW(FORMAT_MESSAGE_FROM_HMODULE or FORMAT_MESSAGE_FROM_SYSTEM or
-                      FORMAT_MESSAGE_IGNORE_INSERTS,
-                      Pointer(GetModuleHandleW('wininet.dll')), ErrorCode, 0,
-                      @Buffer[0], Length(Buffer), nil) > 0) then
+    FORMAT_MESSAGE_IGNORE_INSERTS,
+    Pointer(GetModuleHandleW('wininet.dll')), ErrorCode, 0, @Buffer[0], Length(Buffer), nil) > 0) then
     Text := Trim(UnicodeString(PWideChar(@Buffer[0])));
 
   if (Text = '') then
     Text := 'Check the URL, network access and whether the audio server is running.';
 
-  Result := Format('%s (WinINet error %d): %s', [Action, ErrorCode, Text]);
+  Result := Format('%s (WinINet error %d): %s',
+                   [Action, ErrorCode, Text]);
 end;
 
 
 type
   THeosProbeReaper = class(TThread)
+
   private
     FProbe: THeosRadioStreamProbe;
+
   protected
     procedure Execute; override;
+
   public
     constructor Create(Probe: THeosRadioStreamProbe);
   end;
+
+
 constructor THeosProbeReaper.Create(Probe: THeosRadioStreamProbe);
+
 begin
- inherited Create(True);FreeOnTerminate:=True;FProbe:=Probe;
+
+  inherited Create(True);
+  FreeOnTerminate := True;
+  FProbe := Probe;
 end;
+
+
 procedure THeosProbeReaper.Execute;
+
 begin
- FProbe.WaitFor;FProbe.Free;
+
+  FProbe.WaitFor;
+  FProbe.Free;
 end;
+
 
 class procedure THeosRadioStreamProbe.Release(var Probe: THeosRadioStreamProbe);
 var
@@ -175,6 +194,7 @@ end;
 
 
 constructor THeosRadioStreamProbe.Create(const Url: string);
+
 begin
 
   inherited Create(True);
@@ -184,6 +204,7 @@ end;
 
 
 destructor THeosRadioStreamProbe.Destroy();
+
 begin
 
   Terminate;
@@ -193,9 +214,11 @@ end;
 
 
 procedure THeosRadioStreamProbe.Execute();
+
 begin
 
-  ProbeUrl(FUrl, True);
+  ProbeUrl(FUrl,
+           True);
 end;
 
 
@@ -221,6 +244,7 @@ var
   Link: TMatch;
   Href: TMatch;
   Stream: TMemoryStream;
+
 begin
 
   Result := False;
@@ -231,31 +255,49 @@ begin
   try
     try
       Session := InternetOpenW('FactoryX HEOS Remote stream check',
-                               INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0);
+                               INTERNET_OPEN_TYPE_PRECONFIG,
+                               nil,
+                               nil,
+                               0);
 
       if not Assigned(Session) then
         begin
           ErrorCode := Windows.GetLastError();
-          FErrorText := StreamInternetError('Cannot initialize the URL check', ErrorCode);
+          FErrorText := StreamInternetError('Cannot initialize the URL check',
+                                            ErrorCode);
           Exit;
         end;
 
       Timeout := 1500;
-      InternetSetOption(Session, INTERNET_OPTION_CONNECT_TIMEOUT, @Timeout, SizeOf(Timeout));
-      InternetSetOption(Session, INTERNET_OPTION_SEND_TIMEOUT, @Timeout, SizeOf(Timeout));
-      InternetSetOption(Session, INTERNET_OPTION_RECEIVE_TIMEOUT, @Timeout, SizeOf(Timeout));
+      InternetSetOption(Session,
+                        INTERNET_OPTION_CONNECT_TIMEOUT,
+                        @Timeout,
+                        SizeOf(Timeout));
+      InternetSetOption(Session,
+                        INTERNET_OPTION_SEND_TIMEOUT,
+                        @Timeout,
+                        SizeOf(Timeout));
+      InternetSetOption(Session,
+                        INTERNET_OPTION_RECEIVE_TIMEOUT,
+                        @Timeout,
+                        SizeOf(Timeout));
 
       if Terminated then
         Exit;
 
-      Request := InternetOpenUrlW(Session, PChar(Url), nil, 0,
+      Request := InternetOpenUrlW(Session,
+                                  PChar(Url),
+                                  nil,
+                                  0,
                                   INTERNET_FLAG_RELOAD or INTERNET_FLAG_NO_CACHE_WRITE or
-                                  INTERNET_FLAG_NO_COOKIES or INTERNET_FLAG_NO_UI, 0);
+        INTERNET_FLAG_NO_COOKIES or INTERNET_FLAG_NO_UI,
+                                  0);
 
       if not Assigned(Request) then
         begin
           ErrorCode := Windows.GetLastError();
-          FErrorText := StreamInternetError('Cannot reach the stream URL from this PC', ErrorCode);
+          FErrorText := StreamInternetError('Cannot reach the stream URL from this PC',
+                                            ErrorCode);
           Exit;
         end;
 
@@ -263,17 +305,18 @@ begin
       Index := 0;
       Size := SizeOf(Status);
 
-      if not HttpQueryInfoW(Request, HTTP_QUERY_STATUS_CODE or HTTP_QUERY_FLAG_NUMBER,
-                             @Status, Size, Index) then
+      if not HttpQueryInfoW(Request, HTTP_QUERY_STATUS_CODE or HTTP_QUERY_FLAG_NUMBER, @Status, Size, Index) then
         begin
           ErrorCode := Windows.GetLastError();
-          FErrorText := StreamInternetError('Cannot read the HTTP response', ErrorCode);
+          FErrorText := StreamInternetError('Cannot read the HTTP response',
+                                            ErrorCode);
           Exit;
         end;
 
       if (Status < 200) or (Status >= 300) then
         begin
-          FErrorText := Format('The stream URL returned HTTP %d. Check that its audio server is running.', [Status]);
+          FErrorText := Format('The stream URL returned HTTP %d. Check that its audio server is running.',
+                               [Status]);
           Exit;
         end;
 
@@ -291,7 +334,8 @@ begin
         EffectiveUrl := PChar(@Combined[0]);
 
       if StartsText('text/html', ContentType) or
-         StartsText('application/xhtml', ContentType) then
+        StartsText('application/xhtml',
+                   ContentType) then
         begin
           FErrorText := 'This URL is a webpage, not an audio stream. HEOS needs a direct MP3/AAC stream URL; the browser broadcast cannot be played directly.';
           // Resolve a website only once; an HTML fallback must never loop.
@@ -308,23 +352,29 @@ begin
               if not InternetReadFile(Request, @Buffer[0], SizeOf(Buffer), Count) or (Count = 0) then
                 Break;
 
-              Stream.WriteBuffer(Buffer[0], Count);
+              Stream.WriteBuffer(Buffer[0],
+                                 Count);
             end;
 
-          SetString(HtmlBytes, PAnsiChar(Stream.Memory), Stream.Size);
+          SetString(HtmlBytes,
+                    PAnsiChar(Stream.Memory),
+                    Stream.Size);
           Html := UTF8ToString(HtmlBytes);
 
-          for Link in TRegEx.Matches(Html, '<link\b[^>]*>', [roIgnoreCase]) do
+          for Link in TRegEx.Matches(Html,
+                                     '<link\b[^>]*>',
+                                     [roIgnoreCase]) do
             if TRegEx.IsMatch(Link.Value, 'rel\s*=\s*["''][^"'']*(?:apple-touch-icon|icon)', [roIgnoreCase]) then
               begin
-                Href := TRegEx.Match(Link.Value, 'href\s*=\s*["'']([^"'']+)["'']', [roIgnoreCase]);
+                Href := TRegEx.Match(Link.Value,
+                                     'href\s*=\s*["'']([^"'']+)["'']',
+                                     [roIgnoreCase]);
 
                 if Href.Success then
                   begin
                     Size := Length(Combined);
 
-                    if InternetCombineUrlW(PChar(EffectiveUrl), PChar(Href.Groups[1].Value),
-                                            @Combined[0], Size, 0) then
+                    if InternetCombineUrlW(PChar(EffectiveUrl), PChar(Href.Groups[1].Value), @Combined[0], Size, 0) then
                       FLogoUrl := PChar(@Combined[0]);
 
                     Break;
@@ -336,32 +386,30 @@ begin
 
           Size := Length(Combined);
 
-          if not InternetCombineUrlW(PChar(EffectiveUrl), '/radio/live.aac',
-                                       @Combined[0], Size, 0) then
+          if not InternetCombineUrlW(PChar(EffectiveUrl), '/radio/live.aac', @Combined[0], Size, 0) then
             Exit;
 
           AudioUrl := PChar(@Combined[0]);
           FErrorText := '';
           InternetCloseHandle(Request);
           Request := nil;
-          Result := ProbeUrl(AudioUrl, False);
+          Result := ProbeUrl(AudioUrl,
+                             False);
 
           if not Result and not Terminated then
             FErrorText := 'This URL is a webpage. Its direct AAC stream is unavailable (' +
-                          AudioUrl + '): ' + FErrorText;
+              AudioUrl + '): ' + FErrorText;
           Exit;
         end
       else if StartsText('image/', ContentType) or
-              StartsText('text/', ContentType) or
-              StartsText('application/json', ContentType) then
+        StartsText('text/',
+                   ContentType) or
+        StartsText('application/json',
+                   ContentType) then
         FErrorText := 'This URL does not return audio (Content-Type: ' + ContentType + '). Enter a direct MP3/AAC stream URL.';
 
       // A guessed website endpoint must explicitly identify itself as AAC.
-      if not ResolveWebsite and (FErrorText = '') and
-         not SameText(Trim(Copy(ContentType, 1, Pos(';', ContentType + ';') - 1)), 'audio/aac') and
-         not SameText(Trim(Copy(ContentType, 1, Pos(';', ContentType + ';') - 1)), 'audio/aacp') and
-         not SameText(Trim(Copy(ContentType, 1, Pos(';', ContentType + ';') - 1)), 'audio/x-aac') and
-         not SameText(Trim(Copy(ContentType, 1, Pos(';', ContentType + ';') - 1)), 'audio/adts') then
+      if not ResolveWebsite and (FErrorText = '') and not SameText(Trim(Copy(ContentType, 1, Pos(';', ContentType + ';') - 1)), 'audio/aac') and not SameText(Trim(Copy(ContentType, 1, Pos(';', ContentType + ';') - 1)), 'audio/aacp') and not SameText(Trim(Copy(ContentType, 1, Pos(';', ContentType + ';') - 1)), 'audio/x-aac') and not SameText(Trim(Copy(ContentType, 1, Pos(';', ContentType + ';') - 1)), 'audio/adts') then
         FErrorText := 'The AAC endpoint did not return AAC audio (Content-Type: ' + ContentType + ').';
 
       if not Terminated and (FErrorText = '') then

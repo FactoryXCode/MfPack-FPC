@@ -64,21 +64,22 @@ unit RDJ.Log;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   SysUtils;
 
-  function RDJLogFileName(): string;
+function RDJLogFileName(): string;
 
-  procedure RDJLog(const ACategory: string;
-                   const AMessage: string);
+procedure RDJLog(const ACategory: string;
+                 const AMessage: string);
 
-  procedure RDJLogFmt(const ACategory: string;
-                      const AFormat: string;
-                      const AArgs: array of const);
+procedure RDJLogFmt(const ACategory: string;
+                    const AFormat: string;
+                    const AArgs: array of const);
 
 implementation
 
@@ -109,13 +110,13 @@ begin
 
   Result := -1;
   if (FindFirst(AFileName,
-                faAnyFile,
-                SearchRec) = 0) then
-    try
-      Result := SearchRec.Size;
-    finally
-      SysUtils.FindClose(SearchRec);
-    end;
+    faAnyFile,
+    SearchRec) = 0) then
+  try
+    Result := SearchRec.Size;
+  finally
+    SysUtils.FindClose(SearchRec);
+  end;
 end;
 
 
@@ -150,12 +151,15 @@ begin
     Exit;
 
   Line := Format('%s | PID=%d TID=%d | %-14s | %s%s',
-                 [FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now),
-                  GetCurrentProcessId(),
-                  GetCurrentThreadId(),
-                  Copy(Trim(ACategory), 1, 14),
-                  AMessage,
-                  sLineBreak]);
+                 [FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz',
+                                 Now),
+    GetCurrentProcessId(),
+    GetCurrentThreadId(),
+    Copy(Trim(ACategory),
+         1,
+         14),
+    AMessage,
+    sLineBreak]);
 
   OutputDebugStringW(PChar(TrimRight(Line)));
 
@@ -172,7 +176,7 @@ begin
         ForceDirectories(LogDir);
 
       if FileExists(FileName) and
-         (RDJExistingFileSize(FileName) >= RDJ_LOG_MAX_BYTES) then
+        (RDJExistingFileSize(FileName) >= RDJ_LOG_MAX_BYTES) then
         begin
           PreviousFileName := TPath.Combine(LogDir,
                                             'RDJPro.previous.log');
@@ -193,7 +197,7 @@ begin
         Stream.Seek(0,
                     soFromEnd);
         Utf8 := UTF8String(Line);
-        if Length(Utf8) > 0 then
+        if (Length(Utf8) > 0) then
           Stream.WriteBuffer(Utf8[1],
                              Length(Utf8));
       finally
@@ -211,6 +215,7 @@ end;
 procedure RDJLogFmt(const ACategory: string;
                     const AFormat: string;
                     const AArgs: array of const);
+
 begin
 
   if not RDJ_LOGGING_ENABLED then

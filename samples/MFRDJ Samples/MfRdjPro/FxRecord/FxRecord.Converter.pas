@@ -86,6 +86,7 @@ type
   end;
 
   TFxConversionThread = class(TThread)
+
   private
     FInputFileName: string;
     FPartialFileName: string;
@@ -146,6 +147,7 @@ var
 
 procedure CheckHR(const AResult: HRESULT;
                   const AOperation: string);
+
 begin
 
   if Failed(AResult) then
@@ -155,6 +157,7 @@ end;
 
 
 function FourCC(const AText: AnsiString): DWORD;
+
 begin
 
   if (Length(AText) <> 4) then
@@ -221,13 +224,14 @@ var
   AudioEnded: Boolean;
   PaddingByte: Byte;
 
-  // Helpers
+// Helpers
   procedure WriteDWord(const AValue: DWORD);
   begin
 
     Output.WriteBuffer(AValue,
                        SizeOf(AValue));
   end;
+
 
   function BeginChunk(const AId: AnsiString): Int64;
   begin
@@ -236,6 +240,7 @@ var
     Result := Output.Position;
     WriteDWord(0);
   end;
+
 
   procedure PatchDWord(const APosition: Int64;
                        const AValue: DWORD);
@@ -250,6 +255,7 @@ var
     Output.Position := Saved;
   end;
 
+
   procedure EndChunk(const AStart: Int64);
   begin
 
@@ -262,13 +268,14 @@ var
   end;
 
 begin
+
   StreamIndex := 0;
   PaddingByte := 0;
 
   CheckHR(MFCreateSourceReaderFromURL(PWideChar(AEncodedFile),
                                       nil,
                                       Reader),
-                                      'Open encoded packets');
+          'Open encoded packets');
 
   // The work MP4 contains only MP3 audio. Copy video from the original source,
   // avoiding a second MP4 sink that can discard reordered H.264 frames.
@@ -287,10 +294,10 @@ begin
 
   CheckHR(StreamType.GetGUID(MF_MT_MAJOR_TYPE,
                              MajorType),
-    'Read original stream type');
+          'Read original stream type');
 
   if IsEqualGUID(MajorType,
-                 MFMediaType_Video) then
+    MFMediaType_Video) then
     NativeVideoIndex := 0
   else
     NativeVideoIndex := 1;
@@ -357,7 +364,8 @@ begin
         WriteDWord(FourCC('hdrl'));
         ChunkStart := BeginChunk('avih');
         FillChar(MainHeader,
-                 SizeOf(MainHeader), 0);
+                 SizeOf(MainHeader),
+                 0);
         MainHeader[0] := DWORD((UInt64(1000000) * RateD) div RateN);
         MainHeader[1] := 150000 + Wave.nAvgBytesPerSec;
         MainHeader[3] := $10; // AVIF_HASINDEX
@@ -375,7 +383,7 @@ begin
         ChunkStart := BeginChunk('strh');
         FillChar(StreamHeader,
                  SizeOf(StreamHeader),
-                        0);
+                 0);
 
         StreamHeader[0] := FourCC('vids');
         StreamHeader[1] := FourCC('H264');
@@ -441,8 +449,10 @@ begin
         AudioBytes := 0;
         VideoEnded := False;
         AudioEnded := False;
-        PendingVideo := nil; PendingAudio := nil;
-        VideoOrigin := -1; AudioOrigin := -1;
+        PendingVideo := nil;
+        PendingAudio := nil;
+        VideoOrigin := -1;
+        AudioOrigin := -1;
 
         repeat
           Sample := nil;
@@ -478,8 +488,8 @@ begin
 
               AudioEnded := ((AudioFlags and DWORD(MF_SOURCE_READERF_ENDOFSTREAM)) <> 0);
 
-             if (PendingAudio <> nil) and (AudioOrigin < 0) then
-               AudioOrigin := AudioTimestamp;
+              if (PendingAudio <> nil) and (AudioOrigin < 0) then
+                AudioOrigin := AudioTimestamp;
             end;
 
           if (PendingVideo <> nil) and ((PendingAudio = nil) or (VideoTimestamp - VideoOrigin <= AudioTimestamp - AudioOrigin)) then
@@ -488,13 +498,12 @@ begin
               PendingVideo := nil;
               StreamIndex := VideoIndex;
             end
-          else
-            if (PendingAudio <> nil) then
-              begin
-                Sample := PendingAudio;
-                PendingAudio := nil;
-                StreamIndex := AudioIndex;
-              end;
+          else if (PendingAudio <> nil) then
+            begin
+              Sample := PendingAudio;
+              PendingAudio := nil;
+              StreamIndex := AudioIndex;
+            end;
 
           if (Sample <> nil) then
             begin
@@ -509,7 +518,7 @@ begin
               try
                 // Classic AVI has 32-bit offsets. Fail safely before exceeding
                 // 2 GiB, retaining both the original source and encoded work file.
-                if Output.Position + DataLength + Index.Size + 32 >= $7FFF0000 then
+                if (Output.Position + DataLength + Index.Size + 32 >= $7FFF0000) then
                   raise Exception.Create('AVI segment exceeds 2 GiB; reduce FragmentDuration.');
 
                 Entry.Offset := DWORD(Output.Position - MoviStart - 4);
@@ -549,8 +558,8 @@ begin
                 Buffer.Unlock();
               end;
 
-            Buffer := nil;
-          end;
+              Buffer := nil;
+            end;
         until VideoEnded and AudioEnded and (PendingVideo = nil) and (PendingAudio = nil);
 
         if (VideoFrames = 0) or (AudioBytes = 0) then
@@ -588,8 +597,10 @@ begin
 end;
 
 
-procedure EncodeMp3Audio(const AInputFile, AOutputFile: string;
-                         const ASampleRate, ABitRateKbps: Integer);
+procedure EncodeMp3Audio(const AInputFile,
+                         AOutputFile: string;
+                         const ASampleRate,
+                         ABitRateKbps: Integer);
 var
   Reader: IMFSourceReader;
   Writer: IMFSinkWriter;
@@ -612,7 +623,7 @@ begin
   CheckHR(MFCreateSourceReaderFromURL(PWideChar(AInputFile),
                                       nil,
                                       Reader),
-                                      'Open MP3 source recording');
+          'Open MP3 source recording');
 
   CheckHR(Reader.GetNativeMediaType(0,
                                     0,
@@ -624,7 +635,7 @@ begin
           'Read source stream type');
 
   if IsEqualGUID(MajorType,
-                 MFMediaType_Video) then
+    MFMediaType_Video) then
     begin
       VideoIn := 0;
       AudioIn := 1;
@@ -653,10 +664,13 @@ begin
           'Read source video subtype');
 
   if not IsEqualGUID(MajorType,
-                     MFVideoFormat_H264) then
+    MFVideoFormat_H264) then
     raise Exception.Create('AVI-H264-MP3 requires H.264 source video.');
 
-  CheckHR(Reader.SetCurrentMediaType(VideoIn, 0, VideoType), 'Preserve H.264 source packets');
+  CheckHR(Reader.SetCurrentMediaType(VideoIn,
+                                     0,
+                                     VideoType),
+          'Preserve H.264 source packets');
 
   CheckHR(MFCreateMediaType(PcmType),
           'Create PCM input type');
@@ -788,12 +802,12 @@ begin
                                    Sample),
                 'Encode MP3 sample');
 
-      // Yield in the audio sample loop; H.264 will be copied directly into AVI.
-      Inc(AudioSamples);
+        // Yield in the audio sample loop; H.264 will be copied directly into AVI.
+        Inc(AudioSamples);
 
-      if ((AudioSamples mod 4) = 0) then
-        Sleep(1);
-    end;
+        if ((AudioSamples mod 4) = 0) then
+          Sleep(1);
+      end;
 
   until AudioEnded;
 
@@ -848,7 +862,7 @@ begin
           'Read source stream type');
 
   if IsEqualGUID(MajorType,
-                 MFMediaType_Video) then
+    MFMediaType_Video) then
     begin
       VideoIn := 0;
       AudioIn := 1;
@@ -881,7 +895,7 @@ begin
           'Read source video subtype');
 
   if not IsEqualGUID(MajorType,
-                    MFVideoFormat_H264) then
+    MFVideoFormat_H264) then
     raise Exception.Create('MP4-H264-AAC requires H.264 source video.');
 
   CheckHR(Reader.SetCurrentMediaType(VideoIn,
@@ -1022,9 +1036,8 @@ begin
       begin
         if (StreamIndex = VideoIn) then
           VideoEnded := True
-        else
-          if (StreamIndex = AudioIn) then
-            AudioEnded := True;
+        else if (StreamIndex = AudioIn) then
+          AudioEnded := True;
 
         CheckHR(Reader.SetStreamSelection(StreamIndex,
                                           False),
@@ -1042,21 +1055,21 @@ begin
                     'Rebase H.264 timestamp');
 
             CheckHR(Writer.WriteSample(VideoOut,
-                                   Sample),
+                                       Sample),
                     'Copy H.264 sample');
-         end
-      else
-        begin
-          if (AudioStart < 0) then
-            AudioStart := TimeStamp;
+          end
+        else
+          begin
+            if (AudioStart < 0) then
+              AudioStart := TimeStamp;
 
-          CheckHR(Sample.SetSampleTime(TimeStamp - AudioStart),
-                  'Rebase AAC timestamp');
+            CheckHR(Sample.SetSampleTime(TimeStamp - AudioStart),
+                    'Rebase AAC timestamp');
 
-          CheckHR(Writer.WriteSample(AudioOut,
-                                     Sample),
-                  'Encode AAC sample');
-        end;
+            CheckHR(Writer.WriteSample(AudioOut,
+                                       Sample),
+                    'Encode AAC sample');
+          end;
       end;
 
   until VideoEnded and AudioEnded;
@@ -1075,6 +1088,7 @@ constructor TFxConversionThread.Create(const AInputFileName: string;
                                        const AOutputProfile: string;
                                        const ASampleRate: Integer;
                                        const ABitRateKbps: Integer);
+
 begin
 
   inherited Create(True);
@@ -1111,8 +1125,8 @@ begin
     5: PhaseName := 'finalizing';
     6: PhaseName := 'MF-shutdown';
     7: PhaseName := 'finished';
-  else
-    PhaseName := 'unknown';
+    else
+      PhaseName := 'unknown';
   end;
 
   Result := Format('thread=%d phase=%s ageMs=%d file=%s',
@@ -1129,69 +1143,68 @@ begin
   ConversionLock.Enter;
   try
 
-  FSucceeded := False;
-  FErrorText := '';
+    FSucceeded := False;
+    FErrorText := '';
 
-  InterlockedExchange(FPhase,
-                      1);
-
-  try
-    CheckHR(CoInitializeEx(nil,
-                           COINIT_MULTITHREADED),
-            'Initialize converter COM');
+    InterlockedExchange(FPhase,
+                        1);
 
     try
-      CheckHR(MFStartup(),
-              'Initialize Media Foundation');
+      CheckHR(CoInitializeEx(nil,
+                             COINIT_MULTITHREADED),
+              'Initialize converter COM');
 
       try
+        CheckHR(MFStartup(),
+                'Initialize Media Foundation');
 
-        // An old partial file is evidence of an interrupted conversion.
-        if FileExists(FPartialFileName) or FileExists(FFinalFileName) then
-          raise Exception.Create('Recording output already exists; it has been preserved.');
+        try
 
-        EncodedFile := '';
+          // An old partial file is evidence of an interrupted conversion.
+          if FileExists(FPartialFileName) or FileExists(FFinalFileName) then
+            raise Exception.Create('Recording output already exists; it has been preserved.');
 
-        if SameText(FOutputProfile,
-                    'AVI-H264-MP3') then
-          begin
-            if not ((FSampleRate = 32000) or
-               (FSampleRate = 44100) or
-               (FSampleRate = 48000)) or not
-               ((FBitRateKbps = 128) or
-               (FBitRateKbps = 160) or
-               (FBitRateKbps = 192)) then
-              raise Exception.Create('Invalid MP3 sample rate or bitrate.');
+          EncodedFile := '';
 
-            EncodedFile := FPartialFileName + '.encoded.mp4';
-            if FileExists(EncodedFile) then
-              raise Exception.Create('Encoded work file already exists; it has been preserved.');
-
-            InterlockedExchange(FPhase,
-                                2);
-
-            EncodeMp3Audio(FInputFileName,
-                           EncodedFile,
-                           FSampleRate,
-                           FBitRateKbps);
-
-            InterlockedExchange(FPhase,
-                                3);
-
-            MuxNativePacketsToAvi(FInputFileName,
-                                  EncodedFile,
-                                  FPartialFileName);
-          end
-        else
           if SameText(FOutputProfile,
-                      'MP4-H264-AAC') then
+            'AVI-H264-MP3') then
+            begin
+              if not ((FSampleRate = 32000) or
+                (FSampleRate = 44100) or
+                (FSampleRate = 48000)) or not
+                ((FBitRateKbps = 128) or
+                (FBitRateKbps = 160) or
+                (FBitRateKbps = 192)) then
+                raise Exception.Create('Invalid MP3 sample rate or bitrate.');
+
+              EncodedFile := FPartialFileName + '.encoded.mp4';
+              if FileExists(EncodedFile) then
+                raise Exception.Create('Encoded work file already exists; it has been preserved.');
+
+              InterlockedExchange(FPhase,
+                                  2);
+
+              EncodeMp3Audio(FInputFileName,
+                             EncodedFile,
+                             FSampleRate,
+                             FBitRateKbps);
+
+              InterlockedExchange(FPhase,
+                                  3);
+
+              MuxNativePacketsToAvi(FInputFileName,
+                                    EncodedFile,
+                                    FPartialFileName);
+            end
+          else if SameText(FOutputProfile,
+            'MP4-H264-AAC') then
             begin
               if not ((FSampleRate = 44100) or
-                      (FSampleRate = 48000)) or not
-                     ((FBitRateKbps = 96) or
-                      (FBitRateKbps = 128) or
-                     (FBitRateKbps = 160) or
-                     (FBitRateKbps = 192)) then
+                (FSampleRate = 48000)) or not
+                ((FBitRateKbps = 96) or
+                (FBitRateKbps = 128) or
+                (FBitRateKbps = 160) or
+                (FBitRateKbps = 192)) then
                 raise Exception.Create('Invalid AAC sample rate or bitrate (96-192 kbps).');
 
               InterlockedExchange(FPhase,
@@ -1205,47 +1218,50 @@ begin
           else
             raise Exception.Create('Unsupported conversion profile.');
 
-        InterlockedExchange(FPhase,
-                             5);
+          InterlockedExchange(FPhase,
+                              5);
 
 
-        if not FileExists(FPartialFileName) then
-          raise Exception.Create('The native converter did not create an output file.');
+          if not FileExists(FPartialFileName) then
+            raise Exception.Create('The native converter did not create an output file.');
 
-        if not MoveFileExW(PChar(FPartialFileName),
-                          PChar(FFinalFileName),
-                          $8) then
-          raise Exception.Create('Cannot finalize recording. ' + SysErrorMessage(GetLastError()));
+          if not MoveFileExW(PChar(FPartialFileName),
+            PChar(FFinalFileName),
+            $8) then
+            raise Exception.Create('Cannot finalize recording. ' + SysErrorMessage(GetLastError()));
 
-        if (EncodedFile <> '') then
-          FxDeleteFile(PChar(EncodedFile));
+          if (EncodedFile <> '') then
+            FxDeleteFile(PChar(EncodedFile));
 
-        FxDeleteFile(PChar(FInputFileName));
+          FxDeleteFile(PChar(FInputFileName));
 
-        FSucceeded := True;
+          FSucceeded := True;
+
+        finally
+          InterlockedExchange(FPhase,
+                              6);
+          MFShutdown();
+        end;
 
       finally
-        InterlockedExchange(FPhase,
-                            6);
-        MFShutdown();
+        CoUninitialize();
       end;
 
-    finally
-      CoUninitialize();
+    except
+      on E: Exception do
+        FErrorText := E.Message;
     end;
 
-  except
-    on E: Exception do
-      FErrorText := E.Message;
+    InterlockedExchange(FPhase,
+                        7);
+  finally
+    ConversionLock.Leave
   end;
-
-  InterlockedExchange(FPhase,
-                      7);
-  finally ConversionLock.Leave end;
 end;
 
 initialization
   ConversionLock := SyncObjs.TCriticalSection.Create;
+
 finalization
   ConversionLock.Free;
 end.

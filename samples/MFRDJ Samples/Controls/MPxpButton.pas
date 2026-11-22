@@ -66,12 +66,13 @@ unit MPxpButton;
 
 interface
 
-uses Types,
-Rdj.Platform,
-LMessages,
+uses
+  Types,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   {System}
@@ -93,12 +94,12 @@ type
                      blGlyphTop,
                      blGlyphBottom);
 
-  TMPButtonStyle  = (bsNormal,
-                     bsEncarta,
-                     bsModern,
-                     bsOld,
-                     bsShape,
-                     bsQuicken);
+  TMPButtonStyle = (bsNormal,
+                    bsEncarta,
+                    bsModern,
+                    bsOld,
+                    bsShape,
+                    bsQuicken);
 
   TMPxpButtonBehavior = (bbAuto,
                          bbPushButton,
@@ -106,8 +107,10 @@ type
                          bbRadioButton);
 
   TMPxpButton = class(TCustomControl)
+
   published
     property BorderSpacing;
+
   private
     FAlignment: TAlignment;
     FAllowAllUp: Boolean;
@@ -223,10 +226,12 @@ type
 
     procedure MouseDown(Button: TMouseButton;
                         Shift: TShiftState;
-                        X, Y: Integer); override;
+                        X,
+                        Y: Integer); override;
     procedure MouseUp(Button: TMouseButton;
                       Shift: TShiftState;
-                      X, Y: Integer); override;
+                      X,
+                      Y: Integer); override;
     procedure ActionChange(Sender: TObject;
                            CheckDefaults: Boolean); override;
     procedure WMLButtonDblClk(var Message: TLMLButtonDblClk); message WM_LBUTTONDBLCLK;
@@ -312,7 +317,9 @@ implementation
 const
   cHotTrackSteps = 10;
 
+
 procedure Register;
+
 begin
 
   RegisterComponents('RDJ Controls',
@@ -323,15 +330,16 @@ end;
 { TMPxpButton }
 
 constructor TMPxpButton.Create(AOwner: TComponent);
+
 begin
 
   inherited;
 
   ControlStyle := ControlStyle + [csSetCaption,
-                                  csClickEvents,
-                                  csDoubleClicks,
-                                  csCaptureMouse,
-                                  csOpaque];
+    csClickEvents,
+    csDoubleClicks,
+    csCaptureMouse,
+    csOpaque];
 
   DoubleBuffered := True;
   ParentDoubleBuffered := False;
@@ -384,6 +392,7 @@ end;
 
 
 destructor TMPxpButton.Destroy;
+
 begin
 
   FreeAndNil(FDecTimer);
@@ -397,6 +406,7 @@ end;
 
 
 procedure TMPxpButton.CMEnabledChanged(var Msg: TLMessage);
+
 begin
 
   inherited;
@@ -416,6 +426,7 @@ end;
 
 
 procedure TMPxpButton.CMColorChanged(var Msg: TLMessage);
+
 begin
 
   inherited;
@@ -425,7 +436,7 @@ begin
     Exit;
 
   if (FColorWhenUp = clNone) or
-     (FColorWhenUp = clBtnFace) then
+    (FColorWhenUp = clBtnFace) then
     FColorWhenUp := Color;
 
   Invalidate;
@@ -433,6 +444,7 @@ end;
 
 
 procedure TMPxpButton.SetCaption(const Value: TCaption);
+
 begin
 
   inherited Caption := Value;
@@ -441,6 +453,7 @@ end;
 
 
 function TMPxpButton.GetCaption(): TCaption;
+
 begin
 
   Result := inherited Caption;
@@ -448,6 +461,7 @@ end;
 
 
 procedure TMPxpButton.SetAlignment(Value: TAlignment);
+
 begin
 
   if (FAlignment = Value) then
@@ -458,6 +472,7 @@ end;
 
 
 procedure TMPxpButton.SetFlat(Value: Boolean);
+
 begin
 
   if (FFlat = Value) then
@@ -468,6 +483,7 @@ end;
 
 
 procedure TMPxpButton.SetColorWhenDown(Value: TColor);
+
 begin
 
   FColorWhenDown := Value;
@@ -476,6 +492,7 @@ end;
 
 
 procedure TMPxpButton.SetColorWhenUp(Value: TColor);
+
 begin
 
   FColorWhenUp := Value;
@@ -564,7 +581,7 @@ begin
   FDown := Value;
 
   if (OldDown <> FDown) and (GetEffectiveBehavior <> bbPushButton) and
-     (not (csLoading in ComponentState)) and (not (csDesigning in ComponentState)) then
+    (not (csLoading in ComponentState)) and (not (csDesigning in ComponentState)) then
     DoCheckedChanged;
 
   Invalidate;
@@ -572,6 +589,7 @@ end;
 
 
 procedure TMPxpButton.ReadLegacyDown(Reader: TReader);
+
 begin
 
   // Backward compatibility for older DFM resources. Down is no longer a
@@ -581,6 +599,7 @@ end;
 
 
 procedure TMPxpButton.DefineProperties(Filer: TFiler);
+
 begin
 
   inherited DefineProperties(Filer);
@@ -592,6 +611,7 @@ end;
 
 
 procedure TMPxpButton.SetGlyph(Value: TBitmap);
+
 begin
 
   if (Value <> nil) then
@@ -615,6 +635,7 @@ end;
 
 
 procedure TMPxpButton.SetGroupIndex(Value: Integer);
+
 begin
 
   if (FGroupIndex = Value) then
@@ -625,6 +646,7 @@ end;
 
 
 procedure TMPxpButton.SetHTFont(Value: TFont);
+
 begin
 
   if (Value = nil) then
@@ -635,6 +657,7 @@ end;
 
 
 procedure TMPxpButton.SetLayout(Value: TMPButtonLayout);
+
 begin
 
   if (FLayout = Value) then
@@ -645,6 +668,7 @@ end;
 
 
 procedure TMPxpButton.SetLightColor(Value: TColor);
+
 begin
 
   if (FLightColor = Value) then
@@ -655,6 +679,7 @@ end;
 
 
 procedure TMPxpButton.SetNumGlyphs(Value: Integer);
+
 begin
 
   if (FNumGlyphs = Value) then
@@ -665,6 +690,7 @@ end;
 
 
 procedure TMPxpButton.SetShadowColor(Value: TColor);
+
 begin
 
   if (FShadowColor = Value) then
@@ -675,13 +701,14 @@ end;
 
 
 procedure TMPxpButton.SetStyle(Value: TMPButtonStyle);
+
 begin
 
   // Respect old 8bpp limitation but don't silently ignore property updates
   if (Value = bsModern) and
-     (GetDeviceCaps(Canvas.Handle,
-                    BITSPIXEL) <= 8) and
-     (not (csDesigning in ComponentState)) then
+    (GetDeviceCaps(Canvas.Handle,
+                   BITSPIXEL) <= 8) and
+    (not (csDesigning in ComponentState)) then
     Value := bsNormal;
 
   if (FStyle = Value) then
@@ -692,6 +719,7 @@ end;
 
 
 procedure TMPxpButton.SetTransparent(Value: Boolean);
+
 begin
 
   if (FTransparent = Value) then
@@ -712,6 +740,7 @@ end;
 
 
 procedure TMPxpButton.SetWordWrap(Value: Boolean);
+
 begin
 
   if (FWordWrap = Value) then
@@ -722,6 +751,7 @@ end;
 
 
 procedure TMPxpButton.SetGlyphTPColor(Value: TColor);
+
 begin
 
   if (FGlyphTPColor = Value) then
@@ -733,6 +763,7 @@ end;
 
 
 procedure TMPxpButton.SetFGlTransp(Value: Boolean);
+
 begin
 
   if (FGlTransp = Value) then
@@ -743,6 +774,7 @@ end;
 
 
 procedure TMPxpButton.SetSlowDecease(Value: Boolean);
+
 begin
 
   if (FSlowDecease = Value) then
@@ -773,6 +805,7 @@ end;
 
 
 procedure TMPxpButton.DecTimerTick(Sender: TObject);
+
 begin
 
   if bCursorOnButton then
@@ -794,6 +827,7 @@ end;
 
 
 function TMPxpButton.GetChecked(): Boolean;
+
 begin
 
   Result := FDown;
@@ -801,6 +835,7 @@ end;
 
 
 procedure TMPxpButton.SetChecked(Value: Boolean);
+
 begin
 
   SetDown(Value);
@@ -808,6 +843,7 @@ end;
 
 
 procedure TMPxpButton.SetBehavior(Value: TMPxpButtonBehavior);
+
 begin
 
   if (FBehavior = Value) then
@@ -818,6 +854,7 @@ end;
 
 
 procedure TMPxpButton.SetGlyphUnchecked(Value: TBitmap);
+
 begin
 
   if (Value <> nil) then
@@ -830,6 +867,7 @@ end;
 
 
 procedure TMPxpButton.SetGlyphChecked(Value: TBitmap);
+
 begin
 
   if (Value <> nil) then
@@ -842,16 +880,18 @@ end;
 
 
 procedure TMPxpButton.SetImages(Value: TCustomImageList);
+
 begin
 
   if (FImages = Value) then
-  Exit;
+    Exit;
   FImages := Value;
   Invalidate;
 end;
 
 
 procedure TMPxpButton.SetImageIndexUnchecked(Value: Integer);
+
 begin
 
   if (FImageIndexUnchecked = Value) then
@@ -862,6 +902,7 @@ end;
 
 
 procedure TMPxpButton.SetImageIndexChecked(Value: Integer);
+
 begin
 
   if (FImageIndexChecked = Value) then
@@ -872,6 +913,7 @@ end;
 
 
 procedure TMPxpButton.SetShowFocusRect(Value: Boolean);
+
 begin
 
   if (FShowFocusRect = Value) then
@@ -882,6 +924,7 @@ end;
 
 
 procedure TMPxpButton.DoCheckedChanged();
+
 begin
 
   if Assigned(FOnCheckedChanged) then
@@ -890,16 +933,18 @@ end;
 
 
 function TMPxpButton.HasStateGlyphs(): Boolean;
+
 begin
 
   Result := (FGlyphUnchecked <> nil) and
-            (FGlyphChecked <> nil) and
-            (not FGlyphUnchecked.Empty) and
-            (not FGlyphChecked.Empty);
+    (FGlyphChecked <> nil) and
+    (not FGlyphUnchecked.Empty) and
+    (not FGlyphChecked.Empty);
 end;
 
 
 function TMPxpButton.GetEffectiveBehavior(): TMPxpButtonBehavior;
+
 begin
 
   if (FBehavior <> bbAuto) then
@@ -922,59 +967,61 @@ begin
 
   // State glyph bitmaps override
   if HasStateGlyphs then
-  begin
+    begin
 
-    if Down then
-      Exit(FGlyphChecked)
-    else
-      Exit(FGlyphUnchecked);
-  end;
+      if Down then
+        Exit(FGlyphChecked)
+      else
+        Exit(FGlyphUnchecked);
+    end;
 
   // ImageList override
   if (FImages <> nil) then
-  begin
+    begin
 
-    if Down then
-      idx := FImageIndexChecked
-    else
-      idx := FImageIndexUnchecked;
+      if Down then
+        idx := FImageIndexChecked
+      else
+        idx := FImageIndexUnchecked;
 
-    if (idx >= 0) then
-      begin
+      if (idx >= 0) then
+        begin
 
-        bmp := TBitmap.Create;
-        bmp.SetSize(FImages.Width, FImages.Height);
-        bmp.Canvas.Brush.Color := FGlyphTPColor;
-        bmp.Canvas.FillRect(Types.Rect(0,
-                                 0,
-                                 bmp.Width,
-                                 bmp.Height));
+          bmp := TBitmap.Create;
+          bmp.SetSize(FImages.Width,
+                      FImages.Height);
+          bmp.Canvas.Brush.Color := FGlyphTPColor;
+          bmp.Canvas.FillRect(Types.Rect(0,
+                                         0,
+                                         bmp.Width,
+                                         bmp.Height));
 
-        bmp.Transparent := True;
-        bmp.TransparentColor := FGlyphTPColor;
+          bmp.Transparent := True;
+          bmp.TransparentColor := FGlyphTPColor;
 
-        FImages.Draw(bmp.Canvas,
-                     0,
-                     0,
-                     idx,
-                     True);
-        Exit(bmp); // owned by caller
-      end;
-  end;
+          FImages.Draw(bmp.Canvas,
+                       0,
+                       0,
+                       idx,
+                       True);
+          Exit(bmp); // owned by caller
+        end;
+    end;
 
   Result := FGlyph;
 end;
 
 
 function TMPxpButton.GetPaintNumGlyphs(): Integer;
+
 begin
 
   if HasStateGlyphs then
     Exit(1);
 
   if (FImages <> nil) and
-     ((FImageIndexUnchecked >= 0) or
-     (FImageIndexChecked >= 0)) then
+    ((FImageIndexUnchecked >= 0) or
+    (FImageIndexChecked >= 0)) then
     Exit(1);
 
   Result := FNumGlyphs;
@@ -983,62 +1030,66 @@ end;
 
 procedure TMPxpButton.Notification(AComponent: TComponent;
                                    Operation: TOperation);
+
 begin
 
   inherited;
 
   if (Operation = opRemove) and (AComponent = FImages) then
-  begin
+    begin
 
-    FImages := nil;
-    Invalidate;
-  end;
+      FImages := nil;
+      Invalidate;
+    end;
 end;
 
 
 procedure TMPxpButton.KeyDown(var Key: Word;
                               Shift: TShiftState);
+
 begin
 
   inherited;
 
   if not Enabled then
-  Exit;
+    Exit;
 
   if (Key = VK_SPACE) or (Key = VK_RETURN) then
-  begin
+    begin
 
-    Click();
-    Key := 0;
-  end;
+      Click();
+      Key := 0;
+    end;
 end;
 
 
 procedure TMPxpButton.DoMouseEnter(var Msg: TLMessage);
+
 begin
 
   inherited;
 
   if Enabled and
-     Visible and
-     (Parent <> nil) and
-     Parent.Showing then
-  begin
+    Visible and
+    (Parent <> nil) and
+    Parent.Showing then
+    begin
 
-    bCursorOnButton := True;
-    FHotTrackStep := cHotTrackSteps;
-    if (FDecTimer <> nil) then
-      FDecTimer.Enabled := False;
+      bCursorOnButton := True;
+      FHotTrackStep := cHotTrackSteps;
+      if (FDecTimer <> nil) then
+        FDecTimer.Enabled := False;
 
-    Invalidate;
+      Invalidate;
 
-    if Assigned(FOnMouseEnter) then
-      FOnMouseEnter(Self);
-  end;
+      if Assigned(FOnMouseEnter) then
+        FOnMouseEnter(Self);
+    end;
 end;
 
 
 procedure TMPxpButton.DoMouseLeave(var Msg: TLMessage);
+
 begin
 
   inherited;
@@ -1054,35 +1105,37 @@ begin
     end;
 
   if Enabled and
-     Visible and
-     (Parent <> nil) and
-     Parent.Showing then
-       if Assigned(FOnMouseExit) then
-         FOnMouseExit(Self);
+    Visible and
+    (Parent <> nil) and
+    Parent.Showing then
+    if Assigned(FOnMouseExit) then
+      FOnMouseExit(Self);
 end;
 
 
 procedure TMPxpButton.DoDialogChar(var Message: TCMDialogChar);
+
 begin
 
   inherited;
 
   // basic '&' accelerator support
   if IsAccel(Message.CharCode,
-     Caption) and
-     Enabled and
-     Visible then
-  begin
+    Caption) and
+    Enabled and
+    Visible then
+    begin
 
-    Click();
-    Message.Result := 1;
-  end;
+      Click();
+      Message.Result := 1;
+    end;
 end;
 
 
 procedure TMPxpButton.MouseDown(Button: TMouseButton;
                                 Shift: TShiftState;
-                                X, Y: Integer);
+                                X,
+                                Y: Integer);
 var
   mode: TMPxpButtonBehavior;
 
@@ -1091,7 +1144,7 @@ begin
   inherited;
 
   if (Button <> mbLeft) then
-  Exit;
+    Exit;
 
   if (TabStop and CanFocus) then
     SetFocus;
@@ -1102,24 +1155,25 @@ begin
     bbPushButton: SetDown(True);
     bbCheckBox: SetDown(not FDown);
     bbRadioButton:
-    begin
+      begin
 
-      if FDown then
-        begin
+        if FDown then
+          begin
 
-          if FAllowAllUp then
-            SetDown(False);
-        end
-      else
-        SetDown(True);
-    end;
+            if FAllowAllUp then
+              SetDown(False);
+          end
+        else
+          SetDown(True);
+      end;
   end;
 end;
 
 
 procedure TMPxpButton.MouseUp(Button: TMouseButton;
                               Shift: TShiftState;
-                              X, Y: Integer);
+                              X,
+                              Y: Integer);
 var
   mode: TMPxpButtonBehavior;
 
@@ -1128,7 +1182,7 @@ begin
   inherited;
 
   if (Button <> mbLeft) then
-  Exit;
+    Exit;
 
   mode := GetEffectiveBehavior();
   if (mode = bbPushButton) then
@@ -1137,6 +1191,7 @@ end;
 
 
 procedure TMPxpButton.WMLButtonDblClk(var Message: TLMLButtonDblClk);
+
 begin
 
   Perform(WM_LBUTTONDOWN,
@@ -1146,6 +1201,7 @@ end;
 
 
 procedure TMPxpButton.WMSize(var Msg: TLMSize);
+
 begin
 
   inherited;
@@ -1155,6 +1211,7 @@ end;
 
 
 procedure TMPxpButton.WMWindowPosChanged(var Msg: TLMWindowPosChanged);
+
 begin
 
   inherited;
@@ -1164,6 +1221,7 @@ end;
 
 
 procedure TMPxpButton.CMParentColorChanged(var Msg: TLMessage);
+
 begin
 
   inherited;
@@ -1175,12 +1233,13 @@ end;
 procedure TMPxpButton.ActionChange(Sender: TObject;
                                    CheckDefaults: Boolean);
 
+
   procedure CopyImage(ImageList: TCustomImageList;
                       Index: Integer);
   begin
 
     if (ImageList = nil) or (Index < 0) then
-    Exit;
+      Exit;
 
     with Glyph do
       begin
@@ -1190,9 +1249,9 @@ procedure TMPxpButton.ActionChange(Sender: TObject;
         Canvas.Brush.Color := clFuchsia;
 
         Canvas.FillRect(Types.Rect(0,
-                             0,
-                             Width,
-                             Height));
+                                   0,
+                                   Width,
+                                   Height));
 
         ImageList.Draw(Canvas,
                        0,
@@ -1219,8 +1278,8 @@ begin
 
       if not CheckDefaults or (not Assigned(Glyph)) then
         if (TCustomAction(Sender).ActionList <> nil) and
-           (TCustomAction(Sender).ActionList.Images <> nil) and
-           (TCustomAction(Sender).ImageIndex >= 0) then
+          (TCustomAction(Sender).ActionList.Images <> nil) and
+          (TCustomAction(Sender).ImageIndex >= 0) then
           CopyImage(TCustomAction(Sender).ActionList.Images,
                     TCustomAction(Sender).ImageIndex);
     end;
@@ -1228,6 +1287,7 @@ end;
 
 
 procedure TMPxpButton.Click();
+
 begin
 
   inherited;
@@ -1235,6 +1295,7 @@ end;
 
 
 procedure TMPxpButton.Paint();
+
 
   procedure PaintParentBackground(ABitmap: TBitmap);
   var
@@ -1244,7 +1305,7 @@ procedure TMPxpButton.Paint();
   begin
 
     if (Parent = nil) then
-    Exit;
+      Exit;
 
     DC := ABitmap.Canvas.Handle;
     SaveIndex := SaveDC(DC);
@@ -1284,7 +1345,7 @@ var
 begin
 
   if (csLoading in ComponentState) then
-  Exit;
+    Exit;
 
   if not (Visible or (csDesigning in ComponentState)) then
     Exit;
@@ -1307,9 +1368,9 @@ begin
 
         bmp.Canvas.Brush.Color := Color;
         bmp.Canvas.FillRect(Types.Rect(0,
-                            0,
-                            Width,
-                            Height));
+                                       0,
+                                       Width,
+                                       Height));
       end;
 
     // Map style/layout to MPxpButtons
@@ -1317,25 +1378,25 @@ begin
 
     case FStyle of
       bsEncarta: aStyle := MPxpButtons.bsEncarta;
-      bsModern:  aStyle := MPxpButtons.bsModern;
-      bsOld:     aStyle := MPxpButtons.bsOld;
-      bsShape:   aStyle := MPxpButtons.bsShape;
+      bsModern: aStyle := MPxpButtons.bsModern;
+      bsOld: aStyle := MPxpButtons.bsOld;
+      bsShape: aStyle := MPxpButtons.bsShape;
       bsQuicken: aStyle := MPxpButtons.bsQuicken;
     end;
 
     aLayout := MPxpButtons.blGlyphLeft;
     case FLayout of
-      blGlyphTop:    aLayout := MPxpButtons.blGlyphTop;
-      blGlyphRight:  aLayout := MPxpButtons.blGlyphRight;
+      blGlyphTop: aLayout := MPxpButtons.blGlyphTop;
+      blGlyphRight: aLayout := MPxpButtons.blGlyphRight;
       blGlyphBottom: aLayout := MPxpButtons.blGlyphBottom;
     end;
 
     paintGlyph := GetPaintGlyph();
     numGlyphs := GetPaintNumGlyphs();
     tmpGlyphOwned := (paintGlyph <> nil) and
-                     (paintGlyph <> FGlyph) and
-                     (paintGlyph <> FGlyphUnchecked) and
-                     (paintGlyph <> FGlyphChecked);
+      (paintGlyph <> FGlyph) and
+      (paintGlyph <> FGlyphUnchecked) and
+      (paintGlyph <> FGlyphChecked);
 
     // Choose base color: allow ColorWhenUp override
     baseColor := Color;
@@ -1373,23 +1434,24 @@ begin
                     FAlignment);
 
     Canvas.Draw(0,
-                0, bmp);
+                0,
+                bmp);
 
     // Focus rectangle
     if FShowFocusRect and
-       TabStop and
-       Focused and
-       Enabled then
-    begin
+      TabStop and
+      Focused and
+      Enabled then
+      begin
 
-      Canvas.Brush.Style := bsClear;
-      Canvas.Pen.Style := psDot;
-      Canvas.Rectangle(2,
-                       2,
-                       Width - 2,
-                       Height - 2);
-      Canvas.Pen.Style := psSolid;
-    end;
+        Canvas.Brush.Style := bsClear;
+        Canvas.Pen.Style := psDot;
+        Canvas.Rectangle(2,
+                         2,
+                         Width - 2,
+                         Height - 2);
+        Canvas.Pen.Style := psSolid;
+      end;
 
   finally
 

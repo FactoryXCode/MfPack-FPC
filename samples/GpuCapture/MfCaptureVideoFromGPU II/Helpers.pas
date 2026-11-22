@@ -70,7 +70,7 @@ interface
 uses
   MfGpuCapture.Platform,
   WinApi.WinApiTypes,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ActiveX.ObjBase,
   {System}
@@ -86,84 +86,110 @@ uses
 
 type
   TGpuCaptureWorker = class(TThread)
+
   private
     FRun: TThreadMethod;
+
   protected
     procedure Execute(); override;
+
   public
     constructor Create(const Run: TThreadMethod);
   end;
 
-  // Utility to check HRESULT
-  procedure CheckHR(hr: HRESULT;
-                    const Context: string = '');
+// Utility to check HRESULT
+procedure CheckHR(hr: HRESULT;
+                  const Context: string = '');
 
-  // Tests if a given resolution is supported by encoder (like CLSID_CMSH265EncoderMFT, CLSID_CMSH264EncoderMFT.264 etc.)
-  // MFVideoFormat should be the same MFVideoFormat codec related to the CLSID of the encoder.
-  // Note: This method is also implemented in WinApi.MediaFoundationApi.MfMetLib.pas from MfPack version 19 and up.
-  function IsResolutionSupported(const CLSIDEncoder: TGUID;  // CLSID of the encoder, like CLSID_CMSH265EncoderMFT
-                                 const MFVideoFormat: TGUID; // MFVideoFormat, like MFVideoFormat_HEVC
-                                 const InputType: TGUID;     // The input type sub format, like MFVideoFormat_NV12
-                                 Width: UInt32;
-                                 Height: UInt32): Boolean;
+// Tests if a given resolution is supported by encoder (like CLSID_CMSH265EncoderMFT, CLSID_CMSH264EncoderMFT.264 etc.)
+// MFVideoFormat should be the same MFVideoFormat codec related to the CLSID of the encoder.
+// Note: This method is also implemented in WinApi.MediaFoundationApi.MfMetLib.pas from MfPack version 19 and up.
+function IsResolutionSupported(const CLSIDEncoder: TGUID;  // CLSID of the encoder, like CLSID_CMSH265EncoderMFT
+  const MFVideoFormat: TGUID; // MFVideoFormat, like MFVideoFormat_HEVC
+  const InputType: TGUID;     // The input type sub format, like MFVideoFormat_NV12
+  Width: UInt32;
+                               Height: UInt32): Boolean;
 
-  // Delphi MulDiv replacement for Int64 types.
-  function _MulDiv64(const aNumber,
-                           aNumerator,
-                           aDenominator: Int64): Int64;
+// Delphi MulDiv replacement for Int64 types.
+function _MulDiv64(const aNumber,
+                   aNumerator,
+                   aDenominator: Int64): Int64;
 
 
-function GpuCounterTime(Counter,Frequency: Int64): Int64;
+function GpuCounterTime(Counter,
+                        Frequency: Int64): Int64;
 procedure PackGpuNV12(const Source: D3D11_MAPPED_SUBRESOURCE;
-                      Width,Height: UINT;
+                      Width,
+                      Height: UINT;
                       Destination: PByte);
 
 implementation
 
-function GpuCounterTime(Counter,Frequency: Int64): Int64;
+
+function GpuCounterTime(Counter,
+                        Frequency: Int64): Int64;
+
 begin
-  if Frequency <= 0 then raise EArgumentException.Create('Invalid counter frequency');
+
+  if (Frequency <= 0) then
+    raise EArgumentException.Create('Invalid counter frequency');
   Result := (Counter div Frequency) * 10000000 +
-            ((Counter mod Frequency) * 10000000) div Frequency;
+    ((Counter mod Frequency) * 10000000) div Frequency;
 end;
 
+
 procedure PackGpuNV12(const Source: D3D11_MAPPED_SUBRESOURCE;
-                      Width,Height: UINT;
+                      Width,
+                      Height: UINT;
                       Destination: PByte);
 var
   Row: UINT;
   Input: PByte;
+
 begin
+
   if (Source.pData = nil) or (Destination = nil) or
-     (Width = 0) or (Height = 0) or
-     ((Width and 1) <> 0) or ((Height and 1) <> 0) or
-     (Source.RowPitch < Width) then
+    (Width = 0) or (Height = 0) or
+    ((Width and 1) <> 0) or ((Height and 1) <> 0) or
+    (Source.RowPitch < Width) then
     raise EArgumentException.Create('Invalid NV12 layout');
   Input := Source.pData;
   for Row := 0 to Height + Height div 2 - 1 do
     begin
-      Move(Input^,Destination^,Width);
-      Inc(Input,Source.RowPitch);
-      Inc(Destination,Width);
+      Move(Input^,
+           Destination^,
+           Width);
+      Inc(Input,
+          Source.RowPitch);
+      Inc(Destination,
+          Width);
     end;
 end;
 
+
 constructor TGpuCaptureWorker.Create(const Run: TThreadMethod);
+
 begin
+
   inherited Create(True);
   FreeOnTerminate := False;
   FRun := Run;
 end;
 
+
 procedure TGpuCaptureWorker.Execute();
 var
   ComResult: HRESULT;
   SavedMask: TFPUExceptionMask;
+
 begin
-  ComResult := CoInitializeEx(nil,COINIT_MULTITHREADED);
-  if FAILED(ComResult) then Exit;
+
+  ComResult := CoInitializeEx(nil,
+                              COINIT_MULTITHREADED);
+  if FAILED(ComResult) then
+    Exit;
   SavedMask := GetExceptionMask();
-  SetExceptionMask([exInvalidOp,exDenormalized,exZeroDivide,exOverflow,exUnderflow,exPrecision]);
+  SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
   try
     FRun();
   finally
@@ -177,17 +203,20 @@ end;
 // Utility to check HRESULT
 procedure CheckHR(hr: HRESULT;
                   const Context: string = '');
+
 begin
+
   if Failed(hr) then
-    raise Exception.CreateFmt('HRESULT 0x%x - %s', [hr,
-                                                    Context]);
+    raise Exception.CreateFmt('HRESULT 0x%x - %s',
+                              [hr,
+      Context]);
 end;
 
 
 function IsResolutionSupported(const CLSIDEncoder: TGUID;  // CLSID of the encoder, like CLSID_CMSH265EncoderMFT
-                               const MFVideoFormat: TGUID; // MFVideoFormat, like MFVideoFormat_HEVC
-                               const InputType: TGUID;     // The input type sub format, like MFVideoFormat_NV12
-                               Width: UInt32;
+  const MFVideoFormat: TGUID; // MFVideoFormat, like MFVideoFormat_HEVC
+  const InputType: TGUID;     // The input type sub format, like MFVideoFormat_NV12
+  Width: UInt32;
                                Height: UInt32): Boolean;
 var
   hr: HRESULT;
@@ -256,9 +285,11 @@ end;
 // If working with Int64, use this method, instead of MulDiv.
 // Note: In later MfPack versions (> version 3.18), this method will be declared in WinApi.MediaFoundationApi.MfUtils.
 function _MulDiv64(const aNumber,
-                         aNumerator,
-                         aDenominator: Int64): Int64;
+                   aNumerator,
+                   aDenominator: Int64): Int64;
+
 begin
+
   if (aDenominator <= 0) then
     Exit(0);
 

@@ -67,7 +67,7 @@ interface
 
 uses
   MfCapturePlatform,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   {System}
@@ -85,6 +85,7 @@ uses
 type
 
   TFileCapture = class(TInterfacedPersistent)
+
   private
 
     FAccuracy: Double;
@@ -144,6 +145,7 @@ type
 
     function SampleWithinTolerance(ARequestedTime: TTimeSpan;
                                    AActualTime: TTimeSpan): Boolean;
+
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -190,10 +192,12 @@ uses
   Graphics;
 
 
-{ TFileCapture }
+  { TFileCapture }
 
 constructor TFileCapture.Create;
+
 begin
+
   Inherited;
   ResetVariables;
   FSampleConverter := TSampleConverter.Create;
@@ -201,7 +205,9 @@ end;
 
 
 destructor TFileCapture.Destroy;
+
 begin
+
   // Would FeeAndNil be an option?  Tony: I think so .. I'll try out And Yes it does.
   CloseSource;
   FreeAndNil(FSampleConverter);
@@ -210,29 +216,35 @@ end;
 
 
 procedure TFileCapture.CancelCapture;
+
 begin
+
   Flush;
 end;
 
 
 procedure TFileCapture.CloseSource;
+
 begin
+
   if SourceOpen then
-  begin
-    Flush;
-    Log('Destroy source reader - Begin',
-        ltInfo);
-    SafeRelease(FSourceReader);
-    Log('Destroy source reader - End',
-        ltInfo);
-  end;
+    begin
+      Flush;
+      Log('Destroy source reader - Begin',
+          ltInfo);
+      SafeRelease(FSourceReader);
+      Log('Destroy source reader - End',
+          ltInfo);
+    end;
 
   ResetVariables;
 end;
 
 
 procedure TFileCapture.ResetVariables;
+
 begin
+
   FVideoInfo.Reset;
   FAwaitingFlush := False;
   FRequestedTime := TTimeSpan.Zero;
@@ -251,19 +263,19 @@ var
 
 begin
 
-{$IF 0=1}
+  {$IF 0=1}
   oBitmap := TBitmap.Create(FVideoInfo.iVideoWidth,
                             FVideoInfo.iVideoHeight);
-{$ELSE}
+  {$ELSE}
   oBitmap := TBitmap.Create();
   oBitmap.Width := VideoInfo.iVideoWidth;
   oBitmap.Height := VideoInfo.iVideoHeight;
-{$ENDIF}
+  {$ENDIF}
 
   if SampleConverter.BitmapFromSample(ASample,
-                                      VideoInfo,
-                                      sError,
-                                      oBitmap) then
+    VideoInfo,
+    sError,
+    oBitmap) then
     begin
       if Assigned(OnFrameFound) then
         OnFrameFound(oBitmap,
@@ -281,19 +293,25 @@ end;
 
 
 procedure TFileCapture.Flush;
+
 begin
+
   FAwaitingFlush := True;
 end;
 
 
 function TFileCapture.GetAccuracy: Double;
+
 begin
+
   Result := FAccuracy;
 end;
 
 
 procedure TFileCapture.RequestFrame(APosition: TTimeSpan);
+
 begin
+
   FFramesSkipped := 0;
   FRequestedTime := APosition;
   SetPosition(APosition);
@@ -301,36 +319,49 @@ end;
 
 
 procedure TFileCapture.SetAccuracy(const AValue: Double);
+
 begin
+
   FAccuracy := AValue;
 end;
 
 
 function TFileCapture.GetMaxFramesToSkip: Integer;
+
 begin
+
   Result := FMaxFramesToSkip;
 end;
 
 
 function TFileCapture.GetSourceOpen: Boolean;
+
 begin
+
   Result := Assigned(FSourceReader);
 end;
 
 
 procedure TFileCapture.HandleFlushComplete;
+
 begin
+
   FAwaitingFlush := False;
 end;
 
+
 procedure TFileCapture.HandleFrameSkipped;
+
 begin
+
   inc(FFramesSkipped);
 end;
 
 
 procedure TFileCapture.HandleMediaFormatChanged;
+
 begin
+
   GetVideoFormat(True);
   FSourceReader.SetStreamSelection(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
                                    True);
@@ -342,6 +373,7 @@ var
   sError: string;
 
 begin
+
   case AResult of
     E_POINTER:
       sError := 'Object not initialized.';
@@ -353,17 +385,20 @@ begin
       sError := 'A flush operation is pending';
     E_INVALIDARG:
       sError := 'Invalid argument.';
-  else
-    sError := 'Unknown error';
+    else
+      sError := 'Unknown error';
   end;
 
-  Log('ReadSample call failed: ' + sError, ltError);
+  Log('ReadSample call failed: ' + sError,
+      ltError);
 end;
 
 
 procedure TFileCapture.Log(const AMessage: string;
                            const AType: TLogType);
+
 begin
+
   if Assigned(FOnLog) then
     FOnLog(AMessage,
            AType);
@@ -371,13 +406,17 @@ end;
 
 
 procedure TFileCapture.ConfigureSourceReader(const AAttributes: IMFAttributes);
+
 begin
+
   // Override if the capture method needs to configure IMFAttributes.
 end;
 
 
 function TFileCapture.OpenSource(const AURL: string): Boolean;
+
 begin
+
   CloseSource;
   FURL := '';
 
@@ -387,20 +426,22 @@ begin
     begin
       Result := CreateSourceReader(AURL);
 
-    if Result then
-      begin
-        Result := SelectVideoStream and GetVideoFormat(False);
+      if Result then
+        begin
+          Result := SelectVideoStream and GetVideoFormat(False);
 
-        if Result then
-          begin
-            UpdateCapabilities;
-            FDuration := GetDuration;
-            FURL := AURL;
-          end;
-      end;
+          if Result then
+            begin
+              UpdateCapabilities;
+              FDuration := GetDuration;
+              FURL := AURL;
+            end;
+        end;
     end
   else
-    Log(Format('File does not exist: "%s"', [AURL]), ltError);
+    Log(Format('File does not exist: "%s"',
+               [AURL]),
+        ltError);
 end;
 
 
@@ -412,13 +453,15 @@ var
   pInputType: IMFMediaType;
 
 begin
-  Result := SUCCEEDED(FSourceReader.GetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM,@pInputType));
+
+  Result := SUCCEEDED(FSourceReader.GetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+                                                        @pInputType));
 
   if Result and SUCCEEDED(pInputType.GetGUID(MF_MT_SUBTYPE,
-                                             oSubType)) then
+    oSubType)) then
     begin
       // Make sure it is RGB 32
-      if IsEqualGUID(oSubType,MFVideoFormat_RGB32) then
+      if IsEqualGUID(oSubType, MFVideoFormat_RGB32) then
         begin
           Result := SUCCEEDED(MFGetAttributeSize(pInputType,
                                                  MF_MT_FRAME_SIZE,
@@ -438,10 +481,13 @@ begin
                 end;
             end;
 
-          FVideoInfo.iStride := Integer(MFGetAttributeUINT32(pInputType,MF_MT_DEFAULT_STRIDE,DWORD(FVideoInfo.iVideoWidth*4)));
+          FVideoInfo.iStride := Integer(MFGetAttributeUINT32(pInputType,
+                                                             MF_MT_DEFAULT_STRIDE,
+                                                             DWORD(FVideoInfo.iVideoWidth * 4)));
         end
       else
-        Log('GetVideoFormat. Video is not RGB 32 format', ltError);
+        Log('GetVideoFormat. Video is not RGB 32 format',
+            ltError);
     end;
 end;
 
@@ -451,6 +497,7 @@ var
   pMediaType: IMFMediaType;
 
 begin
+
   // Configure the source reader to give us progressive RGB32 frames.
   Result := SUCCEEDED(MFCreateMediaType(pMediaType));
 
@@ -483,6 +530,7 @@ var
   oAttributes: IMFAttributes;
 
 begin
+
   // Configure the source reader to perform video processing.
   Result := SUCCEEDED(MFCreateAttributes(oAttributes,
                                          1));
@@ -501,7 +549,8 @@ begin
     end;
 
   if not Result then
-    Log('Failed to create source reader for frame capture', ltError);
+    Log('Failed to create source reader for frame capture',
+        ltError);
 end;
 
 
@@ -511,29 +560,31 @@ var
   oPropVar: PROPVARIANT;
 
 begin
+
   FSupportsSeek := False;
   Result := SourceOpen;
 
   if Result then
     begin
       PropVariantInit(oPropVar);
-try
-      Result := SUCCEEDED(FSourceReader.GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
-                                                                 MF_SOURCE_READER_MEDIASOURCE_CHARACTERISTICS,
-                                                                 oPropVar));
+      try
+        Result := SUCCEEDED(FSourceReader.GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
+                                                                   MF_SOURCE_READER_MEDIASOURCE_CHARACTERISTICS,
+                                                                   oPropVar));
 
-      if Result then
-        begin
-          Result := SUCCEEDED(PropVariantToUInt32(oPropVar,
-                                                  oFlags));
-          if Result then
-            FSupportsSeek := (oFlags and MFMEDIASOURCE_CAN_SEEK) = MFMEDIASOURCE_CAN_SEEK;
-        end
-      else
-        Log('GetPresentationAttribute failed', ltError);
-finally
-  PropVariantClear(oPropVar);
-end;
+        if Result then
+          begin
+            Result := SUCCEEDED(PropVariantToUInt32(oPropVar,
+                                                    oFlags));
+            if Result then
+              FSupportsSeek := ((oFlags and MFMEDIASOURCE_CAN_SEEK) = MFMEDIASOURCE_CAN_SEEK);
+          end
+        else
+          Log('GetPresentationAttribute failed',
+              ltError);
+      finally
+        PropVariantClear(oPropVar);
+      end;
     end;
 end;
 
@@ -543,22 +594,23 @@ var
   oPropVar: PROPVARIANT;
 
 begin
+
   Result := TTimeSpan.Zero;
 
   if SourceOpen then
     begin
       PropVariantInit(oPropVar);
-try
-      if SUCCEEDED(FSourceReader.GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
-                                                          MF_PD_DURATION,
-                                                          oPropVar)) and (oPropVar.vt = VT_UI8)
-      then
-        Result := TTimeSpan.Create(oPropVar.hVal.QuadPart)
-      else
-        Log('GetDuration failed', ltError);
-finally
-      PropVariantClear(oPropVar);
-end;
+      try
+        if SUCCEEDED(FSourceReader.GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
+          MF_PD_DURATION,
+          oPropVar)) and (oPropVar.vt = VT_UI8) then
+          Result := TTimeSpan.Create(oPropVar.hVal.QuadPart)
+        else
+          Log('GetDuration failed',
+              ltError);
+      finally
+        PropVariantClear(oPropVar);
+      end;
     end;
 end;
 
@@ -568,13 +620,15 @@ var
   oStartPropVar: PROPVARIANT;
 
 begin
+
   Result := SourceOpen;
 
   if Result then
     begin
       Log(Format('Setting source position: %s',
-                [TimeSpanToDisplay(APosition, True)]),
-                ltInfo);
+                 [TimeSpanToDisplay(APosition,
+                                    True)]),
+          ltInfo);
 
       PropVariantInit(oStartPropVar);
       try
@@ -586,9 +640,9 @@ begin
         PropVariantClear(oStartPropVar);
       end;
 
-    if not Result then
-      Log('Failed to set position',
-          ltError);
+      if not Result then
+        Log('Failed to set position',
+            ltError);
     end
   else
     Log('Failed to set position - Source is not open.',
@@ -598,21 +652,27 @@ end;
 
 function TFileCapture.SampleWithinTolerance(ARequestedTime: TTimeSpan;
                                             AActualTime: TTimeSpan): Boolean;
+
 begin
-  Result := CompareValue(ARequestedTime.TotalMilliseconds,
-                         AActualTime.TotalMilliseconds,
-                         Accuracy) = EqualsValue;
+
+  Result := (CompareValue(ARequestedTime.TotalMilliseconds,
+                          AActualTime.TotalMilliseconds,
+                          Accuracy) = EqualsValue);
 end;
 
 
 procedure TFileCapture.ResetFramesSkipped;
+
 begin
+
   FMaxFramesToSkip := 0;
 end;
 
 
 procedure TFileCapture.SetMaxFramesToSkip(const AValue: Integer);
+
 begin
+
   FMaxFramesToSkip := AValue;
 end;
 

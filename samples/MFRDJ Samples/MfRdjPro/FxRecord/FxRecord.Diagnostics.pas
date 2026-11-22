@@ -67,13 +67,12 @@ interface
 
 uses
   FxProxy.Platform,
-{Winapi}
+  {Winapi}
   Windows,
   {System}
   Classes,
   SysUtils,
   SyncObjs;
-
 
 type
 
@@ -93,6 +92,7 @@ type
 
   // Independent sampling continues even when the recording monitor is blocked.
   TFxRecordDiagnostics = class(TThread)
+
   private
     FStop: TEvent;
     FLock: SyncObjs.TCriticalSection;
@@ -115,14 +115,14 @@ type
   end;
 
 
-  function GetTickCount64(): UInt64; stdcall;
+function GetTickCount64(): UInt64; stdcall;
 
-  function GetProcessMemoryInfo(Process: THandle;
-                                var Counters: TFxMemoryCounters;
-                                Size: DWORD): BOOL; stdcall;
+function GetProcessMemoryInfo(Process: THandle;
+                              var Counters: TFxMemoryCounters;
+                              Size: DWORD): BOOL; stdcall;
 
-  function GetProcessHandleCount(Process: THandle;
-                                 var Count: DWORD): BOOL; stdcall;
+function GetProcessHandleCount(Process: THandle;
+                               var Count: DWORD): BOOL; stdcall;
 
 
 implementation
@@ -136,13 +136,13 @@ uses
   {Application}
   FxRecord.Log;
 
-
 const
   Kernel32Lib = 'kernel32.dll';
   PsApiLib = 'psapi.dll';
 
 
 function FileTimeValue(const AValue: TFileTime): UInt64;
+
 begin
 
   Result := (UInt64(AValue.dwHighDateTime) shl 32) or AValue.dwLowDateTime;
@@ -168,12 +168,12 @@ begin
     Entry.dwSize := SizeOf(Entry);
 
     if Thread32First(Snapshot,
-                     Entry) then
+      Entry) then
       repeat
         if (Entry.th32OwnerProcessID = GetCurrentProcessId) then
           Inc(Result);
       until not Thread32Next(Snapshot,
-                             Entry);
+          Entry);
 
   finally
     CloseHandle(Snapshot);
@@ -182,6 +182,7 @@ end;
 
 
 constructor TFxRecordDiagnostics.Create(const ALogFileName: string);
+
 begin
 
   inherited Create(True);
@@ -202,6 +203,7 @@ end;
 
 
 destructor TFxRecordDiagnostics.Destroy();
+
 begin
 
   Stop();
@@ -215,6 +217,7 @@ end;
 
 
 procedure TFxRecordDiagnostics.Stop();
+
 begin
 
   Terminate;
@@ -223,6 +226,7 @@ end;
 
 
 procedure TFxRecordDiagnostics.SetActivity(const AActivity: string);
+
 begin
 
   FLock.Acquire;
@@ -251,19 +255,19 @@ begin
       begin
         Stream := TFileStream.Create(Name,
                                      fmOpenRead or fmShareDenyNone);
-      try
-        if (Stream.Size < 10 * 1024 * 1024) then
-          Name := '';
+        try
+          if (Stream.Size < 10 * 1024 * 1024) then
+            Name := '';
 
-      finally
-        Stream.Free;
-      end;
+        finally
+          Stream.Free;
+        end;
 
-      if (Name <> '') then
-        if not MoveFileExW(PChar(Name),
-                          PChar(Name + '.previous'),
-                          MOVEFILE_REPLACE_EXISTING) then
-          Exit;
+        if (Name <> '') then
+          if not MoveFileExW(PChar(Name),
+            PChar(Name + '.previous'),
+            MOVEFILE_REPLACE_EXISTING) then
+            Exit;
       end;
 
     AppendFxRecordLog(FLogConfig,
@@ -327,96 +331,98 @@ begin
                      [GetCurrentProcessId, Info.dwNumberOfProcessors, FxParamStr(0), DateTimeToStr(TFile.GetLastWriteTime(FxParamStr(0)))]));
 
   while not Terminated do
-  begin
-    try
-      Tick := GetTickCount64();
+    begin
+      try
+        Tick := GetTickCount64();
 
-      if GetProcessTimes(GetCurrentProcess,
-                         Created,
-                         Exited,
-                         Kernel,
-                         UserTime) and
-         FxGetSystemTimes(Idle,
-                                       SysKernel,
-                                       SysUser) then
-      begin
-        ProcessTime := FileTimeValue(Kernel) + FileTimeValue(UserTime);
-        SystemTime := FileTimeValue(SysKernel) + FileTimeValue(SysUser);
-        IdleTime := FileTimeValue(Idle);
-
-        if (PrevTick <> 0) and (Tick > PrevTick) and (SystemTime > PrevSystem) then
+        if GetProcessTimes(GetCurrentProcess,
+          Created,
+          Exited,
+          Kernel,
+          UserTime) and
+          FxGetSystemTimes(Idle,
+                           SysKernel,
+                           SysUser) then
           begin
-            CPU := 100.0 * (ProcessTime - PrevProcess) / ((Tick - PrevTick) * 10000.0 * Info.dwNumberOfProcessors);
-            SystemCPU := 100.0 * (1.0 - (IdleTime - PrevIdle) / (SystemTime - PrevSystem));
+            ProcessTime := FileTimeValue(Kernel) + FileTimeValue(UserTime);
+            SystemTime := FileTimeValue(SysKernel) + FileTimeValue(SysUser);
+            IdleTime := FileTimeValue(Idle);
 
-            FillChar(Memory,
-                     SizeOf(Memory),
-                     0);
+            if (PrevTick <> 0) and (Tick > PrevTick) and (SystemTime > PrevSystem) then
+              begin
+                CPU := 100.0 * (ProcessTime - PrevProcess) / ((Tick - PrevTick) * 10000.0 * Info.dwNumberOfProcessors);
+                SystemCPU := 100.0 * (1.0 - (IdleTime - PrevIdle) / (SystemTime - PrevSystem));
 
-          Memory.cb := SizeOf(Memory);
-          MemoryOK := GetProcessMemoryInfo(GetCurrentProcess,
-                                           Memory,
-                                           SizeOf(Memory));
-          High := (CPU >= 70.0);
-          FLock.Acquire;
+                FillChar(Memory,
+                         SizeOf(Memory),
+                         0);
 
-          try
-            Activity := FActivity;
-            ActivityTick := FActivityTick;
-          finally
-            FLock.Release;
+                Memory.cb := SizeOf(Memory);
+                MemoryOK := GetProcessMemoryInfo(GetCurrentProcess,
+                                                 Memory,
+                                                 SizeOf(Memory));
+                High := (CPU >= 70.0);
+                FLock.Acquire;
+
+                try
+                  Activity := FActivity;
+                  ActivityTick := FActivityTick;
+                finally
+                  FLock.Release;
+                end;
+
+                // The activity can be updated after the CPU sample timestamp.
+                if (Tick >= ActivityTick) then
+                  MonitorAge := Tick - ActivityTick
+                else
+                  MonitorAge := 0;
+
+                Stalled := (MonitorAge >= 5000);
+
+                if (LastLog = 0) or
+                  (Tick - LastLog >= 60000) or
+                  (High <> WasHigh) or
+                  (High and (Tick - LastLog >= 15000)) or
+                  (Stalled <> WasStalled) or
+                  (Stalled and (Tick - LastLog >= 15000)) or
+                  (MemoryOK and (Memory.PrivateUsage > LastPrivate) and
+                  (Memory.PrivateUsage - LastPrivate >= 64 * 1024 * 1024)) then
+                  begin
+                    Handles := 0;
+
+                    GetProcessHandleCount(GetCurrentProcess,
+                                          Handles);
+
+                    WriteSample(Format('cpu=%.1f%% systemCPU=%.1f%% privateMB=%.1f workingSetMB=%.1f peakWorkingSetMB=%.1f memoryValid=%s threads=%d handles=%d monitorAgeMs=%d activity=%s',
+                                       [CPU, SystemCPU, Memory.PrivateUsage / 1048576.0,
+                      Memory.WorkingSetSize / 1048576.0, Memory.PeakWorkingSetSize / 1048576.0,
+                      BoolToStr(MemoryOK,
+                                True), ProcessThreadCount, Handles, Int64(MonitorAge), Activity]));
+                    LastLog := Tick;
+
+                    if MemoryOK then
+                      LastPrivate := Memory.PrivateUsage;
+                  end;
+
+                WasHigh := High;
+                WasStalled := Stalled;
+
+              end;
+
+            PrevProcess := ProcessTime;
+            PrevIdle := IdleTime;
+            PrevSystem := SystemTime;
+            PrevTick := Tick;
+
           end;
-
-          // The activity can be updated after the CPU sample timestamp.
-          if (Tick >= ActivityTick) then
-            MonitorAge := Tick - ActivityTick
-          else
-            MonitorAge := 0;
-
-          Stalled := (MonitorAge >= 5000);
-
-          if (LastLog = 0) or
-             (Tick - LastLog >= 60000) or
-             (High <> WasHigh) or
-             (High and (Tick - LastLog >= 15000)) or
-             (Stalled <> WasStalled) or
-             (Stalled and (Tick - LastLog >= 15000)) or
-             (MemoryOK and (Memory.PrivateUsage > LastPrivate) and
-              (Memory.PrivateUsage - LastPrivate >= 64 * 1024 * 1024)) then
-          begin
-            Handles := 0;
-
-            GetProcessHandleCount(GetCurrentProcess,
-                                  Handles);
-
-            WriteSample(Format('cpu=%.1f%% systemCPU=%.1f%% privateMB=%.1f workingSetMB=%.1f peakWorkingSetMB=%.1f memoryValid=%s threads=%d handles=%d monitorAgeMs=%d activity=%s',
-                               [CPU, SystemCPU, Memory.PrivateUsage / 1048576.0,
-                                Memory.WorkingSetSize / 1048576.0, Memory.PeakWorkingSetSize / 1048576.0,
-                                BoolToStr(MemoryOK, True), ProcessThreadCount, Handles, Int64(MonitorAge), Activity]));
-            LastLog := Tick;
-
-            if MemoryOK then
-              LastPrivate := Memory.PrivateUsage;
-          end;
-
-          WasHigh := High;
-          WasStalled := Stalled;
-
-        end;
-
-        PrevProcess := ProcessTime;
-        PrevIdle := IdleTime;
-        PrevSystem := SystemTime;
-        PrevTick := Tick;
-
+      except
+        on E: Exception do
+          WriteSample('Sampling failed: ' + E.ClassName + ': ' + E.Message);
       end;
-    except
-      on E: Exception do WriteSample('Sampling failed: ' + E.ClassName + ': ' + E.Message);
-    end;
 
-    if (FStop.WaitFor(5000) = wrSignaled) then
-      Break;
-  end;
+      if (FStop.WaitFor(5000) = wrSignaled) then
+        Break;
+    end;
 
   WriteSample('Diagnostics stopped.');
 end;
@@ -426,11 +432,10 @@ end;
 
 {$WARN SYMBOL_PLATFORM OFF}
 
-function GetTickCount64;        external Kernel32Lib name 'GetTickCount64' ;
-function GetProcessHandleCount; external Kernel32Lib name 'GetProcessHandleCount' ;
-function GetProcessMemoryInfo;  external PsApiLib name 'GetProcessMemoryInfo' ;
+function GetTickCount64; external Kernel32Lib name 'GetTickCount64';
+function GetProcessHandleCount; external Kernel32Lib name 'GetProcessHandleCount';
+function GetProcessMemoryInfo; external PsApiLib name 'GetProcessMemoryInfo';
 
 {$WARN SYMBOL_PLATFORM ON}
 
 end.
-

@@ -64,11 +64,12 @@ unit frmMasterFxRack;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -206,8 +207,11 @@ type
     procedure chkLimiterEnableClick(Sender: TObject);
     procedure tbLimiterCeilingDbChange(Sender: TObject);
     procedure tbLimiterReleaseMsChange(Sender: TObject);
-    procedure tbLimiterLookaheadMsMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure tbLimiterLookaheadMsMouseUp(Sender: TObject;
+                                          Button: TMouseButton;
+                                          Shift: TShiftState;
+                                          X,
+                                          Y: Integer);
     procedure chkRmsDetectorClick(Sender: TObject);
     procedure chkTruePeakGuardClick(Sender: TObject);
     procedure tbTruePeakCeilingDbTPChange(Sender: TObject);
@@ -274,7 +278,9 @@ implementation
 uses
   frmMainMDI;
 
+
 procedure TfrmMasterFxRack.FormCreate(Sender: TObject);
+
 begin
 
   FormStyle := fsMDIChild;
@@ -282,6 +288,7 @@ end;
 
 
 procedure TfrmMasterFxRack.FormDestroy(Sender: TObject);
+
 begin
 
   FMasterEq := nil;
@@ -292,14 +299,16 @@ end;
 
 
 procedure TfrmMasterFxRack.FormShow(Sender: TObject);
+
 begin
 
   // No form caption
   SetWindowLong(Handle,
                 GWL_STYLE,
-                GetWindowLong(Handle, GWL_STYLE) and not WS_CAPTION or WS_BORDER);
+                GetWindowLong(Handle,
+                              GWL_STYLE) and not WS_CAPTION or WS_BORDER);
   //Height := 1538;
- // Width := 722 - 10;
+  // Width := 722 - 10;
   // Set the MasterEq on top.
   pnlEQ.BringToFront;
 end;
@@ -307,6 +316,7 @@ end;
 
 // EQ
 procedure TfrmMasterFxRack.LoadEqFromEffect();
+
 begin
 
   if not Assigned(FMasterEq) then
@@ -331,6 +341,7 @@ end;
 
 // Flanger/Echo
 procedure TfrmMasterFxRack.LoadFlangerFromEffect();
+
 begin
 
   if not Assigned(FMasterFlangerEcho) then
@@ -355,6 +366,7 @@ end;
 
 // Compressor/Limiter
 procedure TfrmMasterFxRack.LoadCompFromEffect();
+
 begin
 
   if not Assigned(FMasterCompLim) then
@@ -390,8 +402,8 @@ begin
       2: cbTruePeakOversample.ItemIndex := 0;
       4: cbTruePeakOversample.ItemIndex := 1;
       8: cbTruePeakOversample.ItemIndex := 2;
-    else
-      cbTruePeakOversample.ItemIndex := 1;
+      else
+        cbTruePeakOversample.ItemIndex := 1;
     end;
 
   finally
@@ -403,6 +415,7 @@ end;
 
 
 procedure TfrmMasterFxRack.SaveEqToEffect();
+
 begin
 
   if not CanWriteToEffect(FMasterEq) then
@@ -418,6 +431,7 @@ end;
 
 
 procedure TfrmMasterFxRack.SaveFlangerToEffect();
+
 begin
 
   if not CanWriteToEffect(FMasterFlangerEcho) then
@@ -436,6 +450,7 @@ end;
 
 
 procedure TfrmMasterFxRack.SaveCompToEffect();
+
 begin
 
   if not CanWriteToEffect(FMasterCompLim) then
@@ -472,6 +487,7 @@ procedure TfrmMasterFxRack.BindMasterFx(AMasterRack: TMfWasApiEffectsRack;
                                         AMasterEq: TMfLowMidHighEqEffect;
                                         AMasterFlangerEcho: TMfFlangerEchoEffect;
                                         AMasterCompLim: TMfCompressorLimiterEffect);
+
 begin
 
   FMasterRack := AMasterRack;
@@ -484,6 +500,7 @@ end;
 
 
 procedure TfrmMasterFxRack.LoadGuiFromEffects();
+
 begin
 
   FUpdatingGui := True;
@@ -510,13 +527,16 @@ end;
 // EQ --------------------------------------------------------------------------
 
 procedure TfrmMasterFxRack.btnEQClick(Sender: TObject);
+
 begin
+
   //
   pnlEQ.BringToFront;
 end;
 
 
 procedure TfrmMasterFxRack.chkEqEnableClick(Sender: TObject);
+
 begin
 
   if not CanWriteToEffect(FMasterEq) then
@@ -527,6 +547,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbHighGainDbChange(Sender: TObject);
+
 begin
 
   SaveEqToEffect();
@@ -534,6 +555,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbHighGainDbDblClick(Sender: TObject);
+
 begin
 
   tbHighGainDb.AnimateTrackBarToPosition(0,
@@ -542,6 +564,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbMidGainDbChange(Sender: TObject);
+
 begin
 
   SaveEqToEffect();
@@ -549,6 +572,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbMidGainDbDblClick(Sender: TObject);
+
 begin
 
   tbMidGainDb.AnimateTrackBarToPosition(0,
@@ -557,6 +581,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbLowGainDbChange(Sender: TObject);
+
 begin
 
   SaveEqToEffect();
@@ -564,6 +589,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbLowGainDbDblClick(Sender: TObject);
+
 begin
 
   tbLowGainDb.AnimateTrackBarToPosition(0,
@@ -572,6 +598,7 @@ end;
 
 
 procedure TfrmMasterFxRack.UpdateGainLabels();
+
 begin
 
   lblLowValue.Caption := FormatFloat('0 dB',
@@ -588,13 +615,16 @@ end;
 // Flanger/Echo ----------------------------------------------------------------
 
 procedure TfrmMasterFxRack.btnFlangerEchoClick(Sender: TObject);
+
 begin
+
   //
   pnlFlangerEcho.BringToFront;
 end;
 
 
 procedure TfrmMasterFxRack.btnMinimizeClick(Sender: TObject);
+
 begin
 
   MainMDIFrm.btnEffects.Click;
@@ -602,6 +632,7 @@ end;
 
 
 procedure TfrmMasterFxRack.chkFlangerEnableClick(Sender: TObject);
+
 begin
 
   if not CanWriteToEffect(FMasterFlangerEcho) then
@@ -613,6 +644,7 @@ end;
 // Sliders
 
 procedure TfrmMasterFxRack.tbBaseDelayMsChange(Sender: TObject);
+
 begin
 
   SaveFlangerToEffect();
@@ -620,6 +652,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbDepthMsChange(Sender: TObject);
+
 begin
 
   SaveFlangerToEffect();
@@ -627,6 +660,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbRateHzChange(Sender: TObject);
+
 begin
 
   SaveFlangerToEffect();
@@ -634,6 +668,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbFeedbackChange(Sender: TObject);
+
 begin
 
   SaveFlangerToEffect();
@@ -641,6 +676,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbWetChange(Sender: TObject);
+
 begin
 
   SaveFlangerToEffect();
@@ -649,6 +685,7 @@ end;
 
 
 procedure TfrmMasterFxRack.btnPresetFlangerClick(Sender: TObject);
+
 begin
 
   if not CanWriteToEffect(FMasterFlangerEcho) then
@@ -668,6 +705,7 @@ end;
 
 
 procedure TfrmMasterFxRack.btnPresetEchoClick(Sender: TObject);
+
 begin
 
   if not CanWriteToEffect(FMasterFlangerEcho) then
@@ -687,6 +725,7 @@ end;
 
 
 procedure TfrmMasterFxRack.UpdateFlangerEchoValueLabels();
+
 begin
 
   lblBaseDelayValue.Caption := Format('%d ms',
@@ -711,13 +750,16 @@ end;
 // Compressor ------------------------------------------------------------------
 
 procedure TfrmMasterFxRack.btnCompressorLimiterClick(Sender: TObject);
+
 begin
+
   //
   pnlCompressorLimiter.BringToFront;
 end;
 
 
 procedure TfrmMasterFxRack.chkCompEnableClick(Sender: TObject);
+
 begin
 
   if not CanWriteToEffect(FMasterCompLim) then
@@ -728,6 +770,7 @@ end;
 
 // Sliders ------------
 procedure TfrmMasterFxRack.tbThresholdDbChange(Sender: TObject);
+
 begin
 
   SaveCompToEffect();
@@ -735,6 +778,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbRatioChange(Sender: TObject);
+
 begin
 
   SaveCompToEffect();
@@ -742,6 +786,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbMakeupDbChange(Sender: TObject);
+
 begin
 
   SaveCompToEffect();
@@ -749,6 +794,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbAttackMsChange(Sender: TObject);
+
 begin
 
   SaveCompToEffect();
@@ -756,6 +802,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbReleaseMsChange(Sender: TObject);
+
 begin
 
   SaveCompToEffect();
@@ -763,6 +810,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbKneeDbChange(Sender: TObject);
+
 begin
 
   SaveCompToEffect();
@@ -770,6 +818,7 @@ end;
 // Sliders end ---------------------
 
 procedure TfrmMasterFxRack.chkAutoMakeupClick(Sender: TObject);
+
 begin
 
   SaveCompToEffect();
@@ -777,6 +826,7 @@ end;
 
 
 procedure TfrmMasterFxRack.UpdateCompLimValueLabels();
+
 begin
 
   lblThresholdValue.Caption := Format('%d ms',
@@ -818,6 +868,7 @@ end;
 // Limiter ---------------------------------------------------------------------
 
 procedure TfrmMasterFxRack.chkLimiterEnableClick(Sender: TObject);
+
 begin
 
   if not CanWriteToEffect(FMasterCompLim) then
@@ -828,6 +879,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbLimiterCeilingDbChange(Sender: TObject);
+
 begin
 
   if not CanWriteToEffect(FMasterCompLim) then
@@ -838,6 +890,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbLimiterReleaseMsChange(Sender: TObject);
+
 begin
 
   if not CanWriteToEffect(FMasterCompLim) then
@@ -848,13 +901,20 @@ end;
 
 
 procedure TfrmMasterFxRack.tbLimiterLookaheadMsChange(Sender: TObject);
+
 begin
 
-  lblLookaheadValue.Caption := Format('%d ms', [tbLimiterLookaheadMs.Position]);
+  lblLookaheadValue.Caption := Format('%d ms',
+                                      [tbLimiterLookaheadMs.Position]);
 end;
 
+
 procedure TfrmMasterFxRack.tbLimiterLookaheadMsMouseUp(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                                       Button: TMouseButton;
+                                                       Shift: TShiftState;
+                                                       X,
+                                                       Y: Integer);
+
 begin
 
   SaveCompToEffect();
@@ -865,6 +925,7 @@ end;
 // Detector / True Peak --------------------------------------------------------
 
 procedure TfrmMasterFxRack.chkRmsDetectorClick(Sender: TObject);
+
 begin
 
   SaveCompToEffect();
@@ -872,6 +933,7 @@ end;
 
 
 procedure TfrmMasterFxRack.chkTruePeakGuardClick(Sender: TObject);
+
 begin
 
   SaveCompToEffect();
@@ -879,6 +941,7 @@ end;
 
 
 procedure TfrmMasterFxRack.tbTruePeakCeilingDbTPChange(Sender: TObject);
+
 begin
 
   SaveCompToEffect();
@@ -886,6 +949,7 @@ end;
 
 
 procedure TfrmMasterFxRack.cbTruePeakOversampleChange(Sender: TObject);
+
 begin
 
   SaveCompToEffect();
@@ -895,6 +959,7 @@ end;
 
 // Set all compressor/limiter values to default.
 procedure TfrmMasterFxRack.btnSetDefaultsClick(Sender: TObject);
+
 begin
 
   chkCompEnable.Checked := True;
@@ -926,6 +991,7 @@ end;
 // Comp/lim --------------------------------------------------------------------
 
 function TfrmMasterFxRack.RatioToTrackBar(ARatio: Single): Integer;
+
 begin
 
   if (ARatio < 1.0) then
@@ -948,6 +1014,7 @@ end;
 
 // All
 function TfrmMasterFxRack.CanWriteToEffect(const AComp: TMfWasApiFxComponentBase): Boolean;
+
 begin
 
   Result := False;

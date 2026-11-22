@@ -158,7 +158,7 @@ type
   end;
 
 
-  function GetDefaultEqTuning(): TEqTuning;
+function GetDefaultEqTuning(): TEqTuning;
 
 
 implementation
@@ -168,6 +168,7 @@ uses
 
 
 function GetDefaultEqTuning(): TEqTuning;
+
 begin
 
   FillChar(Result,

@@ -68,8 +68,8 @@ interface
 uses
   LMessages,
   LCLIntf,
-WinApi.WinApiTypes,
-{Winapi}
+  WinApi.WinApiTypes,
+  {Winapi}
   Windows,
   WinApi.WinError,
   WinApi.ActiveX.ObjBase,
@@ -95,11 +95,12 @@ WinApi.WinApiTypes,
 
 type
   TSampleConverter = class(TObject)
+
   protected
     FOutputType: IMFMediaType;
     FTransform: IMFTransform;
-    FSupportedInputs : TArray<TGUID>;
-    FTopDownFormats : TArray<TGUID>;
+    FSupportedInputs: TArray < TGUID > ;
+    FTopDownFormats: TArray < TGUID > ;
 
   private
     function ConvertSampleToRGB(AInputSample: IMFSample;
@@ -134,22 +135,29 @@ implementation
 
 
 constructor TSampleConverter.Create();
+
 begin
+
   inherited;
   SetSupportedInputs();
 end;
 
 
 destructor TSampleConverter.Destroy();
+
 begin
+
   FreeConverter();
   inherited;
 end;
 
 
 procedure TSampleConverter.SetSupportedInputs();
+
 begin
-  SetLength(FSupportedInputs, 20);
+
+  SetLength(FSupportedInputs,
+            20);
   FSupportedInputs[0] := MFVideoFormat_ARGB32;
   FSupportedInputs[1] := MFVideoFormat_RGB24;
   FSupportedInputs[2] := MFVideoFormat_RGB32;
@@ -181,25 +189,30 @@ end;
 
 
 function TSampleConverter.IsTopDown(const ASubFormat: TGUID): Boolean;
+
 begin
-  Result := IndexOf(ASubFormat,
-                    FTopDownFormats) > -1;
+
+  Result := (IndexOf(ASubFormat,
+                     FTopDownFormats) > -1);
 end;
 
 
 function TSampleConverter.IsInputSupported(const AInputFormat: TGUID): Boolean;
+
 begin
-  Result := IndexOf(AInputFormat,
-                    FSupportedInputs) > -1;
+
+  Result := (IndexOf(AInputFormat,
+                     FSupportedInputs) > -1);
 end;
 
 
 function TSampleConverter.IndexOf(const AInput: TGUID;
                                   const AValues: array of TGUID): Integer;
+
 begin
+
   Result := High(AValues);
-  while (Result >= Low(AValues)) and
-        not IsEqualGUID(AInput,AValues[Result]) do
+  while (Result >= Low(AValues)) and not IsEqualGUID(AInput, AValues[Result]) do
     Dec(Result);
 end;
 
@@ -209,85 +222,148 @@ function TSampleConverter.DataFromSample(const ASample: IMFSample;
                                          out AMemoryStream: TMemoryStream): HResult;
 var
   AError: string;
+
+
   function BuildBitmap(): Boolean;
-var
-  Sample: IMFSample;
-  Buffer: IMFMediaBuffer;
-  Buffer2D: IMF2DBuffer;
-  Data,Top: PByte;
-  Length: DWORD;
-  Pitch: LONG;
-  Width,Height,Y: Integer;
-  Header: BITMAPFILEHEADER;
-  Info: BITMAPINFOHEADER;
-  Locked2D,Locked: Boolean;
-  Bits: UINT32;
-begin
-  Result := False;
-  AMemoryStream := nil;
-  AError := '';
-  if ASample = nil then begin AError := 'No input sample';Exit;end;
-  Width := AVideoInfo.iVideoWidth;Height := AVideoInfo.iVideoHeight;
-  if (Width <= 0) or (Height <= 0) or (Int64(Width)*Height > (MaxInt-54) div 4) then
-    begin AError := 'Invalid video dimensions';Exit;end;
-  if IsEqualGUID(AVideoInfo.fSubType,MFVideoFormat_RGB32) then Sample := ASample
-  else
-    begin
-      if FTransform = nil then begin AError := 'Converter is not initialized';Exit;end;
-      if FAILED(ConvertSampleToRGB(ASample,Sample)) then
-        begin AError := 'Video processor conversion failed';Exit;end;
-    end;
-  if FAILED(Sample.ConvertToContiguousBuffer(@Buffer)) then
-    begin AError := 'Cannot access frame buffer';Exit;end;
-  Locked2D := False;Locked := False;
-  try
-    if SUCCEEDED(Buffer.QueryInterface(IMF2DBuffer,Buffer2D)) then
-      Locked2D := SUCCEEDED(Buffer2D.Lock2D(Top,Pitch));
-    if not Locked2D then
+  var
+    Sample: IMFSample;
+    Buffer: IMFMediaBuffer;
+    Buffer2D: IMF2DBuffer;
+    Data, Top: PByte;
+    Length: DWORD;
+    Pitch: LONG;
+    Width, Height, Y: Integer;
+    Header: BITMAPFILEHEADER;
+    Info: BITMAPINFOHEADER;
+    Locked2D, Locked: Boolean;
+    Bits: UINT32;
+  begin
+    Result := False;
+    AMemoryStream := nil;
+    AError := '';
+    if (ASample = nil) then
       begin
-        if FAILED(Buffer.Lock(Data,nil,@Length)) then
-          begin AError := 'Cannot lock frame buffer';Exit;end;
-        Locked := True;
-        MFGetStrideForBitmapInfoHeader(MFVideoFormat_RGB32.D1,Width,Pitch);
-        if IsEqualGUID(AVideoInfo.fSubType,MFVideoFormat_RGB32) then
-          begin
-            if (AVideoInfo.iStride <> 0) and (AVideoInfo.iStride <> 1) then Pitch := LONG(AVideoInfo.iStride);
-          end
-        else if (FOutputType <> nil) and SUCCEEDED(FOutputType.GetUINT32(MF_MT_DEFAULT_STRIDE,Bits)) then
-          Pitch := LONG(Bits);
-        if (Abs(Int64(Pitch)) < Int64(Width)*4) or
-           (Int64(Length) < Abs(Int64(Pitch))*(Height-1)+Int64(Width)*4) then
-          begin AError := 'Frame buffer is shorter than its dimensions/stride';Exit;end;
-        Top := Data;
-        if Pitch < 0 then Top := PByte(NativeInt(Data)+NativeInt(-Int64(Pitch)*(Height-1)));
+        AError := 'No input sample';
+        Exit;
       end;
-    if Abs(Int64(Pitch)) < Int64(Width)*4 then
-      begin AError := 'Invalid frame pitch';Exit;end;
-    FillChar(Header,SizeOf(Header),0);FillChar(Info,SizeOf(Info),0);
-    Header.bfType := $4D42;Header.bfOffBits := SizeOf(Header)+SizeOf(Info);
-    Header.bfSize := Header.bfOffBits+DWORD(Width*Height*4);
-    Info.biSize := SizeOf(Info);Info.biWidth := Width;Info.biHeight := -Height;
-    Info.biPlanes := 1;Info.biBitCount := 32;Info.biCompression := BI_RGB;Info.biSizeImage := Width*Height*4;
-    AMemoryStream := TMemoryStream.Create();
+    Width := AVideoInfo.iVideoWidth;
+    Height := AVideoInfo.iVideoHeight;
+    if (Width <= 0) or (Height <= 0) or (Int64(Width) * Height > (MaxInt - 54) div 4) then
+      begin
+        AError := 'Invalid video dimensions';
+        Exit;
+      end;
+    if IsEqualGUID(AVideoInfo.fSubType, MFVideoFormat_RGB32) then
+      Sample := ASample
+    else
+      begin
+        if (FTransform = nil) then
+          begin
+            AError := 'Converter is not initialized';
+            Exit;
+          end;
+        if FAILED(ConvertSampleToRGB(ASample, Sample)) then
+          begin
+            AError := 'Video processor conversion failed';
+            Exit;
+          end;
+      end;
+    if FAILED(Sample.ConvertToContiguousBuffer(@Buffer)) then
+      begin
+        AError := 'Cannot access frame buffer';
+        Exit;
+      end;
+    Locked2D := False;
+    Locked := False;
     try
-      AMemoryStream.WriteBuffer(Header,SizeOf(Header));AMemoryStream.WriteBuffer(Info,SizeOf(Info));
-      for Y := 0 to Height-1 do
-        AMemoryStream.WriteBuffer(PByte(NativeInt(Top)+NativeInt(Int64(Y)*Pitch))^,Width*4);
-      AMemoryStream.Position := 0;
-      Result := True;
-    except FreeAndNil(AMemoryStream);raise;end;
-  finally
-    if Locked2D then Buffer2D.Unlock2D();
-    if Locked then Buffer.Unlock();
+      if SUCCEEDED(Buffer.QueryInterface(IMF2DBuffer, Buffer2D)) then
+        Locked2D := SUCCEEDED(Buffer2D.Lock2D(Top,
+                                              Pitch));
+      if not Locked2D then
+        begin
+          if FAILED(Buffer.Lock(Data, nil, @Length)) then
+            begin
+              AError := 'Cannot lock frame buffer';
+              Exit;
+            end;
+          Locked := True;
+          MFGetStrideForBitmapInfoHeader(MFVideoFormat_RGB32.D1,
+                                         Width,
+                                         Pitch);
+          if IsEqualGUID(AVideoInfo.fSubType, MFVideoFormat_RGB32) then
+            begin
+              if (AVideoInfo.iStride <> 0) and (AVideoInfo.iStride <> 1) then
+                Pitch := LONG(AVideoInfo.iStride);
+            end
+          else if (FOutputType <> nil) and SUCCEEDED(FOutputType.GetUINT32(MF_MT_DEFAULT_STRIDE, Bits)) then
+            Pitch := LONG(Bits);
+          if (Abs(Int64(Pitch)) < Int64(Width) * 4) or
+            (Int64(Length) < Abs(Int64(Pitch)) * (Height - 1) + Int64(Width) * 4) then
+            begin
+              AError := 'Frame buffer is shorter than its dimensions/stride';
+              Exit;
+            end;
+          Top := Data;
+          if (Pitch < 0) then
+            Top := PByte(NativeInt(Data) + NativeInt(-Int64(Pitch) * (Height - 1)));
+        end;
+      if (Abs(Int64(Pitch)) < Int64(Width) * 4) then
+        begin
+          AError := 'Invalid frame pitch';
+          Exit;
+        end;
+      FillChar(Header,
+               SizeOf(Header),
+               0);
+      FillChar(Info,
+               SizeOf(Info),
+               0);
+      Header.bfType := $4D42;
+      Header.bfOffBits := SizeOf(Header) + SizeOf(Info);
+      Header.bfSize := Header.bfOffBits + DWORD(Width * Height * 4);
+      Info.biSize := SizeOf(Info);
+      Info.biWidth := Width;
+      Info.biHeight := -Height;
+      Info.biPlanes := 1;
+      Info.biBitCount := 32;
+      Info.biCompression := BI_RGB;
+      Info.biSizeImage := Width * Height * 4;
+      AMemoryStream := TMemoryStream.Create();
+      try
+        AMemoryStream.WriteBuffer(Header,
+                                  SizeOf(Header));
+        AMemoryStream.WriteBuffer(Info,
+                                  SizeOf(Info));
+        for Y := 0 to Height - 1 do
+          AMemoryStream.WriteBuffer(PByte(NativeInt(Top) + NativeInt(Int64(Y) * Pitch))^,
+                                    Width * 4);
+        AMemoryStream.Position := 0;
+        Result := True;
+      except
+        FreeAndNil(AMemoryStream);
+        raise;
+      end;
+    finally
+      if Locked2D then
+        Buffer2D.Unlock2D();
+      if Locked then
+        Buffer.Unlock();
+    end;
   end;
-end;
+
 begin
-  if BuildBitmap() then Result := S_OK else Result := E_FAIL;
+
+  if BuildBitmap() then
+    Result := S_OK
+  else
+    Result := E_FAIL;
 end;
 
 
 function TSampleConverter.GetBMPFileHeader(): BITMAPFILEHEADER;
+
 begin
+
   Result.bfType := Ord('B') or (Ord('M') shl 8); // Type is "BM" for BitMap
   Result.bfSize := SizeOf(Result.bfOffBits) + sizeof(RGBTRIPLE);
   Result.bfReserved1 := 0;
@@ -297,7 +373,9 @@ end;
 
 
 function TSampleConverter.GetBMPFileInfo(const AVideoInfo: TVideoFormatInfo): BITMAPINFOHEADER;
+
 begin
+
   // See: https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
   Result.biSize := SizeOf(BITMAPINFOHEADER);
   Result.biWidth := AVideoInfo.iVideoWidth;
@@ -316,7 +394,9 @@ end;
 
 
 procedure TSampleConverter.FreeConverter();
+
 begin
+
   if Assigned(FTransform) then
     SafeRelease(FTransform);
   FOutputType := nil;
@@ -325,11 +405,14 @@ end;
 
 function TSampleConverter.UpdateConverter(const AManager: IMFDXGIDeviceManager;
                                           const AInputType: IMFMediaType): HResult;
+
 begin
+
   Result := CreateTransform(AManager,
                             AInputType);
 
-  if SUCCEEDED(Result) then NotifyBeginStreaming();
+  if SUCCEEDED(Result) then
+    NotifyBeginStreaming();
 end;
 
 
@@ -399,14 +482,16 @@ begin
   //                                  UInt64(AManager));
 
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 
 end;
 
 
 procedure TSampleConverter.NotifyBeginStreaming();
+
 begin
+
   // This should speed up the first frame request.
   // See: https://docs.microsoft.com/en-us/windows/win32/medfound/mft-message-notify-begin-streaming
   FTransform.ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING,
@@ -465,10 +550,9 @@ begin
                                         0);
     end;
 
-done:
-  SafeRelease(pBufferOut);
+  done:
+    SafeRelease(pBufferOut);
   Result := hr;
 end;
 
 end.
-

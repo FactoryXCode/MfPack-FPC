@@ -84,7 +84,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -100,7 +101,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IAdvancedMediaCaptureInitializationSettings);'}
   {$EXTERNALSYM IAdvancedMediaCaptureInitializationSettings}
   IAdvancedMediaCaptureInitializationSettings = interface(IUnknown)
-	['{3DE21209-8BA6-4f2a-A577-2819B56FF14D}']
+    ['{3DE21209-8BA6-4f2a-A577-2819B56FF14D}']
 
     function SetDirectxDeviceManager(value: IMFDXGIDeviceManager): HResult; stdcall;
     // Sets DX manager to be used for the video capture session.
@@ -108,6 +109,7 @@ type
     // DX device manager interface pointer.
 
   end;
+
   IID_IAdvancedMediaCaptureInitializationSettings = IAdvancedMediaCaptureInitializationSettings;
   {$EXTERNALSYM IID_IAdvancedMediaCaptureInitializationSettings}
 
@@ -119,14 +121,15 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IAdvancedMediaCaptureSettings);'}
   {$EXTERNALSYM IAdvancedMediaCaptureSettings}
   IAdvancedMediaCaptureSettings = interface(IUnknown)
-	['{24E0485F-A33E-4aa1-B564-6019B1D14F65}']
+    ['{24E0485F-A33E-4aa1-B564-6019B1D14F65}']
 
     function GetDirectxDeviceManager(out value: IMFDXGIDeviceManager): HResult; stdcall;
     // Gets DirectX manager that is being used in MediaCapture object
-     // <param name = "IMFDXGIDeviceManager">
-     // Pointer to receive DX manager interface pointer
+    // <param name = "IMFDXGIDeviceManager">
+    // Pointer to receive DX manager interface pointer
 
   end;
+
   IID_IAdvancedMediaCaptureSettings = IAdvancedMediaCaptureSettings;
   {$EXTERNALSYM IID_IAdvancedMediaCaptureSettings}
 
@@ -137,11 +140,12 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IAdvancedMediaCapture);'}
   {$EXTERNALSYM IAdvancedMediaCapture}
   IAdvancedMediaCapture = interface(IUnknown)
-	['{D0751585-D216-4344-B5BF-463B68F977BB}']
+    ['{D0751585-D216-4344-B5BF-463B68F977BB}']
 
     function GetAdvancedMediaCaptureSettings(out value: IAdvancedMediaCaptureSettings): HResult; stdcall;
 
   end;
+
   IID_IAdvancedMediaCapture = IAdvancedMediaCapture;
   {$EXTERNALSYM IID_IAdvancedMediaCapture}
 
@@ -152,6 +156,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

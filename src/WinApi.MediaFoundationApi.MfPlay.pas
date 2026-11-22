@@ -83,7 +83,7 @@ uses
   {WinApi}
   Windows,
   WinApi.WinApiTypes,
-  {ActiveX}  
+  {ActiveX}
   WinApi.ActiveX.PropSys,
   WinApi.ActiveX.PropIdl,
   {MediaFoundationApi}
@@ -97,7 +97,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -109,38 +110,53 @@ const
   // Position types that MFPlay uses.
   // See IMFPMediaItem.GetStartStopPosition and IMFPMediaItem.SetStartStopPosition.
   //
-  MFP_POSITIONTYPE_100NS          : TGUID = '{00000000-0000-0000-0000-000000000000}';  // = GUID_NULL
+  MFP_POSITIONTYPE_100NS: TGUID = '{00000000-0000-0000-0000-000000000000}';  // = GUID_NULL
   {$EXTERNALSYM MFP_POSITIONTYPE_100NS}
 
   // implementations of DEFINE_PROPERTYKEY macro, see comment: PropKeyDef.pas
 
-  MFP_PKEY_StreamIndex            : PROPERTYKEY = (fmtid: (D1: $a7cf9740;
-                                                   D2: $e8d9;
-		                                               D3: $4a87;
-                                                   D4: ($bd, $8e, $29, $67, $0, $1f, $d3, $ad));
-                                                   pid: $0);
+  MFP_PKEY_StreamIndex: PROPERTYKEY = (fmtid: (D1: $a7cf9740;
+    D2: $e8d9;
+    D3: $4a87;
+    D4: ($bd,
+         $8e,
+         $29,
+         $67,
+         $0,
+         $1f,
+         $d3,
+         $ad));
+    pid: $0);
   {$EXTERNALSYM MFP_PKEY_StreamIndex}
 
-  MFP_PKEY_StreamRenderingResults : PROPERTYKEY = (fmtid: (D1: $a7cf9740;
-                                                   D2: $e8d9;
-		                                               D3: $4a87;
-                                                   D4: ($bd, $8e, $29, $67, $0, $1f, $d3, $ad));
-                                                   pid: $01);
+  MFP_PKEY_StreamRenderingResults: PROPERTYKEY = (fmtid: (D1: $a7cf9740;
+    D2: $e8d9;
+    D3: $4a87;
+    D4: ($bd,
+         $8e,
+         $29,
+         $67,
+         $0,
+         $1f,
+         $d3,
+         $ad));
+    pid: $01);
   {$EXTERNALSYM MFP_PKEY_StreamRenderingResults}
 
 
 
-{$IFNDEF MFP_X_PTRS}
+  {$IFNDEF MFP_X_PTRS}
   // NOTES: A DWORD_PTR is NOT a pointer to DWord, but a NativeUInt (4 bytes) on a 32bit system or UInt64 (8 bytes) on a 64bit system.
   //        By default this type is defined in MfPack.MfpTypes
 type
   DWORD_PTR = NativeUInt;
   {$EXTERNALSYM DWORD_PTR}
-{$ENDIF}
+  {$ENDIF}
 
-{$IFNDEF MFP_SIZE}
+  {$IFNDEF MFP_SIZE}
 type
   PSIZE = ^tagSIZE;
+
   tagSIZE = record
     cx: Longint;
     cy: Longint;
@@ -148,37 +164,37 @@ type
   {$EXTERNALSYM tagSIZE}
   SIZE = tagSIZE;
   {$EXTERNALSYM SIZE}
-{$ENDIF}
+  {$ENDIF}
 
-{$IFNDEF MFP_COLORREF}
+  {$IFNDEF MFP_COLORREF}
 type
   COLORREF = DWORD;
   {$EXTERNALSYM COLORREF}
   LPCOLORREF = ^DWORD;
-{$ENDIF}
+  {$ENDIF}
 
 
 type
   MFP_CREATION_OPTIONS = UINT32;
   {$EXTERNALSYM MFP_CREATION_OPTIONS}
 const
-  MFP_OPTION_NONE                             : MFP_CREATION_OPTIONS = 0;
+  MFP_OPTION_NONE: MFP_CREATION_OPTIONS = 0;
   {$EXTERNALSYM MFP_OPTION_NONE}
-  MFP_OPTION_FREE_THREADED_CALLBACK           : MFP_CREATION_OPTIONS = $1;
+  MFP_OPTION_FREE_THREADED_CALLBACK: MFP_CREATION_OPTIONS = $1;
   {$EXTERNALSYM MFP_OPTION_FREE_THREADED_CALLBACK}
-  MFP_OPTION_NO_MMCSS                         : MFP_CREATION_OPTIONS = $2;
+  MFP_OPTION_NO_MMCSS: MFP_CREATION_OPTIONS = $2;
   {$EXTERNALSYM MFP_OPTION_NO_MMCSS}
-  MFP_OPTION_NO_REMOTE_DESKTOP_OPTIMIZATION   : MFP_CREATION_OPTIONS = $4;
+  MFP_OPTION_NO_REMOTE_DESKTOP_OPTIMIZATION: MFP_CREATION_OPTIONS = $4;
   {$EXTERNALSYM MFP_OPTION_NO_REMOTE_DESKTOP_OPTIMIZATION}
 
 type
   PMFP_MEDIAPLAYER_STATE = ^MFP_MEDIAPLAYER_STATE;
-  MFP_MEDIAPLAYER_STATE            = (MFP_MEDIAPLAYER_STATE_EMPTY    = 0,
-                                      MFP_MEDIAPLAYER_STATE_STOPPED  = $1,
-                                      MFP_MEDIAPLAYER_STATE_PLAYING  = $2,
-                                      MFP_MEDIAPLAYER_STATE_PAUSED   = $3,
-                                      MFP_MEDIAPLAYER_STATE_SHUTDOWN = $4
-                                     );
+  MFP_MEDIAPLAYER_STATE = (MFP_MEDIAPLAYER_STATE_EMPTY = 0,
+                           MFP_MEDIAPLAYER_STATE_STOPPED = $1,
+                           MFP_MEDIAPLAYER_STATE_PLAYING = $2,
+                           MFP_MEDIAPLAYER_STATE_PAUSED = $3,
+                           MFP_MEDIAPLAYER_STATE_SHUTDOWN = $4
+    );
   {$EXTERNALSYM MFP_MEDIAPLAYER_STATE}
 
 
@@ -186,30 +202,30 @@ type
   MFP_MEDIAITEM_CHARACTERISTICS = UINT32;
   {$EXTERNALSYM MFP_MEDIAITEM_CHARACTERISTICS}
 const
-  MFP_MEDIAITEM_IS_LIVE       : MFP_MEDIAITEM_CHARACTERISTICS = $1;
+  MFP_MEDIAITEM_IS_LIVE: MFP_MEDIAITEM_CHARACTERISTICS = $1;
   {$EXTERNALSYM MFP_MEDIAITEM_IS_LIVE}
-  MFP_MEDIAITEM_CAN_SEEK      : MFP_MEDIAITEM_CHARACTERISTICS = $2;
+  MFP_MEDIAITEM_CAN_SEEK: MFP_MEDIAITEM_CHARACTERISTICS = $2;
   {$EXTERNALSYM MFP_MEDIAITEM_CAN_SEEK}
-  MFP_MEDIAITEM_CAN_PAUSE     : MFP_MEDIAITEM_CHARACTERISTICS = $4;
+  MFP_MEDIAITEM_CAN_PAUSE: MFP_MEDIAITEM_CHARACTERISTICS = $4;
   {$EXTERNALSYM MFP_MEDIAITEM_CAN_PAUSE}
-  MFP_MEDIAITEM_HAS_SLOW_SEEK : MFP_MEDIAITEM_CHARACTERISTICS = $8;
+  MFP_MEDIAITEM_HAS_SLOW_SEEK: MFP_MEDIAITEM_CHARACTERISTICS = $8;
   {$EXTERNALSYM MFP_MEDIAITEM_HAS_SLOW_SEEK}
 
 type
   MFP_CREDENTIAL_FLAGS = UINT32;
   {$EXTERNALSYM MFP_CREDENTIAL_FLAGS}
 const
-  MFP_CREDENTIAL_PROMPT         : MFP_CREDENTIAL_FLAGS = $1;
+  MFP_CREDENTIAL_PROMPT: MFP_CREDENTIAL_FLAGS = $1;
   {$EXTERNALSYM MFP_CREDENTIAL_PROMPT}
-  MFP_CREDENTIAL_SAVE           : MFP_CREDENTIAL_FLAGS = $2;
+  MFP_CREDENTIAL_SAVE: MFP_CREDENTIAL_FLAGS = $2;
   {$EXTERNALSYM MFP_CREDENTIAL_SAVE}
-  MFP_CREDENTIAL_DO_NOT_CACHE   : MFP_CREDENTIAL_FLAGS = $4;
+  MFP_CREDENTIAL_DO_NOT_CACHE: MFP_CREDENTIAL_FLAGS = $4;
   {$EXTERNALSYM MFP_CREDENTIAL_DO_NOT_CACHE}
-  MFP_CREDENTIAL_CLEAR_TEXT     : MFP_CREDENTIAL_FLAGS = $8;
+  MFP_CREDENTIAL_CLEAR_TEXT: MFP_CREDENTIAL_FLAGS = $8;
   {$EXTERNALSYM MFP_CREDENTIAL_CLEAR_TEXT}
-  MFP_CREDENTIAL_PROXY          : MFP_CREDENTIAL_FLAGS = $10;
+  MFP_CREDENTIAL_PROXY: MFP_CREDENTIAL_FLAGS = $10;
   {$EXTERNALSYM MFP_CREDENTIAL_PROXY}
-  MFP_CREDENTIAL_LOGGED_ON_USER : MFP_CREDENTIAL_FLAGS = $20;
+  MFP_CREDENTIAL_LOGGED_ON_USER: MFP_CREDENTIAL_FLAGS = $20;
   {$EXTERNALSYM MFP_CREDENTIAL_LOGGED_ON_USER}
 
 type
@@ -227,24 +243,25 @@ type
 
 
   PMFP_EVENT_TYPE = ^MFP_EVENT_TYPE;
-  MFP_EVENT_TYPE = (MFP_EVENT_TYPE_PLAY                    = 0,
-                    MFP_EVENT_TYPE_PAUSE                   = 1,
-                    MFP_EVENT_TYPE_STOP                    = 2,
-                    MFP_EVENT_TYPE_POSITION_SET            = 3,
-                    MFP_EVENT_TYPE_RATE_SET                = 4,
-                    MFP_EVENT_TYPE_MEDIAITEM_CREATED       = 5,
-                    MFP_EVENT_TYPE_MEDIAITEM_SET           = 6,
-                    MFP_EVENT_TYPE_FRAME_STEP              = 7,
-                    MFP_EVENT_TYPE_MEDIAITEM_CLEARED       = 8,
-                    MFP_EVENT_TYPE_MF                      = 9,
-                    MFP_EVENT_TYPE_ERROR                   = 10,
-                    MFP_EVENT_TYPE_PLAYBACK_ENDED          = 11,
+  MFP_EVENT_TYPE = (MFP_EVENT_TYPE_PLAY = 0,
+                    MFP_EVENT_TYPE_PAUSE = 1,
+                    MFP_EVENT_TYPE_STOP = 2,
+                    MFP_EVENT_TYPE_POSITION_SET = 3,
+                    MFP_EVENT_TYPE_RATE_SET = 4,
+                    MFP_EVENT_TYPE_MEDIAITEM_CREATED = 5,
+                    MFP_EVENT_TYPE_MEDIAITEM_SET = 6,
+                    MFP_EVENT_TYPE_FRAME_STEP = 7,
+                    MFP_EVENT_TYPE_MEDIAITEM_CLEARED = 8,
+                    MFP_EVENT_TYPE_MF = 9,
+                    MFP_EVENT_TYPE_ERROR = 10,
+                    MFP_EVENT_TYPE_PLAYBACK_ENDED = 11,
                     MFP_EVENT_TYPE_ACQUIRE_USER_CREDENTIAL = 12
-                   );
+    );
   {$EXTERNALSYM MFP_EVENT_TYPE}
 
 
   PMFP_EVENT_HEADER = ^MFP_EVENT_HEADER;
+
   MFP_EVENT_HEADER = record
     eEventType: MFP_EVENT_TYPE;
     hrEvent: HResult;
@@ -256,6 +273,7 @@ type
 
 
   PMFP_PLAY_EVENT = ^MFP_PLAY_EVENT;
+
   MFP_PLAY_EVENT = record
     header: MFP_EVENT_HEADER;
     pMediaItem: IMFPMediaItem;
@@ -264,6 +282,7 @@ type
 
 
   PMFP_PAUSE_EVENT = ^MFP_PAUSE_EVENT;
+
   cwMFP_PAUSE_EVENT = record
     header: MFP_EVENT_HEADER;
     pMediaItem: IMFPMediaItem;
@@ -274,6 +293,7 @@ type
 
 
   PMFP_STOP_EVENT = ^MFP_STOP_EVENT;
+
   MFP_STOP_EVENT = record
     header: MFP_EVENT_HEADER;
     pMediaItem: IMFPMediaItem;
@@ -282,6 +302,7 @@ type
 
 
   PMFP_POSITION_SET_EVENT = ^MFP_POSITION_SET_EVENT;
+
   MFP_POSITION_SET_EVENT = record
     header: MFP_EVENT_HEADER;
     pMediaItem: IMFPMediaItem;
@@ -290,6 +311,7 @@ type
 
 
   PMFP_RATE_SET_EVENT = ^MFP_RATE_SET_EVENT;
+
   MFP_RATE_SET_EVENT = record
     header: MFP_EVENT_HEADER;
     pMediaItem: IMFPMediaItem;
@@ -299,6 +321,7 @@ type
 
 
   PMFP_MEDIAITEM_CREATED_EVENT = ^MFP_MEDIAITEM_CREATED_EVENT;
+
   MFP_MEDIAITEM_CREATED_EVENT = record
     header: MFP_EVENT_HEADER;
     pMediaItem: IMFPMediaItem;
@@ -308,6 +331,7 @@ type
 
 
   PMFP_MEDIAITEM_SET_EVENT = ^MFP_MEDIAITEM_SET_EVENT;
+
   MFP_MEDIAITEM_SET_EVENT = record
     header: MFP_EVENT_HEADER;
     pMediaItem: IMFPMediaItem;
@@ -316,6 +340,7 @@ type
 
 
   PMFP_FRAME_STEP_EVENT = ^MFP_FRAME_STEP_EVENT;
+
   MFP_FRAME_STEP_EVENT = record
     header: MFP_EVENT_HEADER;
     pMediaItem: IMFPMediaItem;
@@ -324,6 +349,7 @@ type
 
 
   PMFP_MEDIAITEM_CLEARED_EVENT = ^MFP_MEDIAITEM_CLEARED_EVENT;
+
   MFP_MEDIAITEM_CLEARED_EVENT = record
     header: MFP_EVENT_HEADER;
     pMediaItem: IMFPMediaItem;
@@ -332,6 +358,7 @@ type
 
 
   PMFP_MF_EVENT = ^MFP_MF_EVENT;
+
   MFP_MF_EVENT = record
     header: MFP_EVENT_HEADER;
     MFEventType: MediaEventType;
@@ -342,6 +369,7 @@ type
 
 
   PMFP_ERROR_EVENT = ^MFP_ERROR_EVENT;
+
   MFP_ERROR_EVENT = record
     header: MFP_EVENT_HEADER;
   end;
@@ -349,6 +377,7 @@ type
 
 
   PMFP_PLAYBACK_ENDED_EVENT = ^MFP_PLAYBACK_ENDED_EVENT;
+
   MFP_PLAYBACK_ENDED_EVENT = record
     header: MFP_EVENT_HEADER;
     pMediaItem: IMFPMediaItem;
@@ -357,6 +386,7 @@ type
 
 
   PMFP_ACQUIRE_USER_CREDENTIAL_EVENT = ^MFP_ACQUIRE_USER_CREDENTIAL_EVENT;
+
   MFP_ACQUIRE_USER_CREDENTIAL_EVENT = record
     header: MFP_EVENT_HEADER;
     dwUserData: DWORD_PTR;
@@ -386,7 +416,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFPMediaPlayer);'}
   {$EXTERNALSYM IMFPMediaPlayer}
   IMFPMediaPlayer = interface(IUnknown)
-	['{A714590A-58AF-430a-85BF-44F5EC838D85}']
+    ['{A714590A-58AF-430a-85BF-44F5EC838D85}']
 
     function Play(): HResult; stdcall;
 
@@ -507,6 +537,7 @@ type
     function Shutdown(): HResult; stdcall;
 
   end;
+
   IID_IMFPMediaPlayer = IMFPMediaPlayer;
   {$EXTERNALSYM IID_IMFPMediaPlayer}
 
@@ -528,7 +559,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFPMediaItem);'}
   {$EXTERNALSYM IMFPMediaItem}
   IMFPMediaItem = interface(IUnknown)
-	['{90EB3E6B-ECBF-45cc-B1DA-C6FE3EA70D57}']
+    ['{90EB3E6B-ECBF-45cc-B1DA-C6FE3EA70D57}']
 
     function GetMediaPlayer(out ppMediaPlayer: IMFPMediaPlayer): HResult; stdcall;
 
@@ -584,6 +615,7 @@ type
     function GetMetadata(out ppMetadataStore: IPropertyStore): HResult; stdcall;
 
   end;
+
   IID_IMFPMediaItem = IMFPMediaItem;
   {$EXTERNALSYM IID_IMFPMediaItem}
 
@@ -603,9 +635,10 @@ type
   IMFPMediaPlayerCallback = interface(IUnknown)
     ['{766C8FFB-5FDB-4fea-A28D-B912996F51BD}']
 
-      procedure OnMediaPlayerEvent(var pEventHeader: MFP_EVENT_HEADER); stdcall;
+    procedure OnMediaPlayerEvent(var pEventHeader: MFP_EVENT_HEADER); stdcall;
 
   end;
+
   IID_IMFPMediaPlayerCallback = IMFPMediaPlayerCallback;
   {$EXTERNALSYM IID_IMFPMediaPlayerCallback}
 
@@ -616,52 +649,52 @@ type
    Applications should use the Media Session for playback.
    Creates a new instance of the MFPlay player object.
   }
-  function MFPCreateMediaPlayer(pwszURL: LPCWSTR;
-                                fStartPlayback: BOOL;
-                                creationOptions: MFP_CREATION_OPTIONS;
-                                pCallback: IMFPMediaPlayerCallback;
-                                hWnd: HWND;
-                                ppMediaPlayer: PIMFPMediaPlayer): HResult; stdcall; deprecated;
-  {$EXTERNALSYM MFPCreateMediaPlayer}
+function MFPCreateMediaPlayer(pwszURL: LPCWSTR;
+                              fStartPlayback: BOOL;
+                              creationOptions: MFP_CREATION_OPTIONS;
+                              pCallback: IMFPMediaPlayerCallback;
+                              hWnd: HWND;
+                              ppMediaPlayer: PIMFPMediaPlayer): HResult; stdcall; deprecated;
+{$EXTERNALSYM MFPCreateMediaPlayer}
 
 
-  // CONVERTED MACRO'S
-  // NOTE: These will be deprecated: See: https://docs.microsoft.com/en-us/windows/win32/api/mfplay/
-  //////////////////////////////////////////////////////////////////////////////
-  /// <summary>
-  ///     Macros to cast a pointer to a MFP_EVENT_HEADER structure into a pointer to a MFP_*_EVENT.
-  ///     If the event is not of the correct type, the macro returns a Nil pointer.
-  /// </summary>
-  function MFP_GET_PLAY_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_PLAY_EVENT;
-  {$EXTERNALSYM MFP_GET_PLAY_EVENT}
-  function MFP_GET_PAUSE_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_PAUSE_EVENT;
-  {$EXTERNALSYM MFP_GET_PAUSE_EVENT}
-  function MFP_GET_STOP_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_STOP_EVENT;
-  {$EXTERNALSYM MFP_GET_STOP_EVENT}
-  function MFP_GET_POSITION_SET_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_POSITION_SET_EVENT;
-  {$EXTERNALSYM MFP_GET_POSITION_SET_EVENT}
-  function MFP_GET_RATE_SET_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_RATE_SET_EVENT;
-  {$EXTERNALSYM MFP_GET_RATE_SET_EVENT}
-  function MFP_GET_MEDIAITEM_CREATED_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_MEDIAITEM_CREATED_EVENT;
-  {$EXTERNALSYM MFP_GET_MEDIAITEM_CREATED_EVENT}
-  function MFP_GET_MEDIAITEM_SET_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_MEDIAITEM_SET_EVENT;
-  {$EXTERNALSYM MFP_GET_MEDIAITEM_SET_EVENT}
-  function MFP_GET_FRAME_STEP_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_FRAME_STEP_EVENT;
-  {$EXTERNALSYM MFP_GET_FRAME_STEP_EVENT}
-  function MFP_GET_MEDIAITEM_CLEARED_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_MEDIAITEM_CLEARED_EVENT;
-  {$EXTERNALSYM MFP_GET_MEDIAITEM_CLEARED_EVENT}
-  function MFP_GET_MF_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_MF_EVENT;
-  {$EXTERNALSYM MFP_GET_MF_EVENT}
-  function MFP_GET_ERROR_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_ERROR_EVENT;
-  {$EXTERNALSYM MFP_GET_ERROR_EVENT}
-  function MFP_GET_PLAYBACK_ENDED_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_PLAYBACK_ENDED_EVENT;
-  {$EXTERNALSYM MFP_GET_PLAYBACK_ENDED_EVENT}
-  function MFP_GET_ACQUIRE_USER_CREDENTIAL_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_ACQUIRE_USER_CREDENTIAL_EVENT;
-  {$EXTERNALSYM MFP_GET_ACQUIRE_USER_CREDENTIAL_EVENT}
+// CONVERTED MACRO'S
+// NOTE: These will be deprecated: See: https://docs.microsoft.com/en-us/windows/win32/api/mfplay/
+//////////////////////////////////////////////////////////////////////////////
+/// <summary>
+///     Macros to cast a pointer to a MFP_EVENT_HEADER structure into a pointer to a MFP_*_EVENT.
+///     If the event is not of the correct type, the macro returns a Nil pointer.
+/// </summary>
+function MFP_GET_PLAY_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_PLAY_EVENT;
+{$EXTERNALSYM MFP_GET_PLAY_EVENT}
+function MFP_GET_PAUSE_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_PAUSE_EVENT;
+{$EXTERNALSYM MFP_GET_PAUSE_EVENT}
+function MFP_GET_STOP_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_STOP_EVENT;
+{$EXTERNALSYM MFP_GET_STOP_EVENT}
+function MFP_GET_POSITION_SET_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_POSITION_SET_EVENT;
+{$EXTERNALSYM MFP_GET_POSITION_SET_EVENT}
+function MFP_GET_RATE_SET_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_RATE_SET_EVENT;
+{$EXTERNALSYM MFP_GET_RATE_SET_EVENT}
+function MFP_GET_MEDIAITEM_CREATED_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_MEDIAITEM_CREATED_EVENT;
+{$EXTERNALSYM MFP_GET_MEDIAITEM_CREATED_EVENT}
+function MFP_GET_MEDIAITEM_SET_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_MEDIAITEM_SET_EVENT;
+{$EXTERNALSYM MFP_GET_MEDIAITEM_SET_EVENT}
+function MFP_GET_FRAME_STEP_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_FRAME_STEP_EVENT;
+{$EXTERNALSYM MFP_GET_FRAME_STEP_EVENT}
+function MFP_GET_MEDIAITEM_CLEARED_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_MEDIAITEM_CLEARED_EVENT;
+{$EXTERNALSYM MFP_GET_MEDIAITEM_CLEARED_EVENT}
+function MFP_GET_MF_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_MF_EVENT;
+{$EXTERNALSYM MFP_GET_MF_EVENT}
+function MFP_GET_ERROR_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_ERROR_EVENT;
+{$EXTERNALSYM MFP_GET_ERROR_EVENT}
+function MFP_GET_PLAYBACK_ENDED_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_PLAYBACK_ENDED_EVENT;
+{$EXTERNALSYM MFP_GET_PLAYBACK_ENDED_EVENT}
+function MFP_GET_ACQUIRE_USER_CREDENTIAL_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_ACQUIRE_USER_CREDENTIAL_EVENT;
+{$EXTERNALSYM MFP_GET_ACQUIRE_USER_CREDENTIAL_EVENT}
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 
 implementation
@@ -671,111 +704,149 @@ const
 
 
 function MFP_GET_PLAY_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_PLAY_EVENT;
+
 begin
-  if pHdr.eEventType = MFP_EVENT_TYPE_PLAY then
+
+  if (pHdr.eEventType = MFP_EVENT_TYPE_PLAY) then
     Result := PMFP_PLAY_EVENT(pHdr)
   else
     Result := Nil;
 end;
 
+
 function MFP_GET_PAUSE_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_PAUSE_EVENT;
+
 begin
-  if pHdr.eEventType = MFP_EVENT_TYPE_PAUSE then
+
+  if (pHdr.eEventType = MFP_EVENT_TYPE_PAUSE) then
     Result := PMFP_PAUSE_EVENT(pHdr)
   else
     Result := Nil;
 end;
 
+
 function MFP_GET_STOP_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_STOP_EVENT;
+
 begin
-  if pHdr.eEventType = MFP_EVENT_TYPE_STOP then
+
+  if (pHdr.eEventType = MFP_EVENT_TYPE_STOP) then
     Result := PMFP_STOP_EVENT(pHdr)
   else
     Result := Nil;
 end;
 
+
 function MFP_GET_POSITION_SET_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_POSITION_SET_EVENT;
+
 begin
-  if pHdr.eEventType = MFP_EVENT_TYPE_POSITION_SET then
+
+  if (pHdr.eEventType = MFP_EVENT_TYPE_POSITION_SET) then
     Result := PMFP_POSITION_SET_EVENT(pHdr)
   else
     Result := Nil;
 end;
 
+
 function MFP_GET_RATE_SET_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_RATE_SET_EVENT;
+
 begin
-  if pHdr.eEventType = MFP_EVENT_TYPE_RATE_SET then
+
+  if (pHdr.eEventType = MFP_EVENT_TYPE_RATE_SET) then
     Result := PMFP_RATE_SET_EVENT(pHdr)
   else
     Result := Nil;
 end;
 
+
 function MFP_GET_MEDIAITEM_CREATED_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_MEDIAITEM_CREATED_EVENT;
+
 begin
-  if pHdr.eEventType = MFP_EVENT_TYPE_MEDIAITEM_CREATED then
+
+  if (pHdr.eEventType = MFP_EVENT_TYPE_MEDIAITEM_CREATED) then
     Result := PMFP_MEDIAITEM_CREATED_EVENT(pHdr)
   else
     Result := Nil;
 end;
 
+
 function MFP_GET_MEDIAITEM_SET_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_MEDIAITEM_SET_EVENT;
+
 begin
-  if pHdr.eEventType = MFP_EVENT_TYPE_MEDIAITEM_SET then
+
+  if (pHdr.eEventType = MFP_EVENT_TYPE_MEDIAITEM_SET) then
     Result := PMFP_MEDIAITEM_SET_EVENT(pHdr)
   else
     Result := Nil;
 end;
 
+
 function MFP_GET_FRAME_STEP_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_FRAME_STEP_EVENT;
+
 begin
-  if pHdr.eEventType = MFP_EVENT_TYPE_FRAME_STEP then
+
+  if (pHdr.eEventType = MFP_EVENT_TYPE_FRAME_STEP) then
     Result := PMFP_FRAME_STEP_EVENT(pHdr)
   else
     Result := Nil;
 end;
 
+
 function MFP_GET_MEDIAITEM_CLEARED_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_MEDIAITEM_CLEARED_EVENT;
+
 begin
-  if pHdr.eEventType = MFP_EVENT_TYPE_MEDIAITEM_CLEARED then
+
+  if (pHdr.eEventType = MFP_EVENT_TYPE_MEDIAITEM_CLEARED) then
     Result := PMFP_MEDIAITEM_CLEARED_EVENT(pHdr)
   else
     Result := Nil;
 end;
 
+
 function MFP_GET_MF_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_MF_EVENT;
+
 begin
-  if pHdr.eEventType = MFP_EVENT_TYPE_MF then
+
+  if (pHdr.eEventType = MFP_EVENT_TYPE_MF) then
     Result := PMFP_MF_EVENT(pHdr)
   else
     Result := Nil;
 end;
 
+
 function MFP_GET_ERROR_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_ERROR_EVENT;
+
 begin
-  if pHdr.eEventType = MFP_EVENT_TYPE_ERROR then
+
+  if (pHdr.eEventType = MFP_EVENT_TYPE_ERROR) then
     Result := PMFP_ERROR_EVENT(pHdr)
   else
     Result := Nil;
 end;
 
+
 function MFP_GET_PLAYBACK_ENDED_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_PLAYBACK_ENDED_EVENT;
+
 begin
-  if pHdr.eEventType = MFP_EVENT_TYPE_PLAYBACK_ENDED then
+
+  if (pHdr.eEventType = MFP_EVENT_TYPE_PLAYBACK_ENDED) then
     Result := PMFP_PLAYBACK_ENDED_EVENT(pHdr)
   else
     Result := Nil;
 end;
 
+
 function MFP_GET_ACQUIRE_USER_CREDENTIAL_EVENT(const pHdr: PMFP_EVENT_HEADER): PMFP_ACQUIRE_USER_CREDENTIAL_EVENT;
+
 begin
-  if pHdr.eEventType = MFP_EVENT_TYPE_ACQUIRE_USER_CREDENTIAL then
+
+  if (pHdr.eEventType = MFP_EVENT_TYPE_ACQUIRE_USER_CREDENTIAL) then
     Result := PMFP_ACQUIRE_USER_CREDENTIAL_EVENT(pHdr)
   else
     Result := Nil;
 end;
 
-  function MFPCreateMediaPlayer; external MfPlayLib name 'MFPCreateMediaPlayer' ;
+function MFPCreateMediaPlayer; external MfPlayLib name 'MFPCreateMediaPlayer';
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

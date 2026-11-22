@@ -85,25 +85,40 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
   {$I 'XAudio2.inc'}
 
 
-// XAudio 2.8
+  // XAudio 2.8
 const
 
-  CLSID_AudioVolumeMeter : TGUID = (D1: $4FC3B166;
-                                    D2: $972A;
-                                    D3: $40CF;
-                                    D4: ($BC, $37, $7D, $B0, $3D, $B2, $FB, $A3));
+  CLSID_AudioVolumeMeter: TGUID = (D1: $4FC3B166;
+    D2: $972A;
+    D3: $40CF;
+    D4: ($BC,
+         $37,
+         $7D,
+         $B0,
+         $3D,
+         $B2,
+         $FB,
+         $A3));
 
-  CLSID_AudioReverb      : TGUID = (D1: $C2633B16;
-                                    D2: $471B;
-                                    D3: $4498;
-                                    D4: ($B8, $C5, $4F, $09, $59, $E2, $EC, $09));
+  CLSID_AudioReverb: TGUID = (D1: $C2633B16;
+    D2: $471B;
+    D3: $4498;
+    D4: ($B8,
+         $C5,
+         $4F,
+         $09,
+         $59,
+         $E2,
+         $EC,
+         $09));
 
   // All structures defined in this file should use tight packing
   // #pragma pack(push, 1)
@@ -121,18 +136,18 @@ const
   **************************************************************************)
 
 
-  function CreateAudioVolumeMeter(ppApo: PPointer): HRESULT; stdcall;
-  function CreateAudioReverb(ppApo: PPointer): HRESULT; stdcall;
+function CreateAudioVolumeMeter(ppApo: PPointer): HRESULT; stdcall;
+function CreateAudioReverb(ppApo: PPointer): HRESULT; stdcall;
 
-  // Note:
-  // The current SDK wrappers delegate directly to CreateAudioVolumeMeter/Reverb.
-  // The legacy COM activation notes below are retained for historical context.
-  // Historically, XAudio2CreateVolumeMeter called CoCreateInstance on Windows,
-  // the application must have called the CoInitializeEx method before calling XAudio2CreateVolumeMeter.
-  // XAudio2Create has the same requirement, which means CoInitializeEx typically will be
-  // called long before XAudio2CreateVolumeMeter is called.
-  //
-  // A typical calling pattern on Windows would be as follows:
+// Note:
+// The current SDK wrappers delegate directly to CreateAudioVolumeMeter/Reverb.
+// The legacy COM activation notes below are retained for historical context.
+// Historically, XAudio2CreateVolumeMeter called CoCreateInstance on Windows,
+// the application must have called the CoInitializeEx method before calling XAudio2CreateVolumeMeter.
+// XAudio2Create has the same requirement, which means CoInitializeEx typically will be
+// called long before XAudio2CreateVolumeMeter is called.
+//
+// A typical calling pattern on Windows would be as follows:
 
   (* Code
     ...
@@ -155,13 +170,13 @@ const
 
   *)
 
-  // Inline functions.
-  function XAudio2CreateVolumeMeter(out ppApo: IUnknown;
-                                    Flags: UINT32 = 0): HRESULT; inline;
+// Inline functions.
+function XAudio2CreateVolumeMeter(out ppApo: IUnknown;
+                                  Flags: UINT32 = 0): HRESULT; inline;
 
 
-  function XAudio2CreateReverb(out ppApo: IUnknown;
-                               Flags: UINT32 = 0): HRESULT; inline;
+function XAudio2CreateReverb(out ppApo: IUnknown;
+                             Flags: UINT32 = 0): HRESULT; inline;
 
 
 
@@ -172,19 +187,20 @@ const
   *
   **************************************************************************)
 
-  // XAUDIO2FX_VOLUMEMETER_LEVELS: Receives results from GetEffectParameters().
-  // The user is responsible for allocating pPeakLevels, pRMSLevels, and
-  // initializing ChannelCount accordingly.
-  // The volume meter does not support SetEffectParameters().
+// XAUDIO2FX_VOLUMEMETER_LEVELS: Receives results from GetEffectParameters().
+// The user is responsible for allocating pPeakLevels, pRMSLevels, and
+// initializing ChannelCount accordingly.
+// The volume meter does not support SetEffectParameters().
 type
   PXAUDIO2FX_VOLUMEMETER_LEVELS = ^XAUDIO2FX_VOLUMEMETER_LEVELS;
+
   XAUDIO2FX_VOLUMEMETER_LEVELS = record
     pPeakLevels: PSingle;             // Peak levels table: receives maximum absolute level for each channel
-                                      // over a processing pass; may be nil if pRMSLevls >= nil,
-                                      // otherwise must have at least ChannelCount elements.
+    // over a processing pass; may be nil if pRMSLevls >= nil,
+    // otherwise must have at least ChannelCount elements.
     pRMSLevels: PSingle;              // Root mean square levels table: receives RMS level for each channel
-                                      // over a processing pass; may be nil if pPeakLevels >= nil,
-                                      // otherwise must have at least ChannelCount elements.
+    // over a processing pass; may be nil if pPeakLevels >= nil,
+    // otherwise must have at least ChannelCount elements.
     ChannelCount: UINT32;             // Number of channels being processed by the volume meter APO
   end;
 
@@ -209,25 +225,26 @@ type
   **************************************************************************)
 const
 
-  XAUDIO2FX_REVERB_MIN_FRAMERATE      = 20000;
-  XAUDIO2FX_REVERB_MAX_FRAMERATE      = 48000;
+  XAUDIO2FX_REVERB_MIN_FRAMERATE = 20000;
+  XAUDIO2FX_REVERB_MAX_FRAMERATE = 48000;
 
   // XAUDIO2FX_REVERB_PARAMETERS: Native parameter set for the reverb effect
 
 type
 
   PXAUDIO2FX_REVERB_PARAMETERS = ^XAUDIO2FX_REVERB_PARAMETERS;
+
   XAUDIO2FX_REVERB_PARAMETERS = record
-// ratio of wet (processed) signal to dry (original) signal
+    // ratio of wet (processed) signal to dry (original) signal
     WetDryMix: Single;               // [0, 100] (percentage)
-// Delay times
+    // Delay times
     ReflectionsDelay: UINT32;        // [0, 300] in ms
     ReverbDelay: Byte;               // [0, 85] in ms
     RearDelay: Byte;                 // 7.1: [0, 20] in ms, all other: [0, 5] in ms
-{$IFDEF _WINNT_WIN10}
+    {$IFDEF _WINNT_WIN10}
     SideDelay: Byte;                 // 7.1: [0, 5] in ms, all other: not used, but still validated
-{$ENDIF}
-// Indexed parameters
+    {$ENDIF}
+    // Indexed parameters
     PositionLeft: Byte;              // [0, 30] no units
     PositionRight: Byte;             // [0, 30] no units, ignored when configured to mono
     PositionMatrixLeft: Byte;        // [0, 30] no units
@@ -238,7 +255,7 @@ type
     LowEQCutoff: Byte;               // [0, 9] no units
     HighEQGain: Byte;                // [0, 8] no units
     HighEQCutoff: Byte;              // [0, 14] no units
-// Direct parameters
+    // Direct parameters
     RoomFilterFreq: Single;           // [20, 20000] in Hz
     RoomFilterMain: Single;           // [-100, 0] in dB
     RoomFilterHF: Single;             // [-100, 0] in dB
@@ -247,8 +264,9 @@ type
     DecayTime: Single;                // [0.1, inf] in seconds
     Density: Single;                  // [0, 100] (percentage)
     RoomSize: Single;                 // [1, 100] in feet
-// component control
+    // component control
     DisableLateField: BOOL;         // TRUE to disable late field reflections.
+
   public
     procedure CheckBoundaries(sevenDotOneReverb: Boolean);
   end;
@@ -258,71 +276,71 @@ type
 const
 
   // MINIMUM
-  XAUDIO2FX_REVERB_MIN_WET_DRY_MIX         = 0.0;
-  XAUDIO2FX_REVERB_MIN_REFLECTIONS_DELAY   = 0;
-  XAUDIO2FX_REVERB_MIN_REVERB_DELAY        = 0;
-  XAUDIO2FX_REVERB_MIN_REAR_DELAY          = 0;
-  XAUDIO2FX_REVERB_MIN_7POINT1_SIDE_DELAY  = 0;
-  XAUDIO2FX_REVERB_MIN_7POINT1_REAR_DELAY  = 0;
-  XAUDIO2FX_REVERB_MIN_POSITION            = 0;
-  XAUDIO2FX_REVERB_MIN_DIFFUSION           = 0;
-  XAUDIO2FX_REVERB_MIN_LOW_EQ_GAIN         = 0;
-  XAUDIO2FX_REVERB_MIN_LOW_EQ_CUTOFF       = 0;
-  XAUDIO2FX_REVERB_MIN_HIGH_EQ_GAIN        = 0;
-  XAUDIO2FX_REVERB_MIN_HIGH_EQ_CUTOFF      = 0;
-  XAUDIO2FX_REVERB_MIN_ROOM_FILTER_FREQ    = 20.0;
-  XAUDIO2FX_REVERB_MIN_ROOM_FILTER_MAIN    = -100.0;
-  XAUDIO2FX_REVERB_MIN_ROOM_FILTER_HF      = -100.0;
-  XAUDIO2FX_REVERB_MIN_REFLECTIONS_GAIN    = -100.0;
-  XAUDIO2FX_REVERB_MIN_REVERB_GAIN         = -100.0;
-  XAUDIO2FX_REVERB_MIN_DECAY_TIME          = 0.1;
-  XAUDIO2FX_REVERB_MIN_DENSITY             = 0.0;
-  XAUDIO2FX_REVERB_MIN_ROOM_SIZE           = 0.0;
+  XAUDIO2FX_REVERB_MIN_WET_DRY_MIX = 0.0;
+  XAUDIO2FX_REVERB_MIN_REFLECTIONS_DELAY = 0;
+  XAUDIO2FX_REVERB_MIN_REVERB_DELAY = 0;
+  XAUDIO2FX_REVERB_MIN_REAR_DELAY = 0;
+  XAUDIO2FX_REVERB_MIN_7POINT1_SIDE_DELAY = 0;
+  XAUDIO2FX_REVERB_MIN_7POINT1_REAR_DELAY = 0;
+  XAUDIO2FX_REVERB_MIN_POSITION = 0;
+  XAUDIO2FX_REVERB_MIN_DIFFUSION = 0;
+  XAUDIO2FX_REVERB_MIN_LOW_EQ_GAIN = 0;
+  XAUDIO2FX_REVERB_MIN_LOW_EQ_CUTOFF = 0;
+  XAUDIO2FX_REVERB_MIN_HIGH_EQ_GAIN = 0;
+  XAUDIO2FX_REVERB_MIN_HIGH_EQ_CUTOFF = 0;
+  XAUDIO2FX_REVERB_MIN_ROOM_FILTER_FREQ = 20.0;
+  XAUDIO2FX_REVERB_MIN_ROOM_FILTER_MAIN = -100.0;
+  XAUDIO2FX_REVERB_MIN_ROOM_FILTER_HF = -100.0;
+  XAUDIO2FX_REVERB_MIN_REFLECTIONS_GAIN = -100.0;
+  XAUDIO2FX_REVERB_MIN_REVERB_GAIN = -100.0;
+  XAUDIO2FX_REVERB_MIN_DECAY_TIME = 0.1;
+  XAUDIO2FX_REVERB_MIN_DENSITY = 0.0;
+  XAUDIO2FX_REVERB_MIN_ROOM_SIZE = 0.0;
 
   // MAXIMUM
-  XAUDIO2FX_REVERB_MAX_WET_DRY_MIX         = 100.0;
-  XAUDIO2FX_REVERB_MAX_REFLECTIONS_DELAY   = 300;
-  XAUDIO2FX_REVERB_MAX_REVERB_DELAY        = 85;
-  XAUDIO2FX_REVERB_MAX_REAR_DELAY          = 5;
-  XAUDIO2FX_REVERB_MAX_7POINT1_SIDE_DELAY  = 5;
-  XAUDIO2FX_REVERB_MAX_7POINT1_REAR_DELAY  = 20;
-  XAUDIO2FX_REVERB_MAX_POSITION            = 30;
-  XAUDIO2FX_REVERB_MAX_DIFFUSION           = 15;
-  XAUDIO2FX_REVERB_MAX_LOW_EQ_GAIN         = 12;
-  XAUDIO2FX_REVERB_MAX_LOW_EQ_CUTOFF       = 9;
-  XAUDIO2FX_REVERB_MAX_HIGH_EQ_GAIN        = 8;
-  XAUDIO2FX_REVERB_MAX_HIGH_EQ_CUTOFF      = 14;
-  XAUDIO2FX_REVERB_MAX_ROOM_FILTER_FREQ    = 20000.0;
-  XAUDIO2FX_REVERB_MAX_ROOM_FILTER_MAIN    = 0.0;
-  XAUDIO2FX_REVERB_MAX_ROOM_FILTER_HF      = 0.0;
-  XAUDIO2FX_REVERB_MAX_REFLECTIONS_GAIN    = 20.0;
-  XAUDIO2FX_REVERB_MAX_REVERB_GAIN         = 20.0;
-  XAUDIO2FX_REVERB_MAX_DENSITY             = 100.0;
-  XAUDIO2FX_REVERB_MAX_ROOM_SIZE           = 100.0;
+  XAUDIO2FX_REVERB_MAX_WET_DRY_MIX = 100.0;
+  XAUDIO2FX_REVERB_MAX_REFLECTIONS_DELAY = 300;
+  XAUDIO2FX_REVERB_MAX_REVERB_DELAY = 85;
+  XAUDIO2FX_REVERB_MAX_REAR_DELAY = 5;
+  XAUDIO2FX_REVERB_MAX_7POINT1_SIDE_DELAY = 5;
+  XAUDIO2FX_REVERB_MAX_7POINT1_REAR_DELAY = 20;
+  XAUDIO2FX_REVERB_MAX_POSITION = 30;
+  XAUDIO2FX_REVERB_MAX_DIFFUSION = 15;
+  XAUDIO2FX_REVERB_MAX_LOW_EQ_GAIN = 12;
+  XAUDIO2FX_REVERB_MAX_LOW_EQ_CUTOFF = 9;
+  XAUDIO2FX_REVERB_MAX_HIGH_EQ_GAIN = 8;
+  XAUDIO2FX_REVERB_MAX_HIGH_EQ_CUTOFF = 14;
+  XAUDIO2FX_REVERB_MAX_ROOM_FILTER_FREQ = 20000.0;
+  XAUDIO2FX_REVERB_MAX_ROOM_FILTER_MAIN = 0.0;
+  XAUDIO2FX_REVERB_MAX_ROOM_FILTER_HF = 0.0;
+  XAUDIO2FX_REVERB_MAX_REFLECTIONS_GAIN = 20.0;
+  XAUDIO2FX_REVERB_MAX_REVERB_GAIN = 20.0;
+  XAUDIO2FX_REVERB_MAX_DENSITY = 100.0;
+  XAUDIO2FX_REVERB_MAX_ROOM_SIZE = 100.0;
 
   // DEFAULT
-  XAUDIO2FX_REVERB_DEFAULT_WET_DRY_MIX        = 100.0;
-  XAUDIO2FX_REVERB_DEFAULT_REFLECTIONS_DELAY  = 5;
-  XAUDIO2FX_REVERB_DEFAULT_REVERB_DELAY       = 5;
-  XAUDIO2FX_REVERB_DEFAULT_REAR_DELAY         = 5;
+  XAUDIO2FX_REVERB_DEFAULT_WET_DRY_MIX = 100.0;
+  XAUDIO2FX_REVERB_DEFAULT_REFLECTIONS_DELAY = 5;
+  XAUDIO2FX_REVERB_DEFAULT_REVERB_DELAY = 5;
+  XAUDIO2FX_REVERB_DEFAULT_REAR_DELAY = 5;
   XAUDIO2FX_REVERB_DEFAULT_7POINT1_SIDE_DELAY = 5;
   XAUDIO2FX_REVERB_DEFAULT_7POINT1_REAR_DELAY = 20;
-  XAUDIO2FX_REVERB_DEFAULT_POSITION           = 6;
-  XAUDIO2FX_REVERB_DEFAULT_POSITION_MATRIX    = 27;
-  XAUDIO2FX_REVERB_DEFAULT_EARLY_DIFFUSION    = 8;
-  XAUDIO2FX_REVERB_DEFAULT_LATE_DIFFUSION     = 8;
-  XAUDIO2FX_REVERB_DEFAULT_LOW_EQ_GAIN        = 8;
-  XAUDIO2FX_REVERB_DEFAULT_LOW_EQ_CUTOFF      = 4;
-  XAUDIO2FX_REVERB_DEFAULT_HIGH_EQ_GAIN       = 8;
-  XAUDIO2FX_REVERB_DEFAULT_HIGH_EQ_CUTOFF     = 4;
-  XAUDIO2FX_REVERB_DEFAULT_ROOM_FILTER_FREQ   = 5000.0;
-  XAUDIO2FX_REVERB_DEFAULT_ROOM_FILTER_MAIN   = 0.0;
-  XAUDIO2FX_REVERB_DEFAULT_ROOM_FILTER_HF     = 0.0;
-  XAUDIO2FX_REVERB_DEFAULT_REFLECTIONS_GAIN   = 0.0;
-  XAUDIO2FX_REVERB_DEFAULT_REVERB_GAIN        = 0.0;
-  XAUDIO2FX_REVERB_DEFAULT_DECAY_TIME         = 1.0;
-  XAUDIO2FX_REVERB_DEFAULT_DENSITY            = 100.0;
-  XAUDIO2FX_REVERB_DEFAULT_ROOM_SIZE          = 100.0;
+  XAUDIO2FX_REVERB_DEFAULT_POSITION = 6;
+  XAUDIO2FX_REVERB_DEFAULT_POSITION_MATRIX = 27;
+  XAUDIO2FX_REVERB_DEFAULT_EARLY_DIFFUSION = 8;
+  XAUDIO2FX_REVERB_DEFAULT_LATE_DIFFUSION = 8;
+  XAUDIO2FX_REVERB_DEFAULT_LOW_EQ_GAIN = 8;
+  XAUDIO2FX_REVERB_DEFAULT_LOW_EQ_CUTOFF = 4;
+  XAUDIO2FX_REVERB_DEFAULT_HIGH_EQ_GAIN = 8;
+  XAUDIO2FX_REVERB_DEFAULT_HIGH_EQ_CUTOFF = 4;
+  XAUDIO2FX_REVERB_DEFAULT_ROOM_FILTER_FREQ = 5000.0;
+  XAUDIO2FX_REVERB_DEFAULT_ROOM_FILTER_MAIN = 0.0;
+  XAUDIO2FX_REVERB_DEFAULT_ROOM_FILTER_HF = 0.0;
+  XAUDIO2FX_REVERB_DEFAULT_REFLECTIONS_GAIN = 0.0;
+  XAUDIO2FX_REVERB_DEFAULT_REVERB_GAIN = 0.0;
+  XAUDIO2FX_REVERB_DEFAULT_DECAY_TIME = 1.0;
+  XAUDIO2FX_REVERB_DEFAULT_DENSITY = 100.0;
+  XAUDIO2FX_REVERB_DEFAULT_ROOM_SIZE = 100.0;
   XAUDIO2FX_REVERB_DEFAULT_DISABLE_LATE_FIELD = False;
 
 
@@ -330,10 +348,11 @@ const
 type
 
   PXAUDIO2FX_REVERB_I3DL2_PARAMETERS = ^XAUDIO2FX_REVERB_I3DL2_PARAMETERS;
+
   XAUDIO2FX_REVERB_I3DL2_PARAMETERS = record
-  // ratio of wet (processed) signal to dry (original) signal
+    // ratio of wet (processed) signal to dry (original) signal
     WetDryMix: Single;               // [0, 100] (percentage)
-  // Standard I3DL2 parameters
+    // Standard I3DL2 parameters
     Room: INT32;                     // [-10000, 0] in mB (hundredths of decibels)
     RoomHF: INT32;                   // [-10000, 0] in mB (hundredths of decibels)
     RoomRolloffFactor: Single;        // [0.0, 10.0]
@@ -354,11 +373,13 @@ type
 
   // ReverbConvertI3DL2ToNative: Utility function to map from I3DL2 to native parameters
 
-  procedure ReverbConvertI3DL2ToNative(pI3DL2: PXAUDIO2FX_REVERB_I3DL2_PARAMETERS;
-                                       pNative: PXAUDIO2FX_REVERB_PARAMETERS
-                                       {$IFDEF _WINNT_WIN10}
-                                       ; sevenDotOneReverb: BOOL = TRUE
-                                       {$ENDIF});
+procedure ReverbConvertI3DL2ToNative(pI3DL2: PXAUDIO2FX_REVERB_I3DL2_PARAMETERS;
+                                     pNative: PXAUDIO2FX_REVERB_PARAMETERS
+  {$IFDEF _WINNT_WIN10}
+                                       ;
+                                     sevenDotOneReverb: BOOL = TRUE
+  {$ENDIF}
+  );
 
 
   (**************************************************************************
@@ -373,449 +394,450 @@ type
 const
 
   XAUDIO2FX_I3DL2_PRESET_DEFAULT: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                       Room: -10000;
-                                                                       RoomHF: 0;
-                                                                       RoomRolloffFactor: 0.0;
-                                                                       DecayTime: 1.00;
-                                                                       DecayHFRatio: 0.50;
-                                                                       Reflections: -10000;
-                                                                       ReflectionsDelay: 0.020;
-                                                                       Reverb: -10000;
-                                                                       ReverbDelay: 0.040;
-                                                                       Diffusion: 100.0;
-                                                                       Density: 100.0;
-                                                                       HFReference: 5000.0);
+    Room: -10000;
+    RoomHF: 0;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.00;
+    DecayHFRatio: 0.50;
+    Reflections: -10000;
+    ReflectionsDelay: 0.020;
+    Reverb: -10000;
+    ReverbDelay: 0.040;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_GENERIC: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                       Room: -1000;
-                                                                       RoomHF: -100;
-                                                                       RoomRolloffFactor: 0.0;
-                                                                       DecayTime: 1.49;
-                                                                       DecayHFRatio: 0.83;
-                                                                       Reflections: -2602;
-                                                                       ReflectionsDelay: 0.007;
-                                                                       Reverb: 200;
-                                                                       ReverbDelay: 0.011;
-                                                                       Diffusion: 100.0;
-                                                                       Density: 100.0;
-                                                                       HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -100;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.49;
+    DecayHFRatio: 0.83;
+    Reflections: -2602;
+    ReflectionsDelay: 0.007;
+    Reverb: 200;
+    ReverbDelay: 0.011;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_PADDEDCELL: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                          Room: -1000;
-                                                                          RoomHF: -6000;
-                                                                          RoomRolloffFactor: 0.0;
-                                                                          DecayTime: 0.17;
-                                                                          DecayHFRatio: 0.10;
-                                                                          Reflections: -1204;
-                                                                          ReflectionsDelay: 0.001;
-                                                                          Reverb: 207;
-                                                                          ReverbDelay: 0.002;
-                                                                          Diffusion: 100.0;
-                                                                          Density: 100.0;
-                                                                          HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -6000;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 0.17;
+    DecayHFRatio: 0.10;
+    Reflections: -1204;
+    ReflectionsDelay: 0.001;
+    Reverb: 207;
+    ReverbDelay: 0.002;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_ROOM: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                    Room: -1000;
-                                                                    RoomHF: -454;
-                                                                    RoomRolloffFactor: 0.0;
-                                                                    DecayTime: 0.40;
-                                                                    DecayHFRatio: 0.83;
-                                                                    Reflections: -1646;
-                                                                    ReflectionsDelay: 0.002;
-                                                                    Reverb: 53;
-                                                                    ReverbDelay: 0.003;
-                                                                    Diffusion: 100.0;
-                                                                    Density: 100.0;
-                                                                    HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -454;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 0.40;
+    DecayHFRatio: 0.83;
+    Reflections: -1646;
+    ReflectionsDelay: 0.002;
+    Reverb: 53;
+    ReverbDelay: 0.003;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_BATHROOM: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                        Room: -1000;
-                                                                        RoomHF: -1200;
-                                                                        RoomRolloffFactor: 0.0;
-                                                                        DecayTime: 1.49;
-                                                                        DecayHFRatio: 0.54;
-                                                                        Reflections: -370;
-                                                                        ReflectionsDelay: 0.007;
-                                                                        Reverb: 1030;
-                                                                        ReverbDelay: 0.011;
-                                                                        Diffusion: 100.0;
-                                                                        Density: 60.0;
-                                                                        HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -1200;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.49;
+    DecayHFRatio: 0.54;
+    Reflections: -370;
+    ReflectionsDelay: 0.007;
+    Reverb: 1030;
+    ReverbDelay: 0.011;
+    Diffusion: 100.0;
+    Density: 60.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_LIVINGROOM: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                          Room: -1000;
-                                                                          RoomHF: -6000;
-                                                                          RoomRolloffFactor: 0.0;
-                                                                          DecayTime: 0.50;
-                                                                          DecayHFRatio: 0.10;
-                                                                          Reflections: -1376;
-                                                                          ReflectionsDelay: 0.003;
-                                                                          Reverb: -1104;
-                                                                          ReverbDelay: 0.004;
-                                                                          Diffusion: 100.0;
-                                                                          Density: 100.0;
-                                                                          HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -6000;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 0.50;
+    DecayHFRatio: 0.10;
+    Reflections: -1376;
+    ReflectionsDelay: 0.003;
+    Reverb: -1104;
+    ReverbDelay: 0.004;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_STONEROOM: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                         Room: -1000;
-                                                                         RoomHF: -300;
-                                                                         RoomRolloffFactor: 0.0;
-                                                                         DecayTime: 2.31;
-                                                                         DecayHFRatio: 0.64;
-                                                                         Reflections: -711;
-                                                                         ReflectionsDelay: 0.012;
-                                                                         Reverb: 83;
-                                                                         ReverbDelay: 0.017;
-                                                                         Diffusion: 100.0;
-                                                                         Density: 100.0;
-                                                                         HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -300;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 2.31;
+    DecayHFRatio: 0.64;
+    Reflections: -711;
+    ReflectionsDelay: 0.012;
+    Reverb: 83;
+    ReverbDelay: 0.017;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_AUDITORIUM: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                          Room: -1000;
-                                                                          RoomHF: -476;
-                                                                          RoomRolloffFactor: 0.0;
-                                                                          DecayTime: 4.32;
-                                                                          DecayHFRatio: 0.59;
-                                                                          Reflections: -789;
-                                                                          ReflectionsDelay: 0.020;
-                                                                          Reverb: -289;
-                                                                          ReverbDelay: 0.030;
-                                                                          Diffusion: 100.0;
-                                                                          Density: 100.0;
-                                                                          HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -476;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 4.32;
+    DecayHFRatio: 0.59;
+    Reflections: -789;
+    ReflectionsDelay: 0.020;
+    Reverb: -289;
+    ReverbDelay: 0.030;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_CONCERTHALL: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                           Room: -1000;
-                                                                           RoomHF: -500;
-                                                                           RoomRolloffFactor: 0.0;
-                                                                           DecayTime: 3.92;
-                                                                           DecayHFRatio: 0.70;
-                                                                           Reflections: -1230;
-                                                                           ReflectionsDelay: 0.020;
-                                                                           Reverb: -2;
-                                                                           ReverbDelay: 0.029;
-                                                                           Diffusion: 100.0;
-                                                                           Density: 100.0;
-                                                                           HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -500;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 3.92;
+    DecayHFRatio: 0.70;
+    Reflections: -1230;
+    ReflectionsDelay: 0.020;
+    Reverb: -2;
+    ReverbDelay: 0.029;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_CAVE: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                    Room: -1000;
-                                                                    RoomHF: 0;
-                                                                    RoomRolloffFactor: 0.0;
-                                                                    DecayTime: 2.91;
-                                                                    DecayHFRatio: 1.30;
-                                                                    Reflections: -602;
-                                                                    ReflectionsDelay: 0.015;
-                                                                    Reverb: -302;
-                                                                    ReverbDelay: 0.022;
-                                                                    Diffusion: 100.0;
-                                                                    Density: 100.0;
-                                                                    HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: 0;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 2.91;
+    DecayHFRatio: 1.30;
+    Reflections: -602;
+    ReflectionsDelay: 0.015;
+    Reverb: -302;
+    ReverbDelay: 0.022;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_ARENA: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                     Room: -1000;
-                                                                     RoomHF: -698;
-                                                                     RoomRolloffFactor: 0.0;
-                                                                     DecayTime: 7.24;
-                                                                     DecayHFRatio: 0.33;
-                                                                     Reflections: -1166;
-                                                                     ReflectionsDelay: 0.020;
-                                                                     Reverb: 16;
-                                                                     ReverbDelay: 0.030;
-                                                                     Diffusion: 100.0;
-                                                                     Density: 100.0;
-                                                                     HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -698;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 7.24;
+    DecayHFRatio: 0.33;
+    Reflections: -1166;
+    ReflectionsDelay: 0.020;
+    Reverb: 16;
+    ReverbDelay: 0.030;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_HANGAR: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                      Room: -1000;
-                                                                      RoomHF: -1000;
-                                                                      RoomRolloffFactor: 0.0;
-                                                                      DecayTime: 10.05;
-                                                                      DecayHFRatio: 0.23;
-                                                                      Reflections: -602;
-                                                                      ReflectionsDelay: 0.020;
-                                                                      Reverb: 198;
-                                                                      ReverbDelay: 0.030;
-                                                                      Diffusion: 100.0;
-                                                                      Density: 100.0;
-                                                                      HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -1000;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 10.05;
+    DecayHFRatio: 0.23;
+    Reflections: -602;
+    ReflectionsDelay: 0.020;
+    Reverb: 198;
+    ReverbDelay: 0.030;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_CARPETEDHALLWAY: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                               Room: -1000;
-                                                                               RoomHF: -4000;
-                                                                               RoomRolloffFactor: 0.0;
-                                                                               DecayTime: 0.30;
-                                                                               DecayHFRatio: 0.10;
-                                                                               Reflections: -1831;
-                                                                               ReflectionsDelay: 0.002;
-                                                                               Reverb: -1630;
-                                                                               ReverbDelay: 0.030;
-                                                                               Diffusion: 100.0;
-                                                                               Density: 100.0;
-                                                                               HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -4000;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 0.30;
+    DecayHFRatio: 0.10;
+    Reflections: -1831;
+    ReflectionsDelay: 0.002;
+    Reverb: -1630;
+    ReverbDelay: 0.030;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_HALLWAY: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                       Room: -1000;
-                                                                       RoomHF: -300;
-                                                                       RoomRolloffFactor: 0.0;
-                                                                       DecayTime: 1.49;
-                                                                       DecayHFRatio: 0.59;
-                                                                       Reflections: -1219;
-                                                                       ReflectionsDelay: 0.007;
-                                                                       Reverb: 441;
-                                                                       ReverbDelay: 0.011;
-                                                                       Diffusion: 100.0;
-                                                                       Density: 100.0;
-                                                                       HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -300;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.49;
+    DecayHFRatio: 0.59;
+    Reflections: -1219;
+    ReflectionsDelay: 0.007;
+    Reverb: 441;
+    ReverbDelay: 0.011;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_STONECORRIDOR: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                             Room: -1000;
-                                                                             RoomHF: -237;
-                                                                             RoomRolloffFactor: 0.0;
-                                                                             DecayTime: 2.70;
-                                                                             DecayHFRatio: 0.79;
-                                                                             Reflections: -1214;
-                                                                             ReflectionsDelay: 0.013;
-                                                                             Reverb: 395;
-                                                                             ReverbDelay: 0.020;
-                                                                             Diffusion: 100.0;
-                                                                             Density: 100.0;
-                                                                             HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -237;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 2.70;
+    DecayHFRatio: 0.79;
+    Reflections: -1214;
+    ReflectionsDelay: 0.013;
+    Reverb: 395;
+    ReverbDelay: 0.020;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_ALLEY: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                     Room: -1000;
-                                                                     RoomHF: -270;
-                                                                     RoomRolloffFactor: 0.0;
-                                                                     DecayTime: 1.49;
-                                                                     DecayHFRatio: 0.86;
-                                                                     Reflections: -1204;
-                                                                     ReflectionsDelay: 0.007;
-                                                                     Reverb: -4;
-                                                                     ReverbDelay: 0.011;
-                                                                     Diffusion: 100.0;
-                                                                     Density: 100.0;
-                                                                     HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -270;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.49;
+    DecayHFRatio: 0.86;
+    Reflections: -1204;
+    ReflectionsDelay: 0.007;
+    Reverb: -4;
+    ReverbDelay: 0.011;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_FOREST: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                      Room: -1000;
-                                                                      RoomHF: -3300;
-                                                                      RoomRolloffFactor: 0.0;
-                                                                      DecayTime: 1.49;
-                                                                      DecayHFRatio: 0.54;
-                                                                      Reflections: -2560;
-                                                                      ReflectionsDelay: 0.162;
-                                                                      Reverb: -613;
-                                                                      ReverbDelay: 0.088;
-                                                                      Diffusion: 79.0;
-                                                                      Density: 100.0;
-                                                                      HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -3300;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.49;
+    DecayHFRatio: 0.54;
+    Reflections: -2560;
+    ReflectionsDelay: 0.162;
+    Reverb: -613;
+    ReverbDelay: 0.088;
+    Diffusion: 79.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_CITY: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                    Room: -1000;
-                                                                    RoomHF: -800;
-                                                                    RoomRolloffFactor: 0.0;
-                                                                    DecayTime: 1.49;
-                                                                    DecayHFRatio: 0.67;
-                                                                    Reflections: -2273;
-                                                                    ReflectionsDelay: 0.007;
-                                                                    Reverb: -2217;
-                                                                    ReverbDelay: 0.011;
-                                                                    Diffusion: 50.0;
-                                                                    Density: 100.0;
-                                                                    HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -800;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.49;
+    DecayHFRatio: 0.67;
+    Reflections: -2273;
+    ReflectionsDelay: 0.007;
+    Reverb: -2217;
+    ReverbDelay: 0.011;
+    Diffusion: 50.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_MOUNTAINS: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                         Room: -1000;
-                                                                         RoomHF: -2500;
-                                                                         RoomRolloffFactor: 0.0;
-                                                                         DecayTime: 1.49;
-                                                                         DecayHFRatio: 0.21;
-                                                                         Reflections: -2780;
-                                                                         ReflectionsDelay: 0.300;
-                                                                         Reverb: -2014;
-                                                                         ReverbDelay: 0.100;
-                                                                         Diffusion: 27.0;
-                                                                         Density: 100.0;
-                                                                         HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -2500;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.49;
+    DecayHFRatio: 0.21;
+    Reflections: -2780;
+    ReflectionsDelay: 0.300;
+    Reverb: -2014;
+    ReverbDelay: 0.100;
+    Diffusion: 27.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_QUARRY: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                      Room: -1000;
-                                                                      RoomHF: -1000;
-                                                                      RoomRolloffFactor: 0.0;
-                                                                      DecayTime: 1.49;
-                                                                      DecayHFRatio: 0.83;
-                                                                      Reflections: -10000;
-                                                                      ReflectionsDelay: 0.061;
-                                                                      Reverb: 500;
-                                                                      ReverbDelay: 0.025;
-                                                                      Diffusion: 100.0;
-                                                                      Density: 100.0;
-                                                                      HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -1000;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.49;
+    DecayHFRatio: 0.83;
+    Reflections: -10000;
+    ReflectionsDelay: 0.061;
+    Reverb: 500;
+    ReverbDelay: 0.025;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_PLAIN: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                     Room: -1000;
-                                                                     RoomHF: -2000;
-                                                                     RoomRolloffFactor: 0.0;
-                                                                     DecayTime: 1.49;
-                                                                     DecayHFRatio: 0.50;
-                                                                     Reflections: -2466;
-                                                                     ReflectionsDelay: 0.179;
-                                                                     Reverb: -2514;
-                                                                     ReverbDelay: 0.100;
-                                                                     Diffusion: 21.0;
-                                                                     Density: 100.0;
-                                                                     HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -2000;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.49;
+    DecayHFRatio: 0.50;
+    Reflections: -2466;
+    ReflectionsDelay: 0.179;
+    Reverb: -2514;
+    ReverbDelay: 0.100;
+    Diffusion: 21.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_PARKINGLOT: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                          Room: -1000;
-                                                                          RoomHF: 0;
-                                                                          RoomRolloffFactor: 0.0;
-                                                                          DecayTime: 1.65;
-                                                                          DecayHFRatio: 1.50;
-                                                                          Reflections: -1363;
-                                                                          ReflectionsDelay: 0.008;
-                                                                          Reverb: -1153;
-                                                                          ReverbDelay: 0.012;
-                                                                          Diffusion: 100.0;
-                                                                          Density: 100.0;
-                                                                          HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: 0;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.65;
+    DecayHFRatio: 1.50;
+    Reflections: -1363;
+    ReflectionsDelay: 0.008;
+    Reverb: -1153;
+    ReverbDelay: 0.012;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_SEWERPIPE: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                         Room: -1000;
-                                                                         RoomHF: -1000;
-                                                                         RoomRolloffFactor: 0.0;
-                                                                         DecayTime: 2.81;
-                                                                         DecayHFRatio: 0.14;
-                                                                         Reflections: 429;
-                                                                         ReflectionsDelay: 0.014;
-                                                                         Reverb: 648;
-                                                                         ReverbDelay: 0.021;
-                                                                         Diffusion: 80.0;
-                                                                         Density: 60.0;
-                                                                         HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -1000;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 2.81;
+    DecayHFRatio: 0.14;
+    Reflections: 429;
+    ReflectionsDelay: 0.014;
+    Reverb: 648;
+    ReverbDelay: 0.021;
+    Diffusion: 80.0;
+    Density: 60.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_UNDERWATER: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                          Room: -1000;
-                                                                          RoomHF: -4000;
-                                                                          RoomRolloffFactor: 0.0;
-                                                                          DecayTime: 1.49;
-                                                                          DecayHFRatio: 0.10;
-                                                                          Reflections: -449;
-                                                                          ReflectionsDelay: 0.007;
-                                                                          Reverb: 1700;
-                                                                          ReverbDelay: 0.011;
-                                                                          Diffusion: 100.0;
-                                                                          Density: 100.0;
-                                                                          HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -4000;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.49;
+    DecayHFRatio: 0.10;
+    Reflections: -449;
+    ReflectionsDelay: 0.007;
+    Reverb: 1700;
+    ReverbDelay: 0.011;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_SMALLROOM: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                         Room: -1000;
-                                                                         RoomHF: -600;
-                                                                         RoomRolloffFactor: 0.0;
-                                                                         DecayTime: 1.10;
-                                                                         DecayHFRatio: 0.83;
-                                                                         Reflections: -400;
-                                                                         ReflectionsDelay: 0.005;
-                                                                         Reverb: 500;
-                                                                         ReverbDelay: 0.010;
-                                                                         Diffusion: 100.0;
-                                                                         Density: 100.0;
-                                                                         HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -600;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.10;
+    DecayHFRatio: 0.83;
+    Reflections: -400;
+    ReflectionsDelay: 0.005;
+    Reverb: 500;
+    ReverbDelay: 0.010;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_MEDIUMROOM: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                          Room: -1000;
-                                                                          RoomHF: -600;
-                                                                          RoomRolloffFactor: 0.0;
-                                                                          DecayTime: 1.30;
-                                                                          DecayHFRatio: 0.83;
-                                                                          Reflections: -1000;
-                                                                          ReflectionsDelay: 0.010;
-                                                                          Reverb: -200;
-                                                                          ReverbDelay: 0.020;
-                                                                          Diffusion: 100.0;
-                                                                          Density: 100.0;
-                                                                          HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -600;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.30;
+    DecayHFRatio: 0.83;
+    Reflections: -1000;
+    ReflectionsDelay: 0.010;
+    Reverb: -200;
+    ReverbDelay: 0.020;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_LARGEROOM: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                         Room: -1000;
-                                                                         RoomHF: -600;
-                                                                         RoomRolloffFactor: 0.0;
-                                                                         DecayTime: 1.50;
-                                                                         DecayHFRatio: 0.83;
-                                                                         Reflections: -1600;
-                                                                         ReflectionsDelay: 0.020;
-                                                                         Reverb: -1000;
-                                                                         ReverbDelay: 0.040;
-                                                                         Diffusion: 100.0;
-                                                                         Density: 100.0;
-                                                                         HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -600;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.50;
+    DecayHFRatio: 0.83;
+    Reflections: -1600;
+    ReflectionsDelay: 0.020;
+    Reverb: -1000;
+    ReverbDelay: 0.040;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_MEDIUMHALL: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                          Room: -1000;
-                                                                          RoomHF: -600;
-                                                                          RoomRolloffFactor: 0.0;
-                                                                          DecayTime: 1.80;
-                                                                          DecayHFRatio: 0.70;
-                                                                          Reflections: -1300;
-                                                                          ReflectionsDelay: 0.015;
-                                                                          Reverb: -800;
-                                                                          ReverbDelay: 0.030;
-                                                                          Diffusion: 100.0;
-                                                                          Density: 100.0;
-                                                                          HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -600;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.80;
+    DecayHFRatio: 0.70;
+    Reflections: -1300;
+    ReflectionsDelay: 0.015;
+    Reverb: -800;
+    ReverbDelay: 0.030;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_LARGEHALL: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                         Room: -1000;
-                                                                         RoomHF: -600;
-                                                                         RoomRolloffFactor: 0.0;
-                                                                         DecayTime: 1.80;
-                                                                         DecayHFRatio: 0.70;
-                                                                         Reflections: -2000;
-                                                                         ReflectionsDelay: 0.030;
-                                                                         Reverb: -1400;
-                                                                         ReverbDelay: 0.060;
-                                                                         Diffusion: 100.0;
-                                                                         Density: 100.0;
-                                                                         HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -600;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.80;
+    DecayHFRatio: 0.70;
+    Reflections: -2000;
+    ReflectionsDelay: 0.030;
+    Reverb: -1400;
+    ReverbDelay: 0.060;
+    Diffusion: 100.0;
+    Density: 100.0;
+    HFReference: 5000.0);
 
   XAUDIO2FX_I3DL2_PRESET_PLATE: XAUDIO2FX_REVERB_I3DL2_PARAMETERS = (WetDryMix: 100;
-                                                                     Room: -1000;
-                                                                     RoomHF: -200;
-                                                                     RoomRolloffFactor: 0.0;
-                                                                     DecayTime: 1.30;
-                                                                     DecayHFRatio: 0.90;
-                                                                     Reflections: 0;
-                                                                     ReflectionsDelay: 0.002;
-                                                                     Reverb: 0;
-                                                                     ReverbDelay: 0.010;
-                                                                     Diffusion: 100.0;
-                                                                     Density: 75.0;
-                                                                     HFReference: 5000.0);
+    Room: -1000;
+    RoomHF: -200;
+    RoomRolloffFactor: 0.0;
+    DecayTime: 1.30;
+    DecayHFRatio: 0.90;
+    Reflections: 0;
+    ReflectionsDelay: 0.002;
+    Reverb: 0;
+    ReverbDelay: 0.010;
+    Diffusion: 100.0;
+    Density: 75.0;
+    HFReference: 5000.0);
 
 
   // Undo the #pragma pack(push, 1) at the top of this file
   //#pragma pack(pop) // revert packing alignment
   // set back to default
-  {$IFDEF WIN32}
+{$IFDEF WIN32}
     {$ALIGN 1}
-  {$ELSE}
-    {$ALIGN 8} // Win64
-  {$ENDIF}
+{$ELSE}
+{$ALIGN 8}
+// Win64
+{$ENDIF}
 
 
   // Additional Prototypes for ALL interfaces
 
-  function ClipByteValue(byteval: UINT32): Byte; inline;
+function ClipByteValue(byteval: UINT32): Byte; inline;
 
-  /// <summary>Compares kXAudio2NativeReverb parameters for Min and Max, adjusting it if it's outside the specified range.</summary>
-  procedure CheckXAudio2NativeReverbParams(var params: XAUDIO2FX_REVERB_PARAMETERS;
-                                           sevenDotOneReverb: Boolean); inline;
+/// <summary>Compares kXAudio2NativeReverb parameters for Min and Max, adjusting it if it's outside the specified range.</summary>
+procedure CheckXAudio2NativeReverbParams(var params: XAUDIO2FX_REVERB_PARAMETERS;
+                                         sevenDotOneReverb: Boolean); inline;
 
-  /// <summary>Compares XAudio2I3DL2Reverb parameters for Min and Max, adjusting it if it's outside the specified range.</summary>
-  procedure CheckXAudio2I3DL2ReverbParams(var params: XAUDIO2FX_REVERB_I3DL2_PARAMETERS); inline;
+/// <summary>Compares XAudio2I3DL2Reverb parameters for Min and Max, adjusting it if it's outside the specified range.</summary>
+procedure CheckXAudio2I3DL2ReverbParams(var params: XAUDIO2FX_REVERB_I3DL2_PARAMETERS); inline;
 
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 
 implementation
@@ -823,14 +845,19 @@ implementation
 
 function XAudio2CreateVolumeMeter(out ppApo: IUnknown;
                                   Flags: UINT32 = 0): HRESULT; inline;
+
 begin
-  Result:= CreateAudioVolumeMeter(@ppApo);
+
+  Result := CreateAudioVolumeMeter(@ppApo);
 end;
+
 
 function XAudio2CreateReverb(out ppApo: IUnknown;
                              Flags: UINT32 = 0): HRESULT; inline;
+
 begin
-  Result:= CreateAudioReverb(@ppApo);
+
+  Result := CreateAudioReverb(@ppApo);
 end;
 
 
@@ -840,9 +867,11 @@ function CreateAudioReverb; external XAudio2_DLL name 'CreateAudioReverb';
 
 procedure ReverbConvertI3DL2ToNative(pI3DL2: PXAUDIO2FX_REVERB_I3DL2_PARAMETERS;
                                      pNative: PXAUDIO2FX_REVERB_PARAMETERS
-                                     {$IFDEF _WINNT_WIN10}
-                                     ; sevenDotOneReverb: BOOL = True
-                                     {$ENDIF});
+  {$IFDEF _WINNT_WIN10}
+                                     ;
+                                     sevenDotOneReverb: BOOL = True
+  {$ENDIF}
+  );
 var
   reflectionsDelay: Single;
   reverbDelay: Single;
@@ -851,104 +880,105 @@ var
   decayRatio: Double;
 
 begin
+
   // Match the SDK conversion; callers may clamp explicitly before conversion.
 
   // RoomRolloffFactor is ignored
 
   // These parameters have no equivalent in I3DL2
-{$IFDEF _WINNT_WIN10}
+  {$IFDEF _WINNT_WIN10}
   if (sevenDotOneReverb = True) then
+      begin
+        pNative^.RearDelay := XAUDIO2FX_REVERB_DEFAULT_7POINT1_REAR_DELAY; // 20
+      end
+  else
+      begin
+        pNative^.RearDelay := XAUDIO2FX_REVERB_DEFAULT_REAR_DELAY; // 5
+      end;
+
+    pNative^.SideDelay := XAUDIO2FX_REVERB_DEFAULT_7POINT1_SIDE_DELAY; // 5
+  {$ELSE}
+  pNative^.RearDelay := XAUDIO2FX_REVERB_DEFAULT_REAR_DELAY; // 5
+  {$ENDIF}
+
+  pNative^.PositionLeft := XAUDIO2FX_REVERB_DEFAULT_POSITION; // 6
+  pNative^.PositionRight := XAUDIO2FX_REVERB_DEFAULT_POSITION; // 6
+  pNative^.PositionMatrixLeft := XAUDIO2FX_REVERB_DEFAULT_POSITION_MATRIX; // 27
+  pNative^.PositionMatrixRight := XAUDIO2FX_REVERB_DEFAULT_POSITION_MATRIX; // 27
+  pNative^.RoomSize := XAUDIO2FX_REVERB_DEFAULT_ROOM_SIZE; // 100
+  pNative^.LowEQCutoff := 4;
+  pNative^.HighEQCutoff := 6;
+
+  // The rest of the I3DL2 parameters map to the native property set
+  pNative^.RoomFilterMain := (pI3DL2^.Room / 100.0);
+  pNative^.RoomFilterHF := (pI3DL2^.RoomHF / 100);
+
+  decayRatio := pI3DL2^.DecayHFRatio;
+  if (pI3DL2^.DecayHFRatio >= 1.0) then
     begin
-      pNative^.RearDelay := XAUDIO2FX_REVERB_DEFAULT_7POINT1_REAR_DELAY; // 20
+      index := Trunc(-4.0 * log10(decayRatio));
+
+      if (index < -8) then
+        index := -8;
+
+      if (index < 0) then
+        pNative^.LowEQGain := index + 8
+      else
+        pNative^.LowEQGain := 8;
+
+      pNative^.HighEQGain := 8;
+      pNative^.DecayTime := (pI3DL2^.DecayTime * pI3DL2^.DecayHFRatio);
     end
   else
     begin
-      pNative^.RearDelay := XAUDIO2FX_REVERB_DEFAULT_REAR_DELAY; // 5
+      index := Trunc(4.0 * log10(decayRatio));
+
+      if (index < -8) then
+        index := -8;
+
+      pNative^.LowEQGain := 8;
+
+      if (index < 0) then
+        pNative^.HighEQGain := index + 8
+      else
+        pNative^.HighEQGain := 8;
+
+      pNative^.DecayTime := pI3DL2^.DecayTime;
     end;
 
-    pNative^.SideDelay := XAUDIO2FX_REVERB_DEFAULT_7POINT1_SIDE_DELAY; // 5
-{$ELSE}
-    pNative^.RearDelay := XAUDIO2FX_REVERB_DEFAULT_REAR_DELAY; // 5
-{$ENDIF}
+  reflectionsDelay := pI3DL2^.ReflectionsDelay * 1000.0;
 
-    pNative^.PositionLeft := XAUDIO2FX_REVERB_DEFAULT_POSITION; // 6
-    pNative^.PositionRight := XAUDIO2FX_REVERB_DEFAULT_POSITION; // 6
-    pNative^.PositionMatrixLeft := XAUDIO2FX_REVERB_DEFAULT_POSITION_MATRIX; // 27
-    pNative^.PositionMatrixRight := XAUDIO2FX_REVERB_DEFAULT_POSITION_MATRIX; // 27
-    pNative^.RoomSize := XAUDIO2FX_REVERB_DEFAULT_ROOM_SIZE; // 100
-    pNative^.LowEQCutoff := 4;
-    pNative^.HighEQCutoff := 6;
+  if (reflectionsDelay >= XAUDIO2FX_REVERB_MAX_REFLECTIONS_DELAY) then // 300
+    begin
+      reflectionsDelay := (XAUDIO2FX_REVERB_MAX_REFLECTIONS_DELAY - 1);
+    end
+  else if (reflectionsDelay <= 1) then
+    begin
+      reflectionsDelay := 1;
+    end;
 
-    // The rest of the I3DL2 parameters map to the native property set
-    pNative^.RoomFilterMain := (pI3DL2^.Room / 100.0);
-    pNative^.RoomFilterHF := (pI3DL2^.RoomHF / 100);
+  pNative^.ReflectionsDelay := Trunc(reflectionsDelay);
 
-    decayRatio := pI3DL2^.DecayHFRatio;
-    if (pI3DL2^.DecayHFRatio >= 1.0) then
-      begin
-        index := Trunc(-4.0 * log10(decayRatio));
+  reverbDelay := (pI3DL2^.ReverbDelay * 1000.0);
+  if (reverbDelay >= XAUDIO2FX_REVERB_MAX_REVERB_DELAY) then // 85
+    begin
+      reverbDelay := (XAUDIO2FX_REVERB_MAX_REVERB_DELAY - 1);
+    end;
 
-        if (index < -8) then
-          index := -8;
+  // Implemented a rangechecker here.
+  pNative^.ReverbDelay := Byte(Trunc(reverbDelay));
 
-        if (index < 0) then
-            pNative^.LowEQGain := index + 8
-        else
-            pNative^.LowEQGain := 8;
+  pNative^.ReflectionsGain := (pI3DL2^.Reflections / 100.0);
+  pNative^.ReverbGain := (pI3DL2^.Reverb / 100.0);
+  diffusionScaled := 15.0 * pI3DL2^.Diffusion;
+  diffusionScaled := diffusionScaled / 100.0;
+  pNative^.EarlyDiffusion := Trunc(diffusionScaled);
+  pNative^.LateDiffusion := pNative^.EarlyDiffusion;
+  pNative^.Density := pI3DL2^.Density;
+  pNative^.RoomFilterFreq := pI3DL2^.HFReference;
 
-        pNative^.HighEQGain:= 8;
-        pNative^.DecayTime := (pI3DL2^.DecayTime * pI3DL2^.DecayHFRatio);
-      end
-    else
-      begin
-        index := Trunc(4.0 * log10(decayRatio));
-
-        if (index < -8) then
-          index := -8;
-
-        pNative^.LowEQGain := 8;
-
-        if (index < 0) then
-            pNative^.HighEQGain := index + 8
-        else
-            pNative^.HighEQGain := 8;
-
-        pNative^.DecayTime := pI3DL2^.DecayTime;
-     end;
-
-    reflectionsDelay := pI3DL2^.ReflectionsDelay * 1000.0;
-
-    if (reflectionsDelay >= XAUDIO2FX_REVERB_MAX_REFLECTIONS_DELAY) then // 300
-      begin
-        reflectionsDelay := (XAUDIO2FX_REVERB_MAX_REFLECTIONS_DELAY - 1);
-      end
-    else if (reflectionsDelay <= 1) then
-      begin
-        reflectionsDelay := 1;
-      end;
-
-    pNative^.ReflectionsDelay:= Trunc(reflectionsDelay);
-
-    reverbDelay:= (pI3DL2^.ReverbDelay * 1000.0);
-    if (reverbDelay >= XAUDIO2FX_REVERB_MAX_REVERB_DELAY) then // 85
-      begin
-        reverbDelay := (XAUDIO2FX_REVERB_MAX_REVERB_DELAY - 1);
-      end;
-
-    // Implemented a rangechecker here.
-    pNative^.ReverbDelay := Byte(Trunc(reverbDelay));
-
-    pNative^.ReflectionsGain := (pI3DL2^.Reflections / 100.0);
-    pNative^.ReverbGain := (pI3DL2^.Reverb / 100.0);
-    diffusionScaled := 15.0 * pI3DL2^.Diffusion;
-    diffusionScaled := diffusionScaled / 100.0;
-    pNative^.EarlyDiffusion := Trunc(diffusionScaled);
-    pNative^.LateDiffusion := pNative^.EarlyDiffusion;
-    pNative^.Density := pI3DL2^.Density;
-    pNative^.RoomFilterFreq := pI3DL2^.HFReference;
-
-    pNative^.WetDryMix := pI3DL2^.WetDryMix;
-    pNative^.DisableLateField := FALSE;
+  pNative^.WetDryMix := pI3DL2^.WetDryMix;
+  pNative^.DisableLateField := FALSE;
 
 end;
 
@@ -956,7 +986,9 @@ end;
 // Implement Additional Prototypes here.
 
 function ClipByteValue(byteval: UINT32): Byte; inline;
+
 begin
+
   if (byteval > 255) then
     Result := 255
   else
@@ -966,53 +998,108 @@ end;
 
 procedure CheckXAudio2NativeReverbParams(var params: XAUDIO2FX_REVERB_PARAMETERS;
                                          sevenDotOneReverb: Boolean); inline;
+
 begin
 
   // Ratio of wet (processed) signal to dry (original) signal.
-  params.WetDryMix := EnsureRange(params.WetDryMix, 0, 100);
+  params.WetDryMix := EnsureRange(params.WetDryMix,
+                                  0,
+                                  100);
 
   // Delay times
-  params.ReflectionsDelay := EnsureRange(params.ReflectionsDelay, 0, 300);
-  params.ReverbDelay := EnsureRange(params.ReverbDelay, 0, 85);
+  params.ReflectionsDelay := EnsureRange(params.ReflectionsDelay,
+                                         0,
+                                         300);
+  params.ReverbDelay := EnsureRange(params.ReverbDelay,
+                                    0,
+                                    85);
 
   if sevenDotOneReverb then
     begin
-      params.RearDelay := EnsureRange(params.RearDelay, 0, 20);
+      params.RearDelay := EnsureRange(params.RearDelay,
+                                      0,
+                                      20);
       {$IFDEF _WINNT_WIN10}
-      params.SideDelay := EnsureRange(params.SideDelay, 0, 5);
+        params.SideDelay := EnsureRange(params.SideDelay,
+                                        0,
+                                        5);
       {$ENDIF}
     end
   else
     begin
-      params.RearDelay := EnsureRange(params.RearDelay, 0, 5);
+      params.RearDelay := EnsureRange(params.RearDelay,
+                                      0,
+                                      5);
       {$IFDEF _WINNT_WIN10}
-      params.SideDelay := EnsureRange(params.SideDelay, 0, 5);
+        params.SideDelay := EnsureRange(params.SideDelay,
+                                        0,
+                                        5);
       {$ENDIF}
     end;
 
   // Indexed parameters
-  params.PositionLeft := EnsureRange(params.PositionLeft, 0, 30);
-  params.PositionRight := EnsureRange(params.PositionRight, 0, 30);
-  params.PositionMatrixLeft := EnsureRange(params.PositionMatrixLeft, 0, 30);
-  params.PositionMatrixRight := EnsureRange(params.PositionMatrixRight, 0, 30);
-  params.EarlyDiffusion := EnsureRange(params.EarlyDiffusion, 0, 15);
-  params.LateDiffusion := EnsureRange(params.LateDiffusion, 0, 15);
-  params.LowEQGain := EnsureRange(params.LowEQGain, 0, 12);
-  params.LowEQCutoff := EnsureRange(params.LowEQCutoff, 0, 9);
-  params.HighEQGain := EnsureRange(params.HighEQGain, 0, 8);
-  params.HighEQCutoff := EnsureRange(params.HighEQCutoff, 0, 14);
-  params.LowEQGain := EnsureRange(params.LowEQGain, 0, 12);
-  params.LowEQGain := EnsureRange(params.LowEQGain, 0, 12);
+  params.PositionLeft := EnsureRange(params.PositionLeft,
+                                     0,
+                                     30);
+  params.PositionRight := EnsureRange(params.PositionRight,
+                                      0,
+                                      30);
+  params.PositionMatrixLeft := EnsureRange(params.PositionMatrixLeft,
+                                           0,
+                                           30);
+  params.PositionMatrixRight := EnsureRange(params.PositionMatrixRight,
+                                            0,
+                                            30);
+  params.EarlyDiffusion := EnsureRange(params.EarlyDiffusion,
+                                       0,
+                                       15);
+  params.LateDiffusion := EnsureRange(params.LateDiffusion,
+                                      0,
+                                      15);
+  params.LowEQGain := EnsureRange(params.LowEQGain,
+                                  0,
+                                  12);
+  params.LowEQCutoff := EnsureRange(params.LowEQCutoff,
+                                    0,
+                                    9);
+  params.HighEQGain := EnsureRange(params.HighEQGain,
+                                   0,
+                                   8);
+  params.HighEQCutoff := EnsureRange(params.HighEQCutoff,
+                                     0,
+                                     14);
+  params.LowEQGain := EnsureRange(params.LowEQGain,
+                                  0,
+                                  12);
+  params.LowEQGain := EnsureRange(params.LowEQGain,
+                                  0,
+                                  12);
 
   // Direct parameters
-  params.RoomFilterFreq := EnsureRange(params.RoomFilterFreq, 20.0, 20000.0);
-  params.RoomFilterMain := EnsureRange(params.RoomFilterMain, -100.0, 0.0);
-  params.RoomFilterHF := EnsureRange(params.RoomFilterHF, -100.0, 0.0);
-  params.ReflectionsGain := EnsureRange(params.ReflectionsGain, -100.0, 20.0);
-  params.ReverbGain := EnsureRange(params.ReverbGain, -100.0, 20.0);
-  params.DecayTime := EnsureRange(params.DecayTime, 0.1, Infinity);
-  params.Density := EnsureRange(params.Density, 0.0, 100.0);
-  params.RoomSize := EnsureRange(params.RoomSize, 0.0, 100.0);
+  params.RoomFilterFreq := EnsureRange(params.RoomFilterFreq,
+                                       20.0,
+                                       20000.0);
+  params.RoomFilterMain := EnsureRange(params.RoomFilterMain,
+                                       -100.0,
+                                       0.0);
+  params.RoomFilterHF := EnsureRange(params.RoomFilterHF,
+                                     -100.0,
+                                     0.0);
+  params.ReflectionsGain := EnsureRange(params.ReflectionsGain,
+                                        -100.0,
+                                        20.0);
+  params.ReverbGain := EnsureRange(params.ReverbGain,
+                                   -100.0,
+                                   20.0);
+  params.DecayTime := EnsureRange(params.DecayTime,
+                                  0.1,
+                                  Infinity);
+  params.Density := EnsureRange(params.Density,
+                                0.0,
+                                100.0);
+  params.RoomSize := EnsureRange(params.RoomSize,
+                                 0.0,
+                                 100.0);
 
   // component control
   params.DisableLateField := params.DisableLateField;
@@ -1021,50 +1108,102 @@ end;
 
 
 procedure XAUDIO2FX_REVERB_PARAMETERS.CheckBoundaries(sevenDotOneReverb: Boolean);
+
 begin
+
   // Ratio of wet (processed) signal to dry (original) signal.
-  WetDryMix := EnsureRange(WetDryMix, 0, 100);
+  WetDryMix := EnsureRange(WetDryMix,
+                           0,
+                           100);
 
   // Delay times
-  ReflectionsDelay := EnsureRange(ReflectionsDelay, 0, 300);
-  ReverbDelay := EnsureRange(ReverbDelay, 0, 85);
+  ReflectionsDelay := EnsureRange(ReflectionsDelay,
+                                  0,
+                                  300);
+  ReverbDelay := EnsureRange(ReverbDelay,
+                             0,
+                             85);
 
   if sevenDotOneReverb then
     begin
-      RearDelay := EnsureRange(RearDelay, 0, 20);
+      RearDelay := EnsureRange(RearDelay,
+                               0,
+                               20);
       {$IFDEF _WINNT_WIN10}
-      SideDelay := EnsureRange(SideDelay, 0, 5);
+        SideDelay := EnsureRange(SideDelay,
+                                 0,
+                                 5);
       {$ENDIF}
     end
   else
     begin
-      RearDelay := EnsureRange(RearDelay, 0, 5);
+      RearDelay := EnsureRange(RearDelay,
+                               0,
+                               5);
       {$IFDEF _WINNT_WIN10}
-      SideDelay := EnsureRange(SideDelay, 0, 5);
+        SideDelay := EnsureRange(SideDelay,
+                                 0,
+                                 5);
       {$ENDIF}
     end;
 
   // Indexed parameters
-  PositionLeft := EnsureRange(PositionLeft, 0, 30);
-  PositionRight := EnsureRange(PositionRight, 0, 30);
-  PositionMatrixLeft := EnsureRange(PositionMatrixLeft, 0, 30);
-  PositionMatrixRight := EnsureRange(PositionMatrixRight, 0, 30);
-  EarlyDiffusion := EnsureRange(EarlyDiffusion, 0, 15);
-  LateDiffusion := EnsureRange(LateDiffusion, 0, 15);
-  LowEQGain := EnsureRange(LowEQGain, 0, 12);
-  LowEQCutoff := EnsureRange(LowEQCutoff, 0, 9);
-  HighEQGain := EnsureRange(HighEQGain, 0, 8);
-  HighEQCutoff := EnsureRange(HighEQCutoff, 0, 14);
+  PositionLeft := EnsureRange(PositionLeft,
+                              0,
+                              30);
+  PositionRight := EnsureRange(PositionRight,
+                               0,
+                               30);
+  PositionMatrixLeft := EnsureRange(PositionMatrixLeft,
+                                    0,
+                                    30);
+  PositionMatrixRight := EnsureRange(PositionMatrixRight,
+                                     0,
+                                     30);
+  EarlyDiffusion := EnsureRange(EarlyDiffusion,
+                                0,
+                                15);
+  LateDiffusion := EnsureRange(LateDiffusion,
+                               0,
+                               15);
+  LowEQGain := EnsureRange(LowEQGain,
+                           0,
+                           12);
+  LowEQCutoff := EnsureRange(LowEQCutoff,
+                             0,
+                             9);
+  HighEQGain := EnsureRange(HighEQGain,
+                            0,
+                            8);
+  HighEQCutoff := EnsureRange(HighEQCutoff,
+                              0,
+                              14);
 
   // Direct parameters
-  RoomFilterFreq := EnsureRange(RoomFilterFreq, 20.0, 20000.0);
-  RoomFilterMain := EnsureRange(RoomFilterMain, -100.0, 0.0);
-  RoomFilterHF := EnsureRange(RoomFilterHF, -100.0, 0.0);
-  ReflectionsGain := EnsureRange(ReflectionsGain, -100.0, 20.0);
-  ReverbGain := EnsureRange(ReverbGain, -100.0, 20.0);
-  DecayTime := EnsureRange(DecayTime, 0.1, Infinity);
-  Density := EnsureRange(Density, 0.0, 100.0);
-  RoomSize := EnsureRange(RoomSize, 0.0, 100.0);
+  RoomFilterFreq := EnsureRange(RoomFilterFreq,
+                                20.0,
+                                20000.0);
+  RoomFilterMain := EnsureRange(RoomFilterMain,
+                                -100.0,
+                                0.0);
+  RoomFilterHF := EnsureRange(RoomFilterHF,
+                              -100.0,
+                              0.0);
+  ReflectionsGain := EnsureRange(ReflectionsGain,
+                                 -100.0,
+                                 20.0);
+  ReverbGain := EnsureRange(ReverbGain,
+                            -100.0,
+                            20.0);
+  DecayTime := EnsureRange(DecayTime,
+                           0.1,
+                           Infinity);
+  Density := EnsureRange(Density,
+                         0.0,
+                         100.0);
+  RoomSize := EnsureRange(RoomSize,
+                          0.0,
+                          100.0);
 
   // component control
   DisableLateField := DisableLateField;
@@ -1072,46 +1211,102 @@ end;
 
 
 procedure XAUDIO2FX_REVERB_I3DL2_PARAMETERS.CheckBoundaries();
+
 begin
+
   // Ratio of wet (processed) signal to dry (original) signal.
-  WetDryMix := EnsureRange(WetDryMix, 0.0, 100.0);
+  WetDryMix := EnsureRange(WetDryMix,
+                           0.0,
+                           100.0);
 
   // Standard I3DL2 parameters.
-  Room := EnsureRange(Room, -10000, 0);
-  RoomHF := EnsureRange(RoomHF, -10000, 0);
+  Room := EnsureRange(Room,
+                      -10000,
+                      0);
+  RoomHF := EnsureRange(RoomHF,
+                        -10000,
+                        0);
 
-  RoomRolloffFactor := EnsureRange(RoomRolloffFactor, 0.0, 10.0);
-  DecayTime := EnsureRange(DecayTime, 0.1, 20.0);
-  DecayHFRatio := EnsureRange(DecayHFRatio, 0.1, 2.0);
-  Reflections := EnsureRange(Reflections, -10000, 1000);
-  ReflectionsDelay := EnsureRange(ReflectionsDelay, 0.0, 0.3);
-  Reverb := EnsureRange(Reverb, -10000, 2000);
-  ReverbDelay := EnsureRange(ReverbDelay, 0.0, 0.1);
-  Diffusion := EnsureRange(Diffusion, 0.0, 100.0);
-  Density := EnsureRange(Density, 0.0, 100.0);
-  HFReference := EnsureRange(HFReference, 20.0, 20000.0);
+  RoomRolloffFactor := EnsureRange(RoomRolloffFactor,
+                                   0.0,
+                                   10.0);
+  DecayTime := EnsureRange(DecayTime,
+                           0.1,
+                           20.0);
+  DecayHFRatio := EnsureRange(DecayHFRatio,
+                              0.1,
+                              2.0);
+  Reflections := EnsureRange(Reflections,
+                             -10000,
+                             1000);
+  ReflectionsDelay := EnsureRange(ReflectionsDelay,
+                                  0.0,
+                                  0.3);
+  Reverb := EnsureRange(Reverb,
+                        -10000,
+                        2000);
+  ReverbDelay := EnsureRange(ReverbDelay,
+                             0.0,
+                             0.1);
+  Diffusion := EnsureRange(Diffusion,
+                           0.0,
+                           100.0);
+  Density := EnsureRange(Density,
+                         0.0,
+                         100.0);
+  HFReference := EnsureRange(HFReference,
+                             20.0,
+                             20000.0);
 end;
 
 
 procedure CheckXAudio2I3DL2ReverbParams(var params: XAUDIO2FX_REVERB_I3DL2_PARAMETERS); inline;
+
 begin
+
   // Ratio of wet (processed) signal to dry (original) signal.
-  params.WetDryMix := EnsureRange(params.WetDryMix, 0.0, 100.0);
+  params.WetDryMix := EnsureRange(params.WetDryMix,
+                                  0.0,
+                                  100.0);
 
   // Standard I3DL2 parameters.
-  params.Room := EnsureRange(params.Room, -10000, 0);
-  params.RoomHF := EnsureRange(params.RoomHF, -10000, 0);
+  params.Room := EnsureRange(params.Room,
+                             -10000,
+                             0);
+  params.RoomHF := EnsureRange(params.RoomHF,
+                               -10000,
+                               0);
 
-  params.RoomRolloffFactor := EnsureRange(params.RoomRolloffFactor, 0.0, 10.0);
-  params.DecayTime := EnsureRange(params.DecayTime, 0.1, 20.0);
-  params.DecayHFRatio := EnsureRange(params.DecayHFRatio, 0.1, 2.0);
-  params.Reflections := EnsureRange(params.Reflections, -10000, 1000);
-  params.ReflectionsDelay := EnsureRange(params.ReflectionsDelay, 0.0, 0.3);
-  params.Reverb := EnsureRange(params.Reverb, -10000, 2000);
-  params.ReverbDelay := EnsureRange(params.ReverbDelay, 0.0, 0.1);
-  params.Diffusion := EnsureRange(params.Diffusion, 0.0, 100.0);
-  params.Density := EnsureRange(params.Density, 0.0, 100.0);
-  params.HFReference := EnsureRange(params.HFReference, 20.0, 20000.0);
+  params.RoomRolloffFactor := EnsureRange(params.RoomRolloffFactor,
+                                          0.0,
+                                          10.0);
+  params.DecayTime := EnsureRange(params.DecayTime,
+                                  0.1,
+                                  20.0);
+  params.DecayHFRatio := EnsureRange(params.DecayHFRatio,
+                                     0.1,
+                                     2.0);
+  params.Reflections := EnsureRange(params.Reflections,
+                                    -10000,
+                                    1000);
+  params.ReflectionsDelay := EnsureRange(params.ReflectionsDelay,
+                                         0.0,
+                                         0.3);
+  params.Reverb := EnsureRange(params.Reverb,
+                               -10000,
+                               2000);
+  params.ReverbDelay := EnsureRange(params.ReverbDelay,
+                                    0.0,
+                                    0.1);
+  params.Diffusion := EnsureRange(params.Diffusion,
+                                  0.0,
+                                  100.0);
+  params.Density := EnsureRange(params.Density,
+                                0.0,
+                                100.0);
+  params.HFReference := EnsureRange(params.HFReference,
+                                    20.0,
+                                    20000.0);
 end;
 
 

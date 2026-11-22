@@ -69,7 +69,7 @@ unit WinApi.MediaFoundationApi.MfSpatialAudio;
 
 {$I MfPack.Fpc.inc}
 
-  {$HPPEMIT '#include "mfspatialaudio.h"'}
+{$HPPEMIT '#include "mfspatialaudio.h"'}
 
 interface
 
@@ -88,7 +88,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -111,7 +112,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFSpatialAudioObjectBuffer);'}
   {$EXTERNALSYM IMFSpatialAudioObjectBuffer}
   IMFSpatialAudioObjectBuffer = interface(IMFMediaBuffer)
-  ['{d396ec8c-605e-4249-978d-72ad1c312872}']
+    ['{d396ec8c-605e-4249-978d-72ad1c312872}']
 
     function SetID(u32ID: UINT32): HRESULT; stdcall;
     // <summary>
@@ -174,6 +175,7 @@ type
     // </param>
 
   end;
+
   IID_IMFSpatialAudioObjectBuffer = IMFSpatialAudioObjectBuffer;
   {$EXTERNALSYM IID_IMFSpatialAudioObjectBuffer}
 
@@ -189,7 +191,7 @@ type
   {$HPPEMIT 'DECLARE_DINTERFACE_TYPE(IMFSpatialAudioSample);'}
   {$EXTERNALSYM IMFSpatialAudioSample}
   IMFSpatialAudioSample = interface(IMFSample)
-  ['{abf28a9B-3393-4290-ba79-5ffc46d986b2}']
+    ['{abf28a9B-3393-4290-ba79-5ffc46d986b2}']
 
     function GetObjectCount(out pdwObjectCount: DWORD): HRESULT; stdcall;
     // <summary>
@@ -225,6 +227,7 @@ type
     // </param>
 
   end;
+
   IID_IMFSpatialAudioSample = IMFSpatialAudioSample;
   {$EXTERNALSYM IID_IMFSpatialAudioSample}
 
@@ -235,6 +238,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

@@ -67,7 +67,7 @@ interface
 uses
   MfLoopbackSamples.Platform,
   LMessages,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   ShellAPI,
@@ -99,7 +99,6 @@ uses
   dlgDevices,
   UniThreadTimer;
 
-
 type
   TfrmLoopBackCapture = class(TForm)
     butStart: TButton;
@@ -130,17 +129,22 @@ type
     procedure FormCreate(Sender: TObject);
     procedure butStartClick(Sender: TObject);
     procedure butStopClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure butPlayDataClick(Sender: TObject);
     procedure cbxStayOnTopClick(Sender: TObject);
     procedure butShowdlgDevicesClick(Sender: TObject);
     procedure tbBufferDurationChange(Sender: TObject);
-    procedure rbConsoleMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure rbConsoleMouseUp(Sender: TObject;
+                               Button: TMouseButton;
+                               Shift: TShiftState;
+                               X,
+                               Y: Integer);
     procedure butResetEngineClick(Sender: TObject);
     procedure cbxAutoBufferSizeClick(Sender: TObject);
-    procedure edFileNameKeyUp(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
+    procedure edFileNameKeyUp(Sender: TObject;
+                              var Key: Word;
+                              Shift: TShiftState);
 
   private
     { Private declarations }
@@ -190,6 +194,7 @@ implementation
 
 
 procedure TfrmLoopBackCapture.EnablePanels(aEnabled: Boolean);
+
 begin
 
   Panel1.Enabled := aEnabled;
@@ -200,6 +205,7 @@ end;
 
 
 procedure TfrmLoopBackCapture.OnCapturingStartEvent(Sender: TObject);
+
 begin
 
   thrTimer.Enabled := True;
@@ -213,6 +219,7 @@ var
   errorStatus: HResult;
 
 begin
+
   if not Assigned(prAudioSink) then
     Exit;
 
@@ -231,7 +238,8 @@ begin
     end
   else if (errorStatus <> S_OK) then
     begin
-      lblStatus.Caption := Format('Capturing stopped because of an error (hr = %d).', [errorStatus]);
+      lblStatus.Caption := Format('Capturing stopped because of an error (hr = %d).',
+                                  [errorStatus]);
       butPlayData.Enabled := False;
     end;
 
@@ -242,7 +250,11 @@ end;
 
 
 procedure TfrmLoopBackCapture.rbConsoleMouseUp(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                               Button: TMouseButton;
+                                               Shift: TShiftState;
+                                               X,
+                                               Y: Integer);
+
 begin
 
   lblStatus.Caption := 'Start Capture';
@@ -250,6 +262,7 @@ end;
 
 
 procedure TfrmLoopBackCapture.OnTimer(sender: TObject);
+
 begin
 
   lblStatus.Caption := 'Capturing from source: ' + FormatDateTime('hh:nn:ss:zzz',
@@ -281,7 +294,8 @@ begin
   if SUCCEEDED(hr) then
     begin
 
-      prFileName := Format('%s', [edFileName.Text]);
+      prFileName := Format('%s',
+                           [edFileName.Text]);
       if (prOrgFileName = '') or prEdited then
         begin
           prOrgFileName := prFileName;
@@ -299,12 +313,12 @@ begin
                   if (prOrgFileName = prFileName) then
                     prFileName := Format('%s(%d)',
                                          [edFileName.Text,
-                                          i])
+                      i])
                   else
                     begin
                       prFileName := Format('%s(%d)',
                                            [prOrgFileName,
-                                            i]);
+                        i]);
                       edFileName.Text := prFileName;
                     end;
                   Inc(i);
@@ -323,7 +337,7 @@ begin
       EnablePanels(False);
 
       // User did not choose settings from dlg
-      if prEndPointDataFlow = eDataFlow(-1) then
+      if (prEndPointDataFlow = eDataFlow(-1)) then
         begin
           prEndPointDataFlow := eRender;
           prEndPointRole := eMultimedia;
@@ -359,12 +373,13 @@ begin
         end;
     end;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
 procedure TfrmLoopBackCapture.butPlayDataClick(Sender: TObject);
+
 begin
 
   ShellExecute(Handle,
@@ -377,6 +392,7 @@ end;
 
 
 procedure TfrmLoopBackCapture.butStartClick(Sender: TObject);
+
 begin
 
   StartCapture();
@@ -384,7 +400,9 @@ end;
 
 
 procedure TfrmLoopBackCapture.butStopClick(Sender: TObject);
+
 begin
+
   // Stop the engine with whatever it's doing.
   prAudioSink.Stop();
   EnablePanels(True);
@@ -393,13 +411,14 @@ end;
 
 
 procedure TfrmLoopBackCapture.butResetEngineClick(Sender: TObject);
+
 begin
 
   RemoveAudioSink();
   CreateNewAudioSink();
   EnablePanels(True);
   Self.BorderIcons := [biSystemMenu,
-                       biMinimize];
+    biMinimize];
   butPlayData.Enabled := False;
   butStop.Enabled := False;
   butStart.Enabled := True;
@@ -408,6 +427,7 @@ end;
 
 
 procedure TfrmLoopBackCapture.butShowdlgDevicesClick(Sender: TObject);
+
 begin
 
   // Create the dialog if it's not allready done.
@@ -444,7 +464,9 @@ end;
 
 
 procedure TfrmLoopBackCapture.cbxAutoBufferSizeClick(Sender: TObject);
+
 begin
+
   if cbxAutoBufferSize.Checked then
     begin
       prBufferDuration := 0;
@@ -458,6 +480,7 @@ end;
 
 
 procedure TfrmLoopBackCapture.cbxStayOnTopClick(Sender: TObject);
+
 begin
 
   if cbxStayOnTop.Checked then
@@ -480,7 +503,8 @@ end;
 
 
 procedure TfrmLoopBackCapture.FormCloseQuery(Sender: TObject;
-  var CanClose: Boolean);
+                                             var CanClose: Boolean);
+
 begin
 
   CanClose := False;
@@ -494,7 +518,9 @@ end;
 
 
 procedure TfrmLoopBackCapture.FormCreate(Sender: TObject);
+
 begin
+
   //
   lblStatus.ControlStyle := lblStatus.ControlStyle + [csOpaque];
   aStopWatch := TStopwatch.Create;
@@ -546,6 +572,7 @@ end;
 
 
 procedure TfrmLoopBackCapture.CreateNewAudioSink();
+
 begin
 
   // Create the AudioSink object.
@@ -561,8 +588,10 @@ begin
 end;
 
 
-procedure TfrmLoopBackCapture.edFileNameKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TfrmLoopBackCapture.edFileNameKeyUp(Sender: TObject;
+                                              var Key: Word;
+                                              Shift: TShiftState);
+
 begin
 
   prEdited := True;
@@ -570,7 +599,9 @@ end;
 
 
 procedure TfrmLoopBackCapture.RemoveAudioSink();
+
 begin
+
   if Assigned(prAudioSink) then
     begin
       if not prAudioSink.StopRecording then
@@ -582,7 +613,9 @@ end;
 
 
 procedure TfrmLoopBackCapture.tbBufferDurationChange(Sender: TObject);
+
 begin
+
   SetBufferDuration();
 end;
 
@@ -604,7 +637,7 @@ begin
   else
     lblBufferDuration.Caption := Format('Capture buffer duration(%d %s)',
                                         [sedBufferSize.Value,
-                                         sms])
+      sms])
 end;
 
 
@@ -614,14 +647,14 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_LITE)) then
-      begin
-        MessageBoxW(0,
-                   lpcwstr('Your computer does not support this Media Foundation API version ' +
-                           IntToStr(MF_VERSION) + '.'),
-                   lpcwstr('MFStartup Failure!'),
-                           MB_ICONSTOP);
-      end;
+    MFSTARTUP_LITE)) then
+    begin
+      MessageBoxW(0,
+                  lpcwstr('Your computer does not support this Media Foundation API version ' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
+    end;
 
 finalization
 

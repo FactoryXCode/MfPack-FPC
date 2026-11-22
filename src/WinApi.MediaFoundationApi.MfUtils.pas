@@ -95,7 +95,7 @@ uses
   {$I 'WinApiTypes.inc'}
   {$DEFINE IGNORE_COMPILERVERSION}
 
-  type
+type
   OSVERSIONINFOEXW = record
     dwOSVersionInfoSize: DWORD;
     dwMajorVersion: DWORD;
@@ -120,33 +120,33 @@ uses
                   pf24bit,
                   pf32bit,
                   pfCustom
-                 );
+    );
 
-  const
+const
   clNone = TColor($1FFFFFFF);
 
   // Windows
   // Used by function CreateEventEx dwFlags.
   {$IF true}
-  const
+const
   CREATE_EVENT_MANUAL_RESET = DWORD($0001);  // The initial state of the event object is signaled; otherwise, it is nonsignaled.
 
-  CREATE_EVENT_INITIAL_SET  = DWORD($0002);  // The event must be manually reset using the ResetEvent function.
-                                             // Any number of waiting threads, or threads that subsequently begin
-                                             // wait operations for the specified event object,
-                                             // can be released while the object's state is signaled.
-                                             // If this flag is not specified, the system automatically resets
-                                             // the event after releasing a single waiting thread.
+  CREATE_EVENT_INITIAL_SET = DWORD($0002);  // The event must be manually reset using the ResetEvent function.
+  // Any number of waiting threads, or threads that subsequently begin
+  // wait operations for the specified event object,
+  // can be released while the object's state is signaled.
+  // If this flag is not specified, the system automatically resets
+  // the event after releasing a single waiting thread.
   {$ENDIF}
 
   // Windows SetThreadExecutionState constants.
   // Enables an application to inform the system that it is in use,
   // thereby preventing the system from entering sleep or turning off
   // the display while the application is running.
-  const
-  ES_CONTINUOUS        = DWORD($80000000); // Informs the system that the state being set should remain in effect until the next call that uses ES_CONTINUOUS and one of the other state flags is cleared.
-  ES_SYSTEM_REQUIRED   = DWORD($00000001); // Forces the system to be in the working state by resetting the system idle timer.
-  ES_DISPLAY_REQUIRED  = DWORD($00000002); // Forces the display to be on by resetting the display idle timer.
+const
+  ES_CONTINUOUS = DWORD($80000000); // Informs the system that the state being set should remain in effect until the next call that uses ES_CONTINUOUS and one of the other state flags is cleared.
+  ES_SYSTEM_REQUIRED = DWORD($00000001); // Forces the system to be in the working state by resetting the system idle timer.
+  ES_DISPLAY_REQUIRED = DWORD($00000002); // Forces the display to be on by resetting the display idle timer.
   // ES_USER_PRESENT      = DWORD($00000004); // This value is not supported.
   ES_AWAYMODE_REQUIRED = DWORD($00000040); // Enables away mode. This value must be specified with ES_CONTINUOUS.
 
@@ -159,554 +159,554 @@ type
 
   TPComObj = array of Pointer;
 
-  procedure SafeRelease(var IUnk);
-  // Use for releasing objects.
-  procedure SAFE_RELEASE(var IUnk);
+procedure SafeRelease(var IUnk);
+// Use for releasing objects.
+procedure SAFE_RELEASE(var IUnk);
 
-  procedure Cpp_FreeAndNil(var Obj: TObject);
+procedure Cpp_FreeAndNil(var Obj: TObject);
 
-  // Initializes storage only; release an initialized value with PropVariantClear first.
-  procedure PropVariantClearSafe(var pv: PROPVARIANT); inline;
+// Initializes storage only; release an initialized value with PropVariantClear first.
+procedure PropVariantClearSafe(var pv: PROPVARIANT); inline;
 
-  // Compare GUIDS
-  function InlineIsEqualGUID(rguid1: TGUID;
-                             rguid2: TGUID): BOOL; inline;
+// Compare GUIDS
+function InlineIsEqualGUID(rguid1: TGUID;
+                           rguid2: TGUID): BOOL; inline;
 
-  function IsEqualGUID(rguid1: TGUID;
-                       rguid2: TGUID): BOOL; inline;
+function IsEqualGUID(rguid1: TGUID;
+                     rguid2: TGUID): BOOL; inline;
 
-  // Same type, different names
-  function IsEqualIID(riid1: TGUID;
-                      riid2: TGUID): BOOL; inline;
+// Same type, different names
+function IsEqualIID(riid1: TGUID;
+                    riid2: TGUID): BOOL; inline;
 
-  function IsEqualCLSID(rclsid1: TGUID;
-                        rclsid2: TGUID): BOOL; inline;
+function IsEqualCLSID(rclsid1: TGUID;
+                      rclsid2: TGUID): BOOL; inline;
 
-  function IsEqualFMTID(rfmtid1: TGUID;
-                        rfmtid2: TGUID): BOOL; inline;
+function IsEqualFMTID(rfmtid1: TGUID;
+                      rfmtid2: TGUID): BOOL; inline;
 
-  // Compare GUID pointers (nil pointers are rejected).
-  function IsEqualPGUID(rguid1: PGUID;
-                        rguid2: PGUID): BOOL; stdcall;
+// Compare GUID pointers (nil pointers are rejected).
+function IsEqualPGUID(rguid1: PGUID;
+                      rguid2: PGUID): BOOL; stdcall;
 
-  function IsEqualPIID(riid1: PGUID;
-                       riid2: PGUID): BOOL; stdcall;
+function IsEqualPIID(riid1: PGUID;
+                     riid2: PGUID): BOOL; stdcall;
 
-  function IsEqualPCLSID(rclsid1: PGUID;
-                         rclsid2: PGUID): BOOL; stdcall;
+function IsEqualPCLSID(rclsid1: PGUID;
+                       rclsid2: PGUID): BOOL; stdcall;
 
-  // Other guid methods
-  function GuidFromString(Value: string): TGuid; inline;
+// Other guid methods
+function GuidFromString(Value: string): TGuid; inline;
 
-  function IsEmptyGuid(pGuid: TGuid): BOOL; inline;
-
-
-  // From wtypes.h
-  procedure DECIMAL_SETZERO(var dec: DECIMAL); inline;
-
-  // Returns the clip payload byte count; malformed smaller headers return zero.
-  function CBPCLIPDATA(_clipdata: CLIPDATA): SIZE_T; inline;
-
-  // Functions to keep byte values in range of 0 - 255
-  function ClipByteValue(byteval: UINT32): Byte; inline;
-  function Clip(clr: Integer): Byte; inline;
-
-  function OsIsWinXPOrHigher(): Boolean;
-  function OsIsWinXPSP1OrHigher(): Boolean;
-  function OsIsWinXPSP2OrHigher(): Boolean;
-  function OsIsWinXPSP3OrHigher(): Boolean;
-  function OsIsWinVistaOrHigher(): Boolean;
-  function OsIsWinVistaSP1OrHigher(): Boolean;
-  function OsIsWinVistaSP2OrHigher(): Boolean;
-  function OsIsWin7OrHigher(): Boolean;
-  function OsIsWin7SP1OrHigher(): Boolean;
-  function OsIsWin8OrHigher(): Boolean;
-  function OsIsWin81OrHigher(): Boolean;
-  function OsIsWin10OrHigher(): Boolean;
-  function OsIsWinServer(): Boolean;
-  function IsWinVerOrHigher(wMajorVersion: Word;
-                            wMinorVersion: Word;
-                            wServicePackMajor: Word): Boolean;
-
-  // Utility to check HRESULT
-  procedure CheckHR(hr: HRESULT;
-                    const aContext: string = '');
+function IsEmptyGuid(pGuid: TGuid): BOOL; inline;
 
 
-  // C++ translations
-  //=================
-  function UIntAdd(const uAugend: UINT32;
-                   const uAddend: UINT32;
-                   out puResult: UINT32): HRESULT;
+// From wtypes.h
+procedure DECIMAL_SETZERO(var dec: DECIMAL); inline;
 
-  function SizeTMult(const cbMultiplicand: SIZE_T;
-                     const cbMultiplier: SIZE_T;
-                     out pcbResult: SIZE_T): HRESULT;
+// Returns the clip payload byte count; malformed smaller headers return zero.
+function CBPCLIPDATA(_clipdata: CLIPDATA): SIZE_T; inline;
 
-  // Time formatting
-  // Converts 100-Nano second units (Hns unit) to time string format.
-  function HnsTimeToStr(hns: MFTIME;
-                        DelimiterFormat: string;
-                        ShowMilliSeconds: Boolean = True;
-                        FractionalDigits: Integer = 3): string; overload; inline;
+// Functions to keep byte values in range of 0 - 255
+function ClipByteValue(byteval: UINT32): Byte; inline;
+function Clip(clr: Integer): Byte; inline;
 
-  function HnsTimeToStr(hns: MFTIME;
-                        ShowMilliSeconds: Boolean = True;
-                        FractionalDigits: Integer = 3): string; overload; inline;
+function OsIsWinXPOrHigher(): Boolean;
+function OsIsWinXPSP1OrHigher(): Boolean;
+function OsIsWinXPSP2OrHigher(): Boolean;
+function OsIsWinXPSP3OrHigher(): Boolean;
+function OsIsWinVistaOrHigher(): Boolean;
+function OsIsWinVistaSP1OrHigher(): Boolean;
+function OsIsWinVistaSP2OrHigher(): Boolean;
+function OsIsWin7OrHigher(): Boolean;
+function OsIsWin7SP1OrHigher(): Boolean;
+function OsIsWin8OrHigher(): Boolean;
+function OsIsWin81OrHigher(): Boolean;
+function OsIsWin10OrHigher(): Boolean;
+function OsIsWinServer(): Boolean;
+function IsWinVerOrHigher(wMajorVersion: Word;
+                          wMinorVersion: Word;
+                          wServicePackMajor: Word): Boolean;
 
-  // Converts Milliseconds to a time string format
-  function MSecToStr(wMsec: Int64;
-                     ShowMilliSeconds: Boolean = True): string; inline;
-
-  // Translate timeformat to milliseconds (default) or 100-Nano second units.
-  function TimeToHnsTime(TimeStamp: string;
-                         HnsTimeUnits: Boolean = True): MFTIME; inline;
-
-  // Converts Seconds to time string format.
-  // This funtion is primarily used by the MediaEngine interface
-  function MfSecToStr(dSec: Double;
-                      ShowMilliSec: Boolean): string; inline;
-
-  // Convert Milliseconds to MFTIME (100-nano second units)
-  function MSecToHnsTime(Millisec: ULONGLONG): MFTIME; inline;
-
-  // Convert 100-nanosecond units to milliseconds.
-  function HnsTimeToMsec(hnsTime: MFTIME): MFTIME; inline;
-
-  // Convert frames to milliseconds
-  function FramesToMsec(frames: Int64;
-                        fps: Double): MFTIME; inline;
-
-  // Convert frames to a timestring
-  function FramesToTimeStr(frames: Int64;
-                           fps: Double;
-                           ShowMilliSeconds: boolean = True ): string; inline;
-
-  // Converts the number of bytes, samplerate, channels and bits per second to hnstime and returns the timeformat.
-  function BytesToTimeStr(const pBytesWritten: Int64;
-                          const pSampleRate: Integer;
-                          const pChannels: Integer;
-                          const pBitsPerSample: Integer;
-                          pShowMilliSeconds: Boolean = True): string; inline;
-
-  {$IF true}
-  // API function GetTickCount64.
-  function GetTickCount64(): UInt64; stdcall;
-  {$ENDIF}
-
-  // Converts winApi BOOL to INT.
-  function NormalizeBOOL(const aBOOL: LongBool): Integer;
-
-  // Inline methods to avoid hard Double typecasting.
-  function _Double(const AValue: Single): Double; overload; inline;
-  function _Double(const AValue: Integer): Double; overload; inline;
-  function _Double(const AValue: Cardinal): Double; overload; inline;
-  function _Double(const AValue: Int64): Double; overload; inline;
-  function _Double(const AValue: UInt64): Double; overload; inline;
-  // Inline methods to avoid hard Single typecasting errors.
-  function _Single(const AValue: Double): Single; overload; inline;
-  function _Single(const AValue: Integer): Single; overload; inline;
-  function _Single(const AValue: Cardinal): Single; overload; inline;
-  function _Single(const AValue: Int64): Single; overload; inline;
-  function _Single(const AValue: UInt64): Single; overload; inline;
+// Utility to check HRESULT
+procedure CheckHR(hr: HRESULT;
+                  const aContext: string = '');
 
 
-  // Operating system
+// C++ translations
+//=================
+function UIntAdd(const uAugend: UINT32;
+                 const uAddend: UINT32;
+                 out puResult: UINT32): HRESULT;
 
-  function GetOSArchitecture(): string;
+function SizeTMult(const cbMultiplicand: SIZE_T;
+                   const cbMultiplier: SIZE_T;
+                   out pcbResult: SIZE_T): HRESULT;
 
-  //
-  function SetThreadExecutionState(const AFlags: DWORD): DWORD; stdcall;
+// Time formatting
+// Converts 100-Nano second units (Hns unit) to time string format.
+function HnsTimeToStr(hns: MFTIME;
+                      DelimiterFormat: string;
+                      ShowMilliSeconds: Boolean = True;
+                      FractionalDigits: Integer = 3): string; overload; inline;
 
-  // Windows power scheme.
-  function PowerGetActiveScheme(UserRootPowerKey: HKEY;
-                                out ActivePolicyGuid: PGUID): DWORD; stdcall;
+function HnsTimeToStr(hns: MFTIME;
+                      ShowMilliSeconds: Boolean = True;
+                      FractionalDigits: Integer = 3): string; overload; inline;
 
-  function PowerReadACValueIndex(RootPowerKey: HKEY;
-                                 const SchemeGuid: PGUID;
-                                 const SubGroupOfPowerSettingsGuid: PGUID;
-                                 const PowerSettingGuid: PGUID;
-                                 out AcValueIndex: DWORD): DWORD; stdcall;
+// Converts Milliseconds to a time string format
+function MSecToStr(wMsec: Int64;
+                   ShowMilliSeconds: Boolean = True): string; inline;
 
-  function PowerReadDCValueIndex(RootPowerKey: HKEY;
-                                 const SchemeGuid: PGUID;
-                                 const SubGroupOfPowerSettingsGuid: PGUID;
-                                 const PowerSettingGuid: PGUID;
-                                 out DcValueIndex: DWORD): DWORD; stdcall;
+// Translate timeformat to milliseconds (default) or 100-Nano second units.
+function TimeToHnsTime(TimeStamp: string;
+                       HnsTimeUnits: Boolean = True): MFTIME; inline;
 
-  function PowerWriteACValueIndex(RootPowerKey: HKEY;
-                                  const SchemeGuid: PGUID;
-                                  const SubGroupOfPowerSettingsGuid: PGUID;
-                                  const PowerSettingGuid: PGUID;
-                                  AcValueIndex: DWORD): DWORD; stdcall;
+// Converts Seconds to time string format.
+// This funtion is primarily used by the MediaEngine interface
+function MfSecToStr(dSec: Double;
+                    ShowMilliSec: Boolean): string; inline;
 
-  function PowerWriteDCValueIndex(RootPowerKey: HKEY;
-                                  const SchemeGuid: PGUID;
-                                  const SubGroupOfPowerSettingsGuid: PGUID;
-                                  const PowerSettingGuid: PGUID;
-                                  DcValueIndex: DWORD): DWORD; stdcall;
+// Convert Milliseconds to MFTIME (100-nano second units)
+function MSecToHnsTime(Millisec: ULONGLONG): MFTIME; inline;
 
-  function PowerSetActiveScheme(UserRootPowerKey: HKEY;
-                                const SchemeGuid: PGUID): DWORD; stdcall;
+// Convert 100-nanosecond units to milliseconds.
+function HnsTimeToMsec(hnsTime: MFTIME): MFTIME; inline;
 
+// Convert frames to milliseconds
+function FramesToMsec(frames: Int64;
+                      fps: Double): MFTIME; inline;
 
-  // Colors and pixelformats
-  //========================
+// Convert frames to a timestring
+function FramesToTimeStr(frames: Int64;
+                         fps: Double;
+                         ShowMilliSeconds: boolean = True): string; inline;
 
-  // Translates a HTML color name name to TColor
-  // Example: 'Red' >> TColor($0000FF) = TColors.Red = clRed;
-  function GetTColorFromHtmlColorName(HtmlClrName: string): TColor;
+// Converts the number of bytes, samplerate, channels and bits per second to hnstime and returns the timeformat.
+function BytesToTimeStr(const pBytesWritten: Int64;
+                        const pSampleRate: Integer;
+                        const pChannels: Integer;
+                        const pBitsPerSample: Integer;
+                        pShowMilliSeconds: Boolean = True): string; inline;
 
-  // HTMLcolor to TColor
-  function HtmlColorToTColor(aValue: string;
-                             aDefault: Tcolor = clNone): TColor; inline;
+{$IF true}
+// API function GetTickCount64.
+function GetTickCount64(): UInt64; stdcall;
+{$ENDIF}
 
-  // TColor to HTMLcolor
-  function TColorToHtmlColor(aValue: TColor): string; inline;
+// Converts winApi BOOL to INT.
+function NormalizeBOOL(const aBOOL: LongBool): Integer;
 
-  // TColor to MFARGB
-  procedure CopyTColorToMFARGB(const cColor: TColor;
-                               out argb: MFARGB); inline;
-  // MFARGB to TColor
-  procedure CopyMFARGBToTColor(const argb: MFARGB;
-                               out cColor: TColor); inline;
-
-  // TColor to COLORREF
-  function ColorToColorRef(cColor: TColor): COLORREF; inline;
-
-  // COLORREF to TColor
-  function ColorRefToTColor(cColorRef: COLORREF): TColor; inline;
-
-  // Copies RGBTRIPLE src to RGBTRIPLE srd
-  procedure CopyRgbTriple(src: RGBTRIPLE;
-                          out srd: RGBTRIPLE); inline;
-
-  // Copies RGBTRIPLE src to RGBQUAD srd
-  procedure CopyRgbTripleToRgbQuad(src: RGBTRIPLE;
-                                   out srd: RGBQUAD); inline;
-
-  // Copies RGBQUAD src to RGBTRIPLE srd
-  procedure CopyRgbQuadToRgbTriple(src: RGBQUAD;
-                                   out srd: RGBTRIPLE); inline;
+// Inline methods to avoid hard Double typecasting.
+function _Double(const AValue: Single): Double; overload; inline;
+function _Double(const AValue: Integer): Double; overload; inline;
+function _Double(const AValue: Cardinal): Double; overload; inline;
+function _Double(const AValue: Int64): Double; overload; inline;
+function _Double(const AValue: UInt64): Double; overload; inline;
+// Inline methods to avoid hard Single typecasting errors.
+function _Single(const AValue: Double): Single; overload; inline;
+function _Single(const AValue: Integer): Single; overload; inline;
+function _Single(const AValue: Cardinal): Single; overload; inline;
+function _Single(const AValue: Int64): Single; overload; inline;
+function _Single(const AValue: UInt64): Single; overload; inline;
 
 
-  // copies a DWord (COLORREF) to RGBTRIPLE
-  procedure CopyClrRefToRgbTriple(src: COLORREF;
-                                  out srd: RGBTRIPLE); inline;
+// Operating system
 
-  // copies a RGBTRIPLE to DWord (COLORREF)
-  procedure CopyRgbTripleToClrRef(src: RGBTRIPLE;
-                                  out srd: COLORREF); inline;
+function GetOSArchitecture(): string;
 
-  // copies a RGBQUAD to DWord (COLORREF)
-  procedure CopyRGBQuadToClrRef(src: RGBQUAD;
+//
+function SetThreadExecutionState(const AFlags: DWORD): DWORD; stdcall;
+
+// Windows power scheme.
+function PowerGetActiveScheme(UserRootPowerKey: HKEY;
+                              out ActivePolicyGuid: PGUID): DWORD; stdcall;
+
+function PowerReadACValueIndex(RootPowerKey: HKEY;
+                               const SchemeGuid: PGUID;
+                               const SubGroupOfPowerSettingsGuid: PGUID;
+                               const PowerSettingGuid: PGUID;
+                               out AcValueIndex: DWORD): DWORD; stdcall;
+
+function PowerReadDCValueIndex(RootPowerKey: HKEY;
+                               const SchemeGuid: PGUID;
+                               const SubGroupOfPowerSettingsGuid: PGUID;
+                               const PowerSettingGuid: PGUID;
+                               out DcValueIndex: DWORD): DWORD; stdcall;
+
+function PowerWriteACValueIndex(RootPowerKey: HKEY;
+                                const SchemeGuid: PGUID;
+                                const SubGroupOfPowerSettingsGuid: PGUID;
+                                const PowerSettingGuid: PGUID;
+                                AcValueIndex: DWORD): DWORD; stdcall;
+
+function PowerWriteDCValueIndex(RootPowerKey: HKEY;
+                                const SchemeGuid: PGUID;
+                                const SubGroupOfPowerSettingsGuid: PGUID;
+                                const PowerSettingGuid: PGUID;
+                                DcValueIndex: DWORD): DWORD; stdcall;
+
+function PowerSetActiveScheme(UserRootPowerKey: HKEY;
+                              const SchemeGuid: PGUID): DWORD; stdcall;
+
+
+// Colors and pixelformats
+//========================
+
+// Translates a HTML color name name to TColor
+// Example: 'Red' >> TColor($0000FF) = TColors.Red = clRed;
+function GetTColorFromHtmlColorName(HtmlClrName: string): TColor;
+
+// HTMLcolor to TColor
+function HtmlColorToTColor(aValue: string;
+                           aDefault: Tcolor = clNone): TColor; inline;
+
+// TColor to HTMLcolor
+function TColorToHtmlColor(aValue: TColor): string; inline;
+
+// TColor to MFARGB
+procedure CopyTColorToMFARGB(const cColor: TColor;
+                             out argb: MFARGB); inline;
+// MFARGB to TColor
+procedure CopyMFARGBToTColor(const argb: MFARGB;
+                             out cColor: TColor); inline;
+
+// TColor to COLORREF
+function ColorToColorRef(cColor: TColor): COLORREF; inline;
+
+// COLORREF to TColor
+function ColorRefToTColor(cColorRef: COLORREF): TColor; inline;
+
+// Copies RGBTRIPLE src to RGBTRIPLE srd
+procedure CopyRgbTriple(src: RGBTRIPLE;
+                        out srd: RGBTRIPLE); inline;
+
+// Copies RGBTRIPLE src to RGBQUAD srd
+procedure CopyRgbTripleToRgbQuad(src: RGBTRIPLE;
+                                 out srd: RGBQUAD); inline;
+
+// Copies RGBQUAD src to RGBTRIPLE srd
+procedure CopyRgbQuadToRgbTriple(src: RGBQUAD;
+                                 out srd: RGBTRIPLE); inline;
+
+
+// copies a DWord (COLORREF) to RGBTRIPLE
+procedure CopyClrRefToRgbTriple(src: COLORREF;
+                                out srd: RGBTRIPLE); inline;
+
+// copies a RGBTRIPLE to DWord (COLORREF)
+procedure CopyRgbTripleToClrRef(src: RGBTRIPLE;
                                 out srd: COLORREF); inline;
 
-  // copies a DWord (COLORREF) to RGBQUAD
-  procedure CopyClrRefToRGBQuad(src: COLORREF;
-                                out srd: RGBQUAD); inline;
+// copies a RGBQUAD to DWord (COLORREF)
+procedure CopyRGBQuadToClrRef(src: RGBQUAD;
+                              out srd: COLORREF); inline;
+
+// copies a DWord (COLORREF) to RGBQUAD
+procedure CopyClrRefToRGBQuad(src: COLORREF;
+                              out srd: RGBQUAD); inline;
 
 
-  function ConvertYCrCbToRGB(aY: Integer;
-                             aCr: Integer;
-                             aCb: Integer): RGBQUAD; inline;
+function ConvertYCrCbToRGB(aY: Integer;
+                           aCr: Integer;
+                           aCb: Integer): RGBQUAD; inline;
 
-  function PixelFormatToStr(PixelFmt: TPixelFormat): string; inline;
-
-
-  // External
-  function StringFromCLSID(const rclsid: REFCLSID;
-                           var lplpsz: POleStr): HResult; stdcall;
-
-  // Borrows the UTF-16 buffer; retain the source string while using the pointer.
-  function StrToPWideChar(const source: string): PWideChar; //inline;
+function PixelFormatToStr(PixelFmt: TPixelFormat): string; inline;
 
 
-  // MFVideoNormalizedRect methods
-  ////////////////////////////////
-  // Support for older Delphi versions (<= XE2)
+// External
+function StringFromCLSID(const rclsid: REFCLSID;
+                         var lplpsz: POleStr): HResult; stdcall;
 
-  // Set MFVideoNormalizedRect values
-  //  example rcSrc:= SetVNTRect(0, 0, 10, 20);
-  function SetVNRect(const nrLeft: FLOAT = 0.0;
-                     const nrTop: FLOAT = 0.0;
-                     const nrRight: FLOAT = 0.0;
-                     const nrBottom: FLOAT = 0.0): MFVideoNormalizedRect; inline;
+// Borrows the UTF-16 buffer; retain the source string while using the pointer.
+function StrToPWideChar(const source: string): PWideChar; //inline;
 
-  // Copy MFVideoNormalizedRect values to another MFVideoNormalizedRect
-  procedure CopyVNRectToVNRect(const rs: MFVideoNormalizedRect;
-                               out rd: MFVideoNormalizedRect); inline;
 
-  // Copy a MFVideoNormalizedRect to a PMFVideoNormalizedRect
-  procedure CopyVNRectToPVNRect(rs: MFVideoNormalizedRect;
-                                rd: PMFVideoNormalizedRect); inline;
+// MFVideoNormalizedRect methods
+////////////////////////////////
+// Support for older Delphi versions (<= XE2)
 
-  // Copy a PMFVideoNormalizedRect to a MFVideoNormalizedRect
-  procedure CopyPVNRectToVNRect(rs: PMFVideoNormalizedRect;
-                                out rd: MFVideoNormalizedRect); inline;
+// Set MFVideoNormalizedRect values
+//  example rcSrc:= SetVNTRect(0, 0, 10, 20);
+function SetVNRect(const nrLeft: FLOAT = 0.0;
+                   const nrTop: FLOAT = 0.0;
+                   const nrRight: FLOAT = 0.0;
+                   const nrBottom: FLOAT = 0.0): MFVideoNormalizedRect; inline;
 
-  // Add a MFVideoNormalizedRect to another
-  function AddVNRect(const r1: MFVideoNormalizedRect;
-                     const r2: MFVideoNormalizedRect): MFVideoNormalizedRect; inline;
+// Copy MFVideoNormalizedRect values to another MFVideoNormalizedRect
+procedure CopyVNRectToVNRect(const rs: MFVideoNormalizedRect;
+                             out rd: MFVideoNormalizedRect); inline;
 
-  // Substract a MFVideoNormalizedRect from another
-  function SubstractVNRect(const r1: MFVideoNormalizedRect;
-                           const r2: MFVideoNormalizedRect): MFVideoNormalizedRect; inline;
+// Copy a MFVideoNormalizedRect to a PMFVideoNormalizedRect
+procedure CopyVNRectToPVNRect(rs: MFVideoNormalizedRect;
+                              rd: PMFVideoNormalizedRect); inline;
 
-  // multiply a MFVideoNormalizedRect with another
-  function multiplyVNRect(const r1: MFVideoNormalizedRect;
-                          const scale: LONG): MFVideoNormalizedRect; inline;
-
-  // Get the width of a MFVideoNormalizedRect
-  function GetNrRectWidth(const rc: MFVideoNormalizedRect): LONG; inline;
-
-  // Get the height of a MFVideoNormalizedRect
-  function GetNrRectHeight(const rc: MFVideoNormalizedRect): LONG; inline;
-
-  // Checks whether a MFVideoNormalizedRect is empty
-  function IsEmptyNrRect(const nnRect: MFVideoNormalizedRect): Boolean; inline;
-
-  // Clears a borrowed pointer without freeing its storage.
-  procedure ClearVNRect(var ppRect: PMFVideoNormalizedRect); inline;
-
-  // Copy a TRect to a MFVideoNormalizedRect
-  procedure CopyTRectToVNRect(const rs: TRect;
+// Copy a PMFVideoNormalizedRect to a MFVideoNormalizedRect
+procedure CopyPVNRectToVNRect(rs: PMFVideoNormalizedRect;
                               out rd: MFVideoNormalizedRect); inline;
 
-  // Copy a MFVideoNormalizedRect to a TRect
-  procedure CopyVNRectToTRect(const rs: MFVideoNormalizedRect;
-                              out rd: TRect); inline;
+// Add a MFVideoNormalizedRect to another
+function AddVNRect(const r1: MFVideoNormalizedRect;
+                   const r2: MFVideoNormalizedRect): MFVideoNormalizedRect; inline;
 
-  // Copy a PMFVideoNormalizedRect to a TRect
-  procedure CopyPVNRectToTRect(rs: PMFVideoNormalizedRect;
-                               out rd: TRect); inline;
+// Substract a MFVideoNormalizedRect from another
+function SubstractVNRect(const r1: MFVideoNormalizedRect;
+                         const r2: MFVideoNormalizedRect): MFVideoNormalizedRect; inline;
 
-  // Copy a PMFVideoNormalizedRect to a PRect
-  procedure CopyPVNRectToPRect(rs: PMFVideoNormalizedRect;
-                               rd: PRect); inline;
-  // TRect methods //
+// multiply a MFVideoNormalizedRect with another
+function multiplyVNRect(const r1: MFVideoNormalizedRect;
+                        const scale: LONG): MFVideoNormalizedRect; inline;
 
-  // Copy TRect values to another TRect
-  procedure CopyTRectToTRect(const rs: TRect;
+// Get the width of a MFVideoNormalizedRect
+function GetNrRectWidth(const rc: MFVideoNormalizedRect): LONG; inline;
+
+// Get the height of a MFVideoNormalizedRect
+function GetNrRectHeight(const rc: MFVideoNormalizedRect): LONG; inline;
+
+// Checks whether a MFVideoNormalizedRect is empty
+function IsEmptyNrRect(const nnRect: MFVideoNormalizedRect): Boolean; inline;
+
+// Clears a borrowed pointer without freeing its storage.
+procedure ClearVNRect(var ppRect: PMFVideoNormalizedRect); inline;
+
+// Copy a TRect to a MFVideoNormalizedRect
+procedure CopyTRectToVNRect(const rs: TRect;
+                            out rd: MFVideoNormalizedRect); inline;
+
+// Copy a MFVideoNormalizedRect to a TRect
+procedure CopyVNRectToTRect(const rs: MFVideoNormalizedRect;
+                            out rd: TRect); inline;
+
+// Copy a PMFVideoNormalizedRect to a TRect
+procedure CopyPVNRectToTRect(rs: PMFVideoNormalizedRect;
                              out rd: TRect); inline;
 
-  // Get the width of a TRect
-  function GetTRectWidth(const rc: TRect): LONG; inline;
+// Copy a PMFVideoNormalizedRect to a PRect
+procedure CopyPVNRectToPRect(rs: PMFVideoNormalizedRect;
+                             rd: PRect); inline;
+// TRect methods //
 
-  // Get the height of a TRect
-  function GetTRectHeight(const rc: TRect): LONG; inline;
+// Copy TRect values to another TRect
+procedure CopyTRectToTRect(const rs: TRect;
+                           out rd: TRect); inline;
 
-  // Copy a TRect to a LPRECT
-  procedure CopyTRectToLPRect(rs: TRect;
-                              var rd: LPRECT); inline;
+// Get the width of a TRect
+function GetTRectWidth(const rc: TRect): LONG; inline;
 
-  // Copy a LPRECT to a TRect
-  procedure CopyLPRectToTRect(rs: LPRECT;
-                              var rd: TRect); inline;
+// Get the height of a TRect
+function GetTRectHeight(const rc: TRect): LONG; inline;
 
-  // Copy a TRect to a PRect
-  procedure CopyTRectToPRect(rs: TRect;
-                             var rd: PRect ); inline;
+// Copy a TRect to a LPRECT
+procedure CopyTRectToLPRect(rs: TRect;
+                            var rd: LPRECT); inline;
 
-  // Copy a PRect to a TRect
-  procedure CopyPRectToTRect(rs: PRect;
-                             var rd: TRect); inline;
+// Copy a LPRECT to a TRect
+procedure CopyLPRectToTRect(rs: LPRECT;
+                            var rd: TRect); inline;
 
+// Copy a TRect to a PRect
+procedure CopyTRectToPRect(rs: TRect;
+                           var rd: PRect); inline;
 
-  // MFAREA & MFOFFSET
-  //==================
-
-  // Get Float (Single) value from MFOffSet.
-  function MFOffsetToFloat(const offset: MFOffset): Float; inline;
-
-  // MakeOffset
-  function MakeOffset(v: Single): MFOffset; inline;
-
-  // Get the display area from a (video) media type.
-  function GetVideoDisplayArea(pType: IMFMediaType;
-                               out pArea: MFVideoArea): HRESULT;
-
-  // initializes a MFVideoArea structure.
-  function MakeArea(X: FLOAT;
-                    Y: FLOAT;
-                    dwWidth: DWORD;
-                    dwHeight: DWORD): MFVideoArea; inline;
+// Copy a PRect to a TRect
+procedure CopyPRectToTRect(rs: PRect;
+                           var rd: TRect); inline;
 
 
-  // FOURCC functions
-  //=================
-  function MAKEFOURCC(const ch0: AnsiChar;
-                      const ch1: AnsiChar;
-                      const ch2: AnsiChar;
-                      const ch3: AnsiChar): FOURCC; inline;
+// MFAREA & MFOFFSET
+//==================
 
-  // The reverse of MAKEFOURCC
-  function GETFOURCC(frcc: FOURCC): WideString; inline;
+// Get Float (Single) value from MFOffSet.
+function MFOffsetToFloat(const offset: MFOffset): Float; inline;
 
+// MakeOffset
+function MakeOffset(v: Single): MFOffset; inline;
 
-  // Bitfield manipulation functions
-  // Encoded index: (offset shl 8) or width; invalid fields raise ERangeError.
-  // Values are unsigned and saturate to the field mask.
-  //================================
+// Get the display area from a (video) media type.
+function GetVideoDisplayArea(pType: IMFMediaType;
+                             out pArea: MFVideoArea): HRESULT;
 
-  // UINT64
-  // Getter
-  function Get64bitBits(const data: UINT64;
-                        const index: Integer): UINT64;
-
-  // Setter
-  procedure Set64bitBits(var data: UINT64;
-                         const index: Integer;
-                         const value: UINT64);
+// initializes a MFVideoArea structure.
+function MakeArea(X: FLOAT;
+                  Y: FLOAT;
+                  dwWidth: DWORD;
+                  dwHeight: DWORD): MFVideoArea; inline;
 
 
-  // DWORD
-  // Getter
-  function GetDWordBits(const data: DWORD;
-                        const index: Integer): DWORD;
+// FOURCC functions
+//=================
+function MAKEFOURCC(const ch0: AnsiChar;
+                    const ch1: AnsiChar;
+                    const ch2: AnsiChar;
+                    const ch3: AnsiChar): FOURCC; inline;
 
-  // Setter
-  procedure SetDWordBits(var data: DWORD;
-                         const index: Integer;
-                         const value: DWORD);
-
-
-  // WORD
-  // Getter
-  function GetWordBits(const data: WORD;
-                       const index: Integer): WORD;
+// The reverse of MAKEFOURCC
+function GETFOURCC(frcc: FOURCC): WideString; inline;
 
 
-  // Setter
-  procedure SetWordBits(var data: WORD;
-                        const index: Integer;
-                        const value: WORD);
+// Bitfield manipulation functions
+// Encoded index: (offset shl 8) or width; invalid fields raise ERangeError.
+// Values are unsigned and saturate to the field mask.
+//================================
+
+// UINT64
+// Getter
+function Get64bitBits(const data: UINT64;
+                      const index: Integer): UINT64;
+
+// Setter
+procedure Set64bitBits(var data: UINT64;
+                       const index: Integer;
+                       const value: UINT64);
+
+
+// DWORD
+// Getter
+function GetDWordBits(const data: DWORD;
+                      const index: Integer): DWORD;
+
+// Setter
+procedure SetDWordBits(var data: DWORD;
+                       const index: Integer;
+                       const value: DWORD);
+
+
+// WORD
+// Getter
+function GetWordBits(const data: WORD;
+                     const index: Integer): WORD;
+
+
+// Setter
+procedure SetWordBits(var data: WORD;
+                      const index: Integer;
+                      const value: WORD);
 
 
 
-  // BYTE
-  // Getter
-  function GetByteBits(const data: Byte;
-                       const index: Integer): Byte;
+// BYTE
+// Getter
+function GetByteBits(const data: Byte;
+                     const index: Integer): Byte;
 
 
-  // Setter
-  procedure SetByteBits(var data: Byte;
-                        const index: Integer;
-                        const value: Byte);
+// Setter
+procedure SetByteBits(var data: Byte;
+                      const index: Integer;
+                      const value: Byte);
 
 
-  // System
-  //=======
-  function BoolToStrYesNo(const aBoolean: Boolean;
-                          sYes: string = 'Yes';
-                          sNo: string = 'No'): string;
-  // = BoolToStr, for backward compatibility.
-  function MfpBoolToStr(const aBoolean: Boolean): string; inline;
-  function BoolToStr(const aBoolean: Boolean): string; inline;
+// System
+//=======
+function BoolToStrYesNo(const aBoolean: Boolean;
+                        sYes: string = 'Yes';
+                        sNo: string = 'No'): string;
+// = BoolToStr, for backward compatibility.
+function MfpBoolToStr(const aBoolean: Boolean): string; inline;
+function BoolToStr(const aBoolean: Boolean): string; inline;
 
-  // Constrain function, checks the high- and lowband limits of a value.
-  function ConstrainValue(const Value: Integer;
-                          Min: Integer;
-                          Max: Integer): Integer; inline; overload;
+// Constrain function, checks the high- and lowband limits of a value.
+function ConstrainValue(const Value: Integer;
+                        Min: Integer;
+                        Max: Integer): Integer; inline; overload;
 
-  function ConstrainValue(const Value: Int64;
-                          Min: Int64;
-                          Max: Int64): Int64; inline; overload;
+function ConstrainValue(const Value: Int64;
+                        Min: Int64;
+                        Max: Int64): Int64; inline; overload;
 
-  function ConstrainValue(const Value: Float;
-                          Min: Float;
-                          Max: Float): Float; inline; overload;
+function ConstrainValue(const Value: Float;
+                        Min: Float;
+                        Max: Float): Float; inline; overload;
 
-  function ConstrainValue(const Value: byte;
-                          Min: byte;
-                          Max: byte): byte; inline; overload;
-
-
-  // Maps a value in between minimum and maximum valueranges.
-  function MapRange(const aValue: Single;
-                    InMin: Single;
-                    InMax: Single;
-                    OutMin: Single;
-                    OutMax: Single): Single; inline; overload;
-
-  function MapRange(const aValue: Integer;
-                    InMin: Single;
-                    InMax: Single;
-                    OutMin: Single;
-                    OutMax: Single): Single; inline; overload;
-
-  // Since Win 10, use this function to create a file.
-  function CreateFile2(lpFileName: PWideChar;
-                       {[in]}           dwDesiredAccess: DWORD;
-                       {[in]}           dwShareMode: DWORD;
-                       {[in]}           dwCreationDisposition: DWORD;
-                       {[in, optional]} pCreateExParams: LPCREATEFILE2_EXTENDED_PARAMETERS): THandle; stdcall;
-
-  // Replaces TFile::Size
-  function GetFileSize64(const AFileName: string;
-                         out ASize: Int64): Boolean;
+function ConstrainValue(const Value: byte;
+                        Min: byte;
+                        Max: byte): byte; inline; overload;
 
 
-  // Strings
-  function StringCbCat(pszDest: PChar;
-                       cbDest: SIZE_T;
-                       const pszSrc: string): HRESULT;
+// Maps a value in between minimum and maximum valueranges.
+function MapRange(const aValue: Single;
+                  InMin: Single;
+                  InMax: Single;
+                  OutMin: Single;
+                  OutMax: Single): Single; inline; overload;
 
-  function StringCbCatA(pszDest: PAnsiChar;
-                        cbDest: SIZE_T;
-                        pszSrc: PAnsiChar): HRESULT; stdcall;
+function MapRange(const aValue: Integer;
+                  InMin: Single;
+                  InMax: Single;
+                  OutMin: Single;
+                  OutMax: Single): Single; inline; overload;
 
-  function StringCbCatW(pszDest: PWideChar;
-                        cbDest: SIZE_T;
-                        pszSrc: PWideChar): HRESULT; stdcall;
+// Since Win 10, use this function to create a file.
+function CreateFile2(lpFileName: PWideChar;
+  {[in]}           dwDesiredAccess: DWORD;
+  {[in]}           dwShareMode: DWORD;
+  {[in]}           dwCreationDisposition: DWORD;
+  {[in, optional]} pCreateExParams: LPCREATEFILE2_EXTENDED_PARAMETERS): THandle; stdcall;
 
-  {$IF true}
-  // Introduced: Delphi XE8
-  // Compares two Unicode strings.
-  // Digits in the strings are considered as numerical content rather than text.
-  // This test is not case-sensitive.
-  function StrCmpLogicalW(psz1: LPCWSTR;
-                          psz2: LPCWSTR): Integer; stdcall;
-  {$ENDIF}
-
-  // Windows
-  {$IF true}
-  function CreateEventEx(lpEventAttributes: PSecurityAttributes;
-                         lpName: LPCWSTR;
-                         dwFlags: DWord;
-                         dwDesiredAccess: DWord): THandle; stdcall;
-
-  function CreateEventExA(lpEventAttributes: PSecurityAttributes;
-                          lpName: LPCSTR;
-                          dwFlags: DWord;
-                          dwDesiredAccess: DWord): THandle; stdcall;
-
-  function CreateEventExW(lpEventAttributes: PSecurityAttributes;
-                          lpName: LPCWSTR;
-                          dwFlags: DWord;
-                          dwDesiredAccess: DWord): THandle; stdcall;
-  {$ENDIF}
-
-  // Alternative for ProcessMessages
-  // Example usage: HandleMessages(GetCurrentThread());
-  procedure HandleMessages(AThread: THandle;
-                           AWait: Cardinal = INFINITE);
+// Replaces TFile::Size
+function GetFileSize64(const AFileName: string;
+                       out ASize: Int64): Boolean;
 
 
-  // See: https://learn.microsoft.com/nl-nl/windows/win32/api/processthreadsapi/nf-processthreadsapi-openthread
-  function OpenThread(dwDesiredAccess: DWORD;
-                      bInheritHandle: BOOL;
-                      dwThreadId: DWORD): THandle; stdcall;
+// Strings
+function StringCbCat(pszDest: PChar;
+                     cbDest: SIZE_T;
+                     const pszSrc: string): HRESULT;
 
-  // Math & replacements.
+function StringCbCatA(pszDest: PAnsiChar;
+                      cbDest: SIZE_T;
+                      pszSrc: PAnsiChar): HRESULT; stdcall;
 
-  // NOTE: MulDiv replacement for Int64 types.
-  // MulDiv is 32-bit (Integer in/out). With range checking on, Delphi throws "Range check error".
-  // If working with Int64, use this method, instead of MulDiv.
-  function MulDiv64(const aNumber,
-                    aNumerator,
-                    aDenominator: Int64): Int64; inline;
+function StringCbCatW(pszDest: PWideChar;
+                      cbDest: SIZE_T;
+                      pszSrc: PWideChar): HRESULT; stdcall;
+
+{$IF true}
+// Introduced: Delphi XE8
+// Compares two Unicode strings.
+// Digits in the strings are considered as numerical content rather than text.
+// This test is not case-sensitive.
+function StrCmpLogicalW(psz1: LPCWSTR;
+                        psz2: LPCWSTR): Integer; stdcall;
+{$ENDIF}
+
+// Windows
+{$IF true}
+function CreateEventEx(lpEventAttributes: PSecurityAttributes;
+                       lpName: LPCWSTR;
+                       dwFlags: DWord;
+                       dwDesiredAccess: DWord): THandle; stdcall;
+
+function CreateEventExA(lpEventAttributes: PSecurityAttributes;
+                        lpName: LPCSTR;
+                        dwFlags: DWord;
+                        dwDesiredAccess: DWord): THandle; stdcall;
+
+function CreateEventExW(lpEventAttributes: PSecurityAttributes;
+                        lpName: LPCWSTR;
+                        dwFlags: DWord;
+                        dwDesiredAccess: DWord): THandle; stdcall;
+{$ENDIF}
+
+// Alternative for ProcessMessages
+// Example usage: HandleMessages(GetCurrentThread());
+procedure HandleMessages(AThread: THandle;
+                         AWait: Cardinal = INFINITE);
+
+
+// See: https://learn.microsoft.com/nl-nl/windows/win32/api/processthreadsapi/nf-processthreadsapi-openthread
+function OpenThread(dwDesiredAccess: DWORD;
+                    bInheritHandle: BOOL;
+                    dwThreadId: DWORD): THandle; stdcall;
+
+// Math & replacements.
+
+// NOTE: MulDiv replacement for Int64 types.
+// MulDiv is 32-bit (Integer in/out). With range checking on, Delphi throws "Range check error".
+// If working with Int64, use this method, instead of MulDiv.
+function MulDiv64(const aNumber,
+                  aNumerator,
+                  aDenominator: Int64): Int64; inline;
 
 
 implementation
@@ -715,29 +715,48 @@ uses
   {System}
   TypInfo;
 
+
 function IntToStr(Value: Int64): UnicodeString;
+
 begin
+
   Result := UnicodeString(SysUtils.IntToStr(Value));
 end;
 
-function TryStrToInt(const Value: UnicodeString;out Number: Integer): Boolean;
+
+function TryStrToInt(const Value: UnicodeString;
+                     out Number: Integer): Boolean;
+
 begin
-  Result := SysUtils.TryStrToInt(AnsiString(Value),Number);
+
+  Result := SysUtils.TryStrToInt(AnsiString(Value),
+                                 Number);
 end;
 
+
 function StrToInt(const Value: UnicodeString): Integer;
+
 begin
+
   Result := SysUtils.StrToInt(AnsiString(Value));
 end;
 
-function Format(const Fmt: UnicodeString;const Args: array of const): UnicodeString;
+
+function Format(const Fmt: UnicodeString;
+                const Args: array of const): UnicodeString;
+
 begin
-  Result := SysUtils.WideFormat(Fmt,Args);
+
+  Result := SysUtils.WideFormat(Fmt,
+                                Args);
 end;
 
+
 function ColorToRGB(color: TColor): COLORREF;
+
 begin
-  if color < 0 then
+
+  if (color < 0) then
     Result := GetSysColor(color and $FF)
   else
     Result := COLORREF(color);
@@ -750,13 +769,13 @@ const
   PowrProfLib = 'PowrProf.dll';
 
 
-  VER_EQUAL             = 1;
-  VER_GREATER           = 2;
-  VER_GREATER_EQUAL     = 3;
-  VER_LESS              = 4;
-  VER_LESS_EQUAL        = 5;
-  VER_AND               = 6;
-  VER_OR                = 7;
+  VER_EQUAL = 1;
+  VER_GREATER = 2;
+  VER_GREATER_EQUAL = 3;
+  VER_LESS = 4;
+  VER_LESS_EQUAL = 5;
+  VER_AND = 6;
+  VER_OR = 7;
 
   //Defined in MfPack.inc
   //_WIN32_WINNT_WINXP    = $0501;
@@ -766,11 +785,11 @@ const
   //_WIN32_WINNT_WINBLUE  = $0603;  // Windows 8.1 (codename Windows Blue)
   //_WIN32_WINNT_WIN10    = $0A00;
 
-  VER_SERVICEPACKMAJOR  = $0000010;
-  VER_MAJORVERSION      = $0000002;
-  VER_MINORVERSION      = $0000001;
-  VER_NT_WORKSTATION    = 1;
-  VER_PRODUCT_TYPE      = $80;
+  VER_SERVICEPACKMAJOR = $0000010;
+  VER_MAJORVERSION = $0000002;
+  VER_MINORVERSION = $0000001;
+  VER_NT_WORKSTATION = 1;
+  VER_PRODUCT_TYPE = $80;
 
 
 // SafeRelease
@@ -778,7 +797,9 @@ const
 // release COM interfaced objects.
 // Note: The object does initiate a reference call.
 procedure SafeRelease(var IUnk);
+
 begin
+
   if (IUnknown(IUnk) <> nil) then
     IUnknown(IUnk) := nil;
 end;
@@ -786,22 +807,28 @@ end;
 
 // Note: Here the object does NOT initiate a reference call.
 procedure Safe_Release(var IUnk);
+
 begin
+
   if Assigned(IUnknown(IUnk)) then
-    IUnknown(Pointer(@IUnk)^):= nil;
+    IUnknown(Pointer(@IUnk)^) := nil;
 end;
 
 
 // Equivalent method of CPPFreeAndNil
 procedure Cpp_FreeAndNil(var Obj: TObject);
+
 begin
+
   Obj.Free();
   Obj := nil;
 end;
 
 
 procedure PropVariantClearSafe(var pv: PROPVARIANT);
+
 begin
+
   ZeroMemory(@pv,
              SizeOf(pv));
 end;
@@ -813,25 +840,42 @@ end;
 // ole2: compare GUID type pointers
 function IsEqualPGUID(rguid1: PGUID;
                       rguid2: PGUID): BOOL; stdcall;
+
 begin
+
   Result := (rguid1 <> nil) and (rguid2 <> nil);
   if Result then
-    Result := CompareMem(rguid1,rguid2,SizeOf(TGUID));
+    Result := CompareMem(rguid1,
+                         rguid2,
+                         SizeOf(TGUID));
 end;
+
+
 function IsEqualPIID(riid1: PGUID;
                      riid2: PGUID): BOOL; stdcall;
+
 begin
+
   Result := (riid1 <> nil) and (riid2 <> nil);
   if Result then
-    Result := CompareMem(riid1,riid2,SizeOf(TGUID));
+    Result := CompareMem(riid1,
+                         riid2,
+                         SizeOf(TGUID));
 end;
+
+
 function IsEqualPCLSID(rclsid1: PGUID;
                        rclsid2: PGUID): BOOL; stdcall;
+
 begin
+
   Result := (rclsid1 <> nil) and (rclsid2 <> nil);
   if Result then
-    Result := CompareMem(rclsid1,rclsid2,SizeOf(TGUID));
+    Result := CompareMem(rclsid1,
+                         rclsid2,
+                         SizeOf(TGUID));
 end;
+
 
 function InlineIsEqualGUID(rguid1: TGUID;
                            rguid2: TGUID): BOOL; inline;
@@ -840,18 +884,21 @@ var
   rg2: PIntegerArray;
 
 begin
+
   rg1 := PIntegerArray(@rguid1);
   rg2 := PIntegerArray(@rguid2);
-  Result :=  (rg1^[0] = rg2^[0]) and
-             (rg1^[1] = rg2^[1]) and
-             (rg1^[2] = rg2^[2]) and
-             (rg1^[3] = rg2^[3]);
+  Result := (rg1^[0] = rg2^[0]) and
+    (rg1^[1] = rg2^[1]) and
+    (rg1^[2] = rg2^[2]) and
+    (rg1^[3] = rg2^[3]);
 end;
 
 
 function IsEqualGUID(rguid1: TGUID;
                      rguid2: TGUID): BOOL; inline;
+
 begin
+
   // Actually the same as InlineIsEqualGUID
   Result := InlineIsEqualGUID(rguid1,
                               rguid2);
@@ -867,7 +914,9 @@ end;
 // Determines whether two interface identifiers are equal.
 function IsEqualIID(riid1: TGUID;
                     riid2: TGUID): BOOL; inline;
+
 begin
+
   Result := InLineIsEqualGUID(riid1,
                               riid2);
 end;
@@ -875,7 +924,9 @@ end;
 
 function IsEqualCLSID(rclsid1: TGUID;
                       rclsid2: TGUID): BOOL; inline;
+
 begin
+
   Result := InLineIsEqualGUID(rclsid1,
                               rclsid2);
 end;
@@ -883,7 +934,9 @@ end;
 
 function IsEqualFMTID(rfmtid1: TGUID;
                       rfmtid2: TGUID): BOOL; inline;
+
 begin
+
   Result := InLineIsEqualGUID(rfmtid1,
                               rfmtid2);
 end;
@@ -891,15 +944,19 @@ end;
 // Other guid tools
 
 function GuidFromString(Value: string): TGuid; inline;
+
 begin
+
   result := StringToGuid(AnsiString(Value));
 end;
 
 
 function IsEmptyGuid(pGuid: TGUID): BOOL; inline;
+
 begin
-   result := InLineIsEqualGuid(pGuid,
-                               GUID_NULL);
+
+  result := InLineIsEqualGuid(pGuid,
+                              GUID_NULL);
 end;
 
 
@@ -909,7 +966,9 @@ end;
 // MACRO translations
 //==================
 procedure DECIMAL_SETZERO(var dec: DECIMAL); inline;
+
 begin
+
   dec.Lo64 := 0;
   dec.Hi32 := 0;
   dec.signscale := 0;
@@ -917,26 +976,33 @@ end;
 
 
 function CBPCLIPDATA(_clipdata: CLIPDATA): SIZE_T; inline;
+
 begin
-  if _clipdata.cbSize < SizeOf(_clipdata.ulClipFmt) then
+
+  if (_clipdata.cbSize < SizeOf(_clipdata.ulClipFmt)) then
     Result := 0
   else
-    Result := _clipdata.cbSize-SizeOf(_clipdata.ulClipFmt);
+    Result := _clipdata.cbSize - SizeOf(_clipdata.ulClipFmt);
 end;
 
 
 // clipping functions ////////////////////////////////////////////////////////////
 
 function ClipByteValue(byteval: UINT32): Byte; inline;
+
 begin
+
   if (byteval > 255) then
     Result := 255
   else
     Result := Byte(byteval);
 end;
 
+
 function Clip(clr: Integer): Byte; inline;
+
 begin
+
   if (clr > 255) then
     Result := Byte(255)
   else if (clr < 0) then
@@ -950,7 +1016,7 @@ end;
 ////////////// WINVERSIONS /////////////////////////////////////////////////////
 // thanks to Glenn9999 on tek-tips.com on 06/06/2015 and http://thebesthacker.com
 
-function VerifyVersionInfo(var LPOSVERSIONINFOEX : OSVERSIONINFOEXW;
+function VerifyVersionInfo(var LPOSVERSIONINFOEX: OSVERSIONINFOEXW;
                            dwTypeMask: DWORD;
                            dwlConditionMask: Int64): BOOL; stdcall; external Kernel32Lib name 'VerifyVersionInfoW';
 
@@ -960,12 +1026,15 @@ function VerSetConditionMask(dwlConditionMask: Int64;
                              dwConditionMask: Byte): Int64; stdcall; external Kernel32Lib;
 
 
-function IsWinVerOrHigher(wMajorVersion, wMinorVersion, wServicePackMajor: Word): Boolean;
+function IsWinVerOrHigher(wMajorVersion,
+                          wMinorVersion,
+                          wServicePackMajor: Word): Boolean;
 var
   osvi: OSVERSIONINFOEXW;
   condmask: Int64;
 
 begin
+
   FillChar(osvi,
            SizeOf(osvi),
            0);
@@ -987,14 +1056,16 @@ begin
   osvi.wServicePackMajor := wServicePackMajor;
   Result := VerifyVersionInfo(osvi,
                               VER_MAJORVERSION or
-                              VER_MINORVERSION or
-                              VER_SERVICEPACKMAJOR,
+    VER_MINORVERSION or
+    VER_SERVICEPACKMAJOR,
                               condmask);
 end;
 
 //
 function OsIsWinXPOrHigher(): Boolean;
+
 begin
+
   Result := IsWinVerOrHigher((_WIN32_WINNT_WINXP shr 8),
                              (_WIN32_WINNT_WINXP and $FF),
                              0);
@@ -1002,7 +1073,9 @@ end;
 
 //
 function OsIsWinXPSP1OrHigher(): Boolean;
+
 begin
+
   Result := IsWinVerOrHigher((_WIN32_WINNT_WINXP shr 8),
                              (_WIN32_WINNT_WINXP and $FF),
                              1);
@@ -1010,7 +1083,9 @@ end;
 
 //
 function OsIsWinXPSP2OrHigher(): Boolean;
+
 begin
+
   Result := IsWinVerOrHigher((_WIN32_WINNT_WINXP shr 8),
                              (_WIN32_WINNT_WINXP and $FF),
                              2);
@@ -1018,7 +1093,9 @@ end;
 
 //
 function OsIsWinXPSP3OrHigher(): Boolean;
+
 begin
+
   Result := IsWinVerOrHigher((_WIN32_WINNT_WINXP shr 8),
                              (_WIN32_WINNT_WINXP and $FF),
                              3);
@@ -1026,7 +1103,9 @@ end;
 
 //
 function OsIsWinVistaOrHigher(): Boolean;
+
 begin
+
   Result := IsWinVerOrHigher((_WIN32_WINNT_VISTA shr 8),
                              (_WIN32_WINNT_VISTA and $FF),
                              0);
@@ -1034,7 +1113,9 @@ end;
 
 //
 function OsIsWinVistaSP1OrHigher(): Boolean;
+
 begin
+
   Result := IsWinVerOrHigher((_WIN32_WINNT_VISTA shr 8),
                              (_WIN32_WINNT_VISTA and $FF),
                              1);
@@ -1042,7 +1123,9 @@ end;
 
 //
 function OsIsWinVistaSP2OrHigher(): Boolean;
+
 begin
+
   Result := IsWinVerOrHigher((_WIN32_WINNT_VISTA shr 8),
                              (_WIN32_WINNT_VISTA and $FF),
                              2);
@@ -1050,7 +1133,9 @@ end;
 
 //
 function OsIsWin7OrHigher(): Boolean;
+
 begin
+
   Result := IsWinVerOrHigher((_WIN32_WINNT_WIN7 shr 8),
                              (_WIN32_WINNT_WIN7 and $FF),
                              0);
@@ -1058,7 +1143,9 @@ end;
 
 //
 function OsIsWin7SP1OrHigher(): Boolean;
+
 begin
+
   Result := IsWinVerOrHigher((_WIN32_WINNT_WIN7 shr 8),
                              (_WIN32_WINNT_WIN7 and $FF),
                              1);
@@ -1066,7 +1153,9 @@ end;
 
 //
 function OsIsWin8OrHigher(): Boolean;
+
 begin
+
   Result := IsWinVerOrHigher((_WIN32_WINNT_WIN8 shr 8),
                              (_WIN32_WINNT_WIN8 and $FF),
                              0);
@@ -1074,7 +1163,9 @@ end;
 
 //
 function OsIsWin81OrHigher(): Boolean;
+
 begin
+
   Result := IsWinVerOrHigher((_WIN32_WINNT_WINBLUE shr 8),
                              (_WIN32_WINNT_WINBLUE and $FF),
                              0);
@@ -1082,7 +1173,9 @@ end;
 
 //
 function OsIsWin10OrHigher(): Boolean;
+
 begin
+
   Result := IsWinVerOrHigher((_WIN32_WINNT_WIN10 shr 8),
                              (_WIN32_WINNT_WIN10 and $FF),
                              0);
@@ -1095,48 +1188,51 @@ var
   condmask: Int64;
 
 begin
+
   FillChar(osvi,
            sizeof(osvi),
            0);
-  osvi.dwOSVersionInfoSize:= SizeOf(osvi);
+  osvi.dwOSVersionInfoSize := SizeOf(osvi);
   FillChar(condmask,
            8,
            0);
-  condmask:= VerSetConditionMask(condmask,
-                                 VER_PRODUCT_TYPE,
-                                 VER_EQUAL );
+  condmask := VerSetConditionMask(condmask,
+                                  VER_PRODUCT_TYPE,
+                                  VER_EQUAL);
   osvi.wProductType := VER_NT_WORKSTATION;
   Result := not VerifyVersionInfo(osvi,
                                   VER_PRODUCT_TYPE,
                                   condmask);
 end;
 
-  // C++ function equivalents
-  //=========================
+// C++ function equivalents
+//=========================
 
-  // Multiplies one value of type SIZE_T by another.
-  // Example: hhresult = SizeTMult(length, sizeof(WCHAR), cb);
-  // Parameters
-  // cbMultiplicand [in]
-  //    Type: SIZE_T
-  //    The value to be multiplied by cbMultiplier.
-  // cbMultiplier [in]
-  //    Type: SIZE_T
-  //    The value by which to multiply cbMultiplicand.
-  // pcbResult [out]
-  //    Type: SIZE_T*
-  //    A pointer to the result.
-  //    If the operation results in a value that overflows or underflows the capacity of the type,
-  //    the function returns INTSAFE_E_ARITHMETIC_OVERFLOW and this parameter is not valid.
+// Multiplies one value of type SIZE_T by another.
+// Example: hhresult = SizeTMult(length, sizeof(WCHAR), cb);
+// Parameters
+// cbMultiplicand [in]
+//    Type: SIZE_T
+//    The value to be multiplied by cbMultiplier.
+// cbMultiplier [in]
+//    Type: SIZE_T
+//    The value by which to multiply cbMultiplicand.
+// pcbResult [out]
+//    Type: SIZE_T*
+//    A pointer to the result.
+//    If the operation results in a value that overflows or underflows the capacity of the type,
+//    the function returns INTSAFE_E_ARITHMETIC_OVERFLOW and this parameter is not valid.
 function SizeTMult(const cbMultiplicand: SIZE_T;
                    const cbMultiplier: SIZE_T;
                    out pcbResult: SIZE_T): HRESULT;
+
 begin
+
   if (cbMultiplier <> 0) and (cbMultiplicand > High(SIZE_T) div cbMultiplier) then
-  begin
-    pcbResult := High(SIZE_T);
-    Exit(INTSAFE_E_ARITHMETIC_OVERFLOW);
-  end;
+    begin
+      pcbResult := High(SIZE_T);
+      Exit(INTSAFE_E_ARITHMETIC_OVERFLOW);
+    end;
   pcbResult := cbMultiplicand * cbMultiplier;
   Result := S_OK;
 end; // SizeTMult
@@ -1145,40 +1241,45 @@ end; // SizeTMult
 // Utility to check HRESULT
 procedure CheckHR(hr: HRESULT;
                   const aContext: string = '');
+
 begin
+
   if Failed(hr) then
-    raise Exception.CreateFmt('HRESULT 0x%x - %s', [hr,
-                                                    aContext]);
+    raise Exception.CreateFmt('HRESULT 0x%x - %s',
+                              [hr,
+      aContext]);
 end;
 
-  // Adds two values of type UINT.
-  // Parameters
-  // uAugend [in]
-  //    Type: UINT
-  //    The first value in the equation.
-  // uAddend [in]
-  //    Type: UINT
-  //    The value to add to uAugend.
-  // puResult [out]
-  //    Type: PUINT
-  //    A pointer to the sum.
-  //    If the operation results in a value that overflows or underflows the capacity of the type,
-  //    the function returns INTSAFE_E_ARITHMETIC_OVERFLOW and this parameter is not valid.
-  // Return value
-  // Type: HRESULT
-  //    If this function succeeds, it returns S_OK. Otherwise, it returns an HRESULT error code.
-  // Remarks
-  // This is one of a set of inline functions designed to provide arithmetic operations and
-  // perform validity checks with minimal impact on performance.
+// Adds two values of type UINT.
+// Parameters
+// uAugend [in]
+//    Type: UINT
+//    The first value in the equation.
+// uAddend [in]
+//    Type: UINT
+//    The value to add to uAugend.
+// puResult [out]
+//    Type: PUINT
+//    A pointer to the sum.
+//    If the operation results in a value that overflows or underflows the capacity of the type,
+//    the function returns INTSAFE_E_ARITHMETIC_OVERFLOW and this parameter is not valid.
+// Return value
+// Type: HRESULT
+//    If this function succeeds, it returns S_OK. Otherwise, it returns an HRESULT error code.
+// Remarks
+// This is one of a set of inline functions designed to provide arithmetic operations and
+// perform validity checks with minimal impact on performance.
 function UIntAdd(const uAugend: UINT32;
                  const uAddend: UINT32;
                  out puResult: UINT32): HRESULT;
+
 begin
-  if uAddend > High(UINT32) - uAugend then
-  begin
-    puResult := High(UINT32);
-    Exit(INTSAFE_E_ARITHMETIC_OVERFLOW);
-  end;
+
+  if (uAddend > High(UINT32) - uAugend) then
+    begin
+      puResult := High(UINT32);
+      Exit(INTSAFE_E_ARITHMETIC_OVERFLOW);
+    end;
   puResult := uAugend + uAddend;
   Result := S_OK;
 end;
@@ -1188,14 +1289,18 @@ end;
 //=======================================
 
 function NanoSecondsToMilliSeconds(aNanoSec: Int64): Int64; inline;
+
 begin
-  Result :=  aNanoSec div 1000000;
+
+  Result := aNanoSec div 1000000;
 end;
 
 
 function MilliSecondsToSeconds(aSec: Int64): Single; inline;
+
 begin
-  Result :=  aSec / 1000;
+
+  Result := aSec / 1000;
 end;
 
 
@@ -1213,68 +1318,67 @@ var
 
 begin
 
- if (FractionalDigits > 3) then
-   FractionalDigits := 3
- else
-   if (FractionalDigits < 2) then
-     FractionalDigits := 2;
+  if (FractionalDigits > 3) then
+    FractionalDigits := 3
+  else if (FractionalDigits < 2) then
+    FractionalDigits := 2;
 
-try
-  hours := hns div MFTIME(36000000000);
-  hns := hns mod MFTIME(36000000000);
+  try
+    hours := hns div MFTIME(36000000000);
+    hns := hns mod MFTIME(36000000000);
 
-  mins := hns div 600000000;
-  hns := hns mod 600000000;
+    mins := hns div 600000000;
+    hns := hns mod 600000000;
 
-  secs := hns div 10000000;
-  hns := hns mod 10000000;
+    secs := hns div 10000000;
+    hns := hns mod 10000000;
 
-  millisec := hns div 10000;
+    millisec := hns div 10000;
 
-  if DelimiterFormat = '' then
-    DelimiterFormat := ':';
+    if (DelimiterFormat = '') then
+      DelimiterFormat := ':';
 
-  if ShowMilliSeconds then
-    begin
+    if ShowMilliSeconds then
+      begin
 
-      // Two digits represent centiseconds; all other values retain the
-      // historical three-digit millisecond format.
-      if (FractionalDigits = 2) then
-        begin
+        // Two digits represent centiseconds; all other values retain the
+        // historical three-digit millisecond format.
+        if (FractionalDigits = 2) then
+          begin
 
-          FractionalValue := millisec div 10;
-          Result := Format('%2.2d%s%2.2d%s%2.2d,%2.2d',
+            FractionalValue := millisec div 10;
+            Result := Format('%2.2d%s%2.2d%s%2.2d,%2.2d',
+                             [hours,
+              DelimiterFormat,
+              mins,
+              DelimiterFormat,
+              secs,
+              FractionalValue]);
+          end
+        else // FractionalDigits = 3
+          Result := Format('%2.2d%s%2.2d%s%2.2d,%3.3d',
                            [hours,
-                            DelimiterFormat,
-                            mins,
-                            DelimiterFormat,
-                            secs,
-                            FractionalValue]);
-        end
-      else // FractionalDigits = 3
-        Result := Format('%2.2d%s%2.2d%s%2.2d,%3.3d',
-                         [hours,
-                          DelimiterFormat,
-                          mins,
-                          DelimiterFormat,
-                          secs,
-                          millisec]);
-    end
-  else
-    Result := Format('%2.2d%s%2.2d%s%2.2d',
-                     [hours,
-                      DelimiterFormat,
-                      mins,
-                      DelimiterFormat,
-                      secs]);
-
-except
-  on exception do
-    if ShowMilliSeconds and (FractionalDigits = 2) then
-      Result := '00:00:00,00'
+            DelimiterFormat,
+            mins,
+            DelimiterFormat,
+            secs,
+            millisec]);
+      end
     else
-      Result := '00:00:00,000';
-end;
+      Result := Format('%2.2d%s%2.2d%s%2.2d',
+                       [hours,
+        DelimiterFormat,
+        mins,
+        DelimiterFormat,
+        secs]);
+
+  except
+    on exception do
+      if ShowMilliSeconds and (FractionalDigits = 2) then
+        Result := '00:00:00,00'
+      else
+        Result := '00:00:00,000';
+  end;
 end;
 
 
@@ -1302,32 +1406,35 @@ var
   millisec: Word;
 
 begin
-try
-  hours := wMsec div 3600000;
-  wMsec := wMsec mod 3600000;
 
-  mins := wMsec div 60000;
-  wMsec := wMsec mod 60000;
+  try
+    hours := wMsec div 3600000;
+    wMsec := wMsec mod 3600000;
 
-  secs := wMsec div 1000;
-  wMsec := wMsec mod 1000;
+    mins := wMsec div 60000;
+    wMsec := wMsec mod 60000;
 
-  millisec := wMsec;
+    secs := wMsec div 1000;
+    wMsec := wMsec mod 1000;
 
-  if ShowMilliSeconds then
-    Result := Format('%2.2d:%2.2d:%2.2d,%3.3d',
-                     [hours,
-                      mins,
-                      secs,
-                      millisec])
-  else
-    Result := Format('%2.2d:%2.2d:%2.2d', [hours,
-                                           mins,
-                                           secs]);
+    millisec := wMsec;
 
-except
-  on exception do Result:= '00:00:00,000';
-end;
+    if ShowMilliSeconds then
+      Result := Format('%2.2d:%2.2d:%2.2d,%3.3d',
+                       [hours,
+        mins,
+        secs,
+        millisec])
+    else
+      Result := Format('%2.2d:%2.2d:%2.2d',
+                       [hours,
+        mins,
+        secs]);
+
+  except
+    on exception do
+      Result := '00:00:00,000';
+  end;
 end;
 
 
@@ -1340,25 +1447,24 @@ var
   Minutes: Integer;
   Seconds: Integer;
   Milliseconds: Integer;
+
 begin
+
   Result := 0;
-  if Length(TimeStamp) <> 12 then
+  if (Length(TimeStamp) <> 12) then
     Exit;
   if (TimeStamp[3] <> ':') or (TimeStamp[6] <> ':') or
-     ((TimeStamp[9] <> ',') and (TimeStamp[9] <> '.')) then
+    ((TimeStamp[9] <> ',') and (TimeStamp[9] <> '.')) then
     Exit;
-  if not TryStrToInt(Copy(TimeStamp,1,2),Hours) or
-     not TryStrToInt(Copy(TimeStamp,4,2),Minutes) or
-     not TryStrToInt(Copy(TimeStamp,7,2),Seconds) or
-     not TryStrToInt(Copy(TimeStamp,10,3),Milliseconds) then
+  if not TryStrToInt(Copy(TimeStamp, 1, 2), Hours) or not TryStrToInt(Copy(TimeStamp, 4, 2), Minutes) or not TryStrToInt(Copy(TimeStamp, 7, 2), Seconds) or not TryStrToInt(Copy(TimeStamp, 10, 3), Milliseconds) then
     Exit;
   if (Hours < 0) or (Minutes < 0) or (Minutes > 59) or
-     (Seconds < 0) or (Seconds > 59) or
-     (Milliseconds < 0) or (Milliseconds > 999) then
+    (Seconds < 0) or (Seconds > 59) or
+    (Milliseconds < 0) or (Milliseconds > 999) then
     Exit;
-  Result := Int64(Hours)*3600000+Minutes*60000+Seconds*1000+Milliseconds;
+  Result := Int64(Hours) * 3600000 + Minutes * 60000 + Seconds * 1000 + Milliseconds;
   if HnsTimeUnits then
-    Result := Result*ONE_HNS_MSEC;
+    Result := Result * ONE_HNS_MSEC;
 end;
 
 //
@@ -1369,6 +1475,7 @@ var
   splitsec: Double;
 
 begin
+
   try
     splitsec := Frac(dSec);
 
@@ -1385,50 +1492,58 @@ begin
         splitsec := splitsec + secs;
         result := Format('%2.2d:%2.2d:%2.2f',
                          [hours,
-                          mins,
-                          splitsec]);
+          mins,
+          splitsec]);
       end
     else
       begin
         secs := secs + Round(splitsec);
         result := Format('%2.2d:%2.2d:%2.2d',
                          [hours,
-                          mins,
-                          secs]);
+          mins,
+          secs]);
       end;
 
   except
-    on exception do Result:= '00:00:00';
+    on exception do
+      Result := '00:00:00';
   end;
 end;
 
 //
 function MSecToHnsTime(Millisec: ULONGLONG): MFTIME; inline;
+
 begin
+
   result := Millisec * ONE_HNS_MSEC;
 end;
 
 //
 function HnsTimeToMsec(hnsTime: MFTIME): MFTIME; inline;
+
 begin
+
   Result := (hnsTime div ONE_HNS_MSEC);
 end;
 
 //
 function FramesToMsec(frames: Int64;
                       fps: Double): MFTIME; inline;
+
 begin
+
   Result := Round((frames / fps) * 1000);
 end;
 
 //
 function FramesToTimeStr(frames: Int64;
                          fps: Double;
-                         ShowMilliSeconds: boolean = True ): string; inline;
+                         ShowMilliSeconds: boolean = True): string; inline;
 var
   wMsec: UInt64;
 
 begin
+
   wMsec := FramesToMsec(frames,
                         fps);
   Result := MSecToStr(wMsec,
@@ -1467,8 +1582,9 @@ end;
 
 
 function NormalizeBOOL(const aBOOL: LongBool): INT;
+
 begin
-  
+
   // Delphi LongBool uses -1 for True; normalize for comparisons.
   // See comments in WinApi.WinApiTypes about BOOL.
   if aBOOL then
@@ -1480,54 +1596,82 @@ end;
 
 // Inline methods to avoid hard Double typecasting errors.
 function _Double(const AValue: Single): Double; overload; inline;
+
 begin
+
   Result := AValue;
 end;
+
 
 function _Double(const AValue: Integer): Double; overload; inline;
+
 begin
+
   Result := AValue;
 end;
+
 
 function _Double(const AValue: Cardinal): Double; overload; inline;
+
 begin
+
   Result := AValue;
 end;
+
 
 function _Double(const AValue: Int64): Double; overload; inline;
+
 begin
+
   Result := AValue;
 end;
 
+
 function _Double(const AValue: UInt64): Double; overload; inline;
+
 begin
+
   Result := AValue;
 end;
 
 
 // Inline methods to avoid hard Single typecasting errors.
 function _Single(const AValue: Double): Single; overload; inline;
+
 begin
+
   Result := AValue;
 end;
+
 
 function _Single(const AValue: Integer): Single; overload; inline;
+
 begin
+
   Result := AValue;
 end;
+
 
 function _Single(const AValue: Cardinal): Single; overload; inline;
+
 begin
+
   Result := AValue;
 end;
+
 
 function _Single(const AValue: Int64): Single; overload; inline;
+
 begin
+
   Result := AValue;
 end;
 
+
 function _Single(const AValue: UInt64): Single; overload; inline;
+
 begin
+
   Result := AValue;
 end;
 
@@ -1538,14 +1682,17 @@ end;
 function GetOSArchitecture(): string;
 var
   info: SYSTEM_INFO;
+
 begin
+
   GetNativeSystemInfo(@info);
   case info.wProcessorArchitecture of
     0: Result := 'Intel 32Bit';
     9: Result := 'Intel 64Bit';
     5: Result := 'ARM 32Bit';
     12: Result := 'ARM 64Bit';
-    else Result := 'Unknown OS architecture';
+    else
+      Result := 'Unknown OS architecture';
   end;
 end;
 
@@ -1557,9 +1704,10 @@ var
   I: Integer;
 
 begin
+
   Result := clNone;
   for I := 0 to High(HTMLColorNames) do
-    if HTMLColorNames[I].ClrName = UpperCase(HtmlClrName) then
+    if (HTMLColorNames[I].ClrName = UpperCase(HtmlClrName)) then
       begin
         Result := HTMLColorNames[I].DelphiClr;
         Break;
@@ -1569,7 +1717,9 @@ end;
 
 function HtmlColorToTColor(aValue: string;
                            aDefault: Tcolor = clNone): TColor; inline;
+
 begin
+
   if (Length(aValue) <> 7) or (aValue[1] <> '#') then
     Result := aDefault
   else
@@ -1588,50 +1738,62 @@ end;
 function TColorToHtmlColor(aValue: TColor): string; inline;
 var
   crRGB: TColorRef;
+
 begin
-  crRGB := ColorToRGB(aValue) ;
+
+  crRGB := ColorToRGB(aValue);
   Result := Format('#%.2x%.2x%.2x',
                    [GetRValue(crRGB),
-                    GetGValue(crRGB),
-                    GetBValue(crRGB)]);
+    GetGValue(crRGB),
+    GetBValue(crRGB)]);
 end;
 
 
 procedure CopyTColorToMFARGB(const cColor: TColor;
                              out argb: MFARGB); inline;
+
 begin
-  argb.rgbBlue  := (cColor shr 16) and $FF;
+
+  argb.rgbBlue := (cColor shr 16) and $FF;
   argb.rgbGreen := (cColor shr 8) and $FF;
-  argb.rgbRed   := (cColor and $FF);
+  argb.rgbRed := (cColor and $FF);
   argb.rgbAlpha := (cColor shr 24) and $FF;
 end;
 
 
 procedure CopyMFARGBToTColor(const argb: MFARGB;
                              out cColor: TColor); inline;
+
 begin
+
   cColor := ((argb.rgbRed shl 0) or
-             (argb.rgbGreen shl 8) or
-             (argb.rgbBlue shl 16) or
-             (argb.rgbAlpha shl 24));
+    (argb.rgbGreen shl 8) or
+    (argb.rgbBlue shl 16) or
+    (argb.rgbAlpha shl 24));
 end;
 
 
 function ColorToColorRef(cColor: TColor): COLORREF; inline;
+
 begin
+
   Result := COLORREF(cColor);
 end;
 
 
 function ColorRefToTColor(cColorRef: COLORREF): TColor; inline;
+
 begin
+
   Result := TColor(cColorRef);
 end;
 
 
 procedure CopyRgbTriple(src: RGBTRIPLE;
                         out srd: RGBTRIPLE); inline;
+
 begin
+
   srd.rgbtBlue := src.rgbtBlue;
   srd.rgbtGreen := src.rgbtGreen;
   srd.rgbtRed := src.rgbtRed;
@@ -1640,7 +1802,9 @@ end;
 
 procedure CopyRgbTripleToRgbQuad(src: RGBTRIPLE;
                                  out srd: RGBQUAD); inline;
+
 begin
+
   srd.rgbBlue := src.rgbtBlue;
   srd.rgbGreen := src.rgbtGreen;
   srd.rgbRed := src.rgbtRed;
@@ -1651,7 +1815,9 @@ end;
 // Copies RGBQUAD src to RGBTRIPLE srd
 procedure CopyRgbQuadToRgbTriple(src: RGBQUAD;
                                  out srd: RGBTRIPLE); inline;
+
 begin
+
   srd.rgbtBlue := src.rgbBlue;
   srd.rgbtGreen := src.rgbGreen;
   srd.rgbtRed := src.rgbRed;
@@ -1661,7 +1827,9 @@ end;
 // copies a DWord (COLORREF) to RGBTRIPLE
 procedure CopyClrRefToRgbTriple(src: COLORREF;
                                 out srd: RGBTRIPLE); inline;
+
 begin
+
   srd.rgbtBlue := byte(src shl 0);
   srd.rgbtGreen := byte(src shl 8);
   srd.rgbtRed := byte(src shl 16);
@@ -1671,29 +1839,35 @@ end;
 // copies a RGBTRIPLE to DWord (COLORREF)
 procedure CopyRgbTripleToClrRef(src: RGBTRIPLE;
                                 out srd: COLORREF); inline;
+
 begin
+
   srd := ((DWord(src.rgbtBlue) shl 0) or
-          (DWord(src.rgbtGreen) shl 8) or
-          (DWord(src.rgbtRed) shl 16) or
-          ($00000000 shl 24));
+    (DWord(src.rgbtGreen) shl 8) or
+    (DWord(src.rgbtRed) shl 16) or
+    ($00000000 shl 24));
 end;
 
 
 // copies a RGBQUAD to DWord (COLORREF)
 procedure CopyRGBQuadToClrRef(src: RGBQUAD;
                               out srd: COLORREF); inline;
+
 begin
+
   srd := ((DWord(src.rgbBlue) shl 0) or
-          (DWord(src.rgbGreen) shl 8) or
-          (DWord(src.rgbRed) shl 16) or
-          (DWord(src.rgbReserved) shl 24)); // this should always be 0!
+    (DWord(src.rgbGreen) shl 8) or
+    (DWord(src.rgbRed) shl 16) or
+    (DWord(src.rgbReserved) shl 24)); // this should always be 0!
 end;
 
 
 // copies a DWord (COLORREF) to RGBQUAD
 procedure CopyClrRefToRGBQuad(src: COLORREF;
                               out srd: RGBQUAD); inline;
+
 begin
+
   srd.rgbBlue := byte(src shl 0);
   srd.rgbGreen := byte(src shl 8);
   srd.rgbRed := byte(src shl 16);
@@ -1709,33 +1883,36 @@ var
   c, d, e: Integer;
 
 begin
+
   rgbq := Default(RGBQUAD);
   c := aY - 16;
   d := aCb - 128;
   e := aCr - 128;
 
-  rgbq.rgbBlue :=  Clip(( 298 * c + 516 * d + 128) shr 8);
-  rgbq.rgbGreen := Clip(( 298 * c - 100 * d - 208 * e + 128) shr 8);
-  rgbq.rgbRed :=   Clip(( 298 * c + 409 * e + 128) shr 8);
+  rgbq.rgbBlue := Clip((298 * c + 516 * d + 128) shr 8);
+  rgbq.rgbGreen := Clip((298 * c - 100 * d - 208 * e + 128) shr 8);
+  rgbq.rgbRed := Clip((298 * c + 409 * e + 128) shr 8);
 
-  Result:=  rgbq;
+  Result := rgbq;
 end;
 
 
 function PixelFormatToStr(PixelFmt: TPixelFormat): string; inline;
+
 begin
+
   case PixelFmt of
-    pfDevice : Result := 'pfDevice';
-    pf1bit   : Result := 'pf1bit';
-    pf4bit   : Result := 'pf4bit';
-    pf8bit   : Result := 'pf8bit';
-    pf15bit  : Result := 'pf15bit';
-    pf16bit  : Result := 'pf16bit';
-    pf24bit  : Result := 'pf24bit';
-    pf32bit  : Result := 'pf32bit';
-    pfCustom : Result := 'pfCustom';
-  else
-    Result := 'Unknown';
+    pfDevice: Result := 'pfDevice';
+    pf1bit: Result := 'pf1bit';
+    pf4bit: Result := 'pf4bit';
+    pf8bit: Result := 'pf8bit';
+    pf15bit: Result := 'pf15bit';
+    pf16bit: Result := 'pf16bit';
+    pf24bit: Result := 'pf24bit';
+    pf32bit: Result := 'pf32bit';
+    pfCustom: Result := 'pfCustom';
+    else
+      Result := 'Unknown';
   end;
 end;
 
@@ -1767,7 +1944,9 @@ function SetVNRect(const nrLeft: FLOAT = 0.0;
                    const nrTop: FLOAT = 0.0;
                    const nrRight: FLOAT = 0.0;
                    const nrBottom: FLOAT = 0.0): MFVideoNormalizedRect; inline;
+
 begin
+
   Result.Top := nrTop;
   Result.Bottom := nrBottom;
   Result.Left := nrLeft;
@@ -1778,7 +1957,9 @@ end;
 // Copy MFVideoNormalizedRect values to another MFVideoNormalizedRect
 procedure CopyVNRectToVNRect(const rs: MFVideoNormalizedRect;
                              out rd: MFVideoNormalizedRect); inline;
+
 begin
+
   rd.Top := rs.Top;
   rd.Bottom := rs.Bottom;
   rd.Left := rs.Left;
@@ -1789,8 +1970,10 @@ end;
 // Copy a MFVideoNormalizedRect to a PMFVideoNormalizedRect
 procedure CopyVNRectToPVNRect(rs: MFVideoNormalizedRect;
                               rd: PMFVideoNormalizedRect); inline;
+
 begin
-  if rd = nil then
+
+  if (rd = nil) then
     raise EArgumentException.Create('Destination rectangle is nil');
   rd^ := rs;
 end;
@@ -1799,7 +1982,9 @@ end;
 // Copy a PMFVideoNormalizedRect to a MFVideoNormalizedRect
 procedure CopyPVNRectToVNRect(rs: PMFVideoNormalizedRect;
                               out rd: MFVideoNormalizedRect); inline;
+
 begin
+
   rd := rs^;
 end;
 
@@ -1807,7 +1992,9 @@ end;
 // Add a MFVideoNormalizedRect to another
 function AddVNRect(const r1: MFVideoNormalizedRect;
                    const r2: MFVideoNormalizedRect): MFVideoNormalizedRect; inline;
+
 begin
+
   Result.Top := r1.Top + r2.Top;
   Result.Bottom := r1.Bottom + r2.Bottom;
   Result.Left := r1.Left + r2.Left;
@@ -1818,7 +2005,9 @@ end;
 // Substract a MFVideoNormalizedRect from another
 function SubstractVNRect(const r1: MFVideoNormalizedRect;
                          const r2: MFVideoNormalizedRect): MFVideoNormalizedRect; inline;
+
 begin
+
   Result.Top := r1.Top - r2.Top;
   Result.Bottom := r1.Bottom - r2.Bottom;
   Result.Left := r1.Left - r2.Left;
@@ -1829,38 +2018,48 @@ end;
 // multiply a MFVideoNormalizedRect with another
 function multiplyVNRect(const r1: MFVideoNormalizedRect;
                         const scale: LONG): MFVideoNormalizedRect; inline;
+
 begin
+
   Result.Top := r1.Top * scale;
   Result.Bottom := r1.Bottom * scale;
   Result.Left := r1.Left * scale;
   Result.Right := r1.Right * scale;
- end;
+end;
 
 
 // Get the width of a MFVideoNormalizedRect
 function GetNrRectWidth(const rc: MFVideoNormalizedRect): LONG; inline;
+
 begin
-  Result := Trunc(rc.Right-rc.Left);
+
+  Result := Trunc(rc.Right - rc.Left);
 end;
 
 
 // Get the height of a MFVideoNormalizedRect
 function GetNrRectHeight(const rc: MFVideoNormalizedRect): LONG; inline;
+
 begin
-  Result := Trunc(rc.Bottom-rc.Top);
+
+  Result := Trunc(rc.Bottom - rc.Top);
 end;
 
 
 // Checks whether a MFVideoNormalizedRect is empty
 function IsEmptyNrRect(const nnRect: MFVideoNormalizedRect): Boolean; inline;
+
 begin
+
   Result := (nnRect.Right <= nnRect.Left) or (nnRect.Bottom <= nnRect.Top);
 end;
 
 
 //Clear PMFVideoNormalizedRect
 procedure ClearVNRect(var ppRect: PMFVideoNormalizedRect); inline;
+
 begin
+
   ppRect := nil;
 end;
 
@@ -1868,7 +2067,9 @@ end;
 // Copy a TRect to a MFVideoNormalizedRect
 procedure CopyTRectToVNRect(const rs: TRect;
                             out rd: MFVideoNormalizedRect); inline;
+
 begin
+
   rd.Top := rs.Top;
   rd.Bottom := rs.Bottom;
   rd.Left := rs.Left;
@@ -1879,7 +2080,9 @@ end;
 // Copy a MFVideoNormalizedRect to a TRect
 procedure CopyVNRectToTRect(const rs: MFVideoNormalizedRect;
                             out rd: TRect); inline;
+
 begin
+
   rd.Top := Trunc(rs.Top);
   rd.Bottom := Trunc(rs.Bottom);
   rd.Left := Trunc(rs.Left);
@@ -1889,7 +2092,9 @@ end;
 // Copy a PMFVideoNormalizedRect to a TRect
 procedure CopyPVNRectToTRect(rs: PMFVideoNormalizedRect;
                              out rd: TRect); inline;
+
 begin
+
   rd.Top := Trunc(rs^.Top);
   rd.Bottom := Trunc(rs^.Bottom);
   rd.Left := Trunc(rs^.Left);
@@ -1899,10 +2104,13 @@ end;
 // Copy a PMFVideoNormalizedRect to a PRect
 procedure CopyPVNRectToPRect(rs: PMFVideoNormalizedRect;
                              rd: PRect); inline;
+
 begin
+
   if (rs = nil) or (rd = nil) then
     raise EArgumentException.Create('Rectangle pointer is nil');
-  CopyVNRectToTRect(rs^,rd^);
+  CopyVNRectToTRect(rs^,
+                    rd^);
 end;
 
 
@@ -1912,7 +2120,9 @@ end;
 // Copy TRect values to another TRect
 procedure CopyTRectToTRect(const rs: TRect;
                            out rd: TRect); inline;
+
 begin
+
   rd.Top := rs.Top;
   rd.Bottom := rs.Bottom;
   rd.Left := rs.Left;
@@ -1922,15 +2132,19 @@ end;
 
 // Get the width of a MFVideoNormalizedRect
 function GetTRectWidth(const rc: TRect): LONG; inline;
+
 begin
-  Result := rc.Right-rc.Left;
+
+  Result := rc.Right - rc.Left;
 end;
 
 
 // Get the height of a MFVideoNormalizedRect
 function GetTRectHeight(const rc: TRect): LONG; inline;
+
 begin
-  Result := rc.Bottom-rc.Top;
+
+  Result := rc.Bottom - rc.Top;
 end;
 
 
@@ -1939,8 +2153,10 @@ end;
 // Copy a TRect to a LPRECT
 procedure CopyTRectToLPRect(rs: TRect;
                             var rd: LPRECT); inline;
+
 begin
-  if rd = nil then
+
+  if (rd = nil) then
     raise EArgumentException.Create('Destination rectangle is nil');
   rd^ := rs;
 end;
@@ -1948,16 +2164,20 @@ end;
 
 // Copy a LPRECT to a TRect
 procedure CopyLPRectToTRect(rs: LPRECT;
-                            var rd: TRect ); inline;
+                            var rd: TRect); inline;
+
 begin
+
   rd := rs^;
 end;
 
 // Copy a TRect to a PRect
 procedure CopyTRectToPRect(rs: TRect;
                            var rd: PRect); inline;
+
 begin
-  if rd = nil then
+
+  if (rd = nil) then
     raise EArgumentException.Create('Destination rectangle is nil');
   rd^ := rs;
 end;
@@ -1966,8 +2186,10 @@ end;
 // Copy a PRect to a TRect
 procedure CopyPRectToTRect(rs: PRect;
                            var rd: TRect); inline;
+
 begin
-  if rs = nil then
+
+  if (rs = nil) then
     raise EArgumentException.Create('Source rectangle is nil');
   rd := rs^;
 end;
@@ -1978,7 +2200,9 @@ end;
 
 // Get Float (Single) value from MFOffSet.
 function MFOffsetToFloat(const offset: MFOffset): Float; inline;
+
 begin
+
   Result := offset.value + (offset.fract / 65536.0);
 end;
 
@@ -1987,14 +2211,16 @@ end;
 function MakeOffset(v: Single): MFOffset; inline;
 var
   I: Integer;
+
 begin
+
   if (v < Low(SHORT)) or (v >= 32768.0) then
     raise ERangeError.Create('MFOffset outside signed 16-bit range');
   I := Trunc(v);
-  if v < I then
+  if (v < I) then
     Dec(I);
   Result.value := SHORT(I);
-  Result.fract := WORD(Trunc((v-I)*65536.0));
+  Result.fract := WORD(Trunc((v - I) * 65536.0));
 end;
 
 
@@ -2004,23 +2230,42 @@ function GetVideoDisplayArea(pType: IMFMediaType;
 var
   Width: UINT32;
   Height: UINT32;
+
 begin
-  FillChar(pArea,SizeOf(pArea),0);
-  if pType = nil then
+
+  FillChar(pArea,
+           SizeOf(pArea),
+           0);
+  if (pType = nil) then
     Exit(E_POINTER);
   Result := MF_E_ATTRIBUTENOTFOUND;
-  if MFGetAttributeUINT32(pType,MF_MT_PAN_SCAN_ENABLED,0) <> 0 then
-    Result := pType.GetBlob(MF_MT_PAN_SCAN_APERTURE,PUINT8(@pArea),SizeOf(pArea),nil);
-  if Result = MF_E_ATTRIBUTENOTFOUND then
-    Result := pType.GetBlob(MF_MT_MINIMUM_DISPLAY_APERTURE,PUINT8(@pArea),SizeOf(pArea),nil);
-  if Result = MF_E_ATTRIBUTENOTFOUND then
-    Result := pType.GetBlob(MF_MT_GEOMETRIC_APERTURE,PUINT8(@pArea),SizeOf(pArea),nil);
-  if Result = MF_E_ATTRIBUTENOTFOUND then
-  begin
-    Result := MFGetAttributeSize(pType,MF_MT_FRAME_SIZE,Width,Height);
-    if SUCCEEDED(Result) then
-      pArea := MakeArea(0.0,0.0,Width,Height);
-  end;
+  if (MFGetAttributeUINT32(pType, MF_MT_PAN_SCAN_ENABLED, 0) <> 0) then
+    Result := pType.GetBlob(MF_MT_PAN_SCAN_APERTURE,
+                            PUINT8(@pArea),
+                            SizeOf(pArea),
+                            nil);
+  if (Result = MF_E_ATTRIBUTENOTFOUND) then
+    Result := pType.GetBlob(MF_MT_MINIMUM_DISPLAY_APERTURE,
+                            PUINT8(@pArea),
+                            SizeOf(pArea),
+                            nil);
+  if (Result = MF_E_ATTRIBUTENOTFOUND) then
+    Result := pType.GetBlob(MF_MT_GEOMETRIC_APERTURE,
+                            PUINT8(@pArea),
+                            SizeOf(pArea),
+                            nil);
+  if (Result = MF_E_ATTRIBUTENOTFOUND) then
+    begin
+      Result := MFGetAttributeSize(pType,
+                                   MF_MT_FRAME_SIZE,
+                                   Width,
+                                   Height);
+      if SUCCEEDED(Result) then
+        pArea := MakeArea(0.0,
+                          0.0,
+                          Width,
+                          Height);
+    end;
 end;
 
 
@@ -2033,6 +2278,7 @@ var
   area: MFVideoArea;
 
 begin
+
   area.OffsetX := MakeOffset(x);
   area.OffsetY := MakeOffset(y);
   area.Area.cx := dwWidth;
@@ -2042,12 +2288,14 @@ end;
 
 
 // External methods
-  function StringFromCLSID; external Ole32Lib name 'StringFromCLSID' ;
+function StringFromCLSID; external Ole32Lib name 'StringFromCLSID';
 
 
 // Keep for previous versions;
 function StrToPWideChar(const source: string): PWideChar;// inline;
+
 begin
+
   Result := PWideChar(source);
 end;
 
@@ -2059,11 +2307,13 @@ function MAKEFOURCC(const ch0: AnsiChar;
                     const ch1: AnsiChar;
                     const ch2: AnsiChar;
                     const ch3: AnsiChar): FOURCC; inline;
+
 begin
+
   Result := DWORD(Ord(ch0)) or
-            (DWORD(Ord(ch1)) shl 8) or
-            (DWORD(Ord(ch2)) shl 16) or
-            (DWORD(Ord(ch3)) shl 24);
+    (DWORD(Ord(ch1)) shl 8) or
+    (DWORD(Ord(ch2)) shl 16) or
+    (DWORD(Ord(ch3)) shl 24);
 end;
 
 
@@ -2071,27 +2321,33 @@ end;
 function GETFOURCC(frcc: DWORD): WideString; inline;
 var
   I: Integer;
+
 begin
-  SetLength(Result,4);
+
+  SetLength(Result,
+            4);
   for I := 0 to 3 do
-    Result[I+1] := WideChar((frcc shr (I*8)) and $FF);
+    Result[I + 1] := WideChar((frcc shr (I * 8)) and $FF);
   Result := UpperCase(Result);
 end;
 
 
-function MfBitMask(const index: Integer;const bits: Integer): UINT64;
+function MfBitMask(const index: Integer;
+                   const bits: Integer): UINT64;
 var
   Width: Integer;
   Offset: Integer;
+
 begin
+
   Width := index and $FF;
   Offset := index shr 8;
-  if (index < 0) or (Width < 1) or (Width > bits) or (Offset > bits-Width) then
+  if (index < 0) or (Width < 1) or (Width > bits) or (Offset > bits - Width) then
     raise ERangeError.Create('Invalid encoded bitfield');
-  if Width = 64 then
+  if (Width = 64) then
     Result := High(UINT64)
   else
-    Result := (UINT64(1) shl Width)-1;
+    Result := (UINT64(1) shl Width) - 1;
 end;
 
 // Bitshifting helpers
@@ -2102,8 +2358,11 @@ end;
 // getter
 function Get64bitBits(const data: UINT64;
                       const index: Integer): UINT64;
+
 begin
-  Result := UINT64((UINT64(data) shr (index shr 8)) and MfBitMask(index,64));
+
+  Result := UINT64((UINT64(data) shr (index shr 8)) and MfBitMask(index,
+                                                                  64));
 end;
 
 // Setter
@@ -2114,10 +2373,13 @@ var
   Mask: UINT64;
   Clipped: UINT64;
   Offset: Integer;
+
 begin
-  Mask := MfBitMask(index,64);
+
+  Mask := MfBitMask(index,
+                    64);
   Clipped := value;
-  if Clipped > Mask then
+  if (Clipped > Mask) then
     Clipped := Mask;
   Offset := index shr 8;
   data := UINT64((UINT64(data) and not (Mask shl Offset)) or (Clipped shl Offset));
@@ -2129,8 +2391,11 @@ end;
 // Getter
 function GetDWordBits(const data: DWORD;
                       const index: Integer): DWORD;
+
 begin
-  Result := DWORD((UINT64(data) shr (index shr 8)) and MfBitMask(index,32));
+
+  Result := DWORD((UINT64(data) shr (index shr 8)) and MfBitMask(index,
+                                                                 32));
 end;
 
 // Setter
@@ -2141,10 +2406,13 @@ var
   Mask: UINT64;
   Clipped: UINT64;
   Offset: Integer;
+
 begin
-  Mask := MfBitMask(index,32);
+
+  Mask := MfBitMask(index,
+                    32);
   Clipped := value;
-  if Clipped > Mask then
+  if (Clipped > Mask) then
     Clipped := Mask;
   Offset := index shr 8;
   data := DWORD((UINT64(data) and not (Mask shl Offset)) or (Clipped shl Offset));
@@ -2156,8 +2424,11 @@ end;
 // Getter
 function GetWordBits(const data: WORD;
                      const index: Integer): WORD;
+
 begin
-  Result := WORD((UINT64(data) shr (index shr 8)) and MfBitMask(index,16));
+
+  Result := WORD((UINT64(data) shr (index shr 8)) and MfBitMask(index,
+                                                                16));
 end;
 
 // Setter
@@ -2168,10 +2439,13 @@ var
   Mask: UINT64;
   Clipped: UINT64;
   Offset: Integer;
+
 begin
-  Mask := MfBitMask(index,16);
+
+  Mask := MfBitMask(index,
+                    16);
   Clipped := value;
-  if Clipped > Mask then
+  if (Clipped > Mask) then
     Clipped := Mask;
   Offset := index shr 8;
   data := WORD((UINT64(data) and not (Mask shl Offset)) or (Clipped shl Offset));
@@ -2183,8 +2457,11 @@ end;
 // Getter
 function GetByteBits(const data: Byte;
                      const index: Integer): Byte;
+
 begin
-  Result := Byte((UINT64(data) shr (index shr 8)) and MfBitMask(index,8));
+
+  Result := Byte((UINT64(data) shr (index shr 8)) and MfBitMask(index,
+                                                                8));
 end;
 
 // Setter
@@ -2195,10 +2472,13 @@ var
   Mask: UINT64;
   Clipped: UINT64;
   Offset: Integer;
+
 begin
-  Mask := MfBitMask(index,8);
+
+  Mask := MfBitMask(index,
+                    8);
   Clipped := value;
-  if Clipped > Mask then
+  if (Clipped > Mask) then
     Clipped := Mask;
   Offset := index shr 8;
   data := Byte((UINT64(data) and not (Mask shl Offset)) or (Clipped shl Offset));
@@ -2209,7 +2489,9 @@ end;
 function BoolToStrYesNo(const aBoolean: Boolean;
                         sYes: string = 'Yes';
                         sNo: string = 'No'): string;
+
 begin
+
   if aBoolean then
     Result := sYes
   else
@@ -2219,13 +2501,17 @@ end;
 
 // For backward compatibility
 function MfpBoolToStr(const aBoolean: Boolean): string; inline;
+
 begin
+
   Result := BoolToStr(aBoolean);
 end;
 
 
 function BoolToStr(const aBoolean: Boolean): string; inline;
+
 begin
+
   if aBoolean then
     Result := 'True'
   else
@@ -2236,7 +2522,9 @@ end;
 function ConstrainValue(const Value: Integer;
                         Min: Integer;
                         Max: Integer): Integer; inline; overload;
+
 begin
+
   Result := Value;
   if (Result < Min) then
     Result := Min
@@ -2248,7 +2536,9 @@ end;
 function ConstrainValue(const Value: Int64;
                         Min: Int64;
                         Max: Int64): Int64; inline; overload;
+
 begin
+
   Result := Value;
   if (Result < Min) then
     Result := Min
@@ -2260,7 +2550,9 @@ end;
 function ConstrainValue(const Value: Float;
                         Min: Float;
                         Max: Float): Float; inline; overload;
+
 begin
+
   Result := Value;
   if (Result < Min) then
     Result := Min
@@ -2272,7 +2564,9 @@ end;
 function ConstrainValue(const Value: byte;
                         Min: byte;
                         Max: byte): byte; inline; overload;
+
 begin
+
   Result := Value;
   if (Result < Min) then
     Result := Min
@@ -2286,7 +2580,9 @@ function MapRange(const aValue: Single;
                   InMax: Single;
                   OutMin: Single;
                   OutMax: Single): Single; inline; overload;
+
 begin
+
   Result := (OutMin + (aValue - InMin) * (OutMax - OutMin) / (InMax - InMin));
 end;
 
@@ -2300,13 +2596,15 @@ var
   ival: Single;
 
 begin
+
   ival := aValue;
   Result := (OutMin + (ival - InMin) * (OutMax - OutMin) / (InMax - InMin));
 end;
 
 
 //  GetFileSize64 replaces  TFile::Size.
-function GetFileSize64(const AFileName: string; out ASize: Int64): Boolean;
+function GetFileSize64(const AFileName: string;
+                       out ASize: Int64): Boolean;
 var
   Data: TWin32FileAttributeData;
 
@@ -2323,8 +2621,7 @@ begin
            0);
 
   if not GetFileAttributesExW(PWideChar(AFileName),
-                             GetFileExInfoStandard,
-                             @Data) then
+    GetFileExInfoStandard, @Data) then
     Exit;
 
   if ((Data.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY) <> 0) then
@@ -2340,7 +2637,9 @@ end;
 function StringCbCat(pszDest: PChar;
                      cbDest: SIZE_T;
                      const pszSrc: string): HRESULT;
+
 begin
+
   // choose the appropriate function based on the string type
   {$IFDEF UNICODE}
   Result := StringCbCatW(pszDest,
@@ -2354,17 +2653,18 @@ begin
 
 end;
 
-function SetThreadExecutionState; external Kernel32Lib name 'SetThreadExecutionState' ;
+function SetThreadExecutionState; external Kernel32Lib name 'SetThreadExecutionState';
 
 // System power scheme.
-function PowerGetActiveScheme; external PowrProfLib name 'PowerGetActiveScheme' ;
-function PowerReadACValueIndex; external PowrProfLib name 'PowerReadACValueIndex' ;
-function PowerReadDCValueIndex; external PowrProfLib name 'PowerReadDCValueIndex' ;
-function PowerWriteACValueIndex; external PowrProfLib name 'PowerWriteACValueIndex' ;
-function PowerWriteDCValueIndex; external PowrProfLib name 'PowerWriteDCValueIndex' ;
-function PowerSetActiveScheme; external PowrProfLib name 'PowerSetActiveScheme' ;
+function PowerGetActiveScheme; external PowrProfLib name 'PowerGetActiveScheme';
+function PowerReadACValueIndex; external PowrProfLib name 'PowerReadACValueIndex';
+function PowerReadDCValueIndex; external PowrProfLib name 'PowerReadDCValueIndex';
+function PowerWriteACValueIndex; external PowrProfLib name 'PowerWriteACValueIndex';
+function PowerWriteDCValueIndex; external PowrProfLib name 'PowerWriteDCValueIndex';
+function PowerSetActiveScheme; external PowrProfLib name 'PowerSetActiveScheme';
 
-function CreateFile2; external Kernel32Lib name 'CreateFile2' ;
+function CreateFile2; external Kernel32Lib name 'CreateFile2';
+
 
 function StringCbCatA(pszDest: PAnsiChar;
                       cbDest: SIZE_T;
@@ -2373,28 +2673,32 @@ var
   Capacity: SIZE_T;
   Used: SIZE_T;
   I: SIZE_T;
+
 begin
+
   Capacity := cbDest div 1;
   if (Capacity = 0) or (Capacity > $7FFFFFFF) or (pszDest = nil) or (pszSrc = nil) then
     Exit(HRESULT($80070057));
   Used := 0;
   while (Used < Capacity) and (pszDest[Used] <> #0) do
     Inc(Used);
-  if Used = Capacity then
+  if (Used = Capacity) then
     Exit(HRESULT($80070057));
   I := 0;
-  while (Used < Capacity-1) and (pszSrc[I] <> #0) do
-  begin
-    pszDest[Used] := pszSrc[I];
-    Inc(Used);
-    Inc(I);
-  end;
+  while (Used < Capacity - 1) and (pszSrc[I] <> #0) do
+    begin
+      pszDest[Used] := pszSrc[I];
+      Inc(Used);
+      Inc(I);
+    end;
   pszDest[Used] := #0;
-  if pszSrc[I] <> #0 then
+  if (pszSrc[I] <> #0) then
     Result := HRESULT($8007007A)
   else
     Result := S_OK;
 end;
+
+
 function StringCbCatW(pszDest: PWideChar;
                       cbDest: SIZE_T;
                       pszSrc: PWideChar): HRESULT; stdcall;
@@ -2402,36 +2706,38 @@ var
   Capacity: SIZE_T;
   Used: SIZE_T;
   I: SIZE_T;
+
 begin
+
   Capacity := cbDest div 2;
   if (Capacity = 0) or (Capacity > $7FFFFFFF) or (pszDest = nil) or (pszSrc = nil) then
     Exit(HRESULT($80070057));
   Used := 0;
   while (Used < Capacity) and (pszDest[Used] <> #0) do
     Inc(Used);
-  if Used = Capacity then
+  if (Used = Capacity) then
     Exit(HRESULT($80070057));
   I := 0;
-  while (Used < Capacity-1) and (pszSrc[I] <> #0) do
-  begin
-    pszDest[Used] := pszSrc[I];
-    Inc(Used);
-    Inc(I);
-  end;
+  while (Used < Capacity - 1) and (pszSrc[I] <> #0) do
+    begin
+      pszDest[Used] := pszSrc[I];
+      Inc(Used);
+      Inc(I);
+    end;
   pszDest[Used] := #0;
-  if pszSrc[I] <> #0 then
+  if (pszSrc[I] <> #0) then
     Result := HRESULT($8007007A)
   else
     Result := S_OK;
 end;
 
 {$IF true}
-function StrCmpLogicalW; external Shlwapi32Lib name 'StrCmpLogicalW' ;
+function StrCmpLogicalW; external Shlwapi32Lib name 'StrCmpLogicalW';
 {$ENDIF}
 
 {$IF true}
 // API function GetTickCount64.
-function GetTickCount64; external kernel32 name 'GetTickCount64' ;
+function GetTickCount64; external kernel32 name 'GetTickCount64';
 {$ENDIF}
 
 
@@ -2444,10 +2750,10 @@ var
 begin
 
   while (MsgWaitForMultipleObjects(1,
-                                   AThread,
-                                   False,
-                                   AWait,
-                                   QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
+      AThread,
+      False,
+      AWait,
+      QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
     begin
       PeekMessage(pMsg,
                   0,
@@ -2455,7 +2761,7 @@ begin
                   0,
                   PM_REMOVE);  // Messages are not removed from the queue after processing by PeekMessage.
 
-      if pMsg.Message = WM_QUIT then
+      if (pMsg.Message = WM_QUIT) then
         Exit;
 
       TranslateMessage(pMsg);
@@ -2471,6 +2777,7 @@ end;
 function MulDiv64(const aNumber,
                   aNumerator,
                   aDenominator: Int64): Int64;
+
 begin
 
   if (aDenominator <= 0) then
@@ -2478,7 +2785,7 @@ begin
 
   // Avoid Int64 overflow: (QpcDelta * 10_000_000) div PerfFreq
   Result := (aNumber div aDenominator) * aNumerator +
-            (aNumber mod aDenominator) * aNumerator div aDenominator;
+    (aNumber mod aDenominator) * aNumerator div aDenominator;
 end;
 
 

@@ -87,6 +87,7 @@ const
 type
 
   TVideoFramePacket = class
+
   public
     Session: Cardinal;
     TimeStamp: LONGLONG;
@@ -97,6 +98,7 @@ type
   end;
 
   TPlaybackNotice = class
+
   public
     Session: Cardinal;
     Text: string;
@@ -106,7 +108,7 @@ type
   end;
 
   IAsyncVideoEngine = interface
-  ['{4526BEB5-C06C-4790-8939-D2C912180A67}']
+    ['{4526BEB5-C06C-4790-8939-D2C912180A67}']
     function Open(const AFileName: string): LONGLONG;
     procedure Start();
     procedure Pause();
@@ -135,7 +137,10 @@ const
   BYTES_PER_PIXEL = 4;
 
 type
-  TAsyncVideoEngine = class(TInterfacedObject, IAsyncVideoEngine, IMFSourceReaderCallback)
+  TAsyncVideoEngine = class(TInterfacedObject,
+                            IAsyncVideoEngine,
+                            IMFSourceReaderCallback)
+
   private
     FLock: TRTLCriticalSection;
     FNotifyWindow: HWND;
@@ -166,13 +171,15 @@ type
     // IMFSourceReaderCallback implementation.
     function OnReadSample(hrStatus: HRESULT;
                           dwStreamIndex: DWORD;
-                          dwStreamFlags: DWORD; llTimestamp: HNSTIME;
+                          dwStreamFlags: DWORD;
+                          llTimestamp: HNSTIME;
                           pSample: IMFSample): HRESULT; stdcall;
 
     function OnFlush(dwStreamIndex: DWORD): HRESULT; stdcall;
 
     function OnEvent(dwStreamIndex: DWORD;
                      pEvent: IMFMediaEvent): HRESULT; stdcall;
+
   public
 
     constructor Create(const ANotifyWindow: HWND;
@@ -186,8 +193,10 @@ type
     procedure Close(const ADetachWindow: Boolean);
   end;
 
+
 constructor TPlaybackNotice.Create(const ASession: Cardinal;
                                    const AText: string);
+
 begin
 
   inherited Create;
@@ -199,14 +208,17 @@ end;
 
 function CreateAsyncVideoEngine(const ANotifyWindow: HWND;
                                 const ASession: Cardinal): IAsyncVideoEngine;
+
 begin
 
-  Result := TAsyncVideoEngine.Create(ANotifyWindow, ASession);
+  Result := TAsyncVideoEngine.Create(ANotifyWindow,
+                                     ASession);
 end;
 
 
 constructor TAsyncVideoEngine.Create(const ANotifyWindow: HWND;
                                      const ASession: Cardinal);
+
 begin
 
   inherited Create;
@@ -218,6 +230,7 @@ end;
 
 
 destructor TAsyncVideoEngine.Destroy;
+
 begin
 
   Close(True);
@@ -229,6 +242,7 @@ end;
 
 procedure TAsyncVideoEngine.Check(const AOperation: string;
                                   const AHr: HRESULT);
+
 begin
 
   if FAILED(AHr) then
@@ -258,18 +272,18 @@ begin
   FStride := Integer(FWidth) * BYTES_PER_PIXEL;
 
   if SUCCEEDED(FReaderType.GetUINT32(MF_MT_DEFAULT_STRIDE,
-                                     StrideValue)) then
+    StrideValue)) then
     FStride := Integer(StrideValue);
 
-  if FStride = 0 then
+  if (FStride = 0) then
     FStride := Integer(FWidth) * BYTES_PER_PIXEL;
 
   FTransform := TMfGrayscaleMFT.Create as IMFTransform;
 
   Check('SetInputType',
-         FTransform.SetInputType(0,
-                                 FReaderType,
-                                 0));
+        FTransform.SetInputType(0,
+                                FReaderType,
+                                0));
 
   Check('SetOutputType',
         FTransform.SetOutputType(0,
@@ -309,8 +323,8 @@ begin
                               Callback));
 
   Check('Enable video processing',
-         Attributes.SetUINT32(MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING,
-                              1));
+        Attributes.SetUINT32(MF_SOURCE_READER_ENABLE_VIDEO_PROCESSING,
+                             1));
 
   Check('MFCreateSourceReaderFromURL',
         MFCreateSourceReaderFromURL(PWideChar(AFileName),
@@ -348,7 +362,8 @@ begin
   try
     Check('Get duration',
           FReader.GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
-                                           MF_PD_DURATION, DurationValue));
+                                           MF_PD_DURATION,
+                                           DurationValue));
 
     if (DurationValue.vt <> VT_UI8) then
       raise Exception.Create('The source did not report a duration.');
@@ -394,6 +409,7 @@ end;
 
 
 procedure TAsyncVideoEngine.Start();
+
 begin
 
   EnterCriticalSection(FLock);
@@ -409,6 +425,7 @@ end;
 
 
 procedure TAsyncVideoEngine.Pause();
+
 begin
 
   EnterCriticalSection(FLock);
@@ -512,7 +529,7 @@ begin
     RequiredLength := UInt64(MemoryStride) * UInt64(FHeight);
 
     if (MemoryStride < RowBytes) or
-       (UInt64(CurrentLength) < RequiredLength) then
+      (UInt64(CurrentLength) < RequiredLength) then
       Exit(E_UNEXPECTED);
 
     SetLength(APixels,
@@ -608,9 +625,9 @@ begin
                                    AText);
 
   if not PostMessageW(WindowHandle,
-                     WM_ASYNC_PLAYBACK_ERROR,
-                     0,
-                     LPARAM(Notice)) then
+    WM_ASYNC_PLAYBACK_ERROR,
+    0,
+    LPARAM(Notice)) then
     Notice.Free;
 end;
 
@@ -655,9 +672,9 @@ begin
 
           if (WindowHandle <> 0) then
             PostMessageW(WindowHandle,
-                        WM_ASYNC_END_OF_STREAM,
-                        WPARAM(FSession),
-                        0);
+                         WM_ASYNC_END_OF_STREAM,
+                         WPARAM(FSession),
+                         0);
           Exit;
         end;
 
@@ -669,9 +686,9 @@ begin
 
           if (WindowHandle <> 0) then
             PostMessageW(WindowHandle,
-                        WM_ASYNC_FRAME_READY,
-                        WPARAM(FSession),
-                        0);
+                         WM_ASYNC_FRAME_READY,
+                         WPARAM(FSession),
+                         0);
           Exit;
         end;
 
@@ -686,11 +703,10 @@ begin
       LeaveCriticalSection(FLock);
     end;
 
-    if (WindowHandle = 0) or
-       not PostMessageW(WindowHandle,
-                       WM_ASYNC_FRAME_READY,
-                       WPARAM(FSession),
-                       LPARAM(Packet)) then
+    if (WindowHandle = 0) or not PostMessageW(WindowHandle,
+      WM_ASYNC_FRAME_READY,
+      WPARAM(FSession),
+      LPARAM(Packet)) then
       Packet.Free;
 
   except
@@ -704,6 +720,7 @@ end;
 
 
 function TAsyncVideoEngine.OnFlush(dwStreamIndex: DWORD): HRESULT;
+
 begin
 
   Result := S_OK;
@@ -712,6 +729,7 @@ end;
 
 function TAsyncVideoEngine.OnEvent(dwStreamIndex: DWORD;
                                    pEvent: IMFMediaEvent): HRESULT;
+
 begin
 
   Result := S_OK;

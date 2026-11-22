@@ -74,7 +74,7 @@ unit WinApi.DirectX.DWrite_3;
 interface
 
 uses
-  
+
   {WinApi}
   Windows,
   WinApi.WinApiTypes,
@@ -90,7 +90,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -100,29 +101,29 @@ const
   // A font resource could not be accessed because it was remote. This can happen
   // when calling CreateFontFace on a non-local font or trying to measure/draw
   // glyphs that are not downloaded yet.
-  DWRITE_E_REMOTEFONT                 = $8898500D;
+  DWRITE_E_REMOTEFONT = $8898500D;
 
   // The download was canceled, which happens if the application calls
   // IDWriteFontDownloadQueue.CancelDownload before they finish.
-  DWRITE_E_DOWNLOADCANCELLED          = $8898500E;
+  DWRITE_E_DOWNLOADCANCELLED = $8898500E;
 
   // The download failed to complete because the remote resource is missing
   // or the network is down.
-  DWRITE_E_DOWNLOADFAILED             = $8898500F;
+  DWRITE_E_DOWNLOADFAILED = $8898500F;
 
   // A download request was not added or a download failed because there
   // are too many active downloads.
-  DWRITE_E_TOOMANYDOWNLOADS           = $88985010;
+  DWRITE_E_TOOMANYDOWNLOADS = $88985010;
 
 
   // Four character identifier for a font axis.
   // remarks
   //   Use DWRITE_MAKE_FONT_AXIS_TAG() to create a custom one.
-  DWRITE_FONT_AXIS_TAG_WEIGHT        = Ord('w') or (Ord('g') shl 8) or (Ord('h') shl 16) or (Ord('t') shl 24);
-  DWRITE_FONT_AXIS_TAG_WIDTH         = Ord('w') or (Ord('d') shl 8) or (Ord('t') shl 16) or (Ord('h') shl 24);
-  DWRITE_FONT_AXIS_TAG_SLANT         = Ord('s') or (Ord('l') shl 8) or (Ord('n') shl 16) or (Ord('t') shl 24);
-  DWRITE_FONT_AXIS_TAG_OPTICAL_SIZE  = Ord('o') or (Ord('p') shl 8) or (Ord('s') shl 16) or (Ord('z') shl 24);
-  DWRITE_FONT_AXIS_TAG_ITALIC        = Ord('i') or (Ord('t') shl 8) or (Ord('a') shl 16) or (Ord('l') shl 24);
+  DWRITE_FONT_AXIS_TAG_WEIGHT = Ord('w') or (Ord('g') shl 8) or (Ord('h') shl 16) or (Ord('t') shl 24);
+  DWRITE_FONT_AXIS_TAG_WIDTH = Ord('w') or (Ord('d') shl 8) or (Ord('t') shl 16) or (Ord('h') shl 24);
+  DWRITE_FONT_AXIS_TAG_SLANT = Ord('s') or (Ord('l') shl 8) or (Ord('n') shl 16) or (Ord('t') shl 24);
+  DWRITE_FONT_AXIS_TAG_OPTICAL_SIZE = Ord('o') or (Ord('p') shl 8) or (Ord('s') shl 16) or (Ord('z') shl 24);
+  DWRITE_FONT_AXIS_TAG_ITALIC = Ord('i') or (Ord('t') shl 8) or (Ord('a') shl 16) or (Ord('l') shl 24);
 
 type
   PLOGFONTW = ^LOGFONTW;
@@ -133,12 +134,13 @@ type
   PUUID = ^UUID;
   PD2D_RECT_F = ^D2D_RECT_F;
 
-// Enums =======================================================================
+  // Enums =======================================================================
 
 type
   // The font property enumeration identifies a string in a font.
   PDWRITE_FONT_PROPERTY_ID = ^DWRITE_FONT_PROPERTY_ID;
   DWRITE_FONT_PROPERTY_ID = DWord;
+
 const
   // Unspecified font property identifier.
   DWRITE_FONT_PROPERTY_ID_NONE = DWRITE_FONT_PROPERTY_ID(0);
@@ -251,6 +253,7 @@ type
   // Specifies the locality of a resource.
   PDWRITE_LOCALITY = ^DWRITE_LOCALITY;
   DWRITE_LOCALITY = DWord;
+
 const
   // The resource is remote, and information is unknown yet, including the file size and date.
   // Attempting to create a font or file stream will fail until locality becomes at least partial.
@@ -267,6 +270,7 @@ type
   // Represents a method of rendering glyphs.
   PDWRITE_RENDERING_MODE1 = ^DWRITE_RENDERING_MODE1;
   DWRITE_RENDERING_MODE1 = type DWord;
+
 const
   // Specifies that the rendering mode is determined automatically based on the font and size.
   DWRITE_RENDERING_MODE1_DEFAULT = DWRITE_RENDERING_MODE_DEFAULT;
@@ -305,6 +309,7 @@ type
   // Specify whether DWRITE_FONT_METRICS.lineGap value should be part of the line metrics.
   PDWRITE_FONT_LINE_GAP_USAGE = ^DWRITE_FONT_LINE_GAP_USAGE;
   DWRITE_FONT_LINE_GAP_USAGE = DWord;
+
 const
   // The usage of the font line gap depends on the method used for text layout.
   DWRITE_FONT_LINE_GAP_USAGE_DEFAULT = DWRITE_FONT_LINE_GAP_USAGE(0);
@@ -319,6 +324,7 @@ type
   // in which the underlying font file is packaged.
   PDWRITE_CONTAINER_TYPE = ^DWRITE_CONTAINER_TYPE;
   DWRITE_CONTAINER_TYPE = DWord;
+
 const
   DWRITE_CONTAINER_TYPE_UNKNOWN = DWRITE_CONTAINER_TYPE(0);
   DWRITE_CONTAINER_TYPE_WOFF = DWRITE_CONTAINER_TYPE(1);
@@ -328,6 +334,7 @@ type
   // How font families are grouped together, used by IDWriteFontCollection.
   PDWRITE_FONT_FAMILY_MODEL = ^DWRITE_FONT_FAMILY_MODEL;
   DWRITE_FONT_FAMILY_MODEL = DWord;
+
 const
   // Families are grouped by the typographic family name preferred by the font author. The family can contain as
   // many face as the font author wants.
@@ -343,9 +350,10 @@ type
   // Apply certain axes automatically in layout during font selection.
   PDWRITE_AUTOMATIC_FONT_AXES = ^DWRITE_AUTOMATIC_FONT_AXES;
   DWRITE_AUTOMATIC_FONT_AXES = DWord;
+
 const
   // No axes are automatically applied.
-  DWRITE_AUTOMATIC_FONT_AXES_NONE         = DWRITE_AUTOMATIC_FONT_AXES($0000);
+  DWRITE_AUTOMATIC_FONT_AXES_NONE = DWRITE_AUTOMATIC_FONT_AXES($0000);
   // Automatically pick an appropriate optical value based on the font size (via SetFontSize) when no value is
   // specified via DWRITE_FONT_AXIS_TAG_OPTICAL_SIZE. Callers can still explicitly apply the 'opsz' value over
   // text ranges via SetFontAxisValues, which take priority.
@@ -355,6 +363,7 @@ type
   // Attributes for a font axis.
   PDWRITE_FONT_AXIS_ATTRIBUTES = ^DWRITE_FONT_AXIS_ATTRIBUTES;
   DWRITE_FONT_AXIS_ATTRIBUTES = DWord;
+
 const
   // No attributes.
   DWRITE_FONT_AXIS_ATTRIBUTES_NONE = DWRITE_FONT_AXIS_ATTRIBUTES($0000);
@@ -374,6 +383,7 @@ type
   // The font source type identifies the mechanism by which a font came to be included in a font set.
   PDWRITE_FONT_SOURCE_TYPE = ^DWRITE_FONT_SOURCE_TYPE;
   DWRITE_FONT_SOURCE_TYPE = DWord;
+
 const
   // The font source is unknown or is not any of the other defined font source types.
   DWRITE_FONT_SOURCE_TYPE_UNKNOWN = DWRITE_FONT_SOURCE_TYPE(0);
@@ -388,7 +398,7 @@ const
   DWRITE_FONT_SOURCE_TYPE_REMOTE_FONT_PROVIDER = DWRITE_FONT_SOURCE_TYPE(4);
 
 
-// =============================================================================
+  // =============================================================================
 
 type
 
@@ -419,6 +429,7 @@ type
   // Font property used for filtering font sets and
   // building a font set with explicit properties.
   PDWRITE_FONT_PROPERTY = ^DWRITE_FONT_PROPERTY;
+
   DWRITE_FONT_PROPERTY = record
     // Specifies the requested font property, such as DWRITE_FONT_PROPERTY_ID_FAMILY_NAME.
     propertyId: DWRITE_FONT_PROPERTY_ID;
@@ -440,7 +451,7 @@ type
 
   // The interface that represents text rendering settings for glyph rasterization and filtering.
   IDWriteRenderingParams3 = interface(IDWriteRenderingParams2)
-  ['{B7924BAA-391B-412A-8C5C-E44CC2D867DC}']
+    ['{B7924BAA-391B-412A-8C5C-E44CC2D867DC}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetRenderingMode1(): DWRITE_RENDERING_MODE1; stdcall; overload;
@@ -453,28 +464,54 @@ type
   // The root factory interface for all DWrite objects.
   //
   IDWriteFactory3 = interface(IDWriteFactory2)
-  ['{9A1B41C3-D3BB-466A-87FC-FE67556A3B65}']
+    ['{9A1B41C3-D3BB-466A-87FC-FE67556A3B65}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function CreateGlyphRunAnalysis(glyphRun: PDWRITE_GLYPH_RUN; transform: PDWRITE_MATRIX; renderingMode: DWRITE_RENDERING_MODE1; measuringMode: DWRITE_MEASURING_MODE; gridFitMode: DWRITE_GRID_FIT_MODE; antialiasMode: DWRITE_TEXT_ANTIALIAS_MODE; baselineOriginX: Single; baselineOriginY: Single; out glyphRunAnalysis: IDWriteGlyphRunAnalysis): HRESULT; stdcall; overload;
+    function CreateGlyphRunAnalysis(glyphRun: PDWRITE_GLYPH_RUN;
+                                    transform: PDWRITE_MATRIX;
+                                    renderingMode: DWRITE_RENDERING_MODE1;
+                                    measuringMode: DWRITE_MEASURING_MODE;
+                                    gridFitMode: DWRITE_GRID_FIT_MODE;
+                                    antialiasMode: DWRITE_TEXT_ANTIALIAS_MODE;
+                                    baselineOriginX: Single;
+                                    baselineOriginY: Single;
+                                    out glyphRunAnalysis: IDWriteGlyphRunAnalysis): HRESULT; stdcall; overload;
 
-    function CreateCustomRenderingParams(gamma: Single; enhancedContrast: Single; grayscaleEnhancedContrast: Single; clearTypeLevel: Single; pixelGeometry: DWRITE_PIXEL_GEOMETRY; renderingMode: DWRITE_RENDERING_MODE1; gridFitMode: DWRITE_GRID_FIT_MODE; out renderingParams: IDWriteRenderingParams3): HRESULT; stdcall; overload;
+    function CreateCustomRenderingParams(gamma: Single;
+                                         enhancedContrast: Single;
+                                         grayscaleEnhancedContrast: Single;
+                                         clearTypeLevel: Single;
+                                         pixelGeometry: DWRITE_PIXEL_GEOMETRY;
+                                         renderingMode: DWRITE_RENDERING_MODE1;
+                                         gridFitMode: DWRITE_GRID_FIT_MODE;
+                                         out renderingParams: IDWriteRenderingParams3): HRESULT; stdcall; overload;
 
-    function CreateFontFaceReference(fontFile: IDWriteFontFile; faceIndex: UINT32; fontSimulations: DWRITE_FONT_SIMULATIONS; out fontFaceReference: IDWriteFontFaceReference): HRESULT; stdcall; overload;
+    function CreateFontFaceReference(fontFile: IDWriteFontFile;
+                                     faceIndex: UINT32;
+                                     fontSimulations: DWRITE_FONT_SIMULATIONS;
+                                     out fontFaceReference: IDWriteFontFaceReference): HRESULT; stdcall; overload;
 
-    function CreateFontFaceReference(filePath: PWideChar; lastWriteTime: PFILETIME; faceIndex: UINT32; fontSimulations: DWRITE_FONT_SIMULATIONS; out fontFaceReference: IDWriteFontFaceReference): HRESULT; stdcall; overload;
+    function CreateFontFaceReference(filePath: PWideChar;
+                                     lastWriteTime: PFILETIME;
+                                     faceIndex: UINT32;
+                                     fontSimulations: DWRITE_FONT_SIMULATIONS;
+                                     out fontFaceReference: IDWriteFontFaceReference): HRESULT; stdcall; overload;
 
     function GetSystemFontSet(out fontSet: IDWriteFontSet): HRESULT; stdcall; overload;
 
     function CreateFontSetBuilder(out fontSetBuilder: IDWriteFontSetBuilder): HRESULT; stdcall; overload;
 
-    function CreateFontCollectionFromFontSet(fontSet: IDWriteFontSet; out fontCollection: IDWriteFontCollection1): HRESULT; stdcall; overload;
+    function CreateFontCollectionFromFontSet(fontSet: IDWriteFontSet;
+                                             out fontCollection: IDWriteFontCollection1): HRESULT; stdcall; overload;
 
-    function GetSystemFontCollection(includeDownloadableFonts: BOOL; out fontCollection: IDWriteFontCollection1; checkForUpdates: BOOL): HRESULT; stdcall; overload;
+    function GetSystemFontCollection(includeDownloadableFonts: BOOL;
+                                     out fontCollection: IDWriteFontCollection1;
+                                     checkForUpdates: BOOL): HRESULT; stdcall; overload;
 
     function GetFontDownloadQueue(out fontDownloadQueue: IDWriteFontDownloadQueue): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFactory3 = IDWriteFactory3;
 
 
@@ -485,30 +522,49 @@ type
   // are unordered flat lists.
   //
   IDWriteFontSet = interface(IUnknown)
-  ['{53585141-D9F8-4095-8321-D73CF6BD116B}']
+    ['{53585141-D9F8-4095-8321-D73CF6BD116B}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetFontCount(): UINT32; stdcall; overload;
 
-    function GetFontFaceReference(listIndex: UINT32; out fontFaceReference: IDWriteFontFaceReference): HRESULT; stdcall; overload;
+    function GetFontFaceReference(listIndex: UINT32;
+                                  out fontFaceReference: IDWriteFontFaceReference): HRESULT; stdcall; overload;
 
-    function FindFontFaceReference(fontFaceReference: IDWriteFontFaceReference; listIndex: PUINT32; exists: PBOOL): HRESULT; stdcall; overload;
+    function FindFontFaceReference(fontFaceReference: IDWriteFontFaceReference;
+                                   listIndex: PUINT32;
+                                   exists: PBOOL): HRESULT; stdcall; overload;
 
-    function FindFontFace(fontFace: IDWriteFontFace; listIndex: PUINT32; exists: PBOOL): HRESULT; stdcall; overload;
+    function FindFontFace(fontFace: IDWriteFontFace;
+                          listIndex: PUINT32;
+                          exists: PBOOL): HRESULT; stdcall; overload;
 
-    function GetPropertyValues(propertyID: DWRITE_FONT_PROPERTY_ID; out values: IDWriteStringList): HRESULT; stdcall; overload;
+    function GetPropertyValues(propertyID: DWRITE_FONT_PROPERTY_ID;
+                               out values: IDWriteStringList): HRESULT; stdcall; overload;
 
-    function GetPropertyValues(propertyID: DWRITE_FONT_PROPERTY_ID; preferredLocaleNames: PWideChar; out values: IDWriteStringList): HRESULT; stdcall; overload;
+    function GetPropertyValues(propertyID: DWRITE_FONT_PROPERTY_ID;
+                               preferredLocaleNames: PWideChar;
+                               out values: IDWriteStringList): HRESULT; stdcall; overload;
 
-    function GetPropertyValues(listIndex: UINT32; propertyId: DWRITE_FONT_PROPERTY_ID; exists: PBOOL; out values: IDWriteLocalizedStrings): HRESULT; stdcall; overload;
+    function GetPropertyValues(listIndex: UINT32;
+                               propertyId: DWRITE_FONT_PROPERTY_ID;
+                               exists: PBOOL;
+                               out values: IDWriteLocalizedStrings): HRESULT; stdcall; overload;
 
-    function GetPropertyOccurrenceCount(_property: PDWRITE_FONT_PROPERTY; propertyOccurrenceCount: PUINT32): HRESULT; stdcall; overload;
+    function GetPropertyOccurrenceCount(_property: PDWRITE_FONT_PROPERTY;
+                                        propertyOccurrenceCount: PUINT32): HRESULT; stdcall; overload;
 
-    function GetMatchingFonts(familyName: PWideChar; fontWeight: DWRITE_FONT_WEIGHT; fontStretch: DWRITE_FONT_STRETCH; fontStyle: DWRITE_FONT_STYLE; out filteredSet: IDWriteFontSet): HRESULT; stdcall; overload;
+    function GetMatchingFonts(familyName: PWideChar;
+                              fontWeight: DWRITE_FONT_WEIGHT;
+                              fontStretch: DWRITE_FONT_STRETCH;
+                              fontStyle: DWRITE_FONT_STYLE;
+                              out filteredSet: IDWriteFontSet): HRESULT; stdcall; overload;
 
-    function GetMatchingFonts(properties: PDWRITE_FONT_PROPERTY; propertyCount: UINT32; out filteredSet: IDWriteFontSet): HRESULT; stdcall; overload;
+    function GetMatchingFonts(properties: PDWRITE_FONT_PROPERTY;
+                              propertyCount: UINT32;
+                              out filteredSet: IDWriteFontSet): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontSet = IDWriteFontSet;
 
 
@@ -517,10 +573,12 @@ type
   // Builder interface to add font face references and create a font set.
   //
   IDWriteFontSetBuilder = interface(IUnknown)
-  ['{2F642AFE-9C68-4F40-B8BE-457401AFCB3D}']
+    ['{2F642AFE-9C68-4F40-B8BE-457401AFCB3D}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function AddFontFaceReference(fontFaceReference: IDWriteFontFaceReference; properties: PDWRITE_FONT_PROPERTY; propertyCount: UINT32): HRESULT; stdcall; overload;
+    function AddFontFaceReference(fontFaceReference: IDWriteFontFaceReference;
+                                  properties: PDWRITE_FONT_PROPERTY;
+                                  propertyCount: UINT32): HRESULT; stdcall; overload;
 
     function AddFontFaceReference(fontFaceReference: IDWriteFontFaceReference): HRESULT; stdcall; overload;
 
@@ -529,6 +587,7 @@ type
     function CreateFontSet(out fontSet: IDWriteFontSet): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontSetBuilder = IDWriteFontSetBuilder;
 
 
@@ -536,14 +595,16 @@ type
   // ================================
   //
   IDWriteFontCollection1 = interface(IDWriteFontCollection)
-  ['{53585141-D9F8-4095-8321-D73CF6BD116C}']
+    ['{53585141-D9F8-4095-8321-D73CF6BD116C}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetFontSet(out fontSet: IDWriteFontSet): HRESULT; stdcall; overload;
 
-    function GetFontFamily(index: UINT32; out fontFamily: IDWriteFontFamily1): HRESULT; stdcall; overload;
+    function GetFontFamily(index: UINT32;
+                           out fontFamily: IDWriteFontFamily1): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontCollection1 = IDWriteFontCollection1;
 
 
@@ -553,16 +614,19 @@ type
   // by weight, stretch, and style.
   //
   IDWriteFontFamily1 = interface(IDWriteFontFamily)
-  ['{DA20D8EF-812A-4C43-9802-62EC4ABD7ADF}']
+    ['{DA20D8EF-812A-4C43-9802-62EC4ABD7ADF}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetFontLocality(listIndex: UINT32): DWRITE_LOCALITY; stdcall; overload;
 
-    function GetFont(listIndex: UINT32; out font: IDWriteFont3): HRESULT; stdcall; overload;
+    function GetFont(listIndex: UINT32;
+                     out font: IDWriteFont3): HRESULT; stdcall; overload;
 
-    function GetFontFaceReference(listIndex: UINT32; out fontFaceReference: IDWriteFontFaceReference): HRESULT; stdcall; overload;
+    function GetFontFaceReference(listIndex: UINT32;
+                                  out fontFaceReference: IDWriteFontFaceReference): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontFamily1 = IDWriteFontFamily1;
 
 
@@ -571,16 +635,19 @@ type
   // The IDWriteFontList interface represents a list of fonts.
   //
   IDWriteFontList1 = interface(IDWriteFontList)
-  ['{DA20D8EF-812A-4C43-9802-62EC4ABD7ADE}']
+    ['{DA20D8EF-812A-4C43-9802-62EC4ABD7ADE}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetFontLocality(listIndex: UINT32): DWRITE_LOCALITY; stdcall; overload;
 
-    function GetFont(listIndex: UINT32; out font: IDWriteFont3): HRESULT; stdcall; overload;
+    function GetFont(listIndex: UINT32;
+                     out font: IDWriteFont3): HRESULT; stdcall; overload;
 
-    function GetFontFaceReference(listIndex: UINT32; out fontFaceReference: IDWriteFontFaceReference): HRESULT; stdcall; overload;
+    function GetFontFaceReference(listIndex: UINT32;
+                                  out fontFaceReference: IDWriteFontFaceReference): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontList1 = IDWriteFontList1;
 
 
@@ -591,13 +658,14 @@ type
   // consists of a font file, font face index, and font face simulation. The file
   // data may or may not be physically present on the local machine yet.
   //
-   IDWriteFontFaceReference = interface(IUnknown)
-   ['{5E7FA7CA-DDE3-424C-89F0-9FCD6FED58CD}']
+  IDWriteFontFaceReference = interface(IUnknown)
+    ['{5E7FA7CA-DDE3-424C-89F0-9FCD6FED58CD}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function CreateFontFace(out fontFace: IDWriteFontFace3): HRESULT; stdcall; overload;
 
-    function CreateFontFaceWithSimulations(fontFaceSimulationFlags: DWRITE_FONT_SIMULATIONS; out fontFace: IDWriteFontFace3): HRESULT; stdcall; overload;
+    function CreateFontFaceWithSimulations(fontFaceSimulationFlags: DWRITE_FONT_SIMULATIONS;
+                                           out fontFace: IDWriteFontFace3): HRESULT; stdcall; overload;
 
     function Equals(fontFaceReference: IDWriteFontFaceReference): BOOL; stdcall; overload;
 
@@ -617,13 +685,17 @@ type
 
     function EnqueueFontDownloadRequest(): HRESULT; stdcall; overload;
 
-    function EnqueueCharacterDownloadRequest(characters: PWideChar; characterCount: UINT32): HRESULT; stdcall; overload;
+    function EnqueueCharacterDownloadRequest(characters: PWideChar;
+                                             characterCount: UINT32): HRESULT; stdcall; overload;
 
-    function EnqueueGlyphDownloadRequest(glyphIndices: PWORD; glyphCount: UINT32): HRESULT; stdcall; overload;
+    function EnqueueGlyphDownloadRequest(glyphIndices: PWORD;
+                                         glyphCount: UINT32): HRESULT; stdcall; overload;
 
-    function EnqueueFileFragmentDownloadRequest(fileOffset: UINT64; fragmentSize: UINT64): HRESULT; stdcall; overload;
+    function EnqueueFileFragmentDownloadRequest(fileOffset: UINT64;
+                                                fragmentSize: UINT64): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontFaceReference = IDWriteFontFaceReference;
 
 
@@ -632,7 +704,7 @@ type
   // The IDWriteFont interface represents a font in a font collection.
   //
   IDWriteFont3 = interface(IDWriteFont2)
-  ['{29748ED6-8C9C-4A6A-BE0B-D912E8538944}']
+    ['{29748ED6-8C9C-4A6A-BE0B-D912E8538944}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function CreateFontFace(out fontFace: IDWriteFontFace3): HRESULT; stdcall; overload;
@@ -646,6 +718,7 @@ type
     function GetLocality(): DWRITE_LOCALITY; stdcall; overload;
 
   end;
+
   IID_IDWriteFont3 = IDWriteFont3;
 
 
@@ -656,7 +729,7 @@ type
   // Various font data such as metrics, names and glyph outlines is obtained from IDWriteFontFace.
   //
   IDWriteFontFace3 = interface(IDWriteFontFace2)
-  ['{D37D7598-09BE-4222-A236-2081341CC1F2}']
+    ['{D37D7598-09BE-4222-A236-2081341CC1F2}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetFontFaceReference(out fontFaceReference: IDWriteFontFaceReference): HRESULT; stdcall; overload;
@@ -673,21 +746,39 @@ type
 
     function GetFaceNames(out names: IDWriteLocalizedStrings): HRESULT; stdcall; overload;
 
-    function GetInformationalStrings(informationalStringID: DWRITE_INFORMATIONAL_STRING_ID; out informationalStrings: IDWriteLocalizedStrings; exists: PBOOL): HRESULT; stdcall; overload;
+    function GetInformationalStrings(informationalStringID: DWRITE_INFORMATIONAL_STRING_ID;
+                                     out informationalStrings: IDWriteLocalizedStrings;
+                                     exists: PBOOL): HRESULT; stdcall; overload;
 
     function HasCharacter(unicodeValue: UINT32): BOOL; stdcall; overload;
 
-    function GetRecommendedRenderingMode(fontEmSize: Single; dpiX: Single; dpiY: Single; transform: PDWRITE_MATRIX; isSideways: BOOL; outlineThreshold: DWRITE_OUTLINE_THRESHOLD; measuringMode: DWRITE_MEASURING_MODE; renderingParams: IDWriteRenderingParams; renderingMode: PDWRITE_RENDERING_MODE1; gridFitMode: PDWRITE_GRID_FIT_MODE): HRESULT; stdcall; overload;
+    function GetRecommendedRenderingMode(fontEmSize: Single;
+                                         dpiX: Single;
+                                         dpiY: Single;
+                                         transform: PDWRITE_MATRIX;
+                                         isSideways: BOOL;
+                                         outlineThreshold: DWRITE_OUTLINE_THRESHOLD;
+                                         measuringMode: DWRITE_MEASURING_MODE;
+                                         renderingParams: IDWriteRenderingParams;
+                                         renderingMode: PDWRITE_RENDERING_MODE1;
+                                         gridFitMode: PDWRITE_GRID_FIT_MODE): HRESULT; stdcall; overload;
 
     function IsCharacterLocal(unicodeValue: UINT32): BOOL; stdcall; overload;
 
     function IsGlyphLocal(glyphId: UINT16): BOOL; stdcall; overload;
 
-    function AreCharactersLocal(characters: PWideChar; characterCount: UINT32; enqueueIfNotLocal: BOOL; isLocal: PBOOL): HRESULT; stdcall; overload;
+    function AreCharactersLocal(characters: PWideChar;
+                                characterCount: UINT32;
+                                enqueueIfNotLocal: BOOL;
+                                isLocal: PBOOL): HRESULT; stdcall; overload;
 
-    function AreGlyphsLocal(glyphIndices: PWORD; glyphCount: UINT32; enqueueIfNotLocal: BOOL; isLocal: PBOOL): HRESULT; stdcall; overload;
+    function AreGlyphsLocal(glyphIndices: PWORD;
+                            glyphCount: UINT32;
+                            enqueueIfNotLocal: BOOL;
+                            isLocal: PBOOL): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontFace3 = IDWriteFontFace3;
 
 
@@ -702,20 +793,27 @@ type
   // IDWriteStringList.
   //
   IDWriteStringList = interface(IUnknown)
-  ['{CFEE3140-1157-47CA-8B85-31BFCF3F2D0E}']
+    ['{CFEE3140-1157-47CA-8B85-31BFCF3F2D0E}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetCount(): UINT32; stdcall; overload;
 
-    function GetLocaleNameLength(listIndex: UINT32; length: PUINT32): HRESULT; stdcall; overload;
+    function GetLocaleNameLength(listIndex: UINT32;
+                                 length: PUINT32): HRESULT; stdcall; overload;
 
-    function GetLocaleName(listIndex: UINT32; localeName: PWideChar; size: UINT32): HRESULT; stdcall; overload;
+    function GetLocaleName(listIndex: UINT32;
+                           localeName: PWideChar;
+                           size: UINT32): HRESULT; stdcall; overload;
 
-    function GetStringLength(listIndex: UINT32; length: PUINT32): HRESULT; stdcall; overload;
+    function GetStringLength(listIndex: UINT32;
+                             length: PUINT32): HRESULT; stdcall; overload;
 
-    function GetString(listIndex: UINT32; stringBuffer: PWideChar; stringBufferSize: UINT32): HRESULT; stdcall; overload;
+    function GetString(listIndex: UINT32;
+                       stringBuffer: PWideChar;
+                       stringBufferSize: UINT32): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteStringList = IDWriteStringList;
 
 
@@ -727,12 +825,15 @@ type
   // from other threads at any time.
   //
   IDWriteFontDownloadListener = interface(IUnknown)
-  ['{B06FE5B9-43EC-4393-881B-DBE4DC72FDA7}']
+    ['{B06FE5B9-43EC-4393-881B-DBE4DC72FDA7}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    procedure DownloadCompleted(downloadQueue: IDWriteFontDownloadQueue; context: IUnknown; downloadResult: HRESULT); stdcall; overload;
+    procedure DownloadCompleted(downloadQueue: IDWriteFontDownloadQueue;
+                                context: IUnknown;
+                                downloadResult: HRESULT); stdcall; overload;
 
   end;
+
   IID_IDWriteFontDownloadListener = IDWriteFontDownloadListener;
 
 
@@ -744,10 +845,11 @@ type
   // be must be able to handle calls on their methods from other threads at any time.
   //
   IDWriteFontDownloadQueue = interface(IUnknown)
-  ['{B71E6052-5AEA-4FA3-832E-F60D431F7E91}']
+    ['{B71E6052-5AEA-4FA3-832E-F60D431F7E91}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function AddListener(listener: IDWriteFontDownloadListener; token: PUINT32): HRESULT; stdcall; overload;
+    function AddListener(listener: IDWriteFontDownloadListener;
+                         token: PUINT32): HRESULT; stdcall; overload;
 
     function RemoveListener(token: UINT32): HRESULT; stdcall; overload;
 
@@ -760,6 +862,7 @@ type
     function GetGenerationCount(): UINT64; stdcall; overload;
 
   end;
+
   IID_IDWriteFontDownloadQueue = IDWriteFontDownloadQueue;
 
 
@@ -768,23 +871,31 @@ type
   // The GDI interop interface provides interoperability with GDI.
   //
   IDWriteGdiInterop1 = interface(IDWriteGdiInterop)
-  ['{4556BE70-3ABD-4F70-90BE-421780A6F515}']
+    ['{4556BE70-3ABD-4F70-90BE-421780A6F515}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function CreateFontFromLOGFONT(logFont: PLOGFONTW; fontCollection: IDWriteFontCollection; out font: IDWriteFont): HRESULT; stdcall; overload;
+    function CreateFontFromLOGFONT(logFont: PLOGFONTW;
+                                   fontCollection: IDWriteFontCollection;
+                                   out font: IDWriteFont): HRESULT; stdcall; overload;
 
-    function GetFontSignature(fontFace: IDWriteFontFace; fontSignature: PFONTSIGNATURE): HRESULT; stdcall; overload;
+    function GetFontSignature(fontFace: IDWriteFontFace;
+                              fontSignature: PFONTSIGNATURE): HRESULT; stdcall; overload;
 
-    function GetFontSignature(font: IDWriteFont; fontSignature: PFONTSIGNATURE): HRESULT; stdcall; overload;
+    function GetFontSignature(font: IDWriteFont;
+                              fontSignature: PFONTSIGNATURE): HRESULT; stdcall; overload;
 
-    function GetMatchingFontsByLOGFONT(logFont: PLOGFONT; fontSet: IDWriteFontSet; out filteredSet: IDWriteFontSet): HRESULT; stdcall; overload;
+    function GetMatchingFontsByLOGFONT(logFont: PLOGFONT;
+                                       fontSet: IDWriteFontSet;
+                                       out filteredSet: IDWriteFontSet): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteGdiInterop1 = IDWriteGdiInterop1;
 
 
   // Information about a formatted line of text.
   PDWRITE_LINE_METRICS1 = ^DWRITE_LINE_METRICS1;
+
   DWRITE_LINE_METRICS1 = record
     DWriteLineMetrics: DWRITE_LINE_METRICS;
 
@@ -803,6 +914,7 @@ type
 
   // The DWRITE_LINE_SPACING structure specifies the parameters used to specify how to manage space between lines.
   PDWRITE_LINE_SPACING = ^DWRITE_LINE_SPACING;
+
   DWRITE_LINE_SPACING = record
 
     // Method used to determine line spacing.
@@ -838,7 +950,7 @@ type
   // ============================
   //
   IDWriteTextFormat2 = interface(IDWriteTextFormat1)
-  ['{F67E0EDD-9E3D-4ECC-8C32-4183253DFE70}']
+    ['{F67E0EDD-9E3D-4ECC-8C32-4183253DFE70}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function SetLineSpacing(lineSpacingOptions: PDWRITE_LINE_SPACING): HRESULT; stdcall; overload;
@@ -846,6 +958,7 @@ type
     function GetLineSpacing(lineSpacingOptions: PDWRITE_LINE_SPACING): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteTextFormat2 = IDWriteTextFormat2;
 
 
@@ -853,7 +966,7 @@ type
   // ============================
   //
   IDWriteTextLayout3 = interface(IDWriteTextLayout2)
-  ['{07DDCD52-020E-4DE8-AC33-6C953D83F92D}']
+    ['{07DDCD52-020E-4DE8-AC33-6C953D83F92D}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function InvalidateLayout(): HRESULT; stdcall; overload;
@@ -862,16 +975,19 @@ type
 
     function GetLineSpacing(lineSpacingOptions: PDWRITE_LINE_SPACING): HRESULT; stdcall; overload;
 
-    function GetLineMetrics(lineMetrics: PDWRITE_LINE_METRICS1; maxLineCount: UINT32; actualLineCount: PUINT32): HRESULT; stdcall; overload;
+    function GetLineMetrics(lineMetrics: PDWRITE_LINE_METRICS1;
+                            maxLineCount: UINT32;
+                            actualLineCount: PUINT32): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteTextLayout3 = IDWriteTextLayout3;
 
 
-///////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////
 
 
-// #if NTDDI_VERSION >= NTDDI_WIN10_RS1
+  // #if NTDDI_VERSION >= NTDDI_WIN10_RS1
 
 
   // Represents a color glyph run. The IDWriteFactory4.TranslateColorGlyphRun
@@ -879,6 +995,7 @@ type
   // depending on what the font supports.
   // For runs without any specific color, such as PNG data, the runColor field will be zero.
   PDWRITE_COLOR_GLYPH_RUN1 = ^DWRITE_COLOR_GLYPH_RUN1;
+
   DWRITE_COLOR_GLYPH_RUN1 = record
     DWriteColorGlyphRun: DWRITE_COLOR_GLYPH_RUN;
     // Type of glyph image format for this color run. Exactly one type will be set since
@@ -892,6 +1009,7 @@ type
 
   // Data for a single glyph from GetGlyphImageData.
   PDWRITE_GLYPH_IMAGE_DATA = ^DWRITE_GLYPH_IMAGE_DATA;
+
   DWRITE_GLYPH_IMAGE_DATA = record
 
     // Pointer to the glyph data, be it SVG, PNG, JPEG, TIFF.
@@ -931,12 +1049,13 @@ type
   // Enumerator for an ordered collection of color glyph runs.
   //
   IDWriteColorGlyphRunEnumerator1 = interface(IDWriteColorGlyphRunEnumerator)
-  ['{7C5F86DA-C7A1-4F05-B8E1-55A179FE5A35}']
+    ['{7C5F86DA-C7A1-4F05-B8E1-55A179FE5A35}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetCurrentRun(out colorGlyphRun: PDWRITE_COLOR_GLYPH_RUN1): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteColorGlyphRunEnumerator1 = IDWriteColorGlyphRunEnumerator1;
 
 
@@ -947,18 +1066,26 @@ type
   // Various font data such as metrics, names and glyph outlines is obtained from IDWriteFontFace.
   //
   IDWriteFontFace4 = interface(IDWriteFontFace3)
-  ['{27F2A904-4EB8-441D-9678-0563F53E3E2F}']
+    ['{27F2A904-4EB8-441D-9678-0563F53E3E2F}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function GetGlyphImageFormats(glyphId: UINT16; pixelsPerEmFirst: UINT32; pixelsPerEmLast: UINT32; glyphImageFormats: PDWRITE_GLYPH_IMAGE_FORMATS): HRESULT; stdcall; overload;
+    function GetGlyphImageFormats(glyphId: UINT16;
+                                  pixelsPerEmFirst: UINT32;
+                                  pixelsPerEmLast: UINT32;
+                                  glyphImageFormats: PDWRITE_GLYPH_IMAGE_FORMATS): HRESULT; stdcall; overload;
 
     function GetGlyphImageFormats(): DWRITE_GLYPH_IMAGE_FORMATS; stdcall; overload;
 
-    function GetGlyphImageData(glyphId: UINT16; pixelsPerEm: UINT32; glyphImageFormat: DWRITE_GLYPH_IMAGE_FORMATS; glyphData: PDWRITE_GLYPH_IMAGE_DATA; out glyphDataContext: Pointer): HRESULT; stdcall; overload;
+    function GetGlyphImageData(glyphId: UINT16;
+                               pixelsPerEm: UINT32;
+                               glyphImageFormat: DWRITE_GLYPH_IMAGE_FORMATS;
+                               glyphData: PDWRITE_GLYPH_IMAGE_DATA;
+                               out glyphDataContext: Pointer): HRESULT; stdcall; overload;
 
     procedure ReleaseGlyphImageData(glyphDataContext: Pointer); stdcall; overload;
 
   end;
+
   IID_IDWriteFontFace4 = IDWriteFontFace4;
 
 
@@ -966,36 +1093,51 @@ type
   // =========================
   //
   IDWriteFactory4 = interface(IDWriteFactory3)
-  ['{4B0B5BD3-0797-4549-8AC5-FE915CC53856}']
+    ['{4B0B5BD3-0797-4549-8AC5-FE915CC53856}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function TranslateColorGlyphRun(baselineOrigin: D2D1_POINT_2F; glyphRun: PDWRITE_GLYPH_RUN; glyphRunDescription: PDWRITE_GLYPH_RUN_DESCRIPTION; desiredGlyphImageFormats: DWRITE_GLYPH_IMAGE_FORMATS; measuringMode: DWRITE_MEASURING_MODE; worldAndDpiTransform: PDWRITE_MATRIX; colorPaletteIndex: UINT32; out colorLayers: IDWriteColorGlyphRunEnumerator1): HRESULT; stdcall; overload;
+    function TranslateColorGlyphRun(baselineOrigin: D2D1_POINT_2F;
+                                    glyphRun: PDWRITE_GLYPH_RUN;
+                                    glyphRunDescription: PDWRITE_GLYPH_RUN_DESCRIPTION;
+                                    desiredGlyphImageFormats: DWRITE_GLYPH_IMAGE_FORMATS;
+                                    measuringMode: DWRITE_MEASURING_MODE;
+                                    worldAndDpiTransform: PDWRITE_MATRIX;
+                                    colorPaletteIndex: UINT32;
+                                    out colorLayers: IDWriteColorGlyphRunEnumerator1): HRESULT; stdcall; overload;
 
-    function ComputeGlyphOrigins(glyphRun: PDWRITE_GLYPH_RUN; baselineOrigin: D2D1_POINT_2F; glyphOrigins: PD2D1_POINT_2F): HRESULT; stdcall; overload;
+    function ComputeGlyphOrigins(glyphRun: PDWRITE_GLYPH_RUN;
+                                 baselineOrigin: D2D1_POINT_2F;
+                                 glyphOrigins: PD2D1_POINT_2F): HRESULT; stdcall; overload;
 
-    function ComputeGlyphOrigins(glyphRun: PDWRITE_GLYPH_RUN; measuringMode: DWRITE_MEASURING_MODE; baselineOrigin: D2D1_POINT_2F; worldAndDpiTransform: PDWRITE_MATRIX; glyphOrigins: PD2D1_POINT_2F): HRESULT; stdcall; overload;
+    function ComputeGlyphOrigins(glyphRun: PDWRITE_GLYPH_RUN;
+                                 measuringMode: DWRITE_MEASURING_MODE;
+                                 baselineOrigin: D2D1_POINT_2F;
+                                 worldAndDpiTransform: PDWRITE_MATRIX;
+                                 glyphOrigins: PD2D1_POINT_2F): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFactory4 = IDWriteFactory4;
 
-//#endif // NTDDI_VERSION >= NTDDI_WIN10_RS1
+  //#endif // NTDDI_VERSION >= NTDDI_WIN10_RS1
 
 
-///////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////
 
 
-//#if NTDDI_VERSION >= NTDDI_WIN10_RS2
+  //#if NTDDI_VERSION >= NTDDI_WIN10_RS2
 
   // Interface IDWriteFontSetBuilder1
   // ================================
   //
   IDWriteFontSetBuilder1 = interface(IDWriteFontSetBuilder)
-  ['{3FF7715F-3CDC-4DC6-9B72-EC5621DCCAFD}']
+    ['{3FF7715F-3CDC-4DC6-9B72-EC5621DCCAFD}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function AddFontFile(fontFile: IDWriteFontFile): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontSetBuilder1 = IDWriteFontSetBuilder1;
 
 
@@ -1006,7 +1148,7 @@ type
   // complete and to get the result.
   //
   IDWriteAsyncResult = interface(IUnknown)
-  ['{CE25F8FD-863B-4D13-9651-C1F88DC73FE2}']
+    ['{CE25F8FD-863B-4D13-9651-C1F88DC73FE2}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetWaitHandle(): THandle; stdcall; overload;
@@ -1014,11 +1156,13 @@ type
     function GetResult(): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteAsyncResult = IDWriteAsyncResult;
 
 
   // DWRITE_FILE_FRAGMENT represents a range of bytes in a font file.
   PDWRITE_FILE_FRAGMENT = ^DWRITE_FILE_FRAGMENT;
+
   DWRITE_FILE_FRAGMENT = record
 
     // Starting offset of the fragment from the beginning of the file.
@@ -1041,18 +1185,25 @@ type
   // </remarks>
   //
   IDWriteRemoteFontFileStream = interface(IDWriteFontFileStream)
-  ['{4DB3757A-2C72-4ED9-B2B6-1ABABE1AFF9C}']
+    ['{4DB3757A-2C72-4ED9-B2B6-1ABABE1AFF9C}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetLocalFileSize(localFileSize: PUINT64): HRESULT; stdcall; overload;
 
-    function GetFileFragmentLocality(fileOffset: UINT64; fragmentSize: UINT64; isLocal: PBOOL; partialSize: PUINT64): HRESULT; stdcall; overload;
+    function GetFileFragmentLocality(fileOffset: UINT64;
+                                     fragmentSize: UINT64;
+                                     isLocal: PBOOL;
+                                     partialSize: PUINT64): HRESULT; stdcall; overload;
 
     function GetLocality(): DWRITE_LOCALITY; stdcall; overload;
 
-    function BeginDownload(downloadOperationID: PUUID; fileFragments: PDWRITE_FILE_FRAGMENT; fragmentCount: UINT32; out asyncResult: IDWriteAsyncResult): HRESULT; stdcall; overload;
+    function BeginDownload(downloadOperationID: PUUID;
+                           fileFragments: PDWRITE_FILE_FRAGMENT;
+                           fragmentCount: UINT32;
+                           out asyncResult: IDWriteAsyncResult): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteRemoteFontFileStream = IDWriteRemoteFontFileStream;
 
 
@@ -1068,16 +1219,24 @@ type
   //   font download queue.
   //
   IDWriteRemoteFontFileLoader = interface(IDWriteFontFileLoader)
-  ['{68648C83-6EDE-46C0-AB46-20083A887FDE}']
+    ['{68648C83-6EDE-46C0-AB46-20083A887FDE}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function CreateRemoteStreamFromKey(fontFileReferenceKey: Pointer; fontFileReferenceKeySize: UINT32; out fontFileStream: IDWriteRemoteFontFileStream): HRESULT; stdcall; overload;
+    function CreateRemoteStreamFromKey(fontFileReferenceKey: Pointer;
+                                       fontFileReferenceKeySize: UINT32;
+                                       out fontFileStream: IDWriteRemoteFontFileStream): HRESULT; stdcall; overload;
 
-    function GetLocalityFromKey(fontFileReferenceKey: Pointer; fontFileReferenceKeySize: UINT32; locality: PDWRITE_LOCALITY): HRESULT; stdcall; overload;
+    function GetLocalityFromKey(fontFileReferenceKey: Pointer;
+                                fontFileReferenceKeySize: UINT32;
+                                locality: PDWRITE_LOCALITY): HRESULT; stdcall; overload;
 
-    function CreateFontFileReferenceFromUrl(factory: IDWriteFactory; baseUrl: PWideChar; fontFileUrl: PWideChar; out fontFile: IDWriteFontFile): HRESULT; stdcall; overload;
+    function CreateFontFileReferenceFromUrl(factory: IDWriteFactory;
+                                            baseUrl: PWideChar;
+                                            fontFileUrl: PWideChar;
+                                            out fontFile: IDWriteFontFile): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteRemoteFontFileLoader = IDWriteRemoteFontFileLoader;
 
 
@@ -1092,14 +1251,19 @@ type
   // IDWriteFactory.UnregisterFontFileLoader.
   //
   IDWriteInMemoryFontFileLoader = interface(IDWriteFontFileLoader)
-  ['{DC102F47-A12D-4B1C-822D-9E117E33043F}']
+    ['{DC102F47-A12D-4B1C-822D-9E117E33043F}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function CreateInMemoryFontFileReference(factory: IDWriteFactory; fontData: Pointer; fontDataSize: UINT32; ownerObject: IUnknown; out fontFile: IDWriteFontFile): HRESULT; stdcall; overload;
+    function CreateInMemoryFontFileReference(factory: IDWriteFactory;
+                                             fontData: Pointer;
+                                             fontDataSize: UINT32;
+                                             ownerObject: IUnknown;
+                                             out fontFile: IDWriteFontFile): HRESULT; stdcall; overload;
 
     function GetFileCount(): UINT32; stdcall; overload;
 
   end;
+
   IID_IDWriteInMemoryFontFileLoader = IDWriteInMemoryFontFileLoader;
 
 
@@ -1108,29 +1272,36 @@ type
   // The root factory interface for all DWrite objects.
   //
   IDWriteFactory5 = interface(IDWriteFactory4)
-  ['{958DB99A-BE2A-4F09-AF7D-65189803D1D3}']
+    ['{958DB99A-BE2A-4F09-AF7D-65189803D1D3}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function CreateFontSetBuilder(out fontSetBuilder: IDWriteFontSetBuilder1): HRESULT; stdcall; overload;
 
     function CreateInMemoryFontFileLoader(out newLoader: IDWriteInMemoryFontFileLoader): HRESULT; stdcall; overload;
 
-    function CreateHttpFontFileLoader(referrerUrl: PWideChar; extraHeaders: PWideChar; out newLoader: IDWriteRemoteFontFileLoader): HRESULT; stdcall; overload;
+    function CreateHttpFontFileLoader(referrerUrl: PWideChar;
+                                      extraHeaders: PWideChar;
+                                      out newLoader: IDWriteRemoteFontFileLoader): HRESULT; stdcall; overload;
 
-    function AnalyzeContainerType(fileData: Pointer; fileDataSize: UINT32): DWRITE_CONTAINER_TYPE; stdcall; overload;
+    function AnalyzeContainerType(fileData: Pointer;
+                                  fileDataSize: UINT32): DWRITE_CONTAINER_TYPE; stdcall; overload;
 
-    function UnpackFontFile(containerType: DWRITE_CONTAINER_TYPE; fileData: Pointer; fileDataSize: UINT32; out unpackedFontStream: IDWriteFontFileStream): HRESULT; stdcall; overload;
+    function UnpackFontFile(containerType: DWRITE_CONTAINER_TYPE;
+                            fileData: Pointer;
+                            fileDataSize: UINT32;
+                            out unpackedFontStream: IDWriteFontFileStream): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFactory5 = IDWriteFactory5;
 
-// #endif // NTDDI_VERSION >= NTDDI_WIN10_RS2
+  // #endif // NTDDI_VERSION >= NTDDI_WIN10_RS2
 
 
-///////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////
 
 
-// #if NTDDI_VERSION >= NTDDI_WIN10_RS3
+  // #if NTDDI_VERSION >= NTDDI_WIN10_RS3
 
   PIDWriteFontResource = ^IDWriteFontResource;
   IDWriteFontResource = interface;
@@ -1156,6 +1327,7 @@ type
 
   // Value for a font axis, used when querying and creating font instances.
   PDWRITE_FONT_AXIS_VALUE = ^DWRITE_FONT_AXIS_VALUE;
+
   DWRITE_FONT_AXIS_VALUE = record
     // Four character identifier of the font axis (weight, width, slant, italic...).
     axisTag: DWRITE_FONT_AXIS_TAG;
@@ -1169,6 +1341,7 @@ type
 
   // Minimum and maximum range of a font axis.
   PDWRITE_FONT_AXIS_RANGE = ^DWRITE_FONT_AXIS_RANGE;
+
   DWRITE_FONT_AXIS_RANGE = record
 
     // Four character identifier of the font axis (weight, width, slant, italic...).
@@ -1186,24 +1359,43 @@ type
   // =========================
   //
   IDWriteFactory6 = interface(IDWriteFactory5)
-  ['{F3744D80-21F7-42EB-B35D-995BC72FC223}']
+    ['{F3744D80-21F7-42EB-B35D-995BC72FC223}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function CreateFontFaceReference(fontFile: IDWriteFontFile; faceIndex: UINT32; fontSimulations: DWRITE_FONT_SIMULATIONS; fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32; out fontFaceReference: IDWriteFontFaceReference1): HRESULT; stdcall; overload;
+    function CreateFontFaceReference(fontFile: IDWriteFontFile;
+                                     faceIndex: UINT32;
+                                     fontSimulations: DWRITE_FONT_SIMULATIONS;
+                                     fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                                     fontAxisValueCount: UINT32;
+                                     out fontFaceReference: IDWriteFontFaceReference1): HRESULT; stdcall; overload;
 
-    function CreateFontResource(fontFile: IDWriteFontFile; faceIndex: UINT32; out fontResource: IDWriteFontResource): HRESULT; stdcall; overload;
+    function CreateFontResource(fontFile: IDWriteFontFile;
+                                faceIndex: UINT32;
+                                out fontResource: IDWriteFontResource): HRESULT; stdcall; overload;
 
-    function GetSystemFontSet(includeDownloadableFonts: BOOL; out fontSet: IDWriteFontSet1): HRESULT; stdcall; overload;
+    function GetSystemFontSet(includeDownloadableFonts: BOOL;
+                              out fontSet: IDWriteFontSet1): HRESULT; stdcall; overload;
 
-    function GetSystemFontCollection(includeDownloadableFonts: BOOL; fontFamilyModel: DWRITE_FONT_FAMILY_MODEL; out fontCollection: IDWriteFontCollection2): HRESULT; stdcall; overload;
+    function GetSystemFontCollection(includeDownloadableFonts: BOOL;
+                                     fontFamilyModel: DWRITE_FONT_FAMILY_MODEL;
+                                     out fontCollection: IDWriteFontCollection2): HRESULT; stdcall; overload;
 
-    function CreateFontCollectionFromFontSet(fontSet: IDWriteFontSet; fontFamilyModel: DWRITE_FONT_FAMILY_MODEL; out fontCollection: IDWriteFontCollection2): HRESULT; stdcall; overload;
+    function CreateFontCollectionFromFontSet(fontSet: IDWriteFontSet;
+                                             fontFamilyModel: DWRITE_FONT_FAMILY_MODEL;
+                                             out fontCollection: IDWriteFontCollection2): HRESULT; stdcall; overload;
 
     function CreateFontSetBuilder(out fontSetBuilder: IDWriteFontSetBuilder2): HRESULT; stdcall; overload;
 
-    function CreateTextFormat(fontFamilyName: PWideChar; fontCollection: IDWriteFontCollection; fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32; fontSize: Single; localeName: PWideChar; out textFormat: IDWriteTextFormat3): HRESULT; stdcall; overload;
+    function CreateTextFormat(fontFamilyName: PWideChar;
+                              fontCollection: IDWriteFontCollection;
+                              fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                              fontAxisValueCount: UINT32;
+                              fontSize: Single;
+                              localeName: PWideChar;
+                              out textFormat: IDWriteTextFormat3): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFactory6 = IDWriteFactory6;
 
 
@@ -1211,12 +1403,13 @@ type
   // ==========================
   //
   IDWriteFontFace5 = interface(IDWriteFontFace4)
-  ['{98EFF3A5-B667-479A-B145-E2FA5B9FDC29}']
+    ['{98EFF3A5-B667-479A-B145-E2FA5B9FDC29}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetFontAxisValueCount(): UINT32; stdcall; overload;
 
-    function GetFontAxisValues(fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32): HRESULT; stdcall; overload;
+    function GetFontAxisValues(fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                               fontAxisValueCount: UINT32): HRESULT; stdcall; overload;
 
     function HasVariations(): BOOL; stdcall; overload;
 
@@ -1225,6 +1418,7 @@ type
     function Equals(fontFace: IDWriteFontFace): BOOL; stdcall; overload;
 
   end;
+
   IID_IDWriteFontFace5 = IDWriteFontFace5;
 
 
@@ -1233,7 +1427,7 @@ type
   // Interface to return axis information for a font resource and create specific font face instances.
   //
   IDWriteFontResource = interface(IUnknown)
-  ['{1F803A76-6871-48E8-987F-B975551C50F2}']
+    ['{1F803A76-6871-48E8-987F-B975551C50F2}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetFontFile(out fontFile: IDWriteFontFile): HRESULT; stdcall; overload;
@@ -1242,25 +1436,38 @@ type
 
     function GetFontAxisCount(): UINT32; stdcall; overload;
 
-    function GetDefaultFontAxisValues(fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32): HRESULT; stdcall; overload;
+    function GetDefaultFontAxisValues(fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                                      fontAxisValueCount: UINT32): HRESULT; stdcall; overload;
 
-    function GetFontAxisRanges(fontAxisRanges: PDWRITE_FONT_AXIS_RANGE; fontAxisRangeCount: UINT32): HRESULT; stdcall; overload;
+    function GetFontAxisRanges(fontAxisRanges: PDWRITE_FONT_AXIS_RANGE;
+                               fontAxisRangeCount: UINT32): HRESULT; stdcall; overload;
 
     function GetFontAxisAttributes(axisIndex: UINT32): DWRITE_FONT_AXIS_ATTRIBUTES; stdcall; overload;
 
-    function GetAxisNames(axisIndex: UINT32; out names: IDWriteLocalizedStrings): HRESULT; stdcall; overload;
+    function GetAxisNames(axisIndex: UINT32;
+                          out names: IDWriteLocalizedStrings): HRESULT; stdcall; overload;
 
     function GetAxisValueNameCount(axisIndex: UINT32): UINT32; stdcall; overload;
 
-    function GetAxisValueNames(axisIndex: UINT32; axisValueIndex: UINT32; fontAxisRange: PDWRITE_FONT_AXIS_RANGE; out names: IDWriteLocalizedStrings): HRESULT; stdcall; overload;
+    function GetAxisValueNames(axisIndex: UINT32;
+                               axisValueIndex: UINT32;
+                               fontAxisRange: PDWRITE_FONT_AXIS_RANGE;
+                               out names: IDWriteLocalizedStrings): HRESULT; stdcall; overload;
 
     function HasVariations(): BOOL; stdcall; overload;
 
-    function CreateFontFace(fontSimulations: DWRITE_FONT_SIMULATIONS; fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32; out fontFace: IDWriteFontFace5): HRESULT; stdcall; overload;
+    function CreateFontFace(fontSimulations: DWRITE_FONT_SIMULATIONS;
+                            fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                            fontAxisValueCount: UINT32;
+                            out fontFace: IDWriteFontFace5): HRESULT; stdcall; overload;
 
-    function CreateFontFaceReference(fontSimulations: DWRITE_FONT_SIMULATIONS; fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32; out fontFaceReference: IDWriteFontFaceReference1): HRESULT; stdcall; overload;
+    function CreateFontFaceReference(fontSimulations: DWRITE_FONT_SIMULATIONS;
+                                     fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                                     fontAxisValueCount: UINT32;
+                                     out fontFaceReference: IDWriteFontFaceReference1): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontResource = IDWriteFontResource;
 
 
@@ -1268,16 +1475,18 @@ type
   // ===================================
   //
   IDWriteFontFaceReference1 = interface(IDWriteFontFaceReference)
-  ['{C081FE77-2FD1-41AC-A5A3-34983C4BA61A}']
+    ['{C081FE77-2FD1-41AC-A5A3-34983C4BA61A}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function CreateFontFace(out fontFace: IDWriteFontFace5): HRESULT; stdcall; overload;
 
     function GetFontAxisValueCount(): UINT32; stdcall; overload;
 
-    function GetFontAxisValues(fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32): HRESULT; stdcall; overload;
+    function GetFontAxisValues(fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                               fontAxisValueCount: UINT32): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontFaceReference1 = IDWriteFontFaceReference1;
 
 
@@ -1285,14 +1494,23 @@ type
   // ================================
   //
   IDWriteFontSetBuilder2 = interface(IDWriteFontSetBuilder1)
-  ['{EE5BA612-B131-463C-8F4F-3189B9401E45}']
+    ['{EE5BA612-B131-463C-8F4F-3189B9401E45}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function AddFont(fontFile: IDWriteFontFile; fontFaceIndex: UINT32; fontSimulations: DWRITE_FONT_SIMULATIONS; fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32; fontAxisRanges: PDWRITE_FONT_AXIS_RANGE; fontAxisRangeCount: UINT32; properties: PDWRITE_FONT_PROPERTY; propertyCount: UINT32): HRESULT; stdcall; overload;
+    function AddFont(fontFile: IDWriteFontFile;
+                     fontFaceIndex: UINT32;
+                     fontSimulations: DWRITE_FONT_SIMULATIONS;
+                     fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                     fontAxisValueCount: UINT32;
+                     fontAxisRanges: PDWRITE_FONT_AXIS_RANGE;
+                     fontAxisRangeCount: UINT32;
+                     properties: PDWRITE_FONT_PROPERTY;
+                     propertyCount: UINT32): HRESULT; stdcall; overload;
 
     function AddFontFile(filePath: PWideChar): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontSetBuilder2 = IDWriteFontSetBuilder2;
 
 
@@ -1300,36 +1518,66 @@ type
   // =========================
   //
   IDWriteFontSet1 = interface(IDWriteFontSet)
-  ['{7E9FDA85-6C92-4053-BC47-7AE3530DB4D3}']
+    ['{7E9FDA85-6C92-4053-BC47-7AE3530DB4D3}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function GetMatchingFonts(fontProperty: PDWRITE_FONT_PROPERTY; fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32; out matchingFonts: IDWriteFontSet1): HRESULT; stdcall; overload;
+    function GetMatchingFonts(fontProperty: PDWRITE_FONT_PROPERTY;
+                              fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                              fontAxisValueCount: UINT32;
+                              out matchingFonts: IDWriteFontSet1): HRESULT; stdcall; overload;
 
     function GetFirstFontResources(out filteredFontSet: IDWriteFontSet1): HRESULT; stdcall; overload;
 
-    function GetFilteredFonts(indices: PUINT32; indexCount: UINT32; out filteredFontSet: IDWriteFontSet1): HRESULT; stdcall; overload;
+    function GetFilteredFonts(indices: PUINT32;
+                              indexCount: UINT32;
+                              out filteredFontSet: IDWriteFontSet1): HRESULT; stdcall; overload;
 
-    function GetFilteredFonts(fontAxisRanges: PDWRITE_FONT_AXIS_RANGE; fontAxisRangeCount: UINT32; selectAnyRange: BOOL; out filteredFontSet: IDWriteFontSet1): HRESULT; stdcall; overload;
+    function GetFilteredFonts(fontAxisRanges: PDWRITE_FONT_AXIS_RANGE;
+                              fontAxisRangeCount: UINT32;
+                              selectAnyRange: BOOL;
+                              out filteredFontSet: IDWriteFontSet1): HRESULT; stdcall; overload;
 
-    function GetFilteredFonts(properties: PDWRITE_FONT_PROPERTY; propertyCount: UINT32; selectAnyProperty: BOOL; out filteredFontSet: IDWriteFontSet1): HRESULT; stdcall; overload;
+    function GetFilteredFonts(properties: PDWRITE_FONT_PROPERTY;
+                              propertyCount: UINT32;
+                              selectAnyProperty: BOOL;
+                              out filteredFontSet: IDWriteFontSet1): HRESULT; stdcall; overload;
 
-    function GetFilteredFontIndices(fontAxisRanges: PDWRITE_FONT_AXIS_RANGE; fontAxisRangeCount: UINT32; selectAnyRange: BOOL; indices: PUINT32; maxIndexCount: UINT32; actualIndexCount: PUINT32): HRESULT; stdcall; overload;
+    function GetFilteredFontIndices(fontAxisRanges: PDWRITE_FONT_AXIS_RANGE;
+                                    fontAxisRangeCount: UINT32;
+                                    selectAnyRange: BOOL;
+                                    indices: PUINT32;
+                                    maxIndexCount: UINT32;
+                                    actualIndexCount: PUINT32): HRESULT; stdcall; overload;
 
-    function GetFilteredFontIndices(properties: PDWRITE_FONT_PROPERTY; propertyCount: UINT32; selectAnyProperty: BOOL; indices: PUINT32; maxIndexCount: UINT32; actualIndexCount: PUINT32): HRESULT; stdcall; overload;
+    function GetFilteredFontIndices(properties: PDWRITE_FONT_PROPERTY;
+                                    propertyCount: UINT32;
+                                    selectAnyProperty: BOOL;
+                                    indices: PUINT32;
+                                    maxIndexCount: UINT32;
+                                    actualIndexCount: PUINT32): HRESULT; stdcall; overload;
 
-    function GetFontAxisRanges(listIndex: UINT32; fontAxisRanges: PDWRITE_FONT_AXIS_RANGE; maxFontAxisRangeCount: UINT32; actualFontAxisRangeCount: PUINT32): HRESULT; stdcall; overload;
+    function GetFontAxisRanges(listIndex: UINT32;
+                               fontAxisRanges: PDWRITE_FONT_AXIS_RANGE;
+                               maxFontAxisRangeCount: UINT32;
+                               actualFontAxisRangeCount: PUINT32): HRESULT; stdcall; overload;
 
-    function GetFontAxisRanges(fontAxisRanges: PDWRITE_FONT_AXIS_RANGE; maxFontAxisRangeCount: UINT32; actualFontAxisRangeCount: PUINT32): HRESULT; stdcall; overload;
+    function GetFontAxisRanges(fontAxisRanges: PDWRITE_FONT_AXIS_RANGE;
+                               maxFontAxisRangeCount: UINT32;
+                               actualFontAxisRangeCount: PUINT32): HRESULT; stdcall; overload;
 
-    function GetFontFaceReference(listIndex: UINT32; out fontFaceReference: IDWriteFontFaceReference1): HRESULT; stdcall; overload;
+    function GetFontFaceReference(listIndex: UINT32;
+                                  out fontFaceReference: IDWriteFontFaceReference1): HRESULT; stdcall; overload;
 
-    function CreateFontResource(listIndex: UINT32; out fontResource: IDWriteFontResource): HRESULT; stdcall; overload;
+    function CreateFontResource(listIndex: UINT32;
+                                out fontResource: IDWriteFontResource): HRESULT; stdcall; overload;
 
-    function CreateFontFace(listIndex: UINT32; out fontFace: IDWriteFontFace5): HRESULT; stdcall; overload;
+    function CreateFontFace(listIndex: UINT32;
+                            out fontFace: IDWriteFontFace5): HRESULT; stdcall; overload;
 
     function GetFontLocality(listIndex: UINT32): DWRITE_LOCALITY; stdcall; overload;
 
   end;
+
   IID_IDWriteFontSet1 = IDWriteFontSet1;
 
 
@@ -1337,12 +1585,13 @@ type
   // ==========================
   //
   IDWriteFontList2 = interface(IDWriteFontList1)
-  ['{C0763A34-77AF-445A-B735-08C37B0A5BF5}']
+    ['{C0763A34-77AF-445A-B735-08C37B0A5BF5}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetFontSet(out fontSet: IDWriteFontSet1): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontList2 = IDWriteFontList2;
 
 
@@ -1350,14 +1599,17 @@ type
   // ============================
   //
   IDWriteFontFamily2 = interface(IDWriteFontFamily1)
-  ['{3ED49E77-A398-4261-B9CF-C126C2131EF3}']
+    ['{3ED49E77-A398-4261-B9CF-C126C2131EF3}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function GetMatchingFonts(fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32; out matchingFonts: IDWriteFontList2): HRESULT; stdcall; overload;
+    function GetMatchingFonts(fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                              fontAxisValueCount: UINT32;
+                              out matchingFonts: IDWriteFontList2): HRESULT; stdcall; overload;
 
     function GetFontSet(out fontSet: IDWriteFontSet1): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontFamily2 = IDWriteFontFamily2;
 
 
@@ -1365,18 +1617,23 @@ type
   // ================================
   //
   IDWriteFontCollection2 = interface(IDWriteFontCollection1)
-  ['{514039C6-4617-4064-BF8B-92EA83E506E0}']
+    ['{514039C6-4617-4064-BF8B-92EA83E506E0}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function GetFontFamily(index: UINT32; out fontFamily: IDWriteFontFamily2): HRESULT; stdcall; overload;
+    function GetFontFamily(index: UINT32;
+                           out fontFamily: IDWriteFontFamily2): HRESULT; stdcall; overload;
 
-    function GetMatchingFonts(familyName: PWideChar; fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32; out fontList: IDWriteFontList2): HRESULT; stdcall; overload;
+    function GetMatchingFonts(familyName: PWideChar;
+                              fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                              fontAxisValueCount: UINT32;
+                              out fontList: IDWriteFontList2): HRESULT; stdcall; overload;
 
     function GetFontFamilyModel(): DWRITE_FONT_FAMILY_MODEL; stdcall; overload;
 
     function GetFontSet(out fontSet: IDWriteFontSet1): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontCollection2 = IDWriteFontCollection2;
 
 
@@ -1384,20 +1641,26 @@ type
   // ============================
   //
   IDWriteTextLayout4 = interface(IDWriteTextLayout3)
-  ['{05A9BF42-223F-4441-B5FB-8263685F55E9}']
+    ['{05A9BF42-223F-4441-B5FB-8263685F55E9}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function SetFontAxisValues(fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32; textRange: DWRITE_TEXT_RANGE): HRESULT; stdcall; overload;
+    function SetFontAxisValues(fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                               fontAxisValueCount: UINT32;
+                               textRange: DWRITE_TEXT_RANGE): HRESULT; stdcall; overload;
 
     function GetFontAxisValueCount(currentPosition: UINT32): UINT32; stdcall; overload;
 
-    function GetFontAxisValues(currentPosition: UINT32; fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32; textRange: PDWRITE_TEXT_RANGE): HRESULT; stdcall; overload;
+    function GetFontAxisValues(currentPosition: UINT32;
+                               fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                               fontAxisValueCount: UINT32;
+                               textRange: PDWRITE_TEXT_RANGE): HRESULT; stdcall; overload;
 
     function GetAutomaticFontAxes(): DWRITE_AUTOMATIC_FONT_AXES; stdcall; overload;
 
     function SetAutomaticFontAxes(automaticFontAxes: DWRITE_AUTOMATIC_FONT_AXES): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteTextLayout4 = IDWriteTextLayout4;
 
 
@@ -1405,20 +1668,23 @@ type
   // ============================
   //
   IDWriteTextFormat3 = interface(IDWriteTextFormat2)
-  ['{6D3B5641-E550-430D-A85B-B7BF48A93427}']
+    ['{6D3B5641-E550-430D-A85B-B7BF48A93427}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function SetFontAxisValues(fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32): HRESULT; stdcall; overload;
+    function SetFontAxisValues(fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                               fontAxisValueCount: UINT32): HRESULT; stdcall; overload;
 
     function GetFontAxisValueCount(): UINT32; stdcall; overload;
 
-    function GetFontAxisValues(fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32): HRESULT; stdcall; overload;
+    function GetFontAxisValues(fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                               fontAxisValueCount: UINT32): HRESULT; stdcall; overload;
 
     function GetAutomaticFontAxes(): DWRITE_AUTOMATIC_FONT_AXES; stdcall; overload;
 
     function SetAutomaticFontAxes(automaticFontAxes: DWRITE_AUTOMATIC_FONT_AXES): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteTextFormat3 = IDWriteTextFormat3;
 
 
@@ -1426,29 +1692,40 @@ type
   // ==============================
   //
   IDWriteFontFallback1 = interface(IDWriteFontFallback)
-  ['{2397599D-DD0D-4681-BD6A-F4F31EAADE77}']
+    ['{2397599D-DD0D-4681-BD6A-F4F31EAADE77}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function MapCharacters(analysisSource: IDWriteTextAnalysisSource; textPosition: UINT32; textLength: UINT32; baseFontCollection: IDWriteFontCollection; baseFamilyName: PWideChar; fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32; mappedLength: PUINT32; scale: PSingle; out mappedFontFace: IDWriteFontFace5): HRESULT; stdcall; overload;
+    function MapCharacters(analysisSource: IDWriteTextAnalysisSource;
+                           textPosition: UINT32;
+                           textLength: UINT32;
+                           baseFontCollection: IDWriteFontCollection;
+                           baseFamilyName: PWideChar;
+                           fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                           fontAxisValueCount: UINT32;
+                           mappedLength: PUINT32;
+                           scale: PSingle;
+                           out mappedFontFace: IDWriteFontFace5): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontFallback1 = IDWriteFontFallback1;
 
-// #endif // NTDDI_VERSION >= NTDDI_WIN10_RS3
+  // #endif // NTDDI_VERSION >= NTDDI_WIN10_RS3
 
 
-// #if NTDDI_VERSION >= NTDDI_WIN10_RS4
+  // #if NTDDI_VERSION >= NTDDI_WIN10_RS4
 
   // Interface IDWriteFontSet2
   // =========================
   //
   IDWriteFontSet2 = interface(IDWriteFontSet1)
-  ['{DC7EAD19-E54C-43AF-B2DA-4E2B79BA3F7F}']
+    ['{DC7EAD19-E54C-43AF-B2DA-4E2B79BA3F7F}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetExpirationEvent(): THandle; stdcall; overload;
 
   end;
+
   IID_IDWriteFontSet2 = IDWriteFontSet2;
 
 
@@ -1456,12 +1733,13 @@ type
   // ================================
   //
   IDWriteFontCollection3 = interface(IDWriteFontCollection2)
-  ['{A4D055A6-F9E3-4E25-93B7-9E309F3AF8E9}']
+    ['{A4D055A6-F9E3-4E25-93B7-9E309F3AF8E9}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetExpirationEvent(): THandle; stdcall; overload;
 
   end;
+
   IID_IDWriteFontCollection3 = IDWriteFontCollection3;
 
 
@@ -1469,92 +1747,110 @@ type
   // =========================
   //
   IDWriteFactory7 = interface(IDWriteFactory6)
-  ['{35D0E0B3-9076-4D2E-A016-A91B568A06B4}']
+    ['{35D0E0B3-9076-4D2E-A016-A91B568A06B4}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function GetSystemFontSet(includeDownloadableFonts: BOOL; out fontSet: IDWriteFontSet2): HRESULT; stdcall; overload;
+    function GetSystemFontSet(includeDownloadableFonts: BOOL;
+                              out fontSet: IDWriteFontSet2): HRESULT; stdcall; overload;
 
-    function GetSystemFontCollection(includeDownloadableFonts: BOOL; fontFamilyModel: DWRITE_FONT_FAMILY_MODEL; out fontCollection: IDWriteFontCollection3): HRESULT; stdcall; overload;
+    function GetSystemFontCollection(includeDownloadableFonts: BOOL;
+                                     fontFamilyModel: DWRITE_FONT_FAMILY_MODEL;
+                                     out fontCollection: IDWriteFontCollection3): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFactory7 = IDWriteFactory7;
 
-// #endif // NTDDI_VERSION >= NTDDI_WIN10_RS4
+  // #endif // NTDDI_VERSION >= NTDDI_WIN10_RS4
 
-// #if NTDDI_VERSION >= NTDDI_WIN10_RS5
+  // #if NTDDI_VERSION >= NTDDI_WIN10_RS5
 
   // Interface IDWriteFontSet3
   // =========================
   //
   IDWriteFontSet3 = interface(IDWriteFontSet2)
-  ['{7C073EF2-A7F4-4045-8C32-8AB8AE640F90}']
+    ['{7C073EF2-A7F4-4045-8C32-8AB8AE640F90}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetFontSourceType(fontIndex: UINT32): DWRITE_FONT_SOURCE_TYPE; stdcall; overload;
 
     function GetFontSourceNameLength(listIndex: UINT32): UINT32; stdcall; overload;
 
-    function GetFontSourceName(listIndex: UINT32; stringBuffer: PWideChar; stringBufferSize: UINT32): HRESULT; stdcall; overload;
+    function GetFontSourceName(listIndex: UINT32;
+                               stringBuffer: PWideChar;
+                               stringBufferSize: UINT32): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontSet3 = IDWriteFontSet3;
 
 
 
 
-
-
-//#endif // NTDDI_VERSION >= NTDDI_WIN10_RS5
+  //#endif // NTDDI_VERSION >= NTDDI_WIN10_RS5
 
 
 
 
-{if NTDDI_VERSION >= NTDDI_WIN10_MN}
+  {if NTDDI_VERSION >= NTDDI_WIN10_MN}
 
 
   // Interface IDWriteFontFace6
   // ==========================
   //
   IDWriteFontFace6 = interface(IDWriteFontFace5)
-  ['{C4B1FE1B-6E84-47D5-B54C-A597981B06AD}']
+    ['{C4B1FE1B-6E84-47D5-B54C-A597981B06AD}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function GetFamilyNames(fontFamilyModel: DWRITE_FONT_FAMILY_MODEL; out names: IDWriteLocalizedStrings): HRESULT; stdcall; overload;
+    function GetFamilyNames(fontFamilyModel: DWRITE_FONT_FAMILY_MODEL;
+                            out names: IDWriteLocalizedStrings): HRESULT; stdcall; overload;
 
-    function GetFaceNames(fontFamilyModel: DWRITE_FONT_FAMILY_MODEL; out names: IDWriteLocalizedStrings): HRESULT; stdcall; overload;
+    function GetFaceNames(fontFamilyModel: DWRITE_FONT_FAMILY_MODEL;
+                          out names: IDWriteLocalizedStrings): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontFace6 = IDWriteFontFace6;
 
-{endif NTDDI_VERSION >= NTDDI_WIN10_MN}
+  {endif NTDDI_VERSION >= NTDDI_WIN10_MN}
 
 
-{if NTDDI_VERSION >= NTDDI_WIN10_NI}
+  {if NTDDI_VERSION >= NTDDI_WIN10_NI}
 
 
   // Interface IDWriteFontSet4
   //==========================
   //
   IDWriteFontSet4 = interface(IDWriteFontSet3)
-  ['{EEC175FC-BEA9-4C86-8B53-CCBDD7DF0C82}']
+    ['{EEC175FC-BEA9-4C86-8B53-CCBDD7DF0C82}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function ConvertWeightStretchStyleToFontAxisValues(inputAxisValues: PDWRITE_FONT_AXIS_VALUE; inputAxisCount: UINT32; fontWeight: DWRITE_FONT_WEIGHT; fontStretch: DWRITE_FONT_STRETCH; fontStyle: DWRITE_FONT_STYLE; fontSize: Single; outputAxisValues: PDWRITE_FONT_AXIS_VALUE): UINT32; stdcall; overload;
+    function ConvertWeightStretchStyleToFontAxisValues(inputAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                                                       inputAxisCount: UINT32;
+                                                       fontWeight: DWRITE_FONT_WEIGHT;
+                                                       fontStretch: DWRITE_FONT_STRETCH;
+                                                       fontStyle: DWRITE_FONT_STYLE;
+                                                       fontSize: Single;
+                                                       outputAxisValues: PDWRITE_FONT_AXIS_VALUE): UINT32; stdcall; overload;
 
-    function GetMatchingFonts(familyName: PWideChar; fontAxisValues: PDWRITE_FONT_AXIS_VALUE; fontAxisValueCount: UINT32; allowedSimulations: DWRITE_FONT_SIMULATIONS; out matchingFonts: IDWriteFontSet4): HRESULT; stdcall; overload;
+    function GetMatchingFonts(familyName: PWideChar;
+                              fontAxisValues: PDWRITE_FONT_AXIS_VALUE;
+                              fontAxisValueCount: UINT32;
+                              allowedSimulations: DWRITE_FONT_SIMULATIONS;
+                              out matchingFonts: IDWriteFontSet4): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontSet4 = IDWriteFontSet4;
 
 
 
 
-
-  // Creates an OpenType tag for a font axis.
-  function DwriteMakeFontAxisTag(a: AnsiChar;
-                                 b: AnsiChar;
-                                 c: AnsiChar;
-                                 d: AnsiChar): DWRITE_FONT_AXIS_TAG;
+// Creates an OpenType tag for a font axis.
+function DwriteMakeFontAxisTag(a: AnsiChar;
+                               b: AnsiChar;
+                               c: AnsiChar;
+                               d: AnsiChar): DWRITE_FONT_AXIS_TAG;
 
 {endif NTDDI_VERSION >= NTDDI_WIN10_NI}
 
@@ -1569,12 +1865,13 @@ type
   /// The bitmap is top-down with 32-bits per pixel and no padding between scan lines.
   /// </summary>
   PDWRITE_BITMAP_DATA_BGRA32 = ^DWRITE_BITMAP_DATA_BGRA32;
+
   DWRITE_BITMAP_DATA_BGRA32 = record
     width: UINT32;
     height: UINT32;
 
     pixels: PUINT32;
-   end;
+  end;
 
   /// <summary>
   /// Encapsulates a bitmap which can be used for rendering glyphs.
@@ -1584,12 +1881,13 @@ type
   //==========================
   //
   IDWriteBitmapRenderTarget2 = interface(IDWriteBitmapRenderTarget1)
-  ['{C553A742-FC01-44DA-A66E-B8B9ED6C3995}']
+    ['{C553A742-FC01-44DA-A66E-B8B9ED6C3995}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetBitmapData(bitmapData: PDWRITE_BITMAP_DATA_BGRA32): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteBitmapRenderTarget2 = IDWriteBitmapRenderTarget2;
 
 
@@ -1608,6 +1906,7 @@ type
 
   PDWRITE_PAINT_FEATURE_LEVEL = ^DWRITE_PAINT_FEATURE_LEVEL;
   DWRITE_PAINT_FEATURE_LEVEL = INT32;
+
 const
   /// <summary>
   /// No paint API support.
@@ -1630,8 +1929,8 @@ const
   /// a color glyph.
   /// </summary>
 type
-   PDWRITE_PAINT_ATTRIBUTES = ^DWRITE_PAINT_ATTRIBUTES;
-   DWRITE_PAINT_ATTRIBUTES = (
+  PDWRITE_PAINT_ATTRIBUTES = ^DWRITE_PAINT_ATTRIBUTES;
+  DWRITE_PAINT_ATTRIBUTES = (
 
     /// <summary>
     /// Specifies no attribute.
@@ -1651,18 +1950,19 @@ type
     /// clients that cache color glyphs.
     /// </summary>
     DWRITE_PAINT_ATTRIBUTES_USES_TEXT_COLOR = $02
-  );
+    );
 
 
-//#ifdef DEFINE_ENUM_FLAG_OPERATORS
-//DEFINE_ENUM_FLAG_OPERATORS(DWRITE_PAINT_ATTRIBUTES)
-//#endif
+  //#ifdef DEFINE_ENUM_FLAG_OPERATORS
+  //DEFINE_ENUM_FLAG_OPERATORS(DWRITE_PAINT_ATTRIBUTES)
+  //#endif
 
 type
   /// <summary>
   /// Represents a color in a color glyph.
   /// </summary>
   PDWRITE_PAINT_COLOR = ^DWRITE_PAINT_COLOR;
+
   DWRITE_PAINT_COLOR = record
 
     /// <summary>
@@ -1706,38 +2006,38 @@ type
 
     // Porter-Duff modes.
     DWRITE_COLOR_COMPOSITE_CLEAR,
-    DWRITE_COLOR_COMPOSITE_SRC,
-    DWRITE_COLOR_COMPOSITE_DEST,
-    DWRITE_COLOR_COMPOSITE_SRC_OVER,
-    DWRITE_COLOR_COMPOSITE_DEST_OVER,
-    DWRITE_COLOR_COMPOSITE_SRC_IN,
-    DWRITE_COLOR_COMPOSITE_DEST_IN,
-    DWRITE_COLOR_COMPOSITE_SRC_OUT,
-    DWRITE_COLOR_COMPOSITE_DEST_OUT,
-    DWRITE_COLOR_COMPOSITE_SRC_ATOP,
-    DWRITE_COLOR_COMPOSITE_DEST_ATOP,
-    DWRITE_COLOR_COMPOSITE_XOR,
-    DWRITE_COLOR_COMPOSITE_PLUS,
+                                 DWRITE_COLOR_COMPOSITE_SRC,
+                                 DWRITE_COLOR_COMPOSITE_DEST,
+                                 DWRITE_COLOR_COMPOSITE_SRC_OVER,
+                                 DWRITE_COLOR_COMPOSITE_DEST_OVER,
+                                 DWRITE_COLOR_COMPOSITE_SRC_IN,
+                                 DWRITE_COLOR_COMPOSITE_DEST_IN,
+                                 DWRITE_COLOR_COMPOSITE_SRC_OUT,
+                                 DWRITE_COLOR_COMPOSITE_DEST_OUT,
+                                 DWRITE_COLOR_COMPOSITE_SRC_ATOP,
+                                 DWRITE_COLOR_COMPOSITE_DEST_ATOP,
+                                 DWRITE_COLOR_COMPOSITE_XOR,
+                                 DWRITE_COLOR_COMPOSITE_PLUS,
 
     // Separable color blend modes.
     DWRITE_COLOR_COMPOSITE_SCREEN,
-    DWRITE_COLOR_COMPOSITE_OVERLAY,
-    DWRITE_COLOR_COMPOSITE_DARKEN,
-    DWRITE_COLOR_COMPOSITE_LIGHTEN,
-    DWRITE_COLOR_COMPOSITE_COLOR_DODGE,
-    DWRITE_COLOR_COMPOSITE_COLOR_BURN,
-    DWRITE_COLOR_COMPOSITE_HARD_LIGHT,
-    DWRITE_COLOR_COMPOSITE_SOFT_LIGHT,
-    DWRITE_COLOR_COMPOSITE_DIFFERENCE,
-    DWRITE_COLOR_COMPOSITE_EXCLUSION,
-    DWRITE_COLOR_COMPOSITE_MULTIPLY,
+                                 DWRITE_COLOR_COMPOSITE_OVERLAY,
+                                 DWRITE_COLOR_COMPOSITE_DARKEN,
+                                 DWRITE_COLOR_COMPOSITE_LIGHTEN,
+                                 DWRITE_COLOR_COMPOSITE_COLOR_DODGE,
+                                 DWRITE_COLOR_COMPOSITE_COLOR_BURN,
+                                 DWRITE_COLOR_COMPOSITE_HARD_LIGHT,
+                                 DWRITE_COLOR_COMPOSITE_SOFT_LIGHT,
+                                 DWRITE_COLOR_COMPOSITE_DIFFERENCE,
+                                 DWRITE_COLOR_COMPOSITE_EXCLUSION,
+                                 DWRITE_COLOR_COMPOSITE_MULTIPLY,
 
     // Non-separable color blend modes.
     DWRITE_COLOR_COMPOSITE_HSL_HUE,
-    DWRITE_COLOR_COMPOSITE_HSL_SATURATION,
-    DWRITE_COLOR_COMPOSITE_HSL_COLOR,
-    DWRITE_COLOR_COMPOSITE_HSL_LUMINOSITY
-  );
+                                 DWRITE_COLOR_COMPOSITE_HSL_SATURATION,
+                                 DWRITE_COLOR_COMPOSITE_HSL_COLOR,
+                                 DWRITE_COLOR_COMPOSITE_HSL_LUMINOSITY
+    );
 
   /// <summary>
   /// Identifies a type of paint element in a color glyph. A color glyph's visual representation
@@ -1752,20 +2052,20 @@ type
     // The following paint types may be returned for color feature levels greater than
     // or equal to DWRITE_PAINT_FEATURE_LEVEL_COLR_V0.
     DWRITE_PAINT_TYPE_NONE,
-    DWRITE_PAINT_TYPE_LAYERS,
-    DWRITE_PAINT_TYPE_SOLID_GLYPH,
+                       DWRITE_PAINT_TYPE_LAYERS,
+                       DWRITE_PAINT_TYPE_SOLID_GLYPH,
 
     // The following paint types may be returned for color feature levels greater than
     // or equal to DWRITE_PAINT_FEATURE_LEVEL_COLR_V1.
     DWRITE_PAINT_TYPE_SOLID,
-    DWRITE_PAINT_TYPE_LINEAR_GRADIENT,
-    DWRITE_PAINT_TYPE_RADIAL_GRADIENT,
-    DWRITE_PAINT_TYPE_SWEEP_GRADIENT,
-    DWRITE_PAINT_TYPE_GLYPH,
-    DWRITE_PAINT_TYPE_COLOR_GLYPH,
-    DWRITE_PAINT_TYPE_TRANSFORM,
-    DWRITE_PAINT_TYPE_COMPOSITE
-  );
+                       DWRITE_PAINT_TYPE_LINEAR_GRADIENT,
+                       DWRITE_PAINT_TYPE_RADIAL_GRADIENT,
+                       DWRITE_PAINT_TYPE_SWEEP_GRADIENT,
+                       DWRITE_PAINT_TYPE_GLYPH,
+                       DWRITE_PAINT_TYPE_COLOR_GLYPH,
+                       DWRITE_PAINT_TYPE_TRANSFORM,
+                       DWRITE_PAINT_TYPE_COMPOSITE
+    );
 
 
 type
@@ -2048,6 +2348,7 @@ type
   /// against different versions of this header file.
   /// </remarks>
   PDWRITE_PAINT_ELEMENT = ^DWRITE_PAINT_ELEMENT;
+
   DWRITE_PAINT_ELEMENT = record
     /// <summary>
     /// Specifies the paint type, and thus which member of the union is valid.
@@ -2062,6 +2363,7 @@ type
 
 
   PD2D1_GRADIENT_STOP = ^D2D1_GRADIENT_STOP;
+
   D2D1_GRADIENT_STOP = record
     position: Single;
     color: D2D_COLOR_F;
@@ -2072,64 +2374,103 @@ type
   /// represented as a visual tree of paint elements.
   /// </summary>
   IDWritePaintReader = interface(IUnknown)
-  ['{8128E912-3B97-42A5-AB6C-24AAD3A86E54}']
+    ['{8128E912-3B97-42A5-AB6C-24AAD3A86E54}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function SetCurrentGlyph(glyphIndex: UINT32; paintElement: PDWRITE_PAINT_ELEMENT; structSize: UINT32; clipBox: PD2D_RECT_F; glyphAttributes: PDWRITE_PAINT_ATTRIBUTES): HRESULT; stdcall; overload;
+    function SetCurrentGlyph(glyphIndex: UINT32;
+                             paintElement: PDWRITE_PAINT_ELEMENT;
+                             structSize: UINT32;
+                             clipBox: PD2D_RECT_F;
+                             glyphAttributes: PDWRITE_PAINT_ATTRIBUTES): HRESULT; stdcall; overload;
 
     function SetTextColor(textColor: PDWRITE_COLOR_F): HRESULT; stdcall; overload;
 
     function SetColorPaletteIndex(colorPaletteIndex: UINT32): HRESULT; stdcall; overload;
 
-    function SetCustomColorPalette(paletteEntries: PDWRITE_COLOR_F; paletteEntryCount: UINT32): HRESULT; stdcall; overload;
+    function SetCustomColorPalette(paletteEntries: PDWRITE_COLOR_F;
+                                   paletteEntryCount: UINT32): HRESULT; stdcall; overload;
 
-    function MoveToFirstChild(paintElement: PDWRITE_PAINT_ELEMENT; structSize: UINT32): HRESULT; stdcall; overload;
+    function MoveToFirstChild(paintElement: PDWRITE_PAINT_ELEMENT;
+                              structSize: UINT32): HRESULT; stdcall; overload;
 
-    function MoveToNextSibling(paintElement: PDWRITE_PAINT_ELEMENT; structSize: UINT32): HRESULT; stdcall; overload;
+    function MoveToNextSibling(paintElement: PDWRITE_PAINT_ELEMENT;
+                               structSize: UINT32): HRESULT; stdcall; overload;
 
     function MoveToParent(): HRESULT; stdcall; overload;
 
-    function GetGradientStops(firstGradientStopIndex: UINT32; gradientStopCount: UINT32; gradientStops: PD2D1_GRADIENT_STOP): HRESULT; stdcall; overload;
+    function GetGradientStops(firstGradientStopIndex: UINT32;
+                              gradientStopCount: UINT32;
+                              gradientStops: PD2D1_GRADIENT_STOP): HRESULT; stdcall; overload;
 
-    function GetGradientStopColors(firstGradientStopIndex: UINT32; gradientStopCount: UINT32; gradientStopColors: PDWRITE_PAINT_COLOR): HRESULT; stdcall; overload;
+    function GetGradientStopColors(firstGradientStopIndex: UINT32;
+                                   gradientStopCount: UINT32;
+                                   gradientStopColors: PDWRITE_PAINT_COLOR): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWritePaintReader = IDWritePaintReader;
 
 
   IDWriteFontFace7 = interface(IDWriteFontFace6)
-  ['{3945B85B-BC95-40F7-B72C-8B73BFC7E13B}']
+    ['{3945B85B-BC95-40F7-B72C-8B73BFC7E13B}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetPaintFeatureLevel(glyphImageFormat: DWRITE_GLYPH_IMAGE_FORMATS): DWRITE_PAINT_FEATURE_LEVEL; stdcall; overload;
 
-    function CreatePaintReader(glyphImageFormat: DWRITE_GLYPH_IMAGE_FORMATS; paintFeatureLevel: DWRITE_PAINT_FEATURE_LEVEL; out paintReader: IDWritePaintReader): HRESULT; stdcall; overload;
+    function CreatePaintReader(glyphImageFormat: DWRITE_GLYPH_IMAGE_FORMATS;
+                               paintFeatureLevel: DWRITE_PAINT_FEATURE_LEVEL;
+                               out paintReader: IDWritePaintReader): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFontFace7 = IDWriteFontFace7;
 
 
   IDWriteFactory8 = interface(IDWriteFactory7)
-  ['{EE0A7FB5-DEF4-4C23-A454-C9C7DC878398}']
+    ['{EE0A7FB5-DEF4-4C23-A454-C9C7DC878398}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
-    function TranslateColorGlyphRun(baselineOrigin: D2D1_POINT_2F; glyphRun: PDWRITE_GLYPH_RUN; glyphRunDescription: PDWRITE_GLYPH_RUN_DESCRIPTION; desiredGlyphImageFormats: DWRITE_GLYPH_IMAGE_FORMATS; paintFeatureLevel: DWRITE_PAINT_FEATURE_LEVEL; measuringMode: DWRITE_MEASURING_MODE; worldAndDpiTransform: PDWRITE_MATRIX; colorPaletteIndex: UINT32; out colorEnumerator: IDWriteColorGlyphRunEnumerator1): HRESULT; stdcall; overload;
+    function TranslateColorGlyphRun(baselineOrigin: D2D1_POINT_2F;
+                                    glyphRun: PDWRITE_GLYPH_RUN;
+                                    glyphRunDescription: PDWRITE_GLYPH_RUN_DESCRIPTION;
+                                    desiredGlyphImageFormats: DWRITE_GLYPH_IMAGE_FORMATS;
+                                    paintFeatureLevel: DWRITE_PAINT_FEATURE_LEVEL;
+                                    measuringMode: DWRITE_MEASURING_MODE;
+                                    worldAndDpiTransform: PDWRITE_MATRIX;
+                                    colorPaletteIndex: UINT32;
+                                    out colorEnumerator: IDWriteColorGlyphRunEnumerator1): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteFactory8 = IDWriteFactory8;
 
 
   IDWriteBitmapRenderTarget3 = interface(IDWriteBitmapRenderTarget2)
-  ['{AEEC37DB-C337-40F1-8E2A-9A41B167B238}']
+    ['{AEEC37DB-C337-40F1-8E2A-9A41B167B238}']
 
     // Native slot order verified against Microsoft Windows projection; inline C++ helpers are not slots.
     function GetPaintFeatureLevel(): DWRITE_PAINT_FEATURE_LEVEL; stdcall; overload;
 
-    function DrawPaintGlyphRun(baselineOriginX: Single; baselineOriginY: Single; measuringMode: DWRITE_MEASURING_MODE; glyphRun: PDWRITE_GLYPH_RUN; glyphImageFormat: DWRITE_GLYPH_IMAGE_FORMATS; textColor: COLORREF; colorPaletteIndex: UINT32; blackBoxRect: PRECT): HRESULT; stdcall; overload;
+    function DrawPaintGlyphRun(baselineOriginX: Single;
+                               baselineOriginY: Single;
+                               measuringMode: DWRITE_MEASURING_MODE;
+                               glyphRun: PDWRITE_GLYPH_RUN;
+                               glyphImageFormat: DWRITE_GLYPH_IMAGE_FORMATS;
+                               textColor: COLORREF;
+                               colorPaletteIndex: UINT32;
+                               blackBoxRect: PRECT): HRESULT; stdcall; overload;
 
-    function DrawGlyphRunWithColorSupport(baselineOriginX: Single; baselineOriginY: Single; measuringMode: DWRITE_MEASURING_MODE; glyphRun: PDWRITE_GLYPH_RUN; renderingParams: IDWriteRenderingParams; textColor: COLORREF; colorPaletteIndex: UINT32; blackBoxRect: PRECT): HRESULT; stdcall; overload;
+    function DrawGlyphRunWithColorSupport(baselineOriginX: Single;
+                                          baselineOriginY: Single;
+                                          measuringMode: DWRITE_MEASURING_MODE;
+                                          glyphRun: PDWRITE_GLYPH_RUN;
+                                          renderingParams: IDWriteRenderingParams;
+                                          textColor: COLORREF;
+                                          colorPaletteIndex: UINT32;
+                                          blackBoxRect: PRECT): HRESULT; stdcall; overload;
 
   end;
+
   IID_IDWriteBitmapRenderTarget3 = IDWriteBitmapRenderTarget3;
 
 
@@ -2189,18 +2530,19 @@ function DwriteMakeFontAxisTag(a: AnsiChar;
                                b: AnsiChar;
                                c: AnsiChar;
                                d: AnsiChar): DWRITE_FONT_AXIS_TAG;
+
 begin
-  Result:= UINT32(Ord(a)) or
-           (UINT32(Ord(b)) shl 8) or
-           (UINT32(Ord(c)) shl 16) or
-           (UINT32(Ord(d)) shl 24);
+
+  Result := UINT32(Ord(a)) or
+    (UINT32(Ord(b)) shl 8) or
+    (UINT32(Ord(c)) shl 16) or
+    (UINT32(Ord(d)) shl 24);
 end;
 
 
 
 
-
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 
 ///
@@ -2209,4 +2551,3 @@ end;
 
 
 end.
-

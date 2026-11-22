@@ -80,7 +80,7 @@ uses
   WinApi.ComBaseApi,
   WinApi.WinShellApi.ShlObj_Core,
   WinApi.WinShellApi.ShTypes,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.ActiveX.ObjBase,
@@ -125,7 +125,7 @@ const
   MsgUpdate = WM_User + 1;
 
   {$IFDEF MSWINDOWS}
-    MAXPATH = MAX_PATH - 12; { TFile.FCMinFileNameLen = 12. There is a problem in IOUtils and we cannot user Max_Path. }
+  MAXPATH = MAX_PATH - 12; { TFile.FCMinFileNameLen = 12. There is a problem in IOUtils and we cannot user Max_Path. }
   {$ELSE}
     MAXPATH = MAX_PATH;
   {$ENDIF}
@@ -224,30 +224,40 @@ type
     procedure lbxFileBoxClickCheck(Sender: TObject);
     procedure lbxFileBoxDblClick(Sender: TObject);
     procedure lbxRenderingOrderClick(Sender: TObject);
-    procedure lbxRenderingOrderDragDrop(Sender, Source: TObject; X, Y: Integer);
+    procedure lbxRenderingOrderDragDrop(Sender,
+                                        Source: TObject;
+                                        X,
+                                        Y: Integer);
     procedure lbxRenderingOrderStartDrag(Sender: TObject;
-      var DragObject: TDragObject);
-    procedure lbxRenderingOrderDragOver(Sender, Source: TObject; X, Y: Integer;
-      State: TDragState; var Accept: Boolean);
+                                         var DragObject: TDragObject);
+    procedure lbxRenderingOrderDragOver(Sender,
+                                        Source: TObject;
+                                        X,
+                                        Y: Integer;
+                                        State: TDragState;
+                                        var Accept: Boolean);
     procedure DriveComboBox1Click(Sender: TObject);
     procedure chbxAddAudioClick(Sender: TObject);
     procedure cbxSetPresentationDurationClick(Sender: TObject);
-    procedure PageControl1Changing(Sender: TObject; var AllowChange: Boolean);
+    procedure PageControl1Changing(Sender: TObject;
+                                   var AllowChange: Boolean);
     procedure cbxResolutionChange(Sender: TObject);
     procedure cbxAudioCodecChange(Sender: TObject);
     procedure cbxPickWinFolderChange(Sender: TObject);
     procedure butRunPreviewClick(Sender: TObject);
     procedure edLocationClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure FormDestroy(Sender: TObject);
     procedure btnAdvancedOptionsClick(Sender: TObject);
 
   private
     FRenderBitmap: TBitmap;
     FRenderWic: TWICImage;
-    FRenderCrop,FRenderZoom: Boolean;
+    FRenderCrop, FRenderZoom: Boolean;
     FRenderEffectDuration: Integer;
     procedure RenderBackground();
+
   private
     ImageRenderer: TImageRenderer;
     fFileList: TStringlist;
@@ -341,12 +351,15 @@ uses
   dlgAudioFormats,
   frmAdvanced;
 
+
 function TfrmMain.PIDLToPath(IdList: WinApi.WinShellApi.ShTypes.PIDLIST_ABSOLUTE): string;
+
 begin
+
   SetLength(Result,
             MAX_PATH);
   if WinApi.WinShellApi.ShlObj_Core.SHGetPathFromIDListW(WinApi.WinShellApi.ShTypes.PCIDLIST_ABSOLUTE(IdList),
-                         PChar(Result)) then
+    PChar(Result)) then
     SetLength(Result,
               StrLen(PChar(Result)))
   else
@@ -355,8 +368,11 @@ end;
 
 
 function TfrmMain.PidlFree(var IdList: WinApi.WinShellApi.ShTypes.PIDLIST_ABSOLUTE): Boolean;
+
 begin
-  if IdList <> nil then CoTaskMemFree(IdList);
+
+  if (IdList <> nil) then
+    CoTaskMemFree(IdList);
   IdList := nil;
   Result := True;
 end;
@@ -367,9 +383,10 @@ var
   FolderPidl: WinApi.WinShellApi.ShTypes.PIDLIST_ABSOLUTE;
 
 begin
+
   if Succeeded(WinApi.WinShellApi.ShlObj_Core.SHGetSpecialFolderLocation(0,
-                                          $0000,
-                                          FolderPidl)) then
+    $0000,
+    FolderPidl)) then
     begin
       Result := PIDLToPath(FolderPidl);
       PidlFree(FolderPidl);
@@ -380,7 +397,9 @@ end;
 
 
 function TfrmMain.GetRandomZoom(): TZoom;
+
 begin
+
   Result.xCenter := 0.5 + (Random - 0.5) * 0.7;
   Result.yCenter := 0.5 + (Random - 0.5) * 0.7;
 
@@ -419,6 +438,7 @@ var
   DoInOut: Boolean;
 
 begin
+
   aWicImage.LoadFromFile(aFiles.Strings[0]);
 
   WicToBmp(aWicImage,
@@ -428,7 +448,7 @@ begin
 
   ImageRenderer.AddStillImage(aBitmapImage,
                               iPicturePresentationTime, // 4000 = default
-                              bCrop);
+    bCrop);
 
   PostMessage(Handle,
               MsgUpdate,
@@ -452,7 +472,7 @@ begin
       if not DoInOut then
         ImageRenderer.CrossFadeTo(aBitmapImage,
                                   FRenderEffectDuration, // 2000 = default
-                                  bCrop)
+          bCrop)
 
       else
         begin
@@ -463,12 +483,12 @@ begin
                                               zZooms,
                                               zZoom,
                                               FRenderEffectDuration,  // 2000
-                                              bCrop);
+            bCrop);
         end;
 
       ImageRenderer.AddStillImage(aBitmapImage,
                                   iPicturePresentationTime, // 4000 = default
-                                  bCrop);
+        bCrop);
 
       PostMessage(Handle,
                   MsgUpdate,
@@ -485,27 +505,31 @@ end;
 
 
 procedure TfrmMain.PageControl1Changing(Sender: TObject;
-  var AllowChange: Boolean);
+                                        var AllowChange: Boolean);
+
 begin
+
   AllowChange := False;
   // Make sure we selected all items.
   if (cbxFileFormat.ItemIndex < 0) or
-     (cbxVideoCodec.ItemIndex < 0) or
-     (cbxResolution.ItemIndex < 0) or
-     (cbxFrameRates.ItemIndex < 0) then
+    (cbxVideoCodec.ItemIndex < 0) or
+    (cbxResolution.ItemIndex < 0) or
+    (cbxFrameRates.ItemIndex < 0) then
     begin
       ShowMessage('You did not complete the output settings.' + #13 + 'Please check.');
       Exit;
     end;
-//  Moved to OnCreate, so the picked folder isn't lost each time you change back to tabsheet1
-//  cbxPickWinFolder.ItemIndex := 0;
-//  cbxPickWinFolderChange(nil);
+  //  Moved to OnCreate, so the picked folder isn't lost each time you change back to tabsheet1
+  //  cbxPickWinFolder.ItemIndex := 0;
+  //  cbxPickWinFolderChange(nil);
   AllowChange := True;
 end;
 
 
 procedure TfrmMain.ShowVideoClick(Sender: TObject);
+
 begin
+
   if not bWriting then
     if FileExists(OutputFileName) then
       ShellExecute(Handle,
@@ -522,36 +546,48 @@ var
   //i: Integer;
   //slImageFiles: TStringlist;
   Latency: DWord;
+
 begin
-    if (fImageFiles.Count = 0) then
-      begin
-        ShowMessage('No image files selected!');
-        Result := 0;
-        Exit;
-      end;
+
+  if (fImageFiles.Count = 0) then
+    begin
+      ShowMessage('No image files selected!');
+      Result := 0;
+      Exit;
+    end;
 
   // The video decoder/encoder and the audio codec produces a latency depending on the in and output format.
   // So, we use an average latency of about 0.030 ms pultiplied by the number of images.
   Latency := spedCompensation.Value * fImageFiles.Count;
   //c: image count  i: image time  e: effect time a: audio time (in timestamp units)
   //c*i + (c-1)*e = a   solve for i:  i = (a - (c-1)*e)/c (not sure about Latency)
-  Result := Trunc((llAudioDuration - (fImageFiles.Count - 1)*spedEffectDuration.Value*10000 - Latency)/fImageFiles.Count/10000);
+  Result := Trunc((llAudioDuration - (fImageFiles.Count - 1) * spedEffectDuration.Value * 10000 - Latency) / fImageFiles.Count / 10000);
   //Result := Trunc((llAudioDuration / fImageFiles.Count) / 10000) - Latency;
 
 end;
 
 
 procedure TfrmMain.btnAdvancedOptionsClick(Sender: TObject);
+
 begin
+
   FfrmAdvanced.ShowModal;
 end;
+
 
 procedure TfrmMain.RenderBackground();
 var
   Done: Boolean;
+
 begin
-  MakeSlideshow(fImageFiles,FRenderWic,FRenderBitmap,Done,True);
+
+  MakeSlideshow(fImageFiles,
+                FRenderWic,
+                FRenderBitmap,
+                Done,
+                True);
 end;
+
 
 procedure TfrmMain.butRenderSlideshowClick(Sender: TObject);
 var
@@ -563,6 +599,7 @@ var
   bDone: Boolean;
   i: integer;
   VideoInfo: TVideoInfo;
+
 begin
 
   if bWriting then
@@ -588,18 +625,18 @@ begin
     for i := 0 to fSelectedFilesList.Count - 1 do
       fImageFiles.Add(fSelectedFilesList.Strings[i]);
     // Set presentation of the video to duration of the audio.
-      if cbxSetPresentationDuration.Checked then
-        begin
-          iPicturePresentationTime := CalculatePicturePresentationTime();
-          if MessageDlg('Image time calculated: '+IntToStr(iPicturePresentationTime) + ' ms' + #13 + 'Continue?',
-                        mtConfirmation,
-                        [mbYes, mbNo],
-                        0,
-                        mbYes) = mrNo  then
-            exit;
-        end
-      else  // Default
-        iPicturePresentationTime := spedImageDuration.Value; // Default = 4 sec.
+    if cbxSetPresentationDuration.Checked then
+      begin
+        iPicturePresentationTime := CalculatePicturePresentationTime();
+        if (MessageDlg('Image time calculated: ' + IntToStr(iPicturePresentationTime) + ' ms' + #13 + 'Continue?',
+          mtConfirmation,
+          [mbYes, mbNo],
+          0,
+          mbYes) = mrNo) then
+          exit;
+      end
+    else  // Default
+      iPicturePresentationTime := spedImageDuration.Value; // Default = 4 sec.
 
     // Create the renderer.
     ImageRenderer := TImageRenderer.Create();
@@ -626,8 +663,9 @@ begin
       if FAILED(hr) then
         begin
           ShowMessage(Format('The format of the input file or the settings of bitrate or sample rate are not supported.' +
-                             'HResult: %d' +
-                             'Try again with different settings.', [hr]));
+            'HResult: %d' +
+            'Try again with different settings.',
+                             [hr]));
           ImageRenderer.Finalize();
           Exit;
         end;
@@ -648,7 +686,7 @@ begin
                 Sleep(1);
               end;
             Task.WaitFor();
-            if Task.FatalException <> nil then
+            if (Task.FatalException <> nil) then
               raise Exception.Create(Exception(Task.FatalException).Message);
           finally
             Task.Free;
@@ -679,12 +717,15 @@ begin
 
       Stats.Clear;
       Stats.Lines.Add('Slideshow time: ' +
-        IntToStr(fImageFiles.Count * iPicturePresentationTime + (fImageFiles.Count-1)*spedEffectDuration.Value) + ' ms');
-      VideoInfo:=GetVideoInfo(OutputFileName);
+        IntToStr(fImageFiles.Count * iPicturePresentationTime + (fImageFiles.Count - 1) * spedEffectDuration.Value) + ' ms');
+      VideoInfo := GetVideoInfo(OutputFileName);
       Stats.Lines.Add('Output video duration: ' +
         IntToStr(VideoInfo.Duration div 10000) + ' ms');
       Stats.Lines.Add('File size: ' + FloatToStrF(round(100 * GetFileSize(OutputFileName) /
-        1024 / 1024) / 100, ffFixed, 5, 2) + ' MB');
+        1024 / 1024) / 100,
+                                                  ffFixed,
+                                                  5,
+                                                  2) + ' MB');
 
     finally
       WicImage.Free;
@@ -700,7 +741,9 @@ end;
 
 // new
 procedure TfrmMain.chbxAddAudioClick(Sender: TObject);
+
 begin
+
   pnlInclAudio.Enabled := chbxAddAudio.Checked;
 end;
 
@@ -719,6 +762,7 @@ const
   FOLDERID_Favorites: TGUID = '{1777F761-68AD-4D8A-87BD-30B759FA33DD}';
 
 begin
+
   path := nil;
   case cbxPickWinFolder.ItemIndex of
     0: folderID := FOLDERID_Pictures;         // %USERPROFILE%\My Documents\My Pictures
@@ -726,8 +770,8 @@ begin
     2: folderID := FOLDERID_Desktop;          // %USERPROFILE%\Desktop
     3: folderID := FOLDERID_Downloads;        // %USERPROFILE%\Downloads
     4: folderID := FOLDERID_Favorites;        // %USERPROFILE%\Favorites
-  else
-    Exit;
+    else
+      Exit;
   end;
 
   hr := SHGetKnownFolderPath(folderID,
@@ -745,19 +789,24 @@ begin
       dlbDir.Directory := mypicturespath;
       dlbDir.Refresh;
     end;
-  if path <> nil then CoTaskMemFree(path);
+  if (path <> nil) then
+    CoTaskMemFree(path);
   path := nil;
 end;
 
 
 procedure TfrmMain.cbxSetPresentationDurationClick(Sender: TObject);
+
 begin
+
   spedImageDuration.Enabled := not cbxSetPresentationDuration.Checked;
 end;
 
 
 procedure TfrmMain.cbxVideoCodecChange(Sender: TObject);
+
 begin
+
   lblCodecInfo.Caption := CodecInfos[fCodecList[cbxVideoCodec.ItemIndex]];
   // We don't use a label here, so we can copy the link to clipboard.
   edLocation.Text := Format('The output will be saved to: %s',
@@ -772,6 +821,7 @@ var
   j: Integer;
 
 begin
+
   if (lbxRenderingOrder.Count = 0) then
     begin
       ShowMessage('You have to select images first!');
@@ -786,7 +836,7 @@ begin
       for j := 0 to fFileList.Count - 1 do
         begin
           if EndsText(lbxRenderingOrder.Items[i],
-                      fFileList.Strings[j]) then
+            fFileList.Strings[j]) then
             begin
               // Load the image.
               imgPreview.Picture.LoadFromFile(fFileList.Strings[j]);
@@ -816,6 +866,7 @@ var
 
 label
   done;
+
 begin
 
   iSelectedAudioFormat := 0;
@@ -846,7 +897,7 @@ begin
     begin
       // User did not select a valid audio format.
       iSelectedAudioFormat := 0;
-   end;
+    end;
 
   if (iSelectedAudioFormat > 0) then
     begin
@@ -857,38 +908,38 @@ begin
       mmoAudioCodecDescr.SelLength := 1;
     end;
 
-done:
-  if (iSelectedAudioFormat = 0) then
-    begin
-      ShowMessage('You did not select a valid audio format!');
-      cbxAudioCodec.ItemIndex := 0;
-    end
-  else
-    begin
-      // Select an audiofile.
-      if AudioDialog then
-        begin
-          fAudioFileName := GetAudioFile();
-          if (fAudioFileName = 'No file selected.') then
-            begin
+  done:
+    if (iSelectedAudioFormat = 0) then
+      begin
+        ShowMessage('You did not select a valid audio format!');
+        cbxAudioCodec.ItemIndex := 0;
+      end
+    else
+      begin
+        // Select an audiofile.
+        if AudioDialog then
+          begin
+            fAudioFileName := GetAudioFile();
+            if (fAudioFileName = 'No file selected.') then
+              begin
+                lblAudioSource.Caption := fAudioFileName;
+                Exit;
+              end
+            else
               lblAudioSource.Caption := fAudioFileName;
-              Exit;
-            end
-          else
-            lblAudioSource.Caption := fAudioFileName;
-          // Get the length of the audiofile.
-          if FAILED(GetFileDuration(StrToPWideChar(fAudioFileName),
-                                    llAudioDuration)) then
-            begin
-              ShowMessage('Could not retrieve the duration of the audio file.');
-              llAudioDuration := 0;
-              iPicturePresentationTime := spedImageDuration.Value; // default = 4 sec.
-              cbxSetPresentationDuration.Checked := False;
-            end;
-        end
-      else
-        Exit;
-    end;
+            // Get the length of the audiofile.
+            if FAILED(GetFileDuration(StrToPWideChar(fAudioFileName),
+            llAudioDuration)) then
+              begin
+                ShowMessage('Could not retrieve the duration of the audio file.');
+                llAudioDuration := 0;
+                iPicturePresentationTime := spedImageDuration.Value; // default = 4 sec.
+                cbxSetPresentationDuration.Checked := False;
+              end;
+          end
+        else
+          Exit;
+      end;
 end;
 
 
@@ -897,6 +948,7 @@ var
   i: Integer;
 
 begin
+
   fCodecList := GetSupportedCodecs(cbxFileFormat.Items[cbxFileFormat.ItemIndex]);
   cbxVideoCodec.Clear();
 
@@ -911,25 +963,33 @@ end;
 
 // new
 procedure TfrmMain.cbxFrameRatesChange(Sender: TObject);
+
 begin
+
   SetFrameRate();
 end;
 
 
 procedure TfrmMain.cbxPickWinFolderChange(Sender: TObject);
+
 begin
+
   OpenFolder(cbxPickWinFolder.ItemIndex);
 end;
 
 
 procedure TfrmMain.cbxResolutionChange(Sender: TObject);
+
 begin
+
   SetResolution();
 end;
 
 
 procedure TfrmMain.CodecsChange(Sender: TObject);
+
 begin
+
   lblCodecInfo.Caption := CodecInfos[fCodecList[cbxVideoCodec.ItemIndex]];
 end;
 
@@ -942,16 +1002,17 @@ var
   MaskPos,
   SepPos: Integer;
   i: Integer;
-{$IF 1=1}
-  strings: TArray<string>;
+  {$IF 1=1}
+  strings: TArray < string > ;
   ClassicStrings: TStringDynArray;
-{$ENDIF}
+  {$ENDIF}
 
 
 const
   mask = '*.bmp;*.jpg;*.png;*.gif';
 
 begin
+
   fFileList.Clear;
   myPicturesPath := dlbDir.Directory;
   Path := IncludeTrailingBackSlash(myPicturesPath);
@@ -974,30 +1035,32 @@ begin
                           MaskLen);
 
 
-    {$IF 0=1}  {Delphi 10.4 Sydney}
+      {$IF 0=1}
+      {Delphi 10.4 Sydney}
       fFileList.AddStrings(TDirectory.GetFiles(Path,
                                                SearchStr,
                                                TSearchOption.soTopDirectoryOnly));
-    {$ELSE}
-      ClassicStrings := TDirectory.GetFiles(Path,
-                                            SearchStr,
-                                            TSearchOption.soTopDirectoryOnly);
+      {$ELSE}
+        ClassicStrings := TDirectory.GetFiles(Path,
+                                              SearchStr,
+                                              TSearchOption.soTopDirectoryOnly);
 
-      if (Length(ClassicStrings) > 0) then
-        begin
-          SetLength(Strings,
-                    Length(ClassicStrings));
-          // Copy all fields to the new array
-          for i := 0 to Length(ClassicStrings) -1 do
-            Strings[i] := ClassicStrings[i];
+        if (Length(ClassicStrings) > 0) then
+            begin
+              SetLength(Strings,
+                        Length(ClassicStrings));
+              // Copy all fields to the new array
+              for i := 0 to Length(ClassicStrings) -1 do
+                Strings[i] := ClassicStrings[i];
 
-          for i := 0 to Length(Strings)-1 do fFileList.Add(Strings[i]);
-        end;
+              for i := 0 to Length(Strings)-1 do
+      fFileList.Add(Strings[i]);
+            end;
 
-      SetLength(ClassicStrings,
-                0);
-      ClassicStrings := nil;
-    {$ENDIF}
+        SetLength(ClassicStrings,
+                  0);
+        ClassicStrings := nil;
+      {$ENDIF}
 
       if (SepPos >= 0) then
         begin
@@ -1022,7 +1085,9 @@ end;
 
 
 procedure TfrmMain.DoUpdate(var msg: TLMessage);
+
 begin
+
   stbStatus.SimpleText := Format('Image %d',
                                  [(msg.WParam + 1)]);
   stbStatus.Repaint;
@@ -1030,13 +1095,16 @@ end;
 
 
 procedure TfrmMain.DriveComboBox1Click(Sender: TObject);
+
 begin
 
 end;
 
 
 procedure TfrmMain.edLocationClick(Sender: TObject);
+
 begin
+
   //
   if not bWriting then
     if FileExists(OutputFileName) then
@@ -1055,6 +1123,7 @@ var
   i: integer;
 
 begin
+
   fCodecList := GetSupportedCodecs(cbxFileFormat.Items[cbxFileFormat.ItemIndex]);
   cbxVideoCodec.Clear;
 
@@ -1066,13 +1135,19 @@ begin
 end;
 
 
-procedure TfrmMain.FormCloseQuery(Sender: TObject;var CanClose: Boolean);
+procedure TfrmMain.FormCloseQuery(Sender: TObject;
+                                  var CanClose: Boolean);
+
 begin
+
   CanClose := not bWriting;
 end;
 
+
 procedure TfrmMain.FormDestroy(Sender: TObject);
+
 begin
+
   if Assigned(fFileList) then
     FreeAndNil(fFileList);
 
@@ -1094,6 +1169,7 @@ end;
 procedure TfrmMain.FormCreate(Sender: TObject);
 var
   i: integer;
+
 begin
 
   fFileList := TStringlist.Create;
@@ -1121,7 +1197,9 @@ end;
 
 
 function TfrmMain.GetAdvancedOptions: TEncoderAdvancedOptions;
+
 begin
+
   Result.DisableHardwareEncoding := FfrmAdvanced.cbxDisableHardwareTransforms.Checked;
   Result.DisableThrottling := FfrmAdvanced.cbxDisableThrottling.Checked;
   Result.DisableQualityBasedEncoding := FfrmAdvanced.cbxDisableQualityBasedEncoding.Checked;
@@ -1129,8 +1207,11 @@ begin
   Result.ResamplingThreadsLimit := FfrmAdvanced.spedThreadLimit.Value;
 end;
 
+
 function TfrmMain.GetAudioDialog: Boolean;
+
 begin
+
   Result := chbxAddAudio.Checked;
 end;
 
@@ -1140,15 +1221,17 @@ var
   i: Integer;
 
 begin
+
   cbxResolution.Clear();
   // Get all resolutions.
   // This will be done automaticly when creating VideoStandardsCheat See private method GetResolutions();
 
-  for i := 0 to Length(fVideoStandardsCheat.Resolutions) -1 do
-    cbxResolution.Items.Append(Format('%s (%d x %d) Aspect Ratio: %s', [fVideoStandardsCheat.Resolutions[i].Resolution,
-                                                                        fVideoStandardsCheat.Resolutions[i].iWidth,
-                                                                        fVideoStandardsCheat.Resolutions[i].iHeight,
-                                                                        fVideoStandardsCheat.Resolutions[i].StrAspectRatio]));
+  for i := 0 to Length(fVideoStandardsCheat.Resolutions) - 1 do
+    cbxResolution.Items.Append(Format('%s (%d x %d) Aspect Ratio: %s',
+                                      [fVideoStandardsCheat.Resolutions[i].Resolution,
+      fVideoStandardsCheat.Resolutions[i].iWidth,
+      fVideoStandardsCheat.Resolutions[i].iHeight,
+      fVideoStandardsCheat.Resolutions[i].StrAspectRatio]));
   // Default resolution and aspect ratio.
   cbxResolution.ItemIndex := 120; // 720p, 16:9
   SetResolution();
@@ -1156,7 +1239,9 @@ end;
 
 
 procedure TfrmMain.SetResolution();
+
 begin
+
   // Store current resolution.
   fVideoStandardsCheat.SetResolutionByIndex(cbxResolution.ItemIndex);
   iVideoWidth := fVideoStandardsCheat.SelectedResolution.iWidth;
@@ -1168,10 +1253,12 @@ end;
 procedure TfrmMain.GetFramerates();
 var
   i: Integer;
+
 begin
+
   cbxFrameRates.Clear();
 
-  for i := 0 to Length(fVideoStandardsCheat.FrameRates) -1 do
+  for i := 0 to Length(fVideoStandardsCheat.FrameRates) - 1 do
     cbxFrameRates.Items.Append(fVideoStandardsCheat.FrameRates[i].sFrameRate);
   cbxFrameRates.ItemIndex := 5; // 18 fps
   cbxFrameRatesChange(nil);
@@ -1179,7 +1266,9 @@ end;
 
 
 procedure TfrmMain.SetFrameRate();
+
 begin
+
   fVideoStandardsCheat.SetFrameRateByIndex(cbxFrameRates.ItemIndex);
   cbxFrameRates.Hint := fVideoStandardsCheat.SelectedFrameRate.sHint;
   dSelectedVideoFrameRate := fVideoStandardsCheat.SelectedFrameRate.FrameRate;
@@ -1187,7 +1276,9 @@ end;
 
 
 function TfrmMain.GetAudioFile(): string;
+
 begin
+
   Result := 'No audiofile selected.';
   fodSelectAudio.FileName := '';
   if not fodSelectAudio.Execute() then
@@ -1198,32 +1289,42 @@ end;
 
 
 function TfrmMain.GetAudioStart: int64;
+
 begin
+
   Result := AudioStartTime.Value;
 end;
 
 
 function TfrmMain.GetDoCrop: boolean;
+
 begin
+
   Result := CropLandscape.Checked;
 end;
 
 
 function TfrmMain.GetDoZoomInOut: boolean;
+
 begin
+
   Result := ZoomInOut.Checked;
 end;
 
 
 function TfrmMain.GetOutputFileName: string;
+
 begin
+
   Result := fOutputFile + '_' + CodecShortNames[fCodecList[cbxVideoCodec.ItemIndex]] +
     cbxFileFormat.Text;
 end;
 
 
 function TfrmMain.GetQuality: integer;
+
 begin
+
   Result := spedSetQuality.Value;
 end;
 
@@ -1231,7 +1332,9 @@ end;
 
 
 procedure TfrmMain.lbxFileBoxClick(Sender: TObject);
+
 begin
+
   // Show a preview of the selected imagefile.
   imgPreview.Picture.LoadFromFile(fFileList.Strings[lbxFileBox.ItemIndex]);
 end;
@@ -1244,13 +1347,14 @@ var
   selTxt: string;
 
 begin
+
   n := 0;
   // Alternative for Selcount.
-  for i := 0 to lbxFileBox.Items.Count -1 do
+  for i := 0 to lbxFileBox.Items.Count - 1 do
     if lbxFileBox.Checked[i] then
       Inc(n);
 
-  if (n = 1)  then
+  if (n = 1) then
     selTxt := 'image'
   else
     selTxt := 'images';
@@ -1280,7 +1384,9 @@ end;
 
 
 procedure TfrmMain.lbxFileBoxDblClick(Sender: TObject);
+
 begin
+
   // Add a duplicate
   if lbxFileBox.Checked[lbxFileBox.ItemIndex] then
     begin
@@ -1295,11 +1401,12 @@ var
   i: Integer;
 
 begin
+
   // Show a preview of the selected imagefile.
   for i := 0 to fFileList.Count - 1 do
     begin
       if EndsText(lbxRenderingOrder.Items[lbxRenderingOrder.ItemIndex],
-                  fFileList.Strings[i]) then
+        fFileList.Strings[i]) then
         begin
           imgPreview.Picture.LoadFromFile(fFileList.Strings[i]);
           Break;
@@ -1308,8 +1415,10 @@ begin
 end;
 
 
-procedure TfrmMain.lbxRenderingOrderDragDrop(Sender, Source: TObject; X,
-   Y: Integer);
+procedure TfrmMain.lbxRenderingOrderDragDrop(Sender,
+                                             Source: TObject;
+                                             X,
+                                             Y: Integer);
 
 var
   TargetPos: Integer;
@@ -1318,41 +1427,50 @@ var
 
 begin
 
-  TargetPos := lbxRenderingOrder.itemAtPos(Point(X, Y),
+  TargetPos := lbxRenderingOrder.itemAtPos(Point(X,
+                                                 Y),
                                            False);
 
- if (TargetPos >= 0) and (TargetPos < lbxRenderingOrder.Count) then
-   begin
-     lbxRenderingOrder.Items.Move(iSourcePos,
-                                  TargetPos);
-     lbxRenderingOrder.ItemIndex := TargetPos;
+  if (TargetPos >= 0) and (TargetPos < lbxRenderingOrder.Count) then
+    begin
+      lbxRenderingOrder.Items.Move(iSourcePos,
+                                   TargetPos);
+      lbxRenderingOrder.ItemIndex := TargetPos;
 
-     // Clear and update the fSelectedFilesList.
-     fSelectedFilesList.Clear;
-     for i := 0 to lbxRenderingOrder.Count - 1 do
-       begin   //fFileList
-         for j := 0 to fFileList.Count - 1 do
-           begin
-             if EndsText(lbxRenderingOrder.Items[i],
-                         fFileList.Strings[j]) then
-               fSelectedFilesList.Append(fFileList.Strings[j]);
-           end;
-       end;
-   end;
+      // Clear and update the fSelectedFilesList.
+      fSelectedFilesList.Clear;
+      for i := 0 to lbxRenderingOrder.Count - 1 do
+        begin   //fFileList
+          for j := 0 to fFileList.Count - 1 do
+            begin
+              if EndsText(lbxRenderingOrder.Items[i],
+                fFileList.Strings[j]) then
+                fSelectedFilesList.Append(fFileList.Strings[j]);
+            end;
+        end;
+    end;
 
 end;
 
 
-procedure TfrmMain.lbxRenderingOrderDragOver(Sender, Source: TObject; X,
-  Y: Integer; State: TDragState; var Accept: Boolean);
+procedure TfrmMain.lbxRenderingOrderDragOver(Sender,
+                                             Source: TObject;
+                                             X,
+                                             Y: Integer;
+                                             State: TDragState;
+                                             var Accept: Boolean);
+
 begin
+
   Accept := True;
 end;
 
 
 procedure TfrmMain.lbxRenderingOrderStartDrag(Sender: TObject;
-  var DragObject: TDragObject);
+                                              var DragObject: TDragObject);
+
 begin
+
   iSourcePos := lbxRenderingOrder.ItemIndex;
 end;
 
@@ -1360,14 +1478,14 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_FULL)) then
-      begin
-        MessageBoxW(0,
-                   lpcwstr('Your computer does not support this Media Foundation API version ' +
-                           IntToStr(MF_VERSION) + '.'),
-                   lpcwstr('MFStartup Failure!'),
-                           MB_ICONSTOP);
-      end;
+    MFSTARTUP_FULL)) then
+    begin
+      MessageBoxW(0,
+                  lpcwstr('Your computer does not support this Media Foundation API version ' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
+    end;
 
 finalization
 

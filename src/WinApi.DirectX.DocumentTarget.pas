@@ -74,7 +74,7 @@ interface
 
 
 uses
-  
+
   {WinApi}
   WinApi.WinApiTypes,
   {ActiveX}
@@ -87,13 +87,14 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
 type
 
-//#if (NTDDI_VERSION >= NTDDI_WIN7)
+  //#if (NTDDI_VERSION >= NTDDI_WIN7)
 
   // Interface IPrintDocumentPackageTarget
   // =====================================
@@ -102,27 +103,32 @@ type
   // It also supports tracking package printing progess and cancelling.
   //
   IPrintDocumentPackageTarget = interface(IUnknown)
-  ['{1b8efec4-3019-4c27-964e-367202156906}']
+    ['{1b8efec4-3019-4c27-964e-367202156906}']
     // SDK native virtual methods.
-    function GetPackageTargetTypes(out targetCount: UINT32; out targetTypes: PGUID): HRESULT; stdcall;
+    function GetPackageTargetTypes(out targetCount: UINT32;
+                                   out targetTypes: PGUID): HRESULT; stdcall;
 
-    function GetPackageTarget(const guidTargetType: TGUID; const riid: TGUID; out ppvTarget: Pointer): HRESULT; stdcall;
+    function GetPackageTarget(const guidTargetType: TGUID;
+                              const riid: TGUID;
+                              out ppvTarget: Pointer): HRESULT; stdcall;
 
     function Cancel(): HRESULT; stdcall;
   end;
+
   IID_IPrintDocumentPackageTarget = IPrintDocumentPackageTarget;
 
 
   PPrintDocumentPackageCompletion = ^PrintDocumentPackageCompletion;
-  PrintDocumentPackageCompletion              = (
+  PrintDocumentPackageCompletion = (
     PrintDocumentPackageCompletion_InProgress = 0,
-    PrintDocumentPackageCompletion_Completed  = ( PrintDocumentPackageCompletion_InProgress + 1),
-    PrintDocumentPackageCompletion_Canceled   = ( PrintDocumentPackageCompletion_Completed + 1),
-    PrintDocumentPackageCompletion_Failed     = ( PrintDocumentPackageCompletion_Canceled + 1)
-  );
+                                    PrintDocumentPackageCompletion_Completed = (PrintDocumentPackageCompletion_InProgress + 1),
+                                    PrintDocumentPackageCompletion_Canceled = (PrintDocumentPackageCompletion_Completed + 1),
+                                    PrintDocumentPackageCompletion_Failed = (PrintDocumentPackageCompletion_Canceled + 1)
+    );
 
 
   PPrintDocumentPackageStatus = ^PrintDocumentPackageStatus;
+
   PrintDocumentPackageStatus = record
     JobId: UINT32;
     CurrentDocument: INT32;
@@ -138,10 +144,11 @@ type
   // Com event implemented by clients, who want to listen print job progress.
   //
   IPrintDocumentPackageStatusEvent = interface(IDispatch)
-  ['{ed90c8ad-5c34-4d05-a1ec-0e8a9b3ad7af}']
+    ['{ed90c8ad-5c34-4d05-a1ec-0e8a9b3ad7af}']
     // SDK native virtual methods.
     function PackageStatusUpdated(packageStatus: PPrintDocumentPackageStatus): HRESULT; stdcall;
   end;
+
   IID_IPrintDocumentPackageStatusEvent = IPrintDocumentPackageStatusEvent;
 
 
@@ -151,10 +158,15 @@ type
   // starting your print job on IPrintDocumentPackageTarget.
   //
   IPrintDocumentPackageTargetFactory = interface(IUnknown)
-  ['{d2959bf7-b31b-4a3d-9600-712eb1335ba4}']
+    ['{d2959bf7-b31b-4a3d-9600-712eb1335ba4}']
     // SDK native virtual methods.
-    function CreateDocumentPackageTargetForPrintJob(printerName: PWideChar; jobName: PWideChar; jobOutputStream: IStream; jobPrintTicketStream: IStream; out docPackageTarget: IPrintDocumentPackageTarget): HRESULT; stdcall;
+    function CreateDocumentPackageTargetForPrintJob(printerName: PWideChar;
+                                                    jobName: PWideChar;
+                                                    jobOutputStream: IStream;
+                                                    jobPrintTicketStream: IStream;
+                                                    out docPackageTarget: IPrintDocumentPackageTarget): HRESULT; stdcall;
   end;
+
   IID_IPrintDocumentPackageTargetFactory = IPrintDocumentPackageTargetFactory;
 
 
@@ -164,12 +176,14 @@ type
   // and returns IppPrinterDevice if the target is an Ipp Printer.
   //
   IPrintDocumentPackageTarget2 = interface(IUnknown)
-  ['{c560298a-535c-48f9-866a-632540660cb4}']
+    ['{c560298a-535c-48f9-866a-632540660cb4}']
     // SDK native virtual methods.
     function GetIsTargetIppPrinter(out isIppPrinter: BOOL): HRESULT; stdcall;
 
-    function GetTargetIppPrintDevice(const riid: TGUID; out ppvTarget: Pointer): HRESULT; stdcall;
+    function GetTargetIppPrintDevice(const riid: TGUID;
+                                     out ppvTarget: Pointer): HRESULT; stdcall;
   end;
+
   IID_IPrintDocumentPackageTarget2 = IPrintDocumentPackageTarget2;
 
 
@@ -178,17 +192,17 @@ type
 const
   CLSID_PrintDocumentPackageTarget: TGUID = '{4842669E-9947-46EA-8BA2-D8CCE432C2CA}';
 
-  ID_DOCUMENTPACKAGETARGET_MSXPS   : TGUID = '{9cae40a8-ded1-41c9-a9fd-d735ef33aeda}';
-  ID_DOCUMENTPACKAGETARGET_OPENXPS : TGUID = '{0056bb72-8c9c-4612-bd0f-93012a87099d}';
+  ID_DOCUMENTPACKAGETARGET_MSXPS: TGUID = '{9cae40a8-ded1-41c9-a9fd-d735ef33aeda}';
+  ID_DOCUMENTPACKAGETARGET_OPENXPS: TGUID = '{0056bb72-8c9c-4612-bd0f-93012a87099d}';
 
-//#endif // (NTDDI_VERSION >= NTDDI_WIN7)
+  //#endif // (NTDDI_VERSION >= NTDDI_WIN7)
 
 
-//#if (NTDDI_VERSION >= NTDDI_WINBLUE)
+  //#if (NTDDI_VERSION >= NTDDI_WINBLUE)
 
-  ID_DOCUMENTPACKAGETARGET_OPENXPS_WITH_3D : TGUID = '{63dbd720-8b14-4577-b074-7bb11b596d28}';
+  ID_DOCUMENTPACKAGETARGET_OPENXPS_WITH_3D: TGUID = '{63dbd720-8b14-4577-b074-7bb11b596d28}';
 
-//#endif // (NTDDI_VERSION >= NTDDI_WINBLUE)
+  //#endif // (NTDDI_VERSION >= NTDDI_WINBLUE)
 
 
 
@@ -202,6 +216,6 @@ const
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

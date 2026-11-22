@@ -64,11 +64,12 @@ unit RDJ.PlaylistTypes;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   SysUtils,
   Classes,
   Generics.Collections;
@@ -155,15 +156,17 @@ type
   end;
 
   TRDJPlaylist = class
+
   private
 
     FInfo: TRDJPlaylistInfo;
-    FItems: TList<TRDJPlaylistEntry>;
+    FItems: TList < TRDJPlaylistEntry > ;
     FModified: Boolean;
 
     function GetCount(): Integer;
     function GetItem(Index: Integer): TRDJPlaylistEntry;
-    procedure SetItem(Index: Integer; const Value: TRDJPlaylistEntry);
+    procedure SetItem(Index: Integer;
+                      const Value: TRDJPlaylistEntry);
 
   public
 
@@ -177,28 +180,23 @@ type
                        ToIndex: Integer);
     procedure RebuildSortOrder();
 
-    property Info: TRDJPlaylistInfo
-      read FInfo
-      write FInfo;
-    property Count: Integer
-      read GetCount;
-    property Items[Index: Integer]: TRDJPlaylistEntry
-      read GetItem
-      write SetItem; default;
-    property Modified: Boolean
-      read FModified
-      write FModified;
+    property Info: TRDJPlaylistInfo read FInfo write FInfo;
+    property Count: Integer read GetCount;
+    property Items[Index: Integer]: TRDJPlaylistEntry read GetItem write SetItem; default;
+    property Modified: Boolean read FModified write FModified;
   end;
 
-  function RDJEmptyTrack(): TRDJTrack;
-  function RDJEmptyPlaylistInfo(): TRDJPlaylistInfo;
-  function RDJEmptyPlaylistItem(): TRDJPlaylistItem;
-  function RDJEmptyPlaylistEntry(): TRDJPlaylistEntry;
+function RDJEmptyTrack(): TRDJTrack;
+function RDJEmptyPlaylistInfo(): TRDJPlaylistInfo;
+function RDJEmptyPlaylistItem(): TRDJPlaylistItem;
+function RDJEmptyPlaylistEntry(): TRDJPlaylistEntry;
 
 
 implementation
 
+
 function RDJEmptyTrack(): TRDJTrack;
+
 begin
 
   Result := Default(TRDJTrack);
@@ -206,6 +204,7 @@ end;
 
 
 function RDJEmptyPlaylistInfo(): TRDJPlaylistInfo;
+
 begin
 
   Result := Default(TRDJPlaylistInfo);
@@ -213,6 +212,7 @@ end;
 
 
 function RDJEmptyPlaylistItem(): TRDJPlaylistItem;
+
 begin
 
   Result := Default(TRDJPlaylistItem);
@@ -220,6 +220,7 @@ end;
 
 
 function RDJEmptyPlaylistEntry(): TRDJPlaylistEntry;
+
 begin
 
   Result := Default(TRDJPlaylistEntry);
@@ -227,17 +228,19 @@ end;
 
 
 constructor TRDJPlaylist.Create();
+
 begin
 
   inherited Create;
 
-  FItems := TList<TRDJPlaylistEntry>.Create;
+  FItems := (TList < TRDJPlaylistEntry > .Create);
   FInfo := RDJEmptyPlaylistInfo;
   FModified := False;
 end;
 
 
 destructor TRDJPlaylist.Destroy();
+
 begin
 
   FreeAndNil(FItems);
@@ -247,6 +250,7 @@ end;
 
 
 procedure TRDJPlaylist.Clear();
+
 begin
 
   FItems.Clear;
@@ -255,6 +259,7 @@ end;
 
 
 procedure TRDJPlaylist.Add(const AEntry: TRDJPlaylistEntry);
+
 begin
 
   FItems.Add(AEntry);
@@ -263,6 +268,7 @@ end;
 
 
 procedure TRDJPlaylist.Delete(Index: Integer);
+
 begin
 
   if (Index < 0) or (Index >= FItems.Count) then
@@ -318,6 +324,7 @@ end;
 
 
 function TRDJPlaylist.GetCount(): Integer;
+
 begin
 
   Result := FItems.Count;
@@ -325,6 +332,7 @@ end;
 
 
 function TRDJPlaylist.GetItem(Index: Integer): TRDJPlaylistEntry;
+
 begin
 
   Result := FItems[Index];
@@ -333,6 +341,7 @@ end;
 
 procedure TRDJPlaylist.SetItem(Index: Integer;
                                const Value: TRDJPlaylistEntry);
+
 begin
 
   FItems[Index] := Value;

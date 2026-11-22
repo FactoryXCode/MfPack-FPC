@@ -68,7 +68,7 @@ interface
 
 uses
   MfLoopbackSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   WinApi.WinApiTypes,
@@ -91,7 +91,8 @@ uses
 
 type
 
-  TAudioOutputKind = (aokWav, aokFlac);
+  TAudioOutputKind = (aokWav,
+                      aokFlac);
 
   IAudioWriter = interface
     ['{B2D1F33F-8C7D-4E8D-9A6E-0E5C5C9C1A7B}']
@@ -109,7 +110,9 @@ type
     function Kind(): TAudioOutputKind;
   end;
 
-  TMfAudioWriter = class(TInterfacedObject, IAudioWriter)
+  TMfAudioWriter = class(TInterfacedObject,
+                         IAudioWriter)
+
   private
 
     FKind: TAudioOutputKind;
@@ -134,8 +137,10 @@ type
     FConvBuf: TBytes;
 
     // MF init refcount
-    class var FStartupCS: TCriticalSection;
-    class var FStartupRef: Integer;
+  class var
+  FStartupCS: TCriticalSection;
+  class var
+  FStartupRef: Integer;
     class constructor ClassCreate();
     class destructor ClassDestroy();
 
@@ -148,7 +153,8 @@ type
     function GetExtensibleSubFormatGUID(const Wf: WAVEFORMATEX;
                                         out SubFmt: TGUID): Boolean;
 
-    function MakeAudioType(const Major, SubType: TGUID;
+    function MakeAudioType(const Major,
+                           SubType: TGUID;
                            SampleRate,
                            Channels,
                            BitsPerSample,
@@ -192,7 +198,7 @@ type
   end;
 
 
-  function CreateAudioWriterFromFileName(const FileName: string): IAudioWriter;
+function CreateAudioWriterFromFileName(const FileName: string): IAudioWriter;
 
 
 implementation
@@ -202,9 +208,10 @@ uses
   WinApi.ActiveX.ObjBase; // CoTaskMemFree
 
 
-{ TMfAudioWriter }
+  { TMfAudioWriter }
 
 class constructor TMfAudioWriter.ClassCreate;
+
 begin
 
   FStartupCS := TCriticalSection.Create();
@@ -213,6 +220,7 @@ end;
 
 
 class destructor TMfAudioWriter.ClassDestroy();
+
 begin
 
   FreeAndNil(FStartupCS);
@@ -220,6 +228,7 @@ end;
 
 
 class function TMfAudioWriter.EnsureMFStarted: HResult;
+
 begin
 
   FStartupCS.Enter;
@@ -241,6 +250,7 @@ end;
 
 
 class procedure TMfAudioWriter.EnsureMFStopped;
+
 begin
 
   FStartupCS.Enter;
@@ -251,7 +261,7 @@ begin
         Dec(FStartupRef);
         if (FStartupRef = 0) then
           MFShutdown();
-    end;
+      end;
   finally
 
     FStartupCS.Leave;
@@ -260,6 +270,7 @@ end;
 
 
 constructor TMfAudioWriter.Create(AKind: TAudioOutputKind);
+
 begin
 
   inherited Create();
@@ -267,11 +278,13 @@ begin
   FKind := AKind;
   FSinkWriter := nil;
   FAudioStreamIndex := 0;
-  SetLength(FConvBuf, 0);
+  SetLength(FConvBuf,
+            0);
 end;
 
 
 destructor TMfAudioWriter.Destroy();
+
 begin
 
   Close();
@@ -281,6 +294,7 @@ end;
 
 
 function TMfAudioWriter.Kind(): TAudioOutputKind;
+
 begin
 
   Result := FKind;
@@ -288,10 +302,11 @@ end;
 
 
 function TMfAudioWriter.IsExtensible(const Wf: WAVEFORMATEX): Boolean;
+
 begin
 
   Result := (Wf.wFormatTag = WAVE_FORMAT_EXTENSIBLE) and
-            (Wf.cbSize >= (SizeOf(WAVEFORMATEXTENSIBLE) - SizeOf(WAVEFORMATEX)));
+    (Wf.cbSize >= (SizeOf(WAVEFORMATEXTENSIBLE) - SizeOf(WAVEFORMATEX)));
 end;
 
 
@@ -321,13 +336,13 @@ var
 
 begin
 
-  if Wf.wFormatTag = WAVE_FORMAT_IEEE_FLOAT then
+  if (Wf.wFormatTag = WAVE_FORMAT_IEEE_FLOAT) then
     Exit(True);
 
   if GetExtensibleSubFormatGUID(Wf,
-                                sub) then
+    sub) then
     Exit(IsEqualGUID(sub,
-         KSDATAFORMAT_SUBTYPE_IEEE_FLOAT));
+                     KSDATAFORMAT_SUBTYPE_IEEE_FLOAT));
 
   Result := False;
 end;
@@ -352,14 +367,14 @@ begin
   case Wf.nChannels of
     1: Result := $00000004; // SPEAKER_FRONT_CENTER
     2: Result := $00000003; // SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT
-  else
-    Result := 0; // unknown
+    else
+      Result := 0; // unknown
   end;
 end;
 
 
 function TMfAudioWriter.MakeAudioType(const Major,
-                                            SubType: TGUID;
+                                      SubType: TGUID;
                                       SampleRate,
                                       Channels,
                                       BitsPerSample,
@@ -533,10 +548,12 @@ var
 
 begin
 
-  if FMFStarted then Exit(MF_E_INVALIDREQUEST);
+  if FMFStarted then
+    Exit(MF_E_INVALIDREQUEST);
   if (Wf.nChannels = 0) or (Wf.nSamplesPerSec = 0) or
-     (Wf.nBlockAlign = 0) then Exit(E_INVALIDARG);
-  if FileName = '' then
+    (Wf.nBlockAlign = 0) then
+    Exit(E_INVALIDARG);
+  if (FileName = '') then
     Exit(E_INVALIDARG);
 
   hr := EnsureMFStarted();
@@ -605,31 +622,29 @@ begin
       v := inF^;
       if (v > 1.0) then
         v := 1.0
-      else
-        if (v < -1.0) then
-          v := -1.0;
+      else if (v < -1.0) then
+        v := -1.0;
 
-    // Signed 24-bit range
-    s := Round(v * 8388607.0);
+      // Signed 24-bit range
+      s := Round(v * 8388607.0);
 
-    if (s > 8388607) then
-      s := 8388607
-    else
-      if (s < -8388608) then
+      if (s > 8388607) then
+        s := 8388607
+      else if (s < -8388608) then
         s := -8388608;
 
-    // Pack little-endian 24-bit
-    outB^ := Byte(s and $FF);
-    Inc(outB);
+      // Pack little-endian 24-bit
+      outB^ := Byte(s and $FF);
+      Inc(outB);
 
-    outB^ := Byte((s shr 8) and $FF);
-    Inc(outB);
+      outB^ := Byte((s shr 8) and $FF);
+      Inc(outB);
 
-    outB^ := Byte((s shr 16) and $FF);
-    Inc(outB);
+      outB^ := Byte((s shr 16) and $FF);
+      Inc(outB);
 
-    Inc(inF);
-  end;
+      Inc(inF);
+    end;
 
   DstPtr := @FConvBuf[0];
   DstBytes := UINT32(needBytes);
@@ -654,8 +669,11 @@ begin
 end;
 
 
-procedure TMfAudioWriter.ConvertPCM32ToPCM24Packed(const Src: Pointer; NumFrames: UINT32; Channels: UINT32;
-  out DstPtr: Pointer; out DstBytes: UINT32);
+procedure TMfAudioWriter.ConvertPCM32ToPCM24Packed(const Src: Pointer;
+                                                   NumFrames: UINT32;
+                                                   Channels: UINT32;
+                                                   out DstPtr: Pointer;
+                                                   out DstBytes: UINT32);
 var
   totalSamples: NativeUInt;
   needBytes: NativeUInt;
@@ -670,8 +688,9 @@ begin
   totalSamples := NativeUInt(NumFrames) * NativeUInt(Channels);
   needBytes := totalSamples * 3;
 
-  if Length(FConvBuf) < Integer(needBytes) then
-    SetLength(FConvBuf, Integer(needBytes));
+  if (Length(FConvBuf) < Integer(needBytes)) then
+    SetLength(FConvBuf,
+              Integer(needBytes));
 
   inS := PInteger(Src);
   outB := @FConvBuf[0];
@@ -684,9 +703,8 @@ begin
 
       if (s24 > 8388607) then
         s24 := 8388607
-      else
-        if (s24 < -8388608) then
-          s24 := -8388608;
+      else if (s24 < -8388608) then
+        s24 := -8388608;
 
       outB^ := Byte(s24 and $FF);
       Inc(outB);
@@ -705,8 +723,11 @@ begin
 end;
 
 
-function TMfAudioWriter.WriteFrames(const Data: Pointer; NumFrames: UINT32; const Wf: WAVEFORMATEX;
-  var Time100ns: Int64; out BytesWritten: UINT32): HResult;
+function TMfAudioWriter.WriteFrames(const Data: Pointer;
+                                    NumFrames: UINT32;
+                                    const Wf: WAVEFORMATEX;
+                                    var Time100ns: Int64;
+                                    out BytesWritten: UINT32): HResult;
 var
   hr: HResult;
   sample: IMFSample;
@@ -718,127 +739,165 @@ var
   bytesToWrite: UINT32;
 
   dur100ns: Int64;
+
 begin
 
   BytesWritten := 0;
 
-  if FSinkWriter = nil then Exit(MF_E_NOT_INITIALIZED);
-  if NumFrames = 0 then Exit(S_OK);
+  if (FSinkWriter = nil) then
+    Exit(MF_E_NOT_INITIALIZED);
+  if (NumFrames = 0) then
+    Exit(S_OK);
 
   // Decide actual source pointer/size we feed to MF (maybe converted)
   if (FKind = aokFlac) then
-  begin
-    // FLAC input is integer PCM at FInBitsPerSample (16 or 24)
-    if FInBitsPerSample = 24 then
     begin
-      bytesToWrite := NumFrames * (FInChannels * 3);
-
-      if Data = nil then
-      begin
-        if Length(FConvBuf) < Integer(bytesToWrite) then
-          SetLength(FConvBuf, Integer(bytesToWrite));
-        FillChar(FConvBuf[0], bytesToWrite, 0);
-        srcPtr := @FConvBuf[0];
-      end
-      else
-      begin
-        if FSrcIsFloat then
-          ConvertFloatToPCM24Packed(Data, NumFrames, FInChannels, srcPtr, bytesToWrite)
-        else if (FSrcBitsPerSample = 32) then
-          ConvertPCM32ToPCM24Packed(Data, NumFrames, FInChannels, srcPtr, bytesToWrite)
-        else
+      // FLAC input is integer PCM at FInBitsPerSample (16 or 24)
+      if (FInBitsPerSample = 24) then
         begin
-          // Assume packed 24-bit PCM already
-          srcPtr := Data;
-        end;
-      end;
-    end
-    else
-    begin
-      // 16-bit PCM
-      bytesToWrite := NumFrames * (FInChannels * 2);
+          bytesToWrite := NumFrames * (FInChannels * 3);
 
-      if Data = nil then
-      begin
-        if Length(FConvBuf) < Integer(bytesToWrite) then
-          SetLength(FConvBuf, Integer(bytesToWrite));
-        FillChar(FConvBuf[0], bytesToWrite, 0);
-        srcPtr := @FConvBuf[0];
-      end
+          if (Data = nil) then
+            begin
+              if (Length(FConvBuf) < Integer(bytesToWrite)) then
+                SetLength(FConvBuf,
+                          Integer(bytesToWrite));
+              FillChar(FConvBuf[0],
+                       bytesToWrite,
+                       0);
+              srcPtr := @FConvBuf[0];
+            end
+          else
+            begin
+              if FSrcIsFloat then
+                ConvertFloatToPCM24Packed(Data,
+                                          NumFrames,
+                                          FInChannels,
+                                          srcPtr,
+                                          bytesToWrite)
+              else if (FSrcBitsPerSample = 32) then
+                ConvertPCM32ToPCM24Packed(Data,
+                                          NumFrames,
+                                          FInChannels,
+                                          srcPtr,
+                                          bytesToWrite)
+              else
+                begin
+                  // Assume packed 24-bit PCM already
+                  srcPtr := Data;
+                end;
+            end;
+        end
+      else
+        begin
+          // 16-bit PCM
+          bytesToWrite := NumFrames * (FInChannels * 2);
+
+          if (Data = nil) then
+            begin
+              if (Length(FConvBuf) < Integer(bytesToWrite)) then
+                SetLength(FConvBuf,
+                          Integer(bytesToWrite));
+              FillChar(FConvBuf[0],
+                       bytesToWrite,
+                       0);
+              srcPtr := @FConvBuf[0];
+            end
+          else
+            srcPtr := Data;
+        end;
+    end
+  else
+    begin
+      // WAV path (float or PCM)
+      bytesToWrite := NumFrames * FInBlockAlign;
+
+      if (Data = nil) then
+        begin
+          if (Length(FConvBuf) < Integer(bytesToWrite)) then
+            SetLength(FConvBuf,
+                      Integer(bytesToWrite));
+          FillChar(FConvBuf[0],
+                   bytesToWrite,
+                   0);
+          srcPtr := @FConvBuf[0];
+        end
       else
         srcPtr := Data;
     end;
-  end
-  else
-  begin
-    // WAV path (float or PCM)
-    bytesToWrite := NumFrames * FInBlockAlign;
-
-    if Data = nil then
-    begin
-      if Length(FConvBuf) < Integer(bytesToWrite) then
-        SetLength(FConvBuf, Integer(bytesToWrite));
-      FillChar(FConvBuf[0], bytesToWrite, 0);
-      srcPtr := @FConvBuf[0];
-    end
-    else
-      srcPtr := Data;
-  end;
 
   // Build MF sample
   hr := MFCreateSample(sample);
-  if FAILED(hr) then Exit(hr);
+  if FAILED(hr) then
+    Exit(hr);
 
-  hr := MFCreateMemoryBuffer(bytesToWrite, buf);
-  if FAILED(hr) then Exit(hr);
+  hr := MFCreateMemoryBuffer(bytesToWrite,
+                             buf);
+  if FAILED(hr) then
+    Exit(hr);
 
-  hr := buf.Lock(pDst, @maxLen, @curLen);
-  if FAILED(hr) then Exit(hr);
+  hr := buf.Lock(pDst,
+                 @maxLen,
+                 @curLen);
+  if FAILED(hr) then
+    Exit(hr);
 
   try
-    if bytesToWrite > 0 then
-      Move(PByte(srcPtr)^, pDst^, bytesToWrite);
+    if (bytesToWrite > 0) then
+      Move(PByte(srcPtr)^,
+           pDst^,
+           bytesToWrite);
   finally
     buf.Unlock;
   end;
 
   hr := buf.SetCurrentLength(bytesToWrite);
-  if FAILED(hr) then Exit(hr);
+  if FAILED(hr) then
+    Exit(hr);
 
   hr := sample.AddBuffer(buf);
-  if FAILED(hr) then Exit(hr);
+  if FAILED(hr) then
+    Exit(hr);
 
   // Timestamping: sample-counter clock (stable)
   dur100ns := MulDiv64(Int64(NumFrames),
-              10000000,
-              Int64(FInSampleRate));
+                       10000000,
+                       Int64(FInSampleRate));
 
   hr := sample.SetSampleTime(Time100ns);
-  if FAILED(hr) then Exit(hr);
+  if FAILED(hr) then
+    Exit(hr);
 
   hr := sample.SetSampleDuration(dur100ns);
-  if FAILED(hr) then Exit(hr);
+  if FAILED(hr) then
+    Exit(hr);
 
-  hr := FSinkWriter.WriteSample(FAudioStreamIndex, sample);
-  if FAILED(hr) then Exit(hr);
+  hr := FSinkWriter.WriteSample(FAudioStreamIndex,
+                                sample);
+  if FAILED(hr) then
+    Exit(hr);
 
-  Inc(Time100ns, dur100ns);
+  Inc(Time100ns,
+      dur100ns);
   BytesWritten := bytesToWrite;
   Result := S_OK;
 end;
 
+
 function TMfAudioWriter.Close: HResult;
 var
   hr: HResult;
+
 begin
+
   hr := S_OK;
 
-  if FSinkWriter <> nil then
-  begin
-    // Finalize flushes headers/trailers etc.
-    hr := FSinkWriter.Finalize;
-    FSinkWriter := nil;
-  end;
+  if (FSinkWriter <> nil) then
+    begin
+      // Finalize flushes headers/trailers etc.
+      hr := FSinkWriter.Finalize;
+      FSinkWriter := nil;
+    end;
 
   if FMFStarted then
     begin
@@ -848,17 +907,18 @@ begin
   Result := hr;
 end;
 
+
 function CreateAudioWriterFromFileName(const FileName: string): IAudioWriter;
 var
   ext: string;
+
 begin
+
   ext := LowerCase(ExtractFileExt(FileName));
-  if ext = '.flac' then
+  if (ext = '.flac') then
     Result := TMfAudioWriter.Create(aokFlac)
   else
     Result := TMfAudioWriter.Create(aokWav);
 end;
 
 end.
-
-

@@ -65,12 +65,13 @@ unit RDJ.HeosAudioServer;
 
 interface
 
-uses MfCastText,
-Rdj.Platform,
-LMessages,
+uses
+  MfCastText,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinSock,
   {System}
@@ -82,6 +83,7 @@ LMessages,
 type
 
   THEOSAudioServer = class(TThread)
+
   private
 
     FListener: TSocket;
@@ -90,7 +92,7 @@ type
     FAddress: string;
     FPort: Word;
     FLock: SyncObjs.TCriticalSection;
-    FData: TQueue<TBytes>;
+    FData: TQueue < TBytes > ;
     FQueuedBytes: Integer;
     FRequests: Integer;
     FLastError: string;
@@ -138,11 +140,13 @@ uses
   {Application}
   Heos.Sockets;
 
+
 function THEOSAudioServer.CheckSocket(Code: Integer;
                                       const Operation: string): Boolean;
+
 begin
 
-  Result := Code <> SOCKET_ERROR;
+  Result := (Code <> SOCKET_ERROR);
 
   if not Result then
     FLastError := Format('%s failed (Windows socket error %d)',
@@ -167,7 +171,7 @@ begin
   FreeOnTerminate := False;
   FListener := INVALID_SOCKET;
   FLock := SyncObjs.TCriticalSection.Create;
-  FData := TQueue<TBytes>.Create;
+  FData := (TQueue < TBytes > .Create);
   FAddress := LocalAddress;
   FPort := Port;
   CreateGUID(G);
@@ -187,15 +191,17 @@ begin
 
   if (FListener = INVALID_SOCKET) then
     if not CheckSocket(SOCKET_ERROR,
-                'Create audio server') then Exit;
+      'Create audio server') then
+      Exit;
 
   Reuse := 1;
   if not CheckSocket(setsockopt(FListener,
-                         SOL_SOCKET,
-                         SO_REUSEADDR,
-                         PAnsiChar(@Reuse),
-                         SizeOf(Reuse)),
-                         'Set audio server socket reuse') then Exit;
+    SOL_SOCKET,
+    SO_REUSEADDR,
+    PAnsiChar(@Reuse),
+    SizeOf(Reuse)),
+    'Set audio server socket reuse') then
+    Exit;
 
   FillChar(Addr,
            SizeOf(Addr),
@@ -207,24 +213,28 @@ begin
   Addr.sin_addr.S_addr := inet_addr(PAnsiChar(Host));
 
   if not CheckSocket(bind(FListener,
-                   Addr,
-                   SizeOf(Addr)),
-                   'Bind audio server') then Exit;
+    Addr,
+    SizeOf(Addr)),
+    'Bind audio server') then
+    Exit;
 
   // Port zero lets Windows allocate an available listening port.
   AddrSize := SizeOf(Addr);
   if not CheckSocket(getsockname(FListener, Addr, AddrSize),
-                'Read audio server port') then Exit;
+    'Read audio server port') then
+    Exit;
   FPort := ntohs(Addr.sin_port);
 
   if not CheckSocket(listen(FListener,
-                     4),
-              'Listen for receiver') then Exit;
+    4),
+    'Listen for receiver') then
+    Exit;
   FInitialized := True;
 end;
 
 
 destructor THEOSAudioServer.Destroy();
+
 begin
 
   Terminate();
@@ -246,6 +256,7 @@ end;
 
 
 function THEOSAudioServer.Url(): string;
+
 begin
 
   Result := Format('http://%s:%d%s',
@@ -254,6 +265,7 @@ end;
 
 
 function THEOSAudioServer.Requests: Integer;
+
 begin
 
   Result := InterlockedCompareExchange(FRequests,
@@ -263,6 +275,7 @@ end;
 
 
 procedure THEOSAudioServer.SetError(const Text: string);
+
 begin
 
   FLock.Acquire;
@@ -275,6 +288,7 @@ end;
 
 
 function THEOSAudioServer.LastError(): string;
+
 begin
 
   FLock.Acquire;
@@ -330,7 +344,7 @@ begin
       if (Code = SOCKET_ERROR) then
         begin
           SetError(Format('HTTP read wait failed (Windows socket error %d)',
-                           [WSAGetLastError]));
+                          [WSAGetLastError]));
           Exit;
         end;
 
@@ -367,7 +381,7 @@ begin
         end;
 
       if (Pos(AnsiString(#13#10#13#10),
-                         Data) > 0) then
+        Data) > 0) then
         begin
           Header := string(Data);
           Result := True;
@@ -423,14 +437,14 @@ begin
       if (Code = SOCKET_ERROR) then
         begin
           SetError(Format('HTTP send wait failed (Windows socket error %d)',
-                           [WSAGetLastError]));
+                          [WSAGetLastError]));
           Exit;
         end;
 
       Sent := WinSock.send(Client,
-                                  P^,
-                                  Count,
-                                  0);
+                           P^,
+                           Count,
+                           0);
 
       if (Sent = SOCKET_ERROR) then
         begin
@@ -478,7 +492,7 @@ begin
         Length(Data));
 
     // Bound memory when the receiver disconnects. Drop whole ADTS batches.
-    while FQueuedBytes > 256 * 1024 do
+    while (FQueuedBytes > 256 * 1024) do
       begin
         Old := FData.Dequeue;
         Dec(FQueuedBytes,
@@ -492,12 +506,13 @@ end;
 
 
 function THEOSAudioServer.Pop(out Data: TBytes): Boolean;
+
 begin
 
   FLock.Acquire;
 
   try
-    Result := FData.Count > 0;
+    Result := (FData.Count > 0);
 
     if Result then
       begin
@@ -518,14 +533,16 @@ var
   Mode: u_long;
 
 begin
-  if not FInitialized then Exit;
+
+  if not FInitialized then
+    Exit;
 
   while not Terminated do
     begin
       try
         if not SocketReady(FListener,
-                           False,
-                           100) then
+          False,
+          100) then
           Continue;
 
         Client := accept(FListener,
@@ -539,7 +556,7 @@ begin
           Mode := 1;
 
           if (ioctlsocket(Client,
-                          LongInt(FIONBIO), Mode) = SOCKET_ERROR) then
+            LongInt(FIONBIO), Mode) = SOCKET_ERROR) then
             begin
               SetError(Format('Cannot set HTTP client nonblocking mode (Windows socket error %d)',
                               [WSAGetLastError]));
@@ -553,12 +570,12 @@ begin
           closesocket(Client);
         end;
 
-    except
+      except
 
-      // A failed receiver request must not kill the listener. The next request
-      // can reconnect; UI reports the request count and HEOS result separately.
-      on E: Exception do
-        SetError('Denon audio HTTP: ' + E.Message);
+        // A failed receiver request must not kill the listener. The next request
+        // can reconnect; UI reports the request count and HEOS result separately.
+        on E: Exception do
+          SetError('Denon audio HTTP: ' + E.Message);
       end;
     end;
 end;
@@ -570,14 +587,14 @@ var
   First: string;
   Method: string;
   Path: string;
-  Lines: TArray<string>;
+  Lines: TArray < string > ;
   P: Integer;
   IsHead: Boolean;
   Data: TBytes;
 
-  // Helper
+// Helper
   function Respond(const Status,
-                    Extra: string): Boolean;
+                   Extra: string): Boolean;
   var
     Response: AnsiString;
 
@@ -592,10 +609,11 @@ var
 begin
 
   if not ReadClientHeader(Client,
-                          Header) then
+    Header) then
     Exit;
 
-  Lines := MfCastSplit(Header,#10);
+  Lines := MfCastSplit(Header,
+                       #10);
   First := Trim(Lines[0]);
 
   P := Pos(' ',
@@ -615,7 +633,7 @@ begin
                1,
                P - 1);
 
-  IsHead := Method = 'HEAD';
+  IsHead := (Method = 'HEAD');
 
   if (Method <> 'GET') and not IsHead then
     begin
@@ -634,7 +652,7 @@ begin
   InterlockedIncrement(FRequests);
 
   if not Respond('200 OK',
-                   'Content-Type: audio/aac' + #13#10 + 'Cache-Control: no-store' + #13#10 + 'Accept-Ranges: none' + #13#10) then
+    'Content-Type: audio/aac' + #13#10 + 'Cache-Control: no-store' + #13#10 + 'Accept-Ranges: none' + #13#10) then
     Exit;
 
   if IsHead then
@@ -655,9 +673,8 @@ begin
     begin
       if Pop(Data) then
         begin
-          if not SendClient(Client,
-                            @Data[0],
-                            Length(Data)) then
+          if not SendClient(Client, @Data[0],
+            Length(Data)) then
             Exit;
         end
       else

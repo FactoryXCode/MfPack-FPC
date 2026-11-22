@@ -78,7 +78,7 @@ uses
 
   {WinApi}
   Windows,
-  WinApi.WinApiTypes,  
+  WinApi.WinApiTypes,
   {ActiveX}
   WinApi.ActiveX.ObjIdlbase,
   WinApi.ActiveX.OaIdl;
@@ -89,7 +89,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -129,7 +130,7 @@ type
   ///   See uuids.h for a more detailed list.
   /// </summary>
   ICodecAPI = interface(IUnknown)
-  ['{901db4c7-31ce-41a2-85dc-8fa0bf41b8da}']
+    ['{901db4c7-31ce-41a2-85dc-8fa0bf41b8da}']
     ///  <summary> Query whether a given parameter is supported.</summary>
     function IsSupported(Api: PGUID): HResult; stdcall;
 
@@ -287,6 +288,7 @@ type
                                       out ChangedParam: PGUID;
                                       out ChangedParamCount: ULONG): HResult; stdcall;
   end;
+
   IID_ICodecAPI = ICodecAPI;
 
 
@@ -296,6 +298,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

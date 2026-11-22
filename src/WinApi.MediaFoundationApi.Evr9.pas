@@ -88,19 +88,21 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
 
-// defined in WinApi.WinApiTypes
-// FLOAT
-// PPTGUID
-// LPGUID
+  // defined in WinApi.WinApiTypes
+  // FLOAT
+  // PPTGUID
+  // LPGUID
 
 
 type
   PMFVideoAlphaBitmapParams = ^MFVideoAlphaBitmapParams;
+
   MFVideoAlphaBitmapParams = record
     dwFlags: DWORD;
     clrSrcKey: COLORREF;
@@ -111,27 +113,29 @@ type
   end;
 
   PMFVideoAlphaBitmap = ^MFVideoAlphaBitmap;
+
   MFVideoAlphaBitmap = record
     GetBitmapFromDC: BOOL;
     bitmap: record
       case Byte of
         0: (hdc: HDC);
         1: (pDDS: Pointer); // Non-owning IDirect3DSurface9 pointer, as in the SDK union.
-    end;
+      end;
     params: MFVideoAlphaBitmapParams;
   end;
 
 type
   PMFVideoAlphaBitmapFlags = ^MFVideoAlphaBitmapFlags;
   MFVideoAlphaBitmapFlags = DWord;
+
 const
-  MFVideoAlphaBitmap_EntireDDS   = MFVideoAlphaBitmapFlags($1);
+  MFVideoAlphaBitmap_EntireDDS = MFVideoAlphaBitmapFlags($1);
   MFVideoAlphaBitmap_SrcColorKey = MFVideoAlphaBitmapFlags($2);
-  MFVideoAlphaBitmap_SrcRect     = MFVideoAlphaBitmapFlags($4);
-  MFVideoAlphaBitmap_DestRect    = MFVideoAlphaBitmapFlags($8);
-  MFVideoAlphaBitmap_FilterMode  = MFVideoAlphaBitmapFlags($10);
-  MFVideoAlphaBitmap_Alpha       = MFVideoAlphaBitmapFlags($20);
-  MFVideoAlphaBitmap_BitMask     = MFVideoAlphaBitmapFlags($3F);
+  MFVideoAlphaBitmap_SrcRect = MFVideoAlphaBitmapFlags($4);
+  MFVideoAlphaBitmap_DestRect = MFVideoAlphaBitmapFlags($8);
+  MFVideoAlphaBitmap_FilterMode = MFVideoAlphaBitmapFlags($10);
+  MFVideoAlphaBitmap_Alpha = MFVideoAlphaBitmapFlags($20);
+  MFVideoAlphaBitmap_BitMask = MFVideoAlphaBitmapFlags($3F);
 
 
 type
@@ -142,13 +146,14 @@ type
   // ================================
   //
   IEVRVideoStreamControl = interface(IUnknown)
-  ['{d0cfe38b-93e7-4772-8957-0400c49a4485}']
+    ['{d0cfe38b-93e7-4772-8957-0400c49a4485}']
 
     function SetStreamActiveState(fActive: BOOL): HResult; stdcall;
 
     function GetStreamActiveState(out lpfActive: BOOL): HResult; stdcall;
 
   end;
+
   IID_IEVRVideoStreamControl = IEVRVideoStreamControl;
 
 
@@ -156,7 +161,7 @@ type
   // ===========================
   //
   IMFVideoProcessor = interface(IUnknown)
-  ['{6AB0000C-FECE-4d1f-A2AC-A9573530656E}']
+    ['{6AB0000C-FECE-4d1f-A2AC-A9573530656E}']
 
     function GetAvailableVideoProcessorModes(lpdwNumProcessingModes: PUINT;
                                              out ppVideoProcessingModes: PGUID): HResult; stdcall;
@@ -174,7 +179,8 @@ type
     function GetProcAmpValues(dwFlags: DWORD;
                               out Values: DXVA2_ProcAmpValues): HResult; stdcall;
 
-    function SetProcAmpValues(dwFlags: DWORD; const pValues: DXVA2_ProcAmpValues): HResult; stdcall;
+    function SetProcAmpValues(dwFlags: DWORD;
+                              const pValues: DXVA2_ProcAmpValues): HResult; stdcall;
 
     function GetFilteringRange(dwProperty: DWORD;
                                out pPropRange: DXVA2_ValueRange): HResult; stdcall;
@@ -182,20 +188,22 @@ type
     function GetFilteringValue(dwProperty: DWORD;
                                out pValue: DXVA2_Fixed32): HResult; stdcall;
 
-    function SetFilteringValue(dwProperty: DWORD; pValue: PDXVA2_Fixed32): HResult; stdcall;
+    function SetFilteringValue(dwProperty: DWORD;
+                               pValue: PDXVA2_Fixed32): HResult; stdcall;
 
     function GetBackgroundColor(out lpClrBkg: COLORREF): HResult; stdcall;
 
     function SetBackgroundColor(ClrBkg: COLORREF): HResult; stdcall;
 
   end;
+
   IID_IMFVideoProcessor = IMFVideoProcessor;
 
 
   // Interface IMFVideoMixerBitmap
   // =============================
   IMFVideoMixerBitmap = interface(IUnknown)
-  ['{814C7B20-0FDB-4eec-AF8F-F957C8F69EDC}']
+    ['{814C7B20-0FDB-4eec-AF8F-F957C8F69EDC}']
 
     function SetAlphaBitmap(var pBmpParms: MFVideoAlphaBitmap): HResult; stdcall;
 
@@ -206,6 +214,7 @@ type
     function GetAlphaBitmapParameters(out pBmpParms: MFVideoAlphaBitmapParams): HResult; stdcall;
 
   end;
+
   IID_IMFVideoMixerBitmap = IMFVideoMixerBitmap;
 
 
@@ -215,6 +224,6 @@ type
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

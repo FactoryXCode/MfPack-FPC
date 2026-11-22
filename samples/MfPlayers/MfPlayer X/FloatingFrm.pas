@@ -72,7 +72,7 @@ uses
   LMessages,
   LCLType,
   MfPlayerSample.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -95,7 +95,6 @@ uses
   {Project}
   TimedTextClass,
   MfPCXConstants;
-
 
 type
   // Screen capabillities
@@ -200,7 +199,9 @@ constructor TFloatingForm.Create(AOwner: TComponent;
                                  TimedTxtFile: WideString;
                                  sPreferredLanguage: string;
                                  ClockProperties: MFCLOCK_PROPERTIES);
+
 begin
+
   inherited Create(AOwner);
 
   VideoSurfaceHandle := hwVideoSurface;
@@ -221,16 +222,16 @@ begin
   fLayerFont := TFont.Create();
   with fLayerFont do
     begin
-      Name        := 'Verdana';
-      Charset     := DEFAULT_CHARSET;
+      Name := 'Verdana';
+      Charset := DEFAULT_CHARSET;
       Orientation := 0;
-      Size        := 12;
+      Size := 12;
       Orientation := 0;
-      Quality     := fqDefault;
-      Pitch       := fpDefault;
-      Height      := -19;
-      Color       := clWhite;
-      Style       := [fsBold];
+      Quality := fqDefault;
+      Pitch := fpDefault;
+      Height := -19;
+      Color := clWhite;
+      Style := [fsBold];
     end;
 
   // Keep the form always on top
@@ -240,12 +241,17 @@ begin
   BorderIcons := [];
   AlphaBlend := True;
   AlphaBlendValue := btOpacity;
-  Windows.SetLayeredWindowAttributes(Handle,ColorToRGB(crTransparency),btOpacity,LWA_COLORKEY or LWA_ALPHA);
+  Windows.SetLayeredWindowAttributes(Handle,
+                                     ColorToRGB(crTransparency),
+                                     btOpacity,
+                                     LWA_COLORKEY or LWA_ALPHA);
 end;
 
 
 procedure TFloatingForm.FormDestroy(Sender: TObject);
+
 begin
+
   FreeAndNil(fLayerFont);
   FreeAndNil(fTimedText);
 end;
@@ -256,6 +262,7 @@ var
   hr: HResult;
 
 begin
+
   // Create the TimedText object
   fTimedText := TMfTimedText.Create(Self.Handle,
                                     fTimedTextFile,
@@ -263,15 +270,15 @@ begin
   if (fTimedText = nil) then
     Close();
 
- // Initial text before subtitling starts (Optional)
- // This can be any message
- if (bShowCustomText = true) then
-   begin
-     SubtitleText:= 'Mediafile ' +
-                     fTimedTextFile +
-                     ' has been loaded...' + #13 +
-                     'Click "Play" or hit the spacebar to start the movie...';
-   end;
+  // Initial text before subtitling starts (Optional)
+  // This can be any message
+  if (bShowCustomText = true) then
+    begin
+      SubtitleText := 'Mediafile ' +
+        fTimedTextFile +
+        ' has been loaded...' + #13 +
+        'Click "Play" or hit the spacebar to start the movie...';
+    end;
 
   // Try to get the TimedText file
   //
@@ -289,7 +296,7 @@ begin
           bTimedTextFileLoaded := True;
           lblSubTitle.Caption := Format('Subtitled movie (%s). Language: %s',
                                         [ExtractFilename(fTimedText.TimedTextFile),
-                                         fTimedText.FriendlyLanguage]);
+            fTimedText.FriendlyLanguage]);
           Show();
         end;
     end
@@ -301,6 +308,7 @@ end;
 
 
 procedure TFloatingForm.SetFormPosition();
+
 begin
 
   // Note: We replace the top and left for the found position X and Y
@@ -323,13 +331,17 @@ end;
 
 
 procedure TFloatingForm.SetShowCustomText(aValue: Boolean);
+
 begin
+
   bShowCustomText := aValue;
 end;
 
 
 procedure TFloatingForm.SetSubTitleText(aValue: string);
+
 begin
+
   sSubTitleTxt := aValue;
   GetTextLines(aValue);
   lblSubTitle.Caption := sSubTitleTxt;
@@ -341,16 +353,19 @@ var
   i: integer;
 
 begin
+
   iTextLines := 1; // default value
   // Get the textlines
-  for i := 1 to Length(aValue)-1 do
-    if aValue[i] = #13 then
+  for i := 1 to Length(aValue) - 1 do
+    if (aValue[i] = #13) then
       inc(iTextLines);
 end;
 
 
 procedure TFloatingForm.CreateParams(var Params: TCreateParams);
+
 begin
+
   inherited CreateParams(Params);
   if not (csDesigning in ComponentState) then
     begin
@@ -362,22 +377,29 @@ end;
 
 // Sets the font of the window (the label Parentfont has been set to True)
 procedure TFloatingForm.SetFont(aValue: TFont);
+
 begin
-  if Assigned(aValue) then fLayerFont.Assign(aValue);
+
+  if Assigned(aValue) then
+    fLayerFont.Assign(aValue);
   Font := fLayerFont;
   lblSubTitle.Font := fLayerFont;
 end;
 
 
 procedure TFloatingForm.SetPreferredLanguage(aValue: string);
+
 begin
+
   FPreferredLanguage := aValue;
   fTimedText.PreferredLanguage := aValue;
 end;
 
 
 procedure TFloatingForm.SetVideoSurfaceHandle(aValue: HWND);
+
 begin
+
   hVideoSurface := aValue;
 end;
 
@@ -387,6 +409,7 @@ var
   dc: THandle; // the Display Context
 
 begin
+
   dc := GetDC(Handle);
   Result.ScrResH := GetDeviceCaps(dc,
                                   HORZRES);
@@ -396,7 +419,8 @@ begin
                                      LOGPIXELSX);
   Result.LogPixelsY := GetDeviceCaps(dc,
                                      LOGPIXELSY);
-  ReleaseDc(Handle, dc);
+  ReleaseDc(Handle,
+            dc);
 end;
 
 
@@ -425,20 +449,20 @@ begin
     begin
 
       label1.Caption := 'Position : ' + IntToStr(MfPlayerX.Position) +
-                        '   Start : ' + IntToStr(fTimedText.Track.Start) +
-                        '   Stop : ' + IntToStr(fTimedText.Track.Stop);
+        '   Start : ' + IntToStr(fTimedText.Track.Start) +
+        '   Stop : ' + IntToStr(fTimedText.Track.Stop);
 
       if (length(fTimedText.Track.TrackText) > 0) then
         label2.Caption := 'TrackID: ' + IntToStr(fTimedText.TrackIndex) +
-                          '   First textline: ' + fTimedText.Track.TrackText[0].TextLine;
+          '   First textline: ' + fTimedText.Track.TrackText[0].TextLine;
 
 
       // Keep the starting of a subtitle within a range, because the clock jitter makes the timer a bit inacurate.
       if InRange(fTimedText.Track.Start,
-                 (MfPlayerX.Position - (fClockProperties.dwClockJitter div 1000)),
-                 (MfPlayerX.Position + (fClockProperties.dwClockJitter div 1000))) then
+        (MfPlayerX.Position - (fClockProperties.dwClockJitter div 1000)),
+        (MfPlayerX.Position + (fClockProperties.dwClockJitter div 1000))) then
         begin
-          for I := 0 to Length(fTimedText.Track.TrackText) -1 do
+          for I := 0 to Length(fTimedText.Track.TrackText) - 1 do
             begin
               if (I > 0) then
                 txt := txt + LFEED;
@@ -471,15 +495,19 @@ end;
 
 
 procedure TFloatingForm.WMTimedTextUpdateEvent(var Msg: TLMessage);
+
 begin
+
   bNewTrackAvailable := True;
 end;
 
 
 procedure TFloatingForm.WMParentSizeEvent(var Msg: TLMessage);
+
 begin
+
   if GetWindowRect(hVideoSurface,
-                   VideoSurfaceRect) then
+    VideoSurfaceRect) then
     begin
       VideoSurfaceRect.NormalizeRect;
       SetFormPosition();
@@ -488,9 +516,11 @@ end;
 
 
 procedure TFloatingForm.WMParentPositionEvent(var Msg: TLMessage);
+
 begin
+
   if GetWindowRect(hVideoSurface,
-                   VideoSurfaceRect) then
+    VideoSurfaceRect) then
     begin
       VideoSurfaceRect.NormalizeRect;
       SetFormPosition();
@@ -500,19 +530,25 @@ end;
 
 
 procedure TFloatingForm.WMSizeEvent(var Msg: TLMessage);
+
 begin
+
   // Here the fontsize will be adjusted when the formsize is changing.
   if Visible then
     begin
-     // Set the bounds of the label
-     lblSubTitle.SetBounds(Left, Top, Width, Height);
-     CalculateFontSize();
+      // Set the bounds of the label
+      lblSubTitle.SetBounds(Left,
+                            Top,
+                            Width,
+                            Height);
+      CalculateFontSize();
     end;
 end;
 
 
 // Prevents this window on top of all other windows
 procedure TFloatingForm.WMSysCommand(var Msg: TWmSysCommand);
+
 begin
 
   if ((Msg.CmdType and $FFF0) = SC_ICON) then
@@ -536,6 +572,7 @@ var
   perc: Single;
 
 begin
+
   // Note:
   // Realtime video measurement: aspectratio 2,37 : 1 (which is the cinema format)
   // Calculate the fontsize as a percentage of the videosurface (aspectratio 16:9)
@@ -597,6 +634,7 @@ var
   hr: HResult;
 
 begin
+
   // input checks will be done in OpenTimedTextFile function
 
   // Load the TimedText file

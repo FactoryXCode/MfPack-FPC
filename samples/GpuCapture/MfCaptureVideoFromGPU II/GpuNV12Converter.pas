@@ -69,7 +69,7 @@ interface
 
 uses
   MfGpuCapture.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ActiveX.ObjBase,
   WinApi.ComBaseApi,
@@ -101,6 +101,7 @@ type
   ///     Call Convert(SrcBGRA, DestNV12);
 
   TGpuNV12Converter = class
+
   private
 
     FDevice: ID3D11Device;
@@ -227,23 +228,24 @@ const
     '  return float2(saturate(Cb), saturate(Cr));'#10 +
     '}'#0;
 
-{ TGpuNV12Converter }
+  { TGpuNV12Converter }
 
 constructor TGpuNV12Converter.Create(const ADevice: ID3D11Device;
                                      const AContext: ID3D11DeviceContext;
                                      AWidth,
                                      AHeight: UINT);
+
 begin
 
   inherited Create();
 
-  if ADevice = nil then
+  if (ADevice = nil) then
     raise Exception.Create('GpuNV12Converter: Device is nil');
 
-  if AContext = nil then
+  if (AContext = nil) then
     raise Exception.Create('GpuNV12Converter: Context is nil');
   if (AWidth = 0) or (AHeight = 0) or
-     ((AWidth and 1) <> 0) or ((AHeight and 1) <> 0) then
+    ((AWidth and 1) <> 0) or ((AHeight and 1) <> 0) then
     raise Exception.Create('GpuNV12Converter: NV12 dimensions must be positive and even');
 
   FDevice := ADevice;
@@ -258,6 +260,7 @@ end;
 
 
 destructor TGpuNV12Converter.Destroy;
+
 begin
 
   FSource := nil;
@@ -311,12 +314,14 @@ begin
   hr := FDevice.CreateTexture2D(texDesc,
                                 nil,
                                 @FTexY);
-  CheckHR(hr, 'GpuNV12: CreateTexture2D Y');
+  CheckHR(hr,
+          'GpuNV12: CreateTexture2D Y');
 
   hr := FDevice.CreateRenderTargetView(FTexY,
                                        nil,
                                        @FRtvY);
-  CheckHR(hr, 'GpuNV12: Create RTV Y');
+  CheckHR(hr,
+          'GpuNV12: Create RTV Y');
 
   // UV target: half resolution, R8G8_UNORM
   texDesc.Width := FWidth div 2;
@@ -326,12 +331,14 @@ begin
   hr := FDevice.CreateTexture2D(texDesc,
                                 nil,
                                 @FTexUV);
-  CheckHR(hr, 'GpuNV12: CreateTexture2D UV');
+  CheckHR(hr,
+          'GpuNV12: CreateTexture2D UV');
 
   hr := FDevice.CreateRenderTargetView(FTexUV,
                                        nil,
                                        @FRtvUV);
-  CheckHR(hr, 'GpuNV12: Create RTV UV');
+  CheckHR(hr,
+          'GpuNV12: Create RTV UV');
 
   // Staging textures for CPU read-back (Y & UV)
   ZeroMemory(@texDesc,
@@ -352,7 +359,8 @@ begin
   hr := FDevice.CreateTexture2D(texDesc,
                                 nil,
                                 @FStagingY);
-  CheckHR(hr, 'GpuNV12: CreateTexture2D StagingY');
+  CheckHR(hr,
+          'GpuNV12: CreateTexture2D StagingY');
 
   ZeroMemory(@texDesc,
              SizeOf(texDesc));
@@ -372,7 +380,8 @@ begin
   hr := FDevice.CreateTexture2D(texDesc,
                                 nil,
                                 @FStagingUV);
-  CheckHR(hr, 'GpuNV12: CreateTexture2D StagingUV');
+  CheckHR(hr,
+          'GpuNV12: CreateTexture2D StagingUV');
 end;
 
 
@@ -399,13 +408,15 @@ begin
                    0,
                    vsBlob,
                    nil);
-  CheckHR(hr, 'GpuNV12: Compile VS');
+  CheckHR(hr,
+          'GpuNV12: Compile VS');
 
   hr := FDevice.CreateVertexShader(vsBlob.GetBufferPointer,
                                    vsBlob.GetBufferSize,
                                    nil,
                                    @FVS);
-  CheckHR(hr, 'GpuNV12: Create VS');
+  CheckHR(hr,
+          'GpuNV12: Create VS');
 
   // Compile & create pixel shader for Y
   hr := D3DCompile(PAnsiChar(HLSL_PS_Y),
@@ -419,13 +430,15 @@ begin
                    0,
                    psBlobY,
                    nil);
-  CheckHR(hr, 'GpuNV12: Compile PS_Y');
+  CheckHR(hr,
+          'GpuNV12: Compile PS_Y');
 
   hr := FDevice.CreatePixelShader(psBlobY.GetBufferPointer,
                                   psBlobY.GetBufferSize,
                                   nil,
                                   @FPS_Y);
-  CheckHR(hr, 'GpuNV12: Create PS_Y');
+  CheckHR(hr,
+          'GpuNV12: Create PS_Y');
 
   // Compile & create pixel shader for UV
   hr := D3DCompile(PAnsiChar(HLSL_PS_UV),
@@ -439,16 +452,19 @@ begin
                    0,
                    psBlobUV,
                    nil);
-  CheckHR(hr, 'GpuNV12: Compile PS_UV');
+  CheckHR(hr,
+          'GpuNV12: Compile PS_UV');
 
   hr := FDevice.CreatePixelShader(psBlobUV.GetBufferPointer,
                                   psBlobUV.GetBufferSize,
                                   nil,
                                   @FPS_UV);
-  CheckHR(hr, 'GpuNV12: Create PS_UV');
+  CheckHR(hr,
+          'GpuNV12: Create PS_UV');
 
   // Input layout: POSITION (float2) + TEXCOORD (float2)
-  ZeroMemory(@inputElems, SizeOf(inputElems));
+  ZeroMemory(@inputElems,
+             SizeOf(inputElems));
 
   inputElems[0].SemanticName := 'POSITION';
   inputElems[0].SemanticIndex := 0;
@@ -471,10 +487,12 @@ begin
                                   vsBlob.GetBufferPointer,
                                   vsBlob.GetBufferSize,
                                   @FLayout);
-  CheckHR(hr, 'GpuNV12: CreateInputLayout');
+  CheckHR(hr,
+          'GpuNV12: CreateInputLayout');
 
   // Sampler: simple linear clamp
-  ZeroMemory(@sampDesc, SizeOf(sampDesc));
+  ZeroMemory(@sampDesc,
+             SizeOf(sampDesc));
   sampDesc.Filter := D3D11_FILTER_MIN_MAG_MIP_LINEAR;
   sampDesc.AddressU := D3D11_TEXTURE_ADDRESS_CLAMP;
   sampDesc.AddressV := D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -483,8 +501,10 @@ begin
   sampDesc.MinLOD := 0;
   sampDesc.MaxLOD := D3D11_FLOAT32_MAX;
 
-  hr := FDevice.CreateSamplerState(sampDesc, @FSampler);
-  CheckHR(hr, 'GpuNV12: CreateSamplerState');
+  hr := FDevice.CreateSamplerState(sampDesc,
+                                   @FSampler);
+  CheckHR(hr,
+          'GpuNV12: CreateSamplerState');
 end;
 
 
@@ -500,18 +520,27 @@ var
   ibData: D3D11_SUBRESOURCE_DATA;
 
 begin
+
   // Full-screen quad in NDC with standard UVs
-  quad[0].Pos[0] := -1.0; quad[0].Pos[1] := -1.0;  // bottom-left
-  quad[0].Tex[0] :=  0.0; quad[0].Tex[1] :=  1.0;
+  quad[0].Pos[0] := -1.0;
+  quad[0].Pos[1] := -1.0;  // bottom-left
+  quad[0].Tex[0] := 0.0;
+  quad[0].Tex[1] := 1.0;
 
-  quad[1].Pos[0] := -1.0; quad[1].Pos[1] :=  1.0;  // top-left
-  quad[1].Tex[0] :=  0.0; quad[1].Tex[1] :=  0.0;
+  quad[1].Pos[0] := -1.0;
+  quad[1].Pos[1] := 1.0;  // top-left
+  quad[1].Tex[0] := 0.0;
+  quad[1].Tex[1] := 0.0;
 
-  quad[2].Pos[0] :=  1.0; quad[2].Pos[1] := -1.0;  // bottom-right
-  quad[2].Tex[0] :=  1.0; quad[2].Tex[1] :=  1.0;
+  quad[2].Pos[0] := 1.0;
+  quad[2].Pos[1] := -1.0;  // bottom-right
+  quad[2].Tex[0] := 1.0;
+  quad[2].Tex[1] := 1.0;
 
-  quad[3].Pos[0] :=  1.0; quad[3].Pos[1] :=  1.0;  // top-right
-  quad[3].Tex[0] :=  1.0; quad[3].Tex[1] :=  0.0;
+  quad[3].Pos[0] := 1.0;
+  quad[3].Pos[1] := 1.0;  // top-right
+  quad[3].Tex[0] := 1.0;
+  quad[3].Tex[1] := 0.0;
 
   // Immutable vertex buffer for the quad
   ZeroMemory(@vbDesc,
@@ -523,13 +552,15 @@ begin
   vbDesc.CPUAccessFlags := 0;
   vbDesc.MiscFlags := 0;
 
-  ZeroMemory(@vbData, SizeOf(vbData));
+  ZeroMemory(@vbData,
+             SizeOf(vbData));
   vbData.pSysMem := @quad[0];
 
   hr := FDevice.CreateBuffer(vbDesc,
                              @vbData,
                              @FVB);
-  CheckHR(hr, 'GpuNV12: CreateBuffer VB');
+  CheckHR(hr,
+          'GpuNV12: CreateBuffer VB');
 
   // Immutable index buffer: triangle strip 0-1-2-3
   indices[0] := 0;
@@ -555,7 +586,8 @@ begin
   hr := FDevice.CreateBuffer(ibDesc,
                              @ibData,
                              @FIB);
-  CheckHR(hr, 'GpuNV12: CreateBuffer IB');
+  CheckHR(hr,
+          'GpuNV12: CreateBuffer IB');
 end;
 
 
@@ -577,23 +609,23 @@ var
 begin
 
   if (FDevice = nil) or
-     (SrcBGRA = nil) then
+    (SrcBGRA = nil) then
     Exit;
 
   FDevice.GetImmediateContext(ctx);
 
   SrcBGRA.GetDesc(sourceDesc);
   if (sourceDesc.Format <> DXGI_FORMAT_B8G8R8A8_UNORM) or
-     (sourceDesc.SampleDesc.Count <> 1) then
+    (sourceDesc.SampleDesc.Count <> 1) then
     raise Exception.Create('GpuNV12: expected a single-sample BGRA texture');
-  if FSource <> nil then
+  if (FSource <> nil) then
     begin
       FSource.GetDesc(copyDesc);
       if (copyDesc.Width <> sourceDesc.Width) or
-         (copyDesc.Height <> sourceDesc.Height) then
+        (copyDesc.Height <> sourceDesc.Height) then
         FSource := nil;
     end;
-  if FSource = nil then
+  if (FSource = nil) then
     begin
       copyDesc := sourceDesc;
       copyDesc.MipLevels := 1;
@@ -602,10 +634,19 @@ begin
       copyDesc.BindFlags := D3D11_BIND_SHADER_RESOURCE;
       copyDesc.CPUAccessFlags := 0;
       copyDesc.MiscFlags := 0;
-      CheckHR(FDevice.CreateTexture2D(copyDesc,nil,@FSource),
+      CheckHR(FDevice.CreateTexture2D(copyDesc,
+                                      nil,
+                                      @FSource),
               'GpuNV12: Create source texture');
     end;
-  ctx.CopySubresourceRegion(FSource,0,0,0,0,SrcBGRA,0,nil);
+  ctx.CopySubresourceRegion(FSource,
+                            0,
+                            0,
+                            0,
+                            0,
+                            SrcBGRA,
+                            0,
+                            nil);
 
   // Create SRV for source BGRA (desktop duplication is usually B8G8R8A8_UNORM)
   ZeroMemory(@srvDesc,
@@ -619,7 +660,8 @@ begin
   hr := FDevice.CreateShaderResourceView(FSource,
                                          @srvDesc,
                                          @srv);
-  CheckHr(hr, 'GpuNV12: CreateShaderResourceView');  //$80070057 =  E_INVALIDARG
+  CheckHr(hr,
+          'GpuNV12: CreateShaderResourceView');  //$80070057 =  E_INVALIDARG
 
   // Common IA setup
   stride := SizeOf(TVertex);
@@ -640,7 +682,9 @@ begin
   ctx.IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
   // Bind common VS, sampler & SRV
-  ctx.VSSetShader(FVS, nil, 0);
+  ctx.VSSetShader(FVS,
+                  nil,
+                  0);
 
   ctx.PSSetSamplers(0,
                     1,
@@ -672,7 +716,9 @@ begin
                   nil,
                   0);
 
-  ctx.DrawIndexed(4, 0, 0);
+  ctx.DrawIndexed(4,
+                  0,
+                  0);
 
   // ---------- Pass 2: UV -----------------------------------------------------
   ZeroMemory(@vp,
@@ -750,13 +796,15 @@ begin
                    FTexUV);
 
   // Map staging Y
-  ZeroMemory(@mapY, SizeOf(mapY));
+  ZeroMemory(@mapY,
+             SizeOf(mapY));
   hr := ctx.Map(FStagingY,
                 0,
                 D3D11_MAP_READ,
                 0,
                 mapY);
-  CheckHR(hr, 'GpuNV12: Map(FStagingY)');
+  CheckHR(hr,
+          'GpuNV12: Map(FStagingY)');
 
   try
     // Map staging UV
@@ -768,7 +816,8 @@ begin
                   D3D11_MAP_READ,
                   0,
                   mapUV);
-    CheckHR(hr, 'GpuNV12: Map(FStagingUV)');
+    CheckHR(hr,
+            'GpuNV12: Map(FStagingUV)');
 
     try
       // Source pitches
@@ -819,20 +868,23 @@ begin
               uvPitchDst);
         end;
     finally
-      ctx.Unmap(FStagingUV, 0);
+      ctx.Unmap(FStagingUV,
+                0);
     end;
   finally
-    ctx.Unmap(FStagingY, 0);
+    ctx.Unmap(FStagingY,
+              0);
   end;
 end;
 
 
 procedure TGpuNV12Converter.Convert(const SrcBGRA: ID3D11Texture2D;
                                     const DestNV12: D3D11_MAPPED_SUBRESOURCE);
+
 begin
 
   if (FDevice = nil) or
-     (SrcBGRA = nil) then
+    (SrcBGRA = nil) then
     Exit;
 
   if (DestNV12.pData = nil) or (DestNV12.RowPitch < FWidth) then
@@ -846,4 +898,3 @@ begin
 end;
 
 end.
-

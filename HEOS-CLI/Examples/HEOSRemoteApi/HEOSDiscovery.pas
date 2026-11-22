@@ -64,12 +64,13 @@ unit HEOSDiscovery;
 
 interface
 
-uses MfCastText,
-Rdj.Platform,
-LMessages,
+uses
+  MfCastText,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   Classes,
@@ -84,8 +85,9 @@ type
   end;
 
   THEOSDiscovery = class(TThread)
+
   private
-    FDevices: TArray<THEOSDevice>;
+    FDevices: TArray < THEOSDevice > ;
     FError: string;
 
   protected
@@ -94,14 +96,14 @@ type
   public
     constructor Create();
 
-    property Devices: TArray<THEOSDevice> read FDevices;
+    property Devices: TArray < THEOSDevice > read FDevices;
     property ErrorText: string read FError;
   end;
 
-  function SsdpLocation(const Response: string): string;
-  function ParseHEOSDescription(const Xml: string;
-                                const Address: string;
-                                out Device: THEOSDevice): Boolean;
+function SsdpLocation(const Response: string): string;
+function ParseHEOSDescription(const Xml: string;
+                              const Address: string;
+                              out Device: THEOSDevice): Boolean;
 
 implementation
 
@@ -116,62 +118,90 @@ uses
   {Application}
   HEOSSockets;
 
+
 function SsdpLocation(const Response: string): string;
 var
   Line: string;
+
 begin
 
   Result := '';
   if not StartsText('HTTP/1.1 200', Response) then
     Exit;
 
-  for Line in MfCastSplit(Response,#10) do
+  for Line in MfCastSplit(Response,
+                          #10) do
     if StartsText('LOCATION:', Trim(Line)) then
-      Exit(Trim(Copy(Trim(Line), 10, MaxInt)));
+      Exit(Trim(Copy(Trim(Line),
+                     10,
+                     MaxInt)));
 end;
 
-function XmlText(const Xml, Tag: string): string;
+
+function XmlText(const Xml,
+                 Tag: string): string;
 var
   StartAt: Integer;
   EndAt: Integer;
   Lower: string;
+
 begin
 
   Result := '';
   Lower := LowerCase(Xml);
-  StartAt := Pos('<' + LowerCase(Tag) + '>', Lower);
-  if StartAt = 0 then
+  StartAt := Pos('<' + LowerCase(Tag) + '>',
+                 Lower);
+  if (StartAt = 0) then
     Exit;
 
-  Inc(StartAt, Length(Tag) + 2);
-  EndAt := PosEx('</' + LowerCase(Tag) + '>', Lower, StartAt);
-  if EndAt <= StartAt then
+  Inc(StartAt,
+      Length(Tag) + 2);
+  EndAt := PosEx('</' + LowerCase(Tag) + '>',
+                 Lower,
+                 StartAt);
+  if (EndAt <= StartAt) then
     Exit;
 
-  Result := Trim(Copy(Xml, StartAt, EndAt - StartAt));
-  Result := StringReplace(Result, '&amp;', '&', [rfReplaceAll]);
-  Result := StringReplace(Result, '&lt;', '<', [rfReplaceAll]);
-  Result := StringReplace(Result, '&gt;', '>', [rfReplaceAll]);
+  Result := Trim(Copy(Xml,
+                      StartAt,
+                      EndAt - StartAt));
+  Result := StringReplace(Result,
+                          '&amp;',
+                          '&',
+                          [rfReplaceAll]);
+  Result := StringReplace(Result,
+                          '&lt;',
+                          '<',
+                          [rfReplaceAll]);
+  Result := StringReplace(Result,
+                          '&gt;',
+                          '>',
+                          [rfReplaceAll]);
 end;
 
+
 function ParseHEOSDescription(const Xml: string;
-                               const Address: string;
-                               out Device: THEOSDevice): Boolean;
+                              const Address: string;
+                              out Device: THEOSDevice): Boolean;
 var
   Description: string;
+
 begin
 
   Device := Default(THEOSDevice);
   Description := LowerCase(Xml);
-  Device.Model := XmlText(Xml, 'modelName');
+  Device.Model := XmlText(Xml,
+                          'modelName');
   Result := IPv4Valid(Address) and
-            (Pos('urn:schemas-denon-com:device:act-denon:1', Description) > 0);
+    (Pos('urn:schemas-denon-com:device:act-denon:1',
+         Description) > 0);
   if not Result then
     Exit;
 
   Device.Address := Address;
-  Device.Name := XmlText(Xml, 'friendlyName');
-  if Device.Name = '' then
+  Device.Name := XmlText(Xml,
+                         'friendlyName');
+  if (Device.Name = '') then
     Device.Name := Device.Model;
 end;
 
@@ -217,14 +247,14 @@ begin
                       SizeOf(Timeout));
 
     Request := InternetOpenUrlW(Session,
-                               PChar(Url),
-                               nil,
-                               0,
-                               INTERNET_FLAG_RELOAD or
-                               INTERNET_FLAG_NO_CACHE_WRITE or
-                               INTERNET_FLAG_NO_AUTO_REDIRECT or
-                               INTERNET_FLAG_NO_COOKIES,
-                               0);
+                                PChar(Url),
+                                nil,
+                                0,
+                                INTERNET_FLAG_RELOAD or
+      INTERNET_FLAG_NO_CACHE_WRITE or
+      INTERNET_FLAG_NO_AUTO_REDIRECT or
+      INTERNET_FLAG_NO_COOKIES,
+                                0);
     if (Request = nil) then
       Exit;
 
@@ -236,10 +266,9 @@ begin
 
         Count := 0;
 
-        if not InternetReadFile(Request,
-                                @Buffer[0],
-                                SizeOf(Buffer),
-                                Count) then
+        if not InternetReadFile(Request, @Buffer[0],
+          SizeOf(Buffer),
+          Count) then
           Exit;
 
         if (Count = 0) then
@@ -247,7 +276,7 @@ begin
 
         OldLength := Length(Data);
 
-        if OldLength + Integer(Count) > 262144 then
+        if (OldLength + Integer(Count) > 262144) then
           Exit;
 
         SetLength(Data,
@@ -269,19 +298,22 @@ begin
   end;
 end;
 
+
 constructor THEOSDiscovery.Create();
+
 begin
 
   inherited Create(True);
   FreeOnTerminate := False;
 end;
 
+
 procedure THEOSDiscovery.Execute();
 const
   Targets: array[0..0] of string = ('urn:schemas-denon-com:device:ACT-Denon:1');
 
 var
-  Sockets: TList<TSocket>;
+  Sockets: TList < TSocket > ;
   Locations: TStringList;
   Addresses: TStringList;
   Known: TStringList;
@@ -309,7 +341,7 @@ var
 
 begin
 
-  Sockets := TList<TSocket>.Create;
+  Sockets := (TList < TSocket > .Create);
   Locations := TStringList.Create;
   Addresses := TStringList.Create;
   Known := TStringList.Create;
@@ -321,12 +353,12 @@ begin
                0);
 
       SocketCheck(gethostname(Host,
-                  SizeOf(Host)),
+                              SizeOf(Host)),
                   'Get local host');
 
       Entry := gethostbyname(Host);
 
-      if Entry = nil then
+      if (Entry = nil) then
         raise Exception.Create('Could not enumerate network interfaces');
 
       FillChar(Group,
@@ -338,7 +370,7 @@ begin
       Group.sin_addr.S_addr := inet_addr('239.255.255.250');
 
       I := 0;
-      while Entry.h_addr_list[I] <> nil do
+      while (Entry.h_addr_list[I] <> nil) do
         begin
           Local := PInAddr(Entry.h_addr_list[I])^;
           Inc(I);
@@ -361,34 +393,34 @@ begin
           Addr.sin_addr := Local;
 
           if (bind(S,
-                   Addr,
-                   SizeOf(Addr)) = SOCKET_ERROR) then
+            Addr,
+            SizeOf(Addr)) = SOCKET_ERROR) then
             begin
               closesocket(S);
               Continue;
             end;
 
-        setsockopt(S,
-                   IPPROTO_IP,
-                   IP_MULTICAST_IF,
-                   PAnsiChar(@Local),
-                   SizeOf(Local));
-        Sockets.Add(S);
+          setsockopt(S,
+                     IPPROTO_IP,
+                     IP_MULTICAST_IF,
+                     PAnsiChar(@Local),
+                     SizeOf(Local));
+          Sockets.Add(S);
 
-        for Target in Targets do
-          begin
-            Search := AnsiString('M-SEARCH * HTTP/1.1'#13#10 +
-                                 'HOST: 239.255.255.250:1900'#13#10 +
-                                 'MAN: "ssdp:discover"'#13#10 + 'MX: 2'#13#10 +
-                                 'ST: ' + Target + #13#10#13#10);
-            sendto(S,
-                   Search[1],
-                   Length(Search),
-                   0,
-                   Group,
-                   SizeOf(Group));
-          end;
-      end;
+          for Target in Targets do
+            begin
+              Search := AnsiString('M-SEARCH * HTTP/1.1'#13#10 +
+                'HOST: 239.255.255.250:1900'#13#10 +
+                'MAN: "ssdp:discover"'#13#10 + 'MX: 2'#13#10 +
+                'ST: ' + Target + #13#10#13#10);
+              sendto(S,
+                     Search[1],
+                     Length(Search),
+                     0,
+                     Group,
+                     SizeOf(Group));
+            end;
+        end;
 
       if (Sockets.Count = 0) then
         raise Exception.Create('No active IPv4 network interface was found');
@@ -399,59 +431,59 @@ begin
         for S in Sockets do
           begin
             if not SocketReady(S,
-                               False,
-                               20) then
+              False,
+              20) then
               Continue;
 
-          PeerSize := SizeOf(Peer);
+            PeerSize := SizeOf(Peer);
 
-          N := recvfrom(S,
-                        Buffer,
-                        SizeOf(Buffer),
-                        0,
-                        Peer,
-                        PeerSize);
+            N := recvfrom(S,
+                          Buffer,
+                          SizeOf(Buffer),
+                          0,
+                          Peer,
+                          PeerSize);
 
-          if (N <= 0) then
-            Continue;
+            if (N <= 0) then
+              Continue;
 
-          SetString(Response,
-                    Buffer,
-                    N);
+            SetString(Response,
+                      Buffer,
+                      N);
 
-          Location := SsdpLocation(string(Response));
-          Address := string(AnsiString(inet_ntoa(Peer.sin_addr)));
+            Location := SsdpLocation(string(Response));
+            Address := string(AnsiString(inet_ntoa(Peer.sin_addr)));
 
-          // Follow only an HTTP description hosted by the responding device.
-          if not StartsText('http://', Location) then
-            Continue;
+            // Follow only an HTTP description hosted by the responding device.
+            if not StartsText('http://', Location) then
+              Continue;
 
-          Authority := Copy(Location,
-                            8,
-                            MaxInt);
+            Authority := Copy(Location,
+                              8,
+                              MaxInt);
 
-          N := Pos('/',
-                   Authority);
+            N := Pos('/',
+                     Authority);
 
-          if (N > 0) then
-            SetLength(Authority,
-                      N - 1);
+            if (N > 0) then
+              SetLength(Authority,
+                        N - 1);
 
-          N := Pos(':',
-                   Authority);
+            N := Pos(':',
+                     Authority);
 
-          if (N > 0) then
-            SetLength(Authority,
-                      N - 1);
+            if (N > 0) then
+              SetLength(Authority,
+                        N - 1);
 
-          if (Authority <> Address) or (Locations.Count >= 32) then
-            Continue;
+            if (Authority <> Address) or (Locations.Count >= 32) then
+              Continue;
 
-          if (Locations.IndexOf(Location) < 0) then
-            begin
-              Locations.Add(Location);
-              Addresses.Add(Address);
-            end;
+            if (Locations.IndexOf(Location) < 0) then
+              begin
+                Locations.Add(Location);
+                Addresses.Add(Address);
+              end;
           end;
 
       for I := 0 to Locations.Count - 1 do
@@ -465,16 +497,23 @@ begin
           Xml := FetchDescription(Locations[I]);
 
           if ParseHEOSDescription(Xml,
-                                   Address,
-                                   Device) and
-             ProbeReceiver(Address, 1255, 800, ErrorText) then
-        begin
-          // HEOS speakers also advertise the CLI; AVR control is separate.
-          Device.AvrAvailable := ProbeReceiver(Address, 23, 800, ErrorText);
-          Known.Add(Address);
-          SetLength(FDevices, Length(FDevices) + 1);
-          FDevices[High(FDevices)] := Device;
-        end;
+            Address,
+            Device) and
+            ProbeReceiver(Address,
+                          1255,
+                          800,
+                          ErrorText) then
+            begin
+              // HEOS speakers also advertise the CLI; AVR control is separate.
+              Device.AvrAvailable := ProbeReceiver(Address,
+                                                   23,
+                                                   800,
+                                                   ErrorText);
+              Known.Add(Address);
+              SetLength(FDevices,
+                        Length(FDevices) + 1);
+              FDevices[High(FDevices)] := Device;
+            end;
         end;
     except
       on E: Exception do
@@ -491,4 +530,3 @@ begin
 end;
 
 end.
-

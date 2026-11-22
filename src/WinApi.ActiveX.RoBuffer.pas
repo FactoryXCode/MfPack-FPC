@@ -77,9 +77,9 @@ uses
   WinApi.ActiveX.ObjIdl;
 
 
-  // Provides a standard IBuffer marshaler to implement the semantics
-  // associated with the IBuffer interface when it is marshaled.
-  function RoGetBufferMarshaler(out bufferMarshaler: IMarshal): HRESULT; stdcall;
+// Provides a standard IBuffer marshaler to implement the semantics
+// associated with the IBuffer interface when it is marshaled.
+function RoGetBufferMarshaler(out bufferMarshaler: IMarshal): HRESULT; stdcall;
 
 type
 
@@ -94,6 +94,7 @@ type
     function Buffer(out value: Pbyte): HRESULT; stdcall;
 
   end;
+
   IID_IBufferByteAccess = IBufferByteAccess;
 
 
@@ -109,9 +110,9 @@ const
 
 
 
-  function RoGetBufferMarshaler; external RoBufferLib name 'RoGetBufferMarshaler' ;
+function RoGetBufferMarshaler; external RoBufferLib name 'RoGetBufferMarshaler';
 
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

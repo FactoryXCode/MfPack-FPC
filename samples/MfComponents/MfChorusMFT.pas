@@ -100,6 +100,7 @@ type
 
 
   TMfChorusMFT = class(TMfAudioEffectMFTBase)
+
   private
 
     FEnabled: Boolean;
@@ -184,8 +185,10 @@ type
   published
 
     property Enabled: Boolean read FEnabled write SetEnabled;
+
   public
     property ChorusSettings: TChorusSettings read FSettings write SetSettings;
+
   published
     property RateHz: Single read FRateHz write SetRateHz;                 // 0.01..20
     property DepthMs: Single read FDepthMs write SetDepthMs;              // 0..25
@@ -200,44 +203,55 @@ implementation
 
 
 procedure TSmoothedParam.Reset(const AValue: Double);
+
 begin
+
   Cur := AValue;
   Target := AValue;
   Step := 0.0;
   SamplesLeft := 0;
 end;
 
-procedure TSmoothedParam.SetTargetRamp(const ATarget: Double; RampSamples: Integer);
+
+procedure TSmoothedParam.SetTargetRamp(const ATarget: Double;
+                                       RampSamples: Integer);
+
 begin
+
   Target := ATarget;
-  if RampSamples <= 0 then
-  begin
-    Cur := Target;
-    Step := 0.0;
-    SamplesLeft := 0;
-    Exit;
-  end;
+  if (RampSamples <= 0) then
+    begin
+      Cur := Target;
+      Step := 0.0;
+      SamplesLeft := 0;
+      Exit;
+    end;
 
   SamplesLeft := RampSamples;
   Step := (Target - Cur) / RampSamples;
 end;
 
+
 function TSmoothedParam.Tick(): Double;
+
 begin
-  if SamplesLeft > 0 then
-  begin
-    Cur := Cur + Step;
-    Dec(SamplesLeft);
-    if SamplesLeft = 0 then
-      Cur := Target;
-  end;
+
+  if (SamplesLeft > 0) then
+    begin
+      Cur := Cur + Step;
+      Dec(SamplesLeft);
+      if (SamplesLeft = 0) then
+        Cur := Target;
+    end;
   Result := Cur;
 end;
 
 { TMfChorusMFT }
 
 constructor TMfChorusMFT.Create();
+
 begin
+
   inherited Create();
 
   FEnabled := True;
@@ -271,15 +285,17 @@ end;
 
 
 destructor TMfChorusMFT.Destroy();
+
 begin
 
   SetLength(FDelayBuf,
-             0);
+            0);
   inherited;
 end;
 
 
 procedure TMfChorusMFT.SetEnabled(const AEnabled: Boolean);
+
 begin
 
   FEnabled := AEnabled;
@@ -287,14 +303,14 @@ end;
 
 
 procedure TMfChorusMFT.SetRateHz(const AValue: Single);
+
 begin
 
   // keep stable (avoid denorm/0)
   if (AValue < 0.01) then
     FRateHz := 0.01
-  else
-    if (AValue > 20.0) then
-      FRateHz := 20.0
+  else if (AValue > 20.0) then
+    FRateHz := 20.0
   else
     FRateHz := AValue;
 
@@ -303,32 +319,33 @@ end;
 
 
 procedure TMfChorusMFT.SetDepthMs(const AValue: Single);
+
 begin
 
   if (AValue < 0) then
     FDepthMs := 0
-  else
-    if (AValue > 25.0) then
-      FDepthMs := 25.0
+  else if (AValue > 25.0) then
+    FDepthMs := 25.0
   else
     FDepthMs := AValue;
 end;
 
 
 procedure TMfChorusMFT.SetBaseDelayMs(const AValue: Single);
+
 begin
 
   if (AValue < 1.0) then
     FBaseDelayMs := 1.0
-  else
-    if (AValue > 60.0) then
-      FBaseDelayMs := 60.0
+  else if (AValue > 60.0) then
+    FBaseDelayMs := 60.0
   else
     FBaseDelayMs := AValue;
 end;
 
 
 procedure TMfChorusMFT.SetMix(const AValue: Single);
+
 begin
 
   FMix := Clamp01(AValue);
@@ -336,6 +353,7 @@ end;
 
 
 procedure TMfChorusMFT.SetFeedback(const AValue: Single);
+
 begin
 
   FFeedback := ClampFB(AValue);
@@ -343,13 +361,13 @@ end;
 
 
 procedure TMfChorusMFT.SetWidthPct(const AValue: Single);
+
 begin
 
   if (AValue < 0) then
     FWidthPct := 0
-  else
-    if (AValue > 100.0) then
-      FWidthPct := 100.0
+  else if (AValue > 100.0) then
+    FWidthPct := 100.0
   else
     FWidthPct := AValue;
 end;
@@ -357,6 +375,7 @@ end;
 
 procedure TMfChorusMFT.SetStereoPhaseDeg(const AValue: Single);
 // Backward compat: degrees (0..180) -> width% (0..100)
+
 begin
 
   SetWidthPct((AValue / 180.0) * 100.0);
@@ -449,17 +468,20 @@ end;
 
 
 class function TMfChorusMFT.Clamp01(const x: Single): Single;
+
 begin
 
   if (x < 0) then
     Result := 0
-  else if (x > 1)
-    then Result := 1
-  else Result := x;
+  else if (x > 1) then
+    Result := 1
+  else
+    Result := x;
 end;
 
 
 class function TMfChorusMFT.ClampFB(const x: Single): Single;
+
 begin
 
   if (x < 0) then
@@ -472,18 +494,19 @@ end;
 
 
 class function TMfChorusMFT.NoteDivToBeats(const D: TMfChorusNoteDiv): Double;
+
 begin
 
   case D of
-    cnd1_1:   Result := 4.0;
-    cnd1_2:   Result := 2.0;
-    cnd1_4:   Result := 1.0;
-    cnd1_8:   Result := 0.5;
-    cnd1_16:  Result := 0.25;
-    cnd1_8T:  Result := 1.0 / 3.0;
+    cnd1_1: Result := 4.0;
+    cnd1_2: Result := 2.0;
+    cnd1_4: Result := 1.0;
+    cnd1_8: Result := 0.5;
+    cnd1_16: Result := 0.25;
+    cnd1_8T: Result := 1.0 / 3.0;
     cnd1_16T: Result := 1.0 / 6.0;
-  else
-    Result := 0.5;
+    else
+      Result := 0.5;
   end;
 end;
 
@@ -495,6 +518,7 @@ var
   SecPerCycle: Double;
 
 begin
+
   if (Bpm <= 1.0) then
     Exit(0.35);
 
@@ -507,7 +531,11 @@ begin
 end;
 
 
-class function TMfChorusMFT.CatmullRom(const p0, p1, p2, p3, t: Single): Single;
+class function TMfChorusMFT.CatmullRom(const p0,
+                                       p1,
+                                       p2,
+                                       p3,
+                                       t: Single): Single;
 var
   t2,
   t3: Single;
@@ -519,10 +547,10 @@ begin
   t3 := t2 * t;
 
   Result :=
-      0.5 * ((2.0 * p1) +
-             (-p0 + p2) * t +
-             (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t2 +
-             (-p0 + 3.0 * p1 - 3.0 * p2 + p3) * t3);
+    0.5 * ((2.0 * p1) +
+    (-p0 + p2) * t +
+    (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * t2 +
+    (-p0 + 3.0 * p1 - 3.0 * p2 + p3) * t3);
 end;
 
 
@@ -553,7 +581,8 @@ begin
   // Need extra headroom for Catmull-Rom taps (p0..p3) around index.
   FDelayLen := maxDelaySamples + 8;
 
-  SetLength(FDelayBuf, Channels);
+  SetLength(FDelayBuf,
+            Channels);
   for ch := 0 to Channels - 1 do
     begin
 
@@ -587,18 +616,18 @@ var
   p3: Single;
   p: Double;
 
-  // Helper
+// Helper
   function WrapIndex(i: Integer): Integer;
-    begin
-      while (i < 0) do
-        Inc(i,
-            FDelayLen);
-      while (i >= FDelayLen) do
-        Dec(i,
-            FDelayLen);
+  begin
+    while (i < 0) do
+      Inc(i,
+          FDelayLen);
+    while (i >= FDelayLen) do
+      Dec(i,
+          FDelayLen);
 
-      Result := i;
-    end;
+    Result := i;
+  end;
 
 begin
 
@@ -659,9 +688,9 @@ var
 begin
 
   if (pData = nil) or
-     (Frames <= 0) or
-     (Channels <= 0) or
-     (SampleRate <= 0) then
+    (Frames <= 0) or
+    (Channels <= 0) or
+    (SampleRate <= 0) then
     Exit;
 
   if not FEnabled then
@@ -669,8 +698,8 @@ begin
 
   // Rebuild if format changed or buffers not ready.
   if (SampleRate <> FLastSampleRate) or
-     (Channels <> FLastChannels) or
-     (FDelayLen <= 0) then
+    (Channels <> FLastChannels) or
+    (FDelayLen <= 0) then
     RebuildState(SampleRate,
                  Channels)
   else
@@ -706,10 +735,12 @@ begin
 
       // delays in samples
       dlyL := baseS + depthS * lfoL;
-      if dlyL < 1.0 then dlyL := 1.0;
+      if (dlyL < 1.0) then
+        dlyL := 1.0;
 
       dlyR := baseS + depthS * lfoR;
-      if dlyR < 1.0 then dlyR := 1.0;
+      if (dlyR < 1.0) then
+        dlyR := 1.0;
 
       // Process channels (supports mono/stereo/multi, stereo gets width via phase offset)
       for ch := 0 to Channels - 1 do
@@ -723,7 +754,8 @@ begin
             readPos := FWritePos - dlyL;
 
           // Read delayed sample
-          y := ReadFrac(ch, readPos);
+          y := ReadFrac(ch,
+                        readPos);
 
           // Write into delay line with feedback
           FDelayBuf[ch][FWritePos] := x + (y * (fb * 1.0));
@@ -745,10 +777,9 @@ begin
 
       // advance LFO phase
       FPhase := FPhase + FPhaseInc;
-      if FPhase >= (2.0 * PI) then
+      if (FPhase >= (2.0 * PI)) then
         FPhase := FPhase - (2.0 * PI);
     end;
 end;
 
 end.
-

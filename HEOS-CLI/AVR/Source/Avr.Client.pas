@@ -64,8 +64,9 @@ unit Avr.Client;
 
 interface
 
-uses Heos.Fpc.Platform,
-{System}
+uses
+  Heos.Fpc.Platform,
+  {System}
   SysUtils,
   Classes,
   SyncObjs,
@@ -83,6 +84,7 @@ type
                      amConnection);
 
   TAvrMessage = class
+
   public
 
     Kind: TAvrMessageKind;
@@ -105,6 +107,7 @@ type
   TAvrClient = class;
 
   TAvrWorker = class(TThread)
+
   private
 
     FOwner: TAvrClient;
@@ -117,12 +120,13 @@ type
     procedure CloseConnection();
     function OpenConnection(): Boolean;
     function Cancelled(): Boolean;
-    
-    function ReadValue(ATimeout: Integer; out AValue: TAvrValue): Boolean;
-    
+
+    function ReadValue(ATimeout: Integer;
+                       out AValue: TAvrValue): Boolean;
+
     function Matches(const ACommand: TAvrCommand;
                      const AValue: TAvrValue): Boolean;
-    
+
     procedure Process(const APending: TAvrPending);
 
   protected
@@ -136,6 +140,7 @@ type
   end;
 
   TAvrClient = class
+
   private
 
     FHost: string;
@@ -145,8 +150,8 @@ type
     FLock: SyncObjs.TCriticalSection;
     FWake: TEvent;
     FWorker: TAvrWorker;
-    FPending: TQueue<TAvrPending>;
-    FMessages: TQueue<TAvrMessage>;
+    FPending: TQueue < TAvrPending > ;
+    FMessages: TQueue < TAvrMessage > ;
     FNextId: UInt64;
     FGeneration: Cardinal;
     FConnected: Boolean;
@@ -169,13 +174,13 @@ type
     constructor Create(const AHost: string;
                        APort: Word = 23;
                        AConnectTimeoutMs: Integer = 2500);
-                       
+
     destructor Destroy(); override;
 
     function Connect(): UInt64;
     procedure Disconnect();
     function Enqueue(const ACommand: TAvrCommand): UInt64;
-    function EnqueueBatch(const ACommands: array of TAvrCommand): TArray<UInt64>;
+    function EnqueueBatch(const ACommands: array of TAvrCommand): TArray < UInt64 > ;
     function TakeMessage(out AMessage: TAvrMessage): Boolean;
     procedure Dispatch(AMaximum: Integer = 100); reintroduce;
 
@@ -194,7 +199,6 @@ type
 implementation
 
 uses
-
   Windows,
   Math,
   StrUtils;
@@ -205,12 +209,13 @@ function GetTickCount64: UInt64; stdcall; external 'kernel32.dll';
 constructor TAvrClient.Create(const AHost: string;
                               APort: Word;
                               AConnectTimeoutMs: Integer);
+
 begin
 
   inherited Create;
   if not IPv4Valid(AHost) or (APort = 0) then
     raise EArgumentException.Create('A valid AVR IPv4 address and port are required.');
-  
+
   if (AConnectTimeoutMs < 100) or (AConnectTimeoutMs > 60000) then
     raise EArgumentOutOfRangeException.Create('AVR connect timeout must be 100 to 60000 ms.');
 
@@ -219,14 +224,14 @@ begin
   FConnectTimeoutMs := AConnectTimeoutMs;
   FTimeoutMs := 2500;
   FLock := SyncObjs.TCriticalSection.Create;
-  
+
   FWake := TEvent.Create(nil,
                          False,
                          False,
                          '');
-                         
-  FPending := TQueue<TAvrPending>.Create;
-  FMessages := TQueue<TAvrMessage>.Create;
+
+  FPending := (TQueue < TAvrPending > .Create);
+  FMessages := (TQueue < TAvrMessage > .Create);
   FWorker := TAvrWorker.Create(Self);
   FWorker.Start;
 end;
@@ -264,6 +269,7 @@ end;
 
 
 procedure TAvrClient.SetTimeoutMs(AValue: Integer);
+
 begin
 
   if (AValue < 100) or (AValue > 60000) then
@@ -273,7 +279,7 @@ begin
 end;
 
 
-function TAvrClient.EnqueueBatch(const ACommands: array of TAvrCommand): TArray<UInt64>;
+function TAvrClient.EnqueueBatch(const ACommands: array of TAvrCommand): TArray < UInt64 > ;
 var
   i: Integer;
   Pending: TAvrPending;
@@ -284,7 +290,8 @@ begin
   for i := 0 to High(ACommands) do
     ACommands[i].Validate();
 
-  SetLength(Result, Length(ACommands));
+  SetLength(Result,
+            Length(ACommands));
   FLock.Acquire;
 
   try
@@ -295,7 +302,8 @@ begin
         Message.Kind := amError;
         Message.ErrorText := 'AVR queue is full; command was not sent.';
         Post(Message);
-        SetLength(Result, 0);
+        SetLength(Result,
+                  0);
         Exit;
       end;
 
@@ -319,16 +327,20 @@ end;
 
 function TAvrClient.Enqueue(const ACommand: TAvrCommand): UInt64;
 var
-  Ids: TArray<UInt64>;
+  Ids: TArray < UInt64 > ;
 
 begin
 
   Ids := EnqueueBatch([ACommand]);
-  if Length(Ids) = 0 then Result := 0 else Result := Ids[0];
+  if (Length(Ids) = 0) then
+    Result := 0
+  else
+    Result := Ids[0];
 end;
 
 
 function TAvrClient.Connect(): UInt64;
+
 begin
 
   Result := Enqueue(TAvrCommands.GetPower());
@@ -368,13 +380,14 @@ end;
 
 
 function TAvrClient.Generation(): Cardinal;
+
 begin
 
   FLock.Acquire;
-  
+
   try
     Result := FGeneration;
-    
+
   finally
     FLock.Release;
   end;
@@ -382,13 +395,14 @@ end;
 
 
 function TAvrClient.GetConnected(): Boolean;
+
 begin
 
   FLock.Acquire;
-  
+
   try
     Result := FConnected;
-    
+
   finally
     FLock.Release;
   end;
@@ -396,13 +410,14 @@ end;
 
 
 function TAvrClient.GetDropped(): UInt64;
+
 begin
 
   FLock.Acquire;
-  
+
   try
     Result := FDropped;
-    
+
   finally
     FLock.Release;
   end;
@@ -417,11 +432,11 @@ var
 begin
 
   FLock.Acquire;
-  
+
   try
     Changed := (FConnected <> AValue);
     FConnected := AValue;
-    
+
   finally
     FLock.Release;
   end;
@@ -438,13 +453,14 @@ end;
 
 
 procedure TAvrClient.Post(AMessage: TAvrMessage);
+
 begin
 
   FLock.Acquire;
   try
 
     if (FMessages.Count >= 4096) and ((AMessage.Kind in [amEvent, amConnection]) or
-       ((AMessage.Kind = amError) and (AMessage.RequestId = 0))) then
+      ((AMessage.Kind = amError) and (AMessage.RequestId = 0))) then
       begin
 
         Inc(FDropped);
@@ -452,7 +468,7 @@ begin
       end
     else
       FMessages.Enqueue(AMessage);
-      
+
   finally
     FLock.Release;
   end;
@@ -460,6 +476,7 @@ end;
 
 
 function TAvrClient.Pop(out APending: TAvrPending): Boolean;
+
 begin
 
   FLock.Acquire;
@@ -468,7 +485,7 @@ begin
     Result := (FPending.Count > 0);
     if Result then
       APending := FPending.Dequeue;
-      
+
   finally
     FLock.Release;
   end;
@@ -476,6 +493,7 @@ end;
 
 
 function TAvrClient.TakeMessage(out AMessage: TAvrMessage): Boolean;
+
 begin
 
   AMessage := nil;
@@ -485,7 +503,7 @@ begin
     Result := (FMessages.Count > 0);
     if Result then
       AMessage := FMessages.Dequeue;
-      
+
   finally
     FLock.Release;
   end;
@@ -509,17 +527,17 @@ begin
 
         case Message.Kind of
           amReply: if Assigned(FOnReply) then
-                     FOnReply(Self,
-                              Message);
+              FOnReply(Self,
+                       Message);
           amEvent: if Assigned(FOnEvent) then
-                     FOnEvent(Self,
-                              Message);
+              FOnEvent(Self,
+                       Message);
           amError: if Assigned(FOnError) then
-                     FOnError(Self,
-                              Message);
+              FOnError(Self,
+                       Message);
           amConnection: if Assigned(FOnConnection) then
-                          FOnConnection(Self,
-                                        Message);
+              FOnConnection(Self,
+                            Message);
         end;
 
       finally
@@ -531,10 +549,11 @@ end;
 
 
 constructor TAvrWorker.Create(AOwner: TAvrClient);
+
 begin
 
   inherited Create(True);
-  
+
   FOwner := AOwner;
   FreeOnTerminate := False;
   FMaximumVolume := 98;
@@ -542,15 +561,17 @@ end;
 
 
 destructor TAvrWorker.Destroy();
+
 begin
 
   FConnection.Free;
-  
+
   inherited;
 end;
 
 
 function TAvrWorker.Cancelled(): Boolean;
+
 begin
 
   Result := Terminated or (FGeneration <> FOwner.Generation());
@@ -558,6 +579,7 @@ end;
 
 
 procedure TAvrWorker.CloseConnection();
+
 begin
 
   FreeAndNil(FConnection);
@@ -567,13 +589,15 @@ end;
 
 
 function TAvrWorker.OpenConnection(): Boolean;
+
 begin
 
   if not Assigned(FConnection) then
     begin
 
       if not THeosConnection.TryConnect(FOwner.FHost, FOwner.FPort,
-                                        FOwner.FConnectTimeoutMs, FConnection, FError) then Exit(False);
+        FOwner.FConnectTimeoutMs, FConnection, FError) then
+        Exit(False);
       FOwner.SetConnected(True);
     end;
   Result := True;
@@ -590,20 +614,24 @@ begin
 
   Result := False;
   AValue := Default(TAvrValue);
-  if not FConnection.TryReadLine(#13, ATimeout, Line, FError) then Exit;
+  if not FConnection.TryReadLine(#13, ATimeout, Line, FError) then
+    Exit;
   Line := Trim(Line);
 
   Result := (Line <> '');
   AValue := Default(TAvrValue);
-  
+
   if not Result then
     Exit;
 
   if (Line = '?') or (Line = 'ERROR') then
-    begin FError := 'Receiver rejected the AVR command.'; Exit(False); end;
+    begin
+      FError := 'Receiver rejected the AVR command.';
+      Exit(False);
+    end;
 
   AValue := ParseAvrValue(Line);
-  
+
   if (AValue.Kind = avVolumeLimit) then
     FMaximumVolume := AValue.Number;
 
@@ -633,24 +661,24 @@ begin
       Value := Copy(AValue.RawText,
                     Length(ACommand.ExpectedPrefix) + 1,
                     MaxInt);
-      
+
       if (ACommand.ExpectedValue <> '') then
         Result := Result and (Value = ACommand.ExpectedValue);
-      
+
       Exit;
     end;
 
   Result := (AValue.Kind = ACommand.ReplyKind);
-  
+
   if not Result or (ACommand.ExpectedValue = '') then
     Exit;
 
   if (ACommand.ReplyKind = avVolume) and AValue.HasNumber and
-     TryAvrLevel(ACommand.ExpectedValue,
-                 Expected) then
+    TryAvrLevel(ACommand.ExpectedValue,
+                Expected) then
     Result := SameValue(AValue.Number,
                         Min(Expected,
-                        FMaximumVolume),
+                            FMaximumVolume),
                         0.001)
   else
     Result := (AValue.Value = ACommand.ExpectedValue);
@@ -662,41 +690,59 @@ var
   Message: TAvrMessage;
   Sent, Success: Boolean;
 
+
   function ExecuteCommand(): Boolean;
   var
     Value, Candidate: TAvrValue;
     Deadline: UInt64;
   begin
     Result := False;
-    if not OpenConnection() then Exit;
+    if not OpenConnection() then
+      Exit;
     Deadline := GetTickCount64 + 80;
     while not Cancelled() and (GetTickCount64 < Deadline) do
-      if not ReadValue(10, Value) then Break;
-    if FError <> '' then Exit;
-    while not Cancelled() and (GetTickCount64 < FNextSendAt) do Sleep(10);
+      if not ReadValue(10, Value) then
+        Break;
+    if (FError <> '') then
+      Exit;
+    while not Cancelled() and (GetTickCount64 < FNextSendAt) do
+      Sleep(10);
     if Cancelled() then
-      begin FError := 'AVR request cancelled before transmission.'; Exit; end;
+      begin
+        FError := 'AVR request cancelled before transmission.';
+        Exit;
+      end;
     Sent := True;
-    if not FConnection.TrySend(AnsiString(APending.Command.Text) + #13, FError) then Exit;
+    if not FConnection.TrySend(AnsiString(APending.Command.Text) + #13, FError) then
+      Exit;
     FNextSendAt := GetTickCount64 + UInt64(APending.Command.DelayMs);
     Deadline := GetTickCount64 + UInt64(FOwner.FTimeoutMs);
     Candidate := Default(TAvrValue);
     repeat
       if Cancelled() then
-        begin FError := 'AVR request cancelled.'; Exit; end;
+        begin
+          FError := 'AVR request cancelled.';
+          Exit;
+        end;
       if ReadValue(50, Value) then
         begin
           if (Value.Kind = APending.Command.ReplyKind) or (APending.Command.ReplyKind = avUnknown) then
             Candidate := Value;
           if Matches(APending.Command, Candidate) then
-            begin Message.Kind := amReply; Message.Value := Candidate; Exit(True); end;
+            begin
+              Message.Kind := amReply;
+              Message.Value := Candidate;
+              Exit(True);
+            end;
         end;
-      if FError <> '' then Exit;
-    until GetTickCount64 >= Deadline;
+      if (FError <> '') then
+        Exit;
+    until (GetTickCount64 >= Deadline);
     FError := 'Receiver did not confirm the AVR command before timeout.';
   end;
 
 begin
+
   Sent := False;
   Success := False;
   FError := '';
@@ -707,7 +753,8 @@ begin
     try
       Success := ExecuteCommand();
     except
-      on E: Exception do FError := E.Message;
+      on E: Exception do
+        FError := E.Message;
     end;
     if not Success then
       begin
@@ -746,37 +793,37 @@ begin
 
         if FOwner.Pop(Pending) then
           Process(Pending)
+        else if Assigned(FConnection) then
+          begin
+
+            try
+
+              FError := '';
+              ReadValue(50,
+                        Value);
+              if (FError <> '') then
+                begin
+                  Message := TAvrMessage.Create;
+                  Message.Kind := amError;
+                  Message.ErrorText := FError;
+                  CloseConnection();
+                  FOwner.Post(Message);
+                end;
+            except
+
+              on E: Exception do
+                begin
+
+                  Message := TAvrMessage.Create;
+                  Message.Kind := amError;
+                  Message.ErrorText := E.Message;
+                  CloseConnection();
+                  FOwner.Post(Message);
+                end;
+            end;
+          end
         else
-          if Assigned(FConnection) then
-            begin
-
-              try
-
-                FError := '';
-                ReadValue(50, Value);
-                if FError <> '' then
-                  begin
-                    Message := TAvrMessage.Create;
-                    Message.Kind := amError;
-                    Message.ErrorText := FError;
-                    CloseConnection();
-                    FOwner.Post(Message);
-                  end;
-              except
-
-                on E: Exception do
-                  begin
-
-                    Message := TAvrMessage.Create;
-                    Message.Kind := amError;
-                    Message.ErrorText := E.Message;
-                    CloseConnection();
-                    FOwner.Post(Message);
-                  end;
-              end;
-            end
-          else
-            FOwner.FWake.WaitFor(50);
+          FOwner.FWake.WaitFor(50);
       end;
   finally
 

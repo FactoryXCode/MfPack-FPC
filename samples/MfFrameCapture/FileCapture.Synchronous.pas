@@ -67,7 +67,7 @@ interface
 
 uses
   MfCapturePlatform,
-{Winapi}
+  {Winapi}
   Windows,
   WinApi.MediaFoundationApi.MfReadWrite,
   WinApi.MediaFoundationApi.MfObjects,
@@ -78,11 +78,13 @@ uses
 
 type
   TFileCaptureSync = class(TFileCapture)
+
   protected
     procedure ProcessSample(ASample: IMFSample;
                             ATimeStamp: TTimeSpan); override;
     function ReadNextSample(out AFlags: DWord;
                             out ASample: IMFSample): Boolean;
+
   public
     procedure RequestFrame(APosition: TTimeSpan); override;
     procedure Flush; override;
@@ -103,7 +105,7 @@ uses
   {Application}
   Support;
 
-{ TFileCaptureSync }
+  { TFileCaptureSync }
 
 procedure TFileCaptureSync.RequestFrame(APosition: TTimeSpan);
 var
@@ -116,6 +118,7 @@ var
   dwFlags: DWord;
 
 begin
+
   inherited;
   dSampleTimeStamp := 0;
 
@@ -125,49 +128,57 @@ begin
   bReachedMaxFrames := False;
 
   while not bFound and not bEndOfStream and (FramesSkipped < MaxFramesToSkip) and ReadNextSample(dwFlags, pSample) do
-  begin
-    bEndOfStream := ((dwFlags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0);
+    begin
+      bEndOfStream := ((dwFlags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0);
 
-    if ((dwFlags and MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) <> 0) then
-      begin
-        // Type change. Get the new format.
-        Log('Media Format has changed, getting new format',
-            ltInfo);
-        HandleMediaFormatChanged;
-      end
-    else if Assigned(pSample) and SUCCEEDED(pSample.GetSampleTime(@dSampleTimeStamp)) then
-      begin
-        tsSampleTime := TTimeSpan.FromTicks(dSampleTimeStamp);
-        bFound := bEndOfStream or SampleWithinTolerance(APosition, tsSampleTime);
-        if bFound then
-          ProcessSample(pSample, tsSampleTime)
-        else
-          begin
-            HandleFrameSkipped;
-            Log(Format('Skipped frame. Not within requested accuracy. Sample time stamp: %s. Frames Skipped: %d',
-                       [TimeSpanToDisplay(tsSampleTime, True), FramesSkipped]), ltDebug);
-          end;
-      end;
+      if ((dwFlags and MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) <> 0) then
+        begin
+          // Type change. Get the new format.
+          Log('Media Format has changed, getting new format',
+              ltInfo);
+          HandleMediaFormatChanged;
+        end
+      else if Assigned(pSample) and SUCCEEDED(pSample.GetSampleTime(@dSampleTimeStamp)) then
+        begin
+          tsSampleTime := TTimeSpan.FromTicks(dSampleTimeStamp);
+          bFound := bEndOfStream or SampleWithinTolerance(APosition,
+                                                          tsSampleTime);
+          if bFound then
+            ProcessSample(pSample,
+                          tsSampleTime)
+          else
+            begin
+              HandleFrameSkipped;
+              Log(Format('Skipped frame. Not within requested accuracy. Sample time stamp: %s. Frames Skipped: %d',
+                         [TimeSpanToDisplay(tsSampleTime,
+                                            True), FramesSkipped]),
+                  ltDebug);
+            end;
+        end;
 
-    bReachedMaxFrames := (FramesSkipped = MaxFramesToSkip);
+      bReachedMaxFrames := (FramesSkipped = MaxFramesToSkip);
 
-    if not bReachedMaxFrames then
-      SafeRelease(pSample);
+      if not bReachedMaxFrames then
+        SafeRelease(pSample);
 
-  end;
+    end;
 
   if not bFound then
     begin
       if bReachedMaxFrames and Assigned(pSample) then
         begin
           Log(Format('Reached maximum frames to skip %d. Using last frame returned at: %s',
-                     [FramesSkipped, TimeSpanToDisplay(tsSampleTime, True)]), ltWarning);
+                     [FramesSkipped, TimeSpanToDisplay(tsSampleTime,
+                                                       True)]),
+              ltWarning);
           ProcessSample(pSample,
                         tsSampleTime);
         end
       else
-        Log(Format('Frame not found. Frames Skipped: %d', [FramesSkipped]), ltWarning);
-  end;
+        Log(Format('Frame not found. Frames Skipped: %d',
+                   [FramesSkipped]),
+            ltWarning);
+    end;
 end;
 
 
@@ -177,33 +188,36 @@ var
   hr: HResult;
 
 begin
-try
-  Result := True;
 
-  if Assigned(SourceReader) then
-    hr := SourceReader.ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
-                                  0,
-                                  Nil,
-                                  @AFlags,
-                                  Nil,
-                                  @ASample)
-  else
-    hr := E_POINTER;
+  try
+    Result := True;
 
-  // Handle normal exceptions.
-  Result := SUCCEEDED(hr);
-  if FAILED(hr) then
-    HandleSampleReadError(hr);
-except
-  // Do nothing, proceed with E_ABORT.
-  Result := False;
-end;
+    if Assigned(SourceReader) then
+      hr := SourceReader.ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+                                    0,
+                                    Nil,
+                                    @AFlags,
+                                    Nil,
+                                    @ASample)
+    else
+      hr := E_POINTER;
+
+    // Handle normal exceptions.
+    Result := SUCCEEDED(hr);
+    if FAILED(hr) then
+      HandleSampleReadError(hr);
+  except
+    // Do nothing, proceed with E_ABORT.
+    Result := False;
+  end;
 end;
 
 
 procedure TFileCaptureSync.ProcessSample(ASample: IMFSample;
                                          ATimeStamp: TTimeSpan);
+
 begin
+
   inherited;
   ReturnSample(ASample,
                ATimeStamp);
@@ -215,6 +229,7 @@ var
   hr: HRESULT;
 
 begin
+
   inherited;
 
   Log('Flush - Begin',

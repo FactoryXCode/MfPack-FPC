@@ -71,7 +71,7 @@ uses
   MfGpuCapture.Platform,
   MfGpuCapture.Events,
   WinApi.WinApiTypes,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ActiveX.ObjBase,
   WinApi.ComBaseApi,
@@ -100,6 +100,7 @@ type
 
 
   TWasapiLoopbackCapture = class
+
   private
 
     FOnData: TWasapiDataEvent;
@@ -116,7 +117,7 @@ type
     FEventHandle: THandle;
 
     // Device
-    FAudioDeviceId : string;
+    FAudioDeviceId: string;
 
     procedure CaptureThreadProc();
     procedure InitClient();
@@ -142,23 +143,29 @@ implementation
 uses
   Dialogs;
 
+
 constructor TWasapiLoopbackCapture.Create(const aDeviceId: string);
+
 begin
 
   inherited Create();
 
   FAudioDeviceId := ADeviceId;
   FStopEvent := TMfGpuEvent.Create(nil,
-                              True,
-                              False,
-                              '');
-  FReadyEvent := TMfGpuEvent.Create(nil,True,False,'');
+                                   True,
+                                   False,
+                                   '');
+  FReadyEvent := TMfGpuEvent.Create(nil,
+                                    True,
+                                    False,
+                                    '');
   FEventHandle := 0;
   FWaveFormat := nil;
 end;
 
 
 destructor TWasapiLoopbackCapture.Destroy();
+
 begin
 
   Stop;
@@ -184,7 +191,8 @@ begin
                          CLSCTX_INPROC_SERVER,
                          IID_IMMDeviceEnumerator,
                          enum);
-  CheckHR(hr, 'CoCreateInstance(IMMDeviceEnumerator)');
+  CheckHR(hr,
+          'CoCreateInstance(IMMDeviceEnumerator)');
 
   // Select the audio device to capture from.
   if (FAudioDeviceId = '') then
@@ -192,30 +200,37 @@ begin
       hr := enum.GetDefaultAudioEndpoint(eRender,
                                          eMultimedia,
                                          FDevice);
-      CheckHR(hr, 'GetDefaultAudioEndpoint');
+      CheckHR(hr,
+              'GetDefaultAudioEndpoint');
     end
   else
     begin
       hr := enum.GetDevice(PWideChar(FAudioDeviceId),
                            FDevice);
-      CheckHR(hr, 'IMMDeviceEnumerator.GetDevice')
+      CheckHR(hr,
+              'IMMDeviceEnumerator.GetDevice')
     end;
 
   hr := FDevice.Activate(IID_IAudioClient,
                          CLSCTX_INPROC_SERVER,
                          nil,
                          Pointer(FAudioClient));
-  CheckHR(hr, 'IMMDevice.Activate(IAudioClient)');
+  CheckHR(hr,
+          'IMMDevice.Activate(IAudioClient)');
 
   hr := FAudioClient.GetMixFormat(FWaveFormat);
-  CheckHR(hr, 'IAudioClient.GetMixFormat');
+  CheckHR(hr,
+          'IAudioClient.GetMixFormat');
 
   // 100ms buffer
   bufferDur := 1000000; // 100ms in 100ns units
 
   // Event-driven loopback
-  FEventHandle := CreateEventW(nil, False, False, nil);
-  if FEventHandle = 0 then
+  FEventHandle := CreateEventW(nil,
+                               False,
+                               False,
+                               nil);
+  if (FEventHandle = 0) then
     RaiseLastOSError;
 
   hr := FAudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED,
@@ -224,14 +239,17 @@ begin
                                 0,
                                 FWaveFormat,
                                 nil);
-  CheckHR(hr, 'IAudioClient.Initialize');
+  CheckHR(hr,
+          'IAudioClient.Initialize');
 
   hr := FAudioClient.SetEventHandle(FEventHandle);
-  CheckHR(hr, 'IAudioClient.SetEventHandle');
+  CheckHR(hr,
+          'IAudioClient.SetEventHandle');
 
   hr := FAudioClient.GetService(IID_IAudioCaptureClient,
                                 FCaptureClient);
-  CheckHR(hr, 'IAudioClient.GetService(IAudioCaptureClient)');
+  CheckHR(hr,
+          'IAudioClient.GetService(IAudioCaptureClient)');
 end;
 
 
@@ -266,7 +284,9 @@ end;
 
 
 procedure TWasapiLoopbackCapture.Start();
+
 begin
+
   if Assigned(FThread) then
     Exit;
 
@@ -277,12 +297,12 @@ begin
   FThread := TGpuCaptureWorker.Create(CaptureThreadProc);
   FThread.FreeOnTerminate := False;
   FThread.Start;
-  if FReadyEvent.WaitFor(5000) <> wrSignaled then
+  if (FReadyEvent.WaitFor(5000) <> wrSignaled) then
     begin
       Stop();
       raise Exception.Create('WASAPI startup timed out');
     end;
-  if FLastError <> '' then
+  if (FLastError <> '') then
     begin
       Stop();
       raise Exception.Create(FLastError);
@@ -291,6 +311,7 @@ end;
 
 
 procedure TWasapiLoopbackCapture.Stop();
+
 begin
 
   if not Assigned(FThread) then
@@ -318,90 +339,95 @@ begin
   try
 
     try
-    InitClient();
+      InitClient();
 
-    hr := FAudioClient.Start();
-    CheckHR(hr, 'IAudioClient.Start');
-    FReadyEvent.SetEvent();
+      hr := FAudioClient.Start();
+      CheckHR(hr,
+              'IAudioClient.Start');
+      FReadyEvent.SetEvent();
 
-    while (FStopEvent.WaitFor(0) = wrTimeout) do
-      begin
+      while (FStopEvent.WaitFor(0) = wrTimeout) do
+        begin
 
-        waitRes := WaitForSingleObject(FEventHandle,
-                                       50);
-        if (waitRes = WAIT_TIMEOUT) then
-          Continue;
+          waitRes := WaitForSingleObject(FEventHandle,
+                                         50);
+          if (waitRes = WAIT_TIMEOUT) then
+            Continue;
 
-        // Drain all available packets
-        hr := FCaptureClient.GetNextPacketSize(packetFrames);
-        CheckHR(hr, 'IAudioCaptureClient.GetNextPacketSize');
+          // Drain all available packets
+          hr := FCaptureClient.GetNextPacketSize(packetFrames);
+          CheckHR(hr,
+                  'IAudioCaptureClient.GetNextPacketSize');
 
-        while (packetFrames > 0) do
-          begin
+          while (packetFrames > 0) do
+            begin
 
-            pData := nil;
-            numFrames := 0;
-            flags := 0;
+              pData := nil;
+              numFrames := 0;
+              flags := 0;
 
-            hr := FCaptureClient.GetBuffer(pData,
-                                           numFrames,
-                                           flags,
-                                           nil,
-                                           nil);
-            CheckHR(hr, 'IAudioCaptureClient.GetBuffer');
+              hr := FCaptureClient.GetBuffer(pData,
+                                             numFrames,
+                                             flags,
+                                             nil,
+                                             nil);
+              CheckHR(hr,
+                      'IAudioCaptureClient.GetBuffer');
 
-            try
-              if Assigned(FOnData) and (numFrames > 0) then
-                begin
-                  // Write silence.
-                  if ((flags and AUDCLNT_BUFFERFLAGS_SILENT) <> 0) then
-                    begin
+              try
+                if Assigned(FOnData) and (numFrames > 0) then
+                  begin
+                    // Write silence.
+                    if ((flags and AUDCLNT_BUFFERFLAGS_SILENT) <> 0) then
+                      begin
 
-                      needBytes := Integer(numFrames) * FWaveFormat.nBlockAlign;
-                      if (Length(silentBuf) <> needBytes) then
-                        SetLength(silentBuf,
-                                  needBytes);
+                        needBytes := Integer(numFrames) * FWaveFormat.nBlockAlign;
+                        if (Length(silentBuf) <> needBytes) then
+                          SetLength(silentBuf,
+                                    needBytes);
 
-                      FillChar(silentBuf[0],
-                               needBytes,
-                               0);
+                        FillChar(silentBuf[0],
+                                 needBytes,
+                                 0);
 
+                        FOnData(Self,
+                                @silentBuf[0],
+                                numFrames,
+                                FWaveFormat);
+                      end
+                    else
                       FOnData(Self,
-                              @silentBuf[0],
+                              pData,
                               numFrames,
                               FWaveFormat);
-                    end
-                  else
-                    FOnData(Self,
-                            pData,
-                            numFrames,
-                            FWaveFormat);
-                end;
-            finally
+                  end;
+              finally
 
-              hr := FCaptureClient.ReleaseBuffer(numFrames);
-              CheckHR(hr, 'IAudioCaptureClient.ReleaseBuffer');
+                hr := FCaptureClient.ReleaseBuffer(numFrames);
+                CheckHR(hr,
+                        'IAudioCaptureClient.ReleaseBuffer');
+              end;
+
+              hr := FCaptureClient.GetNextPacketSize(packetFrames);
+              CheckHR(hr,
+                      'IAudioCaptureClient.GetNextPacketSize');
             end;
+        end;
 
-        hr := FCaptureClient.GetNextPacketSize(packetFrames);
-        CheckHR(hr, 'IAudioCaptureClient.GetNextPacketSize');
+      try
+
+        FAudioClient.Stop();
+      except
+        // Do nothing.
       end;
-    end;
-
-    try
-
-      FAudioClient.Stop();
-    except
-      // Do nothing.
-    end;
 
     except
-      on E: Exception do FLastError := E.ClassName + ': ' + E.Message;
+      on E: Exception do
+        FLastError := E.ClassName + ': ' + E.Message;
     end;
   finally
     FreeClient();
     FReadyEvent.SetEvent();
-
 
   end;
 end;

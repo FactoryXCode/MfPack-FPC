@@ -75,9 +75,13 @@ unit WinApi.MSXML;
 
 interface
 
-uses Windows,WinApi.WinApiTypes,WinApi.Unknwn,WinApi.ActiveX.OaIdl;
+uses
+  Windows,
+  WinApi.WinApiTypes,
+  WinApi.Unknwn,
+  WinApi.ActiveX.OaIdl;
 
-{$PACKENUM 4}
+  {$PACKENUM 4}
 
 type
   DOMNodeType = (NODE_INVALID = 0,
@@ -93,7 +97,7 @@ type
                  NODE_DOCUMENT_TYPE = 10,
                  NODE_DOCUMENT_FRAGMENT = 11,
                  NODE_NOTATION = 12
-                );
+    );
 
   IXMLDOMImplementation = interface;
   IXMLDOMNode = interface;

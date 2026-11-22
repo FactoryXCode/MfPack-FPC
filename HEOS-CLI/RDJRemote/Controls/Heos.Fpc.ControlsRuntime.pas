@@ -1,8 +1,15 @@
 unit Heos.Fpc.ControlsRuntime;
 {$mode delphiunicode}
 interface
+
 implementation
-uses Classes,HEOSButton,HEOSLevelProgressBar,HEOSTrackBar;
+
+uses
+  Classes,
+  HEOSButton,
+  HEOSLevelProgressBar,
+  HEOSTrackBar;
+
 initialization
- RegisterClasses([TDnButton,TDnLevelProgressBar,TDnTrackBar]);
+  RegisterClasses([TDnButton, TDnLevelProgressBar, TDnTrackBar]);
 end.

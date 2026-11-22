@@ -67,7 +67,7 @@ interface
 
 uses
   MfLoopbackSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -81,17 +81,17 @@ uses
   // Undefine this when not needed!
   {$DEFINE SAVE_DEBUG_REPORT}
 
-  // Simple error handler
-  procedure ErrMsg(pErrMsg: string;
-                   pHr: HResult);
+// Simple error handler
+procedure ErrMsg(pErrMsg: string;
+                 pHr: HResult);
 
-  // See also WinApi.MediaFoundationApi.MfUtils/HnsTimeToStr
-  function TranslateHnsTimeToStr(hns: MFTIME;
-                                 ShowMilliSeconds: Boolean = True;
-                                 DelimiterFormat: string = ':'): string; inline;
+// See also WinApi.MediaFoundationApi.MfUtils/HnsTimeToStr
+function TranslateHnsTimeToStr(hns: MFTIME;
+                               ShowMilliSeconds: Boolean = True;
+                               DelimiterFormat: string = ':'): string; inline;
 
-  procedure HandleThreadMessages(AThread: THandle;
-                                 AWait: Cardinal = 0);
+procedure HandleThreadMessages(AThread: THandle;
+                               AWait: Cardinal = 0);
 
 
 implementation
@@ -100,15 +100,17 @@ implementation
 // ErrMsg
 procedure ErrMsg(pErrMsg: string;
                  pHr: HResult);
+
 begin
-{$IFDEF SAVE_DEBUG_REPORT}
+
+  {$IFDEF SAVE_DEBUG_REPORT}
   OutputDebugStringW(StrToPWideChar(Format('Error: %s (hr = %d)',
-                                          [pErrMsg, pHr])))
-{$ELSE}
+                                           [pErrMsg, pHr])))
+  {$ELSE}
 
   ShowMessage(format('Error: %s (hr = %d)',
                      [pErrMsg, pHr]));
-{$ENDIF}
+  {$ENDIF}
 end;
 
 
@@ -123,26 +125,31 @@ var
   millisec: Word;
 
 begin
-try
-  hours := hns div MFTIME(36000000000);
-  hns := hns mod MFTIME(36000000000);
 
-  mins := hns div 600000000;
-  hns := hns mod 600000000;
+  try
+    hours := hns div MFTIME(36000000000);
+    hns := hns mod MFTIME(36000000000);
 
-  secs := hns div 10000000;
-  hns := hns mod 10000000;
+    mins := hns div 600000000;
+    hns := hns mod 600000000;
 
-  millisec := hns div 10000;
+    secs := hns div 10000000;
+    hns := hns mod 10000000;
 
-  if ShowMilliSeconds then
-    Result := Format('%2.2d%s%2.2d%s%2.2d,%3.3d', [hours, DelimiterFormat, mins, DelimiterFormat, secs, DelimiterFormat, millisec])
-  else
-    Result := Format('%2.2d%s%2.2d%s%2.2d', [hours, DelimiterFormat, mins, DelimiterFormat, secs]);
+    millisec := hns div 10000;
 
-except
-  on exception do Result:= Format('00:00:00%s000', [DelimiterFormat]);
-end;
+    if ShowMilliSeconds then
+      Result := Format('%2.2d%s%2.2d%s%2.2d,%3.3d',
+                       [hours, DelimiterFormat, mins, DelimiterFormat, secs, DelimiterFormat, millisec])
+    else
+      Result := Format('%2.2d%s%2.2d%s%2.2d',
+                       [hours, DelimiterFormat, mins, DelimiterFormat, secs]);
+
+  except
+    on exception do
+      Result := Format('00:00:00%s000',
+                       [DelimiterFormat]);
+  end;
 end;
 
 
@@ -154,18 +161,18 @@ var
 begin
 
   while (MsgWaitForMultipleObjects(1,
-                                   AThread,
-                                   False,
-                                   AWait,
-                                   QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
+      AThread,
+      False,
+      AWait,
+      QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
     begin
       PeekMessageW(oMsg,
-                  0,
-                  0,
-                  0,
-                  PM_REMOVE);
+                   0,
+                   0,
+                   0,
+                   PM_REMOVE);
 
-      if oMsg.Message = WM_QUIT then
+      if (oMsg.Message = WM_QUIT) then
         Exit;
 
       TranslateMessage(oMsg);

@@ -64,7 +64,7 @@ interface
 
 uses
   MfCaptureSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   Classes,
@@ -75,6 +75,7 @@ uses
 type
 
   TFxServePublisher = class
+
   private
     FActive: Boolean;
     FFolder: string;
@@ -136,6 +137,7 @@ const
 
 
 function BytesFromStream(const AStream: TStream): TBytes;
+
 begin
 
   SetLength(Result,
@@ -150,6 +152,7 @@ end;
 
 
 constructor TFxServePublisher.Create();
+
 begin
 
   inherited Create();
@@ -162,6 +165,7 @@ end;
 
 
 destructor TFxServePublisher.Destroy();
+
 begin
 
   Stop();
@@ -171,12 +175,15 @@ end;
 
 
 procedure TFxServePublisher.SetLastError(const AText: string);
+
 begin
+
   FLastError := AText;
 end;
 
 
 function TFxServePublisher.FileName(const AName: string): string;
+
 begin
 
   Result := IncludeTrailingPathDelimiter(FFolder) + AName;
@@ -198,7 +205,7 @@ begin
     Exit;
 
   TempName := AFileName + Format('.tmp_%x_%x_%x',
-                                [GetCurrentProcessId, GetCurrentThreadId, GetTickCount]);
+                                 [GetCurrentProcessId, GetCurrentThreadId, GetTickCount]);
 
   try
     Stream := TFileStream.Create(TempName,
@@ -213,8 +220,8 @@ begin
     for I := 0 to 20 do
       begin
         if MoveFileExW(PChar(TempName),
-                      PChar(AFileName),
-                      MOVEFILE_REPLACE_EXISTING or $00000008) then
+          PChar(AFileName),
+          MOVEFILE_REPLACE_EXISTING or $00000008) then
           Exit(True);
 
         ErrorCode := GetLastError;
@@ -247,7 +254,9 @@ begin
             Length(Utf8));
 
   if (Length(Utf8) > 0) then
-    Move(Utf8[1], Bytes[0], Length(Utf8));
+    Move(Utf8[1],
+         Bytes[0],
+         Length(Utf8));
   Result := WriteBytes(AFileName,
                        Bytes);
 end;
@@ -295,24 +304,25 @@ var
 begin
 
   SourceFolder := IncludeTrailingPathDelimiter(
-                    ExtractFilePath(APlayerSource));
+    ExtractFilePath(APlayerSource));
 
   // Deployed/selected WebCam folders keep the PWA assets beside the HTML
   // file. Retain support for the older layout where they lived in a child
   // www directory.
   if not SysUtils.FileExists(SourceFolder +
-                                    'webcam-manifest.json') then
+    'webcam-manifest.json') then
     SourceFolder := SourceFolder + 'www\';
 
   Result := CopyAsset(APlayerSource,
                       'webcam_stream.html') and
-            CopyAsset(SourceFolder + 'webcam-manifest.json',
-                      'webcam-manifest.json') and
-            CopyAsset(SourceFolder + 'sw.js', 'sw.js') and
-            CopyAsset(SourceFolder + 'webcam-icon-192.png',
-                      'webcam-icon-192.png') and
-            CopyAsset(SourceFolder + 'webcam-icon-512.png',
-                      'webcam-icon-512.png');
+    CopyAsset(SourceFolder + 'webcam-manifest.json',
+              'webcam-manifest.json') and
+    CopyAsset(SourceFolder + 'sw.js',
+              'sw.js') and
+    CopyAsset(SourceFolder + 'webcam-icon-192.png',
+              'webcam-icon-192.png') and
+    CopyAsset(SourceFolder + 'webcam-icon-512.png',
+              'webcam-icon-512.png');
 end;
 
 
@@ -326,16 +336,16 @@ begin
   DeleteFile(FileName('init.mp4'));
 
   if (FindFirst(FileName(PUBLISH_FRAGMENT_PREFIX + '*' + PUBLISH_FRAGMENT_EXTENSION),
-                faAnyFile and not faDirectory,
-                SearchRec) = 0) then
-    try
-      repeat
-        DeleteFile(FileName(SearchRec.Name));
-      until (FindNext(SearchRec) <> 0);
+    faAnyFile and not faDirectory,
+    SearchRec) = 0) then
+  try
+    repeat
+      DeleteFile(FileName(SearchRec.Name));
+    until (FindNext(SearchRec) <> 0);
 
-    finally
-      FindClose(SearchRec);
-    end;
+  finally
+    FindClose(SearchRec);
+  end;
 end;
 
 
@@ -386,25 +396,33 @@ begin
 
   Inc(FManifestPublishSequence);
   Json := '{' + sLineBreak +
-          '  "version": 1,' + sLineBreak +
-          '  "application": "MfWebCamStreamer",' + sLineBreak +
-          '  "live": ' + LiveText + ',' + sLineBreak +
-          '  "init": "init.mp4",' + sLineBreak +
-          Format('  "first": %d,', [FFirstPublishedSequence]) + sLineBreak +
-          Format('  "last": %d,', [FLastPublishedSequence]) + sLineBreak +
-          Format('  "publishSeq": %d,', [FManifestPublishSequence]) + sLineBreak +
-          Format('  "sessionId": "%s",', [FSessionId]) + sLineBreak +
-          Format('  "sourceSeq": %d,', [FLastSourceSequence]) + sLineBreak +
-          '  "pendingGroupParts": 0,' + sLineBreak +
-          '  "prefix": "' + PUBLISH_FRAGMENT_PREFIX + '",' + sLineBreak +
-          '  "ext": "' + PUBLISH_FRAGMENT_EXTENSION + '",' + sLineBreak +
-          '  "digits": 6,' + sLineBreak +
-          '  "codec": "video/mp4; codecs=\"avc1.42C01F, mp4a.40.2\"",' + sLineBreak +
-          Format('  "pollMs": %d,', [PUBLISH_MANIFEST_POLL_MS]) + sLineBreak +
-          Format('  "fragmentTargetMs": %d,', [PUBLISH_FRAGMENT_TARGET_MS]) + sLineBreak +
-          '  "groupSourceFragments": 1,' + sLineBreak +
-          Format('  "keepBehind": %d', [PUBLISH_KEEP_FRAGMENTS]) + sLineBreak +
-          '}';
+    '  "version": 1,' + sLineBreak +
+    '  "application": "MfWebCamStreamer",' + sLineBreak +
+    '  "live": ' + LiveText + ',' + sLineBreak +
+    '  "init": "init.mp4",' + sLineBreak +
+    Format('  "first": %d,',
+           [FFirstPublishedSequence]) + sLineBreak +
+    Format('  "last": %d,',
+           [FLastPublishedSequence]) + sLineBreak +
+    Format('  "publishSeq": %d,',
+           [FManifestPublishSequence]) + sLineBreak +
+    Format('  "sessionId": "%s",',
+           [FSessionId]) + sLineBreak +
+    Format('  "sourceSeq": %d,',
+           [FLastSourceSequence]) + sLineBreak +
+    '  "pendingGroupParts": 0,' + sLineBreak +
+    '  "prefix": "' + PUBLISH_FRAGMENT_PREFIX + '",' + sLineBreak +
+    '  "ext": "' + PUBLISH_FRAGMENT_EXTENSION + '",' + sLineBreak +
+    '  "digits": 6,' + sLineBreak +
+    '  "codec": "video/mp4; codecs=\"avc1.42C01F, mp4a.40.2\"",' + sLineBreak +
+    Format('  "pollMs": %d,',
+           [PUBLISH_MANIFEST_POLL_MS]) + sLineBreak +
+    Format('  "fragmentTargetMs": %d,',
+           [PUBLISH_FRAGMENT_TARGET_MS]) + sLineBreak +
+    '  "groupSourceFragments": 1,' + sLineBreak +
+    Format('  "keepBehind": %d',
+           [PUBLISH_KEEP_FRAGMENTS]) + sLineBreak +
+    '}';
 
   Result := WriteUtf8(FileName('live.json'),
                       Json);
@@ -412,7 +430,7 @@ end;
 
 
 function TFxServePublisher.Start(const AFolder: string;
-                                  const APlayerSource: string): Boolean;
+                                 const APlayerSource: string): Boolean;
 var
   SessionGuid: TGUID;
 
@@ -466,6 +484,7 @@ end;
 
 
 procedure TFxServePublisher.Stop();
+
 begin
 
   if FActive and FInitWritten then
@@ -499,16 +518,16 @@ begin
         Exit(True);
 
       if not WriteBytes(FileName('init.mp4'),
-                        InitSegment) then
+        InitSegment) then
         Exit;
 
       FInitWritten := True;
     end;
 
   if not ACapture.GetFragmentWindow(FirstSource,
-                                    LastSource,
-                                    WindowCount) or
-     (WindowCount = 0) then
+    LastSource,
+    WindowCount) or
+    (WindowCount = 0) then
     Exit(True);
 
   if (FLastSourceSequence = 0) then
@@ -526,14 +545,14 @@ begin
   while (SourceSequence <= LastSource) do
     begin
       if not ACapture.GetFragment(SourceSequence,
-                                  Fragment) then
+        Fragment) then
         Break;
 
       FragmentName := Format(PUBLISH_FRAGMENT_PREFIX + '%.6d' + PUBLISH_FRAGMENT_EXTENSION,
                              [SourceSequence]);
 
       if not WriteBytes(FileName(FragmentName),
-                        Fragment) then
+        Fragment) then
         Exit;
 
       FLastSourceSequence := SourceSequence;

@@ -83,58 +83,60 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
 
 
-//* Forward Declarations */
+  //* Forward Declarations */
 
-//===========================================================================
-//
-// Object identifiers in the explorer's name space (ItemID and IDList)
-//
-//  All the items that the user can browse with the explorer (such as files,
-// directories, servers, work-groups, etc.) has an identifier which is unique
-// among items within the parent folder. Those identifiers are called item
-// IDs (SHITEMID). Since all its parent folders have their own item IDs,
-// any items can be uniquely identified by a list of item IDs, which is called
-// an ID list (ITEMIDLIST).
-//
-//  ID lists are almost always allocated by the task allocator (see some
-// description below as well as OLE 2.0 SDK) and may be passed across
-// some of shell interfaces (such as IShellFolder). Each item ID in an ID list
-// is only meaningful to its parent folder (which has generated it), and all
-// the clients must treat it as an opaque binary data except the first two
-// bytes, which indicates the size of the item ID.
-//
-//  When a shell extension -- which implements the IShellFolder interace --
-// generates an item ID, it may put any information in it, not only the data
-// with that it needs to identifies the item, but also some additional
-// information, which would help implementing some other functions efficiently.
-// For example, the shell's IShellFolder implementation of file system items
-// stores the primary (long) name of a file or a directory as the item
-// identifier, but it also stores its alternative (short) name, size and date
-// etc.
-//
-//  When an ID list is passed to one of shell APIs (such as SHGetPathFromIDList),
-// it is always an absolute path -- relative from the root of the name space,
-// which is the desktop folder. When an ID list is passed to one of IShellFolder
-// member function, it is always a relative path from the folder (unless it
-// is explicitly specified).
-//
-//===========================================================================
-//
-// SHITEMID -- Item ID  (mkid)
-//     USHORT      cb;             // Size of the ID (including cb itself)
-//     BYTE        abID[];         // The item ID (variable length)
-//
+  //===========================================================================
+  //
+  // Object identifiers in the explorer's name space (ItemID and IDList)
+  //
+  //  All the items that the user can browse with the explorer (such as files,
+  // directories, servers, work-groups, etc.) has an identifier which is unique
+  // among items within the parent folder. Those identifiers are called item
+  // IDs (SHITEMID). Since all its parent folders have their own item IDs,
+  // any items can be uniquely identified by a list of item IDs, which is called
+  // an ID list (ITEMIDLIST).
+  //
+  //  ID lists are almost always allocated by the task allocator (see some
+  // description below as well as OLE 2.0 SDK) and may be passed across
+  // some of shell interfaces (such as IShellFolder). Each item ID in an ID list
+  // is only meaningful to its parent folder (which has generated it), and all
+  // the clients must treat it as an opaque binary data except the first two
+  // bytes, which indicates the size of the item ID.
+  //
+  //  When a shell extension -- which implements the IShellFolder interace --
+  // generates an item ID, it may put any information in it, not only the data
+  // with that it needs to identifies the item, but also some additional
+  // information, which would help implementing some other functions efficiently.
+  // For example, the shell's IShellFolder implementation of file system items
+  // stores the primary (long) name of a file or a directory as the item
+  // identifier, but it also stores its alternative (short) name, size and date
+  // etc.
+  //
+  //  When an ID list is passed to one of shell APIs (such as SHGetPathFromIDList),
+  // it is always an absolute path -- relative from the root of the name space,
+  // which is the desktop folder. When an ID list is passed to one of IShellFolder
+  // member function, it is always a relative path from the folder (unless it
+  // is explicitly specified).
+  //
+  //===========================================================================
+  //
+  // SHITEMID -- Item ID  (mkid)
+  //     USHORT      cb;             // Size of the ID (including cb itself)
+  //     BYTE        abID[];         // The item ID (variable length)
+  //
 type
 
   LPSHITEMID = ^_SHITEMID;
   LPCSHITEMID = ^_SHITEMID;
   PSHITEMID = ^_SHITEMID;
+
   _SHITEMID = record
     cb: USHORT;
     abID: array [0..255] of Byte;
@@ -142,11 +144,12 @@ type
   SHITEMID = _SHITEMID;
 
 
-//
-// ITEMIDLIST -- List if item IDs (combined with 0-terminator)
-//
+  //
+  // ITEMIDLIST -- List if item IDs (combined with 0-terminator)
+  //
 
   PItemidlist = ^_ITEMIDLIST;
+
   _ITEMIDLIST = record
     mkid: SHITEMID;
   end;
@@ -167,27 +170,28 @@ type
   LPITEMIDLIST = ^ITEMIDLIST;
   LPCITEMIDLIST = ^ITEMIDLIST;
 
-  PIDLIST_ABSOLUTE                    = LPITEMIDLIST;
-  PCIDLIST_ABSOLUTE                   = LPCITEMIDLIST;
-  PCUIDLIST_ABSOLUTE                  = LPCITEMIDLIST;
-  PIDLIST_RELATIVE                    = LPITEMIDLIST;
-  PCIDLIST_RELATIVE                   = LPCITEMIDLIST;
-  PUIDLIST_RELATIVE                   = LPITEMIDLIST;
-  PCUIDLIST_RELATIVE                  = LPCITEMIDLIST;
-  PITEMID_CHILD                       = LPITEMIDLIST;
-  PCITEMID_CHILD                      = LPCITEMIDLIST;
-  PUITEMID_CHILD                      = LPITEMIDLIST;
-  PCUITEMID_CHILD                     = LPCITEMIDLIST;
-  PCUITEMID_CHILD_ARRAY               = LPCITEMIDLIST;
-  PCUIDLIST_RELATIVE_ARRAY            = LPCITEMIDLIST;
-  PCIDLIST_ABSOLUTE_ARRAY             = LPCITEMIDLIST;
-  PCUIDLIST_ABSOLUTE_ARRAY            = LPCITEMIDLIST;
+  PIDLIST_ABSOLUTE = LPITEMIDLIST;
+  PCIDLIST_ABSOLUTE = LPCITEMIDLIST;
+  PCUIDLIST_ABSOLUTE = LPCITEMIDLIST;
+  PIDLIST_RELATIVE = LPITEMIDLIST;
+  PCIDLIST_RELATIVE = LPCITEMIDLIST;
+  PUIDLIST_RELATIVE = LPITEMIDLIST;
+  PCUIDLIST_RELATIVE = LPCITEMIDLIST;
+  PITEMID_CHILD = LPITEMIDLIST;
+  PCITEMID_CHILD = LPCITEMIDLIST;
+  PUITEMID_CHILD = LPITEMIDLIST;
+  PCUITEMID_CHILD = LPCITEMIDLIST;
+  PCUITEMID_CHILD_ARRAY = LPCITEMIDLIST;
+  PCUIDLIST_RELATIVE_ARRAY = LPCITEMIDLIST;
+  PCIDLIST_ABSOLUTE_ARRAY = LPCITEMIDLIST;
+  PCUIDLIST_ABSOLUTE_ARRAY = LPCITEMIDLIST;
 
 type
 
   PWIN32_FIND_DATAA = ^_WIN32_FIND_DATAA;
   LPWIN32_FIND_DATAA = ^_WIN32_FIND_DATAA;
   PWin32FindDataa = ^_WIN32_FIND_DATAA;
+
   _WIN32_FIND_DATAA = record
     dwFileAttributes: DWORD;
     ftCreationTime: FILETIME;
@@ -206,6 +210,7 @@ type
   PWIN32_FIND_DATAW = ^_WIN32_FIND_DATAW;
   LPWIN32_FIND_DATAW = ^_WIN32_FIND_DATAW;
   PWin32FindDataw = ^_WIN32_FIND_DATAW;
+
   _WIN32_FIND_DATAW = record
     dwFileAttributes: DWORD;
     ftCreationTime: FILETIME;
@@ -221,38 +226,39 @@ type
   WIN32_FIND_DATAW = _WIN32_FIND_DATAW;
 
 
-//-------------------------------------------------------------------------
-//
-// struct STRRET
-//
-// structure for returning strings from IShellFolder member functions
-//
-//-------------------------------------------------------------------------
-//
-//  uType indicate which union member to use
-//    STRRET_WSTR    Use STRRET.pOleStr     must be freed by caller of GetDisplayNameOf
-//    STRRET_OFFSET  Use STRRET.uOffset     Offset into SHITEMID for ANSI string
-//    STRRET_CSTR    Use STRRET.cStr        ANSI Buffer
-//
+  //-------------------------------------------------------------------------
+  //
+  // struct STRRET
+  //
+  // structure for returning strings from IShellFolder member functions
+  //
+  //-------------------------------------------------------------------------
+  //
+  //  uType indicate which union member to use
+  //    STRRET_WSTR    Use STRRET.pOleStr     must be freed by caller of GetDisplayNameOf
+  //    STRRET_OFFSET  Use STRRET.uOffset     Offset into SHITEMID for ANSI string
+  //    STRRET_CSTR    Use STRRET.cStr        ANSI Buffer
+  //
   PStrretType = ^tagSTRRET_TYPE;
-  tagSTRRET_TYPE  = (
-    STRRET_WSTR   = 0,
-    STRRET_OFFSET = $1,
-    STRRET_CSTR   = $2);
+  tagSTRRET_TYPE = (
+    STRRET_WSTR = 0,
+                    STRRET_OFFSET = $1,
+                    STRRET_CSTR = $2);
   STRRET_TYPE = tagSTRRET_TYPE;
 
 
-   // Contains strings returned from the IShellFolder interface methods.
-   // To convert this structure to a string, use StrRetToBuf or StrRetToStr (Shlwapi.h).
+  // Contains strings returned from the IShellFolder interface methods.
+  // To convert this structure to a string, use StrRetToBuf or StrRetToStr (Shlwapi.h).
   LPSTRRET = ^STRRET;
   PSTRRET = ^_STRRET;
+
   _STRRET = record
     uType: UINT; //
     case integer of
       0: (pOleStr: PWideChar;);
       1: (uOffset: UINT;);
-      2: (cStr: array[0..MAX_PATH -1 {=259}] of AnsiChar;);
-    end;
+      2: (cStr: array[0..MAX_PATH - 1 {=259}] of AnsiChar;);
+  end;
   STRRET = _STRRET;
   //Members
   // uType: UINT;
@@ -278,23 +284,24 @@ type
   //  Type: CHAR[MAX_PATH]
   //   The buffer to receive the display name.
 
-//-------------------------------------------------------------------------
-//
-// struct SHELLDETAILS
-//
-// structure for returning strings from IShellDetails
-//
-//-------------------------------------------------------------------------
-//
-//  fmt;            // LVCFMT_* value (header only)
-//  cxChar;         // Number of 'average' characters (header only)
-//  str;            // String information
-//
+  //-------------------------------------------------------------------------
+  //
+  // struct SHELLDETAILS
+  //
+  // structure for returning strings from IShellDetails
+  //
+  //-------------------------------------------------------------------------
+  //
+  //  fmt;            // LVCFMT_* value (header only)
+  //  cxChar;         // Number of 'average' characters (header only)
+  //  str;            // String information
+  //
 
 type
 
   LPSHELLDETAILS = ^_SHELLDETAILS;
   PShelldetails = ^_SHELLDETAILS;
+
   _SHELLDETAILS = record
     fmt: Integer;
     cxChar: Integer;
@@ -330,10 +337,10 @@ const
   SHCOLSTATE_FIXED_RATIO = LongInt($4000);
   SHCOLSTATE_DISPLAYMASK = LongInt($F000);
 
-  PERCEIVED_TYPE_FIRST = LongInt(- 3);
-  PERCEIVED_TYPE_CUSTOM = LongInt(- 3);
-  PERCEIVED_TYPE_UNSPECIFIED = LongInt(- 2);
-  PERCEIVED_TYPE_FOLDER = LongInt(- 1);
+  PERCEIVED_TYPE_FIRST = LongInt(-3);
+  PERCEIVED_TYPE_CUSTOM = LongInt(-3);
+  PERCEIVED_TYPE_UNSPECIFIED = LongInt(-2);
+  PERCEIVED_TYPE_FOLDER = LongInt(-1);
   PERCEIVED_TYPE_UNKNOWN = LongInt(0);
   PERCEIVED_TYPE_TEXT = LongInt(1);
   PERCEIVED_TYPE_IMAGE = LongInt(2);
@@ -348,13 +355,13 @@ const
   PERCEIVED_TYPE_LAST = LongInt(10);
 
 
-  PERCEIVEDFLAG_UNDEFINED             = $0000;
-  PERCEIVEDFLAG_SOFTCODED             = $0001;
-  PERCEIVEDFLAG_HARDCODED             = $0002;
-  PERCEIVEDFLAG_NATIVESUPPORT         = $0004;
-  PERCEIVEDFLAG_GDIPLUS               = $0010;
-  PERCEIVEDFLAG_WMSDK                 = $0020;
-  PERCEIVEDFLAG_ZIPFOLDER             = $0040;
+  PERCEIVEDFLAG_UNDEFINED = $0000;
+  PERCEIVEDFLAG_SOFTCODED = $0001;
+  PERCEIVEDFLAG_HARDCODED = $0002;
+  PERCEIVEDFLAG_NATIVESUPPORT = $0004;
+  PERCEIVEDFLAG_GDIPLUS = $0010;
+  PERCEIVEDFLAG_WMSDK = $0020;
+  PERCEIVEDFLAG_ZIPFOLDER = $0040;
 
 type
 
@@ -362,8 +369,9 @@ type
   PERCEIVEDFLAG = DWORD;
 
 
-// >= Vista
+  // >= Vista
   PCOMDLG_FILTERSPEC = ^_COMDLG_FILTERSPEC;
+
   _COMDLG_FILTERSPEC = record
     pszName: PWideChar;
     { [string] }
@@ -396,6 +404,7 @@ type
   REFELEMENTID = ^ELEMENTID;
 
   PLogfonta = ^LOGFONTA;
+
   tagLOGFONTA = record
     lfHeight: LONG;
     lfWidth: LONG;
@@ -415,6 +424,7 @@ type
   LOGFONTA = tagLOGFONTA;
 
   PLogfontw = ^LOGFONTW;
+
   tagLOGFONTW = record
     lfHeight: LONG;
     lfWidth: LONG;
@@ -449,24 +459,24 @@ type
   LPCSHCOLUMNID = ^SHCOLUMNID;
 
   PDEVICE_SCALE_FACTOR = ^DEVICE_SCALE_FACTOR;
-  DEVICE_SCALE_FACTOR           = (
+  DEVICE_SCALE_FACTOR = (
     DEVICE_SCALE_FACTOR_INVALID = 0,
-    SCALE_100_PERCENT           = 100,
-    SCALE_120_PERCENT           = 120,
-    SCALE_125_PERCENT           = 125,
-    SCALE_140_PERCENT           = 140,
-    SCALE_150_PERCENT           = 150,
-    SCALE_160_PERCENT           = 160,
-    SCALE_175_PERCENT           = 175,
-    SCALE_180_PERCENT           = 180,
-    SCALE_200_PERCENT           = 200,
-    SCALE_225_PERCENT           = 225,
-    SCALE_250_PERCENT           = 250,
-    SCALE_300_PERCENT           = 300,
-    SCALE_350_PERCENT           = 350,
-    SCALE_400_PERCENT           = 400,
-    SCALE_450_PERCENT           = 450,
-    SCALE_500_PERCENT           = 500);
+                         SCALE_100_PERCENT = 100,
+                         SCALE_120_PERCENT = 120,
+                         SCALE_125_PERCENT = 125,
+                         SCALE_140_PERCENT = 140,
+                         SCALE_150_PERCENT = 150,
+                         SCALE_160_PERCENT = 160,
+                         SCALE_175_PERCENT = 175,
+                         SCALE_180_PERCENT = 180,
+                         SCALE_200_PERCENT = 200,
+                         SCALE_225_PERCENT = 225,
+                         SCALE_250_PERCENT = 250,
+                         SCALE_300_PERCENT = 300,
+                         SCALE_350_PERCENT = 350,
+                         SCALE_400_PERCENT = 400,
+                         SCALE_450_PERCENT = 450,
+                         SCALE_500_PERCENT = 500);
 
 
   // Additional Prototypes for ALL interfaces
@@ -476,6 +486,7 @@ type
   // To prevent name mangling, we moved Delphi's implementations in WinApi.ShellAPI to here.
 
   LPSHELLEXECUTEINFOA = ^SHELLEXECUTEINFOA;
+
   SHELLEXECUTEINFOA = record
     cbSize: DWORD;
     fMask: ULONG;
@@ -495,6 +506,7 @@ type
   end;
 
   LPSHELLEXECUTEINFOW = ^SHELLEXECUTEINFOW;
+
   SHELLEXECUTEINFOW = record
     cbSize: DWORD;
     fMask: ULONG;
@@ -517,6 +529,6 @@ type
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

@@ -64,11 +64,12 @@ unit LoopBackCapture;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   WinApi.WinApiTypes,
@@ -111,9 +112,9 @@ type
 
   TAsyncCmd = (
     StartCapture,
-    StopCapture,
-    FinishCapture
-  );
+               StopCapture,
+               FinishCapture
+    );
 
   TCapturedPcmEvent = procedure(Sender: TObject;
                                 pData: PByte;
@@ -126,7 +127,10 @@ type
   TCallbackAsync = class;
   TRenderThread = class;
 
-  TLoopbackCapture = class(TInterfacedPersistent, IActivateAudioInterfaceCompletionHandler, IAgileObject)
+  TLoopbackCapture = class(TInterfacedPersistent,
+                           IActivateAudioInterfaceCompletionHandler,
+                           IAgileObject)
+
   protected
 
     pvRenderThread: TRenderThread;
@@ -189,29 +193,22 @@ type
 
     function StopCaptureAsync(): HResult;
 
-    property CurrentMixFormat: TWAVEFORMATEX
-      read pvMixFormat;
+    property CurrentMixFormat: TWAVEFORMATEX read pvMixFormat;
 
-    property CaptureBufferLength: UINT32
-      read pvBufferFrames;
+    property CaptureBufferLength: UINT32 read pvBufferFrames;
 
-    property OnStartCapturing: TNotifyEvent
-      read FOnCapturingStart
-      write FOnCapturingStart;
+    property OnStartCapturing: TNotifyEvent read FOnCapturingStart write FOnCapturingStart;
 
-    property OnStoppedCapturing: TNotifyEvent
-      read FOnCapturingStopped
-      write FOnCapturingStopped;
+    property OnStoppedCapturing: TNotifyEvent read FOnCapturingStopped write FOnCapturingStopped;
 
-    property OnCapturedPcm: TCapturedPcmEvent
-      read FOnCapturedPcm
-      write FOnCapturedPcm;
+    property OnCapturedPcm: TCapturedPcmEvent read FOnCapturedPcm write FOnCapturedPcm;
   end;
 
   TCallbackEvent = procedure(Sender: TObject;
                              hr: HRESULT) of object;
 
   TRenderThread = class(TThread)
+
   private
 
     FEngine: TLoopbackCapture;
@@ -231,7 +228,8 @@ type
     property OnEvent: TCallbackEvent read FOnEvent write FOnEvent;
   end;
 
-  TCallbackAsync = class(TInterfacedPersistent, IMFAsyncCallback)
+  TCallbackAsync = class(TInterfacedPersistent,
+                         IMFAsyncCallback)
 
   private
 
@@ -257,9 +255,10 @@ uses
   System.Services.Avrt;
 
 
-{ TRenderThread }
+  { TRenderThread }
 
 constructor TRenderThread.Create(AEngine: TLoopbackCapture);
+
 begin
 
   inherited Create(True);
@@ -270,6 +269,7 @@ end;
 
 
 destructor TRenderThread.Destroy();
+
 begin
 
   inherited;
@@ -277,6 +277,7 @@ end;
 
 
 procedure TRenderThread.Execute();
+
 begin
 
   FSuccess := FEngine.CaptureThreadFunc;
@@ -284,6 +285,7 @@ end;
 
 
 procedure TRenderThread.SetEvent();
+
 begin
 
   if Assigned(FOnEvent) then
@@ -295,6 +297,7 @@ end;
 { TLoopbackCapture }
 
 constructor TLoopbackCapture.Create();
+
 begin
 
   inherited Create();
@@ -312,6 +315,7 @@ end;
 
 
 destructor TLoopbackCapture.Destroy();
+
 begin
 
   Reset();
@@ -334,17 +338,18 @@ begin
   wrWaitResult := EventObj.WaitFor(Period);
 
   case wrWaitResult of
-    wrSignaled:     Result := S_OK;
-    wrTimeout:      Result := HRESULT_FROM_WIN32(ERROR_TIMEOUT);
-    wrAbandoned:    Result := HRESULT_FROM_WIN32(ERROR_TIMEOUT);
-    wrError:        Result := HRESULT_FROM_WIN32(EventObj.LastError);
-  else
-    Result := E_FAIL;
+    wrSignaled: Result := S_OK;
+    wrTimeout: Result := HRESULT_FROM_WIN32(ERROR_TIMEOUT);
+    wrAbandoned: Result := HRESULT_FROM_WIN32(ERROR_TIMEOUT);
+    wrError: Result := HRESULT_FROM_WIN32(EventObj.LastError);
+    else
+      Result := E_FAIL;
   end;
 end;
 
 
 procedure TLoopbackCapture.CreatedRenderThread;
+
 begin
 
   if not Assigned(pvRenderThread) then
@@ -360,6 +365,7 @@ end;
 
 
 procedure TLoopbackCapture.TerminateRenderThread();
+
 begin
 
   if Assigned(pvRenderThread) then
@@ -500,12 +506,13 @@ end;
 
 
 function TLoopbackCapture.InitializeLoopbackCapture(): HResult;
+
 begin
 
   Reset();
 
   gs_SampleReadyEvent := TEvent.Create(nil,
-                                      False,
+                                       False,
                                        False,
                                        '');
 
@@ -532,6 +539,7 @@ end;
 
 
 procedure TLoopbackCapture.GetMixFormat(out pMixFmt: WAVEFORMATEX);
+
 begin
 
   pMixFmt := Default(WAVEFORMATEX);
@@ -727,9 +735,9 @@ begin
   if SUCCEEDED(hr) then
     pvDeviceState := Initialized;
 
-leave:
+  leave:
 
-  PropVariantClearSafe(activateParams);
+    PropVariantClearSafe(activateParams);
   SetDeviceStateErrorIfFailed(hr);
   Result := hr;
 end;
@@ -753,6 +761,7 @@ end;
 
 
 procedure TLoopbackCapture.Reset();
+
 begin
 
   try
@@ -789,6 +798,7 @@ end;
 
 
 procedure TLoopbackCapture.SetDeviceStateErrorIfFailed(hr: HResult);
+
 begin
 
   if FAILED(hr) then
@@ -829,8 +839,8 @@ begin
         goto leave;
     end;
 
-leave:
-  Result := hr;
+  leave:
+    Result := hr;
 end;
 
 
@@ -843,7 +853,7 @@ begin
   hr := S_OK;
 
   if (pvDeviceState <> Capturing) and
-     (pvDeviceState <> Error) then
+    (pvDeviceState <> Error) then
     hr := E_NOT_VALID_STATE;
 
   if SUCCEEDED(hr) then
@@ -865,7 +875,9 @@ end;
 
 constructor TCallbackAsync.Create(AParent: TLoopbackCapture;
                                   ASyncCmd: TAsyncCmd);
+
 begin
+
   inherited Create();
   _parent := AParent;
   _AsyncCmd := ASyncCmd;
@@ -873,6 +885,7 @@ end;
 
 
 destructor TCallbackAsync.Destroy();
+
 begin
 
   inherited Destroy();
@@ -881,6 +894,7 @@ end;
 
 function TCallbackAsync.GetParameters(out pdwFlags: DWord;
                                       out pdwQueue: DWord): HResult;
+
 begin
 
   pdwFlags := 0;
@@ -908,12 +922,11 @@ begin
 
     FinishCapture:
       hr := _parent.OnFinishCapture(pResult);
-  else
-    hr := S_FALSE;
+    else
+      hr := S_FALSE;
   end;
 
   Result := hr;
 end;
 
 end.
-

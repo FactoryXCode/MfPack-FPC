@@ -97,9 +97,11 @@ type
   TSingleArray = array[0..$7FFFFFF] of Single;
   PSingleArray = ^TSingleArray;
 
-  TMfBassTrebleMFT = class(TInterfacedObject, IMFTransform, IMfBassTrebleControl)
+  TMfBassTrebleMFT = class(TInterfacedObject,
+                           IMFTransform,
+                           IMfBassTrebleControl)
 
-{$region 'IMFTransform implementation'}
+    {$region 'IMFTransform implementation'}
     // IMFTransform implementation ////////////////////////////////////////////
     function GetStreamLimits(out pdwInputMinimum: DWORD;
                              out pdwInputMaximum: DWORD;
@@ -110,7 +112,7 @@ type
                             out pcOutputStreams: DWORD): HRESULT; stdcall;
 
     function GetStreamIDs(dwInputIDArraySize: DWORD;
-                          {out} pdwInputIDs: PDWORD;
+    {out} pdwInputIDs: PDWORD;
                           dwOutputIDArraySize: DWORD;
                           pdwOutputIDs: PDWORD): HResult; stdcall;
 
@@ -177,7 +179,7 @@ type
                            cOutputBufferCount: DWORD;
                            pOutputSamples: PMFT_OUTPUT_DATA_BUFFER;
                            out pdwStatus: DWORD): HRESULT; stdcall;
- {$endregion}
+    {$endregion}
 
   private
 
@@ -233,10 +235,13 @@ type
                               Fc,
                               GainDb: Single);
 
-    procedure ComputeHighShelf(out BQ: TBiquad; const Fs, Fc, GainDb: Single);
+    procedure ComputeHighShelf(out BQ: TBiquad;
+                               const Fs,
+                               Fc,
+                               GainDb: Single);
 
     function ProcessSampleLocked(const InSample: IMFSample;
-                                 out OutSample:  IMFSample): HRESULT;
+                                 out OutSample: IMFSample): HRESULT;
 
   public
 
@@ -266,26 +271,27 @@ implementation
 
 
 const
-  INPUT_STREAM_ID  = 0;
+  INPUT_STREAM_ID = 0;
   OUTPUT_STREAM_ID = 0;
 
 
 function ClampS(const v,
                 lo,
                 hi: Single): Single;
+
 begin
 
   if (v < lo) then
     Result := lo
-  else
-    if (v > hi) then
-      Result := hi
+  else if (v > hi) then
+    Result := hi
   else
     Result := v;
 end;
 
 
 function DbToA(const Db: Single): Double;
+
 begin
 
   // RBJ shelf cookbook: A = 10^(dB/40)
@@ -297,7 +303,9 @@ end;
 { TMfBassTrebleMFT }
 
 constructor TMfBassTrebleMFT.Create();
+
 begin
+
   inherited Create;
 
   FLock := SyncObjs.TCriticalSection.Create();
@@ -330,6 +338,7 @@ end;
 
 
 destructor TMfBassTrebleMFT.Destroy;
+
 begin
 
   FreeAndNil(FLock);
@@ -339,6 +348,7 @@ end;
 
 
 class function TMfBassTrebleMFT.CreateInstance(out Mft: IMFTransform): HRESULT;
+
 begin
 
   try
@@ -354,6 +364,7 @@ end;
 
 
 function CreateBassTrebleMFT(out Mft: IMFTransform): HRESULT;
+
 begin
 
   Result := TMfBassTrebleMFT.CreateInstance(Mft);
@@ -361,6 +372,7 @@ end;
 
 
 function TMfBassTrebleMFT.SetBassDb(const Db: Single): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -388,6 +400,7 @@ end;
 
 
 function TMfBassTrebleMFT.SetTrebleDb(const Db: Single): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -415,6 +428,7 @@ end;
 
 
 function TMfBassTrebleMFT.SetBassFreqHz(const Hz: Single): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -434,6 +448,7 @@ end;
 
 
 function TMfBassTrebleMFT.SetTrebleFreqHz(const Hz: Single): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -453,6 +468,7 @@ end;
 
 
 function TMfBassTrebleMFT.GetBassDb(out Db: Single): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -470,6 +486,7 @@ end;
 
 
 function TMfBassTrebleMFT.GetTrebleDb(out Db: Single): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -488,6 +505,7 @@ end;
 
 
 function TMfBassTrebleMFT.SetRampMode(const Mode: TMfRampMode): HRESULT; stdcall;
+
 begin
 
   FLock.Enter();
@@ -522,11 +540,11 @@ begin
 
   try
 
-   vv := Ms;
+    vv := Ms;
 
-   // We have don't have to check for values <0 because UINT32 can't be < 0.
-   if (vv > 2000) then
-     vv := 2000;
+    // We have don't have to check for values <0 because UINT32 can't be < 0.
+    if (vv > 2000) then
+      vv := 2000;
 
     FRampTimeMs := vv;
   finally
@@ -539,6 +557,7 @@ end;
 
 
 function TMfBassTrebleMFT.GetRampMode(out Mode: TMfRampMode): HRESULT; stdcall;
+
 begin
 
   FLock.Enter();
@@ -556,6 +575,7 @@ end;
 
 
 function TMfBassTrebleMFT.GetRampTimeMs(out Ms: UINT32): HRESULT; stdcall;
+
 begin
 
   FLock.Enter();
@@ -663,12 +683,12 @@ begin
   sqrtA := Sqrt(A);
   alpha := sinw0 / 2.0 * Sqrt(2.0);
 
-  b0 := A*( (A+1) - (A-1) * cosw0 + 2 * sqrtA*alpha );
-  b1 :=  2*A*( (A-1) - (A+1) * cosw0 );
-  b2 := A*( (A+1) - (A-1)*cosw0 - 2 * sqrtA*alpha );
-  a0 := (A+1) + (A-1)*cosw0 + 2 * sqrtA*alpha;
-  a1 := -2*( (A-1) + (A+1) * cosw0 );
-  a2 := (A+1) + (A-1) * cosw0 - 2 * sqrtA*alpha;
+  b0 := A * ((A + 1) - (A - 1) * cosw0 + 2 * sqrtA * alpha);
+  b1 := 2 * A * ((A - 1) - (A + 1) * cosw0);
+  b2 := A * ((A + 1) - (A - 1) * cosw0 - 2 * sqrtA * alpha);
+  a0 := (A + 1) + (A - 1) * cosw0 + 2 * sqrtA * alpha;
+  a1 := -2 * ((A - 1) + (A + 1) * cosw0);
+  a2 := (A + 1) + (A - 1) * cosw0 - 2 * sqrtA * alpha;
 
   if (a0 = 0) then
     Exit;
@@ -707,14 +727,15 @@ begin
   sqrtA := Sqrt(A);
   alpha := sinw0 / 2.0 * Sqrt(2.0);
 
-  b0 :=    A*( (A+1) + (A-1)*cosw0 + 2*sqrtA*alpha );
-  b1 := -2*A*( (A-1) + (A+1)*cosw0 );
-  b2 :=    A*( (A+1) + (A-1)*cosw0 - 2*sqrtA*alpha );
-  a0 :=        (A+1) - (A-1)*cosw0 + 2*sqrtA*alpha;
-  a1 :=    2*( (A-1) - (A+1)*cosw0 );
-  a2 :=        (A+1) - (A-1)*cosw0 - 2*sqrtA*alpha;
+  b0 := A * ((A + 1) + (A - 1) * cosw0 + 2 * sqrtA * alpha);
+  b1 := -2 * A * ((A - 1) + (A + 1) * cosw0);
+  b2 := A * ((A + 1) + (A - 1) * cosw0 - 2 * sqrtA * alpha);
+  a0 := (A + 1) - (A - 1) * cosw0 + 2 * sqrtA * alpha;
+  a1 := 2 * ((A - 1) - (A + 1) * cosw0);
+  a2 := (A + 1) - (A - 1) * cosw0 - 2 * sqrtA * alpha;
 
-  if a0 = 0 then Exit;
+  if (a0 = 0) then
+    Exit;
 
   BQ.b0 := (b0 / a0);
   BQ.b1 := (b1 / a0);
@@ -723,24 +744,42 @@ begin
   BQ.a2 := (a2 / a0);
 end;
 
+
 procedure TMfBassTrebleMFT.UpdateCoeffsLocked();
 var
   ch: Integer;
   bassBq, trebBq: TBiquad;
   fs, bf, tf, bd, td: Single;
+
 begin
-  if (FSampleRate = 0) or (FChannels = 0) then Exit;
+
+  if (FSampleRate = 0) or (FChannels = 0) then
+    Exit;
 
   fs := FSampleRate;
 
-  bd := ClampS(FBassDbCurrent, -24.0, 24.0);
-  td := ClampS(FTrebleDbCurrent, -24.0, 24.0);
+  bd := ClampS(FBassDbCurrent,
+               -24.0,
+               24.0);
+  td := ClampS(FTrebleDbCurrent,
+               -24.0,
+               24.0);
 
-  bf := ClampS(FBassFreq, 20.0, fs * 0.45);
-  tf := ClampS(FTrebleFreq, 200.0, fs * 0.45);
+  bf := ClampS(FBassFreq,
+               20.0,
+               fs * 0.45);
+  tf := ClampS(FTrebleFreq,
+               200.0,
+               fs * 0.45);
 
-  ComputeLowShelf(bassBq, fs, bf, bd);
-  ComputeHighShelf(trebBq, fs, tf, td);
+  ComputeLowShelf(bassBq,
+                  fs,
+                  bf,
+                  bd);
+  ComputeHighShelf(trebBq,
+                   fs,
+                   tf,
+                   td);
 
   EnsureStateSizeLocked;
 
@@ -762,6 +801,7 @@ begin
   FNeedsCoeffUpdate := False;
 end;
 
+
 procedure TMfBassTrebleMFT.ApplyRampingLocked(const Frames: Integer);
 var
   ms: Cardinal;
@@ -771,11 +811,11 @@ var
 begin
 
   case FRampMode of
-    rmOff:    ms := 0;
-    rmFast:   ms := 10;
+    rmOff: ms := 0;
+    rmFast: ms := 10;
     rmSmooth: ms := 30;
-  else
-    ms := FRampTimeMs;
+    else
+      ms := FRampTimeMs;
   end;
 
   if (ms = 0) or (FSampleRate = 0) then
@@ -786,19 +826,18 @@ begin
     end;
 
   rampFrames := Integer((Int64(ms) * Int64(FSampleRate)) div 1000);
-  if rampFrames <= 0 then
+  if (rampFrames <= 0) then
     rampFrames := 1;
 
-  if Frames <= 0 then
+  if (Frames <= 0) then
     k := 1.0
   else
     k := Frames / rampFrames;
 
-  if k > 1.0 then
+  if (k > 1.0) then
     k := 1.0
-  else
-    if k < 0.0 then
-      k := 0.0;
+  else if (k < 0.0) then
+    k := 0.0;
 
   FBassDbCurrent := FBassDbCurrent + (FBassDbTarget - FBassDbCurrent) * k;
   FTrebleDbCurrent := FTrebleDbCurrent + (FTrebleDbTarget - FTrebleDbCurrent) * k;
@@ -833,7 +872,7 @@ begin
     Exit(hr);
 
   if not IsEqualGUID(gdMajorType,
-                     MFMediaType_Audio) then
+    MFMediaType_Audio) then
     Exit(MF_E_INVALIDMEDIATYPE);
 
   hr := pType.GetGUID(MF_MT_SUBTYPE,
@@ -863,7 +902,7 @@ begin
     Exit(hr);
 
   if FAILED(pType.GetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,
-                            BlockAlign)) then
+    BlockAlign)) then
     BlockAlign := (Channels * BitsPerSample) div 8;
 
   Result := hr;
@@ -905,12 +944,14 @@ var
     Result := y;
   end;
 
+
   function ReadInt24(const p: PByte): Integer;
   begin
     Result := Integer(p^ or (PByte(NativeUInt(p) + 1)^ shl 8) or (PByte(NativeUInt(p) + 2)^ shl 16));
-    if (Result and $00800000) <> 0 then
+    if ((Result and $00800000) <> 0) then
       Result := Result or Integer($FF000000);
   end;
+
 
   procedure WriteInt24(const p: PByte;
                        const Value: Integer);
@@ -919,8 +960,10 @@ var
 
   begin
     vv := Value;
-    if vv > 8388607 then vv := 8388607
-    else if vv < -8388608 then vv := -8388608;
+    if (vv > 8388607) then
+      vv := 8388607
+    else if (vv < -8388608) then
+      vv := -8388608;
 
     p^ := Byte(vv and $FF);
     PByte(NativeUInt(p) + 1)^ := Byte((vv shr 8) and $FF);
@@ -991,10 +1034,12 @@ begin
 
                 // Use current ramped gains (or whatever your coeffs were computed from)
                 if (FBassDbCurrent <> 0) then
-                  s := BiquadProcess(FBass[ch], s);
+                  s := BiquadProcess(FBass[ch],
+                                     s);
 
                 if (FTrebleDbCurrent <> 0) then
-                  s := BiquadProcess(FTreble[ch], s);
+                  s := BiquadProcess(FTreble[ch],
+                                     s);
 
                 s := ClampS(s,
                             -1.5,
@@ -1014,7 +1059,7 @@ begin
                   for ch := 0 to Integer(FChannels) - 1 do
                     begin
 
-                      v := PSmallInt(NativeUInt(pOut) + NativeUInt(i*bytesPerFrame + ch*2))^;
+                      v := PSmallInt(NativeUInt(pOut) + NativeUInt(i * bytesPerFrame + ch * 2))^;
                       s := v / 32768.0;
 
                       if (FBassDbCurrent <> 0) then
@@ -1030,7 +1075,7 @@ begin
                                   1.0);
 
                       v := Round(s * 32767.0);
-                      PSmallInt(NativeUInt(pOut) + NativeUInt(i*bytesPerFrame + ch * 2))^ := SmallInt(v);
+                      PSmallInt(NativeUInt(pOut) + NativeUInt(i * bytesPerFrame + ch * 2))^ := SmallInt(v);
                     end;
               end;
 
@@ -1041,21 +1086,24 @@ begin
                   for ch := 0 to Integer(FChannels) - 1 do
                     begin
 
-                      v := ReadInt24(PByte(NativeUInt(pOut) + NativeUInt(i*bytesPerFrame + ch * 3)));
+                      v := ReadInt24(PByte(NativeUInt(pOut) + NativeUInt(i * bytesPerFrame + ch * 3)));
                       s := v / 8388608.0;
 
                       if (FBassDbCurrent <> 0) then
-                        s := BiquadProcess(FBass[ch], s);
+                        s := BiquadProcess(FBass[ch],
+                                           s);
 
                       if (FTrebleDbCurrent <> 0) then
-                        s := BiquadProcess(FTreble[ch], s);
+                        s := BiquadProcess(FTreble[ch],
+                                           s);
 
                       s := ClampS(s,
                                   -1.0,
                                   1.0);
 
                       v := Round(s * 8388607.0);
-                      WriteInt24(PByte(NativeUInt(pOut) + NativeUInt(i*bytesPerFrame + ch * 3)), v);
+                      WriteInt24(PByte(NativeUInt(pOut) + NativeUInt(i * bytesPerFrame + ch * 3)),
+                                 v);
                     end;
               end;
 
@@ -1066,25 +1114,29 @@ begin
                   for ch := 0 to Integer(FChannels) - 1 do
                     begin
 
-                      v := PInteger(NativeUInt(pOut) + NativeUInt(i*bytesPerFrame + ch * 4))^;
+                      v := PInteger(NativeUInt(pOut) + NativeUInt(i * bytesPerFrame + ch * 4))^;
                       s := v / 2147483648.0;
 
                       if (FBassDbCurrent <> 0) then
-                        s := BiquadProcess(FBass[ch], s);
+                        s := BiquadProcess(FBass[ch],
+                                           s);
 
                       if (FTrebleDbCurrent <> 0) then
-                        s := BiquadProcess(FTreble[ch], s);
+                        s := BiquadProcess(FTreble[ch],
+                                           s);
 
-                      s := ClampS(s, -1.0, 1.0);
+                      s := ClampS(s,
+                                  -1.0,
+                                  1.0);
                       v := Round(s * 2147483647.0);
-                      PInteger(NativeUInt(pOut) + NativeUInt(i*bytesPerFrame + ch * 4))^ := v;
+                      PInteger(NativeUInt(pOut) + NativeUInt(i * bytesPerFrame + ch * 4))^ := v;
                     end;
               end;
 
-          else
-            begin
-              // pass-through
-            end;
+            else
+              begin
+                // pass-through
+              end;
           end;
         end;
 
@@ -1104,9 +1156,8 @@ begin
           if FAILED(hr) then
             Exit(hr);
         end
-      else
-        if (hr <> MF_E_NO_SAMPLE_TIMESTAMP) then
-          Exit(hr);
+      else if (hr <> MF_E_NO_SAMPLE_TIMESTAMP) then
+        Exit(hr);
 
       hr := InSample.GetSampleDuration(@timeStamp);
       if SUCCEEDED(hr) then
@@ -1115,9 +1166,8 @@ begin
           if FAILED(hr) then
             Exit(hr);
         end
-      else
-        if (hr <> MF_E_NO_SAMPLE_DURATION) then
-          Exit(hr);
+      else if (hr <> MF_E_NO_SAMPLE_DURATION) then
+        Exit(hr);
 
       hr := S_OK;
 
@@ -1142,6 +1192,7 @@ function TMfBassTrebleMFT.GetStreamLimits(out pdwInputMinimum: DWORD;
                                           out pdwInputMaximum: DWORD;
                                           out pdwOutputMinimum: DWORD;
                                           out pdwOutputMaximum: DWORD): HRESULT;
+
 begin
 
   pdwInputMinimum := 1;
@@ -1154,6 +1205,7 @@ end;
 
 function TMfBassTrebleMFT.GetStreamCount(out pcInputStreams: DWORD;
                                          out pcOutputStreams: DWORD): HRESULT;
+
 begin
 
   pcInputStreams := 1;
@@ -1163,9 +1215,10 @@ end;
 
 
 function TMfBassTrebleMFT.GetStreamIDs(dwInputIDArraySize: DWORD;
-                                       {out} pdwInputIDs: PDWORD;
+  {out} pdwInputIDs: PDWORD;
                                        dwOutputIDArraySize: DWORD;
                                        pdwOutputIDs: PDWORD): HResult;
+
 begin
 
   // Fixed stream IDs = 0, caller can assume 0; return E_NOTIMPL per MF docs.
@@ -1175,23 +1228,25 @@ end;
 
 function TMfBassTrebleMFT.GetInputStreamInfo(const dwInputStreamID: DWORD;
                                              out pStreamInfo: MFT_INPUT_STREAM_INFO): HRESULT;
+
 begin
 
   if (dwInputStreamID <> INPUT_STREAM_ID) then
     Exit(MF_E_INVALIDSTREAMNUMBER);
 
   ZeroMemory(@pStreamInfo,
-    SizeOf(pStreamInfo));
+             SizeOf(pStreamInfo));
 
   pStreamInfo.dwFlags := MFT_INPUT_STREAM_WHOLE_SAMPLES or
-                         MFT_INPUT_STREAM_SINGLE_SAMPLE_PER_BUFFER or
-                         MFT_INPUT_STREAM_FIXED_SAMPLE_SIZE;
+    MFT_INPUT_STREAM_SINGLE_SAMPLE_PER_BUFFER or
+    MFT_INPUT_STREAM_FIXED_SAMPLE_SIZE;
   Result := S_OK;
 end;
 
 
 function TMfBassTrebleMFT.GetOutputStreamInfo(const dwOutputStreamID: DWORD;
                                               out pStreamInfo: MFT_OUTPUT_STREAM_INFO): HRESULT;
+
 begin
 
   if (dwOutputStreamID <> OUTPUT_STREAM_ID) then
@@ -1200,14 +1255,15 @@ begin
   ZeroMemory(@pStreamInfo,
              SizeOf(pStreamInfo));
   pStreamInfo.dwFlags := MFT_OUTPUT_STREAM_PROVIDES_SAMPLES or
-                         MFT_OUTPUT_STREAM_WHOLE_SAMPLES or
-                         MFT_OUTPUT_STREAM_SINGLE_SAMPLE_PER_BUFFER or
-                         MFT_OUTPUT_STREAM_FIXED_SAMPLE_SIZE;
+    MFT_OUTPUT_STREAM_WHOLE_SAMPLES or
+    MFT_OUTPUT_STREAM_SINGLE_SAMPLE_PER_BUFFER or
+    MFT_OUTPUT_STREAM_FIXED_SAMPLE_SIZE;
   Result := S_OK;
 end;
 
 
 function TMfBassTrebleMFT.GetAttributes(out pAttributes: IMFAttributes): HRESULT;
+
 begin
 
   pAttributes := nil;
@@ -1217,6 +1273,7 @@ end;
 
 function TMfBassTrebleMFT.GetInputStreamAttributes(const dwInputStreamID: DWORD;
                                                    out pAttributes: IMFAttributes): HRESULT;
+
 begin
 
   pAttributes := nil;
@@ -1226,6 +1283,7 @@ end;
 
 function TMfBassTrebleMFT.GetOutputStreamAttributes(const dwOutputStreamID: DWORD;
                                                     out pAttributes: IMFAttributes): HRESULT;
+
 begin
 
   pAttributes := nil;
@@ -1234,6 +1292,7 @@ end;
 
 
 function TMfBassTrebleMFT.DeleteInputStream(dwStreamID: DWORD): HRESULT;
+
 begin
 
   Result := E_NOTIMPL;
@@ -1242,6 +1301,7 @@ end;
 
 function TMfBassTrebleMFT.AddInputStreams(cStreams: DWORD;
                                           adwStreamIDs: PDWORD): HRESULT;
+
 begin
 
   Result := E_NOTIMPL;
@@ -1250,7 +1310,8 @@ end;
 
 function TMfBassTrebleMFT.GetInputAvailableType(const dwInputStreamID: DWORD;
                                                 dwTypeIndex: DWORD; // 0-based
-                                                out ppType: IMFMediaType): HRESULT;
+  out ppType: IMFMediaType): HRESULT;
+
 begin
 
   // We do not enumerate; caller proposes via SetInputType.
@@ -1261,7 +1322,8 @@ end;
 
 function TMfBassTrebleMFT.GetOutputAvailableType(const dwOutputStreamID: DWORD;
                                                  dwTypeIndex: DWORD; // 0-based
-                                                 out ppType: IMFMediaType): HRESULT;
+  out ppType: IMFMediaType): HRESULT;
+
 begin
 
   ppType := nil;
@@ -1314,8 +1376,10 @@ begin
         FBitsPerSample := 0;
         FBlockAlign := 0;
         FIsFloat := False;
-        SetLength(FBass, 0);
-        SetLength(FTreble, 0);
+        SetLength(FBass,
+                  0);
+        SetLength(FTreble,
+                  0);
         Exit(S_OK);
       end;
 
@@ -1388,9 +1452,9 @@ begin
 
         // Require exact match with current input format
         if (ch <> FChannels) or
-           (sr <> FSampleRate) or
-           (bps <> FBitsPerSample) or
-           (isf <> FIsFloat) then
+          (sr <> FSampleRate) or
+          (bps <> FBitsPerSample) or
+          (isf <> FIsFloat) then
           Exit(MF_E_INVALIDMEDIATYPE);
       finally
 
@@ -1419,6 +1483,7 @@ end;
 
 function TMfBassTrebleMFT.GetInputCurrentType(const dwInputStreamID: DWORD;
                                               out ppType: IMFMediaType): HRESULT;
+
 begin
 
   if (dwInputStreamID <> INPUT_STREAM_ID) then
@@ -1443,6 +1508,7 @@ end;
 
 function TMfBassTrebleMFT.GetOutputCurrentType(const dwOutputStreamID: DWORD;
                                                out ppType: IMFMediaType): HRESULT;
+
 begin
 
   if (dwOutputStreamID <> OUTPUT_STREAM_ID) then
@@ -1467,6 +1533,7 @@ end;
 
 function TMfBassTrebleMFT.GetInputStatus(const dwInputStreamID: DWORD;
                                          out pdwFlags: DWORD {MFT_INPUT_STATUS_ACCEPT_DATA}): HRESULT;
+
 begin
 
   if (dwInputStreamID <> INPUT_STREAM_ID) then
@@ -1493,6 +1560,7 @@ end;
 
 
 function TMfBassTrebleMFT.GetOutputStatus(out pdwFlags: DWORD): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -1517,6 +1585,7 @@ end;
 
 function TMfBassTrebleMFT.SetOutputBounds(hnsLowerBound: LONGLONG;
                                           hnsUpperBound: LONGLONG): HRESULT;
+
 begin
 
   Result := E_NOTIMPL;
@@ -1525,6 +1594,7 @@ end;
 
 function TMfBassTrebleMFT.ProcessEvent(const dwInputStreamID: DWORD;
                                        pEvent: IMFMediaEvent): HRESULT;
+
 begin
 
   Result := E_NOTIMPL;
@@ -1533,6 +1603,7 @@ end;
 
 function TMfBassTrebleMFT.ProcessMessage(eMessage: MFT_MESSAGE_TYPE;
                                          ulParam: ULONG_PTR): HRESULT;
+
 begin
 
   case eMessage of
@@ -1582,9 +1653,10 @@ end;
 function TMfBassTrebleMFT.ProcessInput(const dwInputStreamID: DWORD;
                                        const pSample: IMFSample;
                                        dwFlags: DWORD = 0): HRESULT;
+
 begin
 
-  if dwInputStreamID <> INPUT_STREAM_ID then
+  if (dwInputStreamID <> INPUT_STREAM_ID) then
     Exit(MF_E_INVALIDSTREAMNUMBER);
 
   if (pSample = nil) then
@@ -1614,9 +1686,9 @@ end;
 
 
 function TMfBassTrebleMFT.ProcessOutput(dwFlags: MFT_PROCESS_OUTPUT_FLAGS; // MFT_PROCESS_OUTPUT_FLAGS
-                                        cOutputBufferCount: DWORD; // # returned by GetStreamCount()
-                                        pOutputSamples: PMFT_OUTPUT_DATA_BUFFER;  // one per stream
-                                        out pdwStatus: DWORD): HRESULT; stdcall;
+  cOutputBufferCount: DWORD; // # returned by GetStreamCount()
+  pOutputSamples: PMFT_OUTPUT_DATA_BUFFER;  // one per stream
+  out pdwStatus: DWORD): HRESULT; stdcall;
 var
   hr: HResult;
   outSample: IMFSample;
@@ -1634,8 +1706,10 @@ begin
   if (cOutputBufferCount <> 1) or (dwFlags <> 0) then
     Exit(E_INVALIDARG);
 
-  if pOutputSamples^.dwStreamID <> 0 then Exit(MF_E_INVALIDSTREAMNUMBER);
-  if pOutputSamples^.pSample <> nil then Exit(E_INVALIDARG);
+  if (pOutputSamples^.dwStreamID <> 0) then
+    Exit(MF_E_INVALIDSTREAMNUMBER);
+  if (pOutputSamples^.pSample <> nil) then
+    Exit(E_INVALIDARG);
 
   FLock.Enter();
 
@@ -1708,4 +1782,3 @@ end;
 
 
 end.
-

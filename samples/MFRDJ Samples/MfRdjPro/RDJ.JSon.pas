@@ -64,11 +64,12 @@ unit RDJ.JSon;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   SysUtils,
@@ -78,6 +79,7 @@ LMessages,
 type
 
   TRDJRadioStatusJson = class
+
   public
 
     class procedure WriteRadioStatusJson(const AFileName: string;
@@ -105,6 +107,7 @@ uses
   RDJ.Setup,
   frmMainMdi;
 
+
 class procedure TRDJRadioStatusJson.WriteRadioStatusJson(const AFileName: string;
                                                          const ADjName: string;
                                                          const AShowName: string;
@@ -127,6 +130,7 @@ var
   CoverUrl: string;
   JsonBytes: TBytes;
 
+
   function SanitizeJsonText(const AValue: string): string;
   var
     I: Integer;
@@ -139,13 +143,14 @@ var
     SetLength(Result,
               Length(AValue));
     for I := 1 to Length(AValue) do
-      if Ord(AValue[I]) < 32 then
+      if (Ord(AValue[I]) < 32) then
         Result[I] := ' '
       else
         Result[I] := AValue[I];
 
     Result := Trim(Result);
   end;
+
 
   procedure SetJsonInteger(const AName: string;
                            const AValue: Integer);
@@ -175,7 +180,7 @@ var
 
     SafeValue := SanitizeJsonText(AValue);
     if (SafeValue = '') and
-       (not AAllowEmpty) then
+      (not AAllowEmpty) then
       Exit;
 
     Json.RemovePair(AName).Free;
@@ -193,7 +198,7 @@ var
 
     Result := '';
     CleanValue := Trim(AValue);
-    if CleanValue = '' then
+    if (CleanValue = '') then
       Exit;
 
     CleanValue := StringReplace(CleanValue,
@@ -211,12 +216,12 @@ var
 
     // Do not publish disk/UNC paths to the browser.
     if ((Length(CleanValue) >= 2) and (CleanValue[2] = ':')) or
-       (Copy(CleanValue,
-             1,
-             2) = '//') then
+      (Copy(CleanValue,
+            1,
+            2) = '//') then
       CleanValue := ExtractFileName(CleanValue);
 
-    if CleanValue = '' then
+    if (CleanValue = '') then
       Exit;
 
     Result := CleanValue + '?ts=' + IntToStr(GetTickCount);
@@ -237,16 +242,16 @@ var
     for Attempt := 0 to RDJ_JSON_PUBLISH_RETRY_COUNT do
       begin
         if MoveFileExW(PChar(ASourceFileName),
-                      PChar(ADestFileName),
-                      MOVEFILE_REPLACE_EXISTING or MOVEFILE_WRITE_THROUGH) then
+          PChar(ADestFileName),
+          MOVEFILE_REPLACE_EXISTING or MOVEFILE_WRITE_THROUGH) then
           Exit;
 
         LastError := GetLastError();
 
         if (LastError <> ERROR_ALREADY_EXISTS) and
-           (LastError <> ERROR_ACCESS_DENIED) and
-           (LastError <> ERROR_SHARING_VIOLATION) and
-           (LastError <> ERROR_LOCK_VIOLATION) then
+          (LastError <> ERROR_ACCESS_DENIED) and
+          (LastError <> ERROR_SHARING_VIOLATION) and
+          (LastError <> ERROR_LOCK_VIOLATION) then
           Break;
 
         Sleep(RDJ_JSON_PUBLISH_RETRY_DELAY_MS);
@@ -261,13 +266,13 @@ begin
     Exit;
 
   if (not AClearEmptyTrackInfo) and
-     (ADjName = '') and
-     (AShowName = '') and
-     (AArtist = '') and
-     (ATitle = '') and
-     (AEventTitle = '') and
-     (AActivityTitle = '') and
-     (AListeners < 0) then
+    (ADjName = '') and
+    (AShowName = '') and
+    (AArtist = '') and
+    (ATitle = '') and
+    (AEventTitle = '') and
+    (AActivityTitle = '') and
+    (AListeners < 0) then
     Exit;
 
   if not Assigned(MainMDIFrm) then

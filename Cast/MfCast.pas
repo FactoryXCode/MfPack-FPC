@@ -96,6 +96,7 @@ type
   // by worker threads; VCL clients must marshal control updates to the main
   // thread (for instance: The MfSimpleCastPlayer sample demonstrates this with PostMessage).
   TMfCast = class
+
   private
     FController: IMfCastController;
     FLogger: IMfCastLogger;
@@ -127,7 +128,7 @@ type
     function GetLoggingEnabled(): Boolean;
 
     procedure SetLoggingEnabled(const AValue: Boolean);
-  
+
   public
 
     class function ApiVersion(): string; static;
@@ -164,7 +165,7 @@ type
 
     function Cast(const ADevice: TMfCastDevice;
                   const ASource: string): HRESULT; overload;
-                  
+
     function Cast(const ADevice: TMfCastDevice;
                   const ASource: string;
                   const ASubtitle: TMfCastSubtitleAsset;
@@ -247,7 +248,9 @@ uses
   MfCastAndroidTvRemote;
 
 type
-  TMfCastLogger = class(TInterfacedObject, IMfCastLogger)
+  TMfCastLogger = class(TInterfacedObject,
+                        IMfCastLogger)
+
   private
     FOwner: TMfCast;
 
@@ -263,6 +266,7 @@ type
 
 
 constructor TMfCastLogger.Create(const AOwner: TMfCast);
+
 begin
 
   inherited Create();
@@ -272,6 +276,7 @@ end;
 
 
 procedure TMfCastLogger.Detach();
+
 begin
 
   FOwner := nil;
@@ -281,6 +286,7 @@ end;
 procedure TMfCastLogger.Log(const ALevel: TMfCastLogLevel;
                             const ASource: string;
                             const AMessage: string);
+
 begin
 
   if Assigned(FOwner) then
@@ -350,7 +356,8 @@ begin
     begin
       Components.SegmentPublisher := TMfCastSegmentPublisher.Create(Components.HttpServer);
       Components.DesktopPublisher := TMfCastSegmentPublisher.Create(Components.DesktopHttpServer,
-                                                                     'desktop.mp4', True);
+                                                                    'desktop.mp4',
+                                                                    True);
       Components.RemuxPipeline := TMfCastRemuxPipeline.Create();
       Components.TranscodePipeline := TMfCastTranscodePipeline.Create();
       Components.CapturePipeline := TMfCastDesktopCapturePipeline.Create();
@@ -414,6 +421,7 @@ end;
 
 
 function TMfCast.Discover(): HRESULT;
+
 begin
 
   Result := FController.StartDiscovery();
@@ -423,7 +431,9 @@ end;
 function TMfCast.Discover(const ADevice: TMfCastDevice): HRESULT;
 var
   Targeted: IMfCastTargetedDiscovery;
+
 begin
+
   if Supports(FController, IMfCastTargetedDiscovery, Targeted) then
     Result := Targeted.DiscoverDevice(ADevice)
   else
@@ -432,6 +442,7 @@ end;
 
 
 function TMfCast.StopDiscovery(): HRESULT;
+
 begin
 
   Result := FController.StopDiscovery();
@@ -439,6 +450,7 @@ end;
 
 
 function TMfCast.RefreshDiscovery(): HRESULT;
+
 begin
 
   Result := FController.RefreshDiscovery();
@@ -446,12 +458,15 @@ end;
 
 
 function TMfCast.RefreshDiscovery(const ADevice: TMfCastDevice): HRESULT;
+
 begin
+
   Result := Discover(ADevice);
 end;
 
 
 function TMfCast.GetDevices(out ADevices: TMfCastDeviceArray): HRESULT;
+
 begin
 
   Result := FController.GetDevices(ADevices);
@@ -460,9 +475,11 @@ end;
 
 function TMfCast.GetMediaTracks(const ASource: string;
                                 out ATracks: TMfCastTrackInfoArray): HRESULT;
+
 begin
 
-  Result := FController.GetMediaTracks(ASource, ATracks);
+  Result := FController.GetMediaTracks(ASource,
+                                       ATracks);
 end;
 
 
@@ -487,6 +504,7 @@ end;
 
 
 function TMfCast.UpdatePreviewWindow(): HRESULT;
+
 begin
 
   if Assigned(FDirectPreviewPlayer) then
@@ -495,7 +513,9 @@ begin
     Result := E_NOTIMPL;
 end;
 
+
 function TMfCast.UpdatePreviewSubtitles(): HRESULT;
+
 begin
 
   if Assigned(FDirectPreviewPlayer) then
@@ -506,6 +526,7 @@ end;
 
 
 function TMfCast.SetAudioArtwork(const ASourceName: string): HRESULT;
+
 begin
 
   Result := FController.SetAudioArtwork(ASourceName);
@@ -513,6 +534,7 @@ end;
 
 
 function TMfCast.SetSourceResolver(const AResolver: IMfCastSourceResolver): HRESULT;
+
 begin
 
   Result := FController.SetSourceResolver(AResolver);
@@ -527,7 +549,7 @@ var
 begin
 
   Subtitle.Reset();
-  Result := Cast(ADevice, 
+  Result := Cast(ADevice,
                  ASource,
                  Subtitle,
                  cmmAutomatic,
@@ -537,6 +559,7 @@ end;
 
 
 function TMfCast.Connect(const ADevice: TMfCastDevice): HRESULT;
+
 begin
 
   Result := FController.Connect(ADevice);
@@ -550,7 +573,7 @@ var
 begin
 
   Subtitle.Reset();
-  Result := Load(ASource, 
+  Result := Load(ASource,
                  Subtitle,
                  cmmAutomatic,
                  csmNone,
@@ -607,6 +630,7 @@ end;
 function TMfCast.CastLiveFragmentedMp4(const ADevice: TMfCastDevice;
                                        const AInitSegment: TBytes;
                                        out AByteStream: IMFByteStream): HRESULT;
+
 begin
 
   Result := FController.CastLiveFragmentedMp4(ADevice,
@@ -618,6 +642,7 @@ end;
 function TMfCast.GetCaptureCapabilities(const ADevice: TMfCastDevice;
                                         const APreference: TMfCastVideoCodecPreference;
                                         out ACapabilities: TMfCastCaptureCapabilities): HRESULT;
+
 begin
 
   Result := MfCastGetCaptureCapabilities(ADevice,
@@ -629,6 +654,7 @@ end;
 function TMfCast.GetCaptureCapabilities(const ADevice: TMfCastDevice;
                                         const ASettings: TMfCastCaptureSettings;
                                         out ACapabilities: TMfCastCaptureCapabilities): HRESULT;
+
 begin
 
   // Explicit audio-only capture needs neither DXGI nor a hardware video encoder.
@@ -664,11 +690,12 @@ begin
       Result := S_OK;
     end
   else
-    Result := GetCaptureCapabilities(ADevice, ASettings.CodecPreference,
+    Result := GetCaptureCapabilities(ADevice,
+                                     ASettings.CodecPreference,
                                      ACapabilities);
 
   if SUCCEEDED(Result) and ACapabilities.AudioOnly and
-     (not ASettings.CaptureSystemAudio) then
+    (not ASettings.CaptureSystemAudio) then
     begin
       ACapabilities.SelectionReason :=
         'Audio-only capture requires system-audio capture to be enabled.';
@@ -682,20 +709,20 @@ function TMfCast.CastDesktop(const ADevice: TMfCastDevice;
                              out ACapabilities: TMfCastCaptureCapabilities): HRESULT;
 var
   EffectiveSettings: TMfCastCaptureSettings;
-  
+
 begin
-  
+
   Result := GetCaptureCapabilities(ADevice,
                                    ASettings,
                                    ACapabilities);
   if FAILED(Result) then
     Exit;
-    
+
   EffectiveSettings := ASettings;
   EffectiveSettings.AudioOnly := ACapabilities.AudioOnly;
-  
 
-    
+
+
   Result := FController.CastDesktop(ADevice,
                                     EffectiveSettings,
                                     ACapabilities.SelectedVideoSubtype);
@@ -703,6 +730,7 @@ end;
 
 
 function TMfCast.Play(): HRESULT;
+
 begin
 
   Result := FController.Play();
@@ -710,6 +738,7 @@ end;
 
 
 function TMfCast.Pause(): HRESULT;
+
 begin
 
   Result := FController.Pause();
@@ -717,6 +746,7 @@ end;
 
 
 function TMfCast.Stop(): HRESULT;
+
 begin
 
   Result := FController.Stop();
@@ -738,6 +768,7 @@ end;
 
 
 function TMfCast.SelectAudioTrack(const ATrackId: Int64): HRESULT;
+
 begin
 
   Result := FController.SelectAudioTrack(ATrackId);
@@ -745,6 +776,7 @@ end;
 
 
 function TMfCast.SelectSubtitle(const ASubtitle: TMfCastSubtitleAsset): HRESULT;
+
 begin
 
   Result := FController.SelectSubtitle(ASubtitle);
@@ -752,6 +784,7 @@ end;
 
 
 function TMfCast.SelectSubtitle(const ATrackId: Int64): HRESULT;
+
 begin
 
   Result := FController.SelectSubtitleTrack(ATrackId);
@@ -759,6 +792,7 @@ end;
 
 
 function TMfCast.DisableSubtitles(): HRESULT;
+
 begin
 
   Result := FController.DisableSubtitles();
@@ -775,14 +809,14 @@ begin
 
   if (Volume < 0.0) then
     Volume := 0.0
-  else
-    if (Volume > 1.0) then
-      Volume := 1.0;
+  else if (Volume > 1.0) then
+    Volume := 1.0;
   Result := FController.SetVolume(Volume);
 end;
 
 
 function TMfCast.SetMuted(const AMuted: Boolean): HRESULT;
+
 begin
 
   Result := FController.SetMuted(AMuted);
@@ -790,22 +824,29 @@ end;
 
 
 class function TMfCast.ApiVersion(): string;
+
 begin
+
   Result := MFCAST_API_VERSION;
 end;
 
 
 function TMfCast.ImportAndroidTvPairing(const ADevice: TMfCastDevice;
-  const APfx: TBytes): HRESULT;
+                                        const APfx: TBytes): HRESULT;
+
 begin
-  Result := MfCastImportAndroidTvPairing(ADevice, APfx);
+
+  Result := MfCastImportAndroidTvPairing(ADevice,
+                                         APfx);
   if Succeeded(Result) then
-    DispatchLog(cllInfo, 'AndroidTvRemote',
-      'Paired Android TV credential registered for this Cast device.')
+    DispatchLog(cllInfo,
+                'AndroidTvRemote',
+                'Paired Android TV credential registered for this Cast device.')
   else
-    DispatchLog(cllWarning, 'AndroidTvRemote',
-      Format('Could not register the paired Android TV credential: HRESULT $%.8x.',
-             [DWORD(Result)]));
+    DispatchLog(cllWarning,
+                'AndroidTvRemote',
+                Format('Could not register the paired Android TV credential: HRESULT $%.8x.',
+                       [DWORD(Result)]));
 end;
 
 
@@ -823,6 +864,7 @@ end;
 function TMfCast.GetDevicePowerState(const ADevice: TMfCastDevice;
                                      out AIsOn: Boolean;
                                      out ADetail: string): HRESULT;
+
 begin
 
   Result := MfCastAndroidTvPower(ADevice,
@@ -865,6 +907,7 @@ end;
 
 
 function TMfCast.Disconnect(): HRESULT;
+
 begin
 
   Result := FController.Disconnect();
@@ -872,6 +915,7 @@ end;
 
 
 function TMfCast.State(): TMfCastState;
+
 begin
 
   Result := FController.GetState();
@@ -879,6 +923,7 @@ end;
 
 
 procedure TMfCast.ControllerDeviceAdded(const ADevice: TMfCastDevice);
+
 begin
 
   if Assigned(FOnDeviceAdded) then
@@ -887,6 +932,7 @@ end;
 
 
 procedure TMfCast.ControllerDeviceUpdated(const ADevice: TMfCastDevice);
+
 begin
 
   if Assigned(FOnDeviceUpdated) then
@@ -895,6 +941,7 @@ end;
 
 
 procedure TMfCast.ControllerDeviceRemoved(const ADeviceId: string);
+
 begin
 
   if Assigned(FOnDeviceRemoved) then
@@ -904,15 +951,17 @@ end;
 
 procedure TMfCast.ControllerStateChanged(const AOldState: TMfCastState;
                                          const ANewState: TMfCastState);
+
 begin
 
   if Assigned(FOnStateChanged) then
-    FOnStateChanged(AOldState, 
+    FOnStateChanged(AOldState,
                     ANewState);
 end;
 
 
 procedure TMfCast.ControllerMediaStatus(const AStatus: TMfCastMediaStatus);
+
 begin
 
   if Assigned(FOnMediaStatus) then
@@ -921,6 +970,7 @@ end;
 
 
 procedure TMfCast.ControllerError(const AError: TMfCastErrorInfo);
+
 begin
 
   if Assigned(FOnError) then
@@ -942,7 +992,8 @@ begin
   Text := Format('[MfCast][%s][%s] %s',
                  [MfCastLogLevelToString(ALevel), ASource, AMessage]);
 
-  OutputDebugStringW(PChar(MfCastFormatLogLine(Text, Now)));
+  OutputDebugStringW(PChar(MfCastFormatLogLine(Text,
+                                               Now)));
 
   if Assigned(FOnLog) then
     FOnLog(Self,
@@ -953,15 +1004,17 @@ end;
 
 
 function TMfCast.GetLoggingEnabled(): Boolean;
+
 begin
 
-  Result := InterlockedCompareExchange(FLoggingEnabled,
-                                       0,
-                                       0) <> 0;
+  Result := (InterlockedCompareExchange(FLoggingEnabled,
+                                        0,
+                                        0) <> 0);
 end;
 
 
 procedure TMfCast.SetLoggingEnabled(const AValue: Boolean);
+
 begin
 
   if AValue then

@@ -71,7 +71,7 @@ interface
 
 uses
   MfCapturePlatform,
-{WinApi}
+  {WinApi}
   Windows,
   MfDuckingDirectShow, {or DSPack DirectShow}
   Messages,
@@ -90,13 +90,13 @@ uses
   WinApi.CoreAudioApi.AudioClient,
   WinApi.CoreAudioApi.MMDeviceApi;
 
- {$I 'WinApiTypes.inc'}
+  {$I 'WinApiTypes.inc'}
 
 const
-  WM_APP_SESSION_DUCKED               = WM_APP;
-  WM_APP_SESSION_UNDUCKED             = WM_APP + 1;
-  WM_APP_GRAPHNOTIFY                  = WM_APP + 2;
-  WM_APP_SESSION_VOLUME_CHANGED       = WM_APP + 3;  // wParam = Mute State, lParam = (float) new volume 0.0 - 1.0
+  WM_APP_SESSION_DUCKED = WM_APP;
+  WM_APP_SESSION_UNDUCKED = WM_APP + 1;
+  WM_APP_GRAPHNOTIFY = WM_APP + 2;
+  WM_APP_SESSION_VOLUME_CHANGED = WM_APP + 3;  // wParam = Mute State, lParam = (float) new volume 0.0 - 1.0
 
   // NOTE: The TCMediaPlayer class is posting messages.
   //       Be sure, your application has an "OnMessage" method ( like the TMessageEvent ) as described at
@@ -105,7 +105,10 @@ const
 
 type
 
-  TCMediaPlayer = class(TInterfacedPersistent, IAudioVolumeDuckNotification, IAudioSessionEvents)
+  TCMediaPlayer = class(TInterfacedPersistent,
+                        IAudioVolumeDuckNotification,
+                        IAudioSessionEvents)
+
   private
     _FileName: PWideChar;
     _GraphBuilder: IGraphBuilder;
@@ -126,14 +129,14 @@ type
     _SessionControl2: IAudioSessionControl2;
 
 
-   // IAudioVolumeDuckNotification implementation
+    // IAudioVolumeDuckNotification implementation
     function OnVolumeDuckNotification(sessionID: LPCWSTR;
                                       countCommunicationSessions: UINT32): HResult; stdcall;
 
     function OnVolumeUnduckNotification(sessionID: LPCWSTR): HResult; stdcall;
 
 
-   // IAudioSessionEvents implementation
+    // IAudioSessionEvents implementation
     function OnDisplayNameChanged(NewDisplayName: LPCWSTR;
                                   EventContext: PGUID): HResult; stdcall;
 
@@ -157,7 +160,7 @@ type
     function OnSessionDisconnected(DisconnectReason: AudioSessionDisconnectReason): HResult; stdcall; { return S_OK; }
 
 
-   // Other
+    // Other
 
     function GetSessionManager2(): HResult; stdcall;
     function GetSessionControl2(): HResult; stdcall;
@@ -202,7 +205,7 @@ type
 
     property Duration: REFERENCE_TIME read _MediaPlayerTime;
 
-end;
+  end;
 
 
 implementation
@@ -213,7 +216,9 @@ implementation
 //  Initialize a bunch of stuff.
 //
 constructor TCMediaPlayer.Create(AppWindow: HWND);
+
 begin
+
   inherited Create();
   _FileName := Nil;
   _GraphBuilder := Nil;
@@ -238,7 +243,9 @@ end;
 //  Does nothing because all the cleanup happened in the Shutdown() method.
 //
 destructor TCMediaPlayer.Destroy();
+
 begin
+
   inherited Destroy();
 end;
 
@@ -288,9 +295,10 @@ end;
 //
 procedure TCMediaPlayer.Shutdown();
 var
- hr: HResult;
+  hr: HResult;
 
 begin
+
   SafeRelease(_MediaEvent);
   SafeRelease(_MediaSeeking);
   SafeRelease(_GraphBuilder);
@@ -301,12 +309,12 @@ begin
         begin
           hr := _SessionManager2.UnregisterDuckNotification(Self);
           if Failed(hr) then
-				    // Failures here are highly unlikely and could indicate an application defect
+            // Failures here are highly unlikely and could indicate an application defect
             MessageBoxW(_AppWindow,
-                       lpcwstr('Unable to unregister for ducking notifications'),
-                       lpcwstr('Stop Player Error'),
-                       MB_OK);
-            _DuckingRegistered := False;
+                        lpcwstr('Unable to unregister for ducking notifications'),
+                        lpcwstr('Stop Player Error'),
+                        MB_OK);
+          _DuckingRegistered := False;
         end;
       SafeRelease(_SessionManager2);
     end;
@@ -321,9 +329,9 @@ begin
           if Failed(hr) then
             // Failures here are highly unlikely and could indicate an application defect
             MessageBoxW(_AppWindow,
-                       lpcwstr('Unable to unregister for session notifications'),
-                       lpcwstr('Stop PlayerError'),
-                       MB_OK);
+                        lpcwstr('Unable to unregister for session notifications'),
+                        lpcwstr('Stop PlayerError'),
+                        MB_OK);
 
           _SessionNotificationRegistered := False;
         end;
@@ -341,12 +349,14 @@ var
   filter: IBaseFilter;
 
 begin
+
   hr := _GraphBuilder.EnumFilters(enumFilters);
 
   if Succeeded(hr) then
     begin
-      hr := (enumFilters as IFilterEnumerator).Next(1,filter,
-                             Nil);
+      hr := (enumFilters as IFilterEnumerator).Next(1,
+                                                    filter,
+                                                    Nil);
       while (hr = S_OK) do
         begin
           //
@@ -359,8 +369,9 @@ begin
           //
           enumFilters.Reset();
 
-          hr := (enumFilters as IFilterEnumerator).Next(1,filter,
-                            Nil);
+          hr := (enumFilters as IFilterEnumerator).Next(1,
+                                                        filter,
+                                                        Nil);
         end;
       SafeRelease(enumFilters);
     end;
@@ -378,6 +389,7 @@ var
   canSeek: Boolean;
 
 begin
+
   RemoveAllFilters();
 
   if Not Assigned(FileName) then
@@ -396,9 +408,9 @@ begin
   if Failed(hr) then
     begin
       MessageBoxW(_AppWindow,
-                 lpcwstr('Unable to build graph for media file'),
-                 lpcwstr('Set Filename Error'),
-                 MB_OK);
+                  lpcwstr('Unable to build graph for media file'),
+                  lpcwstr('Set Filename Error'),
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -425,8 +437,9 @@ var
   timeBegin, timeStop: REFERENCE_TIME;
 
 begin
+
   timeBegin := 0;
-  timeStop  := 0;
+  timeStop := 0;
 
   _GraphBuilder.QueryInterface(IID_IMediaControl,
                                mediaControl);
@@ -453,6 +466,7 @@ var
   mediaControl: IMediaControl;
 
 begin
+
   isPaused := False;
   hr := _GraphBuilder.QueryInterface(IID_IMediaControl,
                                      mediaControl);
@@ -477,6 +491,7 @@ var
   mediaControl: IMediaControl;
 
 begin
+
   isContinued := False;
   hr := _GraphBuilder.QueryInterface(IID_IMediaControl,
                                      mediaControl);
@@ -501,6 +516,7 @@ var
   filterState: TFilterState;
 
 begin
+
   isPaused := False;
   hr := _GraphBuilder.QueryInterface(IID_IMediaControl,
                                      mediaControl);
@@ -535,10 +551,11 @@ var
   mediaControl: IMediaControl;
 
 begin
+
   hr := _GraphBuilder.QueryInterface(IID_IMediaControl,
                                      mediaControl);
   if Succeeded(hr) then
-     mediaControl.Stop();
+    mediaControl.Stop();
 end;
 
 
@@ -559,6 +576,7 @@ var
   timeStop: REFERENCE_TIME;
 
 begin
+
   stopped := False;
   timeBegin := 0;
   timeStop := 0;
@@ -572,29 +590,30 @@ begin
 
   // Get all the events
   while Succeeded(_MediaEvent.GetEvent(evCode,
-                                       param1,
-                                       param2,
-                                       0)) do
+      param1,
+      param2,
+      0)) do
     begin
       _MediaEvent.FreeEventParams(evCode,
                                   param1,
                                   param2);
       case evCode of
-        EC_COMPLETE:       begin
-                             // Stop playback, we're done.
-                             Stop();
-                             _MediaSeeking.SetPositions(timeBegin,
-                                                        AM_SEEKING_AbsolutePositioning,
-                                                        timeStop,
-                                                        AM_SEEKING_NoPositioning);
-                             stopped := True;
-                             Break;
-                           end;
+          EC_COMPLETE: begin
+            // Stop playback, we're done.
+            Stop();
+            _MediaSeeking.SetPositions(timeBegin,
+                                       AM_SEEKING_AbsolutePositioning,
+                                       timeStop,
+                                       AM_SEEKING_NoPositioning);
+            stopped := True;
+            Break;
+          end;
 
-        EC_USERABORT:      begin { Fall through. } end;
-        EC_ERRORABORT:     begin
-                             stopped := false;
-                           end;
+          EC_USERABORT: begin { Fall through. }
+          end;
+          EC_ERRORABORT: begin
+            stopped := false;
+          end;
 
       end;
     end;
@@ -610,6 +629,7 @@ var
   position: REFERENCE_TIME;
 
 begin
+
   if Assigned(_MediaSeeking) and (_MediaPlayerTime > 0) then
     begin
       if SUCCEEDED(_MediaSeeking.GetCurrentPosition(position)) then
@@ -636,6 +656,7 @@ var
   sessionId: PWideChar;
 
 begin
+
   hr := GetSessionManager2();
 
   //
@@ -673,9 +694,9 @@ begin
 
           if Failed(hr) then
             MessageBoxW(_AppWindow,
-                       lpcwstr('Unable to register or unregister for ducking notifications'),
-                       lpcwstr('Sync Ducking Pause Error'),
-                       MB_OK);
+                        lpcwstr('Unable to register or unregister for ducking notifications'),
+                        lpcwstr('Sync Ducking Pause Error'),
+                        MB_OK);
 
           CoTaskMemFree(sessionId);
         end;
@@ -688,11 +709,13 @@ end;
 //
 function TCMediaPlayer.OnVolumeDuckNotification(sessionID: LPCWSTR;
                                                 countCommunicationSessions: UINT32): HResult;
+
 begin
+
   PostMessageW(_AppWindow,
-              WM_APP_SESSION_DUCKED,
-              0,
-              0);
+               WM_APP_SESSION_DUCKED,
+               0,
+               0);
   Result := S_OK;
 end;
 
@@ -701,11 +724,13 @@ end;
 //  When we receive an unduck notification, post a "Session Unducked" message to the application window.
 //
 function TCMediaPlayer.OnVolumeUnduckNotification(SessionID: PWideChar): HResult;
+
 begin
+
   PostMessageW(_AppWindow,
-              WM_APP_SESSION_UNDUCKED,
-              0,
-              0);
+               WM_APP_SESSION_UNDUCKED,
+               0,
+               0);
   Result := S_OK;
 end;
 
@@ -718,6 +743,7 @@ var
   hr: HResult;
 
 begin
+
   hr := GetSessionControl2();
 
   //
@@ -732,9 +758,9 @@ begin
 
       if Failed(hr) then
         MessageBoxW(_AppWindow,
-                   lpcwstr('Unable to update the ducking preference'),
-                   lpcwstr('Sync Ducking State Error'),
-                   MB_OK);
+                    lpcwstr('Unable to update the ducking preference'),
+                    lpcwstr('Sync Ducking State Error'),
+                    MB_OK);
 
     end;
 end;
@@ -749,6 +775,7 @@ var
   volume: Single;
 
 begin
+
   hr := GetSimpleVolume();
   if Succeeded(hr) then
     begin
@@ -760,15 +787,15 @@ begin
         end
       else
         MessageBoxW(_AppWindow,
-                   lpcwstr('Unable to retrieve volume for current session'),
-                   lpcwstr('Get Volume Error'),
-                   MB_OK);
+                    lpcwstr('Unable to retrieve volume for current session'),
+                    lpcwstr('Get Volume Error'),
+                    MB_OK);
     end
   else
     MessageBoxW(_AppWindow,
-               lpcwstr('Unable to retrieve simple volume control for current session'),
-               lpcwstr('Get Volume Error'),
-               MB_OK);
+                lpcwstr('Unable to retrieve simple volume control for current session'),
+                lpcwstr('Get Volume Error'),
+                MB_OK);
 
   Result := 0.0;
 end;
@@ -786,6 +813,7 @@ var
   hr: HResult;
 
 begin
+
   hr := GetSimpleVolume();
   if Succeeded(hr) then
     begin
@@ -793,15 +821,15 @@ begin
                                           @_MediaPlayerEventContext);
       if Failed(hr) then
         MessageBoxW(_AppWindow,
-                   lpcwstr('Unable to retrieve volume for current session'),
-                   lpcwstr('Set Volume Error'),
-                   MB_OK);
+                    lpcwstr('Unable to retrieve volume for current session'),
+                    lpcwstr('Set Volume Error'),
+                    MB_OK);
     end
   else
     MessageBoxW(_AppWindow,
-               lpcwstr('Unable to retrieve simple volume control for current session'),
-               lpcwstr('Set Volume Error'),
-               MB_OK);
+                lpcwstr('Unable to retrieve simple volume control for current session'),
+                lpcwstr('Set Volume Error'),
+                MB_OK);
 
 end;
 
@@ -815,6 +843,7 @@ var
   mute: BOOL;
 
 begin
+
   hr := GetSimpleVolume();
   if Succeeded(hr) then
     begin
@@ -826,15 +855,15 @@ begin
         end
       else
         MessageBoxW(_AppWindow,
-                   lpcwstr('Unable to retrieve mute for current session'),
-                   lpcwstr('Get Mute Error'),
-                   MB_OK);
+                    lpcwstr('Unable to retrieve mute for current session'),
+                    lpcwstr('Get Mute Error'),
+                    MB_OK);
     end
   else
     MessageBoxW(_AppWindow,
-               lpcwstr('Unable to retrieve simple volume control for current session'),
-               lpcwstr('Get Mute Error'),
-               MB_OK);
+                lpcwstr('Unable to retrieve simple volume control for current session'),
+                lpcwstr('Get Mute Error'),
+                MB_OK);
 
   Result := False;
 end;
@@ -852,6 +881,7 @@ var
   hr: HResult;
 
 begin
+
   hr := GetSimpleVolume();
   if Succeeded(hr) then
     begin
@@ -859,18 +889,16 @@ begin
                                   @_MediaPlayerEventContext);
       if Failed(hr) then
         MessageBoxW(_AppWindow,
-                   lpcwstr('Unable to set mute for current session'),
-                   lpcwstr('Set Mute Error'),
-                   MB_OK);
+                    lpcwstr('Unable to set mute for current session'),
+                    lpcwstr('Set Mute Error'),
+                    MB_OK);
     end
   else
     MessageBoxW(_AppWindow,
-               lpcwstr('Unable to retrieve simple volume control for current session'),
-               lpcwstr('Set Mute Error'),
-               MB_OK);
+                lpcwstr('Unable to retrieve simple volume control for current session'),
+                lpcwstr('Set Mute Error'),
+                MB_OK);
 end;
-
-
 
 
 
@@ -878,7 +906,9 @@ end;
 // IAudioSessionEvents implementations
 function TCMediaPlayer.OnDisplayNameChanged(NewDisplayName: LPCWSTR;
                                             EventContext: PGUID): HResult;
+
 begin
+
   // to prevent "Return value might be undefined" compilerwarning
   Result := S_OK;
 end;
@@ -886,7 +916,9 @@ end;
 
 function TCMediaPlayer.OnIconPathChanged(NewIconPath: LPCWSTR;
                                          EventContext: PGUID): HResult;
+
 begin
+
   // to prevent "Return value might be undefined" compilerwarning
   Result := S_OK;
 end;
@@ -901,12 +933,14 @@ end;
 function TCMediaPlayer.OnSimpleVolumeChanged(NewVolume: FLOAT;
                                              NewMute: BOOL;
                                              EvntContext: PGUID): HResult;
+
 begin
+
   if ((EvntContext = nil) or not IsEqualGuid(EvntContext^, _MediaPlayerEventContext)) then
     PostMessageW(_AppWindow,
-                WM_APP_SESSION_VOLUME_CHANGED,
-                WParam(NewMute),
-                LParam(@NewVolume));
+                 WM_APP_SESSION_VOLUME_CHANGED,
+                 WParam(NewMute),
+                 LParam(@NewVolume));
 
   Result := S_OK;
 end;
@@ -916,7 +950,9 @@ function TCMediaPlayer.OnChannelVolumeChanged(ChannelCount: UINT;
                                               NewChannelArray: PFloat;
                                               ChangedChannel: UINT;
                                               EventContext: PGUID): HResult; stdcall; { return S_OK; }
+
 begin
+
   // to prevent "Return value might be undefined" compilerwarning
   Result := S_OK;
 end;
@@ -924,21 +960,27 @@ end;
 
 function TCMediaPlayer.OnGroupingParamChanged(const NewGroupingParam: TGUID;
                                               EventContext: PGUID): HResult; stdcall; { return S_OK; }
+
 begin
+
   // to prevent "Return value might be undefined" compilerwarning
   Result := S_OK;
 end;
 
 
 function TCMediaPlayer.OnStateChanged(NewState: AudioSessionState): HResult; stdcall; { return S_OK; }
+
 begin
+
   // to prevent "Return value might be undefined" compilerwarning
   Result := S_OK;
 end;
 
 
 function TCMediaPlayer.OnSessionDisconnected(DisconnectReason: AudioSessionDisconnectReason): HResult; stdcall; { return S_OK; }
+
 begin
+
   // to prevent "Return value might be undefined" compilerwarning
   Result := S_OK;
 end;
@@ -956,6 +998,7 @@ var
   endpoint: IMMDevice;
 
 begin
+
   hr := S_OK;
   if not Assigned(_SessionManager2) then
     begin
@@ -974,9 +1017,9 @@ begin
                                                        endpoint)
       else
         MessageBoxW(_AppWindow,
-                   lpcwstr('Unable to instantiate MMDeviceEnumerator'),
-                   lpcwstr('Get SessionManager Error'),
-                   MB_OK);
+                    lpcwstr('Unable to instantiate MMDeviceEnumerator'),
+                    lpcwstr('Get SessionManager Error'),
+                    MB_OK);
 
       if Succeeded(hr) then
         begin
@@ -986,15 +1029,15 @@ begin
                                   Pointer(_SessionManager2));
           if Failed(hr) then
             MessageBoxW(_AppWindow,
-                       lpcwstr('Unable to Activate session manager'),
-                       lpcwstr('Get SessionManager Error'),
-                       MB_OK);
+                        lpcwstr('Unable to Activate session manager'),
+                        lpcwstr('Get SessionManager Error'),
+                        MB_OK);
         end
       else
         MessageBoxW(_AppWindow,
-                   lpcwstr('Unable to get default endpoint'),
-                   lpcwstr('Get SessionManager Error'),
-                   MB_OK);
+                    lpcwstr('Unable to get default endpoint'),
+                    lpcwstr('Get SessionManager Error'),
+                    MB_OK);
     end;
   Result := hr;
 end;
@@ -1011,6 +1054,7 @@ var
   sessionControl: IAudioSessionControl;
 
 begin
+
   hr := S_OK;
   if not Assigned(_SessionControl2) then
     begin
@@ -1018,7 +1062,7 @@ begin
       if Succeeded(hr) then
         begin
           hr := _SessionManager2.GetAudioSessionControl(@GUID_NULL, // or Nil
-                                                        0,
+            0,
                                                         sessionControl);
           if Succeeded(hr) then
             begin
@@ -1026,15 +1070,15 @@ begin
                                                   _SessionControl2);
               if Failed(hr) then
                 MessageBoxW(_AppWindow,
-                           lpcwstr('Unable to QI for SessionControl2'),
-                           lpcwstr('Get SessionControl Error'),
-                           MB_OK);
+                            lpcwstr('Unable to QI for SessionControl2'),
+                            lpcwstr('Get SessionControl Error'),
+                            MB_OK);
             end
           else
             MessageBoxW(_AppWindow,
-                       lpcwstr('Unable to get Session Control'),
-                       lpcwstr('Get SessionControl Error'),
-                       MB_OK);
+                        lpcwstr('Unable to get Session Control'),
+                        lpcwstr('Get SessionControl Error'),
+                        MB_OK);
         end;
     end;
   Result := hr;
@@ -1051,6 +1095,7 @@ var
   hr: HResult;
 
 begin
+
   hr := S_OK;
   if not Assigned(_SimpleVolume) then
     begin
@@ -1062,9 +1107,9 @@ begin
                                                       _SimpleVolume);
           if Failed(hr) then
             MessageBoxW(_AppWindow,
-                       lpcwstr('Unable to get Simple Volume'),
-                       lpcwstr('Get Simple Volume Error'),
-                       MB_OK);
+                        lpcwstr('Unable to get Simple Volume'),
+                        lpcwstr('Get Simple Volume Error'),
+                        MB_OK);
         end;
     end;
   Result := hr;
@@ -1079,15 +1124,16 @@ var
   hr: HResult;
 
 begin
+
   hr := GetSessionControl2();
   if Succeeded(hr) then
     begin
       hr := _SessionControl2.GetSessionInstanceIdentifier(SessionId);
       if Failed(hr) then
         MessageBoxW(_AppWindow,
-                   lpcwstr('Unable to get the session instance ID'),
-                   lpcwstr('Get session instance ID Error'),
-                   MB_OK);
+                    lpcwstr('Unable to get the session instance ID'),
+                    lpcwstr('Get session instance ID Error'),
+                    MB_OK);
     end;
   Result := hr;
 end;

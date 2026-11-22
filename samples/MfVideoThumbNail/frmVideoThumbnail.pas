@@ -68,9 +68,9 @@ interface
 
 uses
   MfSmallSamplesPlatform,
-LMessages,
+  LMessages,
   LCLIntf,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   WinApi.ComBaseApi,
@@ -117,10 +117,14 @@ type
     procedure OpenFile1Click(Sender: TObject);
     function MessageLoop(hw: HWND): INT;
     procedure FormShow(Sender: TObject);
-    procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseDown(Sender: TObject;
+                            Button: TMouseButton;
+                            Shift: TShiftState;
+                            X,
+                            Y: Integer);
     procedure Exit1Click(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
 
   private
     { Private declarations }
@@ -166,19 +170,19 @@ var
   // Helpers
   ///////////////////////////////////////////////////////////////////
 
-  procedure InitializeDPIScale(hw: HWND);
-  function DPIScaleX(iValue: Integer): Integer;
-  function DPIScaleY(iValue: Integer): Integer;
-  procedure UnselectAllSprites();
-  procedure SelectSprite(iSelection: Integer);
-  function CreateDrawingResources(hw: HWND): HRESULT;
-  function RenderFrame(hw: HWND): HRESULT;
+procedure InitializeDPIScale(hw: HWND);
+function DPIScaleX(iValue: Integer): Integer;
+function DPIScaleY(iValue: Integer): Integer;
+procedure UnselectAllSprites();
+procedure SelectSprite(iSelection: Integer);
+function CreateDrawingResources(hw: HWND): HRESULT;
+function RenderFrame(hw: HWND): HRESULT;
 
-  // Delphi specific
-  procedure InitSmallRects();
-  procedure InitBigRect();
+// Delphi specific
+procedure InitSmallRects();
+procedure InitBigRect();
 
-  ///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 
 
 implementation
@@ -188,34 +192,55 @@ implementation
 
 
 destructor TForm1.Destroy;
+
 begin
- FreeAndNil(FAnimationTimer);CleanUp;inherited;
+
+  FreeAndNil(FAnimationTimer);
+  CleanUp;
+  inherited;
 end;
+
+
 procedure TForm1.AnimationTick(Sender: TObject);
-begin if FInitialized and not bTerminate then RenderFrame(Handle);end;
+
+begin
+
+  if FInitialized and not bTerminate then
+    RenderFrame(Handle);
+end;
+
 
 procedure TForm1.Exit1Click(Sender: TObject);
+
 begin
+
   Close();
 end;
 
 
-procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TForm1.FormCloseQuery(Sender: TObject;
+                                var CanClose: Boolean);
+
 begin
+
   CanClose := False;
   CleanUp();
   CanClose := True;
 end;
 
 
-procedure TForm1.FormMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TForm1.FormMouseDown(Sender: TObject;
+                               Button: TMouseButton;
+                               Shift: TShiftState;
+                               X,
+                               Y: Integer);
 var
   i: Integer;
   pSprite: TSprite;
   _x, _y: Integer;
 
 begin
+
   // Scale for DPI
   _x := round(X / g_fDPIScaleX);
   _y := round(Y / g_fDPIScaleY);
@@ -232,25 +257,37 @@ begin
     end;
 end;
 
+
 procedure TForm1.FormShow(Sender: TObject);
+
 begin
+
   // We have to initialize after the form is shown.
   // Post the custom message WM_DONE_ONSHOW
   PostMessageW(Handle,
-              WM_DONE_ONSHOW,
-              0,
-              0);
+               WM_DONE_ONSHOW,
+               0,
+               0);
 end;
 
 //
 procedure TForm1.WmAfterShow(var Msg: TLMessage);
+
 begin
- if FInitialized then Exit;
- InitializeDPIScale(Handle);InitSmallRects;InitBigRect;
- if InitializeApp then begin
-  FInitialized:=True;FAnimationTimer:=TTimer.Create(Self);
-  FAnimationTimer.Interval:=16;FAnimationTimer.OnTimer:=AnimationTick;FAnimationTimer.Enabled:=True;
- end;
+
+  if FInitialized then
+    Exit;
+  InitializeDPIScale(Handle);
+  InitSmallRects;
+  InitBigRect;
+  if InitializeApp then
+    begin
+      FInitialized := True;
+      FAnimationTimer := TTimer.Create(Self);
+      FAnimationTimer.Interval := 16;
+      FAnimationTimer.OnTimer := AnimationTick;
+      FAnimationTimer.Enabled := True;
+    end;
 end;
 
 
@@ -287,6 +324,7 @@ var
   //dc: HDC;
 
 begin
+
   inherited Paint();
   BeginPaint(Self.Handle,
              ps);
@@ -318,21 +356,21 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(0,
-                 lpcwstr('Your computer does not support this Media Foundation API version' +
-                       IntToStr(MF_VERSION) + '.'),
-                 lpcwstr('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  lpcwstr('Your computer does not support this Media Foundation API version' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
       Abort;
     end;
-    
-  FStartedMF:=True;
+
+  FStartedMF := True;
   // Set the background color
   BACKGROUND_COLOR := D2D1TColorF($2F4F4F);
 
   for i := 0 to MAX_SPRITES do
     begin
       g_pSprites[i] := TSprite.Create();
-      g_pSprites[i].m_SpriteIndex := i+1; // non-zerobased index
+      g_pSprites[i].m_SpriteIndex := i + 1; // non-zerobased index
     end;
 
   // initialize ThumbnailGenerator & sprites
@@ -359,9 +397,12 @@ end;
 procedure TForm1.CleanUp();
 var
   i: Integer;
+
 begin
+
   bTerminate := True;
-  if FAnimationTimer<>nil then FAnimationTimer.Enabled:=False;
+  if (FAnimationTimer <> nil) then
+    FAnimationTimer.Enabled := False;
 
   if assigned(g_ThumbnailGen) then
     begin
@@ -377,13 +418,19 @@ begin
 
   for i := 0 to MAX_SPRITES do
     begin
-      if Assigned(g_pSprites[i]) then begin
-        g_pSprites[i].Clear();FreeAndNil(g_pSprites[i]);
-      end;
+      if Assigned(g_pSprites[i]) then
+        begin
+          g_pSprites[i].Clear();
+          FreeAndNil(g_pSprites[i]);
+        end;
     end;
 
-  FInitialized:=False;
-  if FStartedMF then begin MFShutdown;FStartedMF:=False;end;
+  FInitialized := False;
+  if FStartedMF then
+    begin
+      MFShutdown;
+      FStartedMF := False;
+    end;
 
 end;
 
@@ -397,9 +444,10 @@ var
   i: Integer;
 
 begin
+
   if dlgOpen.execute then
     begin
-      if dlgOpen.FileName <> '' then
+      if (dlgOpen.FileName <> '') then
         begin
           hr := g_ThumbnailGen.OpenFile(PWideChar(dlgOpen.FileName));
 
@@ -424,7 +472,7 @@ begin
           if (SUCCEEDED(hr)) then
             begin
               {$IFDEF DEBUG}
-              assert(g_pRT <> nil);
+                    assert(g_pRT <> nil);
               {$ENDIF}
               hr := g_ThumbnailGen.CreateBitmaps(g_pRT,
                                                  MAX_SPRITES,
@@ -432,26 +480,25 @@ begin
             end;
 
 
-         if (SUCCEEDED(hr)) then
-           begin
-             UnselectAllSprites();
-             // Select the first sprite.
-             SelectSprite(0);
-           end;
+          if (SUCCEEDED(hr)) then
+            begin
+              UnselectAllSprites();
+              // Select the first sprite.
+              SelectSprite(0);
+            end;
 
-         if (SUCCEEDED(hr)) then
-           begin
-             hr := RenderFrame(Self.WindowHandle);
+          if (SUCCEEDED(hr)) then
+            begin
+              hr := RenderFrame(Self.WindowHandle);
 
-             if FAILED(hr) then
-               begin
-                 ShowMessage('Function RenderFrame() in TForm1.OpenFile1Click failed!');
-                 Exit;
-               end;
-           end;
+              if FAILED(hr) then
+                begin
+                  ShowMessage('Function RenderFrame() in TForm1.OpenFile1Click failed!');
+                  Exit;
+                end;
+            end;
 
-
-       end;
+        end;
     end;
 end;
 
@@ -460,7 +507,11 @@ end;
 // Message loop for the application window.
 //-------------------------------------------------------------------
 function TForm1.MessageLoop(hw: HWND): INT;
-begin Result:=0;end;
+
+begin
+
+  Result := 0;
+end;
 
 
 
@@ -472,6 +523,7 @@ var
   dchdc: HDC;
 
 begin
+
   //
   //  Create the font to be used in the OSD, making sure that
   //  the font size is scaled system DPI setting.
@@ -485,13 +537,19 @@ begin
             dchdc);
 end;
 
+
 function DPIScaleX(iValue: Integer): Integer;
+
 begin
+
   Result := round(iValue / g_fDPIScaleX);
 end;
 
+
 function DPIScaleY(iValue: Integer): Integer;
+
 begin
+
   Result := round(iValue / g_fDPIScaleY);
 end;
 
@@ -501,7 +559,9 @@ end;
 procedure UnselectAllSprites();
 var
   i: integer;
+
 begin
+
   for i := 0 to MAX_SPRITES do
     begin
       g_pSprites[i].AnimateBoundingBox(g_rcSmall[i],
@@ -564,17 +624,17 @@ var
 
 begin
 
-  rcClient:= TRect.Empty();
+  rcClient := TRect.Empty();
 
   pFactory := Nil;
   pRenderTarget := Nil;
 
   if Not GetClientRect(hw,
-                       rcClient) then
-  begin
-    Result := E_FAIL;
-    Exit;
-  end;
+    rcClient) then
+    begin
+      Result := E_FAIL;
+      Exit;
+    end;
 
   hr := D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED,
                           IID_ID2D1Factory,
@@ -583,9 +643,13 @@ begin
 
   if (SUCCEEDED(hr)) then
     begin
-      Props:=D2D1RenderTargetProperties();
-      HwndProps:=D2D1HwndRenderTargetProperties(hw,D2D1SizeU(rcClient.right,rcClient.bottom));
-      hr := pFactory.CreateHwndRenderTarget(@Props,@HwndProps,pRenderTarget);
+      Props := D2D1RenderTargetProperties();
+      HwndProps := D2D1HwndRenderTargetProperties(hw,
+                                                  D2D1SizeU(rcClient.right,
+                                                            rcClient.bottom));
+      hr := pFactory.CreateHwndRenderTarget(@Props,
+                                            @HwndProps,
+                                            pRenderTarget);
 
     end;
 
@@ -594,7 +658,7 @@ begin
       g_pRT := pRenderTarget;
     end;
 
-  Result:= hr;
+  Result := hr;
 end;
 
 
@@ -610,8 +674,10 @@ var
   pSprite: TSprite;
 
 begin
+
   hr := S_OK;
-  if g_Timer=nil then Exit(S_OK);
+  if (g_Timer = nil) then
+    Exit(S_OK);
 
   if Assigned(g_pRT) and (g_pRT.CheckWindowState() = D2D1_WINDOW_STATE_OCCLUDED) then
     begin
@@ -624,12 +690,12 @@ begin
       // Create the Direct2D resources.
       hr := CreateDrawingResources(hw);
     end;
-  
+
 
   if (SUCCEEDED(hr)) then
     begin
 
-      Identity:=D2D1_MATRIX_3X2_F.Identity();
+      Identity := D2D1_MATRIX_3X2_F.Identity();
       fTime := Round(g_Timer.GetFrameNumber()) / 30;
       //fTime := g_Timer.GetFrameNumber() div 30;
 
@@ -644,14 +710,15 @@ begin
           pSprite := g_pSprites[i];
           if (pSprite <> Nil) then
             begin
-                pSprite.Update(g_pRT,
-                               fTime);
-                pSprite.Draw(g_pRT);
+              pSprite.Update(g_pRT,
+                             fTime);
+              pSprite.Draw(g_pRT);
             end;
-           // Reset the transform to the identiy matrix.
-           g_pRT.SetTransform(@Identity);
+          // Reset the transform to the identiy matrix.
+          g_pRT.SetTransform(@Identity);
         end;
-      hr := g_pRT.EndDraw(nil,nil);
+      hr := g_pRT.EndDraw(nil,
+                          nil);
     end;
 
   Result := hr;
@@ -659,29 +726,51 @@ end;
 
 // Small & big thunmbrects initialization methods
 procedure InitSmallRects();
+
 begin
-                            {left  top   right  bottom}
-   g_rcSmall[0] := D2D1RectF(0.05, 0.0,  0.2,   0.20);
-   g_rcSmall[1] := D2D1RectF(0.05, 0.20, 0.2,   0.40);
-   g_rcSmall[2] := D2D1RectF(0.05, 0.40, 0.2,   0.60);
-   g_rcSmall[3] := D2D1RectF(0.05, 0.60, 0.2,   0.80);
-   g_rcSmall[4] := D2D1RectF(0.05, 0.80, 0.2,   1.00);
-   // Hint:
-   // You can add as many sprites as you want.
-   // Just change the MAX_SPRITES and add sprites here
-   // like: g_rcSmall[5] := D2D1RectF(float, float, float, float) etc.
-   // or write an algorithm that calculates the interval (elapse time, in timer) and filelength to get a preview
+
+  {left  top   right  bottom}
+  g_rcSmall[0] := D2D1RectF(0.05,
+                            0.0,
+                            0.2,
+                            0.20);
+  g_rcSmall[1] := D2D1RectF(0.05,
+                            0.20,
+                            0.2,
+                            0.40);
+  g_rcSmall[2] := D2D1RectF(0.05,
+                            0.40,
+                            0.2,
+                            0.60);
+  g_rcSmall[3] := D2D1RectF(0.05,
+                            0.60,
+                            0.2,
+                            0.80);
+  g_rcSmall[4] := D2D1RectF(0.05,
+                            0.80,
+                            0.2,
+                            1.00);
+  // Hint:
+  // You can add as many sprites as you want.
+  // Just change the MAX_SPRITES and add sprites here
+  // like: g_rcSmall[5] := D2D1RectF(float, float, float, float) etc.
+  // or write an algorithm that calculates the interval (elapse time, in timer) and filelength to get a preview
 end;
 
 // The big (right) blown'up picture
 procedure InitBigRect();
+
 begin
-  g_rcBig := D2D1RectF(0.25, 0.05, 0.95, 0.95);
+
+  g_rcBig := D2D1RectF(0.25,
+                       0.05,
+                       0.95,
+                       0.95);
 end;
 
 
 initialization
-//
+  //
 
 
 finalization

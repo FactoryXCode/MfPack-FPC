@@ -66,12 +66,13 @@ unit RDJ.FilenameParser;
 
 interface
 
-uses MfCastText,
-Rdj.Platform,
-LMessages,
+uses
+  MfCastText,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   StrUtils,
@@ -108,27 +109,28 @@ class function TFileNameParser.BuildIceCastSongText(const AArtist: string;
                                                     const ATitle: string;
                                                     const AFallback: string = ''): string;
 
+
   function CleanText(const S: string): string;
-    begin
+  begin
 
-      Result := Trim(S);
+    Result := Trim(S);
+    Result := StringReplace(Result,
+                            #13,
+                            ' ',
+                            [rfReplaceAll]);
+
+    Result := StringReplace(Result,
+                            #10,
+                            ' ',
+                            [rfReplaceAll]);
+
+    while (Pos('  ',
+        Result) > 0) do
       Result := StringReplace(Result,
-                              #13,
+                              '  ',
                               ' ',
                               [rfReplaceAll]);
-
-      Result := StringReplace(Result,
-                              #10,
-                              ' ',
-                              [rfReplaceAll]);
-
-      while (Pos('  ',
-                Result) > 0) do
-        Result := StringReplace(Result,
-                                '  ',
-                                ' ',
-                                [rfReplaceAll]);
-    end;
+  end;
 
 var
   ArtistText: string;
@@ -142,7 +144,7 @@ begin
   FallbackText := CleanText(AFallback);
 
   if (ArtistText <> '') and
-     (TitleText <> '') then
+    (TitleText <> '') then
     Exit(ArtistText + ' - ' + TitleText);
 
   if (TitleText <> '') then
@@ -156,6 +158,7 @@ end;
 
 
 function StripFileExtOnly(const S: string): string;
+
 begin
 
   Result := ChangeFileExt(ExtractFileName(S),
@@ -164,6 +167,7 @@ end;
 
 
 function CollapseSpaces(const S: string): string;
+
 begin
 
   Result := Trim(S);
@@ -188,7 +192,7 @@ begin
 
   for I := 1 to Length(S) do
     if not CharInSet(S[I],
-                     ['0'..'9']) then
+      ['0'..'9']) then
       Exit(False);
 end;
 
@@ -231,7 +235,7 @@ begin
 
   // remove leading dashes and spaces
   while (T <> '') and CharInSet(T[1],
-                                [' ', '-']) do
+      [' ', '-']) do
     Delete(T,
            1,
            1);
@@ -241,12 +245,12 @@ begin
   // Remove leading numeric track number, e.g. "01 Alex Gaudino"
   I := 1;
   while (I <= Length(T)) and CharInSet(T[I],
-                                       ['0'..'9']) do
+      ['0'..'9']) do
     Inc(I);
 
   if (I > 1) and
-     (I <= Length(T)) and
-     (T[I] = ' ') then
+    (I <= Length(T)) and
+    (T[I] = ' ') then
     begin
 
       Delete(T,
@@ -264,7 +268,7 @@ class procedure TFileNameParser.ParseArtistTitleFromFileName(const AFileName: st
                                                              out ATitle: string);
 var
   Base: string;
-  Parts: TArray<string>;
+  Parts: TArray < string > ;
   I: Integer;
   FirstUseful: Integer;
   LastUseful: Integer;
@@ -292,7 +296,8 @@ begin
   if (Base = '') then
     Exit;
 
-  Parts := MfCastSplit(Base,'-');
+  Parts := MfCastSplit(Base,
+                       '-');
   if (Length(Parts) = 0) then
     Exit;
 
@@ -324,8 +329,8 @@ begin
     end;
 
   if (FirstUseful < 0) or
-     (LastUseful < 0) or
-     (FirstUseful >= LastUseful) then
+    (LastUseful < 0) or
+    (FirstUseful >= LastUseful) then
     begin
 
       // fallback: no usable split found, return cleaned basename as title
@@ -379,6 +384,7 @@ class procedure TFileNameParser.ResolveArtistTitle(const AFileName: string;
                                                    const ATitleTag: string;
                                                    out AArtist: string;
                                                    out ATitle: string);
+
 begin
 
   // Carmen uses filename-based parsing only.

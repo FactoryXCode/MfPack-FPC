@@ -83,35 +83,36 @@ uses
 
   {$PACKENUM 4}
 
-  {$IFDEF WIN32}
+{$IFDEF WIN32}
     {$ALIGN 1}
-  {$ELSE}
-    {$ALIGN 8} // Win64
-  {$ENDIF}
+{$ELSE}
+{$ALIGN 8}
+// Win64
+{$ENDIF}
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
-//
-//  ACM Driver Version:
-//
-//  the version is a 32 bit number that is broken into three parts as
-//  follows:
-//
-//      bits 24 - 31:   8 bit _major_ version number
-//      bits 16 - 23:   8 bit _minor_ version number
-//      bits  0 - 15:   16 bit build number
-//
-//  this is then displayed as follows:
-//
-//      bMajor = (BYTE)(dwVersion >> 24)
-//      bMinor = (BYTE)(dwVersion >> 16) &
-//      wBuild = LOWORD(dwVersion)
-//
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
+  //
+  //  ACM Driver Version:
+  //
+  //  the version is a 32 bit number that is broken into three parts as
+  //  follows:
+  //
+  //      bits 24 - 31:   8 bit _major_ version number
+  //      bits 16 - 23:   8 bit _minor_ version number
+  //      bits  0 - 15:   16 bit build number
+  //
+  //  this is then displayed as follows:
+  //
+  //      bMajor = (BYTE)(dwVersion >> 24)
+  //      bMinor = (BYTE)(dwVersion >> 16) &
+  //      wBuild = LOWORD(dwVersion)
+  //
+  //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ;
 
-  function MAKE_ACM_VERSION(mjr: LONG;
-                            mnr: LONG;
-                            bld: LONG): LONG; inline;
+function MAKE_ACM_VERSION(mjr: LONG;
+                          mnr: LONG;
+                          bld: LONG): LONG; inline;
 
 
 
@@ -126,33 +127,33 @@ uses
 
 type
 
-  ACMDRIVERDETAILS                    = tACMDRIVERDETAILSW;
-  PACMDRIVERDETAILS                   = PACMDRIVERDETAILSW;
-  LPACMDRIVERDETAILS                  = LPACMDRIVERDETAILSW;
+  ACMDRIVERDETAILS = tACMDRIVERDETAILSW;
+  PACMDRIVERDETAILS = PACMDRIVERDETAILSW;
+  LPACMDRIVERDETAILS = LPACMDRIVERDETAILSW;
 
-  ACMFORMATTAGDETAILS                 = tACMFORMATTAGDETAILSW;
-  PACMFORMATTAGDETAILS                = PACMFORMATTAGDETAILSW;
-  LPACMFORMATTAGDETAILS               = LPACMFORMATTAGDETAILSW;
+  ACMFORMATTAGDETAILS = tACMFORMATTAGDETAILSW;
+  PACMFORMATTAGDETAILS = PACMFORMATTAGDETAILSW;
+  LPACMFORMATTAGDETAILS = LPACMFORMATTAGDETAILSW;
 
-  ACMFORMATDETAILS                    = tACMFORMATDETAILSW;
-  PACMFORMATDETAILS                   = PACMFORMATDETAILSW;
-  LPACMFORMATDETAILS                  = LPACMFORMATDETAILSW;
+  ACMFORMATDETAILS = tACMFORMATDETAILSW;
+  PACMFORMATDETAILS = PACMFORMATDETAILSW;
+  LPACMFORMATDETAILS = LPACMFORMATDETAILSW;
 
-  ACMFORMATCHOOSE                     = tACMFORMATCHOOSEW;
-  PACMFORMATCHOOSE                    = PACMFORMATCHOOSEW;
-  LPACMFORMATCHOOSE                   = LPACMFORMATCHOOSEW;
+  ACMFORMATCHOOSE = tACMFORMATCHOOSEW;
+  PACMFORMATCHOOSE = PACMFORMATCHOOSEW;
+  LPACMFORMATCHOOSE = LPACMFORMATCHOOSEW;
 
-  ACMFILTERTAGDETAILS                 = tACMFILTERTAGDETAILSW;
-  PACMFILTERTAGDETAILS                = PACMFILTERTAGDETAILSW;
-  LPACMFILTERTAGDETAILS               = LPACMFILTERTAGDETAILSW;
+  ACMFILTERTAGDETAILS = tACMFILTERTAGDETAILSW;
+  PACMFILTERTAGDETAILS = PACMFILTERTAGDETAILSW;
+  LPACMFILTERTAGDETAILS = LPACMFILTERTAGDETAILSW;
 
-  ACMFILTERDETAILS                    = tACMFILTERDETAILSW;
-  PACMFILTERDETAILS                   = PACMFILTERDETAILSW;
-  LPACMFILTERDETAILS                  = LPACMFILTERDETAILSW;
+  ACMFILTERDETAILS = tACMFILTERDETAILSW;
+  PACMFILTERDETAILS = PACMFILTERDETAILSW;
+  LPACMFILTERDETAILS = LPACMFILTERDETAILSW;
 
-  ACMFILTERCHOOSE                     = tACMFILTERCHOOSEW;
-  PACMFILTERCHOOSE                    = PACMFILTERCHOOSEW;
-  LPACMFILTERCHOOSE                   = LPACMFILTERCHOOSEW;
+  ACMFILTERCHOOSE = tACMFILTERCHOOSEW;
+  PACMFILTERCHOOSE = PACMFILTERCHOOSEW;
+  LPACMFILTERCHOOSE = LPACMFILTERCHOOSEW;
 
 
   //
@@ -165,6 +166,7 @@ type
 type
 
   PACMDRVOPENDESCA = ^tACMDRVOPENDESCA;
+
   tACMDRVOPENDESCA = packed record
     cbStruct: DWORD;                 // sizeof(ACMDRVOPENDESC)
     fccType: FOURCC;                 // 'audc'
@@ -180,6 +182,7 @@ type
   LPACMDRVOPENDESCA = ^tACMDRVOPENDESCA;
 
   PACMDRVOPENDESCW = ^tACMDRVOPENDESCW;
+
   tACMDRVOPENDESCW = packed record
     cbStruct: DWORD;                 // sizeof(ACMDRVOPENDESC)
     fccType: FOURCC;                 // 'audc'
@@ -194,9 +197,9 @@ type
   ACMDRVOPENDESCW = tACMDRVOPENDESCW;
   LPACMDRVOPENDESCW = ^tACMDRVOPENDESCW;
 
-  ACMDRVOPENDESC                      = ACMDRVOPENDESCW;
-  PACMDRVOPENDESC                     = PACMDRVOPENDESCW;
-  LPACMDRVOPENDESC                    = LPACMDRVOPENDESCW;
+  ACMDRVOPENDESC = ACMDRVOPENDESCW;
+  PACMDRVOPENDESC = PACMDRVOPENDESCW;
+  LPACMDRVOPENDESC = LPACMDRVOPENDESCW;
 
 
   //
@@ -205,6 +208,7 @@ type
   //
   //
   PACMDRVSTREAMINSTANCE = ^tACMDRVSTREAMINSTANCE;
+
   tACMDRVSTREAMINSTANCE = packed record
     cbStruct: DWORD;
     pwfxSrc: LPWAVEFORMATEX;
@@ -245,12 +249,12 @@ type
     padshNext: LPACMDRVSTREAMHEADER;   // for async driver queueing
     fdwDriver: DWORD;                  // driver instance flags
     dwDriver: DWORD_PTR;               // driver instance data
-                                       //
-                                       //  all remaining fields are used by the ACM for bookkeeping purposes.
-                                       //  an ACM driver should never use these fields (though than can be
-                                       //  helpful for debugging)--note that the meaning of these fields
-                                       //  may change, so do NOT rely on them in shipping code.
-                                       //
+    //
+    //  all remaining fields are used by the ACM for bookkeeping purposes.
+    //  an ACM driver should never use these fields (though than can be
+    //  helpful for debugging)--note that the meaning of these fields
+    //  may change, so do NOT rely on them in shipping code.
+    //
     fdwPrepared: DWORD;
     dwPrepared: DWORD_PTR;
     pbPreparedSrc: PByte;
@@ -266,6 +270,7 @@ type
   //
   //
   PACMDRVSTREAMSIZE = ^tACMDRVSTREAMSIZE;
+
   tACMDRVSTREAMSIZE = packed record
     cbStruct: DWORD;
     fdwSize: DWORD;
@@ -282,6 +287,7 @@ type
   //
   //
   PACMDRVFORMATSUGGEST = ^tACMDRVFORMATSUGGEST;
+
   tACMDRVFORMATSUGGEST = packed record
     cbStruct: DWORD;                 // sizeof(ACMDRVFORMATSUGGEST)
     fdwSuggest: DWORD;               // Suggest flags
@@ -303,27 +309,27 @@ type
 
 const
 
-  ACMDM_DRIVER_NOTIFY                 = (ACMDM_BASE + 1);
-  ACMDM_DRIVER_DETAILS                = (ACMDM_BASE + 10);
+  ACMDM_DRIVER_NOTIFY = (ACMDM_BASE + 1);
+  ACMDM_DRIVER_DETAILS = (ACMDM_BASE + 10);
 
-  ACMDM_HARDWARE_WAVE_CAPS_INPUT      = (ACMDM_BASE + 20);
-  ACMDM_HARDWARE_WAVE_CAPS_OUTPUT     = (ACMDM_BASE + 21);
+  ACMDM_HARDWARE_WAVE_CAPS_INPUT = (ACMDM_BASE + 20);
+  ACMDM_HARDWARE_WAVE_CAPS_OUTPUT = (ACMDM_BASE + 21);
 
-  ACMDM_FORMATTAG_DETAILS             = (ACMDM_BASE + 25);
-  ACMDM_FORMAT_DETAILS                = (ACMDM_BASE + 26);
-  ACMDM_FORMAT_SUGGEST                = (ACMDM_BASE + 27);
+  ACMDM_FORMATTAG_DETAILS = (ACMDM_BASE + 25);
+  ACMDM_FORMAT_DETAILS = (ACMDM_BASE + 26);
+  ACMDM_FORMAT_SUGGEST = (ACMDM_BASE + 27);
 
-  ACMDM_FILTERTAG_DETAILS             = (ACMDM_BASE + 50);
-  ACMDM_FILTER_DETAILS                = (ACMDM_BASE + 51);
+  ACMDM_FILTERTAG_DETAILS = (ACMDM_BASE + 50);
+  ACMDM_FILTER_DETAILS = (ACMDM_BASE + 51);
 
-  ACMDM_STREAM_OPEN                   = (ACMDM_BASE + 76);
-  ACMDM_STREAM_CLOSE                  = (ACMDM_BASE + 77);
-  ACMDM_STREAM_SIZE                   = (ACMDM_BASE + 78);
-  ACMDM_STREAM_CONVERT                = (ACMDM_BASE + 79);
-  ACMDM_STREAM_RESET                  = (ACMDM_BASE + 80);
-  ACMDM_STREAM_PREPARE                = (ACMDM_BASE + 81);
-  ACMDM_STREAM_UNPREPARE              = (ACMDM_BASE + 82);
-  ACMDM_STREAM_UPDATE                 = (ACMDM_BASE + 83);
+  ACMDM_STREAM_OPEN = (ACMDM_BASE + 76);
+  ACMDM_STREAM_CLOSE = (ACMDM_BASE + 77);
+  ACMDM_STREAM_SIZE = (ACMDM_BASE + 78);
+  ACMDM_STREAM_CONVERT = (ACMDM_BASE + 79);
+  ACMDM_STREAM_RESET = (ACMDM_BASE + 80);
+  ACMDM_STREAM_PREPARE = (ACMDM_BASE + 81);
+  ACMDM_STREAM_UNPREPARE = (ACMDM_BASE + 82);
+  ACMDM_STREAM_UPDATE = (ACMDM_BASE + 83);
 
 
 implementation
@@ -332,10 +338,12 @@ implementation
 function MAKE_ACM_VERSION(mjr: LONG;
                           mnr: LONG;
                           bld: LONG): LONG; inline;
+
 begin
+
   Result := LONG((DWORD(mjr) shl 24) or
-                 (DWORD(mnr) shl 16) or
-                 DWORD(bld));
+    (DWORD(mnr) shl 16) or
+    DWORD(bld));
 end;
 
 end.

@@ -99,23 +99,23 @@ function NetApiBufferSize(Buffer: LPVOID;
 {$EXTERNALSYM NetApiBufferSize}
 
 
-  //
-  // The following private function will go away eventually.
-  // Call NetApiBufferAllocate instead.
-  //
+//
+// The following private function will go away eventually.
+// Call NetApiBufferAllocate instead.
+//
 function NetapipBufferAllocate(ByteCount: DWORD;     // Internal Function
-                               var Buffer: LPVOID): NET_API_STATUS; stdcall;
+  var Buffer: LPVOID): NET_API_STATUS; stdcall;
 {$EXTERNALSYM NetapipBufferAllocate}
 
 
 
-  // Additional prototypes for ALL interfaces
+// Additional prototypes for ALL interfaces
 
-  // End of additional prototypes
+// End of additional prototypes
 
 implementation
 
-  // Implement additional prototypes here.
+// Implement additional prototypes here.
 
 const
   netapi32Lib = 'netapi32.dll';

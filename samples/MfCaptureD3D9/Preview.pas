@@ -69,7 +69,7 @@ interface
 
 uses
   MfCapturePlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -94,7 +94,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 const
@@ -118,10 +119,17 @@ type
   end;
 
   // request commands for a-syncrone handling
-  TRequest = (reqNone, reqResize, reqSample);
-  TState = (stInitializing, stError, stCapturing, stStopped);
+  TRequest = (reqNone,
+              reqResize,
+              reqSample);
+  TState = (stInitializing,
+            stError,
+            stCapturing,
+            stStopped);
 
-  TCPreview = class(TInterfacedPersistent, IMFSourceReaderCallback)
+  TCPreview = class(TInterfacedPersistent,
+                    IMFSourceReaderCallback)
+
   private
 
     m_pReader: IMFSourceReader;
@@ -187,9 +195,9 @@ type
     property State: TState read m_state;
   end;
 
-  // helper
-  procedure HandleThreadMessages(AThread: THandle;
-                                 AWait: Cardinal = INFINITE);
+// helper
+procedure HandleThreadMessages(AThread: THandle;
+                               AWait: Cardinal = INFINITE);
 
 var
   param: ChooseDeviceParam;
@@ -206,18 +214,18 @@ implementation
 //  Static class method to create the CPreview object.
 //-------------------------------------------------------------------
 class function TCPreview.CreateInstance(hVideo: HWND;         // Handle to the video window.
-                                        hEvent: HWND;         // Handle to the window to receive notifications.
-                                        out pPlayer: TCPreview): HResult; // Receives the CPreview object.
+  hEvent: HWND;         // Handle to the window to receive notifications.
+  out pPlayer: TCPreview): HResult; // Receives the CPreview object.
 var
   hr: HResult;
 
 begin
 
-// Debug only
-{$IFDEF DEBUG}
+  // Debug only
+  {$IFDEF DEBUG}
   assert(hVideo <> 0);
   assert(hEvent <> 0);
-{$ENDIF}
+  {$ENDIF}
 
   pPLayer := TCPreview.Create(hVideo,
                               hEvent);
@@ -240,7 +248,9 @@ end;
 // Constructor
 constructor TCPreview.Create(hVideo: HWND;
                              hEvent: HWND);
+
 begin
+
   inherited Create();
   m_pReader := nil;
   m_draw := nil;
@@ -250,8 +260,12 @@ begin
 
   // Create the callback
   FCritSec := TCriticalSection.Create();
-  FFlushEvent:=CreateEventW(nil,True,False,nil);
-  if FFlushEvent=0 then RaiseLastOSError;
+  FFlushEvent := CreateEventW(nil,
+                              True,
+                              False,
+                              nil);
+  if (FFlushEvent = 0) then
+    RaiseLastOSError;
 
   m_bFirstSample := FALSE;
   m_llBaseTime := 0;
@@ -261,14 +275,18 @@ end;
 //
 //
 procedure TCPreview.BeforeDestruction();
+
 begin
+
   CloseDevice();
   inherited BeforeDestruction();
 end;
 //
 // Destructor
 destructor TCPreview.Destroy();
+
 begin
+
   // CloseDevice() is called in BeforeDestruction()
 
   if Assigned(m_pSource) then
@@ -283,7 +301,8 @@ begin
       FreeAndnil(m_draw);
     end;
 
-  if FFlushEvent<>0 then CloseHandle(FFlushEvent);
+  if (FFlushEvent <> 0) then
+    CloseHandle(FFlushEvent);
   FCritSec.Free;
   inherited Destroy();
 end;
@@ -301,6 +320,7 @@ var
   hr: HResult;
 
 begin
+
   // Create the DrawDevice
   m_draw := TDrawDevice.Create();
   // Create the Direct3D device.
@@ -316,33 +336,50 @@ end;
 //  Releases all resources held by this object.
 //-------------------------------------------------------------------
 function TCPreview.CloseDevice(): HResult;
-var Reader: IMFSourceReader; Source: IMFMediaSource;
+var
+  Reader: IMFSourceReader;
+  Source: IMFMediaSource;
+
 begin
- Result:=S_OK;
- if FCritSec=nil then Exit;
- FCritSec.Enter;
- try
-  m_State:=stStopped;
-  Reader:=m_pReader;m_pReader:=nil;
-  Source:=m_pSource;m_pSource:=nil;
-  m_strSymbolicLink:='';m_strDeviceName:='';
- finally FCritSec.Leave;end;
- if Reader<>nil then begin
-  ResetEvent(FFlushEvent);
-  if SUCCEEDED(Reader.Flush(MF_SOURCE_READER_ALL_STREAMS)) then WaitForSingleObject(FFlushEvent,5000);
- end;
- if Source<>nil then Source.Shutdown;
- if FActivation<>nil then FActivation.ShutdownObject;
- FActivation:=nil;
+
+  Result := S_OK;
+  if (FCritSec = nil) then
+    Exit;
+  FCritSec.Enter;
+  try
+    m_State := stStopped;
+    Reader := m_pReader;
+    m_pReader := nil;
+    Source := m_pSource;
+    m_pSource := nil;
+    m_strSymbolicLink := '';
+    m_strDeviceName := '';
+  finally
+    FCritSec.Leave;
+  end;
+  if (Reader <> nil) then
+    begin
+      ResetEvent(FFlushEvent);
+      if SUCCEEDED(Reader.Flush(MF_SOURCE_READER_ALL_STREAMS)) then
+        WaitForSingleObject(FFlushEvent,
+                            5000);
+    end;
+  if (Source <> nil) then
+    Source.Shutdown;
+  if (FActivation <> nil) then
+    FActivation.ShutdownObject;
+  FActivation := nil;
 end;
 
 
 procedure TCPreview.NotifyError(hr: HResult);
+
 begin
+
   PostMessageW(m_hwndEvent,
-              WM_APP_PREVIEW_ERROR,
-              WPARAM(DWORD(hr)),
-              LPARAM(0));
+               WM_APP_PREVIEW_ERROR,
+               WPARAM(DWORD(hr)),
+               LPARAM(0));
 end;
 
 
@@ -409,7 +446,7 @@ begin
       until (i > g_cFormats);   // Defined in unit DrawDeviceClass: Holds the number of supported media types
     end;  // Repeat
 
-  if bFound = True then
+  if (bFound = True) then
     hr := m_draw.SetVideoType(pType);
 
   Result := hr;
@@ -440,7 +477,7 @@ begin
   hr := S_OK;
   FCritSec.Enter();
 
-  if m_State=stStopped then
+  if (m_State = stStopped) then
     goto done;
 
   if (Self.m_pReader = nil) and (pSample = nil) then
@@ -483,25 +520,28 @@ begin
   // Request the next frame.
   if SUCCEEDED(hr) then
     begin
-     if Assigned(Self.m_pReader) then
-       hr := Self.m_pReader.ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
-                                             0,
-                                             nil,   // actual
-                                             nil,   // flags
-                                             nil,   // timestamp
-                                             nil)   // sample optional
-     else
-       begin
-         hr := E_POINTER;
-         goto done;
-       end;
+      if Assigned(Self.m_pReader) then
+        hr := Self.m_pReader.ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+                                        0,
+                                        nil,   // actual
+          nil,   // flags
+          nil,   // timestamp
+          nil)   // sample optional
+      else
+        begin
+          hr := E_POINTER;
+          goto done;
+        end;
     end;
 
   // Here you could implement the stream flags, like:
   // check the StreamFlags
 
   // Show timeframes in Mainwindow caption
-  PostMessageW(m_hwndEvent,WM_APP+3,WPARAM(llTimestamp div 10000),0);
+  PostMessageW(m_hwndEvent,
+               WM_APP + 3,
+               WPARAM(llTimestamp div 10000),
+               0);
 
   // On resize, resize the picture to destination size.
   // Note: On critical events, like for example OnResize, we need to process these when a sample
@@ -513,15 +553,15 @@ begin
     end;
 
 
-done:
+  done:
 
-  if FAILED(hr) then
-    begin
-      Self.NotifyError(hr);
-      m_State := stError;
-    end
-  else if m_State<>stStopped then
-    m_State := stCapturing;
+    if FAILED(hr) then
+      begin
+        Self.NotifyError(hr);
+        m_State := stError;
+      end
+    else if (m_State <> stStopped) then
+      m_State := stCapturing;
 
   pBuffer := nil;
 
@@ -532,7 +572,9 @@ end;
 
 
 function TCPreview.OnFlush(dwStreamIndex: DWord): HRESULT;
+
 begin
+
   SetEvent(FFlushEvent);
   Result := S_OK;
 end;
@@ -540,7 +582,9 @@ end;
 
 function TCPreview.OnEvent(dwStreamIndex: DWord;
                            pEvent: IMFMediaEvent): HResult; stdcall;
+
 begin
+
   Result := S_OK;
 end;
 
@@ -566,6 +610,7 @@ label
   done;
 
 begin
+
   hr := S_OK;
 
   // Release the current device, if any.
@@ -576,11 +621,11 @@ begin
 
   // Create the media source for the device.
   hr := pActivate.ActivateObject(IID_IMFMediaSource,
-                                 {Pointer} m_pSource);
+    {Pointer} m_pSource);
   if FAILED(hr) then
     goto done;
 
-  FActivation:=pActivate;
+  FActivation := pActivate;
   // Get the symbolic link.
   hr := pActivate.GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,
                                      m_pwszSymbolicLink,
@@ -614,7 +659,7 @@ begin
     goto done;
 
   hr := pAttributes.SetUINT32(MF_READWRITE_DISABLE_CONVERTERS,
-                             {TRUE}UINT32(1));
+    {TRUE}UINT32(1));
   if FAILED(hr) then
     goto done;
 
@@ -632,7 +677,7 @@ begin
 
   // Try to find a suitable output type.
 
-  for i := 0 to g_cFormats -1 do
+  for i := 0 to g_cFormats - 1 do
     begin
       hr := m_pReader.GetNativeMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
                                          i,
@@ -651,7 +696,7 @@ begin
   if FAILED(hr) then
     goto done;
 
-  m_State:=stInitializing;
+  m_State := stInitializing;
   // Ask for the first sample. From here the IMFSourceReaderCallback.OnReadSample will be activated
   hr := m_pReader.ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
                              0,
@@ -674,8 +719,8 @@ begin
       CloseDevice();
     end;
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -688,9 +733,10 @@ end;
 //-------------------------------------------------------------------
 function TCPreview.ResizeVideo(): HResult;
 var
-  hr : HRESULT;
+  hr: HRESULT;
 
 begin
+
   hr := S_OK;
   FCritSec.Enter;
   if Assigned(m_draw) then
@@ -698,9 +744,9 @@ begin
       hr := m_draw.ResetDevice();
       if FAILED(hr) then
         MessageBoxW(0,
-                   PWideChar('ResetDevice failed!'),
-                   nil,
-                   MB_OK);
+                    PWideChar('ResetDevice failed!'),
+                    nil,
+                    MB_OK);
     end;
   FCritSec.Leave;
   Result := hr;
@@ -716,18 +762,18 @@ var
 begin
 
   while (MsgWaitForMultipleObjects(1,
-                                   AThread,
-                                   False,
-                                   AWait,
-                                   QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
+      AThread,
+      False,
+      AWait,
+      QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
     begin
       PeekMessageW(oMsg,
-                  0,
-                  0,
-                  0,
-                  PM_REMOVE);
+                   0,
+                   0,
+                   0,
+                   PM_REMOVE);
 
-      if oMsg.Message = WM_QUIT then
+      if (oMsg.Message = WM_QUIT) then
         Exit;
 
       TranslateMessage(oMsg);

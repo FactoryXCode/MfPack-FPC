@@ -71,7 +71,7 @@ interface
 uses
   LMessages,
   MfPlayerSample.Platform,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -154,15 +154,21 @@ type
     procedure pnlVideoResize(Sender: TObject);
     procedure mnuTakeScreenshotClick(Sender: TObject);
     procedure butFullScreenClick(Sender: TObject);
-    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyUp(Sender: TObject;
+                        var Key: Word;
+                        Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure Rate1Click(Sender: TObject);
     procedure Ratep2Click(Sender: TObject);
     procedure Ratem1Click(Sender: TObject);
     procedure trbVolumeRChange(Sender: TObject);
-    procedure prbProgressMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure prbProgressMouseUp(Sender: TObject;
+                                 Button: TMouseButton;
+                                 Shift: TShiftState;
+                                 X,
+                                 Y: Integer);
     procedure mnuEnableSubtitlingClick(Sender: TObject);
     procedure mnuSelectStreamsClick(Sender: TObject);
     procedure mnuMediaInfoClick(Sender: TObject);
@@ -215,7 +221,9 @@ uses
 
 
 procedure Tfrm_MfPlayer.mnuExitClick(Sender: TObject);
+
 begin
+
   Close();
 end;
 
@@ -225,7 +233,8 @@ var
   bm: TBitmap;
 
 begin
-  bm:= TBitmap.Create;
+
+  bm := TBitmap.Create;
   MfPlayerX.TakeSnapShot(bm);
   Clipboard.Assign(bm);
   FreeAndNil(bm);
@@ -233,7 +242,9 @@ end;
 
 
 procedure Tfrm_MfPlayer.butPauseClick(Sender: TObject);
+
 begin
+
   if Assigned(MfPlayerX) then
     if MfPlayerX.State in [OpenPending, Started, TopologyReady] then
       begin
@@ -243,6 +254,7 @@ end;
 
 
 procedure Tfrm_MfPlayer.butPlayClick(Sender: TObject);
+
 begin
 
   // Continue where we left when state is paused
@@ -261,7 +273,7 @@ begin
           MfPlayerX.GetVolume();
 
           if (Length(MfPlayerX.m_VolumeChannels) >= 1) then
-            trbVolumeR.Position:= Trunc(MfPlayerX.m_VolumeChannels[0] * 30); // left  30%
+            trbVolumeR.Position := Trunc(MfPlayerX.m_VolumeChannels[0] * 30); // left  30%
           if (Length(MfPlayerX.m_VolumeChannels) > 1) then
             trbVolumeL.Position := Trunc(MfPlayerX.m_VolumeChannels[1] * 30); // right 30%
 
@@ -291,12 +303,14 @@ end;
 
 
 procedure Tfrm_MfPlayer.butStopClick(Sender: TObject);
+
 begin
+
   if Assigned(MfPlayerX) then
     begin
       MfPlayerX.SendPlayerRequest(reqStop);
-      mnuTakeScreenshot.Enabled:= False;
-      prbProgress.Position:= 0;
+      mnuTakeScreenshot.Enabled := False;
+      prbProgress.Position := 0;
 
       // Stop MFPeakmeters
       //MfPeakMeter1.Enabled:= False;
@@ -307,7 +321,9 @@ end;
 
 
 procedure Tfrm_MfPlayer.SetWindowStyle(bFullScreen: Boolean);
+
 begin
+
   if (bFullScreen = True) then
     begin
       BorderStyle := bsNone;
@@ -330,7 +346,9 @@ end;
 
 
 procedure Tfrm_MfPlayer.ResetInterface();
+
 begin
+
   prbProgress.Position := 0;
   mnuSetPosition.Enabled := False;
   pnlControls.Enabled := False;
@@ -354,18 +372,22 @@ var
 
 begin
 
-
   for i := 0 to High(MfPlayerX.StreamContents) do
     begin
       if (MfPlayerX.StreamContents[i].idStreamMediaType = mtVideo) then
         begin
           lst := 'Video Info' + #13 + #13;
-          lst := lst + 'Pixel aspect ratio: ' + FloatToStrF(MfPlayerX.StreamContents[i].video_PixelAspectRatioNumerator / MfPlayerX.StreamContents[i].video_PixelAspectRatioDenominator, ffGeneral, 4, 2) + #13;
-          lst := lst + 'Framerate per second (fps): ' + FloatToStrF(MfPlayerX.StreamContents[i].video_FrameRateNumerator / MfPlayerX.StreamContents[i].video_FrameRateDenominator, ffGeneral, 4, 2) + #13;
+          lst := lst + 'Pixel aspect ratio: ' + FloatToStrF(MfPlayerX.StreamContents[i].video_PixelAspectRatioNumerator / MfPlayerX.StreamContents[i].video_PixelAspectRatioDenominator,
+                                                            ffGeneral,
+                                                            4,
+                                                            2) + #13;
+          lst := lst + 'Framerate per second (fps): ' + FloatToStrF(MfPlayerX.StreamContents[i].video_FrameRateNumerator / MfPlayerX.StreamContents[i].video_FrameRateDenominator,
+                                                                    ffGeneral,
+                                                                    4,
+                                                                    2) + #13;
           lst := lst + 'Framesize (w x h): ' + IntToStr(MfPlayerX.StreamContents[i].video_FrameSizeWidth) + ' x ' + IntToStr(MfPlayerX.StreamContents[i].video_FrameSizeHeigth) + #13 + #13;
         end
-      else
-      if (MfPlayerX.StreamContents[i].idStreamMediaType = mtAudio) then
+      else if (MfPlayerX.StreamContents[i].idStreamMediaType = mtAudio) then
         begin
           lst := lst + 'Audio Info' + #13 + #13;
           lst := lst + 'Format        : ' + MfPlayerX.StreamContents[i].audio_wsAudioDescr + #13;
@@ -382,6 +404,7 @@ end;
 
 // A different but effective way to play in full screen mode
 procedure Tfrm_MfPlayer.butFullScreenClick(Sender: TObject);
+
 begin
 
   if pb_IsFullScreen then
@@ -398,7 +421,9 @@ end;
 
 
 procedure Tfrm_MfPlayer.QuitMfPlayerSession();
+
 begin
+
   ResetInterface();
   if Assigned(MfPlayerX) then
     begin
@@ -419,6 +444,7 @@ end;
 
 
 procedure Tfrm_MfPlayer.mnuOpenClick(Sender: TObject);
+
 begin
 
   // End a previous session
@@ -456,24 +482,26 @@ begin
             end //SUCCEEDED
           else
             MessageBoxW(0,
-                       lpcwstr('MfPlayer could not open ' + #13 +
-                       lpcwstr(dlgOpenUrl.Filename)),
-                       lpcwstr('Initial Failure!'),
-                       MB_ICONERROR);
+                        lpcwstr('MfPlayer could not open ' + #13 +
+              lpcwstr(dlgOpenUrl.Filename)),
+                        lpcwstr('Initial Failure!'),
+                        MB_ICONERROR);
         end // dlg execute
       else // User pressed cancel
         QuitMfPlayerSession();
     end
   else // could not init MfPlayer
     MessageBoxW(0,
-               lpcwstr('Failed to initialize MfPlayer.'),
-               lpcwstr('Initial Failure!'),
-               MB_ICONERROR);
+                lpcwstr('Failed to initialize MfPlayer.'),
+                lpcwstr('Initial Failure!'),
+                MB_ICONERROR);
 end;
 
 
 procedure Tfrm_MfPlayer.mnuEnableSubtitlingClick(Sender: TObject);
+
 begin
+
   if Assigned(FloatingForm) then
     begin
       if (mnuEnableSubtitling.Checked = True) then
@@ -488,21 +516,27 @@ end;
 
 
 procedure Tfrm_MfPlayer.Rate1Click(Sender: TObject);
+
 begin
+
   // Set video rate back to normal
   MfPlayerX.SetRate(1.0);
 end;
 
 
 procedure Tfrm_MfPlayer.Ratep2Click(Sender: TObject);
+
 begin
+
   // Set video rate to maximum speed
   MfPlayerX.SetRate(MfPlayerX.MaxPlayBackRate);
 end;
 
 
 procedure Tfrm_MfPlayer.Ratem1Click(Sender: TObject);
+
 begin
+
   // Set video rate to minimum speed
   MfPlayerX.SetRate(MfPlayerX.MinPlayBackRate);
 end;
@@ -510,7 +544,9 @@ end;
 
 // Implementation for FloatingForm  (subtitlelayer)
 procedure Tfrm_MfPlayer.SetToParentRect();
+
 begin
+
   if (MfPlayerX.m_hwndFloatingForm > 0) then
     SendMessage(ph_FloatingForm,
                 WM_PARENTPOSCHANGED,
@@ -525,11 +561,12 @@ var
   pcrD: LPRECT;
 
 begin
+
   if bAppIsClosing then
     Exit;
 
   if (prbProgress <> Nil) then
-    prbProgress.Max:= prbProgress.Width;
+    prbProgress.Max := prbProgress.Width;
 
   // Set video size
   if Assigned(MfPlayerX) then
@@ -546,18 +583,24 @@ end;
 
 
 procedure Tfrm_MfPlayer.pnlVideoResize(Sender: TObject);
+
 begin
+
   RealignInterface();
 end;
 
 
 // Seek
 procedure Tfrm_MfPlayer.prbProgressMouseUp(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                           Button: TMouseButton;
+                                           Shift: TShiftState;
+                                           X,
+                                           Y: Integer);
 var
   fPos: Float;
 
 begin
+
   // Clear any subtitle
   if Assigned(FloatingForm) then
     FloatingForm.SubtitleText := '';
@@ -583,37 +626,45 @@ var
   iDef: int64;
 
 begin
+
   // The calculated value is not accurate!
   sDur := IntToStr(int64(Trunc(MfPlayerX.Duration / (iSec * 60))));
   sPos := InputBox('Enter a position in seconds',
                    'Enter a value between 0 and ' + sDur + '.',
                    '1');
 
-  iDef := StrToInt64Def(sPos, 0) * iSec;
+  iDef := StrToInt64Def(sPos,
+                        0) * iSec;
   if (iDef >= MfPlayerX.Duration) then
     iDef := 0; // Set back to start position
 
-  MfPlayerX.SetNewPosition:= iDef; // set new StartPosition
+  MfPlayerX.SetNewPosition := iDef; // set new StartPosition
   MfPlayerX.SendPlayerRequest(reqSeek);
 end;
 
 
 procedure Tfrm_MfPlayer.mnuCinemaClick(Sender: TObject);
+
 begin
+
   ps_AspectRatio := AR_235_1;
   ForceResize();
 end;
 
 
 procedure Tfrm_MfPlayer.mnuSixteenByNineClick(Sender: TObject);
+
 begin
+
   ps_AspectRatio := AR_16_9; // default
   ForceResize();
 end;
 
 
 procedure Tfrm_MfPlayer.mnuFourByThreeClick(Sender: TObject);
+
 begin
+
   ps_AspectRatio := AR_4_3;
   ForceResize();
 end;
@@ -626,6 +677,7 @@ var
   iSliderL, iSliderR: FLOAT;
 
 begin
+
   iSliderL := (trbVolumeL.Position * 0.01);
   iSliderR := (trbVolumeR.Position * 0.01);
 
@@ -679,7 +731,9 @@ end;
 
 // Right volume channel
 procedure Tfrm_MfPlayer.trbVolumeRChange(Sender: TObject);
+
 begin
+
   if not Assigned(MfPlayerX) then
     Exit;
 
@@ -693,7 +747,9 @@ end;
 
 // Left volume channel
 procedure Tfrm_MfPlayer.trbVolumeLChange(Sender: TObject);
+
 begin
+
   if not Assigned(MfPlayerX) then
     Exit;
 
@@ -706,8 +762,11 @@ begin
 end;
 //------------------------------------------------------------------------------
 
-procedure Tfrm_MfPlayer.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure Tfrm_MfPlayer.FormCloseQuery(Sender: TObject;
+                                       var CanClose: Boolean);
+
 begin
+
   CanClose := False;
   QuitMfPlayerSession();
   CanClose := True;
@@ -716,7 +775,9 @@ end;
 
 
 procedure Tfrm_MfPlayer.FormCreate(Sender: TObject);
+
 begin
+
   prbProgress.Max := prbProgress.Width;
   bAppIsClosing := False;
   pb_IsFullScreen := False;
@@ -724,94 +785,99 @@ begin
 end;
 
 
-procedure Tfrm_MfPlayer.FormKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure Tfrm_MfPlayer.FormKeyUp(Sender: TObject;
+                                  var Key: Word;
+                                  Shift: TShiftState);
 var
   bm: TBitmap;
 
 begin
+
   case Key of
-    VK_SPACE:   if Assigned(MfPlayerX) then
-                  begin
-                    case MfPlayerX.State of
-                      Started: butPauseClick(Self);
-                      OpenPending: butPlayClick(Self);
-                      Stopped, Paused: butPlayClick(Self);
-                    end;
-                  end;
+    VK_SPACE: if Assigned(MfPlayerX) then
+        begin
+          case MfPlayerX.State of
+            Started: butPauseClick(Self);
+            OpenPending: butPlayClick(Self);
+            Stopped, Paused: butPlayClick(Self);
+          end;
+        end;
 
-    VK_END:     if Assigned(MfPlayerX) then
-                  begin
-                    butStopClick(Self);
-                  end;
+    VK_END: if Assigned(MfPlayerX) then
+        begin
+          butStopClick(Self);
+        end;
 
-    VK_F11:     begin  //Shut down
-                  if Assigned(MfPlayerX) then
-                    MfPlayerX.ShutDown();
-                end;
+      VK_F11: begin  //Shut down
+        if Assigned(MfPlayerX) then
+          MfPlayerX.ShutDown();
+      end;
 
-    VK_F12:     mnuOpenClick(Nil);
+    VK_F12: mnuOpenClick(Nil);
 
     //take a snapshot and copy the bitmap to the clipboard
-    VK_F8:      begin
-                  bm:= TBitmap.Create;
-                  MfPlayerX.TakeSnapShot(bm);
-                  Clipboard.Assign(bm);
-                  FreeAndNil(bm);
-                end;
+      VK_F8: begin
+        bm := TBitmap.Create;
+        MfPlayerX.TakeSnapShot(bm);
+        Clipboard.Assign(bm);
+        FreeAndNil(bm);
+      end;
 
     // Use left and right arrows to adjust the volume.
     // since there is a trackbar, this one will have the focus.
     // We did not implement a balance method.
-    VK_LEFT:    begin
-                  if (Length(MfPlayerX.m_VolumeChannels) >= 1) then
-                    MfPlayerX.m_VolumeChannels[0]:= MfPlayerX.m_VolumeChannels[0] - 0.01;
-                  if (Length(MfPlayerX.m_VolumeChannels) > 1) then
-                    MfPlayerX.m_VolumeChannels[1]:= MfPlayerX.m_VolumeChannels[1] - 0.01;
-                  MfPlayerX.SetVolume(MfPlayerX.m_VolumeChannels);
-                end;
+      VK_LEFT: begin
+        if (Length(MfPlayerX.m_VolumeChannels) >= 1) then
+          MfPlayerX.m_VolumeChannels[0] := MfPlayerX.m_VolumeChannels[0] - 0.01;
+        if (Length(MfPlayerX.m_VolumeChannels) > 1) then
+          MfPlayerX.m_VolumeChannels[1] := MfPlayerX.m_VolumeChannels[1] - 0.01;
+        MfPlayerX.SetVolume(MfPlayerX.m_VolumeChannels);
+      end;
 
-    VK_RIGHT:   begin
-                  if (Length(MfPlayerX.m_VolumeChannels) >= 1) then
-                    MfPlayerX.m_VolumeChannels[0]:= MfPlayerX.m_VolumeChannels[0] + 0.01;
-                  if (Length(MfPlayerX.m_VolumeChannels) > 1) then
-                    MfPlayerX.m_VolumeChannels[1]:= MfPlayerX.m_VolumeChannels[1] + 0.01;
-                  MfPlayerX.SetVolume(MfPlayerX.m_VolumeChannels);
-                end;
+      VK_RIGHT: begin
+        if (Length(MfPlayerX.m_VolumeChannels) >= 1) then
+          MfPlayerX.m_VolumeChannels[0] := MfPlayerX.m_VolumeChannels[0] + 0.01;
+        if (Length(MfPlayerX.m_VolumeChannels) > 1) then
+          MfPlayerX.m_VolumeChannels[1] := MfPlayerX.m_VolumeChannels[1] + 0.01;
+        MfPlayerX.SetVolume(MfPlayerX.m_VolumeChannels);
+      end;
 
-    VK_ESCAPE:  begin
-                  butFullScreenClick(Self);
-                end;
+      VK_ESCAPE: begin
+        butFullScreenClick(Self);
+      end;
   end;
 end;
 
 
 function Tfrm_MfPlayer.GetFmPlayer(): HRESULT;
+
 begin
-  Result:= E_FAIL;
+
+  Result := E_FAIL;
   if not Assigned(MfPlayerX) then
     begin
       MfPlayerX := nil;
       // We want the video to be played on the VideoPanel, so, we use that handle.
       MfPlayerX := TMfPlayerX.Create(pnlVideo.Handle,       // The clipping window / control
-                                     0,                     // The window or control that receives the custom messages. (like Subtitles)
-                                     frm_MfPlayer.Handle,   // The window or control that receives the (text) messages.
-                                     frm_MfPlayer.Handle);  // Must be main form or parent window !!!
+        0,                     // The window or control that receives the custom messages. (like Subtitles)
+        frm_MfPlayer.Handle,   // The window or control that receives the (text) messages.
+        frm_MfPlayer.Handle);  // Must be main form or parent window !!!
 
       // If you want to switch to a different clipping surface while the session is active:
       //MfPlayer.SetVideoSurface:= myFormOrControl.Handle;
-      Result:= S_OK;
+      Result := S_OK;
     end;
 end;
 
 
 procedure Tfrm_MfPlayer.mnuLanguageClick(Sender: TObject);
+
 begin
 
   if Assigned(MfPlayerX) then
     begin
       // no TimedText files found; nothing to do here.
-      if MfPlayerX.m_hwndFloatingForm = 0 then
+      if (MfPlayerX.m_hwndFloatingForm = 0) then
         Exit;
       // Show language dialog
       // No dialog initiated on startup, this should not happen.
@@ -829,7 +895,9 @@ end;
 // Size and move methods, needed by FloatingForm to adjust position and size.
 //------------------------------------------------------------------------------
 procedure Tfrm_MfPlayer.WMSize(var Msg: TLMSize);
+
 begin
+
   inherited;  // OnResize method will be handled first
   if bAppIsClosing then
     Exit;
@@ -843,7 +911,9 @@ end;
 
 
 procedure Tfrm_MfPlayer.WMMove(var Msg: TLMMove);
+
 begin
+
   inherited;
   if bAppIsClosing then
     Exit;
@@ -900,7 +970,7 @@ begin //Position
         begin
           // Check if forward rate is supported
           mnuSetRate.Enabled := MfPlayerX.CanSetRateForward;
-          mnuSelectStreams.Enabled:= True;
+          mnuSelectStreams.Enabled := True;
         end;
     end;
 end;
@@ -908,7 +978,9 @@ end;
 
 // Show a dialog to select audio, video or other streams
 procedure Tfrm_MfPlayer.mnuSelectStreamsClick(Sender: TObject);
+
 begin
+
   // No dialog initiated on startup, this should not happen.
   if not Assigned(dlgSelectStreams) then
     begin

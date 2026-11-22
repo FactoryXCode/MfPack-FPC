@@ -153,7 +153,8 @@ type
     RefreshTimer: TTimer;
 
     procedure FormCreate(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure ConnectionChanged(Sender: TObject);
     procedure SettingsChanged(Sender: TObject);
     procedure SourceModeChanged(Sender: TObject);
@@ -230,7 +231,7 @@ begin
       Registry.RootKey := HKEY_CURRENT_USER;
 
       if Registry.OpenKey(PROFILE_KEY,
-                          False) then
+        False) then
         begin
           if Registry.ValueExists('Server') then
             edServer.Text := Registry.ReadString('Server');
@@ -255,27 +256,28 @@ end;
 
 procedure TfrmFxRecordAdmin.FormCloseQuery(Sender: TObject;
                                            var CanClose: Boolean);
+
 begin
 
   CanClose := not FBusy and not FHasPendingAction;
 
   if CanClose then
     RefreshTimer.Enabled := False
+  else if FRefreshing and not FHasPendingAction then
+    begin
+      // Close the visible UI immediately. Keep its message target alive until
+      // the read-only worker returns, then finish closing without another poll.
+      FCloseRequested := True;
+      RefreshTimer.Enabled := False;
+      Hide;
+    end
   else
-    if FRefreshing and not FHasPendingAction then
-      begin
-        // Close the visible UI immediately. Keep its message target alive until
-        // the read-only worker returns, then finish closing without another poll.
-        FCloseRequested := True;
-        RefreshTimer.Enabled := False;
-        Hide;
-      end
-    else
-      lblOperation.Caption := 'Wait for the current server command to finish before closing.';
+    lblOperation.Caption := 'Wait for the current server command to finish before closing.';
 end;
 
 
 procedure TfrmFxRecordAdmin.AddLog(const AText: string);
+
 begin
 
   memActivity.Lines.Add(FormatDateTime('hh:nn:ss',
@@ -287,6 +289,7 @@ end;
 
 
 procedure TfrmFxRecordAdmin.ConnectionChanged(Sender: TObject);
+
 begin
 
   if FLoading or (csLoading in ComponentState) or (csReading in ComponentState) then
@@ -302,6 +305,7 @@ end;
 
 
 procedure TfrmFxRecordAdmin.SettingsChanged(Sender: TObject);
+
 begin
 
   if FLoading or (csLoading in ComponentState) or (csReading in ComponentState) then
@@ -313,6 +317,7 @@ end;
 
 
 procedure TfrmFxRecordAdmin.cbOutputProfileChange(Sender: TObject);
+
 begin
 
   SettingsChanged(Sender);
@@ -338,7 +343,7 @@ begin
   btnRefresh.Enabled := Ready;
   btnSave.Enabled := Ready and (FState = SERVICE_STOPPED);
   btnApply.Enabled := Ready and (FState in [SERVICE_RUNNING,
-                                            SERVICE_STOPPED]);
+    SERVICE_STOPPED]);
   btnClose.Enabled := (not FBusy or FRefreshing) and not FHasPendingAction and not FCloseRequested;
   Panel1.Enabled := Ready;
 
@@ -360,27 +365,32 @@ begin
 
   if FDirty then
     lblChanges.Caption := 'Unsaved recorder settings'
+  else if FConnected then
+    lblChanges.Caption := 'Recorder settings loaded from the server'
   else
-    if FConnected then
-      lblChanges.Caption := 'Recorder settings loaded from the server'
-    else
-      lblChanges.Caption := 'Connect to load the recorder settings.';
+    lblChanges.Caption := 'Connect to load the recorder settings.';
 end;
 
 
 procedure TfrmFxRecordAdmin.SourceModeChanged(Sender: TObject);
+
 begin
-  if FLoading then Exit;
-  if SameText(FSettings.SourceMode, 'PublicUrl') then FSettings.StreamUrl := Trim(edStreamPath.Text)
-  else FSettings.StreamPath := Trim(edStreamPath.Text);
+
+  if FLoading then
+    Exit;
+  if SameText(FSettings.SourceMode, 'PublicUrl') then
+    FSettings.StreamUrl := Trim(edStreamPath.Text)
+  else
+    FSettings.StreamPath := Trim(edStreamPath.Text);
   FLoading := True;
   try
-    if cbSourceMode.ItemIndex = 1 then
+    if (cbSourceMode.ItemIndex = 1) then
       begin
         FSettings.SourceMode := 'PublicUrl';
         lblStreamPath.Caption := 'HLS playlist URL';
         edStreamPath.Text := FSettings.StreamUrl;
-        if edStreamPath.Text = '' then edStreamPath.Text := 'https://factoryxradio.asuscomm.com/';
+        if (edStreamPath.Text = '') then
+          edStreamPath.Text := 'https://factoryxradio.asuscomm.com/';
       end
     else
       begin
@@ -388,11 +398,15 @@ begin
         lblStreamPath.Caption := 'Stream folder';
         edStreamPath.Text := FSettings.StreamPath;
       end;
-  finally FLoading := False end;
+  finally
+    FLoading := False
+  end;
   SettingsChanged(Sender);
 end;
 
+
 procedure TfrmFxRecordAdmin.LoadControls();
+
 begin
 
   FLoading := True;
@@ -424,8 +438,8 @@ begin
       44100: cbMp3Rate.ItemIndex := 0;
       48000: cbMp3Rate.ItemIndex := 1;
       32000: cbMp3Rate.ItemIndex := 2;
-    else
-      cbMp3Rate.ItemIndex := -1;
+      else
+        cbMp3Rate.ItemIndex := -1;
     end;
 
     cbMp3BitRate.ItemIndex := cbMp3BitRate.Items.IndexOf(IntToStr(FSettings.Mp3BitRateKbps));
@@ -433,8 +447,8 @@ begin
     case FSettings.AacSampleRate of
       44100: cbAacRate.ItemIndex := 0;
       48000: cbAacRate.ItemIndex := 1;
-    else
-      cbAacRate.ItemIndex := -1;
+      else
+        cbAacRate.ItemIndex := -1;
     end;
 
     cbAacBitRate.ItemIndex := cbAacBitRate.Items.IndexOf(IntToStr(FSettings.AacBitRateKbps));
@@ -446,9 +460,10 @@ end;
 
 
 procedure TfrmFxRecordAdmin.ReadControls();
+
 begin
 
-  if cbSourceMode.ItemIndex = 1 then
+  if (cbSourceMode.ItemIndex = 1) then
     begin
       FSettings.SourceMode := 'PublicUrl';
       FSettings.StreamUrl := NormalizeFxRecordStreamUrl(edStreamPath.Text);
@@ -484,15 +499,15 @@ begin
     0: FSettings.Mp3SampleRate := 44100;
     1: FSettings.Mp3SampleRate := 48000;
     2: FSettings.Mp3SampleRate := 32000;
-  else
-    FSettings.Mp3SampleRate := 0;
+    else
+      FSettings.Mp3SampleRate := 0;
   end;
 
   case cbAacRate.ItemIndex of
     0: FSettings.AacSampleRate := 44100;
     1: FSettings.AacSampleRate := 48000;
-  else
-    FSettings.AacSampleRate := 0;
+    else
+      FSettings.AacSampleRate := 0;
   end;
 
   FSettings.Mp3BitRateKbps := StrToIntDef(cbMp3BitRate.Text,
@@ -527,7 +542,7 @@ begin
         end;
 
       Exit;
-  end;
+    end;
 
   try
     if (AAction <> aaConnect) and not FConnected then
@@ -536,7 +551,7 @@ begin
     if (AAction = aaConnect) then
       begin
         FConnection.Machine := Trim(edServer.Text);
-        if Trim(edSharedConfig.Text) = '' then
+        if (Trim(edSharedConfig.Text) = '') then
           edSharedConfig.Text := #92#92 + FConnection.Machine + #92 + 'FxRecord' + #92 + 'FxRecord.ini';
 
         FConnection.ConfigFile := Trim(edSharedConfig.Text);
@@ -546,7 +561,7 @@ begin
         try
           Registry.RootKey := HKEY_CURRENT_USER;
           if Registry.OpenKey(PROFILE_KEY,
-                              True) then
+            True) then
             begin
               Registry.WriteString('Server',
                                    FConnection.Machine);
@@ -558,7 +573,7 @@ begin
         finally
           Registry.Free;
         end;
-    end;
+      end;
 
     NewText := '';
 
@@ -606,6 +621,7 @@ end;
 
 procedure TfrmFxRecordAdmin.StartWorker(AAction: TFxAdminAction;
                                         const ANewText: string);
+
 begin
 
   TFxAdminWorker.Create(Handle,
@@ -647,7 +663,9 @@ begin
     if ((Item.Action = aaConnect) and (Item.ErrorText = '')) or Item.ConfigSaved then
       begin
         FOriginalText := Item.ConfigText;
-        SettingsFromText(FOriginalText, FConnection.ServerConfigFile, FSettings);
+        SettingsFromText(FOriginalText,
+                         FConnection.ServerConfigFile,
+                         FSettings);
         LoadControls();
         FDirty := False;
       end;
@@ -680,10 +698,11 @@ begin
       end
     else
       begin
-        if Item.State = SERVICE_STOP_PENDING then
+        if (Item.State = SERVICE_STOP_PENDING) then
           lblOperation.Caption := 'FxRecord is still stopping and finalizing recordings; status refresh is automatic.'
         else
-          lblOperation.Caption := 'Updated ' + FormatDateTime('hh:nn:ss', Now);
+          lblOperation.Caption := 'Updated ' + FormatDateTime('hh:nn:ss',
+                                                              Now);
         if (Item.Action <> aaRefresh) and (Item.State <> SERVICE_STOP_PENDING) then
           AddLog('Operation completed.');
       end;
@@ -705,6 +724,7 @@ end;
 
 
 procedure TfrmFxRecordAdmin.ConnectClick(Sender: TObject);
+
 begin
 
   RunAction(aaConnect);
@@ -712,6 +732,7 @@ end;
 
 
 procedure TfrmFxRecordAdmin.StartClick(Sender: TObject);
+
 begin
 
   RunAction(aaStart);
@@ -719,6 +740,7 @@ end;
 
 
 procedure TfrmFxRecordAdmin.StopClick(Sender: TObject);
+
 begin
 
   RunAction(aaStop);
@@ -726,6 +748,7 @@ end;
 
 
 procedure TfrmFxRecordAdmin.RestartClick(Sender: TObject);
+
 begin
 
   RunAction(aaRestart);
@@ -733,6 +756,7 @@ end;
 
 
 procedure TfrmFxRecordAdmin.RefreshClick(Sender: TObject);
+
 begin
 
   RunAction(aaRefresh);
@@ -740,6 +764,7 @@ end;
 
 
 procedure TfrmFxRecordAdmin.SaveClick(Sender: TObject);
+
 begin
 
   RunAction(aaSave);
@@ -747,6 +772,7 @@ end;
 
 
 procedure TfrmFxRecordAdmin.ApplyClick(Sender: TObject);
+
 begin
 
   RunAction(aaApply);
@@ -754,6 +780,7 @@ end;
 
 
 procedure TfrmFxRecordAdmin.CloseClick(Sender: TObject);
+
 begin
 
   Close();

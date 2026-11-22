@@ -80,7 +80,9 @@ uses
   MfCastMediaInterfaces;
 
 type
-  TMfCastRemuxPipeline = class(TInterfacedObject, IMfCastRemuxPipeline)
+  TMfCastRemuxPipeline = class(TInterfacedObject,
+                               IMfCastRemuxPipeline)
+
   private
     FLogger: IMfCastLogger;
     FState: TMfCastState;
@@ -133,6 +135,7 @@ uses
 
 type
   TMfCastRemuxWorker = class(TThread)
+
   private
     FOwner: TMfCastRemuxPipeline;
     FPaused: Integer;
@@ -158,6 +161,7 @@ type
     function WaitWhilePaused(): Boolean;
     procedure Pace(const ASampleTime100ns: Int64;
                    const AStartTick: Cardinal);
+
   protected
     procedure Execute(); override;
 
@@ -171,6 +175,7 @@ type
 
 
 constructor TMfCastRemuxWorker.Create(const AOwner: TMfCastRemuxPipeline);
+
 begin
 
   inherited Create(True);
@@ -182,6 +187,7 @@ end;
 
 
 procedure TMfCastRemuxWorker.PauseRemux();
+
 begin
 
   InterlockedExchange(FPaused,
@@ -190,6 +196,7 @@ end;
 
 
 procedure TMfCastRemuxWorker.ResumeRemux();
+
 begin
 
   InterlockedExchange(FPaused,
@@ -198,11 +205,12 @@ end;
 
 
 function TMfCastRemuxWorker.WaitWhilePaused(): Boolean;
+
 begin
 
   while (InterlockedCompareExchange(FPaused,
-                                    0,
-                                    0) <> 0) and (not Terminated) do
+      0,
+      0) <> 0) and (not Terminated) do
     Sleep(20);
   Result := not Terminated;
 end;
@@ -280,42 +288,40 @@ begin
       MediaType := nil;
 
       if FAILED(AReader.GetNativeMediaType(StreamIndex,
-                                           0,
-                                           @MediaType)) or
-         (not Assigned(MediaType)) or
-         FAILED(MediaType.GetGUID(MF_MT_MAJOR_TYPE,
-                                  MajorType)) or
-         FAILED(MediaType.GetGUID(MF_MT_SUBTYPE,
-                                  Subtype)) then
+        0, @MediaType)) or
+        (not Assigned(MediaType)) or
+        FAILED(MediaType.GetGUID(MF_MT_MAJOR_TYPE,
+                                 MajorType)) or
+        FAILED(MediaType.GetGUID(MF_MT_SUBTYPE,
+                                 Subtype)) then
         Continue;
 
       if IsEqualGUID(MajorType,
-                     MFMediaType_Video) and
-         IsEqualGUID(Subtype,
-                     MFVideoFormat_H264) and
-         (not Assigned(AVideoType)) and
-         ((not FOwner.FRequest.HasVideoStreamIndex) or
-          (FOwner.FRequest.VideoStreamIndex = StreamIndex)) then
+        MFMediaType_Video) and
+        IsEqualGUID(Subtype,
+                    MFVideoFormat_H264) and
+        (not Assigned(AVideoType)) and
+        ((not FOwner.FRequest.HasVideoStreamIndex) or
+        (FOwner.FRequest.VideoStreamIndex = StreamIndex)) then
         begin
           AVideoStream := StreamIndex;
           AVideoType := MediaType;
         end
-      else
-        if IsEqualGUID(MajorType,
-                       MFMediaType_Audio) then
-          begin
-            AnyAudio := True;
+      else if IsEqualGUID(MajorType,
+        MFMediaType_Audio) then
+        begin
+          AnyAudio := True;
 
-            if IsEqualGUID(Subtype,
-                           MFAudioFormat_AAC) and
-             (not Assigned(AAudioType)) and
-             ((not FOwner.FRequest.HasAudioStreamIndex) or
-              (FOwner.FRequest.AudioStreamIndex = StreamIndex)) then
+          if IsEqualGUID(Subtype,
+            MFAudioFormat_AAC) and
+            (not Assigned(AAudioType)) and
+            ((not FOwner.FRequest.HasAudioStreamIndex) or
+            (FOwner.FRequest.AudioStreamIndex = StreamIndex)) then
             begin
               AAudioStream := StreamIndex;
               AAudioType := MediaType;
             end;
-          end;
+        end;
     end;
 
   if not Assigned(AVideoType) then
@@ -559,15 +565,14 @@ begin
         begin
           if (ActualStream = VideoStream) then
             VideoDone := True
-          else
-            if HasAudio and (ActualStream = AudioStream) then
-              AudioDone := True;
+          else if HasAudio and (ActualStream = AudioStream) then
+            AudioDone := True;
 
           Continue;
         end;
 
       if ((Flags and (DWORD(MF_SOURCE_READERF_NATIVEMEDIATYPECHANGED) or
-                     DWORD(MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED))) <> 0) then
+        DWORD(MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED))) <> 0) then
         begin
           Result := MF_E_INVALIDMEDIATYPE;
           Exit;
@@ -587,10 +592,9 @@ begin
               if (ActualStream = VideoStream) then
                 Result := Writer.SendStreamTick(VideoOutputStream,
                                                 OutputTime)
-              else
-                if HasAudio and (ActualStream = AudioStream) then
-                  Result := Writer.SendStreamTick(AudioOutputStream,
-                                                  OutputTime);
+              else if HasAudio and (ActualStream = AudioStream) then
+                Result := Writer.SendStreamTick(AudioOutputStream,
+                                                OutputTime);
               if FAILED(Result) then
                 Exit;
             end;
@@ -613,7 +617,7 @@ begin
 
       DecodeTime := 0;
       if SUCCEEDED(Sample.GetUINT64(MFSampleExtension_DecodeTimestamp,
-                                    DecodeTime)) then
+        DecodeTime)) then
         begin
           if (Int64(DecodeTime) > TimelineOrigin) then
             DecodeTime := UINT64(Int64(DecodeTime) - TimelineOrigin)
@@ -624,19 +628,19 @@ begin
                            DecodeTime);
         end;
 
-      Pace(OutputTime, StartTick);
+      Pace(OutputTime,
+           StartTick);
       if Terminated then
         Break;
 
       if (ActualStream = VideoStream) then
         Result := Writer.WriteSample(VideoOutputStream,
                                      Sample)
+      else if HasAudio and (ActualStream = AudioStream) then
+        Result := Writer.WriteSample(AudioOutputStream,
+                                     Sample)
       else
-        if HasAudio and (ActualStream = AudioStream) then
-          Result := Writer.WriteSample(AudioOutputStream,
-                                       Sample)
-        else
-          Result := S_OK;
+        Result := S_OK;
       if FAILED(Result) then
         Exit;
     end;
@@ -664,13 +668,12 @@ begin
                           COINIT_MULTITHREADED);
   if SUCCEEDED(HrCom) then
     ComInitialized := True
-  else
-    if (HrCom <> RPC_E_CHANGED_MODE) then
-      begin
-        FOwner.FWorkerResult := HrCom;
-        FOwner.SetState(csError);
-        Exit;
-      end;
+  else if (HrCom <> RPC_E_CHANGED_MODE) then
+    begin
+      FOwner.FWorkerResult := HrCom;
+      FOwner.SetState(csError);
+      Exit;
+    end;
 
   try
     FOwner.Log(cllInfo,
@@ -713,6 +716,7 @@ end;
 
 
 constructor TMfCastRemuxPipeline.Create();
+
 begin
 
   inherited Create();
@@ -723,6 +727,7 @@ end;
 
 
 destructor TMfCastRemuxPipeline.Destroy();
+
 begin
 
   Stop();
@@ -735,14 +740,18 @@ end;
 
 procedure TMfCastRemuxPipeline.Log(const ALevel: TMfCastLogLevel;
                                    const AMessage: string);
+
 begin
 
   if Assigned(FLogger) then
-    FLogger.Log(ALevel, 'Remux', AMessage);
+    FLogger.Log(ALevel,
+                'Remux',
+                AMessage);
 end;
 
 
 procedure TMfCastRemuxPipeline.SetState(const AState: TMfCastState);
+
 begin
 
   FState := AState;
@@ -750,6 +759,7 @@ end;
 
 
 procedure TMfCastRemuxPipeline.SetLogger(const ALogger: IMfCastLogger);
+
 begin
 
   FLogger := ALogger;
@@ -758,6 +768,7 @@ end;
 
 function TMfCastRemuxPipeline.Start(const ARequest: TMfCastRemuxRequest;
                                     const APublisher: IMfCastSegmentPublisher): HRESULT;
+
 begin
 
   if not Assigned(APublisher) or (Trim(ARequest.SourceName) = '') then
@@ -800,6 +811,7 @@ end;
 
 
 function TMfCastRemuxPipeline.Pause(): HRESULT;
+
 begin
 
   if Assigned(FWorker) then
@@ -810,6 +822,7 @@ end;
 
 
 function TMfCastRemuxPipeline.Resume(): HRESULT;
+
 begin
 
   if Assigned(FWorker) then
@@ -820,6 +833,7 @@ end;
 
 
 function TMfCastRemuxPipeline.Stop(): HRESULT;
+
 begin
 
   if Assigned(FWorker) then
@@ -839,6 +853,7 @@ end;
 
 
 function TMfCastRemuxPipeline.GetState(): TMfCastState;
+
 begin
 
   Result := FState;

@@ -86,7 +86,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -98,7 +99,8 @@ type
 
   PDmoMediaType = ^_DMOMediaType;
   PDMO_MEDIA_TYPE = ^_DMOMediaType;
- _DMOMediaType = record
+
+  _DMOMediaType = record
     majortype: TGUID;
     subtype: TGUID;
     bFixedSizeSamples: BOOL;
@@ -119,79 +121,88 @@ type
   PDMO_INPUT_DATA_BUFFER_FLAGS = ^_DMO_INPUT_DATA_BUFFER_FLAGS;
   _DMO_INPUT_DATA_BUFFER_FLAGS = DWord;
   DMO_INPUT_DATA_BUFFER_FLAGS = _DMO_INPUT_DATA_BUFFER_FLAGS;
+
 const
-  DMO_INPUT_DATA_BUFFERF_SYNCPOINT   = DMO_INPUT_DATA_BUFFER_FLAGS($1);
-  DMO_INPUT_DATA_BUFFERF_TIME        = DMO_INPUT_DATA_BUFFER_FLAGS($2);
-  DMO_INPUT_DATA_BUFFERF_TIMELENGTH  = DMO_INPUT_DATA_BUFFER_FLAGS($4);
+  DMO_INPUT_DATA_BUFFERF_SYNCPOINT = DMO_INPUT_DATA_BUFFER_FLAGS($1);
+  DMO_INPUT_DATA_BUFFERF_TIME = DMO_INPUT_DATA_BUFFER_FLAGS($2);
+  DMO_INPUT_DATA_BUFFERF_TIMELENGTH = DMO_INPUT_DATA_BUFFER_FLAGS($4);
 
 
 type
   PDMO_OUTPUT_DATA_BUFFER_FLAGS = ^_DMO_OUTPUT_DATA_BUFFER_FLAGS;
   _DMO_OUTPUT_DATA_BUFFER_FLAGS = DWord;
   DMO_OUTPUT_DATA_BUFFER_FLAGS = _DMO_OUTPUT_DATA_BUFFER_FLAGS;
+
 const
-  DMO_OUTPUT_DATA_BUFFERF_SYNCPOINT   = DMO_OUTPUT_DATA_BUFFER_FLAGS($1);
-  DMO_OUTPUT_DATA_BUFFERF_TIME        = DMO_OUTPUT_DATA_BUFFER_FLAGS($2);
-  DMO_OUTPUT_DATA_BUFFERF_TIMELENGTH  = DMO_OUTPUT_DATA_BUFFER_FLAGS($4);
-  DMO_OUTPUT_DATA_BUFFERF_INCOMPLETE  = DMO_OUTPUT_DATA_BUFFER_FLAGS($1000000);
+  DMO_OUTPUT_DATA_BUFFERF_SYNCPOINT = DMO_OUTPUT_DATA_BUFFER_FLAGS($1);
+  DMO_OUTPUT_DATA_BUFFERF_TIME = DMO_OUTPUT_DATA_BUFFER_FLAGS($2);
+  DMO_OUTPUT_DATA_BUFFERF_TIMELENGTH = DMO_OUTPUT_DATA_BUFFER_FLAGS($4);
+  DMO_OUTPUT_DATA_BUFFERF_INCOMPLETE = DMO_OUTPUT_DATA_BUFFER_FLAGS($1000000);
 
 type
   PDMO_INPUT_STATUS_FLAGS = ^DMO_INPUT_STATUS_FLAGS;
   _DMO_INPUT_STATUS_FLAGS = DWord;
   DMO_INPUT_STATUS_FLAGS = _DMO_INPUT_STATUS_FLAGS;
+
 const
   DMO_INPUT_STATUSF_ACCEPT_DATA = DMO_INPUT_STATUS_FLAGS($1);
 
 type
   PDMO_INPUT_STREAM_INFO_FLAGS = ^DMO_INPUT_STREAM_INFO_FLAGS;
   _DMO_INPUT_STREAM_INFO_FLAGS = DWord;
-  DMO_INPUT_STREAM_INFO_FLAGS  = _DMO_INPUT_STREAM_INFO_FLAGS;
+  DMO_INPUT_STREAM_INFO_FLAGS = _DMO_INPUT_STREAM_INFO_FLAGS;
+
 const
-  DMO_INPUT_STREAMF_WHOLE_SAMPLES             = DMO_INPUT_STREAM_INFO_FLAGS($1);
-  DMO_INPUT_STREAMF_SINGLE_SAMPLE_PER_BUFFER  = DMO_INPUT_STREAM_INFO_FLAGS($2);
-  DMO_INPUT_STREAMF_FIXED_SAMPLE_SIZE         = DMO_INPUT_STREAM_INFO_FLAGS($4);
-  DMO_INPUT_STREAMF_HOLDS_BUFFERS             = DMO_INPUT_STREAM_INFO_FLAGS($8);
+  DMO_INPUT_STREAMF_WHOLE_SAMPLES = DMO_INPUT_STREAM_INFO_FLAGS($1);
+  DMO_INPUT_STREAMF_SINGLE_SAMPLE_PER_BUFFER = DMO_INPUT_STREAM_INFO_FLAGS($2);
+  DMO_INPUT_STREAMF_FIXED_SAMPLE_SIZE = DMO_INPUT_STREAM_INFO_FLAGS($4);
+  DMO_INPUT_STREAMF_HOLDS_BUFFERS = DMO_INPUT_STREAM_INFO_FLAGS($8);
 
 type
   PDMO_OUTPUT_STREAM_INFO_FLAGS = ^_DMO_OUTPUT_STREAM_INFO_FLAGS;
   _DMO_OUTPUT_STREAM_INFO_FLAGS = DWord;
   DMO_OUTPUT_STREAM_INFO_FLAGS = _DMO_OUTPUT_STREAM_INFO_FLAGS;
+
 const
-  DMO_OUTPUT_STREAMF_WHOLE_SAMPLES             = DMO_OUTPUT_STREAM_INFO_FLAGS($1);
-  DMO_OUTPUT_STREAMF_SINGLE_SAMPLE_PER_BUFFER  = DMO_OUTPUT_STREAM_INFO_FLAGS($2);
-  DMO_OUTPUT_STREAMF_FIXED_SAMPLE_SIZE         = DMO_OUTPUT_STREAM_INFO_FLAGS($4);
-  DMO_OUTPUT_STREAMF_DISCARDABLE               = DMO_OUTPUT_STREAM_INFO_FLAGS($8);
-  DMO_OUTPUT_STREAMF_OPTIONAL                  = DMO_OUTPUT_STREAM_INFO_FLAGS($10);
+  DMO_OUTPUT_STREAMF_WHOLE_SAMPLES = DMO_OUTPUT_STREAM_INFO_FLAGS($1);
+  DMO_OUTPUT_STREAMF_SINGLE_SAMPLE_PER_BUFFER = DMO_OUTPUT_STREAM_INFO_FLAGS($2);
+  DMO_OUTPUT_STREAMF_FIXED_SAMPLE_SIZE = DMO_OUTPUT_STREAM_INFO_FLAGS($4);
+  DMO_OUTPUT_STREAMF_DISCARDABLE = DMO_OUTPUT_STREAM_INFO_FLAGS($8);
+  DMO_OUTPUT_STREAMF_OPTIONAL = DMO_OUTPUT_STREAM_INFO_FLAGS($10);
 
 type
   PDMO_SET_TYPE_FLAGS = ^_DMO_SET_TYPE_FLAGS;
   _DMO_SET_TYPE_FLAGS = DWord;
   DMO_SET_TYPE_FLAGS = _DMO_SET_TYPE_FLAGS;
+
 const
-  DMO_SET_TYPEF_TEST_ONLY                     = DMO_SET_TYPE_FLAGS($1);
-  DMO_SET_TYPEF_CLEAR                         = DMO_SET_TYPE_FLAGS($2);
+  DMO_SET_TYPEF_TEST_ONLY = DMO_SET_TYPE_FLAGS($1);
+  DMO_SET_TYPEF_CLEAR = DMO_SET_TYPE_FLAGS($2);
 
 type
   PDMO_PROCESS_OUTPUT_FLAGS = ^_DMO_PROCESS_OUTPUT_FLAGS;
   _DMO_PROCESS_OUTPUT_FLAGS = Dword;
   DMO_PROCESS_OUTPUT_FLAGS = _DMO_PROCESS_OUTPUT_FLAGS;
+
 const
-  DMO_PROCESS_OUTPUT_DISCARD_WHEN_NO_BUFFER     = DMO_PROCESS_OUTPUT_FLAGS($1);
+  DMO_PROCESS_OUTPUT_DISCARD_WHEN_NO_BUFFER = DMO_PROCESS_OUTPUT_FLAGS($1);
 
 type
   PDMO_INPLACE_PROCESS_FLAGS = ^_DMO_INPLACE_PROCESS_FLAGS;
   _DMO_INPLACE_PROCESS_FLAGS = DWord;
   DMO_INPLACE_PROCESS_FLAGS = _DMO_INPLACE_PROCESS_FLAGS;
+
 const
   DMO_INPLACE_NORMAL = DMO_INPLACE_PROCESS_FLAGS(0);
-  DMO_INPLACE_ZERO   = DMO_INPLACE_PROCESS_FLAGS($1);
+  DMO_INPLACE_ZERO = DMO_INPLACE_PROCESS_FLAGS($1);
 
 type
   PDMO_VIDEO_OUTPUT_STREAM_FLAGS = ^_DMO_VIDEO_OUTPUT_STREAM_FLAGS;
   _DMO_VIDEO_OUTPUT_STREAM_FLAGS = Dword;
   DMO_VIDEO_OUTPUT_STREAM_FLAGS = _DMO_VIDEO_OUTPUT_STREAM_FLAGS;
+
 const
-  DMO_VOSF_NEEDS_PREVIOUS_SAMPLE    = DMO_VIDEO_OUTPUT_STREAM_FLAGS($1);
+  DMO_VOSF_NEEDS_PREVIOUS_SAMPLE = DMO_VIDEO_OUTPUT_STREAM_FLAGS($1);
 
 
 type
@@ -205,6 +216,7 @@ type
 
 
   PDmoOutputDataBuffer = ^DMO_OUTPUT_DATA_BUFFER;
+
   _DMO_OUTPUT_DATA_BUFFER = record
     pBuffer: IMediaBuffer;
     dwStatus: DWORD;
@@ -220,7 +232,7 @@ type
   // Buffers passed to the IMediaObject.ProcessInput and ProcessOutput methods must implement this interface.
   //
   IMediaBuffer = interface(IUnknown)
-  ['{59eff8b9-938c-4a26-82f2-95cb84cdc837}']
+    ['{59eff8b9-938c-4a26-82f2-95cb84cdc837}']
     function SetLength(cbLength: DWORD): HResult; stdcall;
 
     function GetMaxLength(out pcbMaxLength: DWORD): HResult; stdcall;
@@ -229,6 +241,7 @@ type
                                 out pcbLength: DWORD): HResult; stdcall;
 
   end;
+
   IID_IMediaBuffer = IMediaBuffer;
 
 
@@ -237,7 +250,7 @@ type
   // The IMediaObject interface provides methods for manipulating a Microsoft DirectX Media Object (DMO).
   //
   IMediaObject = interface(IUnknown)
-  ['{d8ad0f58-5494-4102-97c5-ec798e59bcf4}']
+    ['{d8ad0f58-5494-4102-97c5-ec798e59bcf4}']
     function GetStreamCount(out pcInputStreams: DWORD;
                             out pcOutputStreams: DWORD): HResult; stdcall;
 
@@ -309,6 +322,7 @@ type
     function Lock(const bLock: LONG): HResult; stdcall;
 
   end;
+
   IID_IMediaObject = IMediaObject;
 
 
@@ -320,7 +334,7 @@ type
   // To enumerate registered DMOs, call the DMOEnum function.
   //
   IEnumDMO = interface(IUnknown)
-  ['{2c3cd98a-2bfa-4a53-9c27-5249ba64ba0f}']
+    ['{2c3cd98a-2bfa-4a53-9c27-5249ba64ba0f}']
     function Next(cItemsToFetch: DWORD;
                   out pCLSID: CLSID;
                   out Names: PWideChar;
@@ -333,6 +347,7 @@ type
     function Clone(out ppEnum: IEnumDMO): HResult; stdcall;
 
   end;
+
   IID_IEnumDMO = IEnumDMO;
 
 
@@ -351,7 +366,7 @@ type
   // Therefore, an application is never obligated to use this interface, and a DMO is never guaranteed to implement it.
   //
   IMediaObjectInPlace = interface(IUnknown)
-  ['{651b9ad0-0fc7-4aa9-9538-d89931010741}']
+    ['{651b9ad0-0fc7-4aa9-9538-d89931010741}']
     function Process(ulSize: ULONG;
                      var pData: PByte;
                      refTimeStart: REFERENCE_TIME;
@@ -362,6 +377,7 @@ type
     function GetLatency(out pLatencyTime: REFERENCE_TIME): HResult; stdcall;
 
   end;
+
   IID_IMediaObjectInPlace = IMediaObjectInPlace;
 
 
@@ -383,7 +399,7 @@ type
   //   To disable quality control, call SetStatus with no flag.
   //
   IDMOQualityControl = interface(IUnknown)
-  ['{65abea96-cf36-453f-af8a-705e98f16260}']
+    ['{65abea96-cf36-453f-af8a-705e98f16260}']
     function SetNow(rtNow: REFERENCE_TIME): HResult; stdcall;
 
     function SetStatus(dwFlags: DWORD): HResult; stdcall;
@@ -391,6 +407,7 @@ type
     function GetStatus(out pdwFlags: DWORD): HResult; stdcall;
 
   end;
+
   IID_IDMOQualityControl = IDMOQualityControl;
 
 
@@ -409,7 +426,7 @@ type
   // Video optimizations are negotiated separately for each output stream.
   //
   IDMOVideoOutputOptimizations = interface(IUnknown)
-  ['{be8f4f4e-5b16-4d29-b350-7f6b5d9298ac}']
+    ['{be8f4f4e-5b16-4d29-b350-7f6b5d9298ac}']
     function QueryOperationModePreferences(ulOutputStreamIndex: ULONG;
                                            pdwRequestedCapabilities: DWORD): HResult; stdcall;
 
@@ -422,6 +439,7 @@ type
     function GetCurrentSampleRequirements(ulOutputStreamIndex: ULONG;
                                           var pdwRequestedFeatures: DWORD): HResult; stdcall;
   end;
+
   IID_IDMOVideoOutputOptimizations = IDMOVideoOutputOptimizations;
 
 
@@ -432,6 +450,6 @@ type
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

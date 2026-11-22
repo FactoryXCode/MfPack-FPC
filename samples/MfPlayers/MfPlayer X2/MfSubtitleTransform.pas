@@ -71,7 +71,7 @@ interface
 
 uses
   MfPlayerSample.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinApiTypes,
   WinApi.ActiveX.PropIdl,
@@ -96,7 +96,10 @@ type
   end;
 
 
-  TMfSubtitleVideoTransform = class(TInterfacedObject, IMFTransform, IMfSubtitleVideoTransformControl)
+  TMfSubtitleVideoTransform = class(TInterfacedObject,
+                                    IMFTransform,
+                                    IMfSubtitleVideoTransformControl)
+
   private
     FCompositor: TMfSubtitleCompositor;
     FTimeline: TMfMediaTimeline;
@@ -213,6 +216,7 @@ implementation
 
 constructor TMfSubtitleVideoTransform.Create(Compositor: TMfSubtitleCompositor;
                                              Timeline: TMfMediaTimeline);
+
 begin
 
   inherited Create();
@@ -229,6 +233,7 @@ end;
 
 
 destructor TMfSubtitleVideoTransform.Destroy();
+
 begin
 
   ClearInput();
@@ -242,6 +247,7 @@ end;
 
 
 procedure TMfSubtitleVideoTransform.ClearInput();
+
 begin
 
   FInputSample := nil;
@@ -250,6 +256,7 @@ end;
 
 
 function TMfSubtitleVideoTransform.CreateRgb32Type(out MediaType: IMFMediaType): HRESULT;
+
 begin
 
   MediaType := nil;
@@ -285,6 +292,7 @@ end;
 
 function TMfSubtitleVideoTransform.CloneMediaType(const SourceType: IMFMediaType;
                                                   out DestType: IMFMediaType): HRESULT;
+
 begin
 
   DestType := nil;
@@ -315,15 +323,15 @@ begin
     Exit;
 
   if FAILED(MediaType.GetGUID(MF_MT_MAJOR_TYPE,
-                              majorType)) then
+    majorType)) then
     Exit;
 
   if not IsEqualGUID(majorType,
-                     MFMediaType_Video) then
+    MFMediaType_Video) then
     Exit;
 
   if FAILED(MediaType.GetGUID(MF_MT_SUBTYPE,
-                              subType)) then
+    subType)) then
     Exit;
 
   Result := IsEqualGUID(subType,
@@ -366,13 +374,13 @@ begin
           height := FHeight;
           OutputDebugStringW(PChar(Format(
             'MfPlayer X2 subtitle transform inherits missing frame size %dx%d',
-            [width, height])));
+                                          [width, height])));
         end
       else
         begin
           OutputDebugStringW(PChar(Format(
             'MfPlayer X2 subtitle transform frame size unavailable, hr=%.8x',
-            [DWORD(Result)])));
+                                          [DWORD(Result)])));
           Exit;
         end;
     end;
@@ -386,7 +394,7 @@ begin
 
   stride := Integer(width) * 4;
   if SUCCEEDED(MediaType.GetUINT32(MF_MT_DEFAULT_STRIDE,
-                                   strideValue)) then
+    strideValue)) then
     begin
 
       stride := Integer(strideValue);
@@ -402,7 +410,7 @@ begin
   FStride := stride;
   OutputDebugStringW(PChar(Format(
     'MfPlayer X2 subtitle transform parsed type %dx%d stride=%d',
-    [FWidth, FHeight, FStride])));
+                                  [FWidth, FHeight, FStride])));
   Result := S_OK;
 end;
 
@@ -424,11 +432,11 @@ begin
   Result := S_OK;
 
   if (not FEnabled) or
-     (not Assigned(FCompositor)) or
-     (not FCompositor.TimedTextFileLoaded) or
-     (FWidth = 0) or
-     (FHeight = 0) or
-     (FStride <= 0) then
+    (not Assigned(FCompositor)) or
+    (not FCompositor.TimedTextFileLoaded) or
+    (FWidth = 0) or
+    (FHeight = 0) or
+    (FStride <= 0) then
     Exit;
 
   buffer := nil;
@@ -455,10 +463,10 @@ begin
                                                      FFrameIndex,
                                                      timeStatus);
         if (timeStatus <> stsFromSample) and
-           (not FLoggedTimelineFallback) then
+          (not FLoggedTimelineFallback) then
           begin
             OutputDebugStringW(PChar(Format('MfPlayer X2 subtitle transform uses timeline fallback status=%d',
-                                           [Ord(timeStatus)])));
+                                            [Ord(timeStatus)])));
             FLoggedTimelineFallback := True;
           end;
       end
@@ -474,13 +482,13 @@ begin
     requiredSize := UInt64(FStride) * UInt64(FHeight);
     bufferSize := currentLength;
     if (UInt64(bufferSize) < requiredSize) and
-       (UInt64(maxLength) >= requiredSize) then
+      (UInt64(maxLength) >= requiredSize) then
       bufferSize := maxLength;
 
     if not FLoggedFirstComposite then
       begin
         OutputDebugStringW(PChar(Format('MfPlayer X2 subtitle first frame time=%d size=%d max=%d stride=%d %dx%d',
-                                       [mediaTimeMs, bufferSize, maxLength, FStride, FWidth, FHeight])));
+                                        [mediaTimeMs, bufferSize, maxLength, FStride, FWidth, FHeight])));
         FLoggedFirstComposite := True;
       end;
 
@@ -497,13 +505,16 @@ end;
 
 
 function TMfSubtitleVideoTransform.SetEnabled(AEnabled: BOOL): HRESULT;
+
 begin
+
   FEnabled := AEnabled;
   Result := S_OK;
 end;
 
 
 function TMfSubtitleVideoTransform.GetEnabled(out AEnabled: BOOL): HRESULT;
+
 begin
 
   AEnabled := FEnabled;
@@ -515,6 +526,7 @@ function TMfSubtitleVideoTransform.GetStreamLimits(out pdwInputMinimum: DWORD;
                                                    out pdwInputMaximum: DWORD;
                                                    out pdwOutputMinimum: DWORD;
                                                    out pdwOutputMaximum: DWORD): HRESULT;
+
 begin
 
   pdwInputMinimum := 1;
@@ -527,6 +539,7 @@ end;
 
 function TMfSubtitleVideoTransform.GetStreamCount(out pcInputStreams: DWORD;
                                                   out pcOutputStreams: DWORD): HRESULT;
+
 begin
 
   pcInputStreams := 1;
@@ -539,6 +552,7 @@ function TMfSubtitleVideoTransform.GetStreamIDs(dwInputIDArraySize: DWORD;
                                                 pdwInputIDs: PDWORD;
                                                 dwOutputIDArraySize: DWORD;
                                                 pdwOutputIDs: PDWORD): HRESULT;
+
 begin
 
   Result := E_NOTIMPL;
@@ -546,7 +560,8 @@ end;
 
 
 function TMfSubtitleVideoTransform.GetInputStreamInfo(const dwInputStreamID: DWORD;
-                                                       out pStreamInfo: MFT_INPUT_STREAM_INFO): HRESULT;
+                                                      out pStreamInfo: MFT_INPUT_STREAM_INFO): HRESULT;
+
 begin
 
   if (dwInputStreamID <> 0) then
@@ -558,14 +573,15 @@ begin
   // sample from ProcessOutput. Advertise the in-place processing model so the
   // Media Session can pair this input stream with the output stream correctly.
   pStreamInfo.dwFlags := MFT_INPUT_STREAM_WHOLE_SAMPLES or
-                         MFT_INPUT_STREAM_SINGLE_SAMPLE_PER_BUFFER or
-                         MFT_INPUT_STREAM_PROCESSES_IN_PLACE;
+    MFT_INPUT_STREAM_SINGLE_SAMPLE_PER_BUFFER or
+    MFT_INPUT_STREAM_PROCESSES_IN_PLACE;
   Result := S_OK;
 end;
 
 
 function TMfSubtitleVideoTransform.GetOutputStreamInfo(const dwOutputStreamID: DWORD;
-                                                        out pStreamInfo: MFT_OUTPUT_STREAM_INFO): HRESULT;
+                                                       out pStreamInfo: MFT_OUTPUT_STREAM_INFO): HRESULT;
+
 begin
 
   if (dwOutputStreamID <> 0) then
@@ -574,13 +590,14 @@ begin
   ZeroMemory(@pStreamInfo,
              SizeOf(pStreamInfo));
   pStreamInfo.dwFlags := MFT_OUTPUT_STREAM_WHOLE_SAMPLES or
-                         MFT_OUTPUT_STREAM_SINGLE_SAMPLE_PER_BUFFER or
-                         MFT_OUTPUT_STREAM_PROVIDES_SAMPLES;
+    MFT_OUTPUT_STREAM_SINGLE_SAMPLE_PER_BUFFER or
+    MFT_OUTPUT_STREAM_PROVIDES_SAMPLES;
   Result := S_OK;
 end;
 
 
 function TMfSubtitleVideoTransform.GetAttributes(out pAttributes: IMFAttributes): HRESULT;
+
 begin
 
   pAttributes := nil;
@@ -590,6 +607,7 @@ end;
 
 function TMfSubtitleVideoTransform.GetInputStreamAttributes(const dwInputStreamID: DWORD;
                                                             out pAttributes: IMFAttributes): HRESULT;
+
 begin
 
   pAttributes := nil;
@@ -599,6 +617,7 @@ end;
 
 function TMfSubtitleVideoTransform.GetOutputStreamAttributes(const dwOutputStreamID: DWORD;
                                                              out pAttributes: IMFAttributes): HRESULT;
+
 begin
 
   pAttributes := nil;
@@ -607,6 +626,7 @@ end;
 
 
 function TMfSubtitleVideoTransform.DeleteInputStream(dwStreamID: DWORD): HRESULT;
+
 begin
 
   Result := E_NOTIMPL;
@@ -615,6 +635,7 @@ end;
 
 function TMfSubtitleVideoTransform.AddInputStreams(cStreams: DWORD;
                                                    adwStreamIDs: PDWORD): HRESULT;
+
 begin
 
   Result := E_NOTIMPL;
@@ -624,6 +645,7 @@ end;
 function TMfSubtitleVideoTransform.GetInputAvailableType(const dwInputStreamID: DWORD;
                                                          dwTypeIndex: DWORD;
                                                          out pType: IMFMediaType): HRESULT;
+
 begin
 
   pType := nil;
@@ -643,8 +665,9 @@ end;
 
 
 function TMfSubtitleVideoTransform.GetOutputAvailableType(const dwOutputStreamID: DWORD;
-                                                           dwTypeIndex: DWORD;
-                                                           out pType: IMFMediaType): HRESULT;
+                                                          dwTypeIndex: DWORD;
+                                                          out pType: IMFMediaType): HRESULT;
+
 begin
 
   pType := nil;
@@ -672,11 +695,13 @@ end;
 function TMfSubtitleVideoTransform.SetInputType(const dwInputStreamID: DWORD;
                                                 pType: IMFMediaType;
                                                 dwFlags: DWORD): HRESULT;
+
 begin
 
   OutputDebugStringW(PChar(Format(
     'MfPlayer X2 subtitle transform SetInputType flags=%.8x assigned=%s',
-    [dwFlags, BoolToStr(Assigned(pType), True)])));
+                                  [dwFlags, BoolToStr(Assigned(pType),
+                                                      True)])));
 
   if (dwInputStreamID <> 0) then
     Exit(MF_E_INVALIDSTREAMNUMBER);
@@ -718,9 +743,11 @@ var
   Value: PROPVARIANT;
 
 begin
+
   OutputDebugStringW(PChar(Format(
     'MfPlayer X2 subtitle transform SetOutputType flags=%.8x assigned=%s',
-    [dwFlags, BoolToStr(Assigned(pType), True)])));
+                                  [dwFlags, BoolToStr(Assigned(pType),
+                                                      True)])));
 
   if (dwOutputStreamID <> 0) then
     Exit(MF_E_INVALIDSTREAMNUMBER);
@@ -754,19 +781,26 @@ begin
 
       // CopyAllItems deletes the destination store; overlay individual items.
       Result := pType.GetCount(Count);
-      if FAILED(Result) then Exit;
-      if Count > UINT32(High(Integer)) then Exit(E_INVALIDARG);
-      for Index := 0 to Integer(Count)-1 do
+      if FAILED(Result) then
+        Exit;
+      if (Count > UINT32(High(Integer))) then
+        Exit(E_INVALIDARG);
+      for Index := 0 to Integer(Count) - 1 do
         begin
           Key := GUID_NULL;
           PropVariantInit(Value);
           try
-            Result := pType.GetItemByIndex(UINT32(Index),Key,@Value);
-            if SUCCEEDED(Result) then Result := NormalizedType.SetItem(Key,Value);
+            Result := pType.GetItemByIndex(UINT32(Index),
+                                           Key,
+                                           @Value);
+            if SUCCEEDED(Result) then
+              Result := NormalizedType.SetItem(Key,
+                                               Value);
           finally
             PropVariantClear(Value);
           end;
-          if FAILED(Result) then Exit;
+          if FAILED(Result) then
+            Exit;
         end;
     end;
 
@@ -780,7 +814,8 @@ end;
 
 
 function TMfSubtitleVideoTransform.GetInputCurrentType(const dwInputStreamID: DWORD;
-                                                        out pType: IMFMediaType): HRESULT;
+                                                       out pType: IMFMediaType): HRESULT;
+
 begin
 
   if (dwInputStreamID <> 0) then
@@ -795,7 +830,8 @@ end;
 
 
 function TMfSubtitleVideoTransform.GetOutputCurrentType(const dwOutputStreamID: DWORD;
-                                                         out pType: IMFMediaType): HRESULT;
+                                                        out pType: IMFMediaType): HRESULT;
+
 begin
 
   if (dwOutputStreamID <> 0) then
@@ -811,6 +847,7 @@ end;
 
 function TMfSubtitleVideoTransform.GetInputStatus(const dwInputStreamID: DWORD;
                                                   out pdwFlags: DWORD): HRESULT;
+
 begin
 
   pdwFlags := 0;
@@ -832,6 +869,7 @@ end;
 
 
 function TMfSubtitleVideoTransform.GetOutputStatus(out pdwFlags: DWORD): HRESULT;
+
 begin
 
   pdwFlags := 0;
@@ -848,6 +886,7 @@ end;
 
 function TMfSubtitleVideoTransform.SetOutputBounds(hnsLowerBound: LONGLONG;
                                                    hnsUpperBound: LONGLONG): HRESULT;
+
 begin
 
   Result := E_NOTIMPL;
@@ -855,7 +894,8 @@ end;
 
 
 function TMfSubtitleVideoTransform.ProcessEvent(const dwInputStreamID: DWORD;
-                                                 pEvent: IMFMediaEvent): HRESULT;
+                                                pEvent: IMFMediaEvent): HRESULT;
+
 begin
 
   Result := E_NOTIMPL;
@@ -864,12 +904,13 @@ end;
 
 function TMfSubtitleVideoTransform.ProcessMessage(eMessage: MFT_MESSAGE_TYPE;
                                                   ulParam: ULONG_PTR): HRESULT;
+
 begin
 
   case eMessage of
     MFT_MESSAGE_COMMAND_FLUSH,
     MFT_MESSAGE_NOTIFY_BEGIN_STREAMING,
-    MFT_MESSAGE_NOTIFY_START_OF_STREAM: begin
+      MFT_MESSAGE_NOTIFY_START_OF_STREAM: begin
         ClearInput();
         FFrameIndex := 0;
         FLoggedTimelineFallback := False;
@@ -889,9 +930,10 @@ end;
 function TMfSubtitleVideoTransform.ProcessInput(const dwInputStreamID: DWORD;
                                                 const pSample: IMFSample;
                                                 dwFlags: DWORD): HRESULT;
+
 begin
 
-  if FFrameIndex = 0 then
+  if (FFrameIndex = 0) then
     OutputDebugStringW(PChar('Subtitle transform received first input sample'));
 
   if (dwInputStreamID <> 0) then
@@ -932,9 +974,9 @@ begin
   if (cOutputBufferCount <> 1) or (pOutputSamples = nil) then
     Exit(E_INVALIDARG);
 
-  if pOutputSamples^.dwStreamID <> 0 then
+  if (pOutputSamples^.dwStreamID <> 0) then
     Exit(MF_E_INVALIDSTREAMNUMBER);
-  if pOutputSamples^.pSample <> nil then
+  if (pOutputSamples^.pSample <> nil) then
     Exit(E_INVALIDARG);
 
   if (not Assigned(FInputType)) or (not Assigned(FOutputType)) then

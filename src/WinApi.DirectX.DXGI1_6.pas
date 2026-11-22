@@ -89,31 +89,34 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
   {$I 'WinApiTypes.inc'}
 
-// Enums =======================================================================
+  // Enums =======================================================================
 
 type
   PDXGI_ADAPTER_FLAG3 = ^DXGI_ADAPTER_FLAG3;
   DXGI_ADAPTER_FLAG3 = DWord;
+
 const
-  DXGI_ADAPTER_FLAG3_NONE                         = DXGI_ADAPTER_FLAG3(0);
-  DXGI_ADAPTER_FLAG3_REMOTE                       = DXGI_ADAPTER_FLAG3(1);
-  DXGI_ADAPTER_FLAG3_SOFTWARE                     = DXGI_ADAPTER_FLAG3(2);
-  DXGI_ADAPTER_FLAG3_ACG_COMPATIBLE               = DXGI_ADAPTER_FLAG3(4);
-  DXGI_ADAPTER_FLAG3_SUPPORT_MONITORED_FENCES     = DXGI_ADAPTER_FLAG3(8);
+  DXGI_ADAPTER_FLAG3_NONE = DXGI_ADAPTER_FLAG3(0);
+  DXGI_ADAPTER_FLAG3_REMOTE = DXGI_ADAPTER_FLAG3(1);
+  DXGI_ADAPTER_FLAG3_SOFTWARE = DXGI_ADAPTER_FLAG3(2);
+  DXGI_ADAPTER_FLAG3_ACG_COMPATIBLE = DXGI_ADAPTER_FLAG3(4);
+  DXGI_ADAPTER_FLAG3_SUPPORT_MONITORED_FENCES = DXGI_ADAPTER_FLAG3(8);
   DXGI_ADAPTER_FLAG3_SUPPORT_NON_MONITORED_FENCES = DXGI_ADAPTER_FLAG3($10);
-  DXGI_ADAPTER_FLAG3_KEYED_MUTEX_CONFORMANCE      = DXGI_ADAPTER_FLAG3($20);
+  DXGI_ADAPTER_FLAG3_KEYED_MUTEX_CONFORMANCE = DXGI_ADAPTER_FLAG3($20);
   //DXGI_ADAPTER_FLAG3_FORCE_DWORD                  = FORCEDWORD;
 
 type
   PDXGI_HARDWARE_COMPOSITION_SUPPORT_FLAGS = ^DXGI_HARDWARE_COMPOSITION_SUPPORT_FLAGS;
   DXGI_HARDWARE_COMPOSITION_SUPPORT_FLAGS = DWord;
+
 const
-  DXGI_HARDWARE_COMPOSITION_SUPPORT_FLAG_FULLSCREEN       = DXGI_HARDWARE_COMPOSITION_SUPPORT_FLAGS(1);
-  DXGI_HARDWARE_COMPOSITION_SUPPORT_FLAG_WINDOWED         = DXGI_HARDWARE_COMPOSITION_SUPPORT_FLAGS(2);
+  DXGI_HARDWARE_COMPOSITION_SUPPORT_FLAG_FULLSCREEN = DXGI_HARDWARE_COMPOSITION_SUPPORT_FLAGS(1);
+  DXGI_HARDWARE_COMPOSITION_SUPPORT_FLAG_WINDOWED = DXGI_HARDWARE_COMPOSITION_SUPPORT_FLAGS(2);
   DXGI_HARDWARE_COMPOSITION_SUPPORT_FLAG_CURSOR_STRETCHED = DXGI_HARDWARE_COMPOSITION_SUPPORT_FLAGS(4);
 
 type
@@ -122,15 +125,17 @@ type
   //------------------------------------------------------------------------------
   PDXGI_GPU_PREFERENCE = ^DXGI_GPU_PREFERENCE;
   DXGI_GPU_PREFERENCE = DWord;
+
 const
-  DXGI_GPU_PREFERENCE_UNSPECIFIED      = DXGI_GPU_PREFERENCE(0);
-  DXGI_GPU_PREFERENCE_MINIMUM_POWER    = DXGI_GPU_PREFERENCE(1);
+  DXGI_GPU_PREFERENCE_UNSPECIFIED = DXGI_GPU_PREFERENCE(0);
+  DXGI_GPU_PREFERENCE_MINIMUM_POWER = DXGI_GPU_PREFERENCE(1);
   DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE = DXGI_GPU_PREFERENCE(2);
 
-// =============================================================================
+  // =============================================================================
 
 type
   PDXGI_ADAPTER_DESC3 = ^DXGI_ADAPTER_DESC3;
+
   DXGI_ADAPTER_DESC3 = record
     Description: array[0..127] of WideChar;
     VendorId: UINT;
@@ -151,15 +156,17 @@ type
   // =======================
   //
   IDXGIAdapter4 = interface(IDXGIAdapter3)
-  ['{3c8d99d1-4fbf-4181-a82c-af66bf7bd24e}']
+    ['{3c8d99d1-4fbf-4181-a82c-af66bf7bd24e}']
 
     function GetDesc3(out pDesc: DXGI_ADAPTER_DESC3): HResult; stdcall;
 
   end;
+
   IID_IDXGIAdapter4 = IDXGIAdapter4;
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
   PDXGI_OUTPUT_DESC1 = ^DXGI_OUTPUT_DESC1;
+
   DXGI_OUTPUT_DESC1 = record
     // Device name for GDI (ex. \\.\DISPLAY1)
     DeviceName: array[0..31] of WideChar;
@@ -193,20 +200,21 @@ type
   end;
 
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
 
 
   // Interface IDXGIOutput6
   // ======================
   //
   IDXGIOutput6 = interface(IDXGIOutput5)
-  ['{068346e8-aaec-4b84-add7-137f513f77a1}']
+    ['{068346e8-aaec-4b84-add7-137f513f77a1}']
 
     function GetDesc1(out pDesc: DXGI_OUTPUT_DESC1): HResult; stdcall;
 
     function CheckHardwareCompositionSupport(out pFlags: UINT): HResult; stdcall;
 
   end;
+
   IID_IDXGIOutput6 = IDXGIOutput6;
 
 
@@ -214,7 +222,7 @@ type
   // =======================
   //
   IDXGIFactory6 = interface(IDXGIFactory5)
-  ['{c1b6694f-ff09-44a9-b03c-77900a0a1d17}']
+    ['{c1b6694f-ff09-44a9-b03c-77900a0a1d17}']
 
     function EnumAdapterByGpuPreference(Adapter: UINT;
                                         GpuPreference: DXGI_GPU_PREFERENCE;
@@ -222,6 +230,7 @@ type
                                         out ppvAdapter: Pointer): HResult; stdcall;
 
   end;
+
   IID_IDXGIFactory6 = IDXGIFactory6;
 
 
@@ -229,7 +238,7 @@ type
   // =======================
   //
   IDXGIFactory7 = interface(IDXGIFactory6)
-  ['{a4966eed-76db-44da-84c1-ee9a7afb20a8}']
+    ['{a4966eed-76db-44da-84c1-ee9a7afb20a8}']
 
     function RegisterAdaptersChangedEvent(hEvent: THandle;
                                           out pdwCookie: DWORD): HResult; stdcall;
@@ -237,25 +246,26 @@ type
     function UnregisterAdaptersChangedEvent(dwCookie: DWORD): HResult; stdcall;
 
   end;
+
   IID_IDXGIFactory7 = IDXGIFactory7;
 
-//------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------
 
-// if (NTDDI_VERSION >= NTDDI_WIN10_NI)
+  // if (NTDDI_VERSION >= NTDDI_WIN10_NI)
 
-  // Disables v-blank virtualization for the process.
-  // This virtualization is used by the dynamic refresh rate (DRR) feature by default for
-  // all swap chains to maintain a steady virtualized present rate and v-blank cadence from
-  // IDXGIOutput.WaitForVBlank.
-  // By disabling virtualization, these APIs will see the changing refresh rate.
-  function DXGIDisableVBlankVirtualization(): HResult; stdcall;
+// Disables v-blank virtualization for the process.
+// This virtualization is used by the dynamic refresh rate (DRR) feature by default for
+// all swap chains to maintain a steady virtualized present rate and v-blank cadence from
+// IDXGIOutput.WaitForVBlank.
+// By disabling virtualization, these APIs will see the changing refresh rate.
+function DXGIDisableVBlankVirtualization(): HResult; stdcall;
 
 // endif (NTDDI_VERSION >= NTDDI_WIN10_NI)
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
 
@@ -263,9 +273,9 @@ const
   DXGI1_6lib = 'dxgi.dll';
 
 
-  function DXGIDisableVBlankVirtualization; external DXGI1_6lib name 'DXGIDisableVBlankVirtualization' ;
+function DXGIDisableVBlankVirtualization; external DXGI1_6lib name 'DXGIDisableVBlankVirtualization';
 
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

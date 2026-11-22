@@ -66,11 +66,12 @@ unit MfJogShuttle;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   {System}
@@ -98,8 +99,8 @@ type
   TJogChangeEvent = procedure(Sender: TObject;
                               const NewPosition: Integer) of object;
 
-  TJogDeltaEvent  = procedure(Sender: TObject;
-                              const Delta: Integer) of object;
+  TJogDeltaEvent = procedure(Sender: TObject;
+                             const Delta: Integer) of object;
 
   { TJogShuttleProgress
 
@@ -114,8 +115,10 @@ type
   }
 
   TJogShuttleProgress = class(TCustomControl)
+
   published
     property BorderSpacing;
+
   private
 
     FPicture: TPicture;
@@ -159,8 +162,8 @@ type
     procedure SetProgressBar(const Value: TProgressBar);
 
     function ConstrainI(const AMin,
-                              AMax,
-                              AValue: Integer): Integer; inline;
+                        AMax,
+                        AValue: Integer): Integer; inline;
 
     function CenterPt(): TPoint;
     function AngleFromPoint(const X: Integer;
@@ -183,12 +186,15 @@ type
 
     procedure MouseDown(Button: TMouseButton;
                         Shift: TShiftState;
-                        X, Y: Integer); override;
+                        X,
+                        Y: Integer); override;
     procedure MouseMove(Shift: TShiftState;
-                        X, Y: Integer); override;
+                        X,
+                        Y: Integer); override;
     procedure MouseUp(Button: TMouseButton;
                       Shift: TShiftState;
-                      X, Y: Integer); override;
+                      X,
+                      Y: Integer); override;
     function DoMouseWheel(Shift: TShiftState;
                           WheelDelta: Integer;
                           MousePos: TPoint): Boolean; override;
@@ -247,22 +253,25 @@ implementation
 
 
 procedure Register;
+
 begin
 
   RegisterComponents('RDJ Controls',
-                    [TJogShuttleProgress]);
+                     [TJogShuttleProgress]);
 end;
 
 { TJogShuttleProgress }
 
 constructor TJogShuttleProgress.Create(AOwner: TComponent);
+
 begin
+
   inherited Create(AOwner);
 
   ControlStyle := ControlStyle + [csReplicatable,
-                                  csOpaque,
-                                  csClickEvents,
-                                  csDoubleClicks];
+    csOpaque,
+    csClickEvents,
+    csDoubleClicks];
   DoubleBuffered := True;
 
   Width := 110;
@@ -286,6 +295,7 @@ end;
 
 
 destructor TJogShuttleProgress.Destroy;
+
 begin
 
   FPicture.Free;
@@ -297,6 +307,7 @@ end;
 
 
 procedure TJogShuttleProgress.EnsureBitmaps;
+
 begin
 
   if (FBitmapOriginal = nil) then
@@ -308,6 +319,7 @@ end;
 
 
 procedure TJogShuttleProgress.PictureChanged(Sender: TObject);
+
 begin
 
   FPictureLoaded := False;
@@ -320,6 +332,7 @@ end;
 
 
 procedure TJogShuttleProgress.SetPicture(const Value: TPicture);
+
 begin
 
   FPicture.Assign(Value);
@@ -328,6 +341,7 @@ end;
 
 
 procedure TJogShuttleProgress.SetTransparent(const Value: Boolean);
+
 begin
 
   if (FTransparent <> Value) then
@@ -342,6 +356,7 @@ end;
 function TJogShuttleProgress.ConstrainI(const AMin,
                                         AMax,
                                         AValue: Integer): Integer;
+
 begin
 
   Result := AValue;
@@ -354,9 +369,10 @@ end;
 
 
 procedure TJogShuttleProgress.SetMin(const Value: Integer);
+
 begin
 
-  if FMin <> Value then
+  if (FMin <> Value) then
     begin
 
       FMin := Value;
@@ -368,6 +384,7 @@ end;
 
 
 procedure TJogShuttleProgress.SetMax(const Value: Integer);
+
 begin
 
   if (FMax <> Value) then
@@ -382,9 +399,10 @@ end;
 
 
 procedure TJogShuttleProgress.SetStep(const Value: Integer);
+
 begin
 
-  if Value <= 0 then
+  if (Value <= 0) then
     FStep := 1
   else
     FStep := Value;
@@ -392,6 +410,7 @@ end;
 
 
 procedure TJogShuttleProgress.SetJogStep(const Value: Integer);
+
 begin
 
   if (Value <= 0) then
@@ -402,6 +421,7 @@ end;
 
 
 procedure TJogShuttleProgress.SetProgressBar(const Value: TProgressBar);
+
 begin
 
   if (FProgressBar <> Value) then
@@ -414,6 +434,7 @@ end;
 
 
 procedure TJogShuttleProgress.SyncProgressBar;
+
 begin
 
   if (FProgressBar <> nil) then
@@ -428,13 +449,14 @@ begin
         if (FProgressBar.Position <> FPosition) then
           FProgressBar.Position := FPosition;
       except
-      // ignore any design-time / invalid handle issues
+        // ignore any design-time / invalid handle issues
       end;
     end;
 end;
 
 
 procedure TJogShuttleProgress.DoChange;
+
 begin
 
   if Assigned(FOnChange) then
@@ -444,6 +466,7 @@ end;
 
 
 procedure TJogShuttleProgress.DoJogDelta(const Delta: Integer);
+
 begin
 
   if Assigned(FOnJogDelta) then
@@ -485,6 +508,7 @@ end;
 
 
 procedure TJogShuttleProgress.StepIt;
+
 begin
 
   SetPosition(FPosition + FStep);
@@ -492,6 +516,7 @@ end;
 
 
 function TJogShuttleProgress.CenterPt: TPoint;
+
 begin
 
   Result := Point(ClientWidth div 2,
@@ -499,7 +524,8 @@ begin
 end;
 
 
-function TJogShuttleProgress.AngleFromPoint(const X, Y: Integer): Double;
+function TJogShuttleProgress.AngleFromPoint(const X,
+                                            Y: Integer): Double;
 var
   c: TPoint;
   dx, dy: Double;
@@ -543,7 +569,7 @@ var
 begin
 
   span := FMax - FMin;
-  if span <= 0 then
+  if (span <= 0) then
     Exit(0);
   t := (FPosition - FMin) / span;
   Result := t * 360.0;
@@ -569,6 +595,7 @@ end;
 
 
 procedure TJogShuttleProgress.LoadOriginalFromPicture;
+
 begin
 
   EnsureBitmaps();
@@ -584,7 +611,8 @@ begin
   else
     begin
 
-      FBitmapOriginal.SetSize(0, 0);
+      FBitmapOriginal.SetSize(0,
+                              0);
       FPictureLoaded := False;
     end;
 end;
@@ -593,8 +621,8 @@ end;
 procedure TJogShuttleProgress.RotateToAngle(const DegCW: Double);
 const
   Black: RGBTriple = (rgbtBlue: 0;
-                      rgbtGreen: 0;
-                      rgbtRed: 0);
+    rgbtGreen: 0;
+    rgbtRed: 0);
 
 var
   i,
@@ -623,7 +651,7 @@ var
   jPrimeCosT: Double;
   rad: Double;
 
-  // Helper
+// Helper
   function DegToRad(const D: Double): Double; inline;
   begin
 
@@ -726,8 +754,9 @@ begin
       bmpToDraw := FBitmapRotated;
 
       r := Types.Rect(0,
-                0, ClientWidth,
-                ClientHeight);
+                      0,
+                      ClientWidth,
+                      ClientHeight);
 
       // Keep circle aspect.
       if (ClientWidth <> ClientHeight) then
@@ -771,6 +800,7 @@ end;
 
 
 procedure TJogShuttleProgress.Resize;
+
 begin
 
   inherited;
@@ -782,7 +812,11 @@ begin
 end;
 
 
-procedure TJogShuttleProgress.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TJogShuttleProgress.MouseDown(Button: TMouseButton;
+                                        Shift: TShiftState;
+                                        X,
+                                        Y: Integer);
+
 begin
 
   inherited;
@@ -799,7 +833,9 @@ begin
 end;
 
 
-procedure TJogShuttleProgress.MouseMove(Shift: TShiftState; X, Y: Integer);
+procedure TJogShuttleProgress.MouseMove(Shift: TShiftState;
+                                        X,
+                                        Y: Integer);
 var
   curAngle: Double;
   deltaDeg: Double;
@@ -846,15 +882,15 @@ begin
           if (FJogStep > 1) then
             deltaPos := (deltaPos div FJogStep) * FJogStep;
 
-         if (deltaPos <> 0) then
-           begin
+          if (deltaPos <> 0) then
+            begin
 
-             newPos := ConstrainI(FMin,
-                                  FMax,
-                                  FDragStartPos + deltaPos);
-            SetPosition(newPos);
-            DoJogDelta(deltaPos);
-           end;
+              newPos := ConstrainI(FMin,
+                                   FMax,
+                                   FDragStartPos + deltaPos);
+              SetPosition(newPos);
+              DoJogDelta(deltaPos);
+            end;
         end;
     end;
 end;
@@ -862,7 +898,9 @@ end;
 
 procedure TJogShuttleProgress.MouseUp(Button: TMouseButton;
                                       Shift: TShiftState;
-                                      X, Y: Integer);
+                                      X,
+                                      Y: Integer);
+
 begin
 
   inherited;
@@ -898,11 +936,10 @@ begin
   // Standard wheel: 120 per notch
   if (WheelDelta > 0) then
     dir := 1
+  else if (WheelDelta < 0) then
+    dir := -1
   else
-    if (WheelDelta < 0) then
-      dir := -1
-    else
-      dir := 0;
+    dir := 0;
 
   if (dir <> 0) then
     begin

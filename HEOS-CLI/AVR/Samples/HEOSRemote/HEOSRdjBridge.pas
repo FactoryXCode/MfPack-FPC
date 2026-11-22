@@ -64,11 +64,12 @@ unit HEOSRdjBridge;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   Classes,
@@ -83,12 +84,13 @@ type
                                  StartPlayback: Boolean) of object;
 
   THEOSDeckAdapter = class
+
   private
     FDatabaseFile: string;
     FOnRoute: THEOSRdjRouteEvent;
 
     function RoutePlaylist(const PlaylistID: Integer;
-                             StartPlayback: Boolean): HRESULT;
+                           StartPlayback: Boolean): HRESULT;
 
   public
 
@@ -103,6 +105,7 @@ type
   end;
 
   THEOSRdjBridge = class
+
   private
     FDeck: THEOSDeckAdapter;
 
@@ -128,8 +131,10 @@ uses
   RDJ.TrackLibrary,
   RDJ.PlaylistManager;
 
+
 constructor THEOSRdjBridge.Create(const DatabaseFile: string;
                                   Route: THEOSRdjRouteEvent);
+
 begin
 
   inherited Create;
@@ -138,26 +143,33 @@ begin
   FDeck.OnRoute := Route;
 end;
 
+
 destructor THEOSRdjBridge.Destroy();
+
 begin
 
   FDeck.Free;
   inherited;
 end;
 
+
 function THEOSRdjBridge.GetChannelDeckCount(): Integer;
+
 begin
 
   Result := 1;
 end;
 
+
 function THEOSRdjBridge.GetChannelDeck(Index: Integer): THEOSDeckAdapter;
+
 begin
 
   Result := nil;
-  if Index = 0 then
+  if (Index = 0) then
     Result := FDeck;
 end;
+
 
 function THEOSDeckAdapter.LoadSingleTrack(const FileName: string;
                                           StartPlayback: Boolean): HRESULT;
@@ -181,7 +193,8 @@ begin
     Entry := RDJEmptyPlaylistEntry();
     Entry.Track.FullPath := ExpandFileName(FileName);
     Entry.Track.FileName := ExtractFileName(FileName);
-    Entry.Track.Title := ChangeFileExt(Entry.Track.FileName, '');
+    Entry.Track.Title := ChangeFileExt(Entry.Track.FileName,
+                                       '');
     Playlist.Add(Entry);
 
     FOnRoute(Self,
@@ -246,6 +259,7 @@ end;
 
 
 function THEOSDeckAdapter.PlayPlaylistByID(PlaylistID: Integer): HRESULT;
+
 begin
 
   Result := RoutePlaylist(PlaylistID,
@@ -254,6 +268,7 @@ end;
 
 
 function THEOSDeckAdapter.LoadPlaylistByID(PlaylistID: Integer): HRESULT;
+
 begin
 
   Result := RoutePlaylist(PlaylistID,

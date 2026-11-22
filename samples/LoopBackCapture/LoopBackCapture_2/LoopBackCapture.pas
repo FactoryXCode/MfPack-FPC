@@ -72,7 +72,7 @@ uses
   MfLoopbackSamples.Events,
   LCLIntf,
   Classes,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   WinApi.WinApiTypes,
@@ -117,12 +117,12 @@ type
 
   TDeviceState = (Uninitialized,
                   Error,       // Implemented to prevent calls to IAudioCaptureClient.GetNextPacketSize.
-                               // See: OnAudioSampleRequested() and error handling.
-                  MaxFileSizeReached,
-                  // All states >= Initialized will allow some methods
-                  // to be called successfully on the Audio Client.
-                  Initialized, // < from this one..
-                  Starting,
+    // See: OnAudioSampleRequested() and error handling.
+    MaxFileSizeReached,
+    // All states >= Initialized will allow some methods
+    // to be called successfully on the Audio Client.
+    Initialized, // < from this one..
+    Starting,
                   Capturing,
                   Stopping,
                   Stopped); // < ..until here
@@ -144,7 +144,10 @@ type
   TCallbackAsync = class;
   TRenderThread = class;
 
-  TLoopbackCapture = class(TInterfacedPersistent, IActivateAudioInterfaceCompletionHandler, IAgileObject)
+  TLoopbackCapture = class(TInterfacedPersistent,
+                           IActivateAudioInterfaceCompletionHandler,
+                           IAgileObject)
+
   protected
 
     pvRenderThread: TRenderThread;
@@ -153,6 +156,7 @@ type
     FNotifyWindow: HWND;
     FClosing: Boolean;
     procedure NotifyWindowProc(var Msg: TLMessage);
+
   private
 
     pvAudioClient: IAudioClient;
@@ -215,9 +219,9 @@ type
     constructor Create();
     destructor Destroy(); override;
 
-  {$region 'IActivateAudioInterfaceCompletionHandler implementation'}
+    {$region 'IActivateAudioInterfaceCompletionHandler implementation'}
     function ActivateCompleted(activateOperation: IActivateAudioInterfaceAsyncOperation): HResult; stdcall;
-  {$endregion}
+    {$endregion}
 
     function StartCaptureAsync(const hWindow: HWND;
                                const processId: DWord;
@@ -239,7 +243,9 @@ type
 
   //   ////////////////////////////////////////////////////////////////////////
 
-  TCallbackAsync = class(TInterfacedObject, IMFAsyncCallback)
+  TCallbackAsync = class(TInterfacedObject,
+                         IMFAsyncCallback)
+
   private
     _parent: TLoopbackCapture;
     _dwQueueID: DWord;
@@ -252,11 +258,11 @@ type
                        AQueueID: DWord = MFASYNC_CALLBACK_QUEUE_MULTITHREADED);
     destructor Destroy(); override;
 
-  {$region 'IActivateAudioInterfaceCompletionHandler implementation'}
+    {$region 'IActivateAudioInterfaceCompletionHandler implementation'}
     function GetParameters(out pdwFlags: DWord;
                            out pdwQueue: DWord): HResult; stdcall;
     function Invoke(pResult: IMFAsyncResult): HResult; stdcall;
-  {$endregion}
+    {$endregion}
 
     procedure SetQueueID(dwQueueID: DWord);
 
@@ -269,6 +275,7 @@ type
 
   // The thread we render after Start.
   TRenderThread = class(TThread)
+
   protected
 
     procedure Execute; override;
@@ -297,25 +304,33 @@ uses
 
 // Thread ======================================================================
 procedure TLoopbackCapture.NotifyWindowProc(var Msg: TLMessage);
+
 begin
-  if Msg.Msg = WM_APP + $4D0 then
+
+  if (Msg.Msg = WM_APP + $4D0) then
     begin
       if not FClosing and Assigned(FOnCapturingStart) then
         FOnCapturingStart(Self);
       Msg.Result := 0;
     end
-  else if Msg.Msg = WM_APP + $4D1 then
+  else if (Msg.Msg = WM_APP + $4D1) then
     begin
       if not FClosing and Assigned(FOnCapturingStopped) then
         FOnCapturingStopped(Self);
       Msg.Result := 0;
     end
   else
-    Msg.Result := DefWindowProcW(FNotifyWindow,Msg.Msg,Msg.WParam,Msg.LParam);
+    Msg.Result := DefWindowProcW(FNotifyWindow,
+                                 Msg.Msg,
+                                 Msg.WParam,
+                                 Msg.LParam);
 end;
 
+
 constructor TRenderThread.Create(AEngine: TLoopbackCapture);
+
 begin
+
   inherited Create(True);
   FEngine := AEngine;
   FreeOnTerminate := False;
@@ -323,6 +338,7 @@ end;
 
 
 destructor TRenderThread.Destroy();
+
 begin
 
   inherited;
@@ -330,6 +346,7 @@ end;
 
 
 procedure TRenderThread.Execute;
+
 begin
 
   // The function where we render the audio data and
@@ -337,11 +354,13 @@ begin
   // See: https://learn.microsoft.com/en-us/windows/win32/procthread/multimedia-class-scheduler-service
   // To get the best performance, it's recommended to set "Best Performance" in Windows energy settings.
   FSuccess := FEngine.CaptureThreadFunc;
-  TThread.Queue(Self,SetEvent);
+  TThread.Queue(Self,
+                SetEvent);
 end;
 
 
 procedure TRenderThread.SetEvent;
+
 begin
 
   // Called from 'Synchronize'.
@@ -359,15 +378,16 @@ end;
 // Thread control methods ======================================================
 
 procedure TLoopbackCapture.CreatedRenderThread;
+
 begin
 
   if not Assigned(pvRenderThread) then
     begin
       pvRenderThread := TRenderThread.Create(Self);
       pvRenderThreadClosedEvent := CreateEventExW(nil,
-                                                 nil,
-                                                 0,
-                                                 EVENT_MODIFY_STATE or SYNCHRONIZE);
+                                                  nil,
+                                                  0,
+                                                  EVENT_MODIFY_STATE or SYNCHRONIZE);
 
       pvRenderThread.Start;
     end;
@@ -375,8 +395,11 @@ end;
 
 
 procedure TLoopbackCapture.TerminateRenderThread();
+
 begin
-  if pvShutdownEvent <> 0 then Windows.SetEvent(pvShutdownEvent);
+
+  if (pvShutdownEvent <> 0) then
+    Windows.SetEvent(pvShutdownEvent);
   if Assigned(pvRenderThread) then
     begin
       pvRenderThread.Terminate();
@@ -384,7 +407,7 @@ begin
       TThread.RemoveQueuedEvents(pvRenderThread);
       FreeAndNil(pvRenderThread);
     end;
-  if pvRenderThreadClosedEvent <> 0 then
+  if (pvRenderThreadClosedEvent <> 0) then
     begin
       CloseHandle(pvRenderThreadClosedEvent);
       pvRenderThreadClosedEvent := 0;
@@ -394,7 +417,9 @@ end;
 // =============================================================================
 
 constructor TLoopbackCapture.Create();
+
 begin
+
   inherited Create();
   FNotifyWindow := LCLIntf.AllocateHWnd(NotifyWindowProc);
 
@@ -420,7 +445,9 @@ end;
 
 
 destructor TLoopbackCapture.Destroy();
+
 begin
+
   FClosing := True;
 
   Reset();
@@ -429,7 +456,8 @@ begin
   pvxSampleReady := nil;
 
   pvxFinishCapture := nil;
-  if FNotifyWindow <> 0 then LCLIntf.DeallocateHWnd(FNotifyWindow);
+  if (FNotifyWindow <> 0) then
+    LCLIntf.DeallocateHWnd(FNotifyWindow);
   inherited Destroy();
 end;
 
@@ -447,73 +475,77 @@ var
   hrActivateResult: HResult;
 
 begin
+
   hr := E_UNEXPECTED;
   try
 
-  // Check for a successful activation result
-  hrActivateResult := E_UNEXPECTED;
+    // Check for a successful activation result
+    hrActivateResult := E_UNEXPECTED;
 
-  hr := activateOperation.GetActivateResult(hrActivateResult,
-                                            IUnknown(pvAudioClient));
-  if FAILED(hrActivateResult) or FAILED(hr) then
-    begin
-      if SUCCEEDED(hr) then hr := hrActivateResult;
-      ErrMsg(Format('activateOperation.GetActivateResult failed. LastError = %d',[GetLastError()]), hrActivateResult);
+    hr := activateOperation.GetActivateResult(hrActivateResult,
+                                              IUnknown(pvAudioClient));
+    if FAILED(hrActivateResult) or FAILED(hr) then
+      begin
+        if SUCCEEDED(hr) then
+          hr := hrActivateResult;
+        ErrMsg(Format('activateOperation.GetActivateResult failed. LastError = %d',
+                      [GetLastError()]),
+               hrActivateResult);
+        Exit(hr);
+      end;
+
+    // Set the WAV format to use.
+    GetMixFormat(pvMixFormat,
+                 pvWavFormat);
+
+    //
+    // Initialize the AudioClient in Shared Mode with the user specified buffer.
+    //
+    // Note: - Shared Mode is needed when rendering from an audio application or process.
+    //       - Exclusive Mode is used when rendering from a hardware endpoint.
+    //       - Interface methods that are reffering to audioendpoints, will not work and returns E_NOTIMPL,
+    //         for example: GetBufferSize(), IsFormatSupported(), GetDevicePeriod(), GetStreamLatency() and GetMixFormat() methods.
+    //         See: https://learn.microsoft.com/en-us/answers/questions/1125409/loopbackcapture-(-activateaudiointerfaceasync-with?page=1&orderby=Helpful#answers
+    //
+
+    hr := pvAudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED,
+                                   AUDCLNT_STREAMFLAGS_LOOPBACK or
+      AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
+                                   pvBufferDuration, // Note: When bufferDuration = 0, the audioclient will automaticly decise the bufferduration.
+      0, // Must be zero in shared mode!
+      @pvMixFormat,
+                                   @GUID_NULL);
+    if FAILED(hr) then
       Exit(hr);
-    end;
 
-  // Set the WAV format to use.
-  GetMixFormat(pvMixFormat,
-               pvWavFormat);
+    // Get the maximum size of the AudioClient Buffer
+    hr := pvAudioClient.GetBufferSize(pvBufferFrames);
+    if FAILED(hr) then
+      Exit(hr);
 
-  //
-  // Initialize the AudioClient in Shared Mode with the user specified buffer.
-  //
-  // Note: - Shared Mode is needed when rendering from an audio application or process.
-  //       - Exclusive Mode is used when rendering from a hardware endpoint.
-  //       - Interface methods that are reffering to audioendpoints, will not work and returns E_NOTIMPL,
-  //         for example: GetBufferSize(), IsFormatSupported(), GetDevicePeriod(), GetStreamLatency() and GetMixFormat() methods.
-  //         See: https://learn.microsoft.com/en-us/answers/questions/1125409/loopbackcapture-(-activateaudiointerfaceasync-with?page=1&orderby=Helpful#answers
-  //
+    // v3-style threaded capture:
+    // Acquire IAudioCaptureClient in the capture thread (CaptureThreadFunc) to avoid cross-thread COM issues.
+    pvAudioCaptureClient := nil;
 
-  hr := pvAudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED,
-                                 AUDCLNT_STREAMFLAGS_LOOPBACK or
-                                 AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
-                                 pvBufferDuration, // Note: When bufferDuration = 0, the audioclient will automaticly decise the bufferduration.
-                                 0, // Must be zero in shared mode!
-                                 @pvMixFormat,
-                                 @GUID_NULL);
-  if FAILED(hr) then
-    Exit(hr);
+    // v3-style threaded capture:
+    // No MF waiting work item chain is used for sample-ready notifications.
+    pvSampleReadyAsyncResult := nil;
 
-  // Get the maximum size of the AudioClient Buffer
-  hr := pvAudioClient.GetBufferSize(pvBufferFrames);
-  if FAILED(hr) then
-     Exit(hr);
+    // Tell the system which event handle it should signal when an audio buffer is ready to be processed by the client.
+    hr := pvAudioClient.SetEventHandle(THandle(gs_SampleReadyEvent.Handle));
+    if FAILED(hr) then
+      Exit(hr);
 
-  // v3-style threaded capture:
-  // Acquire IAudioCaptureClient in the capture thread (CaptureThreadFunc) to avoid cross-thread COM issues.
-  pvAudioCaptureClient := nil;
+    // Creates the WAV file.
+    hr := CreateAudioFile();
+    if FAILED(hr) then
+      Exit(hr);
 
-  // v3-style threaded capture:
-  // No MF waiting work item chain is used for sample-ready notifications.
-  pvSampleReadyAsyncResult := nil;
+    // Everything is ready.
+    pvDeviceState := Initialized;
 
-  // Tell the system which event handle it should signal when an audio buffer is ready to be processed by the client.
-  hr := pvAudioClient.SetEventHandle(THandle(gs_SampleReadyEvent.Handle));
-  if FAILED(hr) then
-     Exit(hr);
-
-  // Creates the WAV file.
-  hr := CreateAudioFile();
-  if FAILED(hr) then
-     Exit(hr);
-
-  // Everything is ready.
-  pvDeviceState := Initialized;
-
-  // Let ActivateAudioInterface know that pvactivateResult has the result of the activation attempt.
-  Result := hr;
+    // Let ActivateAudioInterface know that pvactivateResult has the result of the activation attempt.
+    Result := hr;
   finally
     pvactivateResult := hr;
     gs_hActivateCompleted.SetEvent();
@@ -553,8 +585,8 @@ begin
 
           pvDeviceState := Capturing;
 
-         // The render thread waits directly on gs_SampleReadyEvent.
-         CreatedRenderThread();
+          // The render thread waits directly on gs_SampleReadyEvent.
+          CreatedRenderThread();
         end;
     end;
 
@@ -603,7 +635,9 @@ begin
         begin
           pvDeviceState := Error;
           if FAILED(hr) then
-            ErrMsg(Format('FinishCaptureAsync failed. LastError = %d',[GetLastError()]), hr);
+            ErrMsg(Format('FinishCaptureAsync failed. LastError = %d',
+                          [GetLastError()]),
+                   hr);
         end;
     end;
 
@@ -628,7 +662,11 @@ begin
 
   pvDeviceState := Stopped;
   if Assigned(FOnCapturingStopped) then
-    if not FClosing then PostMessage(FNotifyWindow,WM_APP + $4D0 + 1,0,0);
+    if not FClosing then
+      PostMessage(FNotifyWindow,
+                  WM_APP + $4D0 + 1,
+                  0,
+                  0);
 
   gs_hCaptureStopped.SetEvent();
   Result := hr;
@@ -645,6 +683,7 @@ var
   hr: HResult;
 
 begin
+
   // v3 model: no MF waiting work items.
   // Sample processing happens in CaptureThreadFunc(), which waits on gs_SampleReadyEvent.
   hr := S_OK;
@@ -663,9 +702,9 @@ begin
 
   // Create events for sample ready or user stop.
   gs_SampleReadyEvent := TMfLoopbackEvent.Create(nil,
-                                       False,
-                                       False,
-                                       '');
+                                                 False,
+                                                 False,
+                                                 '');
 
   // Register MMCSS work queue.
   hr := MFLockSharedWorkQueue(PWideChar('Capture'),
@@ -674,7 +713,9 @@ begin
                               pvdwQueueID);
   if FAILED(hr) then
     begin
-      ErrMsg(Format('MFLockSharedWorkQueue failed. LastError = %d',[GetLastError()]), hr);
+      ErrMsg(Format('MFLockSharedWorkQueue failed. LastError = %d',
+                    [GetLastError()]),
+             hr);
       Exit(hr);
     end;
 
@@ -683,19 +724,22 @@ begin
 
   // Create the completion event as auto-reset.
   gs_hActivateCompleted := TMfLoopbackEvent.Create(nil,
-                                         False,
-                                         False,
-                                         '');
+                                                   False,
+                                                   False,
+                                                   '');
 
   // Create the capture-stopped event as auto-reset.
   gs_hCaptureStopped := TMfLoopbackEvent.Create(nil,
-                                      False,
-                                      False,
-                                      '');
+                                                False,
+                                                False,
+                                                '');
 
   // Shutdown event for the capture thread (manual reset not required here; we reset on start).
   if (pvShutdownEvent = 0) then
-    pvShutdownEvent := CreateEventExW(nil, nil, 0, EVENT_MODIFY_STATE or SYNCHRONIZE)
+    pvShutdownEvent := CreateEventExW(nil,
+                                      nil,
+                                      0,
+                                      EVENT_MODIFY_STATE or SYNCHRONIZE)
   else
     ResetEvent(pvShutdownEvent);
 
@@ -708,6 +752,7 @@ end;
 //
 procedure TLoopbackCapture.GetMixFormat(out pMixFmt: WAVEFORMATEX;
                                         WavFormat: TWavFormat = fmt44100b16);
+
 begin
 
   pMixFmt := Default(WAVEFORMATEX);
@@ -862,7 +907,7 @@ begin
 
     // MMCSS (best effort).
     mmcssHandle := NativeUInt(AvSetMmThreadCharacteristics('Audio',
-                                                @mmcssTaskIndex));
+                                                           @mmcssTaskIndex));
 
     // Wait for shutdown or sample-ready.
     waitArray[0] := pvShutdownEvent;
@@ -920,7 +965,7 @@ begin
               if ((dwCaptureFlags and AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY) <> 0) then
                 begin
 
-                 // skip
+                  // skip
                 end
               else
                 begin
@@ -960,11 +1005,11 @@ begin
 
     // Finalize writer in this thread (v3 rule).
     if (audioWriter <> nil) then
-      try
-        audioWriter.Close();
-      except
-        // ignore shutdown errors.
-      end;
+    try
+      audioWriter.Close();
+    except
+      // ignore shutdown errors.
+    end;
     audioWriter := nil;
 
     if (mmcssHandle <> 0) then
@@ -1020,19 +1065,23 @@ begin
                                     asyncOp);
   if FAILED(hr) then
     begin
-      ErrMsg(Format('ActivateAudioInterfaceAsync failed. LastError = %d',[GetLastError()]), hr);
+      ErrMsg(Format('ActivateAudioInterfaceAsync failed. LastError = %d',
+                    [GetLastError()]),
+             hr);
       goto leave;
     end;
 
-  hr := EventWait(gs_hActivateCompleted,10000);
-  if SUCCEEDED(hr) then hr := pvactivateResult;
-    if SUCCEEDED(hr) then
-      pvDeviceState := Initialized;
+  hr := EventWait(gs_hActivateCompleted,
+                  10000);
+  if SUCCEEDED(hr) then
+    hr := pvactivateResult;
+  if SUCCEEDED(hr) then
+    pvDeviceState := Initialized;
 
-leave:
+  leave:
 
-  //PropVariantClear(activateParams);  // Works in Delphi XE7, but not in 10.3, where raises an exception.
-  PropVariantClearSafe(activateParams);
+    //PropVariantClear(activateParams);  // Works in Delphi XE7, but not in 10.3, where raises an exception.
+    PropVariantClearSafe(activateParams);
   SetDeviceStateErrorIfFailed(hr);
 
   Result := hr;
@@ -1058,7 +1107,9 @@ begin
   if FAILED(hr) then
     begin
       pvDeviceState := Error;
-      ErrMsg(Format('MFPutWorkItem2 failed. LastError = %d',[GetLastError()]), hr);
+      ErrMsg(Format('MFPutWorkItem2 failed. LastError = %d',
+                    [GetLastError()]),
+             hr);
     end;
 
   Result := hr;
@@ -1070,61 +1121,66 @@ var
   hr: HResult;
 
 begin
+
   hr := S_OK;
 
-try
+  try
 
-  // Stop and destroy the capture thread (if still running).
-  if (pvShutdownEvent <> 0) then
-    SetEvent(pvShutdownEvent);
+    // Stop and destroy the capture thread (if still running).
+    if (pvShutdownEvent <> 0) then
+      SetEvent(pvShutdownEvent);
 
-  TerminateRenderThread();
+    TerminateRenderThread();
 
-  // Shutdown event is created per capture session.
-  if (pvShutdownEvent <> 0) then
-    begin
+    // Shutdown event is created per capture session.
+    if (pvShutdownEvent <> 0) then
+      begin
 
-      CloseHandle(pvShutdownEvent);
-      pvShutdownEvent := 0;
-    end;
+        CloseHandle(pvShutdownEvent);
+        pvShutdownEvent := 0;
+      end;
 
-  pvactivateResult := E_UNEXPECTED;
-  pvDeviceState := Uninitialized;
-  if (pvdwQueueID <> 0) then
-    MFUnlockWorkQueue(pvdwQueueID);
+    pvactivateResult := E_UNEXPECTED;
+    pvDeviceState := Uninitialized;
+    if (pvdwQueueID <> 0) then
+      MFUnlockWorkQueue(pvdwQueueID);
 
-  // Free the events but reset first and then wait until all events are processed.
-  if Assigned(gs_SampleReadyEvent) then
-    begin
-      gs_SampleReadyEvent.ResetEvent;
-      hr := EventWait(gs_SampleReadyEvent);
-      FreeAndNil(gs_SampleReadyEvent);
-    end;
+    // Free the events but reset first and then wait until all events are processed.
+    if Assigned(gs_SampleReadyEvent) then
+      begin
+        gs_SampleReadyEvent.ResetEvent;
+        hr := EventWait(gs_SampleReadyEvent);
+        FreeAndNil(gs_SampleReadyEvent);
+      end;
 
-  if Assigned(gs_hActivateCompleted) then
-    begin
-      gs_hActivateCompleted.ResetEvent;
-      hr := EventWait(gs_hActivateCompleted);
-      FreeAndNil(gs_hActivateCompleted);
-    end;
+    if Assigned(gs_hActivateCompleted) then
+      begin
+        gs_hActivateCompleted.ResetEvent;
+        hr := EventWait(gs_hActivateCompleted);
+        FreeAndNil(gs_hActivateCompleted);
+      end;
 
-  if Assigned(gs_hCaptureStopped) then
-    begin
-      gs_hCaptureStopped.ResetEvent;
-      hr := EventWait(gs_hCaptureStopped,10000);
-      FreeAndNil(gs_hCaptureStopped);
-    end;
+    if Assigned(gs_hCaptureStopped) then
+      begin
+        gs_hCaptureStopped.ResetEvent;
+        hr := EventWait(gs_hCaptureStopped,
+                        10000);
+        FreeAndNil(gs_hCaptureStopped);
+      end;
 
-  if FAILED(hr) then
-    ErrMsg(Format('A ResetEvent failed. LastError = %d',[GetLastError()]), hr);
+    if FAILED(hr) then
+      ErrMsg(Format('A ResetEvent failed. LastError = %d',
+                    [GetLastError()]),
+             hr);
 
-except
-  Abort;
-end;
+  except
+    Abort;
+  end;
 end;
 
 
 procedure TLoopbackCapture.SetDeviceStateErrorIfFailed(hr: HResult);
+
 begin
 
   if FAILED(hr) then
@@ -1166,7 +1222,9 @@ begin
   hr := InitializeLoopbackCapture();
   if FAILED(hr) then
     begin
-      ErrMsg(Format('InitializeLoopbackCapture failed. LastError = %d',[GetLastError()]), hr);
+      ErrMsg(Format('InitializeLoopbackCapture failed. LastError = %d',
+                    [GetLastError()]),
+             hr);
       goto leave;
     end;
 
@@ -1175,7 +1233,9 @@ begin
                                includeProcessTree);
   if FAILED(hr) then
     begin
-      ErrMsg(Format('ActivateAudioInterface failed. LastError = %d',[GetLastError()]), hr);
+      ErrMsg(Format('ActivateAudioInterface failed. LastError = %d',
+                    [GetLastError()]),
+             hr);
       goto leave;
     end;
 
@@ -1186,16 +1246,18 @@ begin
       hr := MFPutWorkItem2(MFASYNC_CALLBACK_QUEUE_MULTITHREADED,
                            0,
                            pvxStartCapture,  // The callback interface.
-                           nil);
+        nil);
       if FAILED(hr) then
         begin
-          ErrMsg(Format('MFPutWorkItem2 failed. LastError = %d',[GetLastError()]), hr);
+          ErrMsg(Format('MFPutWorkItem2 failed. LastError = %d',
+                        [GetLastError()]),
+                 hr);
           goto leave;
         end;
     end;
 
-leave:
-  Result := hr;
+  leave:
+    Result := hr;
 end;
 
 
@@ -1209,9 +1271,10 @@ var
   hr: HResult;
 
 begin
+
   hr := S_OK;
   if (pvDeviceState <> Capturing) and
-     (pvDeviceState <> Error) then
+    (pvDeviceState <> Error) then
     begin
       hr := E_NOT_VALID_STATE;
     end;
@@ -1237,6 +1300,7 @@ end;
 constructor TCallbackAsync.Create(AParent: TLoopbackCapture;
                                   ASyncCmd: TAsyncCmd;
                                   AQueueID: DWord);
+
 begin
 
   inherited Create();
@@ -1248,6 +1312,7 @@ end;
 
 
 destructor TCallbackAsync.Destroy();
+
 begin
 
   //
@@ -1257,6 +1322,7 @@ end;
 
 function TCallbackAsync.GetParameters(out pdwFlags: DWord;
                                       out pdwQueue: DWord): HResult;
+
 begin
 
   pdwFlags := 0;
@@ -1273,14 +1339,18 @@ var
 begin
 
   case _AsyncCmd of
-    StartCapture:  begin
+      StartCapture: begin
 
-                     hr := _parent.OnStartCapture(pResult);
-                     if SUCCEEDED(hr) and Assigned(_parent.FOnCapturingStart) then
-                       if not _parent.FClosing then PostMessage(_parent.FNotifyWindow,WM_APP + $4D0 + 0,0,0);
-                   end;
-    StopCapture:   hr := _parent.OnStopCapture(pResult);
-    SampleReady:   hr := _parent.OnSampleReady(pResult);
+        hr := _parent.OnStartCapture(pResult);
+        if SUCCEEDED(hr) and Assigned(_parent.FOnCapturingStart) then
+          if not _parent.FClosing then
+            PostMessage(_parent.FNotifyWindow,
+                        WM_APP + $4D0 + 0,
+                        0,
+                        0);
+      end;
+    StopCapture: hr := _parent.OnStopCapture(pResult);
+    SampleReady: hr := _parent.OnSampleReady(pResult);
     FinishCapture: hr := _parent.OnFinishCapture(pResult);
     else
       hr := S_FALSE;  // No error, but wrong command.
@@ -1290,6 +1360,7 @@ end;
 
 
 procedure TCallbackAsync.SetQueueID(dwQueueID: DWord);
+
 begin
 
   _dwQueueID := dwQueueID;

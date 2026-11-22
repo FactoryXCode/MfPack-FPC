@@ -74,11 +74,12 @@ uses
   SysUtils,
   Classes;
 
-  function FxResolveHttpUrl(const ABase: string;
-                            const AReference: string): string;
+function FxResolveHttpUrl(const ABase: string;
+                          const AReference: string): string;
 
 type
   TFxHttpClient = class
+
   private
     FSession: Pointer;
 
@@ -86,71 +87,73 @@ type
     constructor Create();
     destructor Destroy(); override;
 
-    function Get(const AUrl: string; AMaxBytes: Integer; out AFinalUrl: string): TBytes;
+    function Get(const AUrl: string;
+                 AMaxBytes: Integer;
+                 out AFinalUrl: string): TBytes;
   end;
 
-  function GetTickCount64(): UInt64; stdcall;
+function GetTickCount64(): UInt64; stdcall;
 
-  function UrlCombineW(Base,
-                       Relative,
-                       Combined: PWideChar;
-                       var Count: DWORD;
-                       Flags: DWORD): HRESULT; stdcall;
+function UrlCombineW(Base,
+                     Relative,
+                     Combined: PWideChar;
+                     var Count: DWORD;
+                     Flags: DWORD): HRESULT; stdcall;
 
-  function WinHttpOpen(Agent: PWideChar;
-                       Access: DWORD;
-                       Proxy: PWideChar;
-                       Bypass: PWideChar;
-                       Flags: DWORD): Pointer; stdcall;
+function WinHttpOpen(Agent: PWideChar;
+                     Access: DWORD;
+                     Proxy: PWideChar;
+                     Bypass: PWideChar;
+                     Flags: DWORD): Pointer; stdcall;
 
-  function WinHttpConnect(Session: Pointer;
-                          Host: PWideChar;
-                          Port: Word;
-                          Reserved: DWORD): Pointer; stdcall;
+function WinHttpConnect(Session: Pointer;
+                        Host: PWideChar;
+                        Port: Word;
+                        Reserved: DWORD): Pointer; stdcall;
 
-  function WinHttpOpenRequest(Connection: Pointer;
-                              Verb: PWideChar;
-                              Path: PWideChar;
-                              Version: PWideChar;
-                              Referrer: PWideChar;
-                              Accept: Pointer;
-                              Flags: DWORD): Pointer; stdcall;
+function WinHttpOpenRequest(Connection: Pointer;
+                            Verb: PWideChar;
+                            Path: PWideChar;
+                            Version: PWideChar;
+                            Referrer: PWideChar;
+                            Accept: Pointer;
+                            Flags: DWORD): Pointer; stdcall;
 
-  function WinHttpSendRequest(Request: Pointer;
-                              Headers: PWideChar;
-                              HeaderLength: DWORD;
-                              Data: Pointer;
-                              DataLength,
-                              Total: DWORD;
-                              Context: NativeUInt): BOOL; stdcall;
+function WinHttpSendRequest(Request: Pointer;
+                            Headers: PWideChar;
+                            HeaderLength: DWORD;
+                            Data: Pointer;
+                            DataLength,
+                            Total: DWORD;
+                            Context: NativeUInt): BOOL; stdcall;
 
-  function WinHttpReceiveResponse(Request: Pointer;
-                                  Reserved: Pointer): BOOL; stdcall;
+function WinHttpReceiveResponse(Request: Pointer;
+                                Reserved: Pointer): BOOL; stdcall;
 
-  function WinHttpQueryHeaders(Request: Pointer;
-                               Info: DWORD;
-                               Name: PWideChar;
-                               Buffer: Pointer;
-                               var Size: DWORD;
-                               var Index: DWORD): BOOL; stdcall;
+function WinHttpQueryHeaders(Request: Pointer;
+                             Info: DWORD;
+                             Name: PWideChar;
+                             Buffer: Pointer;
+                             var Size: DWORD;
+                             var Index: DWORD): BOOL; stdcall;
 
-  function WinHttpQueryOption(Request: Pointer;
-                              Option: DWORD;
-                              Buffer: Pointer;
-                              var Size: DWORD): BOOL; stdcall;
+function WinHttpQueryOption(Request: Pointer;
+                            Option: DWORD;
+                            Buffer: Pointer;
+                            var Size: DWORD): BOOL; stdcall;
 
-  function WinHttpReadData(Request: Pointer;
-                           Buffer: Pointer;
-                           Size: DWORD;
-                           var Read: DWORD): BOOL; stdcall;
+function WinHttpReadData(Request: Pointer;
+                         Buffer: Pointer;
+                         Size: DWORD;
+                         var Read: DWORD): BOOL; stdcall;
 
-  function WinHttpSetTimeouts(Handle: Pointer;
-                              Resolve: Integer;
-                              Connect: Integer;
-                              Send: Integer;
-                              Receive: Integer): BOOL; stdcall;
+function WinHttpSetTimeouts(Handle: Pointer;
+                            Resolve: Integer;
+                            Connect: Integer;
+                            Send: Integer;
+                            Receive: Integer): BOOL; stdcall;
 
-  function WinHttpCloseHandle(Handle: Pointer): BOOL; stdcall;
+function WinHttpCloseHandle(Handle: Pointer): BOOL; stdcall;
 
 
 implementation
@@ -172,28 +175,28 @@ begin
 
   Count := Length(Buffer);
 
-  if UrlCombineW(PWideChar(ABase),
-                 PWideChar(AReference),
-                 @Buffer[0],
-                 Count,
-                 0) < 0 then
+  if (UrlCombineW(PWideChar(ABase),
+    PWideChar(AReference), @Buffer[0],
+    Count,
+    0) < 0) then
     raise Exception.Create('Cannot resolve the HTTP media URL.');
 
   Result := PWideChar(@Buffer[0]);
 
   if not SameText(Copy(Result,
-                       1,
-                       7), 'http://') and
-     not SameText(Copy(Result,
-                       1,
-                       8), 'https://') then
+    1,
+    7), 'http://') and not SameText(Copy(Result,
+                                         1,
+                                         8),
+                                    'https://') then
     raise Exception.Create('Media URLs must use HTTP or HTTPS.');
 
   for I := 1 to Length(Result) do
     if (Ord(Result[I]) <= 32) or (Result[I] = '\') then
       raise Exception.Create('Invalid HTTP media URL.');
 
-  I := Pos('#', Result);
+  I := Pos('#',
+           Result);
   if (I > 0) then
     Delete(Result,
            I,
@@ -202,25 +205,31 @@ end;
 
 
 constructor TFxHttpClient.Create();
+
 begin
 
   inherited;
 
-  FSession := WinHttpOpen('FactoryX FxRecord/4.2 (HLS recorder)', 0, nil, nil, 0);
+  FSession := WinHttpOpen('FactoryX FxRecord/4.2 (HLS recorder)',
+                          0,
+                          nil,
+                          nil,
+                          0);
 
   if (FSession = nil) then
     RaiseLastOSError;
 
   if not WinHttpSetTimeouts(FSession,
-                            5000,
-                            5000,
-                            5000,
-                            5000) then
+    5000,
+    5000,
+    5000,
+    5000) then
     RaiseLastOSError();
 end;
 
 
 destructor TFxHttpClient.Destroy();
+
 begin
 
   if (FSession <> nil) then
@@ -267,15 +276,16 @@ begin
   AFinalUrl := Url;
   Secure := SameText(Copy(Url,
                           1,
-                          8), 'https://');
+                          8),
+                     'https://');
 
   P := Pos('://',
            Url) + 3;
   Q := P;
 
   while (Q <= Length(Url)) and not CharInSet(Url[Q],
-                                             ['/',
-                                             '?']) do
+      ['/',
+      '?']) do
     Inc(Q);
 
   Authority := Copy(Url,
@@ -295,9 +305,9 @@ begin
   Host := Authority;
   PortText := '';
 
-  if Copy(Host,
-          1,
-          1) = '[' then
+  if (Copy(Host,
+    1,
+    1) = '[') then
     begin
       P := Pos(']',
                Host);
@@ -331,7 +341,8 @@ begin
                            MaxInt);
           Host := Copy(Host,
                        1,
-                       P - 1) end;
+                       P - 1)
+        end;
     end;
 
   if Secure then
@@ -370,24 +381,23 @@ begin
 
     try
       if not WinHttpSendRequest(Request,
-                                'Cache-Control: no-cache'#13#10'Accept: */*'#13#10'Accept-Encoding: identity'#13#10,
-                                DWORD(-1),
-                                nil,
-                                0,
-                                0,
-                                0) then
+        'Cache-Control: no-cache'#13#10'Accept: */*'#13#10'Accept-Encoding: identity'#13#10,
+        DWORD(-1),
+        nil,
+        0,
+        0,
+        0) then
         RaiseLastOSError;
 
       if not WinHttpReceiveResponse(Request,
-                                    nil) then
+        nil) then
         RaiseLastOSError();
 
       Size := SizeOf(UrlBuffer);
 
       if WinHttpQueryOption(Request,
-                            34,
-                            @UrlBuffer[0],
-                            Size) then
+        34, @UrlBuffer[0],
+        Size) then
         AFinalUrl := PWideChar(@UrlBuffer[0]);
 
       Status := 0;
@@ -395,21 +405,19 @@ begin
       Index := 0;
 
       if not WinHttpQueryHeaders(Request,
-                                 19 or $20000000,
-                                 nil,
-                                 @Status,
-                                 Size,
-                                 Index) then
+        19 or $20000000,
+        nil, @Status,
+        Size,
+        Index) then
         RaiseLastOSError();
 
       if (Status <> 200) then
         begin
           Detail := '';
 
-          if WinHttpReadData(Request,
-                             @Buffer[0],
-                             512,
-                             Count) and (Count > 0) then
+          if WinHttpReadData(Request, @Buffer[0],
+            512,
+            Count) and (Count > 0) then
             begin
               SetString(Raw,
                         PAnsiChar(@Buffer[0]),
@@ -421,9 +429,9 @@ begin
                                                 #13,
                                                 ' ',
                                                 [rfReplaceAll]),
-                                                #10,
-                                                ' ',
-                                                [rfReplaceAll]);
+                                  #10,
+                                  ' ',
+                                  [rfReplaceAll]);
 
           raise Exception.CreateFmt('Stream HTTP %d. %s',
                                     [Status, Trim(Detail)]);
@@ -435,10 +443,9 @@ begin
         Started := GetTickCount64();
 
         repeat
-          if not WinHttpReadData(Request,
-                                 @Buffer[0],
-                                 SizeOf(Buffer),
-                                 Count) then
+          if not WinHttpReadData(Request, @Buffer[0],
+            SizeOf(Buffer),
+            Count) then
             RaiseLastOSError();
 
           if (Stream.Size + Count > AMaxBytes) or (GetTickCount64 - Started > 20000) then
@@ -447,7 +454,7 @@ begin
           if (Count > 0) then
             Stream.WriteBuffer(Buffer[0],
                                Count);
-        until Count = 0; //repeat
+        until (Count = 0); //repeat
 
         SetLength(Result,
                   Stream.Size);
@@ -475,20 +482,20 @@ end;
 
 {$WARN SYMBOL_PLATFORM OFF}
 
-function GetTickCount64;         external Kernel32Lib name 'GetTickCount64' ;
-function UrlCombineW;            external ShlwApiLib name 'UrlCombineW' ;
-function WinHttpOpen;            external WinHttpLib name 'WinHttpOpen' ;
-function WinHttpConnect;         external WinHttpLib name 'WinHttpConnect' ;
+function GetTickCount64; external Kernel32Lib name 'GetTickCount64';
+function UrlCombineW; external ShlwApiLib name 'UrlCombineW';
+function WinHttpOpen; external WinHttpLib name 'WinHttpOpen';
+function WinHttpConnect; external WinHttpLib name 'WinHttpConnect';
 
-function WinHttpOpenRequest;     external WinHttpLib name 'WinHttpOpenRequest' ;
-function WinHttpSendRequest;     external WinHttpLib name 'WinHttpSendRequest' ;
-function WinHttpReceiveResponse; external WinHttpLib name 'WinHttpReceiveResponse' ;
+function WinHttpOpenRequest; external WinHttpLib name 'WinHttpOpenRequest';
+function WinHttpSendRequest; external WinHttpLib name 'WinHttpSendRequest';
+function WinHttpReceiveResponse; external WinHttpLib name 'WinHttpReceiveResponse';
 
-function WinHttpQueryHeaders;    external WinHttpLib name 'WinHttpQueryHeaders' ;
-function WinHttpQueryOption;     external WinHttpLib name 'WinHttpQueryOption' ;
-function WinHttpReadData;        external WinHttpLib name 'WinHttpReadData' ;
-function WinHttpSetTimeouts;     external WinHttpLib name 'WinHttpSetTimeouts' ;
-function WinHttpCloseHandle;     external WinHttpLib name 'WinHttpCloseHandle' ;
+function WinHttpQueryHeaders; external WinHttpLib name 'WinHttpQueryHeaders';
+function WinHttpQueryOption; external WinHttpLib name 'WinHttpQueryOption';
+function WinHttpReadData; external WinHttpLib name 'WinHttpReadData';
+function WinHttpSetTimeouts; external WinHttpLib name 'WinHttpSetTimeouts';
+function WinHttpCloseHandle; external WinHttpLib name 'WinHttpCloseHandle';
 
 {$WARN SYMBOL_PLATFORM ON}
 

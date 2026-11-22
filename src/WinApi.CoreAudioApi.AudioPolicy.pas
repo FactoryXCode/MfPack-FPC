@@ -91,7 +91,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -99,14 +100,14 @@ uses
 
 type
   // local
-  _tagAudioSessionDisconnectReason        = (
-    DisconnectReasonDeviceRemoval         = 0,
-    DisconnectReasonServerShutdown        = (DisconnectReasonDeviceRemoval + 1),
-    DisconnectReasonFormatChanged         = (DisconnectReasonServerShutdown + 1),
-    DisconnectReasonSessionLogoff         = (DisconnectReasonFormatChanged + 1),
-    DisconnectReasonSessionDisconnected   = (DisconnectReasonSessionLogoff + 1),
-    DisconnectReasonExclusiveModeOverride = (DisconnectReasonSessionDisconnected + 1)
-  );
+  _tagAudioSessionDisconnectReason = (
+    DisconnectReasonDeviceRemoval = 0,
+                                      DisconnectReasonServerShutdown = (DisconnectReasonDeviceRemoval + 1),
+                                      DisconnectReasonFormatChanged = (DisconnectReasonServerShutdown + 1),
+                                      DisconnectReasonSessionLogoff = (DisconnectReasonFormatChanged + 1),
+                                      DisconnectReasonSessionDisconnected = (DisconnectReasonSessionLogoff + 1),
+                                      DisconnectReasonExclusiveModeOverride = (DisconnectReasonSessionDisconnected + 1)
+    );
   AudioSessionDisconnectReason = _tagAudioSessionDisconnectReason;
 
 
@@ -114,7 +115,7 @@ type
   // =============================
   //  Application initiated events.
   IAudioSessionEvents = interface(IUnknown)
-  ['{24918ACC-64B3-37C1-8CA9-74A66E9957A8}']
+    ['{24918ACC-64B3-37C1-8CA9-74A66E9957A8}']
     function OnDisplayNameChanged(NewDisplayName: LPCWSTR;
                                   EventContext: LPCGUID): HResult; stdcall;
     // Description:
@@ -274,7 +275,7 @@ type
   // Client interface that allows control over a AudioSession.
   //
   IAudioSessionControl = interface(IUnknown)
-  ['{F4B1A599-7266-4319-A8CA-E70ACB11E8CD}']
+    ['{F4B1A599-7266-4319-A8CA-E70ACB11E8CD}']
     function GetState(out pRetVal: AudioSessionState): HResult; stdcall;
     // Description:
     //
@@ -449,6 +450,7 @@ type
     //      no valid failure modes.
     //
   end;
+
   IID_IAudioSessionControl = IAudioSessionControl;
 
 
@@ -458,7 +460,7 @@ type
   // AudioSession Control Extended Interface
   //
   IAudioSessionControl2 = interface(IAudioSessionControl)
-  ['{bfb7ff88-7239-4fc9-8fa2-07c950be9c6d}']
+    ['{bfb7ff88-7239-4fc9-8fa2-07c950be9c6d}']
     function GetSessionIdentifier(out pRetVal: LPWSTR): Hresult; stdcall;
     // Description:
     //
@@ -579,9 +581,9 @@ type
   // Notification on session changes.
   //
   IAudioSessionManager = interface(IUnknown)
-  ['{BFA971F1-4D5E-40BB-935E-967039BFBEE4}']
+    ['{BFA971F1-4D5E-40BB-935E-967039BFBEE4}']
     function GetAudioSessionControl(AudioSessionGuid: LPCGUID;  // may be @GUID_NULL or Nil when nothing is specified.
-                                    StreamFlag: UINT;
+      StreamFlag: UINT;
                                     out SessionControl: IAudioSessionControl): HResult; stdcall;
     // Description:
     //
@@ -601,7 +603,7 @@ type
     //
 
     function GetSimpleAudioVolume(AudioSessionGuid: LPCGUID;  // may be @GUID_NULL or Nil when nothing is specified.
-                                  StreamFlag: UINT;
+      StreamFlag: UINT;
                                   out AudioVolume: ISimpleAudioVolume): HResult; stdcall;
     // Description:
     //
@@ -621,6 +623,7 @@ type
     //
 
   end;
+
   IID_IAudioSessionManager = IAudioSessionManager;
 
 
@@ -630,7 +633,7 @@ type
   // Notification on session changes.
   //
   IAudioVolumeDuckNotification = interface(IUnknown)
-  ['{C3B284D4-6D39-4359-B3CF-B56DDB3BB39C}']
+    ['{C3B284D4-6D39-4359-B3CF-B56DDB3BB39C}']
     function OnVolumeDuckNotification(sessionID: LPCWSTR;
                                       countCommunicationSessions: UINT32): HResult; stdcall;
     // Description:
@@ -676,6 +679,7 @@ type
     //      FAILURECODE Failure
     //
   end;
+
   IID_IAudioVolumeDuckNotification = IAudioVolumeDuckNotification;
 
 
@@ -684,11 +688,12 @@ type
   // Audio Session Notification Interface
   //
   IAudioSessionNotification = interface(IUnknown)
-  ['{641DD20B-4D41-49CC-ABA3-174B9477BB08}']
+    ['{641DD20B-4D41-49CC-ABA3-174B9477BB08}']
 
     function OnSessionCreated(NewSession: IAudioSessionControl): HResult; stdcall;
 
   end;
+
   IID_IAudioSessionNotification = IAudioSessionNotification;
 
 
@@ -697,7 +702,7 @@ type
   // Audio Session Enumerator Interface
   //
   IAudioSessionEnumerator = interface(IUnknown)
-  ['{E2F5BB11-0570-40CA-ACDD-3AA01277DEE8}']
+    ['{E2F5BB11-0570-40CA-ACDD-3AA01277DEE8}']
 
     function GetCount(out SessionCount: integer): HResult; stdcall;
 
@@ -705,6 +710,7 @@ type
                         out Session: IAudioSessionControl): HResult; stdcall;
 
   end;
+
   IID_IAudioSessionEnumerator = IAudioSessionEnumerator;
 
 
@@ -715,8 +721,9 @@ type
   // Also provides support for ducking notifications.
   //
   PIAudioSessionManager2 = ^IAudioSessionManager2;
+
   IAudioSessionManager2 = interface(IAudioSessionManager)
-  ['{77AA99A0-1BD6-484F-8BC7-2C654C9A9B6F}']
+    ['{77AA99A0-1BD6-484F-8BC7-2C654C9A9B6F}']
     function GetSessionEnumerator(out SessionEnum: IAudioSessionEnumerator): HResult; stdcall;
     // Description:
     //
@@ -800,6 +807,7 @@ type
     //      S_OK        Success
     //      FAILURECODE Failure
   end;
+
   IID_IAudioSessionManager2 = IAudioSessionManager2;
 
 
@@ -809,6 +817,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

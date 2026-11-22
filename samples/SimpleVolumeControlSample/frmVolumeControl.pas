@@ -77,7 +77,9 @@ uses
   Forms,
   Dialogs,
   MfAudioEndPoint,
-  WinApi.CoreAudioApi.EndPointVolume, ComCtrls, StdCtrls;
+  WinApi.CoreAudioApi.EndPointVolume,
+  ComCtrls,
+  StdCtrls;
 
 type
   TVolumeControl = class(TForm)
@@ -90,15 +92,17 @@ type
     tbScVolume: TTrackBar;
     butClose: TButton;
     procedure MfAudioEndPoint1Notify(Sender: TObject;
-      pNotify: PAUDIO_VOLUME_NOTIFICATION_DATA);
+                                     pNotify: PAUDIO_VOLUME_NOTIFICATION_DATA);
     procedure tbScVolumeChange(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
     procedure tbDbVolumeChange(Sender: TObject);
     procedure butCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+
   private
     FRefreshing: Boolean;
     procedure RefreshVolume;
+
   public
     MfAudioEndPoint1: TMfAudioEndPoint;
   end;
@@ -111,7 +115,9 @@ implementation
 {$R *.lfm}
 
 procedure TVolumeControl.FormCreate(Sender: TObject);
+
 begin
+
   // Owner-managed runtime creation keeps the form usable without an IDE package.
   MfAudioEndPoint1 := TMfAudioEndPoint.Create(Self);
   MfAudioEndPoint1.Name := 'MfAudioEndPoint1';
@@ -127,22 +133,28 @@ var
   MinDb: Single;
   MaxDb: Single;
   StepDb: Single;
+
 begin
+
   FRefreshing := True;
   try
     tbScVolume.Min := 0;
     tbScVolume.Max := 1000;
-    MfAudioEndPoint1.GetVolumeRange(MinDb,MaxDb,StepDb);
+    MfAudioEndPoint1.GetVolumeRange(MinDb,
+                                    MaxDb,
+                                    StepDb);
     tbDbVolume.Min := Trunc(MinDb * 10);
     tbDbVolume.Max := Round(MaxDb * 10);
-    tbScVolume.Enabled := MfAudioEndPoint1.IMMDeviceInterface <> nil;
+    tbScVolume.Enabled := (MfAudioEndPoint1.IMMDeviceInterface <> nil);
     tbDbVolume.Enabled := tbScVolume.Enabled and (MinDb < MaxDb);
     CheckBox1.Enabled := tbScVolume.Enabled;
     tbScVolume.Position := Round(MfAudioEndPoint1.MasterScalarVolume * 1000);
     tbDbVolume.Position := Round(MfAudioEndPoint1.MasterDbVolume * 10);
     CheckBox1.Checked := MfAudioEndPoint1.Mute;
-    Edit1.Text := FormatFloat('0.0',MfAudioEndPoint1.MasterDbVolume);
-    Edit2.Text := FormatFloat('0.000',MfAudioEndPoint1.MasterScalarVolume);
+    Edit1.Text := FormatFloat('0.0',
+                              MfAudioEndPoint1.MasterDbVolume);
+    Edit2.Text := FormatFloat('0.000',
+                              MfAudioEndPoint1.MasterScalarVolume);
   finally
     FRefreshing := False;
   end;
@@ -150,13 +162,17 @@ end;
 
 
 procedure TVolumeControl.butCloseClick(Sender: TObject);
+
 begin
+
   Close;
 end;
 
 
 procedure TVolumeControl.CheckBox1Click(Sender: TObject);
+
 begin
+
   if FRefreshing then
     Exit;
   try
@@ -168,15 +184,19 @@ end;
 
 
 procedure TVolumeControl.MfAudioEndPoint1Notify(Sender: TObject;
-                                             pNotify: PAUDIO_VOLUME_NOTIFICATION_DATA);
+                                                pNotify: PAUDIO_VOLUME_NOTIFICATION_DATA);
+
 begin
-  if pNotify <> nil then
+
+  if (pNotify <> nil) then
     RefreshVolume;
 end;
 
 
 procedure TVolumeControl.tbScVolumeChange(Sender: TObject);
+
 begin
+
   if FRefreshing then
     Exit;
   try
@@ -188,7 +208,9 @@ end;
 
 
 procedure TVolumeControl.tbDbVolumeChange(Sender: TObject);
+
 begin
+
   if FRefreshing then
     Exit;
   try

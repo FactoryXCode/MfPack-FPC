@@ -20,19 +20,25 @@ type
   TMfDtsDecoderHandle = Pointer;
 
   TMfDtsBridge = class
-  private type
+
+  private
+  type
     TBridgeAbi = function(): Cardinal; cdecl;
     TBridgeVersion = function(): PAnsiChar; cdecl;
-    TDecoderCreate = function(AExtraData: PByte; AExtraDataSize: NativeUInt;
-      AOutputRate, AOutputChannels: Integer;
-      out ADecoder: TMfDtsDecoderHandle): Integer; cdecl;
+    TDecoderCreate = function(AExtraData: PByte;
+                              AExtraDataSize: NativeUInt;
+                              AOutputRate,
+                              AOutputChannels: Integer;
+                              out ADecoder: TMfDtsDecoderHandle): Integer; cdecl;
     TDecoderDestroy = procedure(ADecoder: TMfDtsDecoderHandle); cdecl;
-    TDecoderSend = function(ADecoder: TMfDtsDecoderHandle; AData: PByte;
-      ASize: NativeUInt): Integer; cdecl;
+    TDecoderSend = function(ADecoder: TMfDtsDecoderHandle;
+                            AData: PByte;
+                            ASize: NativeUInt): Integer; cdecl;
     TDecoderDrain = function(ADecoder: TMfDtsDecoderHandle): Integer; cdecl;
     TDecoderAvailable = function(ADecoder: TMfDtsDecoderHandle): NativeUInt; cdecl;
-    TDecoderRead = function(ADecoder: TMfDtsDecoderHandle; ADestination: PByte;
-      ASize: NativeUInt): NativeUInt; cdecl;
+    TDecoderRead = function(ADecoder: TMfDtsDecoderHandle;
+                            ADestination: PByte;
+                            ASize: NativeUInt): NativeUInt; cdecl;
     TDecoderFlush = procedure(ADecoder: TMfDtsDecoderHandle); cdecl;
 
   private
@@ -75,7 +81,9 @@ type
 
 implementation
 
+
 function TMfDtsBridge.Resolve(const AName: AnsiString): Pointer;
+
 begin
 
   Result := GetProcAddress(FModule,
@@ -84,6 +92,7 @@ end;
 
 
 destructor TMfDtsBridge.Destroy;
+
 begin
 
   if (FModule <> 0) then
@@ -105,11 +114,15 @@ begin
   if Result then
     Exit;
 
-  if GetModuleFileNameW(HInstance, ModuleName, Length(ModuleName)) = 0 then Exit(False);
+  if (GetModuleFileNameW(HInstance, ModuleName, Length(ModuleName)) = 0) then
+    Exit(False);
   BridgeName := IncludeTrailingPathDelimiter(ExtractFilePath(ModuleName)) +
-                'MfPackDtsBridge.dll';
-  FModule := LoadLibraryExW(PChar(BridgeName), 0, LOAD_WITH_ALTERED_SEARCH_PATH);
-  if FModule = 0 then Exit(False);
+    'MfPackDtsBridge.dll';
+  FModule := LoadLibraryExW(PChar(BridgeName),
+                            0,
+                            LOAD_WITH_ALTERED_SEARCH_PATH);
+  if (FModule = 0) then
+    Exit(False);
   FAbi := TBridgeAbi(Resolve('mfpack_dts_bridge_abi'));
   FVersion := TBridgeVersion(Resolve('mfpack_dts_bridge_ffmpeg_version'));
   FCreate := TDecoderCreate(Resolve('mfpack_dts_decoder_create'));
@@ -123,43 +136,96 @@ begin
     Assigned(FDestroy) and Assigned(FSend) and Assigned(FDrain) and
     Assigned(FAvailable) and Assigned(FRead) and Assigned(FFlush) and
     (FAbi() = MFPACK_DTS_BRIDGE_ABI);
-  if not Result then begin FreeLibrary(FModule); FModule := 0; end;
+  if not Result then
+    begin
+      FreeLibrary(FModule);
+      FModule := 0;
+    end;
 end;
+
 
 function TMfDtsBridge.Version(): string;
+
 begin
-  if (FModule <> 0) and Assigned(FVersion) then Result := string(AnsiString(FVersion()))
-  else Result := '';
+
+  if (FModule <> 0) and Assigned(FVersion) then
+    Result := string(AnsiString(FVersion()))
+  else
+    Result := '';
 end;
+
 
 function TMfDtsBridge.CreateDecoder(out ADecoder: TMfDtsDecoderHandle): Integer;
+
 begin
+
   ADecoder := nil;
-  if not Load() then Exit(-1);
-  Result := FCreate(nil, 0, 48000, 2, ADecoder);
+  if not Load() then
+    Exit(-1);
+  Result := FCreate(nil,
+                    0,
+                    48000,
+                    2,
+                    ADecoder);
 end;
+
 
 procedure TMfDtsBridge.DestroyDecoder(var ADecoder: TMfDtsDecoderHandle);
+
 begin
-  if Assigned(ADecoder) and Assigned(FDestroy) then FDestroy(ADecoder);
+
+  if Assigned(ADecoder) and Assigned(FDestroy) then
+    FDestroy(ADecoder);
   ADecoder := nil;
 end;
 
-function TMfDtsBridge.Send(ADecoder: TMfDtsDecoderHandle; AData: PByte;
-  ASize: NativeUInt): Integer;
-begin Result := FSend(ADecoder, AData, ASize); end;
+
+function TMfDtsBridge.Send(ADecoder: TMfDtsDecoderHandle;
+                           AData: PByte;
+                           ASize: NativeUInt): Integer;
+
+begin
+
+  Result := FSend(ADecoder,
+                  AData,
+                  ASize);
+end;
+
 
 function TMfDtsBridge.Drain(ADecoder: TMfDtsDecoderHandle): Integer;
-begin Result := FDrain(ADecoder); end;
+
+begin
+
+  Result := FDrain(ADecoder);
+end;
+
 
 function TMfDtsBridge.Available(ADecoder: TMfDtsDecoderHandle): NativeUInt;
-begin Result := FAvailable(ADecoder); end;
 
-function TMfDtsBridge.Read(ADecoder: TMfDtsDecoderHandle; ADestination: PByte;
-  ASize: NativeUInt): NativeUInt;
-begin Result := FRead(ADecoder, ADestination, ASize); end;
+begin
+
+  Result := FAvailable(ADecoder);
+end;
+
+
+function TMfDtsBridge.Read(ADecoder: TMfDtsDecoderHandle;
+                           ADestination: PByte;
+                           ASize: NativeUInt): NativeUInt;
+
+begin
+
+  Result := FRead(ADecoder,
+                  ADestination,
+                  ASize);
+end;
+
 
 procedure TMfDtsBridge.Flush(ADecoder: TMfDtsDecoderHandle);
-begin if Assigned(ADecoder) then FFlush(ADecoder); end;
+
+begin
+
+  if Assigned(ADecoder) then
+    FFlush(ADecoder);
+end;
 
 end.

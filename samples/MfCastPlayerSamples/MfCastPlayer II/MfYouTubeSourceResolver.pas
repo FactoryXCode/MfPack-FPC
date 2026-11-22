@@ -70,7 +70,7 @@ uses
   LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   {System}
@@ -85,7 +85,9 @@ type
                            yrmBestQualityDownload);
 
 
-  TMfYouTubeSourceResolver = class(TInterfacedObject, IMfCastSourceResolver)
+  TMfYouTubeSourceResolver = class(TInterfacedObject,
+                                   IMfCastSourceResolver)
+
   private
     FLastErrorText: string;
     FLastResolvedSourceName: string;
@@ -113,6 +115,7 @@ type
     function FindResolvedFile(const ADirectory: string;
                               const AVideoId: string;
                               out AFileName: string): Boolean;
+
   public
 
     constructor Create();
@@ -136,6 +139,7 @@ implementation
 
 
 constructor TMfYouTubeSourceResolver.Create();
+
 begin
 
   inherited Create();
@@ -145,7 +149,9 @@ begin
   FLastResolvedSourceName := '';
 end;
 
+
 function QuoteArgument(const AValue: string): string;
+
 begin
 
   Result := '"' + StringReplace(AValue,
@@ -158,49 +164,111 @@ end;
 function TMfYouTubeSourceResolver.ExtractVideoId(const ASourceName: string;
                                                  out AVideoId: string): Boolean;
 var
-  Source,Host,Path,Query,Item: string;
-  P,I: Integer;
+  Source, Host, Path, Query, Item: string;
+  P, I: Integer;
+
 begin
+
   Result := False;
   AVideoId := '';
   Source := Trim(ASourceName);
-  P := Pos('://',Source);
-  if P > 0 then
+  P := Pos('://',
+           Source);
+  if (P > 0) then
     begin
-      if not (SameText(Copy(Source,1,P-1),'https') or
-              SameText(Copy(Source,1,P-1),'http')) then Exit;
-      Delete(Source,1,P+2);
+      if not (SameText(Copy(Source, 1, P - 1), 'https') or
+        SameText(Copy(Source,
+                      1,
+                      P - 1),
+                 'http')) then
+        Exit;
+      Delete(Source,
+             1,
+             P + 2);
     end;
-  P := Pos('/',Source);
-  if P = 0 then Exit;
-  Host := LowerCase(Copy(Source,1,P-1));
-  Path := Copy(Source,P,MaxInt);
-  if Copy(Host,1,4) = 'www.' then Delete(Host,1,4);
-  if Copy(Host,1,2) = 'm.' then Delete(Host,1,2);
+  P := Pos('/',
+           Source);
+  if (P = 0) then
+    Exit;
+  Host := LowerCase(Copy(Source,
+                         1,
+                         P - 1));
+  Path := Copy(Source,
+               P,
+               MaxInt);
+  if (Copy(Host, 1, 4) = 'www.') then
+    Delete(Host,
+           1,
+           4);
+  if (Copy(Host, 1, 2) = 'm.') then
+    Delete(Host,
+           1,
+           2);
   if (Host <> 'youtube.com') and (Host <> 'youtu.be') and
-     (Host <> 'youtube-nocookie.com') then Exit;
-  P := Pos('#',Path);
-  if P > 0 then SetLength(Path,P-1);
+    (Host <> 'youtube-nocookie.com') then
+    Exit;
+  P := Pos('#',
+           Path);
+  if (P > 0) then
+    SetLength(Path,
+              P - 1);
   Query := '';
-  P := Pos('?',Path);
-  if P > 0 then begin Query := Copy(Path,P+1,MaxInt);SetLength(Path,P-1);end;
-  if Host = 'youtu.be' then AVideoId := Copy(Path,2,MaxInt)
-  else if Path = '/watch' then
+  P := Pos('?',
+           Path);
+  if (P > 0) then
     begin
-      while Query <> '' do
+      Query := Copy(Path,
+                    P + 1,
+                    MaxInt);
+      SetLength(Path,
+                P - 1);
+    end;
+  if (Host = 'youtu.be') then
+    AVideoId := Copy(Path,
+                     2,
+                     MaxInt)
+  else if (Path = '/watch') then
+    begin
+      while (Query <> '') do
         begin
-          P := Pos('&',Query);
-          if P = 0 then P := Length(Query)+1;
-          Item := Copy(Query,1,P-1);Delete(Query,1,P);
-          if Copy(Item,1,2) = 'v=' then begin AVideoId := Copy(Item,3,MaxInt);Break;end;
+          P := Pos('&',
+                   Query);
+          if (P = 0) then
+            P := Length(Query) + 1;
+          Item := Copy(Query,
+                       1,
+                       P - 1);
+          Delete(Query,
+                 1,
+                 P);
+          if (Copy(Item, 1, 2) = 'v=') then
+            begin
+              AVideoId := Copy(Item,
+                               3,
+                               MaxInt);
+              Break;
+            end;
         end;
     end
-  else if Copy(Path,1,8) = '/shorts/' then AVideoId := Copy(Path,9,MaxInt)
-  else if Copy(Path,1,7) = '/embed/' then AVideoId := Copy(Path,8,MaxInt);
-  if Length(AVideoId) <> 11 then begin AVideoId := '';Exit;end;
+  else if (Copy(Path, 1, 8) = '/shorts/') then
+    AVideoId := Copy(Path,
+                     9,
+                     MaxInt)
+  else if (Copy(Path, 1, 7) = '/embed/') then
+    AVideoId := Copy(Path,
+                     8,
+                     MaxInt);
+  if (Length(AVideoId) <> 11) then
+    begin
+      AVideoId := '';
+      Exit;
+    end;
   for I := 1 to Length(AVideoId) do
-    if not CharInSet(AVideoId[I],['A'..'Z','a'..'z','0'..'9','_','-']) then
-      begin AVideoId := '';Exit;end;
+    if not CharInSet(AVideoId[I], ['A'..'Z', 'a'..'z', '0'..'9', '_', '-']) then
+      begin
+        AVideoId := '';
+        Exit;
+      end;
   Result := True;
 end;
 
@@ -225,7 +293,7 @@ begin
   for Level := 0 to 5 do
     begin
       CandidateName := IncludeTrailingPathDelimiter(SearchDirectory) +
-                       'Binaries\yt-dlp_x86.exe';
+        'Binaries\yt-dlp_x86.exe';
 
       if FileExists(CandidateName) then
         begin
@@ -235,7 +303,7 @@ begin
         end;
 
       CandidateName := IncludeTrailingPathDelimiter(SearchDirectory) +
-                       'Binaries\yt-dlp.exe';
+        'Binaries\yt-dlp.exe';
       if FileExists(CandidateName) then
         begin
           AExecutableName := CandidateName;
@@ -245,7 +313,7 @@ begin
 
       ParentDirectory := ExtractFileDir(SearchDirectory);
       if SameText(ParentDirectory,
-                  SearchDirectory) then
+        SearchDirectory) then
         Break;
       SearchDirectory := ParentDirectory;
     end;
@@ -257,14 +325,14 @@ begin
   FilePart := nil;
 
   SearchLength := SearchPathW(nil,
-                             'yt-dlp_x86.exe',
-                             nil,
-                             Length(SearchBuffer),
-                             SearchBuffer,
-                             FilePart);
+                              'yt-dlp_x86.exe',
+                              nil,
+                              Length(SearchBuffer),
+                              SearchBuffer,
+                              FilePart);
 
   Result := (SearchLength > 0) and
-            (SearchLength < DWORD(Length(SearchBuffer)));
+    (SearchLength < DWORD(Length(SearchBuffer)));
 
   if not Result then
     begin
@@ -275,14 +343,14 @@ begin
       FilePart := nil;
 
       SearchLength := SearchPathW(nil,
-                                 'yt-dlp.exe',
-                                 nil,
-                                 Length(SearchBuffer),
-                                 SearchBuffer,
-                                 FilePart);
+                                  'yt-dlp.exe',
+                                  nil,
+                                  Length(SearchBuffer),
+                                  SearchBuffer,
+                                  FilePart);
 
       Result := (SearchLength > 0) and
-                (SearchLength < DWORD(Length(SearchBuffer)));
+        (SearchLength < DWORD(Length(SearchBuffer)));
     end;
 
   if Result then
@@ -305,10 +373,10 @@ var
 begin
 
   BinariesDirectory := ExcludeTrailingPathDelimiter(
-                         ExtractFilePath(AYtDlpExecutableName));
+    ExtractFilePath(AYtDlpExecutableName));
 
   AExecutableName := IncludeTrailingPathDelimiter(BinariesDirectory) +
-                     'ffmpeg.exe';
+    'ffmpeg.exe';
 
   if FileExists(AExecutableName) then
     begin
@@ -322,34 +390,34 @@ begin
            SizeOf(SearchRecord),
            0);
   FindResult := FindFirst(IncludeTrailingPathDelimiter(BinariesDirectory) +
-                          'ffmpeg-*',
+    'ffmpeg-*',
                           faDirectory,
                           SearchRecord);
 
-  if FindResult = 0 then
-    try
-      while (FindResult = 0) do
-        begin
-          if ((SearchRecord.Attr and faDirectory) <> 0) and
-             (SearchRecord.Name <> '.') and (SearchRecord.Name <> '..') then
-            begin
-              AExecutableName := IncludeTrailingPathDelimiter(BinariesDirectory) +
-                                 SearchRecord.Name + '\bin\ffmpeg.exe';
+  if (FindResult = 0) then
+  try
+    while (FindResult = 0) do
+      begin
+        if ((SearchRecord.Attr and faDirectory) <> 0) and
+          (SearchRecord.Name <> '.') and (SearchRecord.Name <> '..') then
+          begin
+            AExecutableName := IncludeTrailingPathDelimiter(BinariesDirectory) +
+              SearchRecord.Name + '\bin\ffmpeg.exe';
 
-              if FileExists(AExecutableName) then
-                begin
-                  Result := True;
-                  Exit;
-                end;
-            end;
-          FindResult := FindNext(SearchRecord);
-        end;
-    finally
-      FindClose(SearchRecord);
-    end;
+            if FileExists(AExecutableName) then
+              begin
+                Result := True;
+                Exit;
+              end;
+          end;
+        FindResult := FindNext(SearchRecord);
+      end;
+  finally
+    FindClose(SearchRecord);
+  end;
 
   AExecutableName := IncludeTrailingPathDelimiter(BinariesDirectory) +
-                     'ffmpeg\bin\ffmpeg.exe';
+    'ffmpeg\bin\ffmpeg.exe';
 
   if FileExists(AExecutableName) then
     begin
@@ -364,14 +432,14 @@ begin
   FilePart := nil;
 
   SearchLength := SearchPathW(nil,
-                             'ffmpeg.exe',
-                             nil,
-                             Length(SearchBuffer),
-                             SearchBuffer,
-                             FilePart);
+                              'ffmpeg.exe',
+                              nil,
+                              Length(SearchBuffer),
+                              SearchBuffer,
+                              FilePart);
 
   Result := (SearchLength > 0) and
-            (SearchLength < DWORD(Length(SearchBuffer)));
+    (SearchLength < DWORD(Length(SearchBuffer)));
 
   if Result then
     AExecutableName := SearchBuffer
@@ -386,7 +454,7 @@ function TMfYouTubeSourceResolver.RunYtDlp(const AExecutableName: string;
                                            const AOutputTemplate: string): HRESULT;
 const
   FormatSelector = 'bv*[ext=mp4][vcodec^=avc1]+ba[ext=m4a]/' +
-                   'bv*[vcodec^=avc1]+ba/b';
+    'bv*[vcodec^=avc1]+ba/b';
 var
   StartupInfo: TStartupInfoW;
   ProcessInfo: TProcessInformation;
@@ -413,7 +481,7 @@ begin
            0);
 
   LogFileName := IncludeTrailingPathDelimiter(ExtractFilePath(AOutputTemplate)) +
-                 'yt-dlp-last-run.log';
+    'yt-dlp-last-run.log';
 
   FillChar(SecurityAttributes,
            SizeOf(SecurityAttributes),
@@ -423,12 +491,12 @@ begin
   SecurityAttributes.bInheritHandle := True;
 
   LogHandle := CreateFileW(PChar(LogFileName),
-                          GENERIC_WRITE,
-                          FILE_SHARE_READ,
-                          @SecurityAttributes,
-                          CREATE_ALWAYS,
-                          FILE_ATTRIBUTE_NORMAL,
-                          0);
+                           GENERIC_WRITE,
+                           FILE_SHARE_READ,
+                           @SecurityAttributes,
+                           CREATE_ALWAYS,
+                           FILE_ATTRIBUTE_NORMAL,
+                           0);
 
   if (LogHandle = INVALID_HANDLE_VALUE) then
     begin
@@ -441,25 +509,25 @@ begin
   StartupInfo.hStdInput := GetStdHandle(STD_INPUT_HANDLE);
 
   CommandLine := QuoteArgument(AExecutableName) +
-                 ' --no-playlist --no-part --format ' +
-                 QuoteArgument(FormatSelector) +
-                 ' --merge-output-format mp4 --ffmpeg-location ' +
-                 QuoteArgument(AFFmpegExecutableName) +
-                 ' --output ' + QuoteArgument(AOutputTemplate) +
-                 ' ' + QuoteArgument(ASourceName);
+    ' --no-playlist --no-part --format ' +
+    QuoteArgument(FormatSelector) +
+    ' --merge-output-format mp4 --ffmpeg-location ' +
+    QuoteArgument(AFFmpegExecutableName) +
+    ' --output ' + QuoteArgument(AOutputTemplate) +
+    ' ' + QuoteArgument(ASourceName);
 
   UniqueString(CommandLine);
 
   if not CreateProcessW(nil,
-                       PChar(CommandLine),
-                       nil,
-                       nil,
-                       True,
-                       CREATE_NO_WINDOW,
-                       nil,
-                       PChar(ExtractFilePath(AExecutableName)),
-                       StartupInfo,
-                       ProcessInfo) then
+    PChar(CommandLine),
+    nil,
+    nil,
+    True,
+    CREATE_NO_WINDOW,
+    nil,
+    PChar(ExtractFilePath(AExecutableName)),
+    StartupInfo,
+    ProcessInfo) then
     begin
       CloseHandle(LogHandle);
       Result := HRESULT_FROM_WIN32(GetLastError());
@@ -467,10 +535,12 @@ begin
     end;
 
   try
-    if (WaitForSingleObject(ProcessInfo.hProcess,FTimeoutMs) <> WAIT_OBJECT_0) then
+    if (WaitForSingleObject(ProcessInfo.hProcess, FTimeoutMs) <> WAIT_OBJECT_0) then
       begin
-        TerminateProcess(ProcessInfo.hProcess,ERROR_TIMEOUT);
-        WaitForSingleObject(ProcessInfo.hProcess,5000);
+        TerminateProcess(ProcessInfo.hProcess,
+                         ERROR_TIMEOUT);
+        WaitForSingleObject(ProcessInfo.hProcess,
+                            5000);
         FLastErrorText := 'yt-dlp did not complete before the resolver timeout.';
         Result := HRESULT_FROM_WIN32(ERROR_TIMEOUT);
         Exit;
@@ -478,7 +548,7 @@ begin
 
     ExitCode := DWORD(-1);
     if not GetExitCodeProcess(ProcessInfo.hProcess,
-                              ExitCode) then
+      ExitCode) then
       begin
         Result := HRESULT_FROM_WIN32(GetLastError());
         Exit;
@@ -534,7 +604,7 @@ const
   // H.264 video and AAC audio. Chromecast can consume it immediately without
   // first downloading and merging separate YouTube tracks.
   FormatSelector = 'b[ext=mp4][vcodec^=avc1][acodec^=mp4a]/' +
-                   'b[ext=mp4]/b';
+    'b[ext=mp4]/b';
 
 var
   StartupInfo: TStartupInfoW;
@@ -576,12 +646,12 @@ begin
   SecurityAttributes.bInheritHandle := True;
 
   LogHandle := CreateFileW(PChar(LogFileName),
-                          GENERIC_WRITE,
-                          FILE_SHARE_READ,
-                          @SecurityAttributes,
-                          CREATE_ALWAYS,
-                          FILE_ATTRIBUTE_NORMAL,
-                          0);
+                           GENERIC_WRITE,
+                           FILE_SHARE_READ,
+                           @SecurityAttributes,
+                           CREATE_ALWAYS,
+                           FILE_ATTRIBUTE_NORMAL,
+                           0);
 
   if (LogHandle = INVALID_HANDLE_VALUE) then
     begin
@@ -594,24 +664,24 @@ begin
   StartupInfo.hStdInput := GetStdHandle(STD_INPUT_HANDLE);
 
   CommandLine := QuoteArgument(AExecutableName) +
-                 ' --no-playlist --no-warnings --extractor-args ' +
-                 QuoteArgument('youtube:player_client=android') +
-                 ' --format ' + QuoteArgument(FormatSelector) +
-                 ' --get-url ' + QuoteArgument(ASourceName);
+    ' --no-playlist --no-warnings --extractor-args ' +
+    QuoteArgument('youtube:player_client=android') +
+    ' --format ' + QuoteArgument(FormatSelector) +
+    ' --get-url ' + QuoteArgument(ASourceName);
 
 
   UniqueString(CommandLine);
 
   if not CreateProcessW(nil,
-                       PChar(CommandLine),
-                       nil,
-                       nil,
-                       True,
-                       CREATE_NO_WINDOW,
-                       nil,
-                       PChar(ExtractFilePath(AExecutableName)),
-                       StartupInfo,
-                       ProcessInfo) then
+    PChar(CommandLine),
+    nil,
+    nil,
+    True,
+    CREATE_NO_WINDOW,
+    nil,
+    PChar(ExtractFilePath(AExecutableName)),
+    StartupInfo,
+    ProcessInfo) then
     begin
       CloseHandle(LogHandle);
       Result := HRESULT_FROM_WIN32(GetLastError());
@@ -619,10 +689,12 @@ begin
     end;
 
   try
-    if WaitForSingleObject(ProcessInfo.hProcess,FTimeoutMs) <> WAIT_OBJECT_0 then
+    if (WaitForSingleObject(ProcessInfo.hProcess, FTimeoutMs) <> WAIT_OBJECT_0) then
       begin
-        TerminateProcess(ProcessInfo.hProcess,ERROR_TIMEOUT);
-        WaitForSingleObject(ProcessInfo.hProcess,5000);
+        TerminateProcess(ProcessInfo.hProcess,
+                         ERROR_TIMEOUT);
+        WaitForSingleObject(ProcessInfo.hProcess,
+                            5000);
         FLastErrorText := 'yt-dlp did not complete before the resolver timeout.';
         Result := HRESULT_FROM_WIN32(ERROR_TIMEOUT);
         Exit;
@@ -630,7 +702,7 @@ begin
 
     ExitCode := DWORD(-1);
     if not GetExitCodeProcess(ProcessInfo.hProcess,
-                              ExitCode) then
+      ExitCode) then
       begin
         Result := HRESULT_FROM_WIN32(GetLastError());
         Exit;
@@ -661,7 +733,8 @@ begin
             begin
               Line := Trim(LogLines[I]);
               if (Pos('https://', LowerCase(Line)) = 1) or
-                 (Pos('http://', LowerCase(Line)) = 1) then
+                (Pos('http://',
+                     LowerCase(Line)) = 1) then
                 begin
                   AResolvedUrl := Line;
                   Break;
@@ -722,18 +795,18 @@ begin
     end;
 
   try
-    while SearchResult = 0 do
+    while (SearchResult = 0) do
       begin
         Extension := LowerCase(ExtractFileExt(SearchRecord.Name));
 
         if ((SearchRecord.Attr and faDirectory) = 0) and
-           ((Extension = '.mp4') or
-            (Extension = '.webm') or
-            (Extension = '.mkv') or
-            (Extension = '.m4a')) then
+          ((Extension = '.mp4') or
+          (Extension = '.webm') or
+          (Extension = '.mkv') or
+          (Extension = '.m4a')) then
           begin
             AFileName := IncludeTrailingPathDelimiter(ADirectory) +
-                         SearchRecord.Name;
+              SearchRecord.Name;
             Result := True;
             Exit;
           end;
@@ -752,6 +825,7 @@ var
   VideoId: string;
 
 begin
+
   Result := ExtractVideoId(ASourceName,
                            VideoId);
 end;
@@ -782,7 +856,7 @@ begin
   FLastResolvedSourceName := '';
 
   if not ExtractVideoId(ASourceName,
-                        VideoId) then
+    VideoId) then
     begin
       FLastErrorText := 'The URL is not a supported YouTube video URL.';
       Result := E_INVALIDARG;
@@ -801,14 +875,17 @@ begin
            0);
 
   if (GetTempPathW(Length(TempPathBuffer),
-                 TempPathBuffer) = 0) then
+    TempPathBuffer) = 0) then
     begin
       Result := HRESULT_FROM_WIN32(GetLastError());
       Exit;
     end;
 
-  if GetTempFileNameW(TempPathBuffer,'MFC',0,TempName) = 0 then
-    begin Result := HRESULT_FROM_WIN32(GetLastError());Exit;end;
+  if (GetTempFileNameW(TempPathBuffer, 'MFC', 0, TempName) = 0) then
+    begin
+      Result := HRESULT_FROM_WIN32(GetLastError());
+      Exit;
+    end;
   DeleteFileW(PWideChar(TempName));
   TempDirectory := TempName;
 
@@ -819,13 +896,13 @@ begin
       Exit;
     end;
 
-  if FMode = yrmFastCombinedStream then
+  if (FMode = yrmFastCombinedStream) then
     begin
       Result := RunYtDlpGetUrl(ExecutableName,
                                ASourceName,
                                TempDirectory,
                                ResolvedUrl);
-      DeleteFileW(PChar(IncludeTrailingPathDelimiter(TempDirectory)+'yt-dlp-fast-last-run.log'));
+      DeleteFileW(PChar(IncludeTrailingPathDelimiter(TempDirectory) + 'yt-dlp-fast-last-run.log'));
       RemoveDir(TempDirectory);
       if FAILED(Result) then
         Exit;
@@ -842,18 +919,18 @@ begin
     end;
 
   if not FindFFmpeg(ExecutableName,
-                    FFmpegExecutableName) then
+    FFmpegExecutableName) then
     begin
       FLastErrorText := 'This YouTube video has separate video and audio tracks. ' +
-                        'ffmpeg.exe was not found in MfCastPlayer\Binaries, ' +
-                        'an extracted ffmpeg-*\bin directory, or on PATH.';
+        'ffmpeg.exe was not found in MfCastPlayer\Binaries, ' +
+        'an extracted ffmpeg-*\bin directory, or on PATH.';
 
       Result := HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
       Exit;
     end;
 
   OutputTemplate := IncludeTrailingPathDelimiter(TempDirectory) +
-                    VideoId + '.%(ext)s';
+    VideoId + '.%(ext)s';
 
   Result := RunYtDlp(ExecutableName,
                      FFmpegExecutableName,
@@ -863,8 +940,8 @@ begin
     Exit;
 
   if not FindResolvedFile(TempDirectory,
-                          VideoId,
-                          ResolvedFileName) then
+    VideoId,
+    ResolvedFileName) then
     begin
       FLastErrorText := 'yt-dlp completed but no playable output file was found.';
       Result := HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
@@ -880,17 +957,21 @@ end;
 
 
 function TMfYouTubeSourceResolver.GetLastErrorText(): string;
+
 begin
+
   Result := FLastErrorText;
 end;
 
 
 procedure TMfYouTubeSourceResolver.Release(
   const AResolvedSource: TMfCastResolvedSource);
+
 begin
+
   if AResolvedSource.IsTemporary and
-     (AResolvedSource.SourceName <> '') and
-     FileExists(AResolvedSource.SourceName) then
+    (AResolvedSource.SourceName <> '') and
+    FileExists(AResolvedSource.SourceName) then
     begin
       DeleteFileW(PWideChar(AResolvedSource.SourceName));
       RemoveDir(ExtractFileDir(AResolvedSource.SourceName));

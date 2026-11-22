@@ -71,9 +71,9 @@ interface
 
 uses
   MfSmallSamplesPlatform,
-LMessages,
+  LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.Ks,
@@ -132,7 +132,8 @@ type
     procedure pnlVideoResize(Sender: TObject);
     procedure butGetDeviceClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
 
   private
     { Private declarations }
@@ -150,6 +151,7 @@ type
 
   public
     destructor Destroy; override;
+
   public
     { Public declarations }
 
@@ -170,10 +172,18 @@ implementation
 // CleanUp: Frees resources before the application exits
 //-------------------------------------------------------------------
 destructor TFrm_SimpleCapture.Destroy;
-begin QuitSession;inherited;end;
+
+begin
+
+  QuitSession;
+  inherited;
+end;
+
 
 procedure TFrm_SimpleCapture.QuitSession();
+
 begin
+
   if Assigned(MfDeviceCapture) then
     if SUCCEEDED(MfDeviceCapture.ShutDownEngine()) then
       begin
@@ -188,7 +198,9 @@ end;
 procedure TFrm_SimpleCapture.butGetDeviceClick(Sender: TObject);
 var
   hr: HResult;
+
 begin
+
   if not Assigned(dlgChooseDevice) then
     Application.CreateForm(TdlgChooseDevice,
                            dlgChooseDevice)
@@ -198,36 +210,45 @@ begin
         begin
           iSelectedDevice := dlgChooseDevice.iSelectedDevice;
 
-           // Set the device
+          // Set the device
           hr := MfDeviceCapture.SetDevice(dpa[iSelectedDevice]);
-          if SUCCEEDED(hr) then begin
-            FreeAndNil(FDeviceLoss);FDeviceLoss:=TDeviceLoss.Create(Handle,iSelectedDevice,dmo_Message);
-          end;
+          if SUCCEEDED(hr) then
+            begin
+              FreeAndNil(FDeviceLoss);
+              FDeviceLoss := TDeviceLoss.Create(Handle,
+                                                iSelectedDevice,
+                                                dmo_Message);
+            end;
           if FAILED(hr) then
             begin
               GetLastError();
-             end;
+            end;
         end;
     end;
 end;
 
 
 procedure TFrm_SimpleCapture.Button1Click(Sender: TObject);
+
 begin
+
   Close();
 end;
 
 
 procedure TFrm_SimpleCapture.FormCloseQuery(Sender: TObject;
-  var CanClose: Boolean);
+                                            var CanClose: Boolean);
+
 begin
 
   // Before closing the app, clean up.
   QuitSession();
-  CanClose:= True;
+  CanClose := True;
 end;
 
+
 procedure TFrm_SimpleCapture.FormCreate(Sender: TObject);
+
 begin
 
   bAppIsClosing := False;
@@ -244,8 +265,10 @@ var
   vHdc: HDC;
 
 begin
+
   vHdc := 0;
-  BeginPaint(Self.Handle, ps);
+  BeginPaint(Self.Handle,
+             ps);
 
   try
     if Assigned(MfDeviceCapture) and (MfDeviceCapture.VideoDetected()) then
@@ -255,21 +278,24 @@ begin
                ps.rcPaint,
                HBRUSH(COLOR_APPWORKSPACE + 1));
   finally
-    EndPaint(Self.Handle, ps);
+    EndPaint(Self.Handle,
+             ps);
   end;
 end;
 
 
 // Create the capture engine
 function TFrm_SimpleCapture.GetFmCapture(): HRESULT;
+
 begin
+
   Result := E_FAIL;
   if not Assigned(MfDeviceCapture) then
     begin
       MfDeviceCapture := Nil;
       // We want the video to be played on the VideoPanel, so, we use that handle.
       TMfCaptureEngine.CreateInstance(pnlVideo.Handle,       // The clipping window / control
-                                      Handle,
+        Handle,
                                       MfDeviceCapture);  // Must be main form or parent window !!!
       // If you want to switch to a different clipping surface while the session is active:
       // MfDeviceCapture.SetVideoSurface := myFormOrControl.Handle;
@@ -282,6 +308,7 @@ end;
 // The lParam message parameter is a pointer the device index.
 // The wParam message parameter is a pointer that holds the devicename that has been lost.
 procedure TFrm_SimpleCapture.WMDeviceLoss(var aMessage: TLMessage);
+
 begin
 
   if not Assigned(MfDeviceCapture) then
@@ -289,7 +316,8 @@ begin
 
   MfDeviceCapture.ShutDownEngine();
 
-  MessageDlg(Format('Lost capture device: %s',[PWideChar(aMessage.WParam)]),
+  MessageDlg(Format('Lost capture device: %s',
+                    [PWideChar(aMessage.WParam)]),
              mtError,
              mbOKCancel,
              0);
@@ -302,6 +330,7 @@ var
   pcrD: LPRECT;
 
 begin
+
   // Set video size
   if Assigned(MfDeviceCapture) then
     begin

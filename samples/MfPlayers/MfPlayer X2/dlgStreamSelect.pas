@@ -70,7 +70,7 @@ interface
 
 uses
   MfPlayerSample.Platform,
-{Winapi}
+  {Winapi}
   Windows,
   {System}
   SysUtils,
@@ -96,7 +96,8 @@ type
     lvStreams: TListView;
     procedure FormShow(Sender: TObject);
     procedure butCloseClick(Sender: TObject);
-    procedure lvStreamsItemChecked(Sender: TObject; Item: TListItem);
+    procedure lvStreamsItemChecked(Sender: TObject;
+                                   Item: TListItem);
 
   private
     { Private declarations }
@@ -116,6 +117,7 @@ implementation
 
 
 procedure TdlgSelectStreams.butCloseClick(Sender: TObject);
+
 begin
 
   dlgSelectStreams.Close;
@@ -131,31 +133,31 @@ begin
 
   lvStreams.Items.Clear;
 
- // Get all video streams and their properties
- for i:= 0 to High(MfPlayerX.StreamContents) do
-   begin
-     lItem:= lvStreams.Items.Add;
-     lItem.Caption:= IntToStr(MfPlayerX.StreamContents[i].dwStreamIndex);
-     lItem.Checked:= MfPlayerX.StreamContents[i].bSelected;
-     lItem.SubItems.Add(MfPlayerX.StreamContents[i].audio_lpStreamName);
+  // Get all video streams and their properties
+  for i := 0 to High(MfPlayerX.StreamContents) do
+    begin
+      lItem := lvStreams.Items.Add;
+      lItem.Caption := IntToStr(MfPlayerX.StreamContents[i].dwStreamIndex);
+      lItem.Checked := MfPlayerX.StreamContents[i].bSelected;
+      lItem.SubItems.Add(MfPlayerX.StreamContents[i].audio_lpStreamName);
 
-     if (MfPlayerX.StreamContents[i].idStreamMediaType = mtVideo) then
-       begin
-         lItem.SubItems.Add('Video');
-         if (MfPlayerX.StreamContents[i].bSelected = True) then
-           iCurVideoStream:= MfPlayerX.StreamContents[i].dwStreamIndex;
-       end;
+      if (MfPlayerX.StreamContents[i].idStreamMediaType = mtVideo) then
+        begin
+          lItem.SubItems.Add('Video');
+          if (MfPlayerX.StreamContents[i].bSelected = True) then
+            iCurVideoStream := MfPlayerX.StreamContents[i].dwStreamIndex;
+        end;
 
-     if (MfPlayerX.StreamContents[i].idStreamMediaType = mtAudio) then
-       begin
-         lItem.SubItems.Add('Audio');
-         if (MfPlayerX.StreamContents[i].bSelected = True) then
-           iCurAudioStream:= MfPlayerX.StreamContents[i].dwStreamIndex;
-       end;
+      if (MfPlayerX.StreamContents[i].idStreamMediaType = mtAudio) then
+        begin
+          lItem.SubItems.Add('Audio');
+          if (MfPlayerX.StreamContents[i].bSelected = True) then
+            iCurAudioStream := MfPlayerX.StreamContents[i].dwStreamIndex;
+        end;
 
-     lItem.SubItems.Add(MfPlayerX.StreamContents[i].audio_lpLangShortName);
+      lItem.SubItems.Add(MfPlayerX.StreamContents[i].audio_lpLangShortName);
 
-   end;
+    end;
 end;
 
 
@@ -166,15 +168,16 @@ end;
 //       sets the active stream and update the streaminfo array.
 procedure TdlgSelectStreams.lvStreamsItemChecked(Sender: TObject;
                                                  Item: TListItem);
+
 begin
 
- if (Item.SubItems.Count > 0) and (Item.Checked = True) then
+  if (Item.SubItems.Count > 0) and (Item.Checked = True) then
     begin
 
       if (Item.SubItems[1] = 'Audio') then
         begin
-          lvStreams.Items[iCurAudioStream].Checked:= False;
-          iCurAudioStream:= StrToInt(Item.Caption);
+          lvStreams.Items[iCurAudioStream].Checked := False;
+          iCurAudioStream := StrToInt(Item.Caption);
           MfPlayerX.SetActiveStreamType(mtAudio,
                                         iCurAudioStream);
 
@@ -182,8 +185,8 @@ begin
 
       if (Item.SubItems[1] = 'Video') then
         begin
-          lvStreams.Items[iCurVideoStream].Checked:= False;
-          iCurVideoStream:= StrToInt(Item.Caption);
+          lvStreams.Items[iCurVideoStream].Checked := False;
+          iCurVideoStream := StrToInt(Item.Caption);
           MfPlayerX.SetActiveStreamType(mtVideo,
                                         iCurVideoStream);
         end;
@@ -191,4 +194,3 @@ begin
 end;
 
 end.
-

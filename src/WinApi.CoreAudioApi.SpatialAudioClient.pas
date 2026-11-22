@@ -75,7 +75,7 @@ interface
 
 
 uses
-  
+
   {WinApi}
   Windows,
   WinApi.WinApiTypes,
@@ -90,7 +90,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -108,34 +109,34 @@ type
   // type from AudioObjectType_FrontLeft to AudioObjectType_BackCenter are static objects
   PAudioObjectType = ^AudioObjectType;
   AudioObjectType = (
-    AudioObjectType_None             = 0,
-    AudioObjectType_Dynamic          = (1 SHL 0),
-    AudioObjectType_FrontLeft        = (1 SHL 1),   // SPEAKER_FRONT_LEFT is the WAVEFORMATEXTENSIBLE channel mask equivalent
-    AudioObjectType_FrontRight       = (1 SHL 2),   // SPEAKER_FRONT_RIGHT is the WAVEFORMATEXTENSIBLE channel mask equivalent
-    AudioObjectType_FrontCenter      = (1 SHL 3),   // SPEAKER_FRONT_CENTER is the WAVEFORMATEXTENSIBLE channel mask equivalent
-    AudioObjectType_LowFrequency     = (1 SHL 4),   // SPEAKER_LOW_FREQUENCY  is the WAVEFORMATEXTENSIBLE channel mask equivalent - This audio object is not spatialized and therefore doesn't count against spatial audio object resource limits
-    AudioObjectType_SideLeft         = (1 SHL 5),   // SPEAKER_SIDE_LEFT is the WAVEFORMATEXTENSIBLE channel mask equivalent
-    AudioObjectType_SideRight        = (1 SHL 6),   // SPEAKER_SIDE_RIGHT is the WAVEFORMATEXTENSIBLE channel mask equivalent
-    AudioObjectType_BackLeft         = (1 SHL 7),   // SPEAKER_BACK_LEFT is the WAVEFORMATEXTENSIBLE channel mask equivalent
-    AudioObjectType_BackRight        = (1 SHL 8),   // SPEAKER_BACK_RIGHT is the WAVEFORMATEXTENSIBLE channel mask equivalent
-    AudioObjectType_TopFrontLeft     = (1 SHL 9),   // SPEAKER_TOP_FRONT_LEFT is the WAVEFORMATEXTENSIBLE channel mask equivalent
-    AudioObjectType_TopFrontRight    = (1 SHL 10),  // SPEAKER_TOP_FRONT_RIGHT is the WAVEFORMATEXTENSIBLE channel mask equivalent
-    AudioObjectType_TopBackLeft      = (1 SHL 11),  // SPEAKER_TOP_BACK_LEFT is the WAVEFORMATEXTENSIBLE channel mask equivalent
-    AudioObjectType_TopBackRight     = (1 SHL 12),  // SPEAKER_TOP_BACK_RIGHT is the WAVEFORMATEXTENSIBLE channel mask equivalent
-    AudioObjectType_BottomFrontLeft  = (1 SHL 13),
-    AudioObjectType_BottomFrontRight = (1 SHL 14),
-    AudioObjectType_BottomBackLeft   = (1 SHL 15),
-    AudioObjectType_BottomBackRight  = (1 SHL 16),
-    AudioObjectType_BackCenter       = (1 SHL 17),
-    AudioObjectType_StereoLeft       = (1 SHL 18),
-    AudioObjectType_StereoRight      = (1 SHL 19));
+    AudioObjectType_None = 0,
+                     AudioObjectType_Dynamic = (1 SHL 0),
+                     AudioObjectType_FrontLeft = (1 SHL 1),   // SPEAKER_FRONT_LEFT is the WAVEFORMATEXTENSIBLE channel mask equivalent
+    AudioObjectType_FrontRight = (1 SHL 2),   // SPEAKER_FRONT_RIGHT is the WAVEFORMATEXTENSIBLE channel mask equivalent
+    AudioObjectType_FrontCenter = (1 SHL 3),   // SPEAKER_FRONT_CENTER is the WAVEFORMATEXTENSIBLE channel mask equivalent
+    AudioObjectType_LowFrequency = (1 SHL 4),   // SPEAKER_LOW_FREQUENCY  is the WAVEFORMATEXTENSIBLE channel mask equivalent - This audio object is not spatialized and therefore doesn't count against spatial audio object resource limits
+    AudioObjectType_SideLeft = (1 SHL 5),   // SPEAKER_SIDE_LEFT is the WAVEFORMATEXTENSIBLE channel mask equivalent
+    AudioObjectType_SideRight = (1 SHL 6),   // SPEAKER_SIDE_RIGHT is the WAVEFORMATEXTENSIBLE channel mask equivalent
+    AudioObjectType_BackLeft = (1 SHL 7),   // SPEAKER_BACK_LEFT is the WAVEFORMATEXTENSIBLE channel mask equivalent
+    AudioObjectType_BackRight = (1 SHL 8),   // SPEAKER_BACK_RIGHT is the WAVEFORMATEXTENSIBLE channel mask equivalent
+    AudioObjectType_TopFrontLeft = (1 SHL 9),   // SPEAKER_TOP_FRONT_LEFT is the WAVEFORMATEXTENSIBLE channel mask equivalent
+    AudioObjectType_TopFrontRight = (1 SHL 10),  // SPEAKER_TOP_FRONT_RIGHT is the WAVEFORMATEXTENSIBLE channel mask equivalent
+    AudioObjectType_TopBackLeft = (1 SHL 11),  // SPEAKER_TOP_BACK_LEFT is the WAVEFORMATEXTENSIBLE channel mask equivalent
+    AudioObjectType_TopBackRight = (1 SHL 12),  // SPEAKER_TOP_BACK_RIGHT is the WAVEFORMATEXTENSIBLE channel mask equivalent
+    AudioObjectType_BottomFrontLeft = (1 SHL 13),
+                     AudioObjectType_BottomFrontRight = (1 SHL 14),
+                     AudioObjectType_BottomBackLeft = (1 SHL 15),
+                     AudioObjectType_BottomBackRight = (1 SHL 16),
+                     AudioObjectType_BackCenter = (1 SHL 17),
+                     AudioObjectType_StereoLeft = (1 SHL 18),
+                     AudioObjectType_StereoRight = (1 SHL 19));
 
 
   PSPATIAL_AUDIO_STREAM_OPTIONS = ^SPATIAL_AUDIO_STREAM_OPTIONS;
   SPATIAL_AUDIO_STREAM_OPTIONS = (
     SPATIAL_AUDIO_STREAM_OPTIONS_NONE = $00,
-    SPATIAL_AUDIO_STREAM_OPTIONS_OFFLOAD = $01
-  );
+                                  SPATIAL_AUDIO_STREAM_OPTIONS_OFFLOAD = $01
+    );
 
 type
 
@@ -146,6 +147,7 @@ type
 
 
   PSpatialAudioObjectRenderStreamActivationParams = ^SpatialAudioObjectRenderStreamActivationParams;
+
   SpatialAudioObjectRenderStreamActivationParams = record
     ObjectFormat: PWAVEFORMATEX;              // Format descriptor for a single spatial audio objects. All objects must have the same format and must be of type WAVEFORMATEX or WAVEFORMATEXTENSIBLE.
     StaticObjectTypeMask: AudioObjectType;   // (static channel bed mask) mask of static audio object type that are allowed
@@ -158,6 +160,7 @@ type
 
 
   PSpatialAudioObjectRenderStreamActivationParams2 = ^SpatialAudioObjectRenderStreamActivationParams2;
+
   SpatialAudioObjectRenderStreamActivationParams2 = record
     ObjectFormat: PWAVEFORMATEX;              // Format descriptor for a single spatial audio objects. All objects must have the same format and must be of type WAVEFORMATEX or WAVEFORMATEXTENSIBLE.
     StaticObjectTypeMask: AudioObjectType;   // (static channel bed mask) mask of static audio object type that are allowed
@@ -175,7 +178,7 @@ type
   // ================================
   //
   IAudioFormatEnumerator = interface(IUnknown)
-  ['{DCDAA858-895A-4A22-A5EB-67BDA506096D}']
+    ['{DCDAA858-895A-4A22-A5EB-67BDA506096D}']
 
     function GetCount(out count: UINT32): HRESULT; stdcall;
 
@@ -184,6 +187,7 @@ type
     // This method returns format in order of importance, first format is the most favorable format
 
   end;
+
   IID_IAudioFormatEnumerator = IAudioFormatEnumerator;
 
 
@@ -192,8 +196,8 @@ type
   // =================================
   //
   ISpatialAudioObjectBase = interface(IUnknown)
-  ['{CCE0B8F2-8D4D-4EFB-A8CF-3D6ECF1C30E0}']
-    
+    ['{CCE0B8F2-8D4D-4EFB-A8CF-3D6ECF1C30E0}']
+
     function GetBuffer(out buffer: PByte;
                        out bufferLength: UINT32): HRESULT; stdcall;
     //
@@ -218,7 +222,7 @@ type
     //
     // The pointers retrieved by ISpatialAudioObject::GetBuffer should not be used after calling
     // EndUpdatingAudioObjects
-    
+
     function SetEndOfStream(frameCount: UINT32): HRESULT; stdcall;
     // Should be called when submitting the last block of data for the audio object.
     // The frameCount value passed to this function represents the length of the last block of data in frames,
@@ -235,7 +239,7 @@ type
     //
     // ISpatialAudioObject->Release() should be called after calling this method to make the audio object
     // resources available in future passes
-    
+
     function IsActive(out isActive: BOOL): HRESULT; stdcall;
     // When isActive is False, the object cannot be used anymore and Release() should be called
     // to make this audio object resource available in the future
@@ -248,6 +252,7 @@ type
     // Retrieve the audio object type submitted via ActivateSpatialAudioObject
 
   end;
+
   IID_ISpatialAudioObjectBase = ISpatialAudioObjectBase;
 
 
@@ -256,7 +261,7 @@ type
   // =============================
   //
   ISpatialAudioObject = interface(ISpatialAudioObjectBase)
-  ['{DDE28967-521B-46E5-8F00-BD6F2BC8AB1D}']
+    ['{DDE28967-521B-46E5-8F00-BD6F2BC8AB1D}']
 
 
     // Right-handed Cartesian, where each unit represents 1 meter
@@ -282,7 +287,7 @@ type
                          y: FLOAT;
                          z: FLOAT): HRESULT; stdcall;
 
-    
+
     function SetVolume(volume: FLOAT): HRESULT; stdcall; // Volume scale, value between 0.0 and 1.0
     // Set audio-object amplitude, PCM, values multiplier which will be applied before passing data
     // to the audio rendering engine
@@ -298,6 +303,7 @@ type
     // SPTLAUDCLNT_E_RESOURCES_INVALIDATED
 
   end;
+
   IID_ISpatialAudioObject = ISpatialAudioObject;
 
 
@@ -305,7 +311,7 @@ type
   // =============================================
   //
   ISpatialAudioObjectRenderStreamBase = interface(IUnknown)
-  ['{FEAAF403-C1D8-450D-AA05-E0CCEE7502A8}']
+    ['{FEAAF403-C1D8-450D-AA05-E0CCEE7502A8}']
 
     function GetAvailableDynamicObjectCount(out value: UINT32): HRESULT; stdcall;
     // Get available dynamic object count for this stream
@@ -313,27 +319,27 @@ type
     function GetService(const riid: REFIID;
                         out service: Pointer): HRESULT; stdcall;
     // Accesses additional services from the spatial audio client
-    
+
     function Start(): HRESULT; stdcall;
     // Streaming control method that starts the spatial audio stream.
     // Starting the stream causes data flow between the endpoint buffer and the audio engine.
     // The first time this method is called, the stream's audio clock position will be at 0.
     // Otherwise, the clock resumes from its position at the time that the stream was last paused.
-    
+
     function Stop(): HRESULT; stdcall;
     // Streaming control method to pause the spatial audio stream.
     // Pausing the stream causes data to stop flowing between the endpoint buffer and the audio engine.
     // Pausing the stream freezes the stream's audio clock at its current stream position.
     // A subsequent call to Start() causes the stream to resume running from that position.
     // This method fails if it is called when the stream is not started.
-    
+
     function Reset(): HRESULT; stdcall;
     // Streaming control method to reset a stopped audio stream.
     // Resetting the stream flushes all pending data and resets the audio clock stream position to 0.
     // Resetting the stream will cause all active ISpatialAudioObjectBase to be revoked.
     // A subsequent call to Start() causes the stream to start from 0 position.
     // This method fails if it is called on a stream that is not stopped.
-    
+
     function BeginUpdatingAudioObjects(out availableDynamicObjectCount: UINT32;
                                        out frameCountPerBuffer: UINT32): HRESULT; stdcall;
     // Begin Supplying Audio-Object Data
@@ -351,7 +357,7 @@ type
     // For each BeginUpdatingAudioObjects() call, there should be a corresponding EndUpdatingAudioObjects() call.
     // If BeginUpdatingAudioObjects() is called twice without calling EndUpdatingAudioObjects(), the second call to
     // BeginUpdatingAudioObjects() will return SPTLAUDCLNT_E_OUT_OF_ORDER
-    
+
     function EndUpdatingAudioObjects(): HRESULT; stdcall;
     // End Supplying Audio-Object Data
     // This method must be called after BeginUpdatingAudioObjects was successfully executed and the API caller
@@ -363,6 +369,7 @@ type
     // return SPTLAUDCLNT_E_OUT_OF_ORDER
 
   end;
+
   IID_ISpatialAudioObjectRenderStreamBase = ISpatialAudioObjectRenderStreamBase;
 
 
@@ -370,9 +377,9 @@ type
   // =========================================
   //
   ISpatialAudioObjectRenderStream = interface(ISpatialAudioObjectRenderStreamBase)
-  ['{BAB5F473-B423-477B-85F5-B5A332A04153}']
-    
-    function ActivateSpatialAudioObject(_type: AudioObjectType ;
+    ['{BAB5F473-B423-477B-85F5-B5A332A04153}']
+
+    function ActivateSpatialAudioObject(_type: AudioObjectType;
                                         out audioObject: ISpatialAudioObject): HRESULT; stdcall;
     // Activate an ISpatialAudioObject for rendering, counts against total resources
     // This method will return SPTLAUDCLNT_E_NO_MORE_OBJECTS if all audio objects are
@@ -381,6 +388,7 @@ type
     // and there is no more data to feed or after SetEndOfStream()
 
   end;
+
   IID_ISpatialAudioObjectRenderStream = ISpatialAudioObjectRenderStream;
 
 
@@ -391,15 +399,16 @@ type
   // ISpatialAudioObjectRenderStreamBase state.
   //
   ISpatialAudioObjectRenderStreamNotify = interface(IUnknown)
-  ['{DDDF83E6-68D7-4C70-883F-A1836AFB4A50}']
-    
+    ['{DDDF83E6-68D7-4C70-883F-A1836AFB4A50}']
+
     function OnAvailableDynamicObjectCountChange(sender: ISpatialAudioObjectRenderStreamBase;
                                                  hnsComplianceDeadlineTime: LONGLONG;         // When the spatial resource limit will be enforced in 100-nanosecond units, 0 = Now
-                                                 availableDynamicObjectCountChange: UINT32): HRESULT; stdcall; // How many dynamic audio objects will be available in hnsComplianceDeadlineTime
+      availableDynamicObjectCountChange: UINT32): HRESULT; stdcall; // How many dynamic audio objects will be available in hnsComplianceDeadlineTime
     // Called when audio object rendering capacity is about to change for the stream
     // and let API client knows how many dynamic audio objects will be available
     // in hnsComplianceDeadlineTime
   end;
+
   IID_ISpatialAudioObjectRenderStreamNotify = ISpatialAudioObjectRenderStreamNotify;
 
 
@@ -408,7 +417,7 @@ type
   // =============================
   //
   ISpatialAudioClient = interface(IUnknown)
-  ['{BBF8E066-AAAA-49BE-9A4D-FD2A858EA27F}']
+    ['{BBF8E066-AAAA-49BE-9A4D-FD2A858EA27F}']
 
     function GetStaticObjectPosition(_type: AudioObjectType;
                                      out x: FLOAT;
@@ -416,7 +425,7 @@ type
                                      out z: FLOAT): HRESULT; stdcall;
     // Return the position of the input static object type
     // This method returns E_INVALIDARG if "type" is not a static audio object type
-    
+
     function GetNativeStaticObjectTypeMask(out mask: AudioObjectType): HRESULT; stdcall;
     // Return the native static object mask / channel bed mask of the currently active spatial
     // rendering engine
@@ -426,19 +435,19 @@ type
 
     function GetSupportedAudioObjectFormatEnumerator(out enumerator: IAudioFormatEnumerator): HRESULT; stdcall;
     // List all supported object formats, the first on in the list is the most preferable format
-    
+
     function GetMaxFrameCount(objectFormat: PWAVEFORMATEX;
                               out frameCountPerBuffer: UINT32): HRESULT; stdcall;
     // Get max possible frame count per processing pass.
     // This value will change when the endpoint cadence gets changed
     // The value returned by this method can be used to allocate source buffer
     // Must specify same format which stream will be created
-    
+
     function IsAudioObjectFormatSupported(objectFormat: PWAVEFORMATEX): HRESULT; stdcall;
     // Indicates whether ISpatialAudioObjectRenderStream supports a particular format
     // If format is not supported, this method returns AUDCLNT_E_UNSUPPORTED_FORMAT
     // otherwise it will return S_OK
-    
+
     function IsSpatialAudioStreamAvailable(const streamUuid: REFIID;
                                            auxiliaryInfo: PPROPVARIANT): HRESULT; stdcall;
     // Check whether the currently active spatial rendering engine supports spatial audio
@@ -452,11 +461,11 @@ type
     // If the stream cannot be activated for the currently active rendering engine, this
     // method returns SPTLAUDCLNT_E_STREAM_IS_NOT_AVAILABLE.
     // If the format is not supported, the method returns SPTLAUDCLNT_E_METADATA_FORMAT_IS_NOT_SUPPORTED
-    
+
     //
     function ActivateSpatialAudioStream(activationParams: PPROPVARIANT;  // activation parameters for the required streams for example SpatialAudioObjectRenderStreamForMetadataActivationParams
-                                        const riid: REFIID;                    // spatial audio stream interface UUID for example ISpatialAudioObjectRenderStreamForMetadata
-                                        out stream: Pointer): HRESULT; stdcall;
+      const riid: REFIID;                    // spatial audio stream interface UUID for example ISpatialAudioObjectRenderStreamForMetadata
+      out stream: Pointer): HRESULT; stdcall;
     // Activate and initialize spatial audio stream using one of the spatial audio stream activation structures.
     // for example:
     //    SpatialAudioObjectRenderStreamForMetadataActivationParams params = {};
@@ -467,6 +476,7 @@ type
     //    activateParams.blob.pBlobData = reinterpret_cast<BYTE*>(&params);
 
   end;
+
   IID_ISpatialAudioClient = ISpatialAudioClient;
 
 
@@ -474,9 +484,9 @@ type
   // =============================
   //
   ISpatialAudioClient2 = interface(ISpatialAudioClient)
-  ['{caabe452-a66a-4bee-a93e-e320463f6a53}']
+    ['{caabe452-a66a-4bee-a93e-e320463f6a53}']
     function IsOffloadCapable(category: AUDIO_STREAM_CATEGORY;
-                             {out} out isOffloadCapable: BOOL): HRESULT; stdcall;
+    {out} out isOffloadCapable: BOOL): HRESULT; stdcall;
     // This method is called to find out if the audio rendering endpoint that the
     // ISpatialAudioClient2 was created on supports hardware offloaded audio processing.
     // The method also considers the capabilities of the AUDIO_STREAM_CATEGORY value that will
@@ -485,7 +495,7 @@ type
     function GetMaxFrameCountForCategory(category: AUDIO_STREAM_CATEGORY;
                                          offloadEnabled: BOOL;
                                          objectFormat: PWAVEFORMATEX;
-                                         {out} out frameCountPerBuffer: UINT32): HRESULT; stdcall;
+    {out} out frameCountPerBuffer: UINT32): HRESULT; stdcall;
     // Get max possible frame count per processing pass. This value will change if the endpoint cadence changes.
     // The value returned by this method can be used to allocate source buffer.
     // The caller must specify same AUDIO_STREAM_CATEGORY value and WAVEFORMATEX that will be used when creating the stream.
@@ -493,6 +503,7 @@ type
     // SPATIAL_AUDIO_STREAM_OPTIONS_OFFLOAD flag.
 
   end;
+
   IID_ISpatialAudioClient2 = ISpatialAudioClient2;
 
 
@@ -531,10 +542,11 @@ type
 
 
   PSpatialAudioClientActivationParams = ^SpatialAudioClientActivationParams;
+
   SpatialAudioClientActivationParams = record
     tracingContextId: TGUID;
     appId: TGUID;
-    majorVersion:  Integer;
+    majorVersion: Integer;
     minorVersion1: Integer;
     minorVersion2: Integer;
     minorVersion3: Integer;
@@ -546,19 +558,19 @@ const
   //Since XE2 you have to hardcode this.
   //The AUDCLNT_ERR macro is defined in PfPack.AudioClient.pas
 
-  SPTLAUDCLNT_E_DESTROYED                           =   $88890100; //   AUDCLNT_ERR($0100)
-  SPTLAUDCLNT_E_OUT_OF_ORDER                        =   $88890101; //   AUDCLNT_ERR($0101)
-  SPTLAUDCLNT_E_RESOURCES_INVALIDATED               =   $88890102; //   AUDCLNT_ERR($0102)
-  SPTLAUDCLNT_E_NO_MORE_OBJECTS                     =   $88890103; //   AUDCLNT_ERR($0103)
-  SPTLAUDCLNT_E_PROPERTY_NOT_SUPPORTED              =   $88890104; //   AUDCLNT_ERR($0104)
-  SPTLAUDCLNT_E_ERRORS_IN_OBJECT_CALLS              =   $88890105; //   AUDCLNT_ERR($0105)
-  SPTLAUDCLNT_E_METADATA_FORMAT_NOT_SUPPORTED       =   $88890106; //   AUDCLNT_ERR($0106)
-  SPTLAUDCLNT_E_STREAM_NOT_AVAILABLE                =   $88890107; //   AUDCLNT_ERR($0107)
-  SPTLAUDCLNT_E_INVALID_LICENSE                     =   $88890108; //   AUDCLNT_ERR($0108)
-  SPTLAUDCLNT_E_STREAM_NOT_STOPPED                  =   $8889010a; //   AUDCLNT_ERR($010a)
-  SPTLAUDCLNT_E_STATIC_OBJECT_NOT_AVAILABLE         =   $8889010b; //   AUDCLNT_ERR($010b)
-  SPTLAUDCLNT_E_OBJECT_ALREADY_ACTIVE               =   $8889010c; //   AUDCLNT_ERR($010c)
-  SPTLAUDCLNT_E_INTERNAL                            =   $8889010d; //   AUDCLNT_ERR($010d)
+  SPTLAUDCLNT_E_DESTROYED = $88890100; //   AUDCLNT_ERR($0100)
+  SPTLAUDCLNT_E_OUT_OF_ORDER = $88890101; //   AUDCLNT_ERR($0101)
+  SPTLAUDCLNT_E_RESOURCES_INVALIDATED = $88890102; //   AUDCLNT_ERR($0102)
+  SPTLAUDCLNT_E_NO_MORE_OBJECTS = $88890103; //   AUDCLNT_ERR($0103)
+  SPTLAUDCLNT_E_PROPERTY_NOT_SUPPORTED = $88890104; //   AUDCLNT_ERR($0104)
+  SPTLAUDCLNT_E_ERRORS_IN_OBJECT_CALLS = $88890105; //   AUDCLNT_ERR($0105)
+  SPTLAUDCLNT_E_METADATA_FORMAT_NOT_SUPPORTED = $88890106; //   AUDCLNT_ERR($0106)
+  SPTLAUDCLNT_E_STREAM_NOT_AVAILABLE = $88890107; //   AUDCLNT_ERR($0107)
+  SPTLAUDCLNT_E_INVALID_LICENSE = $88890108; //   AUDCLNT_ERR($0108)
+  SPTLAUDCLNT_E_STREAM_NOT_STOPPED = $8889010a; //   AUDCLNT_ERR($010a)
+  SPTLAUDCLNT_E_STATIC_OBJECT_NOT_AVAILABLE = $8889010b; //   AUDCLNT_ERR($010b)
+  SPTLAUDCLNT_E_OBJECT_ALREADY_ACTIVE = $8889010c; //   AUDCLNT_ERR($010c)
+  SPTLAUDCLNT_E_INTERNAL = $8889010d; //   AUDCLNT_ERR($010d)
 
   // Additional Prototypes for ALL interfaces
 
@@ -566,6 +578,6 @@ const
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

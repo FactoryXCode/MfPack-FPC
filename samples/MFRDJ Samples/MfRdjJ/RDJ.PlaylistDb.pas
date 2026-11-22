@@ -65,23 +65,25 @@ unit RDJ.PlaylistDb;
 
 interface
 
-uses Rdj.Platform,
-Rdj.SQLite,
-LMessages,
+uses
+  Rdj.Platform,
+  Rdj.SQLite,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   {System}
   SysUtils,
   Classes,
   FxProxy.IOUtils,
-  {FireDAC}  {Application}
+  {FireDAC}{Application}
   RDJ.PlaylistTypes;
 
 type
 
   TRDJPlaylistDb = class
+
   private
 
     FConnection: TFDConnection;
@@ -137,15 +139,16 @@ type
     property DbFileName: string read FDbFileName;
   end;
 
-  // Helpers
-  function RDJDateTimeToDbStr(const AValue: TDateTime): string;
-  function RDJDbStrToDateTime(const S: string): TDateTime;
+// Helpers
+function RDJDateTimeToDbStr(const AValue: TDateTime): string;
+function RDJDbStrToDateTime(const S: string): TDateTime;
 
 
 implementation
 
 
 procedure TRDJPlaylistDb.SetupConnection();
+
 begin
 
   FConnection.LoginPrompt := False;
@@ -160,6 +163,7 @@ end;
 
 
 constructor TRDJPlaylistDb.Create();
+
 begin
 
   inherited Create;
@@ -177,6 +181,7 @@ end;
 
 
 destructor TRDJPlaylistDb.Destroy();
+
 begin
 
   Close;
@@ -189,6 +194,7 @@ end;
 
 
 procedure TRDJPlaylistDb.Open(const ADbFileName: string);
+
 begin
 
   if (Trim(ADbFileName) = '') then
@@ -210,6 +216,7 @@ end;
 
 
 procedure TRDJPlaylistDb.Close();
+
 begin
 
   if FTransaction.Active then
@@ -223,6 +230,7 @@ end;
 
 
 function TRDJPlaylistDb.IsOpen(): Boolean;
+
 begin
 
   Result := FConnected and FConnection.Connected;
@@ -230,6 +238,7 @@ end;
 
 
 procedure TRDJPlaylistDb.BeginTx();
+
 begin
 
   if not FTransaction.Active then
@@ -238,6 +247,7 @@ end;
 
 
 procedure TRDJPlaylistDb.CommitTx();
+
 begin
 
   if FTransaction.Active then
@@ -246,6 +256,7 @@ end;
 
 
 procedure TRDJPlaylistDb.RollbackTx();
+
 begin
 
   if FTransaction.Active then
@@ -316,7 +327,7 @@ begin
     while not Q.Eof do
       begin
         if SameText(Q.FieldByName('name').AsWideString,
-                    AColumnName) then
+          AColumnName) then
           begin
             Result := True;
             Exit;
@@ -333,10 +344,11 @@ end;
 procedure TRDJPlaylistDb.AddColumnIfMissing(const ATableName: string;
                                             const AColumnName: string;
                                             const AColumnSql: string);
+
 begin
 
   if ColumnExists(ATableName,
-                  AColumnName) then
+    AColumnName) then
     Exit;
 
   ExecSQL('ALTER TABLE ' + ATableName + ' ADD COLUMN ' + AColumnSql);
@@ -344,72 +356,73 @@ end;
 
 
 procedure TRDJPlaylistDb.CreateSchema();
+
 begin
 
   ExecSQL('CREATE TABLE IF NOT EXISTS Tracks (' +
-          '  TrackID INTEGER PRIMARY KEY AUTOINCREMENT,' +
-          '  FullPath TEXT NOT NULL UNIQUE,' +
-          '  FileName TEXT,' +
-          '  FileExt TEXT,' +
-          '  Title TEXT,' +
-          '  Artist TEXT,' +
-          '  Album TEXT,' +
-          '  AlbumArtist TEXT,' +
-          '  Genre TEXT,' +
-          '  Comment TEXT,' +
-          '  Composer TEXT,' +
-          '  Year INTEGER DEFAULT 0,' +
-          '  TrackNumber INTEGER DEFAULT 0,' +
-          '  DiscNumber INTEGER DEFAULT 0,' +
-          '  DurationMs INTEGER DEFAULT 0,' +
-          '  BitRate INTEGER DEFAULT 0,' +
-          '  BitrateKbps INTEGER DEFAULT 0,' +
-          '  SampleRate INTEGER DEFAULT 0,' +
-          '  Channels INTEGER DEFAULT 0,' +
-          '  BitsPerSample INTEGER DEFAULT 0,' +
-          '  Codec TEXT,' +
-          '  QualityLabel TEXT,' +
-          '  BPM REAL DEFAULT 0,' +
-          '  MusicalKey TEXT,' +
-          '  GainDb REAL DEFAULT 0,' +
-          '  FileSize INTEGER DEFAULT 0,' +
-          '  FileModifiedUtc TEXT,' +
-          '  DateAddedUtc TEXT,' +
-          '  LastScanUtc TEXT,' +
-          '  Rating INTEGER DEFAULT 0,' +
-          '  ColorTag INTEGER DEFAULT 0,' +
-          '  CueInMs INTEGER DEFAULT 0,' +
-          '  CueOutMs INTEGER DEFAULT 0,' +
-          '  IsMissing INTEGER DEFAULT 0' +
-          ');');
+    '  TrackID INTEGER PRIMARY KEY AUTOINCREMENT,' +
+    '  FullPath TEXT NOT NULL UNIQUE,' +
+    '  FileName TEXT,' +
+    '  FileExt TEXT,' +
+    '  Title TEXT,' +
+    '  Artist TEXT,' +
+    '  Album TEXT,' +
+    '  AlbumArtist TEXT,' +
+    '  Genre TEXT,' +
+    '  Comment TEXT,' +
+    '  Composer TEXT,' +
+    '  Year INTEGER DEFAULT 0,' +
+    '  TrackNumber INTEGER DEFAULT 0,' +
+    '  DiscNumber INTEGER DEFAULT 0,' +
+    '  DurationMs INTEGER DEFAULT 0,' +
+    '  BitRate INTEGER DEFAULT 0,' +
+    '  BitrateKbps INTEGER DEFAULT 0,' +
+    '  SampleRate INTEGER DEFAULT 0,' +
+    '  Channels INTEGER DEFAULT 0,' +
+    '  BitsPerSample INTEGER DEFAULT 0,' +
+    '  Codec TEXT,' +
+    '  QualityLabel TEXT,' +
+    '  BPM REAL DEFAULT 0,' +
+    '  MusicalKey TEXT,' +
+    '  GainDb REAL DEFAULT 0,' +
+    '  FileSize INTEGER DEFAULT 0,' +
+    '  FileModifiedUtc TEXT,' +
+    '  DateAddedUtc TEXT,' +
+    '  LastScanUtc TEXT,' +
+    '  Rating INTEGER DEFAULT 0,' +
+    '  ColorTag INTEGER DEFAULT 0,' +
+    '  CueInMs INTEGER DEFAULT 0,' +
+    '  CueOutMs INTEGER DEFAULT 0,' +
+    '  IsMissing INTEGER DEFAULT 0' +
+    ');');
 
   ExecSQL('CREATE TABLE IF NOT EXISTS LibraryFolders (' +
-          '  FolderID INTEGER PRIMARY KEY AUTOINCREMENT,' +
-          '  FolderPath TEXT NOT NULL UNIQUE,' +
-          '  Recursive INTEGER DEFAULT 1,' +
-          '  Enabled INTEGER DEFAULT 1,' +
-          '  DateAddedUtc TEXT' +
-          ');');
+    '  FolderID INTEGER PRIMARY KEY AUTOINCREMENT,' +
+    '  FolderPath TEXT NOT NULL UNIQUE,' +
+    '  Recursive INTEGER DEFAULT 1,' +
+    '  Enabled INTEGER DEFAULT 1,' +
+    '  DateAddedUtc TEXT' +
+    ');');
 
   ExecSQL('CREATE TABLE IF NOT EXISTS Playlists (' +
-          '  PlaylistID INTEGER PRIMARY KEY AUTOINCREMENT,' +
-          '  Name TEXT NOT NULL,' +
-          '  Notes TEXT,' +
-          '  CreatedUtc TEXT,' +
-          '  ModifiedUtc TEXT' +
-          ');');
+    '  PlaylistID INTEGER PRIMARY KEY AUTOINCREMENT,' +
+    '  Name TEXT NOT NULL,' +
+    '  Notes TEXT,' +
+    '  CreatedUtc TEXT,' +
+    '  ModifiedUtc TEXT' +
+    ');');
 
   ExecSQL('CREATE TABLE IF NOT EXISTS PlaylistItems (' +
-          '  PlaylistItemID INTEGER PRIMARY KEY AUTOINCREMENT,' +
-          '  PlaylistID INTEGER NOT NULL,' +
-          '  TrackID INTEGER NOT NULL,' +
-          '  SortOrder INTEGER NOT NULL,' +
-          '  CueInMs INTEGER DEFAULT 0,' +
-          '  CueOutMs INTEGER DEFAULT 0,' +
-          '  UserNote TEXT,' +
-          '  FOREIGN KEY (PlaylistID) REFERENCES Playlists(PlaylistID),' +
-          '  FOREIGN KEY (TrackID) REFERENCES Tracks(TrackID)' +
-          ');');
+    '  PlaylistItemID INTEGER PRIMARY KEY AUTOINCREMENT,' +
+    '  PlaylistID INTEGER NOT NULL,' +
+    '  TrackID INTEGER NOT NULL,' +
+    '  SortOrder INTEGER NOT NULL,' +
+    '  CueInMs INTEGER DEFAULT 0,' +
+    '  CueOutMs INTEGER DEFAULT 0,' +
+    '  UserNote TEXT,' +
+    '  FOREIGN KEY (PlaylistID) REFERENCES Playlists(PlaylistID),' +
+    '  FOREIGN KEY (TrackID) REFERENCES Tracks(TrackID)' +
+    ');');
 
   AddColumnIfMissing('Tracks',
                      'BitrateKbps',
@@ -474,54 +487,54 @@ begin
   try
     Q.Connection := FConnection;
 
-    if ExistingID = 0 then
+    if (ExistingID = 0) then
       begin
         Q.SQL.Text := 'INSERT INTO Tracks (' +
-                      '  FullPath, FileName, FileExt, Title, Artist, Album, AlbumArtist, Genre, Comment, Composer,' +
-                      '  Year, TrackNumber, DiscNumber, DurationMs, BitRate, BitrateKbps, SampleRate, Channels, BitsPerSample, Codec, QualityLabel, BPM, MusicalKey, GainDb,' +
-                      '  FileSize, FileModifiedUtc, DateAddedUtc, LastScanUtc, Rating, ColorTag, CueInMs, CueOutMs, IsMissing' +
-                      ') VALUES (' +
-                      '  :FullPath, :FileName, :FileExt, :Title, :Artist, :Album, :AlbumArtist, :Genre, :Comment, :Composer,' +
-                      '  :Year, :TrackNumber, :DiscNumber, :DurationMs, :BitRate, :BitrateKbps, :SampleRate, :Channels, :BitsPerSample, :Codec, :QualityLabel, :BPM, :MusicalKey, :GainDb,' +
-                      '  :FileSize, :FileModifiedUtc, :DateAddedUtc, :LastScanUtc, :Rating, :ColorTag, :CueInMs, :CueOutMs, :IsMissing' +
-                      ')';
+          '  FullPath, FileName, FileExt, Title, Artist, Album, AlbumArtist, Genre, Comment, Composer,' +
+          '  Year, TrackNumber, DiscNumber, DurationMs, BitRate, BitrateKbps, SampleRate, Channels, BitsPerSample, Codec, QualityLabel, BPM, MusicalKey, GainDb,' +
+          '  FileSize, FileModifiedUtc, DateAddedUtc, LastScanUtc, Rating, ColorTag, CueInMs, CueOutMs, IsMissing' +
+          ') VALUES (' +
+          '  :FullPath, :FileName, :FileExt, :Title, :Artist, :Album, :AlbumArtist, :Genre, :Comment, :Composer,' +
+          '  :Year, :TrackNumber, :DiscNumber, :DurationMs, :BitRate, :BitrateKbps, :SampleRate, :Channels, :BitsPerSample, :Codec, :QualityLabel, :BPM, :MusicalKey, :GainDb,' +
+          '  :FileSize, :FileModifiedUtc, :DateAddedUtc, :LastScanUtc, :Rating, :ColorTag, :CueInMs, :CueOutMs, :IsMissing' +
+          ')';
       end
     else
       begin
         Q.SQL.Text := 'UPDATE Tracks SET ' +
-                      '  FileName = :FileName,' +
-                      '  FileExt = :FileExt,' +
-                      '  Title = :Title,' +
-                      '  Artist = :Artist,' +
-                      '  Album = :Album,' +
-                      '  AlbumArtist = :AlbumArtist,' +
-                      '  Genre = :Genre,' +
-                      '  Comment = :Comment,' +
-                      '  Composer = :Composer,' +
-                      '  Year = :Year,' +
-                      '  TrackNumber = :TrackNumber,' +
-                      '  DiscNumber = :DiscNumber,' +
-                      '  DurationMs = :DurationMs,' +
-                      '  BitRate = :BitRate,' +
-                      '  BitrateKbps = :BitrateKbps,' +
-                      '  SampleRate = :SampleRate,' +
-                      '  Channels = :Channels,' +
-                      '  BitsPerSample = :BitsPerSample,' +
-                      '  Codec = :Codec,' +
-                      '  QualityLabel = :QualityLabel,' +
-                      '  BPM = :BPM,' +
-                      '  MusicalKey = :MusicalKey,' +
-                      '  GainDb = :GainDb,' +
-                      '  FileSize = :FileSize,' +
-                      '  FileModifiedUtc = :FileModifiedUtc,' +
-                      '  DateAddedUtc = :DateAddedUtc,' +
-                      '  LastScanUtc = :LastScanUtc,' +
-                      '  Rating = :Rating,' +
-                      '  ColorTag = :ColorTag,' +
-                      '  CueInMs = :CueInMs,' +
-                      '  CueOutMs = :CueOutMs,' +
-                      '  IsMissing = :IsMissing ' +
-                      'WHERE TrackID = :TrackID';
+          '  FileName = :FileName,' +
+          '  FileExt = :FileExt,' +
+          '  Title = :Title,' +
+          '  Artist = :Artist,' +
+          '  Album = :Album,' +
+          '  AlbumArtist = :AlbumArtist,' +
+          '  Genre = :Genre,' +
+          '  Comment = :Comment,' +
+          '  Composer = :Composer,' +
+          '  Year = :Year,' +
+          '  TrackNumber = :TrackNumber,' +
+          '  DiscNumber = :DiscNumber,' +
+          '  DurationMs = :DurationMs,' +
+          '  BitRate = :BitRate,' +
+          '  BitrateKbps = :BitrateKbps,' +
+          '  SampleRate = :SampleRate,' +
+          '  Channels = :Channels,' +
+          '  BitsPerSample = :BitsPerSample,' +
+          '  Codec = :Codec,' +
+          '  QualityLabel = :QualityLabel,' +
+          '  BPM = :BPM,' +
+          '  MusicalKey = :MusicalKey,' +
+          '  GainDb = :GainDb,' +
+          '  FileSize = :FileSize,' +
+          '  FileModifiedUtc = :FileModifiedUtc,' +
+          '  DateAddedUtc = :DateAddedUtc,' +
+          '  LastScanUtc = :LastScanUtc,' +
+          '  Rating = :Rating,' +
+          '  ColorTag = :ColorTag,' +
+          '  CueInMs = :CueInMs,' +
+          '  CueOutMs = :CueOutMs,' +
+          '  IsMissing = :IsMissing ' +
+          'WHERE TrackID = :TrackID';
       end;
 
     Q.ParamByName('FileName').AsWideString := ATrack.FileName;
@@ -598,7 +611,7 @@ begin
 
     Q.Connection := FConnection;
     Q.SQL.Text := 'INSERT INTO Playlists (Name, Notes, CreatedUtc, ModifiedUtc) ' +
-                  'VALUES (:Name, :Notes, :CreatedUtc, :ModifiedUtc)';
+      'VALUES (:Name, :Notes, :CreatedUtc, :ModifiedUtc)';
 
     Q.ParamByName('Name').AsWideString := AName;
     Q.ParamByName('Notes').AsWideString := ANotes;
@@ -627,7 +640,7 @@ begin
 
     Q.Connection := FConnection;
     Q.SQL.Text := 'UPDATE Playlists SET Name = :Name, ModifiedUtc = :ModifiedUtc ' +
-                  'WHERE PlaylistID = :PlaylistID';
+      'WHERE PlaylistID = :PlaylistID';
 
     Q.ParamByName('Name').AsWideString := ANewName;
     Q.ParamByName('ModifiedUtc').AsWideString := RDJDateTimeToDbStr(Now);
@@ -701,10 +714,10 @@ begin
   try
     Q.Connection := FConnection;
     Q.SQL.Text := 'INSERT INTO PlaylistItems (' +
-                  '  PlaylistID, TrackID, SortOrder, CueInMs, CueOutMs, UserNote' +
-                  ') VALUES (' +
-                  '  :PlaylistID, :TrackID, :SortOrder, :CueInMs, :CueOutMs, :UserNote' +
-                  ')';
+      '  PlaylistID, TrackID, SortOrder, CueInMs, CueOutMs, UserNote' +
+      ') VALUES (' +
+      '  :PlaylistID, :TrackID, :SortOrder, :CueInMs, :CueOutMs, :UserNote' +
+      ')';
 
     Q.ParamByName('PlaylistID').AsInteger := APlaylistID;
     Q.ParamByName('TrackID').AsInteger := ATrackID;
@@ -724,6 +737,7 @@ end;
 // Helpers ---------------------------------------------------------------------
 
 function RDJDateTimeToDbStr(const AValue: TDateTime): string;
+
 begin
 
   if (AValue <= 0) then
@@ -735,6 +749,7 @@ end;
 
 
 function RDJDbStrToDateTime(const S: string): TDateTime;
+
 begin
 
   if (Trim(S) = '') then

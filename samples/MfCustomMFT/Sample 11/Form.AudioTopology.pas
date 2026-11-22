@@ -69,7 +69,7 @@ interface
 uses
   LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -125,6 +125,7 @@ implementation
 
 
 procedure TfrmAudioTopology.FormCreate(Sender: TObject);
+
 begin
 
   tbEffectChange(nil);
@@ -145,15 +146,16 @@ begin
   ClosePlayer(True);
 
   while PeekMessageW(Msg,
-                    Handle,
-                    WM_AUDIO_TOPOLOGY_EVENT,
-                    WM_AUDIO_TOPOLOGY_EVENT,
-                    PM_REMOVE) do
+      Handle,
+      WM_AUDIO_TOPOLOGY_EVENT,
+      WM_AUDIO_TOPOLOGY_EVENT,
+      PM_REMOVE) do
     TAudioTopologyNotice(Pointer(Msg.LParam)).Free;
 end;
 
 
 procedure TfrmAudioTopology.ClosePlayer(const ADetachWindow: Boolean);
+
 begin
 
   FReady := False;
@@ -171,6 +173,7 @@ end;
 
 
 procedure TfrmAudioTopology.LogError(const E: Exception);
+
 begin
 
   lblState.Caption := 'Error';
@@ -244,6 +247,7 @@ end;
 
 
 procedure TfrmAudioTopology.btnOpenClick(Sender: TObject);
+
 begin
 
   if not dlgOpenAudio.Execute then
@@ -265,15 +269,16 @@ begin
 
   except
     on E: Exception do
-    begin
-      ClosePlayer(False);
-      LogError(E);
-    end;
+      begin
+        ClosePlayer(False);
+        LogError(E);
+      end;
   end;
 end;
 
 
 procedure TfrmAudioTopology.tbEffectChange(Sender: TObject);
+
 begin
 
   lblDelay.Caption := Format('Delay: %d ms',
@@ -282,16 +287,18 @@ begin
                            [tbMix.Position]);
 
   if Assigned(FPlayer) then
-    try
-      FPlayer.UpdateEffect(Cardinal(tbDelay.Position),
-                           Cardinal(tbMix.Position));
-    except
-      on E: Exception do LogError(E);
-    end;
+  try
+    FPlayer.UpdateEffect(Cardinal(tbDelay.Position),
+                         Cardinal(tbMix.Position));
+  except
+    on E: Exception do
+      LogError(E);
+  end;
 end;
 
 
 procedure TfrmAudioTopology.btnPlayPauseClick(Sender: TObject);
+
 begin
 
   if not FReady or not Assigned(FPlayer) then
@@ -300,15 +307,18 @@ begin
   try
     if FPlaying then
       FPlayer.Pause()
-    else FPlayer.Start();
+    else
+      FPlayer.Start();
 
   except
-    on E: Exception do LogError(E);
+    on E: Exception do
+      LogError(E);
   end;
 end;
 
 
 procedure TfrmAudioTopology.btnStopClick(Sender: TObject);
+
 begin
 
   if not FReady or not Assigned(FPlayer) then
@@ -318,7 +328,8 @@ begin
     FPlayer.Stop();
 
   except
-    on E: Exception do LogError(E);
+    on E: Exception do
+      LogError(E);
   end;
 end;
 

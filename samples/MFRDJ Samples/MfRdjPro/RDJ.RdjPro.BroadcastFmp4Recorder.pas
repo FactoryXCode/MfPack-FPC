@@ -68,12 +68,13 @@ unit RDJ.RdjPro.BroadcastFmp4Recorder;
 
 interface
 
-uses Rdj.Thread,
-Rdj.Platform,
-LMessages,
+uses
+  Rdj.Thread,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ComBaseApi,
   WinApi.WinApiTypes,
@@ -136,14 +137,17 @@ type
   // It forwards every byte unchanged to the real MFCreateFile byte stream.
   // In parallel it extracts ftyp+moov as the init segment and moof+mdat pairs
   // into an in-memory fragment queue for the later MSE/HTTP layer.
-  TRdjProFmp4CaptureByteStream = class(TObject, IInterface, IMFByteStream)
+  TRdjProFmp4CaptureByteStream = class(TObject,
+                                       IInterface,
+                                       IMFByteStream)
+
   private
     FRefCount: Integer;
     FInner: IMFByteStream;
     FNullOutput: Boolean;
     FNullPosition: UInt64;
     FNullLength: UInt64;
-    FAsyncWriteSizes: TQueue<ULONG>;
+    FAsyncWriteSizes: TQueue < ULONG > ;
     FCritSec: SyncObjs.TCriticalSection;
     FTotalBytesWritten: UInt64;
     FNextLogAt: UInt64;
@@ -153,18 +157,20 @@ type
     FParserBufferSize: Integer;
     FInitSegment: TBytes;
     FPendingMoof: TBytes;
-    FFragmentQueue: TQueue<TBytes>;
-    FPatchedFragmentQueue: TQueue<TBytes>;
-    FTrackDecodeTimes: TDictionary<DWORD, UInt64>;
+    FFragmentQueue: TQueue < TBytes > ;
+    FPatchedFragmentQueue: TQueue < TBytes > ;
+    FTrackDecodeTimes: TDictionary < DWORD, UInt64 > ;
     FBoxIndex: UInt64;
     FShuttingDown: Boolean;
 
     procedure ResetBoxObserver();
-    procedure ObserveBytes(const pb: PByte; const cb: ULONG);
+    procedure ObserveBytes(const pb: PByte;
+                           const cb: ULONG);
     procedure ProcessCompleteBox(const ABoxType: DWORD;
                                  const ABoxData: TBytes);
     function PatchFragmentForMse(const AFragment: TBytes;
                                  out APatchedFragment: TBytes): Boolean;
+
   public
 
     constructor Create(const AInner: IMFByteStream);
@@ -173,7 +179,8 @@ type
     // IInterface.  Important: forward unknown interface requests to the real
     // MFCreateFile byte stream.  The MF file byte stream can expose optional
     // interfaces that the fMP4 sink may rely on.
-    function QueryInterface(constref IID: TGUID; out Obj): HResult; stdcall;
+    function QueryInterface(constref IID: TGUID;
+                            out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
 
@@ -183,12 +190,24 @@ type
     function GetCurrentPosition(out pqwPosition: QWORD): HRESULT; stdcall;
     function SetCurrentPosition(const qwPosition: QWORD): HRESULT; stdcall;
     function IsEndOfStream(out pfEndOfStream: BOOL): HRESULT; stdcall;
-    function Read(pb: PByte; cb: ULONG; out pcbRead: ULONG): HRESULT; stdcall;
-    function BeginRead(pb: PByte; cb: ULONG; pCallback: IMFAsyncCallback; punkState: IUnknown): HRESULT; stdcall;
-    function EndRead(pResult: IMFAsyncResult; out pcbRead: ULONG): HRESULT; stdcall;
-    function Write(pb: PByte; cb: ULONG; out pcbWritten: ULONG): HRESULT; stdcall;
-    function BeginWrite(pb: PByte; cb: ULONG; pCallback: IMFAsyncCallback; punkState: IUnknown): HRESULT; stdcall;
-    function EndWrite(pResult: IMFAsyncResult; out pcbWritten: ULONG): HRESULT; stdcall;
+    function Read(pb: PByte;
+                  cb: ULONG;
+                  out pcbRead: ULONG): HRESULT; stdcall;
+    function BeginRead(pb: PByte;
+                       cb: ULONG;
+                       pCallback: IMFAsyncCallback;
+                       punkState: IUnknown): HRESULT; stdcall;
+    function EndRead(pResult: IMFAsyncResult;
+                     out pcbRead: ULONG): HRESULT; stdcall;
+    function Write(pb: PByte;
+                   cb: ULONG;
+                   out pcbWritten: ULONG): HRESULT; stdcall;
+    function BeginWrite(pb: PByte;
+                        cb: ULONG;
+                        pCallback: IMFAsyncCallback;
+                        punkState: IUnknown): HRESULT; stdcall;
+    function EndWrite(pResult: IMFAsyncResult;
+                      out pcbWritten: ULONG): HRESULT; stdcall;
     function Seek(SeekOrigin: MFBYTESTREAM_SEEK_ORIGIN;
                   llSeekOffset: LONGLONG;
                   dwSeekFlags: DWORD;
@@ -213,6 +232,7 @@ type
   end;
 
   TRdjProFmp4Recorder = class(TObject)
+
   private
     FCritSec: SyncObjs.TCriticalSection;
     FQueueLock: SyncObjs.TCriticalSection;
@@ -225,8 +245,8 @@ type
     FVideoStreamIndex: DWORD;
     FAudioStreamIndex: DWORD;
 
-    FVideoQueue: TQueue<IMFSample>;
-    FAudioQueue: TQueue<TRdjProAudioBlock>;
+    FVideoQueue: TQueue < IMFSample > ;
+    FAudioQueue: TQueue < TRdjProAudioBlock > ;
     FPendingAudioBlock: TRdjProAudioBlock;
     FWorker: TThread;
 
@@ -408,48 +428,51 @@ const
   RDJ_FMP4_WRITE_PUBLIC_MP4_FILE = False;
 
 
-// MfPack versions differ a little here. Keep the experimental fMP4 unit
-// self-contained by declaring the two functions we need only when the project
-// has not already provided them. If your MfPack already declares these, define
-// RDJ_MF_FMP4_API_ALREADY_DECLARED before using this unit and remove/skip this
-// block.
-//{$IFNDEF RDJ_MF_FMP4_API_ALREADY_DECLARED}
-//function MFCreateFMPEG4MediaSink(pIByteStream: IMFByteStream;
-//                                 pVideoMediaType: IMFMediaType;
-//                                 pAudioMediaType: IMFMediaType;
-//                                 out ppIMediaSink: IMFMediaSink): HRESULT; stdcall; external 'Mfplat.dll';
+  // MfPack versions differ a little here. Keep the experimental fMP4 unit
+  // self-contained by declaring the two functions we need only when the project
+  // has not already provided them. If your MfPack already declares these, define
+  // RDJ_MF_FMP4_API_ALREADY_DECLARED before using this unit and remove/skip this
+  // block.
+  //{$IFNDEF RDJ_MF_FMP4_API_ALREADY_DECLARED}
+  //function MFCreateFMPEG4MediaSink(pIByteStream: IMFByteStream;
+  //                                 pVideoMediaType: IMFMediaType;
+  //                                 pAudioMediaType: IMFMediaType;
+  //                                 out ppIMediaSink: IMFMediaSink): HRESULT; stdcall; external 'Mfplat.dll';
 
-//function MFCreateSinkWriterFromMediaSink(pMediaSink: IMFMediaSink;
-//                                         pAttributes: IMFAttributes;
-//                                         out ppSinkWriter: IMFSinkWriter): HRESULT; stdcall; external 'Mfreadwrite.dll';
-//{$ENDIF}
+  //function MFCreateSinkWriterFromMediaSink(pMediaSink: IMFMediaSink;
+  //                                         pAttributes: IMFAttributes;
+  //                                         out ppSinkWriter: IMFSinkWriter): HRESULT; stdcall; external 'Mfreadwrite.dll';
+  //{$ENDIF}
 
 
 function RDJReadU32BE(const p: PByte): DWORD; overload;
+
 begin
 
   Result := (DWORD(p[0]) shl 24) or
-            (DWORD(p[1]) shl 16) or
-            (DWORD(p[2]) shl 8) or
-             DWORD(p[3]);
+    (DWORD(p[1]) shl 16) or
+    (DWORD(p[2]) shl 8) or
+    DWORD(p[3]);
 end;
 
 
 function RDJReadU64BE(const p: PByte): UInt64; overload;
+
 begin
 
   Result := (UInt64(p[0]) shl 56) or
-            (UInt64(p[1]) shl 48) or
-            (UInt64(p[2]) shl 40) or
-            (UInt64(p[3]) shl 32) or
-            (UInt64(p[4]) shl 24) or
-            (UInt64(p[5]) shl 16) or
-            (UInt64(p[6]) shl 8) or
-             UInt64(p[7]);
+    (UInt64(p[1]) shl 48) or
+    (UInt64(p[2]) shl 40) or
+    (UInt64(p[3]) shl 32) or
+    (UInt64(p[4]) shl 24) or
+    (UInt64(p[5]) shl 16) or
+    (UInt64(p[6]) shl 8) or
+    UInt64(p[7]);
 end;
 
 
 function RDJFourCCToString(const AType: DWORD): string;
+
 begin
 
   SetLength(Result,
@@ -465,6 +488,7 @@ end;
 { TRdjProFmp4CaptureByteStream }
 
 constructor TRdjProFmp4CaptureByteStream.Create(const AInner: IMFByteStream);
+
 begin
 
   inherited Create();
@@ -473,20 +497,22 @@ begin
   FNullOutput := not Assigned(AInner);
   FNullPosition := 0;
   FNullLength := 0;
-  FAsyncWriteSizes := TQueue<ULONG>.Create();
+  FAsyncWriteSizes := (TQueue < ULONG > .Create());
   FCritSec := SyncObjs.TCriticalSection.Create();
   FTotalBytesWritten := 0;
   FNextLogAt := RDJ_FMP4_CAPTURE_LOG_STEP_BYTES;
   FLoggedFirstWrite := False;
-  FFragmentQueue := TQueue<TBytes>.Create();
-  FPatchedFragmentQueue := TQueue<TBytes>.Create();
-  FTrackDecodeTimes := TDictionary<DWORD, UInt64>.Create();
+  FFragmentQueue := (TQueue < TBytes > .Create());
+  FPatchedFragmentQueue := (TQueue < TBytes > .Create());
+  FTrackDecodeTimes := (TDictionary < DWORD,
+                        UInt64 > .Create());
   FShuttingDown := False;
   ResetBoxObserver();
 end;
 
 
 destructor TRdjProFmp4CaptureByteStream.Destroy();
+
 begin
 
   FInner := nil;
@@ -561,33 +587,36 @@ end;
 
 function RDJReadU32BE(const AData: TBytes;
                       const AOffset: Integer): DWORD; overload;
+
 begin
 
   Result := (DWORD(AData[AOffset]) shl 24) or
-            (DWORD(AData[AOffset + 1]) shl 16) or
-            (DWORD(AData[AOffset + 2]) shl 8) or
-             DWORD(AData[AOffset + 3]);
+    (DWORD(AData[AOffset + 1]) shl 16) or
+    (DWORD(AData[AOffset + 2]) shl 8) or
+    DWORD(AData[AOffset + 3]);
 end;
 
 
 function RDJReadU64BE(const AData: TBytes;
                       const AOffset: Integer): UInt64; overload;
+
 begin
 
   Result := (UInt64(AData[AOffset]) shl 56) or
-            (UInt64(AData[AOffset + 1]) shl 48) or
-            (UInt64(AData[AOffset + 2]) shl 40) or
-            (UInt64(AData[AOffset + 3]) shl 32) or
-            (UInt64(AData[AOffset + 4]) shl 24) or
-            (UInt64(AData[AOffset + 5]) shl 16) or
-            (UInt64(AData[AOffset + 6]) shl 8) or
-             UInt64(AData[AOffset + 7]);
+    (UInt64(AData[AOffset + 1]) shl 48) or
+    (UInt64(AData[AOffset + 2]) shl 40) or
+    (UInt64(AData[AOffset + 3]) shl 32) or
+    (UInt64(AData[AOffset + 4]) shl 24) or
+    (UInt64(AData[AOffset + 5]) shl 16) or
+    (UInt64(AData[AOffset + 6]) shl 8) or
+    UInt64(AData[AOffset + 7]);
 end;
 
 
 procedure RDJWriteU32BE(var AData: TBytes;
                         const AOffset: Integer;
                         const AValue: DWORD);
+
 begin
 
   AData[AOffset] := Byte((AValue shr 24) and $FF);
@@ -600,6 +629,7 @@ end;
 procedure RDJWriteU64BE(var AData: TBytes;
                         const AOffset: Integer;
                         const AValue: UInt64);
+
 begin
 
   AData[AOffset] := Byte((AValue shr 56) and $FF);
@@ -616,12 +646,13 @@ end;
 function RDJCopyBytes(const AData: TBytes;
                       const AOffset: Integer;
                       const ACount: Integer): TBytes;
+
 begin
 
   System.SetLength(Result,
                    ACount);
 
-  if ACount > 0 then
+  if (ACount > 0) then
     Move(AData[AOffset],
          Result[0],
          ACount);
@@ -637,7 +668,7 @@ var
 
 begin
 
-  if ACount <= 0 then
+  if (ACount <= 0) then
     Exit;
 
   OldLen := Length(ADest);
@@ -684,6 +715,7 @@ end;
 
 
 function RDJMakeTfdtBox(const ABaseDecodeTime: UInt64): TBytes;
+
 begin
 
   System.SetLength(Result,
@@ -809,7 +841,7 @@ begin
             Break;
 
           SampleDuration := RDJReadU32BE(ABoxData,
-                                          Cursor);
+                                         Cursor);
           Inc(Cursor,
               4);
         end
@@ -843,13 +875,13 @@ begin
 
   Result := False;
 
-  if Length(ABoxData) < 20 then
+  if (Length(ABoxData) < 20) then
     Exit;
 
   Flags := RDJReadU32BE(ABoxData,
                         8) and $00FFFFFF;
 
-  if (Flags and $000001) = 0 then
+  if ((Flags and $000001) = 0) then
     Exit;
 
   RDJWriteU32BE(ABoxData,
@@ -867,11 +899,11 @@ var
   MdatOffset: Integer;
   RawMoof: TBytes;
   PatchedMoof: TBytes;
-  PatchedTrafList: TList<TBytes>;
-  DataOffsetFixups: TList<Integer>;
-  TrafDataOffsets: TList<DWORD>;
-  TrafTrackIds: TList<DWORD>;
-  TrafDurations: TList<UInt64>;
+  PatchedTrafList: TList < TBytes > ;
+  DataOffsetFixups: TList < Integer > ;
+  TrafDataOffsets: TList < DWORD > ;
+  TrafTrackIds: TList < DWORD > ;
+  TrafDurations: TList < UInt64 > ;
   Cursor: Integer;
   BoxSize: DWORD;
   BoxType: DWORD;
@@ -892,6 +924,7 @@ var
   OldDecodeTime: UInt64;
   OldTrunDataOffset: DWORD;
 
+
   procedure QueuePatchedTraf(const ATraf: TBytes;
                              const ATrackId: DWORD;
                              const ADuration: UInt64;
@@ -911,40 +944,40 @@ begin
   Result := False;
   APatchedFragment := nil;
 
-  if Length(AFragment) < 16 then
+  if (Length(AFragment) < 16) then
     Exit;
 
   MoofSize := RDJReadU32BE(AFragment,
                            0);
 
   if (MoofSize < 8) or
-     (MoofSize > DWORD(Length(AFragment))) or
-     (RDJReadU32BE(AFragment,
-                   4) <> $6D6F6F66) then // moof
+    (MoofSize > DWORD(Length(AFragment))) or
+    (RDJReadU32BE(AFragment,
+                  4) <> $6D6F6F66) then // moof
     Exit;
 
   MdatOffset := Integer(MoofSize);
-  if MdatOffset + 8 > Length(AFragment) then
+  if (MdatOffset + 8 > Length(AFragment)) then
     Exit;
 
   MdatSize := RDJReadU32BE(AFragment,
                            MdatOffset);
 
   if (MdatSize < 8) or
-     (MdatOffset + Integer(MdatSize) > Length(AFragment)) or
-     (RDJReadU32BE(AFragment,
-                   MdatOffset + 4) <> $6D646174) then // mdat
+    (MdatOffset + Integer(MdatSize) > Length(AFragment)) or
+    (RDJReadU32BE(AFragment,
+                  MdatOffset + 4) <> $6D646174) then // mdat
     Exit;
 
   RawMoof := RDJCopyBytes(AFragment,
                           0,
                           Integer(MoofSize));
 
-  PatchedTrafList := TList<TBytes>.Create();
-  DataOffsetFixups := TList<Integer>.Create();
-  TrafDataOffsets := TList<DWORD>.Create();
-  TrafTrackIds := TList<DWORD>.Create();
-  TrafDurations := TList<UInt64>.Create();
+  PatchedTrafList := (TList < TBytes > .Create());
+  DataOffsetFixups := (TList < Integer > .Create());
+  TrafDataOffsets := (TList < DWORD > .Create());
+  TrafTrackIds := (TList < DWORD > .Create());
+  TrafDurations := (TList < UInt64 > .Create());
   try
     PatchedMoof := nil;
     RDJAppendRaw(PatchedMoof,
@@ -953,7 +986,7 @@ begin
                  8); // moof header, size fixed later
 
     Cursor := 8;
-    while Cursor + 8 <= Integer(MoofSize) do
+    while (Cursor + 8 <= Integer(MoofSize)) do
       begin
         BoxSize := RDJReadU32BE(RawMoof,
                                 Cursor);
@@ -961,10 +994,10 @@ begin
                                 Cursor + 4);
 
         if (BoxSize < 8) or
-           (Cursor + Integer(BoxSize) > Integer(MoofSize)) then
+          (Cursor + Integer(BoxSize) > Integer(MoofSize)) then
           Exit;
 
-        if BoxType <> $74726166 then // traf
+        if (BoxType <> $74726166) then // traf
           begin
             RDJAppendRaw(PatchedMoof,
                          RawMoof,
@@ -990,7 +1023,7 @@ begin
 
         SubCursor := Cursor + 8;
         SubEnd := Cursor + Integer(BoxSize);
-        while SubCursor + 8 <= SubEnd do
+        while (SubCursor + 8 <= SubEnd) do
           begin
             SubBoxSize := RDJReadU32BE(RawMoof,
                                        SubCursor);
@@ -998,10 +1031,10 @@ begin
                                        SubCursor + 4);
 
             if (SubBoxSize < 8) or
-               (SubCursor + Integer(SubBoxSize) > SubEnd) then
+              (SubCursor + Integer(SubBoxSize) > SubEnd) then
               Exit;
 
-            if SubBoxType = $74666864 then // tfhd
+            if (SubBoxType = $74666864) then // tfhd
               begin
                 NewBox := RDJPatchTfhdBox(RDJCopyBytes(RawMoof,
                                                        SubCursor,
@@ -1013,7 +1046,8 @@ begin
                 // base_data_offset was removed. It is easier to parse from the
                 // original flags directly here.
                 if (Length(NewBox) >= 20) and
-                   ((RDJReadU32BE(NewBox, 8) and $000008) <> 0) then
+                  ((RDJReadU32BE(NewBox,
+                                 8) and $000008) <> 0) then
                   DefaultDuration := RDJReadU32BE(NewBox,
                                                   16);
 
@@ -1021,8 +1055,8 @@ begin
                                NewBox);
 
                 if Assigned(FTrackDecodeTimes) and
-                   FTrackDecodeTimes.TryGetValue(TrackId,
-                                                 BaseDecodeTime) then
+                  FTrackDecodeTimes.TryGetValue(TrackId,
+                                                BaseDecodeTime) then
                   begin
                   end
                 else
@@ -1031,7 +1065,7 @@ begin
                 RDJAppendBytes(NewTraf,
                                RDJMakeTfdtBox(BaseDecodeTime));
               end
-            else if SubBoxType = $7472756E then // trun
+            else if (SubBoxType = $7472756E) then // trun
               begin
                 NewBox := RDJCopyBytes(RawMoof,
                                        SubCursor,
@@ -1042,12 +1076,13 @@ begin
                                        DefaultDuration));
 
                 if (Length(NewBox) >= 20) and
-                   ((RDJReadU32BE(NewBox, 8) and $000001) <> 0) then
+                  ((RDJReadU32BE(NewBox,
+                                 8) and $000001) <> 0) then
                   OldTrunDataOffset := RDJReadU32BE(NewBox,
                                                     16);
 
                 if RDJPatchTrunDataOffset(NewBox,
-                                          0) then
+                  0) then
                   begin
                     // Position of data_offset inside this traf. The final value
                     // depends on the final patched moof size, so patch it later.
@@ -1100,28 +1135,31 @@ begin
         // Find the I-th traf in the freshly assembled moof. This avoids keeping
         // stale offsets from before all traf boxes were appended.
         while (Cursor + 8 <= Integer(NewMoofSize)) and
-              (RDJReadU32BE(PatchedMoof, Cursor + 4) <> $74726166) do
+          (RDJReadU32BE(PatchedMoof,
+                        Cursor + 4) <> $74726166) do
           Inc(Cursor,
-              Integer(RDJReadU32BE(PatchedMoof, Cursor)));
+              Integer(RDJReadU32BE(PatchedMoof,
+                                   Cursor)));
 
-        if Cursor + 8 > Integer(NewMoofSize) then
+        if (Cursor + 8 > Integer(NewMoofSize)) then
           Break;
 
         FixOffset := DataOffsetFixups[I];
-        if FixOffset >= 0 then
+        if (FixOffset >= 0) then
           RDJWriteU32BE(PatchedMoof,
                         Cursor + FixOffset,
                         NewMoofSize + 8 + TrafDataOffsets[I]);
 
         Inc(Cursor,
-            Integer(RDJReadU32BE(PatchedMoof, Cursor)));
+            Integer(RDJReadU32BE(PatchedMoof,
+                                 Cursor)));
       end;
 
     APatchedFragment := nil;
     System.SetLength(APatchedFragment,
                      Length(PatchedMoof) + Integer(MdatSize));
 
-    if Length(PatchedMoof) > 0 then
+    if (Length(PatchedMoof) > 0) then
       Move(PatchedMoof[0],
            APatchedFragment[0],
            Length(PatchedMoof));
@@ -1131,7 +1169,7 @@ begin
     // final patched fragment. With live video this extra 200-300 KB allocation
     // happens several times per second and is exactly the kind of heap churn
     // that looks like a leak under the debugger.
-    if MdatSize > 0 then
+    if (MdatSize > 0) then
       Move(AFragment[MdatOffset],
            APatchedFragment[Length(PatchedMoof)],
            Integer(MdatSize));
@@ -1141,7 +1179,7 @@ begin
         for I := 0 to TrafTrackIds.Count - 1 do
           begin
             if FTrackDecodeTimes.TryGetValue(TrafTrackIds[I],
-                                             OldDecodeTime) then
+              OldDecodeTime) then
               FTrackDecodeTimes[TrafTrackIds[I]] := OldDecodeTime + TrafDurations[I]
             else
               FTrackDecodeTimes.Add(TrafTrackIds[I],
@@ -1151,12 +1189,12 @@ begin
 
     if (FBoxIndex <= 20) or ((FBoxIndex mod 200) = 0) then
       OutputDebugStringW(PChar(Format('TRdjProFmp4CaptureByteStream.MSEPatch: raw=%d patched=%d moof=%d traf=%d',
-                                     [Length(AFragment),
-                                      Length(APatchedFragment),
-                                      NewMoofSize,
-                                      PatchedTrafList.Count])));
+                                      [Length(AFragment),
+        Length(APatchedFragment),
+        NewMoofSize,
+        PatchedTrafList.Count])));
 
-    Result := Length(APatchedFragment) > 0;
+    Result := (Length(APatchedFragment) > 0);
   finally
     RawMoof := nil;
     PatchedMoof := nil;
@@ -1190,20 +1228,20 @@ begin
 
   if RDJ_FMP4_VERBOSE_BOX_LOG then
     OutputDebugStringW(PChar(Format('TRdjProFmp4CaptureByteStream.Box[%d]: type=%s size=%d',
-                                   [FBoxIndex,
-                                    RDJFourCCToString(ABoxType),
-                                    Length(ABoxData)])));
+                                    [FBoxIndex,
+      RDJFourCCToString(ABoxType),
+      Length(ABoxData)])));
 
   // The init segment for MSE is ftyp + moov.  Keep pdin/uuid out of it for
   // now; if a browser later needs one of those boxes, we can explicitly add it.
   if (ABoxType = $66747970) or  // ftyp
-     (ABoxType = $6D6F6F76) then // moov
+    (ABoxType = $6D6F6F76) then // moov
     begin
       RDJAppendBytes(FInitSegment,
                      ABoxData);
 
       OutputDebugStringW(PChar(Format('TRdjProFmp4CaptureByteStream.InitSegment: bytes=%d',
-                                     [Length(FInitSegment)])));
+                                      [Length(FInitSegment)])));
       Exit;
     end;
 
@@ -1217,17 +1255,17 @@ begin
 
   if (ABoxType = $6D646174) then // mdat
     begin
-      if Length(FPendingMoof) > 0 then
+      if (Length(FPendingMoof) > 0) then
         begin
           System.SetLength(Fragment,
                            Length(FPendingMoof) + Length(ABoxData));
 
-          if Length(FPendingMoof) > 0 then
+          if (Length(FPendingMoof) > 0) then
             Move(FPendingMoof[0],
                  Fragment[0],
                  Length(FPendingMoof));
 
-          if Length(ABoxData) > 0 then
+          if (Length(ABoxData) > 0) then
             Move(ABoxData[0],
                  Fragment[Length(FPendingMoof)],
                  Length(ABoxData));
@@ -1243,7 +1281,7 @@ begin
             begin
               // Diagnostic raw queue only. Normal live mode does not need a
               // second copy of every moof+mdat fragment.
-              while FFragmentQueue.Count >= RDJ_FMP4_LIVE_MAX_FRAGMENT_QUEUE do
+              while (FFragmentQueue.Count >= RDJ_FMP4_LIVE_MAX_FRAGMENT_QUEUE) do
                 begin
                   OldFragment := FFragmentQueue.Dequeue();
                   OldFragment := nil;
@@ -1258,9 +1296,9 @@ begin
           if Assigned(FPatchedFragmentQueue) then
             begin
               if PatchFragmentForMse(Fragment,
-                                     OldFragment) then
+                OldFragment) then
                 begin
-                  while FPatchedFragmentQueue.Count >= RDJ_FMP4_LIVE_MAX_FRAGMENT_QUEUE do
+                  while (FPatchedFragmentQueue.Count >= RDJ_FMP4_LIVE_MAX_FRAGMENT_QUEUE) do
                     begin
                       Fragment := FPatchedFragmentQueue.Dequeue();
                       Fragment := nil;
@@ -1277,8 +1315,8 @@ begin
 
           if (FBoxIndex <= 20) or ((FBoxIndex mod 200) = 0) then
             OutputDebugStringW(PChar(Format('TRdjProFmp4CaptureByteStream.FragmentReady: bytes=%d patchedQ=%d',
-                                           [FragmentSize,
-                                            QueueCount])));
+                                            [FragmentSize,
+              QueueCount])));
         end;
 
       Exit;
@@ -1286,7 +1324,7 @@ begin
 
   // Other top-level boxes are observed but not stored yet.
   OldLen := 0;
-  if OldLen <> 0 then
+  if (OldLen <> 0) then
     OutputDebugStringW(PChar(''));
 end;
 
@@ -1305,7 +1343,7 @@ var
 begin
 
   if (pb = nil) or
-     (cb = 0) then
+    (cb = 0) then
     Exit;
 
   BoxSize64 := 0;
@@ -1325,16 +1363,16 @@ begin
          FParserBuffer[OldSize],
          cb);
 
-    while FParserBufferSize >= 8 do
+    while (FParserBufferSize >= 8) do
       begin
 
         BoxSize32 := RDJReadU32BE(@FParserBuffer[0]);
         BoxType := RDJReadU32BE(@FParserBuffer[4]);
         HeaderSize := 8;
 
-        if BoxSize32 = 1 then
+        if (BoxSize32 = 1) then
           begin
-            if FParserBufferSize < 16 then
+            if (FParserBufferSize < 16) then
               Break;
 
             BoxSize64 := RDJReadU64BE(@FParserBuffer[8]);
@@ -1344,18 +1382,18 @@ begin
           BoxSize64 := BoxSize32;
 
         if (BoxSize64 < UInt64(HeaderSize)) or
-           (BoxSize64 = 0) or
-           (BoxSize64 > UInt64(MaxInt)) then
+          (BoxSize64 = 0) or
+          (BoxSize64 > UInt64(MaxInt)) then
           begin
             OutputDebugStringW(PChar(Format('TRdjProFmp4CaptureByteStream.BoxObserver invalid box type=%s size=%d buffer=%d',
-                                           [RDJFourCCToString(BoxType),
-                                            BoxSize64,
-                                            FParserBufferSize])));
+                                            [RDJFourCCToString(BoxType),
+              BoxSize64,
+              FParserBufferSize])));
             ResetBoxObserver();
             Exit;
           end;
 
-        if UInt64(FParserBufferSize) < BoxSize64 then
+        if (UInt64(FParserBufferSize) < BoxSize64) then
           Break;
 
         System.SetLength(BoxData,
@@ -1369,7 +1407,7 @@ begin
 
         Remaining := FParserBufferSize - Integer(BoxSize64);
 
-        if Remaining > 0 then
+        if (Remaining > 0) then
           Move(FParserBuffer[Integer(BoxSize64)],
                FParserBuffer[0],
                Remaining);
@@ -1386,13 +1424,14 @@ end;
 
 
 function TRdjProFmp4CaptureByteStream.GetInitSegment(out ASegment: TBytes): Boolean;
+
 begin
 
   ASegment := nil;
 
   FCritSec.Enter();
   try
-    Result := Length(FInitSegment) > 0;
+    Result := (Length(FInitSegment) > 0);
 
     if Result then
       ASegment := Copy(FInitSegment,
@@ -1405,6 +1444,7 @@ end;
 
 
 function TRdjProFmp4CaptureByteStream.TryPopFragment(out AFragment: TBytes): Boolean;
+
 begin
 
   AFragment := nil;
@@ -1412,7 +1452,7 @@ begin
   FCritSec.Enter();
   try
     Result := Assigned(FFragmentQueue) and
-              (FFragmentQueue.Count > 0);
+      (FFragmentQueue.Count > 0);
 
     if Result then
       AFragment := FFragmentQueue.Dequeue();
@@ -1424,6 +1464,7 @@ end;
 
 
 function TRdjProFmp4CaptureByteStream.TryPopPatchedFragment(out AFragment: TBytes): Boolean;
+
 begin
 
   Result := False;
@@ -1433,10 +1474,10 @@ begin
   try
 
     if Assigned(FPatchedFragmentQueue) and
-       (FPatchedFragmentQueue.Count > 0) then
+      (FPatchedFragmentQueue.Count > 0) then
       begin
         AFragment := FPatchedFragmentQueue.Dequeue();
-        Result := Length(AFragment) > 0;
+        Result := (Length(AFragment) > 0);
       end;
   finally
 
@@ -1446,7 +1487,8 @@ end;
 
 
 function TRdjProFmp4CaptureByteStream.TryPopFragmentPair(out ARawFragment: TBytes;
-                                                               out APatchedFragment: TBytes): Boolean;
+                                                         out APatchedFragment: TBytes): Boolean;
+
 begin
 
   Result := False;
@@ -1456,7 +1498,7 @@ begin
   FCritSec.Enter();
   try
     if (not Assigned(FFragmentQueue)) or
-       (not Assigned(FPatchedFragmentQueue)) then
+      (not Assigned(FPatchedFragmentQueue)) then
       Exit;
 
     // Milestone 23:
@@ -1464,14 +1506,14 @@ begin
     // patched is not ready throws away one internal source fragment and lets
     // sourceSeq drift away from publicSeq. Only pop when both sides are ready.
     if (FFragmentQueue.Count <= 0) or
-       (FPatchedFragmentQueue.Count <= 0) then
+      (FPatchedFragmentQueue.Count <= 0) then
       Exit;
 
     ARawFragment := FFragmentQueue.Dequeue();
     APatchedFragment := FPatchedFragmentQueue.Dequeue();
 
     Result := (Length(ARawFragment) > 0) and
-              (Length(APatchedFragment) > 0);
+      (Length(APatchedFragment) > 0);
   finally
     FCritSec.Leave();
   end;
@@ -1483,6 +1525,7 @@ function TRdjProFmp4CaptureByteStream.GetLiveQueueStatus(out ARawQueueCount: Int
                                                          out AParserBufferSize: Integer;
                                                          out APendingMoofBytes: Integer;
                                                          out ATotalBytesWritten: UInt64): Boolean;
+
 begin
 
   ARawQueueCount := 0;
@@ -1510,7 +1553,9 @@ begin
 end;
 
 
-function TRdjProFmp4CaptureByteStream.QueryInterface(constref IID: TGUID; out Obj): HResult;
+function TRdjProFmp4CaptureByteStream.QueryInterface(constref IID: TGUID;
+                                                     out Obj): HResult;
+
 begin
 
   // First answer for our own interfaces: IInterface and IMFByteStream.
@@ -1525,11 +1570,12 @@ begin
 
   if Assigned(FInner) then
     begin
-      Result := FInner.QueryInterface(IID, Obj);
+      Result := FInner.QueryInterface(IID,
+                                      Obj);
 
       if Succeeded(Result) then
         OutputDebugStringW(PChar(Format('TRdjProFmp4CaptureByteStream.QueryInterface delegated IID=%s',
-                                       [GUIDToString(IID)])));
+                                        [GUIDToString(IID)])));
 
       Exit;
     end;
@@ -1539,6 +1585,7 @@ end;
 
 
 function TRdjProFmp4CaptureByteStream._AddRef: Integer;
+
 begin
 
   Result := InterlockedIncrement(FRefCount);
@@ -1546,16 +1593,18 @@ end;
 
 
 function TRdjProFmp4CaptureByteStream._Release: Integer;
+
 begin
 
   Result := InterlockedDecrement(FRefCount);
 
-  if Result = 0 then
+  if (Result = 0) then
     Destroy();
 end;
 
 
 function TRdjProFmp4CaptureByteStream.GetCapabilities(out pdwCapabilities: DWORD): HRESULT;
+
 begin
 
   if FNullOutput then
@@ -1575,6 +1624,7 @@ end;
 
 
 function TRdjProFmp4CaptureByteStream.GetLength(out pqwLength: UInt64): HRESULT;
+
 begin
 
   if FNullOutput then
@@ -1591,12 +1641,13 @@ end;
 
 
 function TRdjProFmp4CaptureByteStream.SetLength(qwLength: UInt64): HRESULT;
+
 begin
 
   if FNullOutput then
     begin
       FNullLength := qwLength;
-      if FNullPosition > FNullLength then
+      if (FNullPosition > FNullLength) then
         FNullPosition := FNullLength;
       Exit(S_OK);
     end;
@@ -1609,6 +1660,7 @@ end;
 
 
 function TRdjProFmp4CaptureByteStream.GetCurrentPosition(out pqwPosition: UInt64): HRESULT;
+
 begin
 
   if FNullOutput then
@@ -1625,12 +1677,13 @@ end;
 
 
 function TRdjProFmp4CaptureByteStream.SetCurrentPosition(const qwPosition: QWORD): HRESULT;
+
 begin
 
   if FNullOutput then
     begin
       FNullPosition := qwPosition;
-      if FNullPosition > FNullLength then
+      if (FNullPosition > FNullLength) then
         FNullLength := FNullPosition;
       Exit(S_OK);
     end;
@@ -1643,6 +1696,7 @@ end;
 
 
 function TRdjProFmp4CaptureByteStream.IsEndOfStream(out pfEndOfStream: BOOL): HRESULT;
+
 begin
 
   if FNullOutput then
@@ -1661,6 +1715,7 @@ end;
 function TRdjProFmp4CaptureByteStream.Read(pb: PByte;
                                            cb: ULONG;
                                            out pcbRead: ULONG): HRESULT;
+
 begin
 
   pcbRead := 0;
@@ -1681,6 +1736,7 @@ function TRdjProFmp4CaptureByteStream.BeginRead(pb: PByte;
                                                 cb: ULONG;
                                                 pCallback: IMFAsyncCallback;
                                                 punkState: IUnknown): HRESULT;
+
 begin
 
   if FNullOutput then
@@ -1698,6 +1754,7 @@ end;
 
 function TRdjProFmp4CaptureByteStream.EndRead(pResult: IMFAsyncResult;
                                               out pcbRead: ULONG): HRESULT;
+
 begin
 
   pcbRead := 0;
@@ -1726,7 +1783,7 @@ begin
   if FNullOutput then
     begin
       if (pb <> nil) and
-         (cb > 0) then
+        (cb > 0) then
         begin
           ObserveBytes(pb,
                        cb);
@@ -1739,7 +1796,7 @@ begin
                 cb);
             Inc(FNullPosition,
                 cb);
-            if FNullPosition > FNullLength then
+            if (FNullPosition > FNullLength) then
               FNullLength := FNullPosition;
 
             if not FLoggedFirstWrite then
@@ -1747,9 +1804,9 @@ begin
                 FLoggedFirstWrite := True;
                 ShouldLog := True;
               end
-            else if FTotalBytesWritten >= FNextLogAt then
+            else if (FTotalBytesWritten >= FNextLogAt) then
               begin
-                while FNextLogAt <= FTotalBytesWritten do
+                while (FNextLogAt <= FTotalBytesWritten) do
                   Inc(FNextLogAt,
                       RDJ_FMP4_CAPTURE_LOG_STEP_BYTES);
 
@@ -1761,8 +1818,8 @@ begin
 
           if ShouldLog then
             OutputDebugStringW(PChar(Format('TRdjProFmp4CaptureByteStream.NullWrite: total=%d last=%u',
-                                           [FTotalBytesWritten,
-                                            cb])));
+                                            [FTotalBytesWritten,
+              cb])));
         end;
 
       pcbWritten := cb;
@@ -1778,7 +1835,7 @@ begin
                          pcbWritten);
 
   if SUCCEEDED(Result) and
-     (pcbWritten > 0) then
+    (pcbWritten > 0) then
     begin
 
       ObserveBytes(pb,
@@ -1798,10 +1855,10 @@ begin
             FLoggedFirstWrite := True;
             ShouldLog := True;
           end
-        else if FTotalBytesWritten >= FNextLogAt then
+        else if (FTotalBytesWritten >= FNextLogAt) then
           begin
 
-            while FNextLogAt <= FTotalBytesWritten do
+            while (FNextLogAt <= FTotalBytesWritten) do
               Inc(FNextLogAt,
                   RDJ_FMP4_CAPTURE_LOG_STEP_BYTES);
 
@@ -1814,8 +1871,8 @@ begin
 
       if ShouldLog then
         OutputDebugStringW(PChar(Format('TRdjProFmp4CaptureByteStream.Write: total=%d last=%u',
-                                       [FTotalBytesWritten,
-                                        pcbWritten])));
+                                        [FTotalBytesWritten,
+          pcbWritten])));
     end;
 end;
 
@@ -1834,7 +1891,7 @@ begin
   // path. Observe the buffer here before optionally forwarding it to the real
   // MFCreateFile stream; the extracted MSE fragments are the browser product.
   if (pb <> nil) and
-     (cb > 0) then
+    (cb > 0) then
     begin
       ObserveBytes(pb,
                    cb);
@@ -1850,7 +1907,7 @@ begin
           begin
             Inc(FNullPosition,
                 cb);
-            if FNullPosition > FNullLength then
+            if (FNullPosition > FNullLength) then
               FNullLength := FNullPosition;
 
             if Assigned(FAsyncWriteSizes) then
@@ -1862,9 +1919,9 @@ begin
             FLoggedFirstWrite := True;
             ShouldLog := True;
           end
-        else if FTotalBytesWritten >= FNextLogAt then
+        else if (FTotalBytesWritten >= FNextLogAt) then
           begin
-            while FNextLogAt <= FTotalBytesWritten do
+            while (FNextLogAt <= FTotalBytesWritten) do
               Inc(FNextLogAt,
                   RDJ_FMP4_CAPTURE_LOG_STEP_BYTES);
 
@@ -1878,12 +1935,12 @@ begin
         begin
           if FNullOutput then
             OutputDebugStringW(PChar(Format('TRdjProFmp4CaptureByteStream.NullBeginWrite: total=%d last=%u',
-                                           [FTotalBytesWritten,
-                                            cb])))
+                                            [FTotalBytesWritten,
+              cb])))
           else
             OutputDebugStringW(PChar(Format('TRdjProFmp4CaptureByteStream.BeginWrite: total=%d last=%u',
-                                           [FTotalBytesWritten,
-                                            cb])));
+                                            [FTotalBytesWritten,
+              cb])));
         end;
     end
   else if FNullOutput and Assigned(FAsyncWriteSizes) then
@@ -1929,6 +1986,7 @@ end;
 
 function TRdjProFmp4CaptureByteStream.EndWrite(pResult: IMFAsyncResult;
                                                out pcbWritten: ULONG): HRESULT;
+
 begin
 
   pcbWritten := 0;
@@ -1938,7 +1996,7 @@ begin
       FCritSec.Enter();
       try
         if Assigned(FAsyncWriteSizes) and
-           (FAsyncWriteSizes.Count > 0) then
+          (FAsyncWriteSizes.Count > 0) then
           pcbWritten := FAsyncWriteSizes.Dequeue();
       finally
         FCritSec.Leave();
@@ -1961,20 +2019,21 @@ function TRdjProFmp4CaptureByteStream.Seek(SeekOrigin: MFBYTESTREAM_SEEK_ORIGIN;
                                            out pqwCurrentPosition: UInt64): HRESULT;
 var
   NewPos: Int64;
+
 begin
 
   if FNullOutput then
     begin
-      if Integer(SeekOrigin) = 0 then
+      if (Integer(SeekOrigin) = 0) then
         NewPos := llSeekOffset
       else
         NewPos := Int64(FNullPosition) + llSeekOffset;
 
-      if NewPos < 0 then
+      if (NewPos < 0) then
         NewPos := 0;
 
       FNullPosition := UInt64(NewPos);
-      if FNullPosition > FNullLength then
+      if (FNullPosition > FNullLength) then
         FNullLength := FNullPosition;
 
       pqwCurrentPosition := FNullPosition;
@@ -1992,6 +2051,7 @@ end;
 
 
 function TRdjProFmp4CaptureByteStream.Flush(): HRESULT;
+
 begin
 
   if FNullOutput then
@@ -2005,6 +2065,7 @@ end;
 
 
 procedure TRdjProFmp4CaptureByteStream.BeginShutdown();
+
 begin
 
   FCritSec.Enter();
@@ -2039,6 +2100,7 @@ end;
 
 
 function TRdjProFmp4CaptureByteStream.Close(): HRESULT;
+
 begin
 
   BeginShutdown();
@@ -2063,7 +2125,7 @@ begin
   try
     if Assigned(FFragmentQueue) then
       begin
-        while FFragmentQueue.Count > 0 do
+        while (FFragmentQueue.Count > 0) do
           begin
             Fragment := FFragmentQueue.Dequeue();
             Fragment := nil;
@@ -2072,7 +2134,7 @@ begin
 
     if Assigned(FPatchedFragmentQueue) then
       begin
-        while FPatchedFragmentQueue.Count > 0 do
+        while (FPatchedFragmentQueue.Count > 0) do
           begin
             Fragment := FPatchedFragmentQueue.Dequeue();
             Fragment := nil;
@@ -2092,19 +2154,25 @@ end;
 
 function RDJMakeUINT64(const HighPart: DWORD;
                        const LowPart: DWORD): UINT64;
+
 begin
+
   Result := (UINT64(HighPart) shl 32) or UINT64(LowPart);
 end;
 
 
 function RDJHighDWORD(const Value: UINT64): DWORD;
+
 begin
+
   Result := DWORD(Value shr 32);
 end;
 
 
 function RDJLowDWORD(const Value: UINT64): DWORD;
+
 begin
+
   Result := DWORD(Value and $FFFFFFFF);
 end;
 
@@ -2114,19 +2182,21 @@ var
   NowTick: DWORD;
   SearchRec: TSearchRec;
   FileSize: Int64;
+
 begin
+
   NowTick := GetTickCount();
 
-  if (NowTick - FDbgLastLogTick) < 10000 then
+  if ((NowTick - FDbgLastLogTick) < 10000) then
     Exit;
 
   FDbgLastLogTick := NowTick;
   FileSize := -1;
 
   if (FPrivateSinkFileName <> '') and
-     (FindFirst(FPrivateSinkFileName,
-                faAnyFile,
-                SearchRec) = 0) then
+    (FindFirst(FPrivateSinkFileName,
+               faAnyFile,
+               SearchRec) = 0) then
     begin
       try
         FileSize := SearchRec.Size;
@@ -2138,22 +2208,22 @@ begin
   FQueueLock.Enter();
   try
     OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder[%s]: Size=%d VQ=%d AQ=%d VQueued=%d AQueued=%d VWritten=%d AWritten=%d State=%d Accept=%d Stop=%d RecAct=%d RecReq=%d Rec=%d LastVms=%d LastAms=%d',
-                                   [AWhere,
-                                    FileSize,
-                                    FVideoQueue.Count,
-                                    FAudioQueue.Count,
-                                    FDbgVideoQueued,
-                                    FDbgAudioQueued,
-                                    FDbgVideoWritten,
-                                    FDbgAudioWritten,
-                                    Ord(FState),
-                                    Ord(FAcceptSamples),
-                                    Ord(FStopRequested),
-                                    FRecoveryActive,
-                                    FRecoveryRequested,
-                                    FDbgRecoveries,
-                                    FLastVideoWriteElapsedMs,
-                                    FLastAudioWriteElapsedMs])));
+                                    [AWhere,
+      FileSize,
+      FVideoQueue.Count,
+      FAudioQueue.Count,
+      FDbgVideoQueued,
+      FDbgAudioQueued,
+      FDbgVideoWritten,
+      FDbgAudioWritten,
+      Ord(FState),
+      Ord(FAcceptSamples),
+      Ord(FStopRequested),
+      FRecoveryActive,
+      FRecoveryRequested,
+      FDbgRecoveries,
+      FLastVideoWriteElapsedMs,
+      FLastAudioWriteElapsedMs])));
   finally
     FQueueLock.Leave();
   end;
@@ -2194,21 +2264,21 @@ begin
   end;
 
   OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.LiveState[%s]: VQ=%d AQ=%d RawQ=%d PatchedQ=%d ParserBytes=%d PendingMoofBytes=%d TotalBytes=%d VQueued=%d AQueued=%d VWritten=%d AWritten=%d LastVms=%d LastAms=%d Rec=%d',
-                                 [AWhere,
-                                  VideoQueueCount,
-                                  AudioQueueCount,
-                                  RawQueueCount,
-                                  PatchedQueueCount,
-                                  ParserBufferSize,
-                                  PendingMoofBytes,
-                                  TotalBytesWritten,
-                                  FDbgVideoQueued,
-                                  FDbgAudioQueued,
-                                  FDbgVideoWritten,
-                                  FDbgAudioWritten,
-                                  FLastVideoWriteElapsedMs,
-                                  FLastAudioWriteElapsedMs,
-                                  FDbgRecoveries])));
+                                  [AWhere,
+    VideoQueueCount,
+    AudioQueueCount,
+    RawQueueCount,
+    PatchedQueueCount,
+    ParserBufferSize,
+    PendingMoofBytes,
+    TotalBytesWritten,
+    FDbgVideoQueued,
+    FDbgAudioQueued,
+    FDbgVideoWritten,
+    FDbgAudioWritten,
+    FLastVideoWriteElapsedMs,
+    FLastAudioWriteElapsedMs,
+    FDbgRecoveries])));
 end;
 
 
@@ -2266,7 +2336,9 @@ end;
 
 
 constructor TRdjProFmp4Recorder.Create();
+
 begin
+
   inherited Create();
 
   FCritSec := SyncObjs.TCriticalSection.Create();
@@ -2276,8 +2348,8 @@ begin
                                False,
                                '');
 
-  FVideoQueue := TQueue<IMFSample>.Create();
-  FAudioQueue := TQueue<TRdjProAudioBlock>.Create();
+  FVideoQueue := (TQueue < IMFSample > .Create());
+  FAudioQueue := (TQueue < TRdjProAudioBlock > .Create());
 
   FCaptureByteStream := nil;
   FVideoStreamIndex := DWORD(-1);
@@ -2313,6 +2385,7 @@ var
   Worker: TThread;
 
 begin
+
   if FAILED(StopRecording()) and Assigned(FWorker) then
     begin
       // A worker that did not stop may still be inside SinkWriter.WriteSample.
@@ -2347,6 +2420,7 @@ end;
 
 
 procedure TRdjProFmp4Recorder.ClearAudioFormat();
+
 begin
 
   FAudioSamplesPerSec := 0;
@@ -2358,6 +2432,7 @@ end;
 
 
 procedure TRdjProFmp4Recorder.ResetTiming();
+
 begin
 
   FBaseVideoTimeSet := False;
@@ -2376,14 +2451,14 @@ begin
 
   FQueueLock.Enter();
   try
-    while FVideoQueue.Count > 0 do
+    while (FVideoQueue.Count > 0) do
       begin
 
         VideoSample := FVideoQueue.Dequeue();
         VideoSample := nil;
       end;
 
-    while FAudioQueue.Count > 0 do
+    while (FAudioQueue.Count > 0) do
       begin
 
         AudioBlock := FAudioQueue.Dequeue();
@@ -2407,24 +2482,29 @@ end;
 
 
 function TRdjProFmp4Recorder.GetWorkerRunning(): Boolean;
+
 begin
 
   Result := Assigned(FWorker) and
-            (WaitForSingleObject(FWorker.Handle, 0) = WAIT_TIMEOUT);
+    (WaitForSingleObject(FWorker.Handle,
+                         0) = WAIT_TIMEOUT);
 end;
 
 
 function TRdjProFmp4Recorder.GetActive(): Boolean;
+
 begin
+
   Result := FState in [mrsStarting,
-                       mrsRecording,
-                       mrsStopping,
-                       mrsFinalizing];
+    mrsRecording,
+    mrsStopping,
+    mrsFinalizing];
 end;
 
 
 procedure TRdjProFmp4Recorder.SetState(const AState: TRdjProFmp4RecorderState;
                                        const AError: HRESULT);
+
 begin
 
   FState := AState;
@@ -2432,12 +2512,13 @@ begin
 
   if FAILED(AError) then
     OutputDebugStringW(PChar(Format('SetState reports error: hr=%.8x in state=%d',
-                                   [FLastError, Ord(FState)])));
+                                    [FLastError, Ord(FState)])));
 end;
 
 
 
 function TRdjProFmp4Recorder.GetInitSegment(out ASegment: TBytes): Boolean;
+
 begin
 
   ASegment := nil;
@@ -2445,7 +2526,7 @@ begin
   FCritSec.Enter();
   try
     Result := Assigned(FCaptureByteStream) and
-              FCaptureByteStream.GetInitSegment(ASegment);
+      FCaptureByteStream.GetInitSegment(ASegment);
   finally
     FCritSec.Leave();
   end;
@@ -2453,6 +2534,7 @@ end;
 
 
 function TRdjProFmp4Recorder.TryPopFragment(out AFragment: TBytes): Boolean;
+
 begin
 
   AFragment := nil;
@@ -2460,7 +2542,7 @@ begin
   FCritSec.Enter();
   try
     Result := Assigned(FCaptureByteStream) and
-              FCaptureByteStream.TryPopFragment(AFragment);
+      FCaptureByteStream.TryPopFragment(AFragment);
   finally
     FCritSec.Leave();
   end;
@@ -2468,6 +2550,7 @@ end;
 
 
 function TRdjProFmp4Recorder.TryPopPatchedFragment(out AFragment: TBytes): Boolean;
+
 begin
 
   AFragment := nil;
@@ -2475,7 +2558,7 @@ begin
   FCritSec.Enter();
   try
     Result := Assigned(FCaptureByteStream) and
-              FCaptureByteStream.TryPopPatchedFragment(AFragment);
+      FCaptureByteStream.TryPopPatchedFragment(AFragment);
   finally
     FCritSec.Leave();
   end;
@@ -2484,6 +2567,7 @@ end;
 
 function TRdjProFmp4Recorder.TryPopFragmentPair(out ARawFragment: TBytes;
                                                 out APatchedFragment: TBytes): Boolean;
+
 begin
 
   ARawFragment := nil;
@@ -2492,8 +2576,8 @@ begin
   FCritSec.Enter();
   try
     Result := Assigned(FCaptureByteStream) and
-              FCaptureByteStream.TryPopFragmentPair(ARawFragment,
-                                                   APatchedFragment);
+      FCaptureByteStream.TryPopFragmentPair(ARawFragment,
+                                            APatchedFragment);
   finally
     FCritSec.Leave();
   end;
@@ -2501,6 +2585,7 @@ end;
 
 
 procedure TRdjProFmp4Recorder.Reset();
+
 begin
 
   StopRecording();
@@ -2523,8 +2608,10 @@ begin
     FVideoOnly := False;
     FAcceptSamples := False;
     FRecoveryReason := '';
-    InterlockedExchange(FRecoveryActive, 0);
-    InterlockedExchange(FRecoveryRequested, 0);
+    InterlockedExchange(FRecoveryActive,
+                        0);
+    InterlockedExchange(FRecoveryRequested,
+                        0);
     FSlowVideoWriteStreak := 0;
     FSlowAudioWriteStreak := 0;
     FLastVideoWriteElapsedMs := 0;
@@ -2566,22 +2653,22 @@ begin
   Den := 1;
 
   if SUCCEEDED(pInputType.GetUINT64(MF_MT_FRAME_SIZE,
-                                    FrameSize)) then
+    FrameSize)) then
     begin
       Width := RDJHighDWORD(FrameSize);
       Height := RDJLowDWORD(FrameSize);
     end;
 
   if SUCCEEDED(pInputType.GetUINT64(MF_MT_FRAME_RATE,
-                                    FrameRate)) then
+    FrameRate)) then
     begin
       Num := RDJHighDWORD(FrameRate);
       Den := RDJLowDWORD(FrameRate);
 
-      if Den = 0 then
+      if (Den = 0) then
         Den := 1;
 
-      if Num = 0 then
+      if (Num = 0) then
         Num := 30;
     end;
 
@@ -2616,8 +2703,8 @@ begin
     Exit;
 
   Result := ppTargetType.SetUINT64(MF_MT_FRAME_RATE,
-                                    RDJMakeUINT64(Num,
-                                                  Den));
+                                   RDJMakeUINT64(Num,
+                                                 Den));
   if FAILED(Result) then
     Exit;
 
@@ -2636,13 +2723,14 @@ end;
 
 
 function TRdjProFmp4Recorder.CreateAudioTargetMediaType(out ppTargetType: IMFMediaType): HRESULT;
+
 begin
 
   ppTargetType := nil;
 
   if (FAudioSamplesPerSec = 0) or
-     (FAudioChannels = 0) or
-     (FAudioBlockAlign = 0) then
+    (FAudioChannels = 0) or
+    (FAudioBlockAlign = 0) then
     Exit(MF_E_INVALIDMEDIATYPE);
 
   Result := MFCreateMediaType(ppTargetType);
@@ -2709,7 +2797,7 @@ begin
   FileStream := nil;
   FPrivateSinkFileName := '';
 
-  if Trim(FFileName) = '' then
+  if (Trim(FFileName) = '') then
     Exit(E_INVALIDARG);
 
   if RDJ_FMP4_WRITE_PUBLIC_MP4_FILE then
@@ -2739,7 +2827,7 @@ begin
         ChangeFileExt(FFileName,
                       Format('.sink_%x_%x.tmp',
                              [GetCurrentProcessId(),
-                              GetTickCount()]));
+        GetTickCount()]));
 
       Result := MFCreateFile(MF_ACCESSMODE_WRITE,
                              MF_OPENMODE_DELETE_IF_EXIST,
@@ -2759,6 +2847,7 @@ begin
   ppByteStream := CaptureStream as IMFByteStream;
   Result := S_OK;
 end;
+
 
 function TRdjProFmp4Recorder.CreateFragmentedSinkWriter(): HRESULT;
 var
@@ -2899,8 +2988,8 @@ begin
 
       Result := AudioInputType.SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
                                          FAudioSamplesPerSec *
-                                         FAudioChannels *
-                                         SizeOf(Single));
+        FAudioChannels *
+        SizeOf(Single));
       if FAILED(Result) then
         Exit;
 
@@ -2912,21 +3001,25 @@ end;
 
 
 procedure TRdjProFmp4Recorder.WorkerProtected;
+
 begin
 
-      try
-        WorkerExecute();
-      except
-        on E: Exception do
-          begin
-            SetState(mrsError, E_FAIL);
-            OutputDebugStringW(PChar('Broadcast recorder worker exception: ' +
-                                   E.ClassName + ': ' + E.Message));
-          end;
+  try
+    WorkerExecute();
+  except
+    on E: Exception do
+      begin
+        SetState(mrsError,
+                 E_FAIL);
+        OutputDebugStringW(PChar('Broadcast recorder worker exception: ' +
+          E.ClassName + ': ' + E.Message));
       end;
+  end;
 end;
 
+
 function TRdjProFmp4Recorder.StartWorker(): HRESULT;
+
 begin
 
   Result := S_OK;
@@ -2942,7 +3035,7 @@ end;
 
 
 function TRdjProFmp4Recorder.StartRecording(const AFileName: string;
-                                           AVideoOnly: Boolean): HRESULT;
+                                            AVideoOnly: Boolean): HRESULT;
 var
   Ext: string;
 
@@ -2989,9 +3082,9 @@ begin
       end;
 
     if (not AVideoOnly) and
-       ((FAudioSamplesPerSec = 0) or
-        (FAudioChannels = 0) or
-        (FAudioBlockAlign = 0)) then
+      ((FAudioSamplesPerSec = 0) or
+      (FAudioChannels = 0) or
+      (FAudioBlockAlign = 0)) then
       begin
 
         Result := MF_E_INVALIDMEDIATYPE;
@@ -3052,8 +3145,10 @@ begin
         Exit;
       end;
 
-    InterlockedExchange(FRecoveryActive, 0);
-    InterlockedExchange(FRecoveryRequested, 0);
+    InterlockedExchange(FRecoveryActive,
+                        0);
+    InterlockedExchange(FRecoveryRequested,
+                        0);
     FRecoveryReason := '';
     FSlowVideoWriteStreak := 0;
     FSlowAudioWriteStreak := 0;
@@ -3083,10 +3178,10 @@ begin
   FCritSec.Enter();
   try
     if (not Active) and (not Assigned(FWorker)) and
-       (not Assigned(FSinkWriter)) and
-       (not Assigned(FMediaSink)) and
-       (not Assigned(FByteStream)) and
-       (not Assigned(FCaptureByteStream)) then
+      (not Assigned(FSinkWriter)) and
+      (not Assigned(FMediaSink)) and
+      (not Assigned(FByteStream)) and
+      (not Assigned(FCaptureByteStream)) then
       begin
 
         SetState(mrsStopped,
@@ -3122,11 +3217,11 @@ begin
       WaitRes := WaitForSingleObject(Worker.Handle,
                                      30000);
 
-      if WaitRes = WAIT_OBJECT_0 then
+      if (WaitRes = WAIT_OBJECT_0) then
         begin
           FCritSec.Enter();
           try
-            if FWorker = Worker then
+            if (FWorker = Worker) then
               FWorker := nil;
           finally
             FCritSec.Leave();
@@ -3213,8 +3308,11 @@ begin
   end;
 end;
 
+
 function TRdjProFmp4Recorder.SetVideoPreviewMediaType(const pMediaType: IMFMediaType): HRESULT;
+
 begin
+
   Result := S_OK;
 
   FCritSec.Enter();
@@ -3235,7 +3333,9 @@ end;
 
 
 function TRdjProFmp4Recorder.SetAudioWaveFormat(const pwfx: PWAVEFORMATEX): HRESULT;
+
 begin
+
   Result := S_OK;
 
   FCritSec.Enter();
@@ -3249,8 +3349,8 @@ begin
       end;
 
     if (pwfx.nSamplesPerSec = 0) or
-       (pwfx.nChannels = 0) or
-       (pwfx.nBlockAlign = 0) then
+      (pwfx.nChannels = 0) or
+      (pwfx.nBlockAlign = 0) then
       begin
         Result := MF_E_INVALIDMEDIATYPE;
         SetState(mrsError,
@@ -3263,7 +3363,7 @@ begin
     FAudioBitsPerSample := 32;
     FAudioBlockAlign := FAudioChannels * SizeOf(Single);
     FAudioAvgBytesPerSec := FAudioSamplesPerSec *
-                             FAudioBlockAlign;
+      FAudioBlockAlign;
   finally
     FCritSec.Leave();
   end;
@@ -3271,7 +3371,9 @@ end;
 
 
 procedure TRdjProFmp4Recorder.SetRotationDegrees(const Degrees: DWORD);
+
 begin
+
   FCritSec.Enter();
   try
     case Degrees of
@@ -3280,8 +3382,8 @@ begin
       180,
       270:
         FRotationDegrees := Degrees;
-    else
-      FRotationDegrees := 0;
+      else
+        FRotationDegrees := 0;
     end;
   finally
     FCritSec.Leave();
@@ -3290,6 +3392,7 @@ end;
 
 
 procedure TRdjProFmp4Recorder.RequestLiveSinkWriterRecoveryInternal(const AReason: string);
+
 begin
 
   // Milestone 23:
@@ -3302,15 +3405,21 @@ end;
 
 
 procedure TRdjProFmp4Recorder.RequestLiveSinkWriterRecovery(const AReason: string);
+
 begin
+
   RequestLiveSinkWriterRecoveryInternal(AReason);
   DebugLogLiveState('Recovery request ignored');
 end;
 
 
 function TRdjProFmp4Recorder.ConsumeLiveSinkWriterRecoveryRequest(out AReason: string): Boolean;
+
 begin
-  Result := InterlockedCompareExchange(FRecoveryRequested, 0, 1) = 1;
+
+  Result := (InterlockedCompareExchange(FRecoveryRequested,
+                                        0,
+                                        1) = 1);
   AReason := '';
 
   if not Result then
@@ -3324,7 +3433,7 @@ begin
     FCritSec.Leave();
   end;
 
-  if Trim(AReason) = '' then
+  if (Trim(AReason) = '') then
     AReason := 'requested';
 end;
 
@@ -3334,6 +3443,7 @@ var
   Reason: string;
 
 begin
+
   if not ConsumeLiveSinkWriterRecoveryRequest(Reason) then
     Exit;
 
@@ -3348,6 +3458,7 @@ var
   OwnedSample: IMFSample;
 
 begin
+
   Result := S_OK;
 
   if not Assigned(pSample) then
@@ -3356,26 +3467,26 @@ begin
   FQueueLock.Enter();
   try
     if (FState <> mrsRecording) or
-       (not FAcceptSamples) or
-       FStopRequested or
-       (FRecoveryActive <> 0) then
+      (not FAcceptSamples) or
+      FStopRequested or
+      (FRecoveryActive <> 0) then
       begin
-        if FRecoveryActive = 0 then
+        if (FRecoveryActive = 0) then
           OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.QueueVideoSample rejected: State=%d Accept=%d Stop=%d',
-                                         [Ord(FState), Ord(FAcceptSamples), Ord(FStopRequested)])));
+                                          [Ord(FState), Ord(FAcceptSamples), Ord(FStopRequested)])));
         Exit(S_OK);
       end;
 
-    if FVideoQueue.Count >= RDJ_FMP4_MAX_VIDEO_QUEUE_SAMPLES then
+    if (FVideoQueue.Count >= RDJ_FMP4_MAX_VIDEO_QUEUE_SAMPLES) then
       begin
-        while FVideoQueue.Count > RDJ_FMP4_VIDEO_QUEUE_TRIM_TO_SAMPLES do
+        while (FVideoQueue.Count > RDJ_FMP4_VIDEO_QUEUE_TRIM_TO_SAMPLES) do
           begin
             VideoSample := FVideoQueue.Dequeue();
             VideoSample := nil;
           end;
 
         OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.QueueVideoSample memory guard trimmed old video backlog: VQ=%d',
-                                       [FVideoQueue.Count])));
+                                        [FVideoQueue.Count])));
       end;
 
     OwnedSample := pSample;
@@ -3387,9 +3498,10 @@ begin
   end;
 end;
 
+
 function TRdjProFmp4Recorder.PushPcmFloat32(const pData: PSingle;
-                                           const Frames: Integer;
-                                           const pwfx: PWAVEFORMATEX): HRESULT;
+                                            const Frames: Integer;
+                                            const pwfx: PWAVEFORMATEX): HRESULT;
 var
   AudioBlock: TRdjProAudioBlock;
   QueueBlock: TRdjProAudioBlock;
@@ -3398,6 +3510,7 @@ var
   TargetFrames: Integer;
 
 begin
+
   Result := S_OK;
 
   if not Assigned(pData) then
@@ -3406,14 +3519,14 @@ begin
   if not Assigned(pwfx) then
     Exit(E_POINTER);
 
-  if Frames <= 0 then
+  if (Frames <= 0) then
     Exit(E_INVALIDARG);
 
   if FVideoOnly then
     Exit(S_OK);
 
   if (DWORD(pwfx.nSamplesPerSec) <> FAudioSamplesPerSec) or
-     (DWORD(pwfx.nChannels) <> FAudioChannels) then
+    (DWORD(pwfx.nChannels) <> FAudioChannels) then
     Exit(MF_E_INVALIDMEDIATYPE);
 
   // Memory guard only: do the cheap state/queue check before allocating.
@@ -3421,46 +3534,46 @@ begin
   FQueueLock.Enter();
   try
     if (FState <> mrsRecording) or
-       (not FAcceptSamples) or
-       FStopRequested or
-       (FRecoveryActive <> 0) then
+      (not FAcceptSamples) or
+      FStopRequested or
+      (FRecoveryActive <> 0) then
       begin
-        if FRecoveryActive = 0 then
+        if (FRecoveryActive = 0) then
           OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.PushPcmFloat32 rejected: State=%d Accept=%d Stop=%d',
-                                         [Ord(FState), Ord(FAcceptSamples), Ord(FStopRequested)])));
+                                          [Ord(FState), Ord(FAcceptSamples), Ord(FStopRequested)])));
         Exit(S_OK);
       end;
 
-    if FAudioQueue.Count >= RDJ_FMP4_MAX_AUDIO_QUEUE_BLOCKS then
+    if (FAudioQueue.Count >= RDJ_FMP4_MAX_AUDIO_QUEUE_BLOCKS) then
       begin
         // Live mode: discard old backlog and keep the newest tap block.
         // Dropping newest keeps the writer busy with stale audio and turns a
         // short overload into long latency, stutter and eventually a frozen
         // manifest. This trims only the queue payloads, not the recorder state.
-        while FAudioQueue.Count > RDJ_FMP4_AUDIO_QUEUE_TRIM_TO_BLOCKS do
+        while (FAudioQueue.Count > RDJ_FMP4_AUDIO_QUEUE_TRIM_TO_BLOCKS) do
           begin
             AudioBlock := FAudioQueue.Dequeue();
             if (AudioBlock.Frames > 0) and
-               (AudioBlock.SamplesPerSec > 0) then
+              (AudioBlock.SamplesPerSec > 0) then
               Inc(FSkippedAudioTime100ns,
                   (LONGLONG(AudioBlock.Frames) *
-                   RDJ_100NS_PER_SECOND) div
-                   LONGLONG(AudioBlock.SamplesPerSec));
+                RDJ_100NS_PER_SECOND) div
+                LONGLONG(AudioBlock.SamplesPerSec));
             AudioBlock.Data := nil;
           end;
 
         OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.PushPcmFloat32 LIVE_GUARD_V2 trimmed old audio backlog: AQ=%d',
-                                       [FAudioQueue.Count])));
+                                        [FAudioQueue.Count])));
       end;
   finally
     FQueueLock.Leave();
   end;
 
   ByteCount := Frames *
-               Integer(FAudioChannels) *
-               SizeOf(Single);
+    Integer(FAudioChannels) *
+    SizeOf(Single);
 
-  if ByteCount <= 0 then
+  if (ByteCount <= 0) then
     Exit(E_INVALIDARG);
 
   SetLength(AudioBlock.Data,
@@ -3476,42 +3589,42 @@ begin
   AudioBlock.BitsPerSample := 32;
   AudioBlock.BlockAlign := pwfx.nChannels * SizeOf(Single);
   AudioBlock.AvgBytesPerSec := pwfx.nSamplesPerSec *
-                               AudioBlock.BlockAlign;
+    AudioBlock.BlockAlign;
 
   FQueueLock.Enter();
   try
     if (FState <> mrsRecording) or
-       (not FAcceptSamples) or
-       FStopRequested or
-       (FRecoveryActive <> 0) then
+      (not FAcceptSamples) or
+      FStopRequested or
+      (FRecoveryActive <> 0) then
       Exit(S_OK);
 
     // The queue can fill again while the PCM block is being copied.
     // Guard once more at the enqueue point so live streaming never falls
     // back to dropping newest audio.
-    if FAudioQueue.Count >= RDJ_FMP4_MAX_AUDIO_QUEUE_BLOCKS then
+    if (FAudioQueue.Count >= RDJ_FMP4_MAX_AUDIO_QUEUE_BLOCKS) then
       begin
-        while FAudioQueue.Count > RDJ_FMP4_AUDIO_QUEUE_TRIM_TO_BLOCKS do
+        while (FAudioQueue.Count > RDJ_FMP4_AUDIO_QUEUE_TRIM_TO_BLOCKS) do
           begin
             QueueBlock := FAudioQueue.Dequeue();
             if (QueueBlock.Frames > 0) and
-               (QueueBlock.SamplesPerSec > 0) then
+              (QueueBlock.SamplesPerSec > 0) then
               Inc(FSkippedAudioTime100ns,
                   (LONGLONG(QueueBlock.Frames) *
-                   RDJ_100NS_PER_SECOND) div
-                   LONGLONG(QueueBlock.SamplesPerSec));
+                RDJ_100NS_PER_SECOND) div
+                LONGLONG(QueueBlock.SamplesPerSec));
             QueueBlock.Data := nil;
           end;
 
         OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.PushPcmFloat32 LIVE_GUARD_V2 trimmed old audio backlog before enqueue: AQ=%d',
-                                       [FAudioQueue.Count])));
+                                        [FAudioQueue.Count])));
       end;
 
     // Coalesce on the producer side. Otherwise the worker can grab the first
     // 10 ms tap block during startup and feed the AAC sink many tiny samples,
     // which is exactly the pattern that produces one-second WriteSample stalls.
     if (FPendingAudioBlock.Frames <= 0) or
-       (Length(FPendingAudioBlock.Data) <= 0) then
+      (Length(FPendingAudioBlock.Data) <= 0) then
       begin
         FPendingAudioBlock.SamplesPerSec := AudioBlock.SamplesPerSec;
         FPendingAudioBlock.Channels := AudioBlock.Channels;
@@ -3520,8 +3633,8 @@ begin
         FPendingAudioBlock.AvgBytesPerSec := AudioBlock.AvgBytesPerSec;
       end
     else if (FPendingAudioBlock.SamplesPerSec <> AudioBlock.SamplesPerSec) or
-            (FPendingAudioBlock.Channels <> AudioBlock.Channels) or
-            (FPendingAudioBlock.BlockAlign <> AudioBlock.BlockAlign) then
+      (FPendingAudioBlock.Channels <> AudioBlock.Channels) or
+      (FPendingAudioBlock.BlockAlign <> AudioBlock.BlockAlign) then
       begin
         FPendingAudioBlock.Data := nil;
         FPendingAudioBlock.Frames := 0;
@@ -3546,11 +3659,11 @@ begin
     AudioBlock.Data := nil;
 
     TargetFrames := (Integer(FPendingAudioBlock.SamplesPerSec) *
-                     RDJ_FMP4_AUDIO_COALESCE_TARGET_MS) div 1000;
-    if TargetFrames <= 0 then
+      RDJ_FMP4_AUDIO_COALESCE_TARGET_MS) div 1000;
+    if (TargetFrames <= 0) then
       TargetFrames := FPendingAudioBlock.Frames;
 
-    if FPendingAudioBlock.Frames < TargetFrames then
+    if (FPendingAudioBlock.Frames < TargetFrames) then
       Exit(S_OK);
 
     QueueBlock := FPendingAudioBlock;
@@ -3572,13 +3685,15 @@ end;
 
 
 function TRdjProFmp4Recorder.PopVideoSample(out ASample: IMFSample): Boolean;
+
 begin
+
   Result := False;
   ASample := nil;
 
   FQueueLock.Enter();
   try
-    if FVideoQueue.Count > 0 then
+    if (FVideoQueue.Count > 0) then
       begin
         ASample := FVideoQueue.Dequeue();
         Result := Assigned(ASample);
@@ -3590,17 +3705,19 @@ end;
 
 
 function TRdjProFmp4Recorder.PopAudioBlock(out ABlock: TRdjProAudioBlock): Boolean;
+
 begin
+
   Result := False;
   ABlock.Data := nil;
   ABlock.Frames := 0;
 
   FQueueLock.Enter();
   try
-    if FAudioQueue.Count > 0 then
+    if (FAudioQueue.Count > 0) then
       begin
         ABlock := FAudioQueue.Dequeue();
-        Result := Length(ABlock.Data) > 0;
+        Result := (Length(ABlock.Data) > 0);
       end;
   finally
     FQueueLock.Leave();
@@ -3616,28 +3733,29 @@ var
   TargetFrames: Integer;
 
 begin
+
   Result := PopAudioBlock(ABlock);
   if not Result then
     Exit;
 
   if (ABlock.SamplesPerSec = 0) or
-     (ABlock.Channels = 0) then
+    (ABlock.Channels = 0) then
     Exit;
 
   TargetFrames := (Integer(ABlock.SamplesPerSec) *
-                   RDJ_FMP4_AUDIO_COALESCE_TARGET_MS) div 1000;
+    RDJ_FMP4_AUDIO_COALESCE_TARGET_MS) div 1000;
 
-  if TargetFrames <= ABlock.Frames then
+  if (TargetFrames <= ABlock.Frames) then
     Exit;
 
-  while ABlock.Frames < TargetFrames do
+  while (ABlock.Frames < TargetFrames) do
     begin
       NextBlock.Data := nil;
       NextBlock.Frames := 0;
 
       FQueueLock.Enter();
       try
-        if FAudioQueue.Count <= 0 then
+        if (FAudioQueue.Count <= 0) then
           Break;
 
         NextBlock := FAudioQueue.Dequeue();
@@ -3645,12 +3763,12 @@ begin
         FQueueLock.Leave();
       end;
 
-      if Length(NextBlock.Data) = 0 then
+      if (Length(NextBlock.Data) = 0) then
         Continue;
 
       if (NextBlock.SamplesPerSec <> ABlock.SamplesPerSec) or
-         (NextBlock.Channels <> ABlock.Channels) or
-         (NextBlock.BlockAlign <> ABlock.BlockAlign) then
+        (NextBlock.Channels <> ABlock.Channels) or
+        (NextBlock.BlockAlign <> ABlock.BlockAlign) then
         begin
           // Audio format changed while recording. This should not happen for
           // the broadcast tap. Do not mix incompatible blocks into one sample.
@@ -3710,7 +3828,7 @@ begin
   // A missing duration can make MP4 playback look frozen or make players pick
   // a strange stream duration. Fall back to 30 fps for this first RDJ path.
   if FAILED(pSample.GetSampleDuration(@SampleDuration)) or
-     (SampleDuration <= 0) then
+    (SampleDuration <= 0) then
     pSample.SetSampleDuration(RDJ_100NS_PER_SECOND div 30);
 
   T0 := GetTickCount64();
@@ -3725,11 +3843,11 @@ begin
 
   FLastVideoWriteElapsedMs := ElapsedMs;
 
-  if ElapsedMs > RDJ_FMP4_LOG_SLOW_VIDEO_MS then
+  if (ElapsedMs > RDJ_FMP4_LOG_SLOW_VIDEO_MS) then
     OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.WriteVideoSample took %d ms hr=0x%.8x VWritten=%d',
-                                   [ElapsedMs,
-                                    Cardinal(Result),
-                                    FDbgVideoWritten])));
+                                    [ElapsedMs,
+      Cardinal(Result),
+      FDbgVideoWritten])));
 
   if FAILED(Result) then
     begin
@@ -3737,17 +3855,17 @@ begin
       Exit;
     end;
 
-  if ElapsedMs >= RDJ_FMP4_RECOVERY_SLOW_VIDEO_MS then
+  if (ElapsedMs >= RDJ_FMP4_RECOVERY_SLOW_VIDEO_MS) then
     Inc(FSlowVideoWriteStreak)
   else
     FSlowVideoWriteStreak := 0;
 
   if (ElapsedMs >= RDJ_FMP4_RECOVERY_VERY_SLOW_VIDEO_MS) or
-     (FSlowVideoWriteStreak >= RDJ_FMP4_RECOVERY_SLOW_VIDEO_STREAK) then
+    (FSlowVideoWriteStreak >= RDJ_FMP4_RECOVERY_SLOW_VIDEO_STREAK) then
     begin
       OutputDebugStringW(PChar(Format(
         'TRdjProFmp4Recorder.SlowVideoNoRecovery: elapsedMs=%d streak=%d',
-        [ElapsedMs, FSlowVideoWriteStreak])));
+                                      [ElapsedMs, FSlowVideoWriteStreak])));
       DebugLogLiveState('Slow video');
     end;
 end;
@@ -3771,7 +3889,7 @@ begin
   if not Assigned(FSinkWriter) then
     Exit(MF_E_NOT_INITIALIZED);
 
-  if Length(ABlock.Data) = 0 then
+  if (Length(ABlock.Data) = 0) then
     Exit(S_OK);
 
   ByteCount := Length(ABlock.Data);
@@ -3813,8 +3931,8 @@ begin
   Buffer := nil;
 
   Duration100ns := (LONGLONG(ABlock.Frames) *
-                    RDJ_100NS_PER_SECOND) div
-                    LONGLONG(ABlock.SamplesPerSec);
+    RDJ_100NS_PER_SECOND) div
+    LONGLONG(ABlock.SamplesPerSec);
 
   FQueueLock.Enter();
   try
@@ -3824,12 +3942,12 @@ begin
     FQueueLock.Leave();
   end;
 
-  if SkippedDuration100ns > 0 then
+  if (SkippedDuration100ns > 0) then
     begin
       Inc(FNextAudioTime100ns,
           SkippedDuration100ns);
       OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.WriteAudioBlock skipped stale audio duration: %d ms',
-                                     [SkippedDuration100ns div 10000])));
+                                      [SkippedDuration100ns div 10000])));
     end;
 
   Sample.SetSampleTime(FNextAudioTime100ns);
@@ -3850,13 +3968,13 @@ begin
 
   FLastAudioWriteElapsedMs := ElapsedMs;
 
-  if ElapsedMs > RDJ_FMP4_LOG_SLOW_AUDIO_MS then
+  if (ElapsedMs > RDJ_FMP4_LOG_SLOW_AUDIO_MS) then
     OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.WriteAudioBlock took %d ms hr=0x%.8x AWritten=%d Frames=%d Bytes=%d',
-                                   [ElapsedMs,
-                                    Cardinal(Result),
-                                    FDbgAudioWritten,
-                                    ABlock.Frames,
-                                    ByteCount])));
+                                    [ElapsedMs,
+      Cardinal(Result),
+      FDbgAudioWritten,
+      ABlock.Frames,
+      ByteCount])));
 
   if FAILED(Result) then
     begin
@@ -3864,16 +3982,16 @@ begin
       Exit;
     end;
 
-  if ElapsedMs >= RDJ_FMP4_RECOVERY_SLOW_AUDIO_MS then
+  if (ElapsedMs >= RDJ_FMP4_RECOVERY_SLOW_AUDIO_MS) then
     Inc(FSlowAudioWriteStreak)
   else
     FSlowAudioWriteStreak := 0;
 
-  if FSlowAudioWriteStreak >= RDJ_FMP4_RECOVERY_SLOW_AUDIO_STREAK then
+  if (FSlowAudioWriteStreak >= RDJ_FMP4_RECOVERY_SLOW_AUDIO_STREAK) then
     begin
       OutputDebugStringW(PChar(Format(
         'TRdjProFmp4Recorder.SlowAudioNoRecovery: elapsedMs=%d streak=%d',
-        [ElapsedMs, FSlowAudioWriteStreak])));
+                                      [ElapsedMs, FSlowAudioWriteStreak])));
       DebugLogLiveState('Slow audio');
     end;
 end;
@@ -3889,12 +4007,13 @@ var
   VideoWritesThisTurn: Integer;
 
 begin
+
   while True do
     begin
       FCritSec.Enter();
       try
         StopNow := FStopRequested or
-                   (FState <> mrsRecording);
+          (FState <> mrsRecording);
       finally
         FCritSec.Leave();
       end;
@@ -3910,7 +4029,7 @@ begin
       // writes can take close to a second on the MF AAC/fMP4 path; writing only
       // one video frame before such a call makes the first live seconds thin.
       VideoWritesThisTurn := 0;
-      while VideoWritesThisTurn < RDJ_FMP4_VIDEO_WRITES_PER_WORKER_TURN do
+      while (VideoWritesThisTurn < RDJ_FMP4_VIDEO_WRITES_PER_WORKER_TURN) do
         begin
           if not PopVideoSample(VideoSample) then
             Break;
@@ -3938,7 +4057,7 @@ begin
             begin
               // Keep worker alive for now. StopRecording/Finalize reports final state.
               OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.WorkerExecute WriteVideoSample failed. hr=%.8x',
-                                             [Hr])));
+                                              [Hr])));
             end;
 
           VideoSample := nil;
@@ -3973,7 +4092,7 @@ begin
             begin
               // Keep worker alive for now.
               OutputDebugStringW(PChar(Format('TRdjProFmp4Recorder.WorkerExecute WriteAudioBlock failed. hr=%.8x',
-                                             [Hr])));
+                                              [Hr])));
             end;
 
           AudioBlock.Data := nil;
@@ -3987,11 +4106,12 @@ begin
       FQueueLock.Enter();
       try
         if (FVideoQueue.Count = 0) and
-           (FAudioQueue.Count = 0) then
+          (FAudioQueue.Count = 0) then
           FQueueEvent.ResetEvent();
       finally
         FQueueLock.Leave();
       end;
     end;
 end;
+
 end.

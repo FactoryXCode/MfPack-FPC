@@ -85,6 +85,7 @@ type
   TFxServeServer = class;
 
   TFxServeAcceptThread = class(TThread)
+
   private
     FServer: TFxServeServer;
 
@@ -99,6 +100,7 @@ type
   end;
 
   TFxServeClientThread = class(TThread)
+
   private
     FServer: TFxServeServer;
     FSocket: TSocket;
@@ -117,12 +119,13 @@ type
 
 
   TFxServeServer = class
+
   private
     FConfig: TFxServeConfig;
     FLogger: TFxServeLogger;
     FListenSocket: TSocket;
     FAcceptThread: TFxServeAcceptThread;
-    FClients: TList<TSocket>;
+    FClients: TList < TSocket > ;
     FClientsLock: SyncObjs.TCriticalSection;
     FRunning: Boolean;
     FActiveConnections: Integer;
@@ -157,13 +160,15 @@ type
                                  const AMethod: string);
 
     procedure ServeStatic(ASocket: TSocket;
-                          const AMethod, APath,
+                          const AMethod,
+                          APath,
                           ARequestHeader: string);
 
     procedure ProxyRequest(ASocket: TSocket;
                            const AMethod: string;
                            const ATarget: string;
                            const ARequestHeader: string);
+
   public
 
     constructor Create(AConfig: TFxServeConfig;
@@ -217,7 +222,7 @@ begin
                               P - 1));
 
         if SameText(NameText,
-                    AName) then
+          AName) then
           Exit(Trim(Copy(Lines[I],
                          P + 1,
                          MaxInt)));
@@ -254,32 +259,32 @@ begin
     Result := AnsiString(Lines[0] + #13#10);
 
     for I := 1 to Lines.Count - 1 do
-    begin
-      if (Lines[I] = '') then
-        Continue;
+      begin
+        if (Lines[I] = '') then
+          Continue;
 
-      P := Pos(':',
-               Lines[I]);
+        P := Pos(':',
+                 Lines[I]);
 
-      if (P <= 0) then
-        Continue;
+        if (P <= 0) then
+          Continue;
 
-      NameText := Trim(Copy(Lines[I],
-                            1,
-                            P - 1));
+        NameText := Trim(Copy(Lines[I],
+                              1,
+                              P - 1));
 
-      if SameText(NameText,
-                  'Connection') or
-         SameText(NameText,
-                  'Keep-Alive') then
-        Continue;
+        if SameText(NameText,
+          'Connection') or
+          SameText(NameText,
+                   'Keep-Alive') then
+          Continue;
 
-      if SameText(NameText,
-                  'Access-Control-Allow-Origin') then
-        HasCors := True;
+        if SameText(NameText,
+          'Access-Control-Allow-Origin') then
+          HasCors := True;
 
-      Result := Result + AnsiString(Lines[I] + #13#10);
-    end;
+        Result := Result + AnsiString(Lines[I] + #13#10);
+      end;
 
     if ACorsEnabled and not HasCors then
       Result := Result + 'Access-Control-Allow-Origin: *'#13#10;
@@ -293,6 +298,7 @@ end;
 
 
 function HttpReason(AStatus: Integer): string;
+
 begin
 
   case AStatus of
@@ -306,8 +312,8 @@ begin
     500: Result := 'Internal Server Error';
     502: Result := 'Bad Gateway';
     503: Result := 'Service Unavailable';
-  else
-    Result := 'Error';
+    else
+      Result := 'Error';
   end;
 end;
 
@@ -322,72 +328,54 @@ begin
 
   if (Ext = '.html') or (Ext = '.htm') then
     Result := 'text/html; charset=utf-8'
+  else if (Ext = '.css') then
+    Result := 'text/css; charset=utf-8'
+  else if (Ext = '.js') then
+    Result := 'application/javascript; charset=utf-8'
+  else if (Ext = '.json') then
+    Result := 'application/json; charset=utf-8'
+  else if (Ext = '.webmanifest') then
+    Result := 'application/manifest+json; charset=utf-8'
+  else if (Ext = '.m3u8') then
+    Result := 'application/vnd.apple.mpegurl'
+  else if (Ext = '.m4s') then
+    Result := 'video/mp4'
+  else if (Ext = '.mp4') then
+    Result := 'video/mp4'
+  else if (Ext = '.mp3') then
+    Result := 'audio/mpeg'
+  else if (Ext = '.aac') then
+    Result := 'audio/aac'
+  else if (Ext = '.flac') then
+    Result := 'audio/flac'
+  else if (Ext = '.wav') then
+    Result := 'audio/wav'
+  else if (Ext = '.jpg') then
+    Result := 'image/jpeg'
+  else if (Ext = '.jpeg') then
+    Result := 'image/jpeg'
+  else if (Ext = '.png') then
+    Result := 'image/png'
+  else if (Ext = '.gif') then
+    Result := 'image/gif'
+  else if (Ext = '.svg') then
+    Result := 'image/svg+xml'
+  else if (Ext = '.ico') then
+    Result := 'image/x-icon'
+  else if (Ext = '.webp') then
+    Result := 'image/webp'
+  else if (Ext = '.txt') then
+    Result := 'text/plain; charset=utf-8'
+  else if (Ext = '.xml') then
+    Result := 'application/xml; charset=utf-8'
   else
-    if (Ext = '.css') then
-      Result := 'text/css; charset=utf-8'
-    else
-      if (Ext = '.js') then
-        Result := 'application/javascript; charset=utf-8'
-      else
-        if (Ext = '.json') then
-          Result := 'application/json; charset=utf-8'
-        else
-          if (Ext = '.webmanifest') then
-            Result := 'application/manifest+json; charset=utf-8'
-          else
-          if (Ext = '.m3u8') then
-            Result := 'application/vnd.apple.mpegurl'
-          else
-            if (Ext = '.m4s') then
-              Result := 'video/mp4'
-            else
-              if (Ext = '.mp4') then
-                Result := 'video/mp4'
-              else
-                if (Ext = '.mp3') then
-                  Result := 'audio/mpeg'
-                else
-                  if (Ext = '.aac') then
-                    Result := 'audio/aac'
-                  else
-                    if (Ext = '.flac') then
-                      Result := 'audio/flac'
-                    else
-                      if (Ext = '.wav') then
-                        Result := 'audio/wav'
-                      else
-                        if (Ext = '.jpg') then
-                          Result := 'image/jpeg'
-                        else
-                          if (Ext = '.jpeg') then
-                            Result := 'image/jpeg'
-                          else
-                            if (Ext = '.png') then
-                              Result := 'image/png'
-                            else
-                              if (Ext = '.gif') then
-                                Result := 'image/gif'
-                            else
-                              if (Ext = '.svg') then
-                                Result := 'image/svg+xml'
-                              else
-                                if (Ext = '.ico') then
-                                  Result := 'image/x-icon'
-                                else
-                                  if (Ext = '.webp') then
-                                    Result := 'image/webp'
-                                  else
-                                    if (Ext = '.txt') then
-                                      Result := 'text/plain; charset=utf-8'
-                                    else
-                                      if (Ext = '.xml') then
-                                        Result := 'application/xml; charset=utf-8'
-                                      else Result := 'application/octet-stream';
+    Result := 'application/octet-stream';
 end;
 
 
 function HexValue(AChar: Char;
                   out AValue: Byte): Boolean;
+
 begin
 
   Result := True;
@@ -396,10 +384,10 @@ begin
     '0'..'9': AValue := Ord(AChar) - Ord('0');
     'a'..'f': AValue := Ord(AChar) - Ord('a') + 10;
     'A'..'F': AValue := Ord(AChar) - Ord('A') + 10;
-  else
-    AValue := 0;
+    else
+      AValue := 0;
 
-    Result := False;
+      Result := False;
   end;
 end;
 
@@ -430,8 +418,10 @@ begin
       if (Ch = '%') then
         begin
           if (I + 2 > Length(AValue)) or not
-              HexValue(AValue[I + 1], HiValue) or not
-              HexValue(AValue[I + 2], LoValue) then
+            HexValue(AValue[I + 1],
+                     HiValue) or not
+            HexValue(AValue[I + 2],
+                     LoValue) then
             Exit;
 
           Bytes[Count] := (HiValue shl 4) or LoValue;
@@ -453,7 +443,7 @@ begin
             Count);
   ADecoded := TEncoding.UTF8.GetString(Bytes);
   Result := (Pos(#0,
-                ADecoded) = 0);
+                 ADecoded) = 0);
 end;
 
 
@@ -466,18 +456,19 @@ begin
   PathText := LowerCase(APath);
 
   Result := (PathText = '/admin') or
-            (Copy(PathText,
-                  1,
-                  7) = '/admin/') or
-            (PathText = '/admin.xsl') or
-            (Copy(PathText,
-                  1,
-                  11) = '/admin.xsl/');
+    (Copy(PathText,
+          1,
+          7) = '/admin/') or
+    (PathText = '/admin.xsl') or
+    (Copy(PathText,
+          1,
+          11) = '/admin.xsl/');
 end;
 
 
 function ParseByteRange(const AValue:
-                        string; AFileSize: Int64;
+  string;
+                        AFileSize: Int64;
                         out AStart: Int64;
                         out AFinish: Int64): Boolean;
 var
@@ -495,16 +486,16 @@ begin
   Text := Trim(AValue);
 
   if not SameText(Copy(Text,
-                       1,
-                       6), 'bytes=') then
+    1,
+    6), 'bytes=') then
     Exit;
 
   Delete(Text,
          1,
          6);
 
-  if Pos(',',
-         Text) > 0 then
+  if (Pos(',',
+    Text) > 0) then
     Exit;
 
   P := Pos('-',
@@ -523,7 +514,7 @@ begin
   if (StartText = '') then
     begin
       if not TryStrToInt64(EndText,
-                           Suffix) or (Suffix <= 0) then
+        Suffix) or (Suffix <= 0) then
         Exit;
 
       if (Suffix > AFileSize) then
@@ -534,13 +525,13 @@ begin
   else
     begin
       if not TryStrToInt64(StartText,
-                           AStart) then
+        AStart) then
         Exit;
 
       if (EndText <> '') then
         begin
           if not TryStrToInt64(EndText,
-                               AFinish) then
+            AFinish) then
             Exit;
         end;
     end;
@@ -581,6 +572,7 @@ end;
 
 
 constructor TFxServeAcceptThread.Create(AServer: TFxServeServer);
+
 begin
 
   inherited Create(True);
@@ -591,14 +583,17 @@ end;
 
 
 procedure TFxServeAcceptThread.Execute();
+
 begin
 
   FServer.AcceptClients();
 end;
 
+
 constructor TFxServeClientThread.Create(AServer: TFxServeServer;
                                         ASocket: TSocket;
                                         const APeerAddress: string);
+
 begin
 
   inherited Create(True);
@@ -611,6 +606,7 @@ end;
 
 
 procedure TFxServeClientThread.Execute();
+
 begin
 
   try
@@ -620,7 +616,7 @@ begin
     except
       on E: Exception do
         FServer.FLogger.Error(Format('LAN request failed peer=%s exception=%s message=%s',
-          [FPeerAddress, E.ClassName, E.Message]));
+                                     [FPeerAddress, E.ClassName, E.Message]));
     end;
 
   finally
@@ -634,6 +630,7 @@ end;
 
 constructor TFxServeServer.Create(AConfig: TFxServeConfig;
                                   ALogger: TFxServeLogger);
+
 begin
 
   inherited Create();
@@ -643,16 +640,17 @@ begin
   if FConfig.ProtectionEnabled and not FConfig.WanEnabled then
     FProtection := TFxServeRequestProtection.Create(
       FConfig.ProtectionRequestsPerMinute,
-      FConfig.ProtectionBurst,
-      FConfig.ProtectionMaxConcurrentPerAddress,
-      FConfig.ProtectionBlockSeconds);
+                                                    FConfig.ProtectionBurst,
+                                                    FConfig.ProtectionMaxConcurrentPerAddress,
+                                                    FConfig.ProtectionBlockSeconds);
   FListenSocket := INVALID_SOCKET;
-  FClients := TList<TSocket>.Create;
+  FClients := (TList < TSocket > .Create);
   FClientsLock := SyncObjs.TCriticalSection.Create;
 end;
 
 
 destructor TFxServeServer.Destroy();
+
 begin
 
   Stop();
@@ -682,14 +680,14 @@ begin
                               [FConfig.WebRoot]);
 
   if (WSAStartup($0202,
-                WsaData) <> 0) then
+    WsaData) <> 0) then
     raise Exception.Create('WSAStartup failed.');
 
   FWSAStarted := True;
 
   try
     if not ResolveIPv4(FConfig.BindAddress,
-                       BindIp) then
+      BindIp) then
       raise Exception.CreateFmt('Cannot resolve bind address: %s',
                                 [FConfig.BindAddress]);
 
@@ -718,15 +716,15 @@ begin
     Address.sin_addr.S_addr := BindIp;
 
     if (bind(FListenSocket,
-             Address,
-             SizeOf(Address)) = SOCKET_ERROR) then
+      Address,
+      SizeOf(Address)) = SOCKET_ERROR) then
       raise Exception.CreateFmt('bind failed on %s:%d (%d).',
                                 [FConfig.BindAddress, FConfig.Port, WSAGetLastError]);
 
     if (listen(FListenSocket,
-              SOMAXCONN) = SOCKET_ERROR) then
+      SOMAXCONN) = SOCKET_ERROR) then
       raise Exception.CreateFmt('listen failed (%d).',
-        [WSAGetLastError]);
+                                [WSAGetLastError]);
 
     FRunning := True;
     FAcceptThread := TFxServeAcceptThread.Create(Self);
@@ -798,8 +796,8 @@ begin
   end;
 
   while (InterlockedCompareExchange(FActiveConnections,
-                                    0,
-                                    0) <> 0) do
+      0,
+      0) <> 0) do
     begin
       Sleep(50);
     end;
@@ -815,6 +813,7 @@ end;
 
 
 procedure TFxServeServer.RegisterClient(ASocket: TSocket);
+
 begin
 
   FClientsLock.Acquire;
@@ -830,6 +829,7 @@ end;
 
 
 procedure TFxServeServer.UnregisterClient(ASocket: TSocket);
+
 begin
 
   FClientsLock.Acquire;
@@ -862,52 +862,52 @@ begin
                              @Peer,
                              @PeerSize);
 
-    if (ClientSocket = INVALID_SOCKET) then
-    begin
-      if FRunning then
-        FLogger.Error(Format('accept failed (%d).',
-                             [WSAGetLastError]));
-      Break;
+      if (ClientSocket = INVALID_SOCKET) then
+        begin
+          if FRunning then
+            FLogger.Error(Format('accept failed (%d).',
+                                 [WSAGetLastError]));
+          Break;
+        end;
+
+      PeerAddress := string(AnsiString(inet_ntoa(Peer.sin_addr)));
+
+      if (InterlockedCompareExchange(FActiveConnections,
+        0,
+        0) >= FConfig.MaxConnections) then
+        begin
+          SendError(ClientSocket,
+                    503,
+                    HttpReason(503),
+                    'Too many connections.');
+          closesocket(ClientSocket);
+
+          Continue;
+        end;
+
+      TimeoutValue := FConfig.HeaderTimeoutMs;
+
+      setsockopt(ClientSocket,
+                 SOL_SOCKET,
+                 SO_RCVTIMEO,
+                 PAnsiChar(@TimeoutValue),
+                 SizeOf(TimeoutValue));
+
+      TimeoutValue := FConfig.SendTimeoutMs;
+
+      setsockopt(ClientSocket,
+                 SOL_SOCKET,
+                 SO_SNDTIMEO,
+                 PAnsiChar(@TimeoutValue),
+                 SizeOf(TimeoutValue));
+
+      RegisterClient(ClientSocket);
+
+      ClientThread := TFxServeClientThread.Create(Self,
+                                                  ClientSocket,
+                                                  PeerAddress);
+      ClientThread.Start();
     end;
-
-    PeerAddress := string(AnsiString(inet_ntoa(Peer.sin_addr)));
-
-    if InterlockedCompareExchange(FActiveConnections,
-                                  0,
-                                  0) >= FConfig.MaxConnections then
-      begin
-        SendError(ClientSocket,
-                  503,
-                  HttpReason(503),
-                  'Too many connections.');
-        closesocket(ClientSocket);
-
-        Continue;
-      end;
-
-    TimeoutValue := FConfig.HeaderTimeoutMs;
-
-    setsockopt(ClientSocket,
-               SOL_SOCKET,
-               SO_RCVTIMEO,
-               PAnsiChar(@TimeoutValue),
-               SizeOf(TimeoutValue));
-
-    TimeoutValue := FConfig.SendTimeoutMs;
-
-    setsockopt(ClientSocket,
-               SOL_SOCKET,
-               SO_SNDTIMEO,
-               PAnsiChar(@TimeoutValue),
-                         SizeOf(TimeoutValue));
-
-    RegisterClient(ClientSocket);
-
-    ClientThread := TFxServeClientThread.Create(Self,
-                                                ClientSocket,
-                                                PeerAddress);
-    ClientThread.Start();
-  end;
 end;
 
 
@@ -939,7 +939,7 @@ begin
          Count);
 
     if (Pos(#13#10#13#10,
-            string(AHeader)) > 0) then
+      string(AHeader)) > 0) then
       Exit(True);
 
   until (Length(AHeader) >= MAX_HEADER_SIZE);
@@ -960,17 +960,17 @@ begin
   Total := 0;
 
   while (Total < ASize) do
-  begin
-    Sent := send(ASocket,
-                 Data[Total],
-                 ASize - Total,
-                 0);
-    if (Sent <= 0) then
-      Exit;
+    begin
+      Sent := send(ASocket,
+                   Data[Total],
+                   ASize - Total,
+                   0);
+      if (Sent <= 0) then
+        Exit;
 
-    Inc(Total,
-        Sent);
-  end;
+      Inc(Total,
+          Sent);
+    end;
 
   Result := True;
 end;
@@ -978,6 +978,7 @@ end;
 
 function TFxServeServer.SendText(ASocket: TSocket;
                                  AText: RawByteString): Boolean;
+
 begin
 
   Result := (Length(AText) = 0) or SendAll(ASocket,
@@ -1002,7 +1003,7 @@ begin
   Body := UTF8String(AMessage + #13#10);
 
   ExtraHeader := '';
-  if AExtraHeaderName <> '' then
+  if (AExtraHeaderName <> '') then
     ExtraHeader := AExtraHeaderName + ': ' + AExtraHeaderValue + #13#10;
 
   Header := UTF8String(Format('HTTP/1.1 %d %s'#13#10 +
@@ -1011,7 +1012,7 @@ begin
     'Cache-Control: no-store'#13#10 +
     '%s' +
     'Connection: close'#13#10#13#10,
-    [AStatus, AReason, Length(Body), ExtraHeader]));
+                              [AStatus, AReason, Length(Body), ExtraHeader]));
 
   SendText(ASocket,
            Header);
@@ -1026,7 +1027,9 @@ procedure TFxServeServer.SendViewerSnapshot(ASocket: TSocket;
 var
   Body: UTF8String;
   Header: UTF8String;
+
 begin
+
   Body := WebCamViewerSnapshotJson();
   Header := UTF8String(Format('HTTP/1.1 200 OK'#13#10 +
     'Content-Type: application/json; charset=utf-8'#13#10 +
@@ -1034,11 +1037,13 @@ begin
     'Cache-Control: no-store'#13#10 +
     'Access-Control-Allow-Origin: *'#13#10 +
     'Connection: close'#13#10#13#10,
-    [Length(Body)]));
+                              [Length(Body)]));
 
-  SendText(ASocket, Header);
-  if AMethod <> 'HEAD' then
-    SendText(ASocket, Body);
+  SendText(ASocket,
+           Header);
+  if (AMethod <> 'HEAD') then
+    SendText(ASocket,
+             Body);
 end;
 
 
@@ -1060,11 +1065,12 @@ var
 begin
 
   if not ReceiveHeader(ASocket,
-                       RawHeader) then
+    RawHeader) then
     Exit;
 
   Header := string(RawHeader);
-  P1 := Pos(#13#10, Header);
+  P1 := Pos(#13#10,
+            Header);
 
   if (P1 = 0) then
     begin
@@ -1135,10 +1141,11 @@ begin
   if Assigned(FProtection) then
     begin
       ProtectionResult := FProtection.TryBeginRequest(APeerAddress,
-                                                       RetryAfterSeconds);
-      if ProtectionResult <> prAllowed then
+                                                      RetryAfterSeconds);
+      if (ProtectionResult <> prAllowed) then
         begin
-          FLogger.Info(Format('Request limited peer=%s', [APeerAddress]));
+          FLogger.Info(Format('Request limited peer=%s',
+                              [APeerAddress]));
           SendError(ASocket,
                     429,
                     'Too Many Requests',
@@ -1154,42 +1161,44 @@ begin
                         [APeerAddress, MethodName, Path]));
 
     if SameText(Path, '/WebCam/live.json') then
-      TouchWebCamViewer(Target, APeerAddress);
+      TouchWebCamViewer(Target,
+                        APeerAddress);
 
     if IsBlockedPath(Path) then
       begin
-      SendError(ASocket,
-                403,
-                HttpReason(403),
-                'Forbidden.');
+        SendError(ASocket,
+                  403,
+                  HttpReason(403),
+                  'Forbidden.');
         Exit;
       end;
 
     if (MethodName <> 'GET') and
-       (MethodName <> 'HEAD') and
-       (MethodName <> 'OPTIONS') then
+      (MethodName <> 'HEAD') and
+      (MethodName <> 'OPTIONS') then
       begin
-      SendError(ASocket,
-                405,
-                HttpReason(405),
-                'Method not allowed.');
+        SendError(ASocket,
+                  405,
+                  HttpReason(405),
+                  'Method not allowed.');
         Exit;
       end;
 
     if (MethodName = 'OPTIONS') then
       begin
-      SendText(ASocket,
-               'HTTP/1.1 204 No Content'#13#10 +
-               'Access-Control-Allow-Origin: *'#13#10 +
-               'Access-Control-Allow-Methods: GET, HEAD, OPTIONS'#13#10 +
-               'Access-Control-Allow-Headers: Content-Type, Accept-Encoding, Range'#13#10 +
-               'Content-Length: 0'#13#10'Connection: close'#13#10#13#10);
+        SendText(ASocket,
+                 'HTTP/1.1 204 No Content'#13#10 +
+          'Access-Control-Allow-Origin: *'#13#10 +
+          'Access-Control-Allow-Methods: GET, HEAD, OPTIONS'#13#10 +
+          'Access-Control-Allow-Headers: Content-Type, Accept-Encoding, Range'#13#10 +
+          'Content-Length: 0'#13#10'Connection: close'#13#10#13#10);
         Exit;
       end;
 
     if SameText(Path, '/WebCam/viewers.json') then
       begin
-      SendViewerSnapshot(ASocket, MethodName);
+        SendViewerSnapshot(ASocket,
+                           MethodName);
         Exit;
       end;
 
@@ -1239,7 +1248,7 @@ var
 begin
 
   if not DecodeUrlPath(APath,
-                       DecodedPath) then
+    DecodedPath) then
     begin
       SendError(ASocket,
                 400,
@@ -1249,7 +1258,7 @@ begin
     end;
 
   if (Pos('\',
-         DecodedPath) > 0) then
+    DecodedPath) > 0) then
     begin
       SendError(ASocket,
                 403,
@@ -1267,24 +1276,26 @@ begin
     RelativePath := '';
 
     for I := 0 to Segments.Count - 1 do
-    begin
-      if (Segments[I] = '') then
-        Continue;
+      begin
+        if (Segments[I] = '') then
+          Continue;
 
-      if (Segments[I] = '.') or
-         (Segments[I] = '..') or
-         (Pos(':', Segments[I]) > 0) or
-         (Pos(#0, Segments[I]) > 0) then
-        begin
-          SendError(ASocket,
-                    403,
-                    HttpReason(403),
-                    'Invalid path.');
-          Exit;
-        end;
+        if (Segments[I] = '.') or
+          (Segments[I] = '..') or
+          (Pos(':',
+               Segments[I]) > 0) or
+          (Pos(#0,
+               Segments[I]) > 0) then
+          begin
+            SendError(ASocket,
+                      403,
+                      HttpReason(403),
+                      'Invalid path.');
+            Exit;
+          end;
 
-      RelativePath := IncludeTrailingPathDelimiter(RelativePath) + Segments[I];
-    end;
+        RelativePath := IncludeTrailingPathDelimiter(RelativePath) + Segments[I];
+      end;
 
   finally
     Segments.Free;
@@ -1301,9 +1312,9 @@ begin
   RootPrefix := IncludeTrailingPathDelimiter(ExpandFileName(FConfig.WebRoot));
 
   if not SameText(Copy(FileName,
-                       1,
-                       Length(RootPrefix)),
-                       RootPrefix) then
+    1,
+    Length(RootPrefix)),
+    RootPrefix) then
     begin
       SendError(ASocket,
                 403,
@@ -1331,40 +1342,57 @@ begin
   OpenError := ERROR_SUCCESS;
   for OpenAttempt := 0 to 20 do
     begin
-      FileHandle := CreateFileW(PChar(FileName), GENERIC_READ,
-        FILE_SHARE_READ or FILE_SHARE_WRITE or FILE_SHARE_DELETE,
-        nil, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, 0);
-      if FileHandle <> INVALID_HANDLE_VALUE then
+      FileHandle := CreateFileW(PChar(FileName),
+                                GENERIC_READ,
+                                FILE_SHARE_READ or FILE_SHARE_WRITE or FILE_SHARE_DELETE,
+                                nil,
+                                OPEN_EXISTING,
+                                FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN,
+                                0);
+      if (FileHandle <> INVALID_HANDLE_VALUE) then
         Break;
       OpenError := GetLastError;
       if not (OpenError in [ERROR_FILE_NOT_FOUND, ERROR_ACCESS_DENIED,
-                             ERROR_SHARING_VIOLATION, ERROR_LOCK_VIOLATION]) or
-         (OpenAttempt = 20) then
+        ERROR_SHARING_VIOLATION, ERROR_LOCK_VIOLATION]) or
+        (OpenAttempt = 20) then
         Break;
       Sleep(10);
     end;
 
-  if FileHandle = INVALID_HANDLE_VALUE then
+  if (FileHandle = INVALID_HANDLE_VALUE) then
     begin
       FLogger.Error(Format('Static file open failed path=%s winError=%d attempts=%d',
-        [APath, OpenError, OpenAttempt + 1]));
+                           [APath, OpenError, OpenAttempt + 1]));
       case OpenError of
         ERROR_FILE_NOT_FOUND, ERROR_PATH_NOT_FOUND:
-          SendError(ASocket, 404, HttpReason(404), 'Not found.');
+          SendError(ASocket,
+                    404,
+                    HttpReason(404),
+                    'Not found.');
         ERROR_ACCESS_DENIED:
-          SendError(ASocket, 403, HttpReason(403), 'Access denied.');
+          SendError(ASocket,
+                    403,
+                    HttpReason(403),
+                    'Access denied.');
         ERROR_SHARING_VIOLATION, ERROR_LOCK_VIOLATION:
-          SendError(ASocket, 503, 'Service Unavailable',
-            'The requested file is temporarily busy.', 'Retry-After', '1');
-      else
-        SendError(ASocket, 500, 'Internal Server Error', 'Could not open the requested file.');
+          SendError(ASocket,
+                    503,
+                    'Service Unavailable',
+                    'The requested file is temporarily busy.',
+                    'Retry-After',
+                    '1');
+        else
+          SendError(ASocket,
+                    500,
+                    'Internal Server Error',
+                    'Could not open the requested file.');
       end;
       Exit;
     end;
 
-  if OpenAttempt > 0 then
+  if (OpenAttempt > 0) then
     FLogger.Info(Format('Static file open recovered path=%s attempts=%d',
-      [APath, OpenAttempt + 1]));
+                        [APath, OpenAttempt + 1]));
 
   Stream := nil;
   try
@@ -1379,14 +1407,14 @@ begin
     if (RangeText <> '') then
       begin
         if not ParseByteRange(RangeText,
-                              FileSize,
-                              StartOffset,
-                              EndOffset) then
+          FileSize,
+          StartOffset,
+          EndOffset) then
           begin
             SendText(ASocket,
                      UTF8String(Format('HTTP/1.1 416 Range Not Satisfiable'#13#10 +
-                                       'Content-Range: bytes */%d'#13#10 +
-                                       'Content-Length: 0'#13#10'Connection: close'#13#10#13#10,
+              'Content-Range: bytes */%d'#13#10 +
+              'Content-Length: 0'#13#10'Connection: close'#13#10#13#10,
                                        [FileSize])));
             Exit;
           end;
@@ -1398,19 +1426,19 @@ begin
 
     if IsPartial then
       Header := UTF8String(Format('HTTP/1.1 206 Partial Content'#13#10 +
-                                  'Content-Range: bytes %d-%d/%d'#13#10,
+        'Content-Range: bytes %d-%d/%d'#13#10,
                                   [StartOffset, EndOffset, FileSize]))
     else
       Header := 'HTTP/1.1 200 OK'#13#10;
 
 
     Header := Header + UTF8String('Content-Type: ' + MimeTypeForFile(FileName) + #13#10 +
-                                  'Accept-Ranges: bytes'#13#10 +
-                                  'Content-Length: ' + IntToStr(Remaining) + #13#10);
+      'Accept-Ranges: bytes'#13#10 +
+      'Content-Length: ' + IntToStr(Remaining) + #13#10);
 
     if FConfig.CorsEnabled then
       Header := Header + 'Access-Control-Allow-Origin: *'#13#10 +
-                         'Access-Control-Expose-Headers: Accept-Ranges, Content-Length, Content-Range'#13#10;
+        'Access-Control-Expose-Headers: Accept-Ranges, Content-Length, Content-Range'#13#10;
 
     if FConfig.IsNoStoreRoute(APath) or SameText(DecodedPath, '/FxAlert/status.json') then
       Header := Header + 'Cache-Control: no-store, no-cache, must-revalidate'#13#10;
@@ -1418,8 +1446,8 @@ begin
     Header := Header + 'Connection: close'#13#10#13#10;
 
     if not SendText(ASocket,
-                    Header) or SameText(AMethod,
-                                        'HEAD') then
+      Header) or SameText(AMethod,
+                          'HEAD') then
       Exit;
 
     Stream.Position := StartOffset;
@@ -1436,8 +1464,8 @@ begin
         Count := Stream.Read(Buffer[0],
                              Count);
         if (Count <= 0) or not SendAll(ASocket,
-                                       Buffer[0],
-                                       Count) then
+          Buffer[0],
+          Count) then
           Break;
 
         Dec(Remaining,
@@ -1479,7 +1507,7 @@ begin
       UpstreamPort := FConfig.RadioPort;
     end;
   if not ResolveIPv4(UpstreamHost,
-                     IpAddress) then
+    IpAddress) then
     begin
       SendError(ASocket,
                 502,
@@ -1511,8 +1539,8 @@ begin
     Address.sin_addr.S_addr := IpAddress;
 
     if (connect(Upstream,
-                Address,
-                SizeOf(Address)) = SOCKET_ERROR) then
+      Address,
+      SizeOf(Address)) = SOCKET_ERROR) then
       begin
         SendError(ASocket,
                   502,
@@ -1522,36 +1550,40 @@ begin
       end;
 
     RequestText := AnsiString(AMethod + ' ' +
-                              ATarget + ' HTTP/1.1'#13#10 +
-                              'Host: ' + UpstreamHost + ':' +
-                              IntToStr(UpstreamPort) + #13#10);
+      ATarget + ' HTTP/1.1'#13#10 +
+      'Host: ' + UpstreamHost + ':' +
+      IntToStr(UpstreamPort) + #13#10);
     Value := HeaderValue(ARequestHeader,
                          'User-Agent');
 
     if (Value <> '') then
       RequestText := RequestText + AnsiString('User-Agent: ' + Value + #13#10);
-    Value := HeaderValue(ARequestHeader, 'Accept');
+    Value := HeaderValue(ARequestHeader,
+                         'Accept');
 
     if (Value <> '') then
       RequestText := RequestText + AnsiString('Accept: ' + Value + #13#10);
 
-    Value := HeaderValue(ARequestHeader, 'Range');
+    Value := HeaderValue(ARequestHeader,
+                         'Range');
 
     if (Value <> '') then
       RequestText := RequestText + AnsiString('Range: ' + Value + #13#10);
-    Value := HeaderValue(ARequestHeader, 'Icy-MetaData');
+    Value := HeaderValue(ARequestHeader,
+                         'Icy-MetaData');
 
     if (Value <> '') then
       RequestText := RequestText + AnsiString('Icy-MetaData: ' + Value + #13#10);
-    Value := HeaderValue(ARequestHeader, 'Origin');
+    Value := HeaderValue(ARequestHeader,
+                         'Origin');
 
     if (Value <> '') then
       RequestText := RequestText + AnsiString('Origin: ' + Value + #13#10);
     RequestText := RequestText + 'Connection: close'#13#10#13#10;
 
     if not SendAll(Upstream,
-                   RequestText[1],
-                   Length(RequestText)) then
+      RequestText[1],
+      Length(RequestText)) then
       begin
         SendError(ASocket,
                   502,
@@ -1569,13 +1601,13 @@ begin
                     0);
 
       if (Count <= 0) then
-      begin
-        SendError(ASocket,
-                  502,
-                  HttpReason(502),
-                  'Upstream closed without a response.');
-        Exit;
-      end;
+        begin
+          SendError(ASocket,
+                    502,
+                    HttpReason(502),
+                    'Upstream closed without a response.');
+          Exit;
+        end;
 
       SetLength(ResponseHeader,
                 Length(ResponseHeader) + Count);
@@ -1590,26 +1622,26 @@ begin
     until (HeaderEnd > 0) or (Length(ResponseHeader) >= MAX_HEADER_SIZE);
 
     if (HeaderEnd = 0) then
-    begin
-      SendError(ASocket,
-                502,
-                HttpReason(502),
-                'Upstream response header is too large.');
-      Exit;
-    end;
+      begin
+        SendError(ASocket,
+                  502,
+                  HttpReason(502),
+                  'Upstream response header is too large.');
+        Exit;
+      end;
 
     OutputHeader := PrepareProxyResponseHeader(Copy(ResponseHeader,
                                                     1,
                                                     HeaderEnd - 1),
-                                                    FConfig.CorsEnabled);
+                                               FConfig.CorsEnabled);
     if not SendText(ASocket,
-                    OutputHeader) then
+      OutputHeader) then
       Exit;
 
     if (Length(ResponseHeader) > HeaderEnd + 3) then
       if not SendAll(ASocket,
-                     ResponseHeader[HeaderEnd + 4],
-                     Length(ResponseHeader) - HeaderEnd - 3) then
+        ResponseHeader[HeaderEnd + 4],
+        Length(ResponseHeader) - HeaderEnd - 3) then
         Exit;
 
     repeat
@@ -1620,8 +1652,8 @@ begin
 
       if (Count > 0) then
         if not SendAll(ASocket,
-                       Buffer[0],
-                       Count) then
+          Buffer[0],
+          Count) then
           Break;
     until (Count <= 0);
 

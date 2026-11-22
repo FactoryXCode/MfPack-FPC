@@ -78,7 +78,7 @@ type
 
   // We implement this in our engine to receive "Device Changed" notifications.
   IWasApiDeviceNotifySink = interface
-  ['{C6B4A1A2-6D15-4A2B-9CC0-2F0D27B1B2D1}']
+    ['{C6B4A1A2-6D15-4A2B-9CC0-2F0D27B1B2D1}']
 
     procedure OnWasApiDefaultDeviceChanged(Flow: EDataFlow;
                                            Role: ERole;
@@ -92,10 +92,13 @@ type
 
 
   // COM callback object
-  TWasApiNotificationClient = class(TInterfacedObject, IMMNotificationClient)
+  TWasApiNotificationClient = class(TInterfacedObject,
+                                    IMMNotificationClient)
+
   private
 
     FSink: IWasApiDeviceNotifySink;
+
   public
 
     constructor Create(const ASink: IWasApiDeviceNotifySink);
@@ -111,10 +114,10 @@ type
     function OnDefaultDeviceChanged(flow: EDataFlow;
                                     role: ERole;
                                     pwstrDefaultDeviceId:
-                                    LPCWSTR): HRESULT; stdcall;
+      LPCWSTR): HRESULT; stdcall;
 
-    function OnPropertyValueChanged(pwstrDeviceId: LPCWSTR; const
-                                    key: PROPERTYKEY): HRESULT; stdcall;
+    function OnPropertyValueChanged(pwstrDeviceId: LPCWSTR;
+                                    const key: PROPERTYKEY): HRESULT; stdcall;
   end;
 
 
@@ -122,6 +125,7 @@ implementation
 
 
 function WStrToUStr(P: LPCWSTR): UnicodeString;
+
 begin
 
   if (P <> nil) then
@@ -132,6 +136,7 @@ end;
 
 
 constructor TWasApiNotificationClient.Create(const ASink: IWasApiDeviceNotifySink);
+
 begin
 
   inherited Create;
@@ -156,6 +161,7 @@ end;
 
 
 function TWasApiNotificationClient.OnDeviceAdded(pwstrDeviceId: LPCWSTR): HRESULT;
+
 begin
 
   // Optional
@@ -181,16 +187,21 @@ function TWasApiNotificationClient.OnDefaultDeviceChanged(flow: EDataFlow;
                                                           pwstrDefaultDeviceId: LPCWSTR): HRESULT;
 var
   Id: UnicodeString;
+
 begin
+
   Id := WStrToUStr(pwstrDefaultDeviceId);
-  if FSink <> nil then
-    FSink.OnWasApiDefaultDeviceChanged(flow, role, Id);
+  if (FSink <> nil) then
+    FSink.OnWasApiDefaultDeviceChanged(flow,
+                                       role,
+                                       Id);
   Result := S_OK;
 end;
 
 
 function TWasApiNotificationClient.OnPropertyValueChanged(pwstrDeviceId: LPCWSTR;
                                                           const key: PROPERTYKEY): HRESULT;
+
 begin
 
   // Optional
@@ -198,4 +209,3 @@ begin
 end;
 
 end.
-

@@ -64,11 +64,12 @@ unit frmTagEditor;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -86,7 +87,6 @@ LMessages,
   RDJ_Common,
   RDJ.PlaylistTypes,
   RDJ.TagWriter;
-
 
 type
 
@@ -136,8 +136,8 @@ type
     class function Execute(var ATrack: TRDJTrack): Boolean;
   end;
 
-//var
-//  frmTagEditor: TfrmTagEditor;
+  //var
+  //  frmTagEditor: TfrmTagEditor;
 
 implementation
 
@@ -145,6 +145,7 @@ implementation
 
 
 procedure TfrmTagEditor.btnOkClick(Sender: TObject);
+
 begin
 
   ModalResult := mrOk;
@@ -169,15 +170,16 @@ begin
 
         Frm.SaveGuiToTrack(ATrack);
 
-        if Trim(ATrack.FullPath) <> '' then
+        if (Trim(ATrack.FullPath) <> '') then
           begin
             if not RDJWriteTrackTags(ATrack.FullPath,
-                                     ATrack,
-                                     ErrorText) then
+              ATrack,
+              ErrorText) then
               begin
-                Windows.MessageBoxW(Application.Handle,PChar('Could not write tags.' + sLineBreak + sLineBreak + ErrorText),
-                                       'Tag Editor',
-                                       MB_ICONERROR or MB_OK);
+                Windows.MessageBoxW(Application.Handle,
+                                    PChar('Could not write tags.' + sLineBreak + sLineBreak + ErrorText),
+                                    'Tag Editor',
+                                    MB_ICONERROR or MB_OK);
                 Result := False;
               end;
           end;
@@ -189,6 +191,7 @@ end;
 
 
 procedure TfrmTagEditor.FormShow(Sender: TObject);
+
 begin
 
   // DWM
@@ -197,6 +200,7 @@ end;
 
 
 procedure TfrmTagEditor.LoadTrackToGui(const ATrack: TRDJTrack);
+
 begin
 
   edtPath.Text := ATrack.FullPath;
@@ -238,6 +242,7 @@ end;
 
 
 procedure TfrmTagEditor.btnCancelClick(Sender: TObject);
+
 begin
 
   ModalResult := mrCancel;
@@ -245,6 +250,7 @@ end;
 
 
 procedure TfrmTagEditor.SaveGuiToTrack(var ATrack: TRDJTrack);
+
 begin
 
   ATrack.Artist := Trim(edtArtist.Text);
@@ -266,14 +272,14 @@ begin
                                             ',',
                                             '.',
                                             [rfReplaceAll]),
-                                            0.0);
+                              0.0);
   ATrack.MusicalKey := Trim(edtKey.Text);
 
   ATrack.GainDb := StrToFloatDef(StringReplace(Trim(edtGainDb.Text),
                                                ',',
                                                '.',
                                                [rfReplaceAll]),
-                                               0.0);
+                                 0.0);
 end;
 
 end.

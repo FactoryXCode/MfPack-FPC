@@ -71,7 +71,7 @@ uses
   LMessages,
   LCLIntf,
   Classes,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   WinApi.WinApiTypes,
@@ -112,12 +112,12 @@ type
 
   TDeviceState = (Uninitialized,
                   Error,       // Implemented to prevent calls to IAudioCaptureClient.GetNextPacketSize.
-                               // See: OnAudioSampleRequested() and error handling.
-                  MaxFileSizeReached,
-                  // All states >= Initialized will allow some methods
-                  // to be called successfully on the Audio Client.
-                  Initialized, // < from this one..
-                  Starting,
+    // See: OnAudioSampleRequested() and error handling.
+    MaxFileSizeReached,
+    // All states >= Initialized will allow some methods
+    // to be called successfully on the Audio Client.
+    Initialized, // < from this one..
+    Starting,
                   Capturing,
                   Stopping,
                   Stopped); // < ..until here
@@ -130,6 +130,7 @@ type
   TWASCapture = class(TInterfacedPersistent,
                       IAudioSessionEvents,
                       IMMNotificationClient)
+
   protected
 
     pvRenderThread: TRenderThread;
@@ -138,6 +139,7 @@ type
     FNotifyWindow: HWND;
     FClosing: Boolean;
     procedure NotifyWindowProc(var Msg: TLMessage);
+
   private
 
     pvRenderThreadClosedEvent: THandle;
@@ -210,7 +212,7 @@ type
     function GetSamplesPerSecond(): DWord;
     function GetBytesPerSample(): Word;
 
-{$Region 'Implementation of IAudioSessionEvents'}
+    {$Region 'Implementation of IAudioSessionEvents'}
     function OnDisplayNameChanged(NewDisplayName: LPCWSTR;
                                   EventContext: PGUID): HResult; stdcall;
     function OnIconPathChanged(NewIconPath: LPCWSTR;
@@ -226,9 +228,9 @@ type
                                     EventContext: PGUID): HResult; stdcall;
     function OnStateChanged(NewState: AudioSessionState): HResult; stdcall;
     function OnSessionDisconnected(DisconnectReason: AudioSessionDisconnectReason): HResult; stdcall;
-{$EndRegion}
+    {$EndRegion}
 
-{$Region 'Implementation of IMMNotificationClient'}
+    {$Region 'Implementation of IMMNotificationClient'}
     function OnDeviceStateChanged(DeviceId: LPCWSTR;
                                   NewState: DWord): HResult; stdcall;
     function OnDeviceAdded(DeviceId: LPCWSTR): HResult; stdcall;
@@ -238,7 +240,7 @@ type
                                     NewDefaultDeviceId: LPCWSTR): HResult; stdcall;
     function OnPropertyValueChanged(DeviceId: LPCWSTR;
                                     const Key: PROPERTYKEY): HResult; stdcall;
-{$EndRegion}
+    {$EndRegion}
 
   public
 
@@ -288,6 +290,7 @@ type
 
   // The thread we render after Start.
   TRenderThread = class(TThread)
+
   protected
 
     procedure Execute; override;
@@ -315,25 +318,33 @@ uses
 
 
 procedure TWASCapture.NotifyWindowProc(var Msg: TLMessage);
+
 begin
-  if Msg.Msg = WM_APP + $4D0 then
+
+  if (Msg.Msg = WM_APP + $4D0) then
     begin
       if not FClosing and Assigned(pvOnCapturingStart) then
         pvOnCapturingStart(Self);
       Msg.Result := 0;
     end
-  else if Msg.Msg = WM_APP + $4D1 then
+  else if (Msg.Msg = WM_APP + $4D1) then
     begin
       if not FClosing and Assigned(pvOnCapturingStopped) then
         pvOnCapturingStopped(Self);
       Msg.Result := 0;
     end
   else
-    Msg.Result := DefWindowProcW(FNotifyWindow,Msg.Msg,Msg.WParam,Msg.LParam);
+    Msg.Result := DefWindowProcW(FNotifyWindow,
+                                 Msg.Msg,
+                                 Msg.WParam,
+                                 Msg.LParam);
 end;
 
+
 constructor TRenderThread.Create(AEngine: TWASCapture);
+
 begin
+
   inherited Create(True);
   FEngine := AEngine;
   FreeOnTerminate := False;
@@ -344,13 +355,16 @@ procedure TRenderThread.Execute;
 var
   ComResult: HRESULT;
   SavedMask: TFPUExceptionMask;
+
 begin
-  ComResult := CoInitializeEx(nil,COINIT_MULTITHREADED);
+
+  ComResult := CoInitializeEx(nil,
+                              COINIT_MULTITHREADED);
   FSuccess := ComResult;
   if SUCCEEDED(ComResult) then
     begin
       SavedMask := GetExceptionMask();
-      SetExceptionMask([exInvalidOp,exDenormalized,exZeroDivide,exOverflow,exUnderflow,exPrecision]);
+      SetExceptionMask([exInvalidOp, exDenormalized, exZeroDivide, exOverflow, exUnderflow, exPrecision]);
       try
         FSuccess := FEngine.CaptureThreadFunc();
       finally
@@ -359,12 +373,14 @@ begin
         CoUninitialize();
       end;
     end;
-  
-  TThread.Queue(Self,SetEvent);
+
+  TThread.Queue(Self,
+                SetEvent);
 end;
 
 
 procedure TRenderThread.SetEvent;
+
 begin
 
   // Called from 'Synchronize'.
@@ -381,23 +397,27 @@ end;
 // =============================================================================
 
 procedure TWASCapture.CreateRenderThread;
+
 begin
 
   if not Assigned(pvRenderThread) then
     begin
       pvRenderThread := TRenderThread.Create(Self);
       pvRenderThreadClosedEvent := CreateEventExW(nil,
-                                                 nil,
-                                                 0,
-                                                 EVENT_MODIFY_STATE or SYNCHRONIZE);
+                                                  nil,
+                                                  0,
+                                                  EVENT_MODIFY_STATE or SYNCHRONIZE);
       pvRenderThread.Start;
     end;
 end;
 
 
 procedure TWASCapture.TerminateRenderThread();
+
 begin
-  if pvShutdownEvent <> 0 then Windows.SetEvent(pvShutdownEvent);
+
+  if (pvShutdownEvent <> 0) then
+    Windows.SetEvent(pvShutdownEvent);
   if Assigned(pvRenderThread) then
     begin
       pvRenderThread.Terminate();
@@ -405,7 +425,7 @@ begin
       TThread.RemoveQueuedEvents(pvRenderThread);
       FreeAndNil(pvRenderThread);
     end;
-  if pvRenderThreadClosedEvent <> 0 then
+  if (pvRenderThreadClosedEvent <> 0) then
     begin
       CloseHandle(pvRenderThreadClosedEvent);
       pvRenderThreadClosedEvent := 0;
@@ -442,8 +462,8 @@ begin
       if SUCCEEDED(hr) then
         // Get the default endpoint. See MMDeviceApi line 278 for explanation.
         hr := pEnumerator.GetDefaultAudioEndpoint(ERender, // eRender or eCapture,
-                                                  eMultimedia,     // eMultimedia, eConsole or eCommunications
-                                                  pvEndpoint);
+          eMultimedia,     // eMultimedia, eConsole or eCommunications
+          pvEndpoint);
       if FAILED(hr) then
         Abort;
     end;
@@ -467,11 +487,14 @@ end;
 
 
 destructor TWASCapture.Destroy();
+
 begin
+
   FClosing := True;
 
   Shutdown();
-  if FNotifyWindow <> 0 then LCLIntf.DeallocateHWnd(FNotifyWindow);
+  if (FNotifyWindow <> 0) then
+    LCLIntf.DeallocateHWnd(FNotifyWindow);
   inherited Destroy();
 end;
 
@@ -490,19 +513,25 @@ begin
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to retrieve session control: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to retrieve session control: %d.',
+                     [GetLastError()]),
+              hr);
       Exit(False);
     end;
 
   //  Create the stream switch complete event- we want a manual reset event that starts in the not-signaled state.
   pvStreamSwitchCompleteEvent := CreateEventExW(nil,
-                                               nil,
-                                               CREATE_EVENT_INITIAL_SET or CREATE_EVENT_MANUAL_RESET,
-                                               EVENT_MODIFY_STATE or SYNCHRONIZE);
+                                                nil,
+                                                CREATE_EVENT_INITIAL_SET or CREATE_EVENT_MANUAL_RESET,
+                                                EVENT_MODIFY_STATE or SYNCHRONIZE);
   if (pvStreamSwitchCompleteEvent = 0) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to create stream switch event: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to create stream switch event: %d.',
+                     [GetLastError()]),
+              hr);
       Exit(False);
     end;
 
@@ -515,7 +544,10 @@ begin
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to register for stream switch notifications: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to register for stream switch notifications: %d.',
+                     [GetLastError()]),
+              hr);
       Exit(False);
     end;
 
@@ -523,7 +555,10 @@ begin
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to register for stream switch notifications: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to register for stream switch notifications: %d.',
+                     [GetLastError()]),
+              hr);
       Exit(False);
     end;
 
@@ -541,14 +576,20 @@ begin
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to unregister for session notifications: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to unregister for session notifications: %d.',
+                     [GetLastError()]),
+              hr);
     end;
 
   pvDeviceEnumerator.UnregisterEndpointNotificationCallback(Self);
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to unregister for endpoint notifications: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to unregister for endpoint notifications: %d.',
+                     [GetLastError()]),
+              hr);
     end;
 
   if (pvStreamSwitchCompleteEvent <> 0) then
@@ -604,7 +645,10 @@ begin
   hr := pvAudioClient.Stop();
   if FAILED(hr) then
     begin
-      InfoMsg(optIDE, Format('Unable to stop audio client during stream switch: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to stop audio client during stream switch: %d.',
+                     [GetLastError()]),
+              hr);
       goto ErrorExit;
     end;
 
@@ -613,7 +657,10 @@ begin
   hr := pvAudioSessionControl.UnregisterAudioSessionNotification(Self);
   if FAILED(hr) then
     begin
-      InfoMsg(optIDE, Format('Unable to stop audio client during stream switch: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to stop audio client during stream switch: %d.',
+                     [GetLastError()]),
+              hr);
       goto ErrorExit;
     end;
 
@@ -641,7 +688,10 @@ begin
   if (waitResult = WAIT_TIMEOUT) then
     begin
 
-      InfoMsg(optIDE, Format('Stream switch timeout - aborting...: %d.',[waitResult]), E_FAIL);
+      InfoMsg(optIDE,
+              Format('Stream switch timeout - aborting...: %d.',
+                     [waitResult]),
+              E_FAIL);
       goto ErrorExit;
     end;
 
@@ -654,7 +704,10 @@ begin
                                                      pvEndpoint);
   if FAILED(hr) then
     begin
-      InfoMsg(optIDE, Format('Unable to retrieve new default device during stream switch: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to retrieve new default device during stream switch: %d.',
+                     [GetLastError()]),
+              hr);
       goto ErrorExit;
     end;
 
@@ -667,7 +720,10 @@ begin
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to activate audio client on the new endpoint: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to activate audio client on the new endpoint: %d.',
+                     [GetLastError()]),
+              hr);
       goto ErrorExit;
     end;
 
@@ -680,7 +736,10 @@ begin
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to retrieve mix format for new audio client: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to retrieve mix format for new audio client: %d.',
+                     [GetLastError()]),
+              hr);
       goto ErrorExit;
     end;
 
@@ -702,19 +761,21 @@ begin
   InfoMsg(optIDE,
           Format('MixFmt: tag=%d ch=%d sr=%d bps=%d align=%d avg=%d cb=%d',
                  [pvMixFormat.Format.wFormatTag, pvMixFormat.Format.nChannels, pvMixFormat.Format.nSamplesPerSec,
-                  pvMixFormat.Format.wBitsPerSample, pvMixFormat.Format.nBlockAlign, pvMixFormat.Format.nAvgBytesPerSec, pvMixFormat.Format.cbSize]),
+    pvMixFormat.Format.wBitsPerSample, pvMixFormat.Format.nBlockAlign, pvMixFormat.Format.nAvgBytesPerSec, pvMixFormat.Format.cbSize]),
           S_OK);
 
   // Note that this is an intentionally naive comparison.
   // A more sophisticated comparison would compare the sample rate,
   // channel count and format and apply the appropriate conversions into the capture pipeline.
 
-  if not CompareMem(@pvMixFormat,
-                    @wfxNew,
-                    SizeOf(WAVEFORMATEX) + wfxNew.cbSize) then
+  if not CompareMem(@pvMixFormat, @wfxNew,
+    SizeOf(WAVEFORMATEX) + wfxNew.cbSize) then
     begin
 
-      InfoMsg(optIDE, Format('New mix format doesn''t match old mix format.  Aborting... : %d.',[E_FAIL]), E_FAIL);
+      InfoMsg(optIDE,
+              Format('New mix format doesn''t match old mix format.  Aborting... : %d.',
+                     [E_FAIL]),
+              E_FAIL);
       // CoTaskMemFree(wfxNew);
       goto ErrorExit;
     end;
@@ -724,9 +785,9 @@ begin
   // Step 7:  Re-initialize the audio client.
 
   if not InitializeAudioEngine() then
-   begin
+    begin
       goto ErrorExit;
-   end;
+    end;
 
   // Step 8: Re-register for session disconnect notifications.
 
@@ -735,7 +796,10 @@ begin
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to retrieve session control on new audio client: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to retrieve session control on new audio client: %d.',
+                     [GetLastError()]),
+              hr);
       goto ErrorExit;
     end;
 
@@ -743,7 +807,10 @@ begin
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to retrieve session control on new audio client: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to retrieve session control on new audio client: %d.',
+                     [GetLastError()]),
+              hr);
       goto ErrorExit;
     end;
 
@@ -756,15 +823,18 @@ begin
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to start the new audio client: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to start the new audio client: %d.',
+                     [GetLastError()]),
+              hr);
       goto ErrorExit;
     end;
 
   pvEnableStreamSwitch := True;
   bRes := True;
 
-ErrorExit:
-  pvEnableStreamSwitch := False;
+  ErrorExit:
+    pvEnableStreamSwitch := False;
   Result := bRes;
 end;
 
@@ -807,14 +877,14 @@ begin
     ZeroMemory(@pvMixFormat,
                SizeOf(pvMixFormat));
 
-        // Always copy the WAVEFORMATEX header first
+    // Always copy the WAVEFORMATEX header first
     Move(pWfx^,
          pvMixFormat.Format,
          SizeOf(WAVEFORMATEX));
 
     // If the returned format is extensible, copy only the extension fields safely
     if (pWfx.wFormatTag = WAVE_FORMAT_EXTENSIBLE) and
-       (pWfx.cbSize >= (SizeOf(WAVEFORMATEXTENSIBLE) - SizeOf(WAVEFORMATEX))) then
+      (pWfx.cbSize >= (SizeOf(WAVEFORMATEXTENSIBLE) - SizeOf(WAVEFORMATEX))) then
       begin
 
         pvMixFormat.Samples.wValidBitsPerSample := PWAVEFORMATEXTENSIBLE(pWfx).Samples.wValidBitsPerSample;
@@ -835,11 +905,11 @@ begin
         case pvMixFormat.Format.nChannels of
           1: pvMixFormat.dwChannelMask := $00000004; // FRONT_CENTER
           2: pvMixFormat.dwChannelMask := $00000003; // FRONT_LEFT|FRONT_RIGHT
-        else
-          pvMixFormat.dwChannelMask := 0;
+          else
+            pvMixFormat.dwChannelMask := 0;
         end;
 
-        if pWfx.wFormatTag = WAVE_FORMAT_IEEE_FLOAT then
+        if (pWfx.wFormatTag = WAVE_FORMAT_IEEE_FLOAT) then
           pvMixFormat.SubFormat := KSDATAFORMAT_SUBTYPE_IEEE_FLOAT
         else
           pvMixFormat.SubFormat := KSDATAFORMAT_SUBTYPE_PCM;
@@ -848,8 +918,8 @@ begin
 
     // Validate before using
     if (pvMixFormat.Format.nChannels = 0) or
-       (pvMixFormat.Format.nSamplesPerSec = 0) or
-       (pvMixFormat.Format.nBlockAlign = 0) then
+      (pvMixFormat.Format.nSamplesPerSec = 0) or
+      (pvMixFormat.Format.nBlockAlign = 0) then
       Exit(False);
 
     // Correct frame size (safe now)
@@ -877,21 +947,24 @@ begin
       Inc(pvBufferDuration,
           pvEngineLatency);
       if (pvBufferDuration < hnsMinimumDevicePeriod) then
-        pvBufferDuration :=  hnsMinimumDevicePeriod;
+        pvBufferDuration := hnsMinimumDevicePeriod;
     end;
 
   hr := pvAudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED,
                                  AUDCLNT_STREAMFLAGS_LOOPBACK or
-                                 AUDCLNT_STREAMFLAGS_EVENTCALLBACK or
-                                 AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM,
+    AUDCLNT_STREAMFLAGS_EVENTCALLBACK or
+    AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM,
                                  pvBufferDuration, // Note: When bufferDuration = 0, the audioclient will automaticly decise the bufferduration.
-                                 0, // Must be zero in shared mode!
-                                 @pvMixFormat.Format,
+    0, // Must be zero in shared mode!
+    @pvMixFormat.Format,
                                  @GUID_NULL);
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to initialize the audio client: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to initialize the audio client: %d.',
+                     [GetLastError()]),
+              hr);
       Exit(SUCCEEDED(hr));
     end;
 
@@ -900,12 +973,15 @@ begin
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to get audio client buffer: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to get audio client buffer: %d.',
+                     [GetLastError()]),
+              hr);
       Exit(SUCCEEDED(hr));
     end;
 
- // Get the stream latency (normally this should be inbetween 0 and 15 ms on Windows 11)
- // See: https://learn.microsoft.com/en-us/windows-hardware/drivers/audio/low-latency-audio
+  // Get the stream latency (normally this should be inbetween 0 and 15 ms on Windows 11)
+  // See: https://learn.microsoft.com/en-us/windows-hardware/drivers/audio/low-latency-audio
   hr := pvAudioClient.GetStreamLatency(hnsLatency);
   if FAILED(hr) then
     Exit(SUCCEEDED(hr));
@@ -919,7 +995,10 @@ begin
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to set ready event: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to set ready event: %d.',
+                     [GetLastError()]),
+              hr);
       Exit(SUCCEEDED(hr));
     end;
 
@@ -929,7 +1008,10 @@ begin
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to get new capture client: %d.',[GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to get new capture client: %d.',
+                     [GetLastError()]),
+              hr);
       Exit(SUCCEEDED(hr));
     end;
 
@@ -943,6 +1025,7 @@ end;
 //
 function TWASCapture.GetMixFormat(out pMixFmt: PWAVEFORMATEX;
                                   pGetDefault: Boolean = False): HResult;
+
 begin
 
   pMixFmt := nil;
@@ -964,7 +1047,10 @@ begin
   if FAILED(Result) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to get mix format on audio client: %d.', [GetLastError()]), Result);
+      InfoMsg(optIDE,
+              Format('Unable to get mix format on audio client: %d.',
+                     [GetLastError()]),
+              Result);
       pvFrameSize := 0;
       Exit(Result);
     end;
@@ -977,6 +1063,7 @@ end;
 // Property read function.
 
 function TWASCapture.GetCannelCount(): Word;
+
 begin
 
   Result := pvMixFormat.Format.nChannels;
@@ -984,6 +1071,7 @@ end;
 
 
 function TWASCapture.GetSamplesPerSecond(): DWord;
+
 begin
 
   Result := pvMixFormat.Format.nSamplesPerSec;
@@ -991,6 +1079,7 @@ end;
 
 
 function TWASCapture.GetBytesPerSample(): Word;
+
 begin
 
   Result := pvMixFormat.Format.wBitsPerSample div 8;
@@ -1001,6 +1090,7 @@ end;
 
 function TWASCapture.OnDisplayNameChanged(NewDisplayName: LPCWSTR;
                                           EventContext: PGUID): HResult;
+
 begin
 
   Result := S_OK;
@@ -1009,6 +1099,7 @@ end;
 
 function TWASCapture.OnIconPathChanged(NewIconPath: LPCWSTR;
                                        EventContext: PGUID): HResult;
+
 begin
 
   Result := S_OK;
@@ -1016,8 +1107,9 @@ end;
 
 
 function TWASCapture.OnSimpleVolumeChanged(NewSimpleVolume: Single;
-                                                   NewMute: BOOL;
-                                                   EventContext: PGUID): HResult;
+                                           NewMute: BOOL;
+                                           EventContext: PGUID): HResult;
+
 begin
 
   Result := S_OK;
@@ -1025,9 +1117,10 @@ end;
 
 
 function TWASCapture.OnChannelVolumeChanged(ChannelCount: UINT;
-                                                    NewChannelVolumeArray: PSINGLE;
-                                                    ChangedChannel: UINT;
-                                                    EventContext: PGUID): HResult;
+                                            NewChannelVolumeArray: PSINGLE;
+                                            ChangedChannel: UINT;
+                                            EventContext: PGUID): HResult;
+
 begin
 
   Result := S_OK;
@@ -1036,6 +1129,7 @@ end;
 
 function TWASCapture.OnGroupingParamChanged(const NewGroupingParam: TGUID;
                                             EventContext: PGUID): HResult;
+
 begin
 
   Result := S_OK;
@@ -1043,6 +1137,7 @@ end;
 
 
 function TWASCapture.OnStateChanged(NewState: AudioSessionState): HResult;
+
 begin
 
   Result := S_OK;
@@ -1055,6 +1150,7 @@ end;
 // we just want to let the capture thread know that the session's gone away.
 //
 function TWASCapture.OnSessionDisconnected(DisconnectReason: AudioSessionDisconnectReason): HResult;
+
 begin
 
   if (DisconnectReason = DisconnectReasonDeviceRemoval) then
@@ -1092,6 +1188,7 @@ end;
 
 function TWASCapture.OnDeviceStateChanged(DeviceId: LPCWSTR;
                                           NewState: DWord): HResult;
+
 begin
 
   Result := S_OK;
@@ -1099,6 +1196,7 @@ end;
 
 
 function TWASCapture.OnDeviceAdded(DeviceId: LPCWSTR): HResult;
+
 begin
 
   Result := S_OK;
@@ -1106,6 +1204,7 @@ end;
 
 
 function TWASCapture.OnDeviceRemoved(DeviceId: LPCWSTR): HResult;
+
 begin
 
   Result := S_OK;
@@ -1119,6 +1218,7 @@ end;
 function TWASCapture.OnDefaultDeviceChanged(Flow: EDataFlow;
                                             Role: ERole;
                                             NewDefaultDeviceId: LPCWSTR): HResult;
+
 begin
 
   if (Flow = EDataFlow(eCapture)) and (Role = pvEndpointRole) then
@@ -1132,8 +1232,8 @@ begin
       //
       if not pvEnableStreamSwitch then
         begin
-            pvEnableStreamSwitch := True;
-            SetEvent(pvStreamSwitchEvent);
+          pvEnableStreamSwitch := True;
+          SetEvent(pvStreamSwitchEvent);
         end;
       SetEvent(pvStreamSwitchCompleteEvent);
     end;
@@ -1143,6 +1243,7 @@ end;
 
 function TWASCapture.OnPropertyValueChanged(DeviceId: LPCWSTR;
                                             const Key: PROPERTYKEY): HResult;
+
 begin
 
   Result := S_OK;
@@ -1157,44 +1258,54 @@ end;
 function TWASCapture.Initialize(pBufferDuration: REFERENCE_TIME;
                                 pEngineLatency: UINT32;
                                 pUseDefaultAudioFmt: Boolean = True): Boolean;
+
 begin
 
   //  Create our shutdown and samples ready events- we want auto reset events that
   //  start in the not-signaled state.
 
   pvShutdownEvent := CreateEventExW(nil,
-                                   nil,
-                                   0,
-                                   EVENT_MODIFY_STATE or SYNCHRONIZE);
+                                    nil,
+                                    0,
+                                    EVENT_MODIFY_STATE or SYNCHRONIZE);
 
   if (pvShutdownEvent = 0) then
     begin
-      InfoMsg(optIDE, Format('Unable to create shutdown event: %d.',[E_FAIL]), E_FAIL);
+      InfoMsg(optIDE,
+              Format('Unable to create shutdown event: %d.',
+                     [E_FAIL]),
+              E_FAIL);
       Exit(False);
     end;
 
   pvAudioSamplesReadyEvent := CreateEventExW(nil,
-                                            nil,
-                                            0,
-                                            EVENT_MODIFY_STATE or SYNCHRONIZE);
+                                             nil,
+                                             0,
+                                             EVENT_MODIFY_STATE or SYNCHRONIZE);
 
   if (pvAudioSamplesReadyEvent = 0) then
     begin
-      InfoMsg(optIDE, Format('Unable to create samples ready event: %d.',[E_FAIL]), E_FAIL);
+      InfoMsg(optIDE,
+              Format('Unable to create samples ready event: %d.',
+                     [E_FAIL]),
+              E_FAIL);
       Exit(False);
     end;
 
   pvStreamSwitchEvent := CreateEventExW(nil,
-                                       nil,
-                                       0,
-                                       EVENT_MODIFY_STATE or SYNCHRONIZE);
+                                        nil,
+                                        0,
+                                        EVENT_MODIFY_STATE or SYNCHRONIZE);
 
   // Create our stream switch event- we want auto reset events that start in the not-signaled state.
   // Note that we create this event even if we're not going to stream switch - that's because the event is used
   // in the main loop of the capturer and thus it has to be set.
   if (pvStreamSwitchEvent = 0) then
     begin
-      InfoMsg(optIDE, Format('Unable to create stream switch event: %d.',[E_FAIL]), E_FAIL);
+      InfoMsg(optIDE,
+              Format('Unable to create stream switch event: %d.',
+                     [E_FAIL]),
+              E_FAIL);
       Exit(False);
     end;
 
@@ -1220,7 +1331,9 @@ end;
 // Shut down the capture code and free all the resources.
 //
 procedure TWASCapture.Shutdown();
+
 begin
+
   Stop();
   if (pvRenderThreadClosedEvent <> 0) then
     begin
@@ -1232,35 +1345,35 @@ begin
       pvRenderThreadClosedEvent := 0;
     end;
 
-    if (pvShutdownEvent <> 0) then
-      begin
+  if (pvShutdownEvent <> 0) then
+    begin
 
-        CloseHandle(pvShutdownEvent);
-        pvShutdownEvent := 0;
-      end;
+      CloseHandle(pvShutdownEvent);
+      pvShutdownEvent := 0;
+    end;
 
-    if (pvAudioSamplesReadyEvent <> 0) then
-      begin
+  if (pvAudioSamplesReadyEvent <> 0) then
+    begin
 
-        CloseHandle(pvAudioSamplesReadyEvent);
-        pvAudioSamplesReadyEvent := 0;
-      end;
+      CloseHandle(pvAudioSamplesReadyEvent);
+      pvAudioSamplesReadyEvent := 0;
+    end;
 
-    if (pvStreamSwitchEvent <> 0) then
-      begin
+  if (pvStreamSwitchEvent <> 0) then
+    begin
 
-        CloseHandle(pvStreamSwitchEvent);
-        pvStreamSwitchEvent := 0;
-      end;
+      CloseHandle(pvStreamSwitchEvent);
+      pvStreamSwitchEvent := 0;
+    end;
 
-    SafeRelease(pvEndpoint);
-    SafeRelease(pvAudioClient);
-    SafeRelease(pvCaptureClient);
+  SafeRelease(pvEndpoint);
+  SafeRelease(pvAudioClient);
+  SafeRelease(pvCaptureClient);
 
-    //pvMixFormat := nil;
+  //pvMixFormat := nil;
 
-    if (pvEnableStreamSwitch = True) then
-      TerminateStreamSwitch();
+  if (pvEnableStreamSwitch = True) then
+    TerminateStreamSwitch();
 end;
 
 
@@ -1270,11 +1383,15 @@ end;
 function TWASCapture.Start(const pFileName: UnicodeString): Boolean;
 var
   hr: HRESULT;
+
 begin
+
   Result := False;
-  if (pFileName = '') or not Assigned(pvAudioClient) then Exit;
+  if (pFileName = '') or not Assigned(pvAudioClient) then
+    Exit;
   TerminateRenderThread();
-  if pvShutdownEvent <> 0 then ResetEvent(pvShutdownEvent);
+  if (pvShutdownEvent <> 0) then
+    ResetEvent(pvShutdownEvent);
   pvFileName := pFileName;
   pvBytesCaptured := 0;
   CreateRenderThread();
@@ -1284,7 +1401,12 @@ begin
       TerminateRenderThread();
       Exit;
     end;
-  if Assigned(pvOnCapturingStart) then if not FClosing then PostMessage(FNotifyWindow,WM_APP + $4D0 + 0,0,0);
+  if Assigned(pvOnCapturingStart) then
+    if not FClosing then
+      PostMessage(FNotifyWindow,
+                  WM_APP + $4D0 + 0,
+                  0,
+                  0);
   Result := True;
 end;
 
@@ -1296,6 +1418,7 @@ var
   hr: HResult;
 
 begin
+
   hr := S_OK;
 
   pvDeviceState := Stopping;
@@ -1312,7 +1435,10 @@ begin
 
       hr := pvAudioClient.Stop();
       if FAILED(hr) then
-        InfoMsg(optIDE, Format('Unable to stop audio client: %d',[GetLastError()]), hr);
+        InfoMsg(optIDE,
+                Format('Unable to stop audio client: %d',
+                       [GetLastError()]),
+                hr);
     end;
 
   if (pvRenderThreadClosedEvent <> 0) then
@@ -1329,7 +1455,11 @@ begin
     begin
 
       // Signal the mainform capturing has been stopped.
-      if not FClosing then PostMessage(FNotifyWindow,WM_APP + $4D0 + 1,0,0);
+      if not FClosing then
+        PostMessage(FNotifyWindow,
+                    WM_APP + $4D0 + 1,
+                    0,
+                    0);
       Sleep(1); // Sleep to prevent a mainform timer would stop before the notify event has been processed.
       pvDeviceState := Stopped;
     end;
@@ -1363,7 +1493,8 @@ begin
   mmcssHandle := 0;
   mmcssTaskIndex := 0;
 
-  SetLength(silenceBuf, 0);
+  SetLength(silenceBuf,
+            0);
 
   // Create and open file.
   audioWriter := CreateAudioWriterFromFileName(pvFileName);
@@ -1374,7 +1505,10 @@ begin
   if FAILED(hr) then
     begin
 
-      InfoMsg(optIDE, Format('Unable to open MF sink writer ''%s'': %d.', [pvFileName, GetLastError()]), hr);
+      InfoMsg(optIDE,
+              Format('Unable to open MF sink writer ''%s'': %d.',
+                     [pvFileName, GetLastError()]),
+              hr);
       Exit(hr);
     end;
 
@@ -1384,7 +1518,7 @@ begin
     begin
 
       mmcssHandle := NativeUInt(AvSetMmThreadCharacteristics('Audio',
-                                                  @mmcssTaskIndex));
+                                                             @mmcssTaskIndex));
       // If it fails, we continue anyway.
     end;
 
@@ -1407,106 +1541,106 @@ begin
           // pvShutdownEvent
           WAIT_OBJECT_0 + 0: pvDeviceState := Stopping;
 
-        // pvStreamSwitchEvent
-        WAIT_OBJECT_0 + 1: begin
+          // pvStreamSwitchEvent
+            WAIT_OBJECT_0 + 1: begin
 
-                             if not HandleStreamSwitchEvent() then
-                             pvDeviceState := Error;
-                           end;
+              if not HandleStreamSwitchEvent() then
+                pvDeviceState := Error;
+            end;
 
-        // pvAudioSamplesReadyEvent
-        WAIT_OBJECT_0 + 2: begin
+          // pvAudioSamplesReadyEvent
+            WAIT_OBJECT_0 + 2: begin
 
-                             hr := pvCaptureClient.GetNextPacketSize(packetSize);
-                             if FAILED(hr) then
-                               begin
+              hr := pvCaptureClient.GetNextPacketSize(packetSize);
+              if FAILED(hr) then
+                begin
 
-                                 pvDeviceState := Error;
-                                 Continue;
-                                end;
+                  pvDeviceState := Error;
+                  Continue;
+                end;
 
-                             // Drain all packets for this event.
-                             while (packetSize > 0) and (pvDeviceState = Capturing) do
-                               begin
+              // Drain all packets for this event.
+              while (packetSize > 0) and (pvDeviceState = Capturing) do
+                begin
 
-                                 hr := pvCaptureClient.GetBuffer(pData,
-                                                                 NumFramesToRead,
-                                                                 flags,
-                                                                 nil,
-                                                                 nil);
-                                 if FAILED(hr) then
-                                   begin
+                  hr := pvCaptureClient.GetBuffer(pData,
+                                                  NumFramesToRead,
+                                                  flags,
+                                                  nil,
+                                                  nil);
+                  if FAILED(hr) then
+                    begin
 
-                                     pvDeviceState := Error;
-                                     Break;
-                                    end;
+                      pvDeviceState := Error;
+                      Break;
+                    end;
 
-                                 try
+                  try
 
-                                   // It is valid (and happens) that NumFramesToRead can be 0.
-                                   // If so: just release and continue.
-                                   if (NumFramesToRead = 0) then
-                                     begin
+                    // It is valid (and happens) that NumFramesToRead can be 0.
+                    // If so: just release and continue.
+                    if (NumFramesToRead = 0) then
+                      begin
 
-                                       // no write, dwBytesWritten stays 0
-                                     end
-                                   else
-                                     begin
+                        // no write, dwBytesWritten stays 0
+                      end
+                    else
+                      begin
 
-                                       bytesToWrite := Integer(NumFramesToRead) * Integer(pvMixFormat.Format.nBlockAlign);
+                        bytesToWrite := Integer(NumFramesToRead) * Integer(pvMixFormat.Format.nBlockAlign);
 
-                                       // SILENT is a bitmask, the writer cannot accept nil pointers.
-                                       if ((flags and AUDCLNT_BUFFERFLAGS_SILENT) <> 0) then
-                                         begin
+                        // SILENT is a bitmask, the writer cannot accept nil pointers.
+                        if ((flags and AUDCLNT_BUFFERFLAGS_SILENT) <> 0) then
+                          begin
 
-                                           if (Length(silenceBuf) < bytesToWrite) then
-                                             SetLength(silenceBuf,
-                                                       bytesToWrite);
+                            if (Length(silenceBuf) < bytesToWrite) then
+                              SetLength(silenceBuf,
+                                        bytesToWrite);
 
-                                           FillChar(silenceBuf[0],
-                                                    bytesToWrite,
-                                                    0);
-                                           pData := @silenceBuf[0];
-                                         end;
+                            FillChar(silenceBuf[0],
+                                     bytesToWrite,
+                                     0);
+                            pData := @silenceBuf[0];
+                          end;
 
-                                       // DO NOT "continue" on DATA_DISCONTINUITY; just optionally log it.
-                                       // if ((flags and AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY) <>) 0 then
-                                       //   InfoMsg(optIDE, 'DATA_DISCONTINUITY', S_OK);
+                        // DO NOT "continue" on DATA_DISCONTINUITY; just optionally log it.
+                        // if ((flags and AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY) <>) 0 then
+                        //   InfoMsg(optIDE, 'DATA_DISCONTINUITY', S_OK);
 
-                                       hr := audioWriter.WriteFrames(pData,
-                                                                     NumFramesToRead,
-                                                                     pvMixFormat.Format,
-                                                                     time100ns,
-                                                                     bytesWrittenMF);
-                                       if FAILED(hr) then
-                                         begin
+                        hr := audioWriter.WriteFrames(pData,
+                                                      NumFramesToRead,
+                                                      pvMixFormat.Format,
+                                                      time100ns,
+                                                      bytesWrittenMF);
+                        if FAILED(hr) then
+                          begin
 
-                                           pvDeviceState := Error;
-                                           Break;
-                                         end;
+                            pvDeviceState := Error;
+                            Break;
+                          end;
 
-                                       Inc(pvBytesCaptured,
-                                           bytesWrittenMF);
-                                     end;
+                        Inc(pvBytesCaptured,
+                            bytesWrittenMF);
+                      end;
 
-                                 finally
+                  finally
 
-                                   hr := pvCaptureClient.ReleaseBuffer(NumFramesToRead);
-                                   if FAILED(hr) then
-                                     pvDeviceState := Error;
-                                 end;
+                    hr := pvCaptureClient.ReleaseBuffer(NumFramesToRead);
+                    if FAILED(hr) then
+                      pvDeviceState := Error;
+                  end;
 
-                                 hr := pvCaptureClient.GetNextPacketSize(packetSize);
-                                 if FAILED(hr) then
-                                   begin
+                  hr := pvCaptureClient.GetNextPacketSize(packetSize);
+                  if FAILED(hr) then
+                    begin
 
-                                     pvDeviceState := Error;
-                                     Break;
-                                   end;
-                               end;
-                           end;
+                      pvDeviceState := Error;
+                      Break;
+                    end;
+                end;
+            end;
         end; // case
-    end; // while
+      end; // while
 
     if (pvDeviceState = Error) then
       Result := hr

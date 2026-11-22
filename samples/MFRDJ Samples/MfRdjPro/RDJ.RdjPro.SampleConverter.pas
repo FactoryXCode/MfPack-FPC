@@ -63,11 +63,12 @@ unit RDJ.RdjPro.SampleConverter;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   WinApi.WinApiTypes,
@@ -94,12 +95,13 @@ LMessages,
 type
 
   TRdjProSampleConverter = class(TObject)
+
   protected
 
     FOutputType: IMFMediaType;
     FTransform: IMFTransform;
-    FSupportedInputs : TArray<TGUID>;
-    FTopDownFormats : TArray<TGUID>;
+    FSupportedInputs: TArray < TGUID > ;
+    FTopDownFormats: TArray < TGUID > ;
 
   private
 
@@ -135,20 +137,25 @@ implementation
 
 
 constructor TRdjProSampleConverter.Create();
+
 begin
+
   inherited;
   SetSupportedInputs();
 end;
 
 
 destructor TRdjProSampleConverter.Destroy();
+
 begin
+
   FreeConverter();
   inherited;
 end;
 
 
 procedure TRdjProSampleConverter.SetSupportedInputs();
+
 begin
 
   SetLength(FSupportedInputs,
@@ -184,28 +191,32 @@ end;
 
 
 function TRdjProSampleConverter.IsTopDown(const ASubFormat: TGUID): Boolean;
+
 begin
 
-  Result := IndexOf(ASubFormat,
-                    FTopDownFormats) > -1;
+  Result := (IndexOf(ASubFormat,
+                     FTopDownFormats) > -1);
 end;
 
 
 function TRdjProSampleConverter.IsInputSupported(const AInputFormat: TGUID): Boolean;
+
 begin
 
-  Result := IndexOf(AInputFormat,
-                    FSupportedInputs) > -1;
+  Result := (IndexOf(AInputFormat,
+                     FSupportedInputs) > -1);
 end;
 
 
 function TRdjProSampleConverter.IndexOf(const AInput: TGUID;
                                         const AValues: array of TGUID): Integer;
+
 begin
 
   Result := High(AValues);
   while (Result >= Low(AValues)) and
-        (not IsEqualGUID(AInput,AValues[Result])) do
+    (not IsEqualGUID(AInput,
+                     AValues[Result])) do
     Dec(Result);
 end;
 
@@ -229,7 +240,7 @@ label
 
 begin
 
-  if (not IsEqualGUID(AVideoInfo.fSubType,MFVideoFormat_RGB32)) then
+  if (not IsEqualGUID(AVideoInfo.fSubType, MFVideoFormat_RGB32)) then
     begin
 
       hr := ConvertSampleToRGB(ASample,
@@ -264,9 +275,12 @@ begin
           AMemoryStream := TMemoryStream.Create;
           oFileHeader := GetBMPFileHeader;
           oFileInfo := GetBMPFileInfo(AVideoInfo);
-          AMemoryStream.Write(oFileHeader, SizeOf(oFileHeader));
-          AMemoryStream.Write(oFileInfo, SizeOf(oFileInfo));
-          AMemoryStream.Write(pBitmapData[0], iActualDataSize);
+          AMemoryStream.Write(oFileHeader,
+                              SizeOf(oFileHeader));
+          AMemoryStream.Write(oFileInfo,
+                              SizeOf(oFileInfo));
+          AMemoryStream.Write(pBitmapData[0],
+                              iActualDataSize);
         end
       else
         begin
@@ -278,8 +292,8 @@ begin
       pBuffer.Unlock();
     end;
 
-done:
-  SafeRelease(pBuffer);
+  done:
+    SafeRelease(pBuffer);
   if Assigned(pConvertedSample) then
     SafeRelease(pConvertedSample);
   Result := hr;
@@ -287,6 +301,7 @@ end;
 
 
 function TRdjProSampleConverter.GetBMPFileHeader(): BITMAPFILEHEADER;
+
 begin
 
   Result.bfType := Ord('B') or (Ord('M') shl 8); // Type is "BM" for BitMap
@@ -298,6 +313,7 @@ end;
 
 
 function TRdjProSampleConverter.GetBMPFileInfo(const AVideoInfo: TVideoFormatInfo): BITMAPINFOHEADER;
+
 begin
 
   // See: https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapinfoheader
@@ -318,6 +334,7 @@ end;
 
 
 procedure TRdjProSampleConverter.FreeConverter();
+
 begin
 
   if Assigned(FTransform) then
@@ -328,6 +345,7 @@ end;
 
 function TRdjProSampleConverter.UpdateConverter(const AManager: IMFDXGIDeviceManager;
                                                 const AInputType: IMFMediaType): HResult;
+
 begin
 
   Result := CreateTransform(AManager,
@@ -403,13 +421,14 @@ begin
   //                                  UInt64(AManager));
 
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 
 end;
 
 
 procedure TRdjProSampleConverter.NotifyBeginStreaming();
+
 begin
 
   // This should speed up the first frame request.
@@ -471,10 +490,9 @@ begin
                                         0);
     end;
 
-done:
-  SafeRelease(pBufferOut);
+  done:
+    SafeRelease(pBufferOut);
   Result := hr;
 end;
 
 end.
-

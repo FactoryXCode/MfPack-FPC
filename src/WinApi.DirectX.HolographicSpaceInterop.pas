@@ -89,7 +89,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -105,6 +106,7 @@ type
                              out holographicSpace): HRESULT; stdcall;
 
   end;
+
   IID_IHolographicSpaceInterop = IHolographicSpaceInterop;
 
   // Interface IHolographicCameraInterop
@@ -121,30 +123,30 @@ type
     // The resource is created so that it is already committed to a heap.
 
     function CreateDirect3D12BackBufferResource(pDevice: ID3D12Device;  {The Direct3D 12 device.}
-                                                // The Direct3D 12 resource description.
-                                                // The API will make a best effort to respect the values in this descriptor. The app
-                                                // should inspect the descriptor for the texture returned by ppCreatedTexture2DResource
-                                                // and respond appropriately to any differences from what was specified.
-                                                pTexture2DDesc: PD3D12_RESOURCE_DESC;
-                                                // If successful, the Direct3D 12 2D texture resource for use as a content buffer. Otherwise null.
-                                                out ppCreatedTexture2DResource: ID3D12Resource): HRESULT; stdcall;
+    // The Direct3D 12 resource description.
+    // The API will make a best effort to respect the values in this descriptor. The app
+    // should inspect the descriptor for the texture returned by ppCreatedTexture2DResource
+    // and respond appropriately to any differences from what was specified.
+      pTexture2DDesc: PD3D12_RESOURCE_DESC;
+    // If successful, the Direct3D 12 2D texture resource for use as a content buffer. Otherwise null.
+      out ppCreatedTexture2DResource: ID3D12Resource): HRESULT; stdcall;
 
     // Creates a D3D12 resource for use as a content buffer for the camera with optional hardware protection.
     // Behavior is the same as CreateDirect3D12BackBufferResource but accepts an optional ID3D12ProtectedResourceSession.
     // Use this optional parameter to to create a hardware protected resource buffer.
     //
     function CreateDirect3D12HardwareProtectedBackBufferResource(// The Direct3D 12 device.
-                                                                 pDevice: ID3D12Device;
-                                                                 // The Direct3D 12 resource description.
-                                                                 // The API will make a best effort to respect the values in this descriptor. The app
-                                                                 // should inspect the descriptor for the texture returned by ppCreatedTexture2DResource
-                                                                 // and respond appropriately to any differences from what was specified.
-                                                                 pTexture2DDesc: PD3D12_RESOURCE_DESC;
-                                                                 // An optional D3D12 protected resource session. Passing a protected session will attempt to create
-                                                                 // A D3D12 hardware protected resource.
-                                                                 pProtectedResourceSession: ID3D12ProtectedResourceSession;
-                                                                 // If successful, the Direct3D 12 2D texture resource for use as a content buffer. Otherwise null.
-                                                                 out ppCreatedTexture2DResource: ID3D12Resource): HRESULT; stdcall;
+      pDevice: ID3D12Device;
+    // The Direct3D 12 resource description.
+    // The API will make a best effort to respect the values in this descriptor. The app
+    // should inspect the descriptor for the texture returned by ppCreatedTexture2DResource
+    // and respond appropriately to any differences from what was specified.
+      pTexture2DDesc: PD3D12_RESOURCE_DESC;
+    // An optional D3D12 protected resource session. Passing a protected session will attempt to create
+    // A D3D12 hardware protected resource.
+      pProtectedResourceSession: ID3D12ProtectedResourceSession;
+    // If successful, the Direct3D 12 2D texture resource for use as a content buffer. Otherwise null.
+      out ppCreatedTexture2DResource: ID3D12Resource): HRESULT; stdcall;
 
     // Acquires a Direct3D12 buffer resource.
     // After committing a resource to a HolographicFrame by calling
@@ -162,24 +164,24 @@ type
     // to be acquired, the method call will fail with the error code E_NOTREADY.
 
     function AcquireDirect3D12BufferResource(// The Direct3D 12 resource to acquire.
-                                             // The resource will be in the D3D12_RESOURCE_STATE_COMMON when it is acquired.
-                                             pResourceToAcquire: ID3D12Resource;
-                                             // The Direct3D 12 command queue to use for transitioning
-                                             // the state of this resource when acquiring it for the app.
-                                             pCommandQueue: ID3D12CommandQueue): HRESULT; stdcall;
+    // The resource will be in the D3D12_RESOURCE_STATE_COMMON when it is acquired.
+      pResourceToAcquire: ID3D12Resource;
+    // The Direct3D 12 command queue to use for transitioning
+    // the state of this resource when acquiring it for the app.
+      pCommandQueue: ID3D12CommandQueue): HRESULT; stdcall;
 
     function AcquireDirect3D12BufferResourceWithTimeout(pResourceToAcquire: ID3D12Resource;
-                                                        // The Direct3D 12 command queue to use for transitioning
-                                                        // the state of this resource when acquiring it for the app.
-                                                        // The resource will be in the D3D12_RESOURCE_STATE_COMMON when it is acquired.
-                                                        pCommandQueue: ID3D12CommandQueue;
-                                                        // If this parameter is set, the call will wait for that amount of
-                                                        // time for the buffer to be acquired.
-                                                        // If the timeout period elapses before the buffer can be acquired,
-                                                        // the method will fail with the error code E_TIMEOUT.
-                                                        // This parameter is in 100-nanosecond units, similar to the
-                                                        // Windows.Foundation.TimeSpan Duration property.
-                                                        duration: UINT64): HRESULT; stdcall;
+    // The Direct3D 12 command queue to use for transitioning
+    // the state of this resource when acquiring it for the app.
+    // The resource will be in the D3D12_RESOURCE_STATE_COMMON when it is acquired.
+      pCommandQueue: ID3D12CommandQueue;
+    // If this parameter is set, the call will wait for that amount of
+    // time for the buffer to be acquired.
+    // If the timeout period elapses before the buffer can be acquired,
+    // the method will fail with the error code E_TIMEOUT.
+    // This parameter is in 100-nanosecond units, similar to the
+    // Windows.Foundation.TimeSpan Duration property.
+      duration: UINT64): HRESULT; stdcall;
 
     // Un-Acquires a Direct3D12 buffer resource.
     // A resource which has been acquired but not submitted should be unacquired to
@@ -187,6 +189,7 @@ type
     function UnacquireDirect3D12BufferResource(pResourceToUnacquire: ID3D12Resource): HRESULT; stdcall;
 
   end;
+
   IID_IHolographicCameraInterop = IHolographicCameraInterop;
 
 
@@ -199,30 +202,31 @@ type
     ['{f75b68d6-d1fd-4707-aafd-fa6f4c0e3bf4}']
 
     function CommitDirect3D12Resource(// The Direct3D 12 texture resource with content to display when presenting the
-                                      // HolographicFrame used to retrieve this object.
-                                      pColorResourceToCommit: ID3D12Resource;
-                                      // A fence used to signal work completion on pColorResourceToCommit.
-                                      pColorResourceFence: ID3D12Fence;
-                                      // The value used to signal work completion on the texture resource fence.
-                                      colorResourceFenceSignalValue: UINT64): HRESULT; stdcall;
+    // HolographicFrame used to retrieve this object.
+      pColorResourceToCommit: ID3D12Resource;
+    // A fence used to signal work completion on pColorResourceToCommit.
+      pColorResourceFence: ID3D12Fence;
+    // The value used to signal work completion on the texture resource fence.
+      colorResourceFenceSignalValue: UINT64): HRESULT; stdcall;
 
     function CommitDirect3D12ResourceWithDepthData(// The Direct3D 12 texture resource with content to display when presenting the
-                                                   // HolographicFrame used to retrieve this object.
-                                                   pColorResourceToCommit: ID3D12Resource;
-                                                   // A fence used to signal work completion on pColorResourceToCommit.
-                                                   pColorResourceFence: ID3D12Fence;
-                                                   // The fence value used to signal work completion on the texture resource.
-                                                   colorResourceFenceSignalValue: UINT64;
-                                                   // The Direct3D 12 depth buffer with depth data for image stabilization.
-                                                   // Typically used when rendering to pColorResourceToCommit, or derived from the
-                                                   // same rendering pass.
-                                                   pDepthResourceToCommit: ID3D12Resource;
-                                                   // A fence used to signal work completion on pDepthResourceToCommit.
-                                                   pDepthResourceFence: ID3D12Fence;
-                                                   // The value used to signal work completion on the depth resource fence.
-                                                   depthResourceFenceSignalValue: UINT64): HRESULT; stdcall;
+    // HolographicFrame used to retrieve this object.
+      pColorResourceToCommit: ID3D12Resource;
+    // A fence used to signal work completion on pColorResourceToCommit.
+      pColorResourceFence: ID3D12Fence;
+    // The fence value used to signal work completion on the texture resource.
+      colorResourceFenceSignalValue: UINT64;
+    // The Direct3D 12 depth buffer with depth data for image stabilization.
+    // Typically used when rendering to pColorResourceToCommit, or derived from the
+    // same rendering pass.
+      pDepthResourceToCommit: ID3D12Resource;
+    // A fence used to signal work completion on pDepthResourceToCommit.
+      pDepthResourceFence: ID3D12Fence;
+    // The value used to signal work completion on the depth resource fence.
+      depthResourceFenceSignalValue: UINT64): HRESULT; stdcall;
 
   end;
+
   IID_IHolographicCameraRenderingParametersInterop = IHolographicCameraRenderingParametersInterop;
 
 
@@ -238,30 +242,30 @@ type
     // struct indicated by pDesc. This parameter is not optional.
     // The resource is created so that it is already committed to a heap.
     function CreateDirect3D12ContentBufferResource(// The Direct3D 12 device.
-                                                   pDevice: ID3D12Device;
-                                                   // The Direct3D 12 resource description.
-                                                   // The API will make a best effort to respect the values in this descriptor. The app
-                                                   // should inspect the descriptor for the texture returned by ppCreatedTexture2DResource
-                                                   // and respond appropriately to any differences from what was specified.
-                                                   pTexture2DDesc: PD3D12_RESOURCE_DESC;
-                                                   // If successful, the Direct3D 12 2D texture resource for use as a content buffer. Otherwise null.
-                                                   out ppTexture2DResource: ID3D12Resource): HRESULT; stdcall;
+      pDevice: ID3D12Device;
+    // The Direct3D 12 resource description.
+    // The API will make a best effort to respect the values in this descriptor. The app
+    // should inspect the descriptor for the texture returned by ppCreatedTexture2DResource
+    // and respond appropriately to any differences from what was specified.
+      pTexture2DDesc: PD3D12_RESOURCE_DESC;
+    // If successful, the Direct3D 12 2D texture resource for use as a content buffer. Otherwise null.
+      out ppTexture2DResource: ID3D12Resource): HRESULT; stdcall;
 
     // Creates a D3D12 resource for use as a content buffer for the camera with optional hardware protection.
     // Behavior is the same as CreateDirect3D12ContentBufferResource but accepts an optional ID3D12ProtectedResourceSession.
     // Use this optional parameter to to create a hardware protected resource buffer.
     function CreateDirect3D12HardwareProtectedContentBufferResource(// The Direct3D 12 device.
-                                                                    pDevice: ID3D12Device;
-                                                                    // The Direct3D 12 resource description.
-                                                                    // The API will make a best effort to respect the values in this descriptor. The app
-                                                                    // should inspect the descriptor for the texture returned by ppCreatedTexture2DResource
-                                                                    // and respond appropriately to any differences from what was specified.
-                                                                    pTexture2DDesc: PD3D12_RESOURCE_DESC;
-                                                                    // An optional D3D12 protected resource session. Passing a protected session will attempt to create
-                                                                    // A D3D12 hardware protected resource.
-                                                                    pProtectedResourceSession: ID3D12ProtectedResourceSession;
-                                                                    // If successful, the Direct3D 12 2D texture resource for use as a content buffer. Otherwise null.
-                                                                    out ppCreatedTexture2DResource: ID3D12Resource): HRESULT; stdcall;
+      pDevice: ID3D12Device;
+    // The Direct3D 12 resource description.
+    // The API will make a best effort to respect the values in this descriptor. The app
+    // should inspect the descriptor for the texture returned by ppCreatedTexture2DResource
+    // and respond appropriately to any differences from what was specified.
+      pTexture2DDesc: PD3D12_RESOURCE_DESC;
+    // An optional D3D12 protected resource session. Passing a protected session will attempt to create
+    // A D3D12 hardware protected resource.
+      pProtectedResourceSession: ID3D12ProtectedResourceSession;
+    // If successful, the Direct3D 12 2D texture resource for use as a content buffer. Otherwise null.
+      out ppCreatedTexture2DResource: ID3D12Resource): HRESULT; stdcall;
 
     // Acquires a Direct3D12 buffer resource.
     // After committing a resource to a HolographicFrame by calling
@@ -278,25 +282,25 @@ type
     // When no timeout value is specified, if this method is called and the buffer is not ready
     // to be acquired, the method call will fail with the error code E_NOTREADY.
     function AcquireDirect3D12BufferResource(// The Direct3D 12 resource to acquire.
-                                             // The resource will be in the D3D12_RESOURCE_STATE_COMMON when it is acquired.
-                                             pResourceToAcquire: ID3D12Resource;
-                                             // The Direct3D 12 command queue to use for transitioning
-                                             // the state of this resource when acquiring it for the app.
-                                             pCommandQueue: ID3D12CommandQueue): HRESULT; stdcall;
+    // The resource will be in the D3D12_RESOURCE_STATE_COMMON when it is acquired.
+      pResourceToAcquire: ID3D12Resource;
+    // The Direct3D 12 command queue to use for transitioning
+    // the state of this resource when acquiring it for the app.
+      pCommandQueue: ID3D12CommandQueue): HRESULT; stdcall;
 
     function AcquireDirect3D12BufferResourceWithTimeout(// The Direct3D 12 resource to acquire.
-                                                        // The resource will be in the D3D12_RESOURCE_STATE_COMMON when it is acquired.
-                                                        pResourceToAcquire: ID3D12Resource;
-                                                        // The Direct3D 12 command queue to use for transitioning
-                                                        // the state of this resource when acquiring it for the app.
-                                                        pCommandQueue: ID3D12CommandQueue;
-                                                        // If this parameter is set, the call will wait for that amount of
-                                                        // time for the buffer to be acquired.
-                                                        // If the timeout period elapses before the buffer can be acquired,
-                                                        // the method will fail with the error code E_TIMEOUT.
-                                                        // This parameter is in 100-nanosecond units, similar to the
-                                                        // Windows.Foundation.TimeSpan Duration property.
-                                                        duration: UINT64): HRESULT; stdcall;
+    // The resource will be in the D3D12_RESOURCE_STATE_COMMON when it is acquired.
+      pResourceToAcquire: ID3D12Resource;
+    // The Direct3D 12 command queue to use for transitioning
+    // the state of this resource when acquiring it for the app.
+      pCommandQueue: ID3D12CommandQueue;
+    // If this parameter is set, the call will wait for that amount of
+    // time for the buffer to be acquired.
+    // If the timeout period elapses before the buffer can be acquired,
+    // the method will fail with the error code E_TIMEOUT.
+    // This parameter is in 100-nanosecond units, similar to the
+    // Windows.Foundation.TimeSpan Duration property.
+      duration: UINT64): HRESULT; stdcall;
 
     // Un-Acquires a Direct3D12 buffer resource.
     // A resource which has been acquired but not submitted should be unacquired to
@@ -304,6 +308,7 @@ type
     function UnacquireDirect3D12BufferResource(pResourceToUnacquire: ID3D12Resource): HRESULT; stdcall;
 
   end;
+
   IID_IHolographicQuadLayerInterop = IHolographicQuadLayerInterop;
 
 
@@ -314,14 +319,15 @@ type
     ['{e5f549cd-c909-444f-8809-7cc18a9c8920}']
 
     function CommitDirect3D12Resource(// The Direct3D 12 texture resource with content to display when presenting the
-                                      // HolographicFrame used to retrieve this object.
-                                      pColorResourceToCommit: ID3D12Resource;
-                                      // A fence used to signal work completion on pColorResourceToCommit.
-                                      pColorResourceFence: ID3D12Fence;
-                                      // The value used to signal work completion on the texture resource fence.
-                                      colorResourceFenceSignalValue: UINT64): HRESULT; stdcall;
+    // HolographicFrame used to retrieve this object.
+      pColorResourceToCommit: ID3D12Resource;
+    // A fence used to signal work completion on pColorResourceToCommit.
+      pColorResourceFence: ID3D12Fence;
+    // The value used to signal work completion on the texture resource fence.
+      colorResourceFenceSignalValue: UINT64): HRESULT; stdcall;
 
   end;
+
   IID_IHolographicQuadLayerUpdateParametersInterop = IHolographicQuadLayerUpdateParametersInterop;
 
 
@@ -331,6 +337,6 @@ type
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

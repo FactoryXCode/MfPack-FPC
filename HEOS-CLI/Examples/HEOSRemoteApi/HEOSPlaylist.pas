@@ -64,27 +64,29 @@ unit HEOSPlaylist;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   Classes,
   SysUtils,
   {Application}
   RDJ.PlaylistTypes;
 
-  function IsDenonAudioFile(const FileName: string): Boolean;
-  function PlaylistEntry(const FileName: string): TRDJPlaylistEntry;
+function IsDenonAudioFile(const FileName: string): Boolean;
+function PlaylistEntry(const FileName: string): TRDJPlaylistEntry;
 
-  procedure LoadPlaylist(const FileName: string;
-                          Playlist: TRDJPlaylist);
+procedure LoadPlaylist(const FileName: string;
+                       Playlist: TRDJPlaylist);
 
-  procedure SavePlaylist(const FileName: string;
-                          Playlist: TRDJPlaylist);
+procedure SavePlaylist(const FileName: string;
+                       Playlist: TRDJPlaylist);
 
 type
   TAudioFolderScan = class(TThread)
+
   private
     FRoot: string;
     FFiles: TStringList;
@@ -114,29 +116,35 @@ uses
   FxProxy.IOUtils,
   StrUtils;
 
+
 function IsDenonAudioFile(const FileName: string): Boolean;
 var
   Ext: string;
+
 begin
 
   Ext := LowerCase(ExtractFileExt(FileName));
   Result := (Ext = '.mp3') or (Ext = '.flac') or (Ext = '.wav') or
-            (Ext = '.aac') or (Ext = '.m4a') or (Ext = '.wma');
+    (Ext = '.aac') or (Ext = '.m4a') or (Ext = '.wma');
 end;
 
+
 function PlaylistEntry(const FileName: string): TRDJPlaylistEntry;
+
 begin
 
   Result := RDJEmptyPlaylistEntry();
   Result.Track.FullPath := ExpandFileName(FileName);
   Result.Track.FileName := ExtractFileName(FileName);
   Result.Track.FileExt := LowerCase(ExtractFileExt(FileName));
-  Result.Track.Title := ChangeFileExt(Result.Track.FileName, '');
+  Result.Track.Title := ChangeFileExt(Result.Track.FileName,
+                                      '');
   Result.Track.IsMissing := not FileExists(Result.Track.FullPath);
 end;
 
+
 procedure LoadPlaylist(const FileName: string;
-                        Playlist: TRDJPlaylist);
+                       Playlist: TRDJPlaylist);
 var
   Lines: TStringList;
   Items: TRDJPlaylist;
@@ -147,40 +155,45 @@ var
   Entry: TRDJPlaylistEntry;
   P: Integer;
   I: Integer;
+
 begin
 
   Lines := TStringList.Create;
   Items := TRDJPlaylist.Create;
   try
-    Lines.LoadFromFile(FileName, TEncoding.UTF8);
+    Lines.LoadFromFile(FileName,
+                       TEncoding.UTF8);
     Title := '';
     for RawLine in Lines do
-    begin
-      Line := Trim(RawLine);
-      if Line = '' then
-        Continue;
-      if StartsText('#EXTINF:', Line) then
       begin
-        P := Pos(',', Line);
-        Title := Copy(Line, P + 1, MaxInt);
-        Continue;
-      end;
-      if Line[1] = '#' then
-        Continue;
-      if Pos('://', Line) > 0 then
-        raise Exception.Create('This playlist contains an Internet URL. Choose a playlist of local music files.');
-      if not IsDenonAudioFile(Line) then
-        raise Exception.Create('Unsupported playlist item: ' + Line);
+        Line := Trim(RawLine);
+        if (Line = '') then
+          Continue;
+        if StartsText('#EXTINF:', Line) then
+          begin
+            P := Pos(',',
+                     Line);
+            Title := Copy(Line,
+                          P + 1,
+                          MaxInt);
+            Continue;
+          end;
+        if (Line[1] = '#') then
+          Continue;
+        if (Pos('://', Line) > 0) then
+          raise Exception.Create('This playlist contains an Internet URL. Choose a playlist of local music files.');
+        if not IsDenonAudioFile(Line) then
+          raise Exception.Create('Unsupported playlist item: ' + Line);
 
-      Path := Line;
-      if not TPath.IsPathRooted(Path) then
-        Path := IncludeTrailingPathDelimiter(ExtractFilePath(ExpandFileName(FileName))) + Path;
-      Entry := PlaylistEntry(Path);
-      if Title <> '' then
-        Entry.Track.Title := Title;
-      Title := '';
-      Items.Add(Entry);
-    end;
+        Path := Line;
+        if not TPath.IsPathRooted(Path) then
+          Path := IncludeTrailingPathDelimiter(ExtractFilePath(ExpandFileName(FileName))) + Path;
+        Entry := PlaylistEntry(Path);
+        if (Title <> '') then
+          Entry.Track.Title := Title;
+        Title := '';
+        Items.Add(Entry);
+      end;
     Playlist.Clear();
     for I := 0 to Items.Count - 1 do
       Playlist.Add(Items[I]);
@@ -192,29 +205,34 @@ begin
   end;
 end;
 
+
 procedure SavePlaylist(const FileName: string;
-                        Playlist: TRDJPlaylist);
+                       Playlist: TRDJPlaylist);
 var
   Lines: TStringList;
   I: Integer;
+
 begin
 
   Lines := TStringList.Create;
   try
     Lines.Add('#EXTM3U');
     for I := 0 to Playlist.Count - 1 do
-    begin
-      Lines.Add('#EXTINF:-1,' + Playlist[I].Track.Title);
-      Lines.Add(Playlist[I].Track.FullPath);
-    end;
-    Lines.SaveToFile(FileName, TEncoding.UTF8);
+      begin
+        Lines.Add('#EXTINF:-1,' + Playlist[I].Track.Title);
+        Lines.Add(Playlist[I].Track.FullPath);
+      end;
+    Lines.SaveToFile(FileName,
+                     TEncoding.UTF8);
     Playlist.Modified := False;
   finally
     Lines.Free;
   end;
 end;
 
+
 constructor TAudioFolderScan.Create(const Root: string);
+
 begin
 
   inherited Create(True);
@@ -223,7 +241,9 @@ begin
   FFiles := TStringList.Create;
 end;
 
+
 destructor TAudioFolderScan.Destroy();
+
 begin
 
   Terminate;
@@ -234,11 +254,16 @@ begin
   inherited;
 end;
 
+
 function TAudioFolderScan.FileCount(): Integer;
+
 begin
 
-  Result := InterlockedCompareExchange(FCount, 0, 0);
+  Result := InterlockedCompareExchange(FCount,
+                                       0,
+                                       0);
 end;
+
 
 procedure TAudioFolderScan.Execute();
 var
@@ -246,6 +271,7 @@ var
   Folder: string;
   Path: string;
   Search: TSearchRec;
+
 begin
 
   Folders := TStringList.Create;
@@ -257,10 +283,10 @@ begin
         begin
           Folder := Folders[Folders.Count - 1];
           Folders.Delete(Folders.Count - 1);
-          if FindFirst(Folder + '*',
-                       faAnyFile,
-                       Search) <> 0 then
-          Continue;
+          if (FindFirst(Folder + '*',
+            faAnyFile,
+            Search) <> 0) then
+            Continue;
 
           try
             repeat
@@ -277,15 +303,14 @@ begin
                   // Do not recurse into junctions or directory symbolic links.
                   {$WARN SYMBOL_PLATFORM OFF}
                   if ((Search.FindData.dwFileAttributes and FILE_ATTRIBUTE_REPARSE_POINT) = 0) then
-                  {$WARN SYMBOL_PLATFORM ON}
+                    {$WARN SYMBOL_PLATFORM ON}
                     Folders.Add(IncludeTrailingPathDelimiter(Path));
                 end
-              else
-                if IsDenonAudioFile(Path) then
-                  begin
-                    FFiles.Add(Path);
-                    InterlockedIncrement(FCount);
-                  end;
+              else if IsDenonAudioFile(Path) then
+                begin
+                  FFiles.Add(Path);
+                  InterlockedIncrement(FCount);
+                end;
             until (FindNext(Search) <> 0);
 
           finally
@@ -307,4 +332,3 @@ begin
 end;
 
 end.
-

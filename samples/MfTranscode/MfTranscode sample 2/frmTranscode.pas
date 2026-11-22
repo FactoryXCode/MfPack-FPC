@@ -69,7 +69,7 @@ interface
 uses
   LMessages,
   MfCaptureSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -140,11 +140,18 @@ type
     procedure FormCreate(Sender: TObject);
     procedure butPlayClick(Sender: TObject);
     // We could use the TLinkLabel, but this works as well.
-    procedure lblChooseSourceFileMouseMove(Sender: TObject; Shift: TShiftState;
-      X, Y: Integer);
-    procedure lblChooseTargetfileMouseMove(Sender: TObject; Shift: TShiftState;
-      X, Y: Integer);
-    procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure lblChooseSourceFileMouseMove(Sender: TObject;
+                                           Shift: TShiftState;
+                                           X,
+                                           Y: Integer);
+    procedure lblChooseTargetfileMouseMove(Sender: TObject;
+                                           Shift: TShiftState;
+                                           X,
+                                           Y: Integer);
+    procedure FormMouseMove(Sender: TObject;
+                            Shift: TShiftState;
+                            X,
+                            Y: Integer);
     procedure FormDestroy(Sender: TObject);
     //
 
@@ -184,6 +191,7 @@ implementation
 {$R *.lfm}
 
 procedure TfrmTranscoder.mnuTargetfileClick(Sender: TObject);
+
 begin
 
   // Create the transcoder object
@@ -199,96 +207,96 @@ begin
 
       // Set the outputformat
       case iSelectedContainerFmt of
-      // Video /////////////////////////////////////////////////////////////
-      1: begin
-           // avi
-           gVideoMediaFmt := MFVideoFormat_H264;
-           gAudioMediaFmt := MFAudioFormat_AAC;
-           gContainerFormat := MFTranscodeContainerType_AVI;
-           // We keep it simpel; show user the target formats.
-           lblContainer.Caption := 'Audio Video Interleave (AVI)';
-           lblVideo.Caption := 'H.264 video encoder';
-           lblAudio.Caption := 'Advanced Audio Coding (AAC)';
-         end;
-      2: begin
-           // mp4 AAC
-           gVideoMediaFmt := MFVideoFormat_H264;
-           gAudioMediaFmt := MFAudioFormat_AAC;
-           gContainerFormat := MFTranscodeContainerType_MPEG4;
-           lblContainer.Caption := 'MPEG 4 (mp4)';
-           lblVideo.Caption := 'H.264 video encoder';
-           lblAudio.Caption := 'Advanced Audio Coding (AAC)';
-         end;
-      3: begin
-           // MPEG-4 Video and Dolby AC-3 audio (Dolby Digital Audio Encoder)
-           gVideoMediaFmt := MFVideoFormat_H264;
-           gAudioMediaFmt := MFAudioFormat_Dolby_AC3;
-           gContainerFormat := MFTranscodeContainerType_MPEG4;
-           lblContainer.Caption := 'MPEG 4 (mp4)';
-           lblVideo.Caption := 'H.264 video encoder';
-           lblAudio.Caption := 'Dolby AC-3 audio';
-         end;
-      4: begin
-           // wmv
-           gVideoMediaFmt := MFVideoFormat_WMV3;
-           gAudioMediaFmt := MFAudioFormat_WMAudioV9;
-           gContainerFormat := MFTranscodeContainerType_ASF;
-           lblContainer.Caption := 'Advanced Systems Format (ASF)';
-           lblVideo.Caption := 'Windows Media Video (WMV)';
-           lblAudio.Caption := 'Windows Media Audio (WMA)';
-         end;
+        // Video /////////////////////////////////////////////////////////////
+          1: begin
+            // avi
+            gVideoMediaFmt := MFVideoFormat_H264;
+            gAudioMediaFmt := MFAudioFormat_AAC;
+            gContainerFormat := MFTranscodeContainerType_AVI;
+            // We keep it simpel; show user the target formats.
+            lblContainer.Caption := 'Audio Video Interleave (AVI)';
+            lblVideo.Caption := 'H.264 video encoder';
+            lblAudio.Caption := 'Advanced Audio Coding (AAC)';
+          end;
+          2: begin
+            // mp4 AAC
+            gVideoMediaFmt := MFVideoFormat_H264;
+            gAudioMediaFmt := MFAudioFormat_AAC;
+            gContainerFormat := MFTranscodeContainerType_MPEG4;
+            lblContainer.Caption := 'MPEG 4 (mp4)';
+            lblVideo.Caption := 'H.264 video encoder';
+            lblAudio.Caption := 'Advanced Audio Coding (AAC)';
+          end;
+          3: begin
+            // MPEG-4 Video and Dolby AC-3 audio (Dolby Digital Audio Encoder)
+            gVideoMediaFmt := MFVideoFormat_H264;
+            gAudioMediaFmt := MFAudioFormat_Dolby_AC3;
+            gContainerFormat := MFTranscodeContainerType_MPEG4;
+            lblContainer.Caption := 'MPEG 4 (mp4)';
+            lblVideo.Caption := 'H.264 video encoder';
+            lblAudio.Caption := 'Dolby AC-3 audio';
+          end;
+          4: begin
+            // wmv
+            gVideoMediaFmt := MFVideoFormat_WMV3;
+            gAudioMediaFmt := MFAudioFormat_WMAudioV9;
+            gContainerFormat := MFTranscodeContainerType_ASF;
+            lblContainer.Caption := 'Advanced Systems Format (ASF)';
+            lblVideo.Caption := 'Windows Media Video (WMV)';
+            lblAudio.Caption := 'Windows Media Audio (WMA)';
+          end;
 
-      // Audio /////////////////////////////////////////////////////////////////
+        // Audio /////////////////////////////////////////////////////////////////
 
-      5: begin
-           // wav
-           gAudioMediaFmt := MFAudioFormat_PCM;
-           gContainerFormat := MFTranscodeContainerType_WAVE;
-           lblContainer.Caption := 'Waveform Audio File Format (wav)';
-           lblVideo.Caption := 'none';
-           lblAudio.Caption := 'Uncompressed PCM audio';
-         end;
-      6: begin
-           // mp3
-           gAudioMediaFmt := MFAudioFormat_MP3;
-           gContainerFormat := MFTranscodeContainerType_MP3;
-           lblContainer.Caption := 'MPEG Audio Layer-3 (mp3)';
-           lblVideo.Caption := 'none';
-           lblAudio.Caption := 'MPEG Audio Layer-3';
-         end;
-      7: begin
-           // flac
-           gAudioMediaFmt := MFAudioFormat_FLAC;
-           gContainerFormat := MFTranscodeContainerType_FLAC;
-           lblContainer.Caption := 'Free Lossless Audio Codec (flac)';
-           lblVideo.Caption := 'none';
-           lblAudio.Caption := 'Free Lossless Audio Codec';
-         end;
-      8: begin
-           // m4a
-           gAudioMediaFmt := MFAudioFormat_AAC;
-           gContainerFormat := MFTranscodeContainerType_MPEG4;
-           lblContainer.Caption := 'MPEG 4 Audio only (m4a)';
-           lblVideo.Caption := 'none';
-           lblAudio.Caption := 'Advanced Audio Coding (AAC)';
-         end;
-      9: begin
-           // wma
-           gAudioMediaFmt := MFAudioFormat_WMAudioV9;
-           gContainerFormat := MFTranscodeContainerType_ASF;
-           lblContainer.Caption := 'Windows Media Audio Format (wma)';
-           lblVideo.Caption := 'none';
-           lblAudio.Caption := 'Windows Media Audio 9 (WMA)';
-         end;
+          5: begin
+            // wav
+            gAudioMediaFmt := MFAudioFormat_PCM;
+            gContainerFormat := MFTranscodeContainerType_WAVE;
+            lblContainer.Caption := 'Waveform Audio File Format (wav)';
+            lblVideo.Caption := 'none';
+            lblAudio.Caption := 'Uncompressed PCM audio';
+          end;
+          6: begin
+            // mp3
+            gAudioMediaFmt := MFAudioFormat_MP3;
+            gContainerFormat := MFTranscodeContainerType_MP3;
+            lblContainer.Caption := 'MPEG Audio Layer-3 (mp3)';
+            lblVideo.Caption := 'none';
+            lblAudio.Caption := 'MPEG Audio Layer-3';
+          end;
+          7: begin
+            // flac
+            gAudioMediaFmt := MFAudioFormat_FLAC;
+            gContainerFormat := MFTranscodeContainerType_FLAC;
+            lblContainer.Caption := 'Free Lossless Audio Codec (flac)';
+            lblVideo.Caption := 'none';
+            lblAudio.Caption := 'Free Lossless Audio Codec';
+          end;
+          8: begin
+            // m4a
+            gAudioMediaFmt := MFAudioFormat_AAC;
+            gContainerFormat := MFTranscodeContainerType_MPEG4;
+            lblContainer.Caption := 'MPEG 4 Audio only (m4a)';
+            lblVideo.Caption := 'none';
+            lblAudio.Caption := 'Advanced Audio Coding (AAC)';
+          end;
+          9: begin
+            // wma
+            gAudioMediaFmt := MFAudioFormat_WMAudioV9;
+            gContainerFormat := MFTranscodeContainerType_ASF;
+            lblContainer.Caption := 'Windows Media Audio Format (wma)';
+            lblVideo.Caption := 'none';
+            lblAudio.Caption := 'Windows Media Audio 9 (WMA)';
+          end;
       end;  // case
 
       // If source is target, warn user.
       if (sSourceFile = dlgTarget.FileName) then
         begin
           MessageBoxW(0,
-                     lpcwstr('The target file is the same as the source file.'),
-                     lpcwstr('Error!'),
-                     MB_ICONERROR);
+                      lpcwstr('The target file is the same as the source file.'),
+                      lpcwstr('Error!'),
+                      MB_ICONERROR);
 
           ResetFormats();
           sTargetFile := '';
@@ -348,7 +356,9 @@ end;
 
 
 procedure TfrmTranscoder.butExecuteClick(Sender: TObject);
+
 begin
+
   Start();
 end;
 
@@ -371,7 +381,8 @@ begin
   hr := FTranscoder.OpenFile(sSourceFile);
   if SUCCEEDED(hr) then
     begin
-      sbMsg.SimpleText := Format('Opened file: %s.', [sSourceFile]);
+      sbMsg.SimpleText := Format('Opened file: %s.',
+                                 [sSourceFile]);
       // Configure the audio profile and add to topology.
       hr := FTranscoder.ConfigureAudioOutput(gAudioMediaFmt,
                                              iSelectedAudioFormat);
@@ -381,7 +392,7 @@ begin
     begin
       // Configure the video profile and add to topology.
       if not IsEqualGUID(gVideoMediaFmt,
-                         GUID_NULL) then
+        GUID_NULL) then
         hr := FTranscoder.ConfigureVideoOutput(gVideoMediaFmt);
     end;
 
@@ -389,7 +400,7 @@ begin
   if SUCCEEDED(hr) then
     begin
       if not IsEqualGUID(gContainerFormat,
-                         GUID_NULL) then
+        GUID_NULL) then
         hr := FTranscoder.ConfigureContainer(gContainerFormat);
     end;
 
@@ -409,13 +420,15 @@ begin
   Sleep(1000);
 
   if SUCCEEDED(hr) then
-    sbMsg.SimpleText := Format('Output file created: %s', [ExtractFileName(sTargetFile)]);
+    sbMsg.SimpleText := Format('Output file created: %s',
+                               [ExtractFileName(sTargetFile)]);
 
   if FAILED(hr) then
-    if hr = E_ABORT then
+    if (hr = E_ABORT) then
       sbMsg.SimpleText := 'Rendering aborted by user.'
     else
-      sbMsg.SimpleText := Format('Could not create the output file (Error %d).', [hr]);
+      sbMsg.SimpleText := Format('Could not create the output file (Error %d).',
+                                 [hr]);
 
   Reset(hr);
 
@@ -423,7 +436,9 @@ end;
 
 
 procedure TfrmTranscoder.Reset(const hr: HResult);
+
 begin
+
   // When finished, release the engine.
   if Assigned(FTranscoder) then
     FreeAndNil(FTranscoder);
@@ -437,7 +452,9 @@ end;
 
 
 procedure TfrmTranscoder.ResetFormats();
+
 begin
+
   gAudioMediaFmt := GUID_NULL;
   gVideoMediaFmt := GUID_NULL;
   gContainerFormat := GUID_NULL;
@@ -463,13 +480,17 @@ end;
 
 
 procedure TfrmTranscoder.butStopClick(Sender: TObject);
+
 begin
+
   {void} FTranscoder.Stop();
 end;
 
 
 procedure TfrmTranscoder.butPlayClick(Sender: TObject);
+
 begin
+
   // Play the selected sourcefile
   if not FileExists(sTargetFile) and FileExists(sSourceFile) then
     begin
@@ -484,40 +505,46 @@ begin
         end;
     end
   else  // Play the targetfile
-    if FileExists(sTargetFile) then
-      begin
-        ShellExecute(Handle,
-                     'open',
-                     PWideChar(sTargetFile),
-                     nil,
-                     nil,
-                     SW_SHOWNORMAL);
-      end;
+  if FileExists(sTargetFile) then
+    begin
+      ShellExecute(Handle,
+                   'open',
+                   PWideChar(sTargetFile),
+                   nil,
+                   nil,
+                   SW_SHOWNORMAL);
+    end;
 end;
 
 
 procedure TfrmTranscoder.mnuExitClick(Sender: TObject);
+
 begin
+
   Close();
 end;
 
 
 procedure TfrmTranscoder.FormCreate(Sender: TObject);
+
 begin
+
   ResetFormats();
 
   // Set the fileextensionfilters for the dialogs.
   dlgTarget.Filter := VIDEO_FILE_FILTER + '|' +
-                      AUDIO_FILE_FILTER;
+    AUDIO_FILE_FILTER;
 
   dlgSource.Filter := VIDEO_FILE_FILTER + '|' +
-                      AUDIO_FILE_FILTER + '|' +
-                      ALL_FILE_FILTER;
+    AUDIO_FILE_FILTER + '|' +
+    ALL_FILE_FILTER;
 end;
 
 
 procedure TfrmTranscoder.FormDestroy(Sender: TObject);
+
 begin
+
   // Terminate a running Transcode process.
   if Assigned(FTranscoder) then
     begin
@@ -527,29 +554,43 @@ begin
 end;
 
 
-procedure TfrmTranscoder.FormMouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
+procedure TfrmTranscoder.FormMouseMove(Sender: TObject;
+                                       Shift: TShiftState;
+                                       X,
+                                       Y: Integer);
+
 begin
+
   Cursor := crDefault;
 end;
 
 
 procedure TfrmTranscoder.lblChooseSourceFileMouseMove(Sender: TObject;
-                                                      Shift: TShiftState; X, Y: Integer);
+                                                      Shift: TShiftState;
+                                                      X,
+                                                      Y: Integer);
+
 begin
+
   Cursor := crHandPoint;
 end;
 
 
 procedure TfrmTranscoder.lblChooseTargetfileMouseMove(Sender: TObject;
-                                                      Shift: TShiftState; X, Y: Integer);
+                                                      Shift: TShiftState;
+                                                      X,
+                                                      Y: Integer);
+
 begin
+
   Cursor := crHandPoint;
 end;
 
 
 procedure TfrmTranscoder.mnuOpenSourceFileClick(Sender: TObject);
+
 begin
+
   ResetFormats();
   sSourceFile := '';
   dlgSource.FileName := sSourceFile;
@@ -577,6 +618,7 @@ var
   CurrPosition: Integer;
 
 begin
+
   // WParam 1 is a progress msg event
   if (Msg.WParam = 1) then
     begin
@@ -588,18 +630,23 @@ begin
         begin
           bElapsedSet := True;
           FStopwatch.Stop;
-          lblEstFinish.Caption := Format('Estimated finish at: %s', [MSecToStr((FStopwatch.ElapsedMilliseconds * 100) + MillisecondOfTheDay(Now), False)]);
+          lblEstFinish.Caption := Format('Estimated finish at: %s',
+                                         [MSecToStr((FStopwatch.ElapsedMilliseconds * 100) + MillisecondOfTheDay(Now),
+                                                    False)]);
         end;
 
       ProgressBar.Position := CurrPosition;
-      lblProgress.Caption := Format('Processed: %d%%', [CurrPosition]);
+      lblProgress.Caption := Format('Processed: %d%%',
+                                    [CurrPosition]);
       HandleMessages(GetCurrentThread());
     end;
 end;
 
 
 procedure TfrmTranscoder.WMStatusEvent(var Msg: TLMessage);
+
 begin
+
   if (Msg.WParam = 0) then
     sbMsg.SimpleText := LPCWSTR(Msg.LParam);
   HandleMessages(GetCurrentThread());

@@ -71,7 +71,7 @@ unit WinApi.WinMM.PlaySoundApi;
 
 interface
 
-  (*$HPPEMIT '#include <playsoundapi.h>' *)
+(*$HPPEMIT '#include <playsoundapi.h>' *)
 
 uses
   {WinApi}
@@ -80,11 +80,12 @@ uses
 
   {$PACKENUM 4}
 
-  {$IFDEF WIN32}
+{$IFDEF WIN32}
     {$ALIGN 1}
-  {$ELSE}
-    {$ALIGN 8} // Win64
-  {$ENDIF}
+{$ELSE}
+{$ALIGN 8}
+// Win64
+{$ENDIF}
 
 
    {***************************************************************************
@@ -94,15 +95,15 @@ uses
     ***************************************************************************}
 
 
-  function sndPlaySound({_In_opt_} pszSound: LPCWSTR;
-                         fuSound: UINT): BOOL; stdcall;
+function sndPlaySound({_In_opt_} pszSound: LPCWSTR;
+                      fuSound: UINT): BOOL; stdcall;
 
-  function sndPlaySoundA({_In_opt_} pszSound: LPCSTR;
-                         fuSound: UINT): BOOL; stdcall;
+function sndPlaySoundA({_In_opt_} pszSound: LPCSTR;
+                       fuSound: UINT): BOOL; stdcall;
 
-  { UniCode }
-  function sndPlaySoundW({_In_opt_} pszSound: LPCWSTR;
-                         fuSound: UINT): BOOL; stdcall;
+{ UniCode }
+function sndPlaySoundW({_In_opt_} pszSound: LPCWSTR;
+                       fuSound: UINT): BOOL; stdcall;
 
 
   {
@@ -111,63 +112,64 @@ uses
 
 const
 
-  SND_SYNC                            = $0000 { play synchronously (default)};
-  SND_ASYNC                           = $0001 { play asynchronously };
-  SND_NODEFAULT                       = $0002 { silence (! default)if sound not found };
-  SND_MEMORY                          = $0004 { pszSound points to a memory file };
-  SND_LOOP                            = $0008 { loop the sound until next sndPlaySound };
-  SND_NOSTOP                          = $0010 { don ' t stop any currently playing sound };
+  SND_SYNC = $0000 { play synchronously (default)};
+  SND_ASYNC = $0001 { play asynchronously };
+  SND_NODEFAULT = $0002 { silence (! default)if sound not found };
+  SND_MEMORY = $0004 { pszSound points to a memory file };
+  SND_LOOP = $0008 { loop the sound until next sndPlaySound };
+  SND_NOSTOP = $0010 { don ' t stop any currently playing sound };
 
-  SND_NOWAIT                          = $00002000 { don ' t wait if the driver is busy };
-  SND_ALIAS                           = $00010000 { name is a registry alias };
-  SND_ALIAS_ID                        = $00110000 { alias is a predefined ID };
-  SND_FILENAME                        = $00020000 { name is file name };
-  SND_RESOURCE                        = $00040004 { name is resource name or atom };
+  SND_NOWAIT = $00002000 { don ' t wait if the driver is busy };
+  SND_ALIAS = $00010000 { name is a registry alias };
+  SND_ALIAS_ID = $00110000 { alias is a predefined ID };
+  SND_FILENAME = $00020000 { name is file name };
+  SND_RESOURCE = $00040004 { name is resource name or atom };
 
-  SND_PURGE                           = $0040 { purge non - static events for task };
-  SND_APPLICATION                     = $0080 { look for application specific association };
+  SND_PURGE = $0040 { purge non - static events for task };
+  SND_APPLICATION = $0080 { look for application specific association };
 
-  SND_SENTRY                          = $00080000 { Generate a SoundSentry event with this sound };
-  SND_RING                            = $00100000 { Treat this as a 'ring' from a communications app - don ' t duck me };
-  SND_SYSTEM                          = $00200000 { Treat this as a system sound };
+  SND_SENTRY = $00080000 { Generate a SoundSentry event with this sound };
+  SND_RING = $00100000 { Treat this as a 'ring' from a communications app - don ' t duck me };
+  SND_SYSTEM = $00200000 { Treat this as a system sound };
 
-  SND_ALIAS_START                     = 0 { alias base };
+  SND_ALIAS_START = 0 { alias base };
 
-  function sndAlias(ch0: Char; ch1: Char): DWord; inline;
+function sndAlias(ch0: Char;
+                  ch1: Char): DWord; inline;
 
-  // This needs a work-around, because we can't use (macro) sndAlias
-  // example: SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('*')) shl 8))
-  //
+// This needs a work-around, because we can't use (macro) sndAlias
+// example: SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('*')) shl 8))
+//
 const
-  SND_ALIAS_SYSTEMASTERISK            = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('*')) shl 8)); // sndAlias('S', '*')
-  SND_ALIAS_SYSTEMQUESTION            = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('?')) shl 8)); // sndAlias('S', '?')
-  SND_ALIAS_SYSTEMHAND                = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('H')) shl 8)); // sndAlias('S', 'H')
-  SND_ALIAS_SYSTEMEXIT                = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('E')) shl 8)); // sndAlias('S', 'E')
-  SND_ALIAS_SYSTEMSTART               = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('S')) shl 8)); // sndAlias('S', 'S')
-  SND_ALIAS_SYSTEMWELCOME             = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('W')) shl 8)); // sndAlias('S', 'W')
-  SND_ALIAS_SYSTEMEXCLAMATION         = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('!')) shl 8)); // sndAlias('S', '!')
-  SND_ALIAS_SYSTEMDEFAULT             = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('D')) shl 8)); // sndAlias('S', 'D')
+  SND_ALIAS_SYSTEMASTERISK = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('*')) shl 8)); // sndAlias('S', '*')
+  SND_ALIAS_SYSTEMQUESTION = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('?')) shl 8)); // sndAlias('S', '?')
+  SND_ALIAS_SYSTEMHAND = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('H')) shl 8)); // sndAlias('S', 'H')
+  SND_ALIAS_SYSTEMEXIT = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('E')) shl 8)); // sndAlias('S', 'E')
+  SND_ALIAS_SYSTEMSTART = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('S')) shl 8)); // sndAlias('S', 'S')
+  SND_ALIAS_SYSTEMWELCOME = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('W')) shl 8)); // sndAlias('S', 'W')
+  SND_ALIAS_SYSTEMEXCLAMATION = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('!')) shl 8)); // sndAlias('S', '!')
+  SND_ALIAS_SYSTEMDEFAULT = SND_ALIAS_START + (DWORD(Ord('S')) or (DWORD(Ord('D')) shl 8)); // sndAlias('S', 'D')
 
 
-  // use unicode by default
-  function PlaySound({_In_opt_} pszSound: LPCWSTR;
-                     {_In_opt_} hmod: HMODULE;
-                     fdwSound: DWORD): BOOL; stdcall;
+// use unicode by default
+function PlaySound({_In_opt_} pszSound: LPCWSTR;
+  {_In_opt_} hmod: HMODULE;
+                   fdwSound: DWORD): BOOL; stdcall;
 
-  function PlaySoundA({_In_opt_} pszSound: LPCSTR;
-                      {_In_opt_} hmod: HMODULE;
-                      fdwSound: DWORD): BOOL; stdcall;
+function PlaySoundA({_In_opt_} pszSound: LPCSTR;
+  {_In_opt_} hmod: HMODULE;
+                    fdwSound: DWORD): BOOL; stdcall;
 
-  { UniCode }
-  function PlaySoundW({_In_opt_} pszSound: LPCWSTR;
-                      {_In_opt_} hmod: HMODULE;
-                      fdwSound: DWORD): BOOL; stdcall;
-
-
-  // Additional Prototypes for ALL interfaces
+{ UniCode }
+function PlaySoundW({_In_opt_} pszSound: LPCWSTR;
+  {_In_opt_} hmod: HMODULE;
+                    fdwSound: DWORD): BOOL; stdcall;
 
 
-  // end of Additional Prototypes
+// Additional Prototypes for ALL interfaces
+
+
+// end of Additional Prototypes
 
 implementation
 
@@ -177,7 +179,9 @@ const
 
 function sndAlias(ch0: Char;
                   ch1: Char): DWord;
+
 begin
+
   Result := (SND_ALIAS_START + (DWORD(Ord(ch0)) or (DWORD(Ord(ch1)) shl 8)));
 end;
 
@@ -188,6 +192,6 @@ function PlaySound; external PlaySoundApiLib name 'PlaySoundW';
 function PlaySoundA; external PlaySoundApiLib name 'PlaySoundA';
 function PlaySoundW; external PlaySoundApiLib name 'PlaySoundW';
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

@@ -71,7 +71,7 @@ interface
 
 uses
   MfCaptureSamples.Platform,
-{Winapi}
+  {Winapi}
   Windows,
   {System}
   SysUtils,
@@ -100,6 +100,7 @@ type
     procedure butOkClick(Sender: TObject);
     procedure butCancelClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+
   private
     { Private declarations }
 
@@ -116,15 +117,20 @@ implementation
 {$R *.lfm}
 
 procedure TdlgChooseDevice.butCancelClick(Sender: TObject);
+
 begin
+
   Close();
 end;
+
 
 procedure TdlgChooseDevice.butOkClick(Sender: TObject);
 var
   i: Integer;
+
 begin
-  for i := 0 to Length(FDevicePropertiesArray) -1 do
+
+  for i := 0 to Length(FDevicePropertiesArray) - 1 do
     begin
       if (FDevicePropertiesArray[i].lpFriendlyName = cbxCaptureDevices.Text) then
         begin
@@ -139,18 +145,20 @@ end;
 procedure TdlgChooseDevice.FormShow(Sender: TObject);
 var
   i: Integer;
+
 begin
+
   cbxCaptureDevices.Clear();
   butOk.Enabled := False;
 
-  if Length(FDevicePropertiesArray) = 0 then
+  if (Length(FDevicePropertiesArray) = 0) then
     begin
       cbxCaptureDevices.Items.Append('COULD NOT FIND A DEVICE');
       cbxCaptureDevices.ItemIndex := 0;
     end
   else
     begin
-      for i:= 0 to Length(FDevicePropertiesArray) -1 do
+      for i := 0 to Length(FDevicePropertiesArray) - 1 do
         cbxCaptureDevices.Items.Add(FDevicePropertiesArray[i].lpFriendlyName);
 
       cbxCaptureDevices.ItemIndex := 0;

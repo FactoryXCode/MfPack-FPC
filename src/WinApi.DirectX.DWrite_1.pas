@@ -85,16 +85,18 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
-// Enums =======================================================================
+  // Enums =======================================================================
 
 type
   // The overall kind of family.
   PDWRITE_PANOSE_FAMILY = ^DWRITE_PANOSE_FAMILY;
   DWRITE_PANOSE_FAMILY = DWord;
+
 const
   DWRITE_PANOSE_FAMILY_ANY = DWRITE_PANOSE_FAMILY(0);
   DWRITE_PANOSE_FAMILY_NO_FIT = DWRITE_PANOSE_FAMILY(1);
@@ -109,6 +111,7 @@ type
   // Present for families: 2-text
   PDWRITE_PANOSE_SERIF_STYLE = ^DWRITE_PANOSE_SERIF_STYLE;
   DWRITE_PANOSE_SERIF_STYLE = DWord;
+
 const
   DWRITE_PANOSE_SERIF_STYLE_ANY = DWRITE_PANOSE_SERIF_STYLE(0);
   DWRITE_PANOSE_SERIF_STYLE_NO_FIT = DWRITE_PANOSE_SERIF_STYLE(1);
@@ -136,6 +139,7 @@ type
   // Present for families: 2-text, 3-script, 4-decorative, 5-symbol
   PDWRITE_PANOSE_WEIGHT = ^DWRITE_PANOSE_WEIGHT;
   DWRITE_PANOSE_WEIGHT = DWord;
+
 const
   DWRITE_PANOSE_WEIGHT_ANY = DWRITE_PANOSE_WEIGHT(0);
   DWRITE_PANOSE_WEIGHT_NO_FIT = DWRITE_PANOSE_WEIGHT(1);
@@ -157,6 +161,7 @@ type
   // Present for families: 2-text
   PDWRITE_PANOSE_PROPORTION = ^DWRITE_PANOSE_PROPORTION;
   DWRITE_PANOSE_PROPORTION = Dword;
+
 const
   DWRITE_PANOSE_PROPORTION_ANY = DWRITE_PANOSE_PROPORTION(0);
   DWRITE_PANOSE_PROPORTION_NO_FIT = DWRITE_PANOSE_PROPORTION(1);
@@ -175,6 +180,7 @@ type
   // Present for families: 2-text, 3-script, 4-decorative
   PDWRITE_PANOSE_CONTRAST = ^DWRITE_PANOSE_CONTRAST;
   DWRITE_PANOSE_CONTRAST = DWord;
+
 const
   DWRITE_PANOSE_CONTRAST_ANY = DWRITE_PANOSE_CONTRAST(0);
   DWRITE_PANOSE_CONTRAST_NO_FIT = DWRITE_PANOSE_CONTRAST(1);
@@ -196,6 +202,7 @@ type
   // Present for families: 2-text
   PDWRITE_PANOSE_STROKE_VARIATION = ^DWRITE_PANOSE_STROKE_VARIATION;
   DWRITE_PANOSE_STROKE_VARIATION = DWord;
+
 const
   DWRITE_PANOSE_STROKE_VARIATION_ANY = DWRITE_PANOSE_STROKE_VARIATION(0);
   DWRITE_PANOSE_STROKE_VARIATION_NO_FIT = DWRITE_PANOSE_STROKE_VARIATION(1);
@@ -214,6 +221,7 @@ type
   // Present for families: 2-text
   PDWRITE_PANOSE_ARM_STYLE = ^DWRITE_PANOSE_ARM_STYLE;
   DWRITE_PANOSE_ARM_STYLE = DWord;
+
 const
   DWRITE_PANOSE_ARM_STYLE_ANY = DWRITE_PANOSE_ARM_STYLE(0);
   DWRITE_PANOSE_ARM_STYLE_NO_FIT = DWRITE_PANOSE_ARM_STYLE(1);
@@ -240,6 +248,7 @@ type
   // Present for families: 2-text
   PDWRITE_PANOSE_LETTERFORM = ^DWRITE_PANOSE_LETTERFORM;
   DWRITE_PANOSE_LETTERFORM = DWord;
+
 const
   DWRITE_PANOSE_LETTERFORM_ANY = DWRITE_PANOSE_LETTERFORM(0);
   DWRITE_PANOSE_LETTERFORM_NO_FIT = DWRITE_PANOSE_LETTERFORM(1);
@@ -264,6 +273,7 @@ type
   // Present for families: 2-text
   PDWRITE_PANOSE_MIDLINE = ^DWRITE_PANOSE_MIDLINE;
   DWRITE_PANOSE_MIDLINE = DWord;
+
 const
   DWRITE_PANOSE_MIDLINE_ANY = DWRITE_PANOSE_MIDLINE(0);
   DWRITE_PANOSE_MIDLINE_NO_FIT = DWRITE_PANOSE_MIDLINE(1);
@@ -286,6 +296,7 @@ type
   // Present for families: 2-text
   PDWRITE_PANOSE_XHEIGHT = ^DWRITE_PANOSE_XHEIGHT;
   DWRITE_PANOSE_XHEIGHT = DWord;
+
 const
   DWRITE_PANOSE_XHEIGHT_ANY = DWRITE_PANOSE_XHEIGHT(0);
   DWRITE_PANOSE_XHEIGHT_NO_FIT = DWRITE_PANOSE_XHEIGHT(1);
@@ -303,6 +314,7 @@ type
   // Present for families: 3-script
   PDWRITE_PANOSE_TOOL_KIND = ^DWRITE_PANOSE_TOOL_KIND;
   DWRITE_PANOSE_TOOL_KIND = DWord;
+
 const
   DWRITE_PANOSE_TOOL_KIND_ANY = DWRITE_PANOSE_TOOL_KIND(0);
   DWRITE_PANOSE_TOOL_KIND_NO_FIT = DWRITE_PANOSE_TOOL_KIND(1);
@@ -320,6 +332,7 @@ type
   // Present for families: 3-script); 5-symbol
   PDWRITE_PANOSE_SPACING = ^DWRITE_PANOSE_SPACING;
   DWRITE_PANOSE_SPACING = DWord;
+
 const
   DWRITE_PANOSE_SPACING_ANY = DWRITE_PANOSE_SPACING(0);
   DWRITE_PANOSE_SPACING_NO_FIT = DWRITE_PANOSE_SPACING(1);
@@ -331,6 +344,7 @@ type
   // Present for families: 3-script
   PDWRITE_PANOSE_ASPECT_RATIO = ^DWRITE_PANOSE_ASPECT_RATIO;
   DWRITE_PANOSE_ASPECT_RATIO = DWord;
+
 const
   DWRITE_PANOSE_ASPECT_RATIO_ANY = DWRITE_PANOSE_ASPECT_RATIO(0);
   DWRITE_PANOSE_ASPECT_RATIO_NO_FIT = DWRITE_PANOSE_ASPECT_RATIO(1);
@@ -345,6 +359,7 @@ type
   // Present for families: 3-script
   PDWRITE_PANOSE_SCRIPT_TOPOLOGY = ^DWRITE_PANOSE_SCRIPT_TOPOLOGY;
   DWRITE_PANOSE_SCRIPT_TOPOLOGY = DWord;
+
 const
   DWRITE_PANOSE_SCRIPT_TOPOLOGY_ANY = DWRITE_PANOSE_SCRIPT_TOPOLOGY(0);
   DWRITE_PANOSE_SCRIPT_TOPOLOGY_NO_FIT = DWRITE_PANOSE_SCRIPT_TOPOLOGY(1);
@@ -363,6 +378,7 @@ type
   // Present for families: 3-script
   PDWRITE_PANOSE_SCRIPT_FORM = ^DWRITE_PANOSE_SCRIPT_FORM;
   DWRITE_PANOSE_SCRIPT_FORM = DWord;
+
 const
   DWRITE_PANOSE_SCRIPT_FORM_ANY = DWRITE_PANOSE_SCRIPT_FORM(0);
   DWRITE_PANOSE_SCRIPT_FORM_NO_FIT = DWRITE_PANOSE_SCRIPT_FORM(1);
@@ -384,6 +400,7 @@ type
   // Present for families: 3-script
   PDWRITE_PANOSE_FINIALS = ^DWRITE_PANOSE_FINIALS;
   DWRITE_PANOSE_FINIALS = DWord;
+
 const
   DWRITE_PANOSE_FINIALS_ANY = DWRITE_PANOSE_FINIALS(0);
   DWRITE_PANOSE_FINIALS_NO_FIT = DWRITE_PANOSE_FINIALS(1);
@@ -405,6 +422,7 @@ type
   // Present for families: 3-script
   PDWRITE_PANOSE_XASCENT = ^DWRITE_PANOSE_XASCENT;
   DWRITE_PANOSE_XASCENT = DWord;
+
 const
   DWRITE_PANOSE_XASCENT_ANY = DWRITE_PANOSE_XASCENT(0);
   DWRITE_PANOSE_XASCENT_NO_FIT = DWRITE_PANOSE_XASCENT(1);
@@ -419,6 +437,7 @@ type
   // Present for families: 4-decorative
   PDWRITE_PANOSE_DECORATIVE_CLASS = ^DWRITE_PANOSE_DECORATIVE_CLASS;
   DWRITE_PANOSE_DECORATIVE_CLASS = DWord;
+
 const
   DWRITE_PANOSE_DECORATIVE_CLASS_ANY = DWRITE_PANOSE_DECORATIVE_CLASS(0);
   DWRITE_PANOSE_DECORATIVE_CLASS_NO_FIT = DWRITE_PANOSE_DECORATIVE_CLASS(1);
@@ -439,6 +458,7 @@ type
   // Present for families: 4-decorative
   PDWRITE_PANOSE_ASPECT = ^DWRITE_PANOSE_ASPECT;
   DWRITE_PANOSE_ASPECT = DWord;
+
 const
   DWRITE_PANOSE_ASPECT_ANY = DWRITE_PANOSE_ASPECT(0);
   DWRITE_PANOSE_ASPECT_NO_FIT = DWRITE_PANOSE_ASPECT(1);
@@ -456,6 +476,7 @@ type
   // Present for families: 4-decorative
   PDWRITE_PANOSE_FILL = ^DWRITE_PANOSE_FILL;
   DWRITE_PANOSE_FILL = DWord;
+
 const
   DWRITE_PANOSE_FILL_ANY = DWRITE_PANOSE_FILL(0);
   DWRITE_PANOSE_FILL_NO_FIT = DWRITE_PANOSE_FILL(1);
@@ -471,6 +492,7 @@ type
   // Present for families: 4-decorative
   PDWRITE_PANOSE_LINING = ^DWRITE_PANOSE_LINING;
   DWRITE_PANOSE_LINING = DWord;
+
 const
   DWRITE_PANOSE_LINING_ANY = DWRITE_PANOSE_LINING(0);
   DWRITE_PANOSE_LINING_NO_FIT = DWRITE_PANOSE_LINING(1);
@@ -487,6 +509,7 @@ type
   // Present for families: 4-decorative
   PDWRITE_PANOSE_DECORATIVE_TOPOLOGY = ^DWRITE_PANOSE_DECORATIVE_TOPOLOGY;
   DWRITE_PANOSE_DECORATIVE_TOPOLOGY = DWord;
+
 const
   DWRITE_PANOSE_DECORATIVE_TOPOLOGY_ANY = DWRITE_PANOSE_DECORATIVE_TOPOLOGY(0);
   DWRITE_PANOSE_DECORATIVE_TOPOLOGY_NO_FIT = DWRITE_PANOSE_DECORATIVE_TOPOLOGY(1);
@@ -510,6 +533,7 @@ type
   // Present for families: 4-decorative
   PDWRITE_PANOSE_CHARACTER_RANGES = ^DWRITE_PANOSE_CHARACTER_RANGES;
   DWRITE_PANOSE_CHARACTER_RANGES = DWord;
+
 const
   DWRITE_PANOSE_CHARACTER_RANGES_ANY = DWRITE_PANOSE_CHARACTER_RANGES(0);
   DWRITE_PANOSE_CHARACTER_RANGES_NO_FIT = DWRITE_PANOSE_CHARACTER_RANGES(1);
@@ -523,6 +547,7 @@ type
   // Present for families: 5-symbol
   PDWRITE_PANOSE_SYMBOL_KIND = ^DWRITE_PANOSE_SYMBOL_KIND;
   DWRITE_PANOSE_SYMBOL_KIND = DWord;
+
 const
   DWRITE_PANOSE_SYMBOL_KIND_ANY = DWRITE_PANOSE_SYMBOL_KIND(0);
   DWRITE_PANOSE_SYMBOL_KIND_NO_FIT = DWRITE_PANOSE_SYMBOL_KIND(1);
@@ -543,6 +568,7 @@ type
   // Present for families: 5-symbol
   PDWRITE_PANOSE_SYMBOL_ASPECT_RATIO = ^DWRITE_PANOSE_SYMBOL_ASPECT_RATIO;
   DWRITE_PANOSE_SYMBOL_ASPECT_RATIO = DWord;
+
 const
   DWRITE_PANOSE_SYMBOL_ASPECT_RATIO_ANY = DWRITE_PANOSE_SYMBOL_ASPECT_RATIO(0);
   DWRITE_PANOSE_SYMBOL_ASPECT_RATIO_NO_FIT = DWRITE_PANOSE_SYMBOL_ASPECT_RATIO(1);
@@ -564,14 +590,16 @@ type
   // system renders aliased outlines then a much higher threshold is used.
   PDWRITE_OUTLINE_THRESHOLD = ^DWRITE_OUTLINE_THRESHOLD;
   DWRITE_OUTLINE_THRESHOLD = DWord;
+
 const
   DWRITE_OUTLINE_THRESHOLD_ANTIALIASED = DWRITE_OUTLINE_THRESHOLD(0);
-  DWRITE_OUTLINE_THRESHOLD_ALIASED     = DWRITE_OUTLINE_THRESHOLD(1);
+  DWRITE_OUTLINE_THRESHOLD_ALIASED = DWRITE_OUTLINE_THRESHOLD(1);
 
 type
   // Baseline for text alignment.
   PDWRITE_BASELINE = ^DWRITE_BASELINE;
   DWRITE_BASELINE = DWord;
+
 const
   // The Roman baseline for horizontal); Central baseline for vertical.
   DWRITE_BASELINE_DEFAULT = DWRITE_BASELINE(0);
@@ -599,6 +627,7 @@ type
   // final presentation.
   PDWRITE_VERTICAL_GLYPH_ORIENTATION = ^DWRITE_VERTICAL_GLYPH_ORIENTATION;
   DWRITE_VERTICAL_GLYPH_ORIENTATION = DWord;
+
 const
   // In vertical layout); naturally horizontal scripts (Latin); Thai); Arabic);
   // Devanagari) rotate 90 degrees clockwise); while ideographic scripts
@@ -617,11 +646,12 @@ type
   // properties.
   PDWRITE_GLYPH_ORIENTATION_ANGLE = ^DWRITE_GLYPH_ORIENTATION_ANGLE;
   DWRITE_GLYPH_ORIENTATION_ANGLE = DWord;
+
 const
   // Glyph orientation is upright.
-  DWRITE_GLYPH_ORIENTATION_ANGLE_0_DEGREES   = DWRITE_GLYPH_ORIENTATION_ANGLE(0);
+  DWRITE_GLYPH_ORIENTATION_ANGLE_0_DEGREES = DWRITE_GLYPH_ORIENTATION_ANGLE(0);
   // Glyph orientation is rotated 90 clockwise.
-  DWRITE_GLYPH_ORIENTATION_ANGLE_90_DEGREES  = DWRITE_GLYPH_ORIENTATION_ANGLE(1);
+  DWRITE_GLYPH_ORIENTATION_ANGLE_90_DEGREES = DWRITE_GLYPH_ORIENTATION_ANGLE(1);
   // Glyph orientation is upside-down.
   DWRITE_GLYPH_ORIENTATION_ANGLE_180_DEGREES = DWRITE_GLYPH_ORIENTATION_ANGLE(2);
   // Glyph orientation is rotated 270 clockwise.
@@ -632,6 +662,7 @@ type
   // antialiasing.
   PDWRITE_TEXT_ANTIALIAS_MODE = ^DWRITE_TEXT_ANTIALIAS_MODE;
   DWRITE_TEXT_ANTIALIAS_MODE = DWord;
+
 const
   // ClearType antialiasing computes coverage independently for the red, green, and blue
   // color elements of each pixel. This allows for more detail than conventional antialiasing.
@@ -644,12 +675,13 @@ const
   // IDWriteBitmapRenderTarget1 uses premultiplied alpha.
   DWRITE_TEXT_ANTIALIAS_MODE_GRAYSCALE = DWRITE_TEXT_ANTIALIAS_MODE(1);
 
-// =============================================================================
+  // =============================================================================
 
 type
 
   // struct DWRITE_FONT_METRICS1 : public DWRITE_FONT_METRICS
   PDWRITE_FONT_METRICS1 = ^DWRITE_FONT_METRICS1;
+
   DWRITE_FONT_METRICS1 = record
 
     // Within Delphi we can't inherit from records
@@ -710,6 +742,7 @@ type
 
   // Metrics for caret placement in a font.
   PDWRITE_CARET_METRICS = ^DWRITE_CARET_METRICS;
+
   DWRITE_CARET_METRICS = record
     // Vertical rise of the caret. Rise / Run yields the caret angle.
     // Rise = 1 for perfectly upright fonts (non-italic).
@@ -734,53 +767,54 @@ type
   PDWRITE_PANOSE = ^DWRITE_PANOSE;
   DWRITE_PANOSE = record
     case Integer of
-      0:(values: array [0..9] of UINT8);
-      1:(familyKind: UINT8);
-      2:(_familyKind: UINT8;
-         serifStyle: UINT8;
-         weight: UINT8;
-         proportion: UINT8;
-         contrast: UINT8;
-         strokeVariation: UINT8;
-         armStyle: UINT8;
-         letterform: UINT8;
-         midline: UINT8;
-         xHeight: UINT8;); // text
-      3:(__familyKind: UINT8;
-         toolKind: UINT8;
-         _weight: UINT8;
-         spacing: UINT8;
-         aspectRatio: UINT8;
-         _contrast: UINT8;
-         scriptTopology: UINT8;
-         scriptForm: UINT8;
-         finials: UINT8;
-         xAscent: UINT8;); // script
-      4:(familyKind_: UINT8;  // = 4 for decorative
-         decorativeClass: UINT8;
-         __weight: UINT8;
-         aspect: UINT8;
-         __contrast: UINT8;
-         serifVariant: UINT8;
-         fill: UINT8;  // treatment
-         lining: UINT8;
-         decorativeTopology: UINT8;
-         characterRange: UINT8;); // decorative
-      5:(familyKind__: UINT8;  // = 5 for symbol
-         symbolKind: UINT8;
-         weight_: UINT8;
-         spacing_: UINT8;
-         aspectRatioAndContrast: UINT8;  // hard coded to no-fit (1)
-         aspectRatio94: UINT8;
-         aspectRatio119: UINT8;
-         aspectRatio157: UINT8;
-         aspectRatio163: UINT8;
-         aspectRatio211: UINT8;); // symbol
-    end;
+      0: (values: array [0..9] of UINT8);
+      1: (familyKind: UINT8);
+      2: (_familyKind: UINT8;
+        serifStyle: UINT8;
+        weight: UINT8;
+        proportion: UINT8;
+        contrast: UINT8;
+        strokeVariation: UINT8;
+        armStyle: UINT8;
+        letterform: UINT8;
+        midline: UINT8;
+        xHeight: UINT8;); // text
+      3: (__familyKind: UINT8;
+        toolKind: UINT8;
+        _weight: UINT8;
+        spacing: UINT8;
+        aspectRatio: UINT8;
+        _contrast: UINT8;
+        scriptTopology: UINT8;
+        scriptForm: UINT8;
+        finials: UINT8;
+        xAscent: UINT8;); // script
+      4: (familyKind_: UINT8;  // = 4 for decorative
+        decorativeClass: UINT8;
+        __weight: UINT8;
+        aspect: UINT8;
+        __contrast: UINT8;
+        serifVariant: UINT8;
+        fill: UINT8;  // treatment
+        lining: UINT8;
+        decorativeTopology: UINT8;
+        characterRange: UINT8;); // decorative
+      5: (familyKind__: UINT8;  // = 5 for symbol
+        symbolKind: UINT8;
+        weight_: UINT8;
+        spacing_: UINT8;
+        aspectRatioAndContrast: UINT8;  // hard coded to no-fit (1)
+        aspectRatio94: UINT8;
+        aspectRatio119: UINT8;
+        aspectRatio157: UINT8;
+        aspectRatio163: UINT8;
+        aspectRatio211: UINT8;); // symbol
+  end;
 
 
   // Range of Unicode codepoints.
   PDWRITE_UNICODE_RANGE = ^DWRITE_UNICODE_RANGE;
+
   DWRITE_UNICODE_RANGE = record
     // The first codepoint in the Unicode range.
     first: UINT32;
@@ -790,6 +824,7 @@ type
 
   // Script-specific properties for caret navigation and justification.
   PDWRITE_SCRIPT_PROPERTIES = ^DWRITE_SCRIPT_PROPERTIES;
+
   DWRITE_SCRIPT_PROPERTIES = record
     // The standardized four character code for the given script.
     // Note these only include the general Unicode scripts, not any
@@ -817,24 +852,25 @@ type
     //   Ogham     - U+1680 Ogham Space Mark
     justificationCharacter: UINT32;
 
-    private
+  private
 
-      Flags: DWord;
-      function GetBits(const aIndex: Integer): Integer;
-      procedure SetBits(const aIndex: Integer; const aValue: Integer);
+    Flags: DWord;
+    function GetBits(const aIndex: Integer): Integer;
+    procedure SetBits(const aIndex: Integer;
+                      const aValue: Integer);
 
-    public
-      // Restrict the caret to whole clusters, like Thai and Devanagari. Scripts
-      // such as Arabic by default allow navigation between clusters. Others
-      // like Thai always navigate across whole clusters.
-      property restrictCaretToClusters: Integer index $0001 read GetBits write SetBits; // 1 bit at offset 0
+  public
+    // Restrict the caret to whole clusters, like Thai and Devanagari. Scripts
+    // such as Arabic by default allow navigation between clusters. Others
+    // like Thai always navigate across whole clusters.
+    property restrictCaretToClusters: Integer index $0001 read GetBits write SetBits; // 1 bit at offset 0
 
-      // The language uses dividers between words, such as spaces between Latin
-      // or the Ethiopic wordspace.
-      //
-      // Examples: Latin, Greek, Devanagari, Ethiopic
-      // Excludes: Chinese, Korean, Thai.
-      property usesWordDividers: Integer index $0101 read GetBits write SetBits;         // 1 bit at offset 1
+    // The language uses dividers between words, such as spaces between Latin
+    // or the Ethiopic wordspace.
+    //
+    // Examples: Latin, Greek, Devanagari, Ethiopic
+    // Excludes: Chinese, Korean, Thai.
+    property usesWordDividers: Integer index $0101 read GetBits write SetBits;         // 1 bit at offset 1
 
     // The characters are discrete units from each other. This includes both
     // block scripts and clustered scripts.
@@ -882,6 +918,7 @@ type
 
   // Justification information per glyph.
   PDWRITE_JUSTIFICATION_OPPORTUNITY = ^DWRITE_JUSTIFICATION_OPPORTUNITY;
+
   DWRITE_JUSTIFICATION_OPPORTUNITY = record
     // Minimum amount of expansion to apply to the side of the glyph.
     // This may vary from 0 to infinity, typically being zero except
@@ -898,13 +935,14 @@ type
     // This may vary from 0 up to the glyph cluster size.
     compressionMaximum: Single;
 
-    private
+  private
 
-      Flags: DWord;
-      function GetBits(const aIndex: Integer): Integer;
-      procedure SetBits(const aIndex: Integer; const aValue: Integer);
+    Flags: DWord;
+    function GetBits(const aIndex: Integer): Integer;
+    procedure SetBits(const aIndex: Integer;
+                      const aValue: Integer);
 
-    public
+  public
 
     // Priority of this expansion point. Larger priorities are applied later,
     // while priority zero does nothing.
@@ -957,7 +995,7 @@ type
   // =====================================================
   //
   IDWriteFactory1 = interface(IDWriteFactory)
-  ['{30572f99-dac6-41db-a16e-0486307e606a}']
+    ['{30572f99-dac6-41db-a16e-0486307e606a}']
     // Gets a font collection representing the set of end-user defined
     // custom fonts.
 
@@ -1015,6 +1053,7 @@ type
                                          out renderingParams: IDWriteRenderingParams1): HResult; stdcall; overload;
 
   end;
+
   IID_IDWriteFactory1 = IDWriteFactory1;
 
 
@@ -1027,7 +1066,7 @@ type
   // Various font data such as metrics, names and glyph outlines is obtained from IDWriteFontFace.
   //
   IDWriteFontFace1 = interface(IDWriteFontFace)
-  ['{a71efdb4-9fdb-4838-ad90-cfc3be8c3daf}']
+    ['{a71efdb4-9fdb-4838-ad90-cfc3be8c3daf}']
 
     // Gets common metrics for the font in design units.
     // These metrics are applicable to all the glyphs within a font,
@@ -1221,6 +1260,7 @@ type
     function HasVerticalGlyphVariants(): BOOL; stdcall;
 
   end;
+
   IID_IDWriteFontFace1 = IDWriteFontFace1;
 
 
@@ -1230,7 +1270,7 @@ type
   // The IDWriteFont interface represents a physical font in a font collection.
   //
   IDWriteFont1 = interface(IDWriteFont)
-  ['{acd16696-8c14-4f5d-877e-fe3fc1d32738}']
+    ['{acd16696-8c14-4f5d-877e-fe3fc1d32738}']
 
     // Gets common metrics for the font in design units.
     // These metrics are applicable to all the glyphs within a font,
@@ -1263,7 +1303,7 @@ type
     //
     // Standard HRESULT error code.
     function GetUnicodeRanges(maxRangeCount: UINT32;
-                              unicodeRanges: PDWRITE_UNICODE_RANGE; 
+                              unicodeRanges: PDWRITE_UNICODE_RANGE;
                               out actualRangeCount: UINT32): HResult; stdcall;
 
     // Returns True if the font is monospaced, meaning its characters are the
@@ -1271,6 +1311,7 @@ type
     function IsMonospacedFont(): BOOL; stdcall;
 
   end;
+
   IID_IDWriteFont1 = IDWriteFont1;
 
 
@@ -1279,11 +1320,12 @@ type
   // The interface that represents text rendering settings for glyph rasterization and filtering.
   //
   IDWriteRenderingParams1 = interface(IDWriteRenderingParams)
-  ['{94413cf4-a6fc-4248-8b50-6674348fcad3}']
+    ['{94413cf4-a6fc-4248-8b50-6674348fcad3}']
     // Gets the amount of contrast enhancement to use for grayscale antialiasing.
     // Valid values are greater than or equal to zero.
     function GetGrayscaleEnhancedContrast(): Single; stdcall;
   end;
+
   IID_IDWriteRenderingParams1 = IDWriteRenderingParams1;
 
 
@@ -1292,7 +1334,7 @@ type
   // Analyzes various text properties for complex script processing.
   //
   IDWriteTextAnalyzer1 = interface(IDWriteTextAnalyzer)
-  ['{80DAD800-E21F-4E83-96CE-BFCCE500DB7C}']
+    ['{80DAD800-E21F-4E83-96CE-BFCCE500DB7C}']
     // Applies spacing between characters, properly adjusting glyph clusters
     // and diacritics.
     // <param name="leadingSpacing">The spacing before each character, in reading order.</param>
@@ -1531,6 +1573,7 @@ type
                                 out modifiedGlyphOffsets: DWRITE_GLYPH_OFFSET): HResult; stdcall;
 
   end;
+
   IID_IDWriteTextAnalyzer1 = IDWriteTextAnalyzer1;
 
 
@@ -1542,7 +1585,7 @@ type
   // stop prematurely and return a callback error.
   //
   IDWriteTextAnalysisSource1 = interface(IDWriteTextAnalysisSource)
-  ['{639CFAD8-0FB4-4B21-A58A-067920120009}']
+    ['{639CFAD8-0FB4-4B21-A58A-067920120009}']
     // The text analyzer calls back to this to get the desired glyph
     // orientation and resolved bidi level, which it uses along with the
     // script properties of the text to determine the actual orientation of
@@ -1568,6 +1611,7 @@ type
                                          out glyphOrientation: DWRITE_VERTICAL_GLYPH_ORIENTATION;
                                          out bidiLevel: UINT8): HResult; stdcall;
   end;
+
   IID_IDWriteTextAnalysisSource1 = IDWriteTextAnalysisSource1;
 
 
@@ -1577,7 +1621,7 @@ type
   // output of the text analyzers.
   //
   IDWriteTextAnalysisSink1 = interface(IDWriteTextAnalysisSink)
-  ['{B0D941A0-85E7-4D8B-9FD3-5CED9934482A}']
+    ['{B0D941A0-85E7-4D8B-9FD3-5CED9934482A}']
 
     // The text analyzer calls back to this to report the actual orientation
     // of each character for shaping and drawing.
@@ -1606,6 +1650,7 @@ type
                                  isRightToLeft: BOOL): HResult; stdcall;
 
   end;
+
   IID_IDWriteTextAnalysisSink1 = IDWriteTextAnalysisSink1;
 
 
@@ -1617,7 +1662,7 @@ type
   // All coordinates are in device independent pixels (DIPs).
   //
   IDWriteTextLayout1 = interface(IDWriteTextLayout)
-  ['{9064D822-80A7-465C-A986-DF65F78B8FEB}']
+    ['{9064D822-80A7-465C-A986-DF65F78B8FEB}']
     // Enables/disables pair-kerning on the given range.
     // <param name="isPairKerningEnabled">The Boolean flag indicates whether text is pair-kerned.</param>
     // <param name="textRange">Text range to which this change applies.</param>
@@ -1662,6 +1707,7 @@ type
                                  out minimumAdvanceWidth: Single;
                                  textRange: PDWRITE_TEXT_RANGE = Nil): HResult; stdcall;
   end;
+
   IID_IDWriteTextLayout1 = IDWriteTextLayout1;
 
 
@@ -1670,7 +1716,7 @@ type
   // Encapsulates a 32-bit device independent bitmap and device context, which can be used for rendering glyphs.
   //
   IDWriteBitmapRenderTarget1 = interface(IDWriteBitmapRenderTarget)
-  ['{791e8298-3ef3-4230-9880-c9bdecc42064}']
+    ['{791e8298-3ef3-4230-9880-c9bdecc42064}']
 
     // Gets the current text antialiasing mode of the bitmap render target.
     // Returns the antialiasing mode.
@@ -1688,6 +1734,7 @@ type
 
 
   end;
+
   IID_IDWriteBitmapRenderTarget1 = IDWriteBitmapRenderTarget1;
 
 
@@ -1700,13 +1747,19 @@ implementation
 
 // DWRITE_SCRIPT_PROPERTIES
 function DWRITE_SCRIPT_PROPERTIES.GetBits(const aIndex: Integer): Integer;
+
 begin
+
   Result := GetDWordBits(Flags,
                          aIndex);
 end;
 
-procedure DWRITE_SCRIPT_PROPERTIES.SetBits(const aIndex: Integer; const aValue: Integer);
+
+procedure DWRITE_SCRIPT_PROPERTIES.SetBits(const aIndex: Integer;
+                                           const aValue: Integer);
+
 begin
+
   SetDWordBits(Flags,
                aIndex,
                aValue);
@@ -1714,19 +1767,24 @@ end;
 
 // DWRITE_JUSTIFICATION_OPPORTUNITY
 function DWRITE_JUSTIFICATION_OPPORTUNITY.GetBits(const aIndex: Integer): Integer;
+
 begin
+
   Result := GetDWordBits(Flags,
                          aIndex);
 end;
 
+
 procedure DWRITE_JUSTIFICATION_OPPORTUNITY.SetBits(const aIndex: Integer;
                                                    const aValue: Integer);
+
 begin
+
   SetDWordBits(Flags,
                aIndex,
                aValue);
 end;
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

@@ -78,9 +78,9 @@ interface
 
 uses
   MfSmallSamplesPlatform,
-LMessages,
+  LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -106,7 +106,6 @@ LMessages,
   {Application}
   AudioClipEngine,
   Helpers;
-
 
 type
   TAudioClipExFrm = class(TForm)
@@ -138,17 +137,28 @@ type
     procedure Open1Click(Sender: TObject);
     procedure Extractto1Click(Sender: TObject);
     procedure butExtractClick(Sender: TObject);
-    procedure lblGetSourceFileMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
-    procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure lblSetTartgetFileMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
+    procedure lblGetSourceFileMouseMove(Sender: TObject;
+                                        Shift: TShiftState;
+                                        X,
+                                        Y: Integer);
+    procedure FormMouseMove(Sender: TObject;
+                            Shift: TShiftState;
+                            X,
+                            Y: Integer);
+    procedure lblSetTartgetFileMouseMove(Sender: TObject;
+                                         Shift: TShiftState;
+                                         X,
+                                         Y: Integer);
     procedure FormCreate(Sender: TObject);
-    procedure edClipDurationKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure edClipDurationKeyUp(Sender: TObject;
+                                  var Key: Word;
+                                  Shift: TShiftState);
     procedure butCancelClick(Sender: TObject);
     procedure tbPriorityChange(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure butCloseClick(Sender: TObject);
+
   private
     { Private declarations }
 
@@ -162,6 +172,7 @@ type
 
   public
     destructor Destroy; override;
+
   public
     { Public declarations }
   end;
@@ -174,10 +185,18 @@ implementation
 {$R *.lfm}
 
 destructor TAudioClipExFrm.Destroy;
-begin FreeAndNil(MfAudioClip);inherited;end;
+
+begin
+
+  FreeAndNil(MfAudioClip);
+  inherited;
+end;
+
 
 procedure TAudioClipExFrm.Reset();
+
 begin
+
   tbPriority.Position := 10;
   butExtract.Enabled := False;
   butCancel.Enabled := False;
@@ -195,7 +214,9 @@ end;
 
 
 procedure TAudioClipExFrm.tbPriorityChange(Sender: TObject);
+
 begin
+
   if Assigned(MfAudioClip) then
     MfAudioClip.SamplePriority := tbPriority.Position;
 end;
@@ -207,6 +228,7 @@ var
   hr: HResult;
 
 begin
+
   hr := S_OK;
 
   if (wSourceFile = Nil) or (wTargetFile = Nil) then
@@ -222,7 +244,7 @@ begin
                                           hr);
 
   if Failed(hr) then
-     Exit;
+    Exit;
 
   if TryStrToInt(edClipDuration.Text, iClipLen) then
     begin
@@ -250,18 +272,23 @@ end;
 
 
 procedure TAudioClipExFrm.butCloseClick(Sender: TObject);
+
 begin
+
   Close();
 end;
 
+
 procedure TAudioClipExFrm.butCancelClick(Sender: TObject);
+
 begin
+
   if Assigned(MfAudioClip) then
     begin
       SendMessageW(MfAudioClip.FHWnd,
-                  WM_USER_ABORT,
-                  0,
-                  0);
+                   WM_USER_ABORT,
+                   0,
+                   0);
 
       while Not MfAudioClip.Flushed do
         HandleMessages(0);
@@ -269,27 +296,32 @@ begin
 end;
 
 
-procedure TAudioClipExFrm.edClipDurationKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TAudioClipExFrm.edClipDurationKeyUp(Sender: TObject;
+                                              var Key: Word;
+                                              Shift: TShiftState);
 var
   iClipLen: Integer;
 
 begin
-  if Length(edClipDuration.Text) = 0 then
+
+  if (Length(edClipDuration.Text) = 0) then
     begin
       lblTime.Caption := '00:00:00';
       Exit;
     end;
 
   if TryStrToInt(edClipDuration.Text, iClipLen) then
-    lblTime.Caption := MSecToStr(iClipLen * ONE_MSEC_SECOND, False)
+    lblTime.Caption := MSecToStr(iClipLen * ONE_MSEC_SECOND,
+                                 False)
   else
     lblTime.Caption := '00:00:00';
 end;
 
 
 procedure TAudioClipExFrm.Exit1Click(Sender: TObject);
+
 begin
+
   Close();
 end;
 
@@ -299,20 +331,24 @@ var
   tmp: string;
 
 begin
+
   tmp := ExtractFileName(string(wSourceFile));
-  Savedialog1.FileName := ChangeFileExt(tmp, '.wav');
+  Savedialog1.FileName := ChangeFileExt(tmp,
+                                        '.wav');
 
   if Savedialog1.execute then
     begin
       // If choosen the source as target, change it to wav
-      if wSourceFile = Savedialog1.FileName then
-        Savedialog1.FileName := ChangeFileExt(wSourceFile, '.wav');
+      if (wSourceFile = Savedialog1.FileName) then
+        Savedialog1.FileName := ChangeFileExt(wSourceFile,
+                                              '.wav');
       // Delete existing target
       if FileExists(Savedialog1.FileName) then
         DeleteFileW(PWideChar(UnicodeString(Savedialog1.FileName)));
 
       lblTargetFile.Caption := Savedialog1.FileName;
-      FTargetName:=Savedialog1.FileName;wTargetFile:=PWideChar(FTargetName);
+      FTargetName := Savedialog1.FileName;
+      wTargetFile := PWideChar(FTargetName);
       butExtract.Enabled := True;
       butCancel.Enabled := True;
       butClose.Enabled := False;
@@ -321,8 +357,10 @@ end;
 
 
 procedure TAudioClipExFrm.FormCloseQuery(Sender: TObject;
-  var CanClose: Boolean);
+                                         var CanClose: Boolean);
+
 begin
+
   CanClose := False;
   butCancelClick(Self); // when sampling is going on, we need to send a message to quit.
 
@@ -332,15 +370,20 @@ end;
 
 
 procedure TAudioClipExFrm.FormCreate(Sender: TObject);
+
 begin
-  
+
   prbProgress.Max := prbProgress.Width;
 end;
 
 
-procedure TAudioClipExFrm.FormMouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
+procedure TAudioClipExFrm.FormMouseMove(Sender: TObject;
+                                        Shift: TShiftState;
+                                        X,
+                                        Y: Integer);
+
 begin
+
   lblGetSourceFile.Font.Color := clHighLight;
   lblGetSourceFile.Font.Style := lblGetSourceFile.Font.Style - [fsBold];
   lblSetTartgetFile.Font.Color := clHighLight;
@@ -348,17 +391,25 @@ begin
 end;
 
 
-procedure TAudioClipExFrm.lblGetSourceFileMouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
+procedure TAudioClipExFrm.lblGetSourceFileMouseMove(Sender: TObject;
+                                                    Shift: TShiftState;
+                                                    X,
+                                                    Y: Integer);
+
 begin
+
   lblGetSourceFile.Font.Color := clHotLight;
   lblGetSourceFile.Font.Style := lblGetSourceFile.Font.Style + [fsBold];
 end;
 
 
-procedure TAudioClipExFrm.lblSetTartgetFileMouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
+procedure TAudioClipExFrm.lblSetTartgetFileMouseMove(Sender: TObject;
+                                                     Shift: TShiftState;
+                                                     X,
+                                                     Y: Integer);
+
 begin
+
   lblSetTartgetFile.Font.Color := clHotLight;
   lblSetTartgetFile.Font.Style := lblSetTartgetFile.Font.Style + [fsBold];
 end;
@@ -369,6 +420,7 @@ var
   hr: HResult;
 
 begin
+
   // Pick a file to extract the audio from
 
   // Clear all
@@ -378,7 +430,8 @@ begin
     begin
       if FileExists(Opendialog1.Filename) then
         begin
-          FSourceName:=Opendialog1.Filename;wSourceFile:=PWideChar(FSourceName);
+          FSourceName := Opendialog1.Filename;
+          wSourceFile := PWideChar(FSourceName);
           lblSourceFile.Caption := Opendialog1.Filename;
 
           // Now we have to check some properties of the source file.
@@ -391,7 +444,8 @@ begin
           else // set duration
             begin
               edClipDuration.Text := IntToStr(MfAudioClip.msecDuration div ONE_MSEC_SECOND);
-              lblTime.Caption := MSecToStr(MfAudioClip.msecDuration, False);
+              lblTime.Caption := MSecToStr(MfAudioClip.msecDuration,
+                                           False);
             end;
         end;
     end;
@@ -399,38 +453,38 @@ end;
 
 
 procedure TAudioClipExFrm.OnClipEngineMsg(var Msg: TLMessage);
+
 begin
+
   if (Not Assigned(MfAudioClip)) or (MfAudioClip.dwMaxAudioData = 0) then
     Exit;
 
   // Update progress msg
-  if Msg.WParam = 1 then
+  if (Msg.WParam = 1) then
     begin
       prbProgress.Position := Round((prbProgress.Width / MfAudioClip.dwMaxAudioData) *
-                                    MfAudioClip.dwAudioDataWritten);
+        MfAudioClip.dwAudioDataWritten);
       lblProgress.Caption := Format('Processed %u Kb from %u Kb.',
                                     [MfAudioClip.dwAudioDataWritten div 1024,
-                                     MfAudioClip.dwMaxAudioData div 1024]);
+        MfAudioClip.dwMaxAudioData div 1024]);
     end
-  else
-    // Finnished processing audiodata
-    if Msg.WParam = 2 then
-      begin
-        // Check HResult
-        if Succeeded(HResult(Msg.lParam)) then
-          begin
-            lblProgress.Caption := 'Clip succesfully extracted.';
-          end
-        else
-          if HResult(Msg.lParam) = E_ABORT then  //$80004004
-            lblProgress.Caption := 'Clip extraction aborted.'
-        else
-          lblProgress.Caption := 'Clip extraction failed!';
+  else // Finnished processing audiodata
+  if (Msg.WParam = 2) then
+    begin
+      // Check HResult
+      if Succeeded(HResult(Msg.lParam)) then
+        begin
+          lblProgress.Caption := 'Clip succesfully extracted.';
+        end
+      else if (HResult(Msg.lParam) = E_ABORT) then  //$80004004
+        lblProgress.Caption := 'Clip extraction aborted.'
+      else
+        lblProgress.Caption := 'Clip extraction failed!';
 
-        butExtract.Enabled := False;
-        butCancel.Enabled := False;
-        butClose.Enabled := True;
-      end;
+      butExtract.Enabled := False;
+      butCancel.Enabled := False;
+      butClose.Enabled := True;
+    end;
 end;
 
 end.

@@ -98,52 +98,52 @@ uses
   {ActiveX}
   WinApi.ActiveX.ObjBase;
 
-
 const
   // The minimum OS support
-  WINVER                              = _WIN32_WINNT_WIN7;
+  WINVER = _WIN32_WINNT_WIN7;
   // By default the maximum filesize of a wavefile can't be larger than 4294967295 bytes (approx. 4 GB)
-  MAX_WAV_FILESIZE                    = MAXDWORD - (44 + SizeOf(WaveformatEx));
+  MAX_WAV_FILESIZE = MAXDWORD - (44 + SizeOf(WaveformatEx));
 
 var
-  bFlush:  Boolean;  // When user want's to abort, this flag will be true.
-                     // The reason for this approach is this sample works in sync state,
-                     // so the respond is tricky.
+  bFlush: Boolean;  // When user want's to abort, this flag will be true.
 
-  function WriteWaveFile(pReader: IMFSourceReader;      // Pointer to the source reader.
-                         const hFile: THandle;          // Handle to the output file.
-                         msecAudioData: LONG): HResult;
+  // The reason for this approach is this sample works in sync state,
+  // so the respond is tricky.
 
-  function ConfigureAudioStream(pReader: IMFSourceReader;    // Pointer to the source reader.
-                                out ppPCMAudio: IMFMediaType): HResult;
+function WriteWaveFile(pReader: IMFSourceReader;      // Pointer to the source reader.
+  const hFile: THandle;          // Handle to the output file.
+  msecAudioData: LONG): HResult;
 
-  function WriteWaveHeader(const hFile: THandle;        // Output file.
-                           pMediaType: IMFMediaType;    // PCM audio format.
-                           out pcbWritten: DWORD): HResult;
+function ConfigureAudioStream(pReader: IMFSourceReader;    // Pointer to the source reader.
+  out ppPCMAudio: IMFMediaType): HResult;
 
-  function CalculateMaxAudioDataSize(pAudioType: IMFMediaType;     // The PCM audio format.
-                                     cbHeader: DWORD;              // The size of the WAVE file header.
-                                     msecAudioData: DWORD): DWord;
+function WriteWaveHeader(const hFile: THandle;        // Output file.
+  pMediaType: IMFMediaType;    // PCM audio format.
+  out pcbWritten: DWORD): HResult;
 
-  function WriteWaveData(const hFile: THandle;        // Output file.
-                         pReader: IMFSourceReader;    // Source reader.
-                         cbMaxAudioData: DWORD;       // Maximum amount of audio data (bytes).
-                         out pcbDataWritten: DWORD): HResult;
+function CalculateMaxAudioDataSize(pAudioType: IMFMediaType;     // The PCM audio format.
+  cbHeader: DWORD;              // The size of the WAVE file header.
+  msecAudioData: DWORD): DWord;
 
-  function FixUpChunkSizes(const hFile: THandle;          // Output file.
-                           cbHeader: DWORD;               // Size of the 'fmt ' chuck.
-                           cbAudioData: DWORD): HResult;
+function WriteWaveData(const hFile: THandle;        // Output file.
+  pReader: IMFSourceReader;    // Source reader.
+  cbMaxAudioData: DWORD;       // Maximum amount of audio data (bytes).
+  out pcbDataWritten: DWORD): HResult;
 
-  function WriteToFile(const hFile: THandle;
-                       const p;
-                       cb: DWORD): HResult;
+function FixUpChunkSizes(const hFile: THandle;          // Output file.
+  cbHeader: DWORD;               // Size of the 'fmt ' chuck.
+  cbAudioData: DWORD): HResult;
 
-  procedure FlushSourceReader(doFlush: Boolean);
+function WriteToFile(const hFile: THandle;
+                     const p;
+                     cb: DWORD): HResult;
 
-  function ExtractSound(const wHandle: HWnd;
-                        const wszSourceFile: PWideChar;     // the sourcefile URL
-                        const wszTargetFile: PWideChar;     // The target file URL
-                        msDuration: Int64): HResult;        // The duration in ms to extract.
+procedure FlushSourceReader(doFlush: Boolean);
+
+function ExtractSound(const wHandle: HWnd;
+                      const wszSourceFile: PWideChar;     // the sourcefile URL
+  const wszTargetFile: PWideChar;     // The target file URL
+  msDuration: Int64): HResult;        // The duration in ms to extract.
 
 
 implementation
@@ -166,17 +166,27 @@ function FullFileName(Name: PWideChar): UnicodeString;
 var
   Size: DWORD;
   Written: DWORD;
+
 begin
+
   Result := '';
-  Size := SampleGetFullPathNameW(Name,0,nil,nil);
-  if Size = 0 then
+  Size := SampleGetFullPathNameW(Name,
+                                 0,
+                                 nil,
+                                 nil);
+  if (Size = 0) then
     Exit;
-  SetLength(Result,Size);
-  Written := SampleGetFullPathNameW(Name,Size,PWideChar(Result),nil);
+  SetLength(Result,
+            Size);
+  Written := SampleGetFullPathNameW(Name,
+                                    Size,
+                                    PWideChar(Result),
+                                    nil);
   if (Written = 0) or (Written >= Size) then
     Result := ''
   else
-    SetLength(Result,Written);
+    SetLength(Result,
+              Written);
 end;
 
 
@@ -191,38 +201,54 @@ var
   TargetPath: UnicodeString;
   Extension: UnicodeString;
   Attributes: DWORD;
+
 begin
+
   Result := E_INVALIDARG;
   if (wszSourceFile = nil) or (wszTargetFile = nil) then
     Exit;
   if (wszSourceFile^ = #0) or (wszTargetFile^ = #0) or
-     (msDuration <= 0) or (msDuration > MaxInt) then
+    (msDuration <= 0) or (msDuration > MaxInt) then
     Exit;
   SourcePath := FullFileName(wszSourceFile);
   TargetPath := FullFileName(wszTargetFile);
-  Extension := Copy(TargetPath,Length(TargetPath) - 3,4);
+  Extension := Copy(TargetPath,
+                    Length(TargetPath) - 3,
+                    4);
   if (SourcePath = '') or (TargetPath = '') or
-     (lstrcmpiW(PWideChar(Extension),'.wav') <> 0) or
-     (lstrcmpiW(PWideChar(SourcePath),PWideChar(TargetPath)) = 0) then
+    (lstrcmpiW(PWideChar(Extension),
+               '.wav') <> 0) or
+    (lstrcmpiW(PWideChar(SourcePath),
+               PWideChar(TargetPath)) = 0) then
     Exit;
   Attributes := GetFileAttributesW(wszSourceFile);
   if (Attributes = INVALID_FILE_ATTRIBUTES) or
-     ((Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0) then
+    ((Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0) then
     Exit(HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
   bFlush := False;
-  Result := MFStartup(MF_VERSION,MFSTARTUP_FULL);
+  Result := MFStartup(MF_VERSION,
+                      MFSTARTUP_FULL);
   if FAILED(Result) then
     Exit;
   try
-    Result := MFCreateSourceReaderFromURL(wszSourceFile,nil,Reader);
+    Result := MFCreateSourceReaderFromURL(wszSourceFile,
+                                          nil,
+                                          Reader);
     if FAILED(Result) then
       Exit;
-    FileHandle := CreateFileW(wszTargetFile,GENERIC_WRITE,FILE_SHARE_READ,nil,
-                              CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0);
-    if FileHandle = INVALID_HANDLE_VALUE then
+    FileHandle := CreateFileW(wszTargetFile,
+                              GENERIC_WRITE,
+                              FILE_SHARE_READ,
+                              nil,
+                              CREATE_ALWAYS,
+                              FILE_ATTRIBUTE_NORMAL,
+                              0);
+    if (FileHandle = INVALID_HANDLE_VALUE) then
       Exit(HRESULT_FROM_WIN32(GetLastError));
     try
-      Result := WriteWaveFile(Reader,FileHandle,LONG(msDuration));
+      Result := WriteWaveFile(Reader,
+                              FileHandle,
+                              LONG(msDuration));
     finally
       CloseHandle(FileHandle);
     end;
@@ -241,19 +267,31 @@ var
   HeaderSize: DWORD;
   AudioSize: DWORD;
   MaxSize: DWORD;
+
 begin
+
   if (pReader = nil) or (msecAudioData <= 0) then
     Exit(E_INVALIDARG);
-  Result := ConfigureAudioStream(pReader,AudioType);
+  Result := ConfigureAudioStream(pReader,
+                                 AudioType);
   if FAILED(Result) then
     Exit;
-  Result := WriteWaveHeader(hFile,AudioType,HeaderSize);
+  Result := WriteWaveHeader(hFile,
+                            AudioType,
+                            HeaderSize);
   if FAILED(Result) then
     Exit;
-  MaxSize := CalculateMaxAudioDataSize(AudioType,HeaderSize,DWORD(msecAudioData));
-  Result := WriteWaveData(hFile,pReader,MaxSize,AudioSize);
+  MaxSize := CalculateMaxAudioDataSize(AudioType,
+                                       HeaderSize,
+                                       DWORD(msecAudioData));
+  Result := WriteWaveData(hFile,
+                          pReader,
+                          MaxSize,
+                          AudioSize);
   if SUCCEEDED(Result) then
-    Result := FixUpChunkSizes(hFile,HeaderSize,AudioSize);
+    Result := FixUpChunkSizes(hFile,
+                              HeaderSize,
+                              AudioSize);
 end;
 
 
@@ -261,23 +299,32 @@ function ConfigureAudioStream(pReader: IMFSourceReader;
                               out ppPCMAudio: IMFMediaType): HResult;
 var
   PartialType: IMFMediaType;
+
 begin
+
   ppPCMAudio := nil;
-  if pReader = nil then
+  if (pReader = nil) then
     Exit(E_POINTER);
   Result := MFCreateMediaType(PartialType);
   if SUCCEEDED(Result) then
-    Result := PartialType.SetGUID(MF_MT_MAJOR_TYPE,MFMediaType_Audio);
+    Result := PartialType.SetGUID(MF_MT_MAJOR_TYPE,
+                                  MFMediaType_Audio);
   if SUCCEEDED(Result) then
-    Result := PartialType.SetGUID(MF_MT_SUBTYPE,MFAudioFormat_PCM);
+    Result := PartialType.SetGUID(MF_MT_SUBTYPE,
+                                  MFAudioFormat_PCM);
   if SUCCEEDED(Result) then
-    Result := pReader.SetStreamSelection(DWORD(MF_SOURCE_READER_ALL_STREAMS),False);
+    Result := pReader.SetStreamSelection(DWORD(MF_SOURCE_READER_ALL_STREAMS),
+                                         False);
   if SUCCEEDED(Result) then
-    Result := pReader.SetCurrentMediaType(DWORD(MF_SOURCE_READER_FIRST_AUDIO_STREAM),nil,PartialType);
+    Result := pReader.SetCurrentMediaType(DWORD(MF_SOURCE_READER_FIRST_AUDIO_STREAM),
+                                          nil,
+                                          PartialType);
   if SUCCEEDED(Result) then
-    Result := pReader.GetCurrentMediaType(DWORD(MF_SOURCE_READER_FIRST_AUDIO_STREAM),@ppPCMAudio);
+    Result := pReader.GetCurrentMediaType(DWORD(MF_SOURCE_READER_FIRST_AUDIO_STREAM),
+                                          @ppPCMAudio);
   if SUCCEEDED(Result) then
-    Result := pReader.SetStreamSelection(DWORD(MF_SOURCE_READER_FIRST_AUDIO_STREAM),True);
+    Result := pReader.SetStreamSelection(DWORD(MF_SOURCE_READER_FIRST_AUDIO_STREAM),
+                                         True);
 end;
 
 
@@ -289,17 +336,23 @@ var
   BytesPerSecond: UINT32;
   Size: UInt64;
   Limit: UInt64;
+
 begin
+
   Result := 0;
-  if pAudioType = nil then
+  if (pAudioType = nil) then
     Exit;
-  BlockSize := MFGetAttributeUINT32(pAudioType,MF_MT_AUDIO_BLOCK_ALIGNMENT,0);
-  BytesPerSecond := MFGetAttributeUINT32(pAudioType,MF_MT_AUDIO_AVG_BYTES_PER_SECOND,0);
+  BlockSize := MFGetAttributeUINT32(pAudioType,
+                                    MF_MT_AUDIO_BLOCK_ALIGNMENT,
+                                    0);
+  BytesPerSecond := MFGetAttributeUINT32(pAudioType,
+                                         MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
+                                         0);
   if (BlockSize = 0) or (BytesPerSecond = 0) then
     Exit;
   Size := UInt64(msecAudioData) * BytesPerSecond div 1000;
   Limit := UInt64(MAXDWORD) - cbHeader;
-  if Size > Limit then
+  if (Size > Limit) then
     Size := Limit;
   Result := DWORD(Size div BlockSize * BlockSize);
 end;
@@ -313,14 +366,18 @@ var
   Format: PWAVEFORMATEX;
   Header: array[0..4] of DWORD;
   DataHeader: array[0..1] of DWORD;
+
 begin
+
   pcbWritten := 0;
-  if pMediaType = nil then
+  if (pMediaType = nil) then
     Exit(E_POINTER);
   Format := nil;
   FormatSize := 0;
-  Result := MFCreateWaveFormatExFromMFMediaType(pMediaType,Format,FormatSize,
-                                               DWORD(MFWaveFormatExConvertFlag_Normal));
+  Result := MFCreateWaveFormatExFromMFMediaType(pMediaType,
+                                                Format,
+                                                FormatSize,
+                                                DWORD(MFWaveFormatExConvertFlag_Normal));
   try
     if FAILED(Result) then
       Exit;
@@ -333,11 +390,17 @@ begin
     Header[4] := FormatSize;
     DataHeader[0] := FCC('data');
     DataHeader[1] := 0;
-    Result := WriteToFile(hFile,Header,SizeOf(Header));
+    Result := WriteToFile(hFile,
+                          Header,
+                          SizeOf(Header));
     if SUCCEEDED(Result) then
-      Result := WriteToFile(hFile,Format^,FormatSize);
+      Result := WriteToFile(hFile,
+                            Format^,
+                            FormatSize);
     if SUCCEEDED(Result) then
-      Result := WriteToFile(hFile,DataHeader,SizeOf(DataHeader));
+      Result := WriteToFile(hFile,
+                            DataHeader,
+                            SizeOf(DataHeader));
     if SUCCEEDED(Result) then
       pcbWritten := SizeOf(Header) + FormatSize + SizeOf(DataHeader);
   finally
@@ -357,9 +420,11 @@ var
   BufferSize: DWORD;
   Flags: DWORD;
   UnlockResult: HRESULT;
+
 begin
+
   pcbDataWritten := 0;
-  if pReader = nil then
+  if (pReader = nil) then
     Exit(E_POINTER);
   Result := S_OK;
   while (pcbDataWritten < cbMaxAudioData) and not bFlush do
@@ -368,31 +433,40 @@ begin
       Sample := nil;
       Buffer := nil;
       Flags := 0;
-      Result := pReader.ReadSample(DWORD(MF_SOURCE_READER_FIRST_AUDIO_STREAM),0,
-                                    nil,@Flags,nil,@Sample);
+      Result := pReader.ReadSample(DWORD(MF_SOURCE_READER_FIRST_AUDIO_STREAM),
+                                   0,
+                                   nil,
+                                   @Flags,
+                                   nil,
+                                   @Sample);
       if FAILED(Result) then
         Exit;
-      if (Flags and MF_SOURCE_READERF_ERROR) <> 0 then
+      if ((Flags and MF_SOURCE_READERF_ERROR) <> 0) then
         Exit(E_FAIL);
-      if (Flags and MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) <> 0 then
+      if ((Flags and MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) <> 0) then
         Exit(MF_E_INVALIDMEDIATYPE);
-      if Sample <> nil then
+      if (Sample <> nil) then
         begin
           Result := Sample.ConvertToContiguousBuffer(@Buffer);
           if FAILED(Result) then
             Exit;
           AudioData := nil;
           BufferSize := 0;
-          Result := Buffer.Lock(AudioData,nil,@BufferSize);
+          Result := Buffer.Lock(AudioData,
+                                nil,
+                                @BufferSize);
           if FAILED(Result) then
             Exit;
           try
-            if BufferSize > cbMaxAudioData - pcbDataWritten then
+            if (BufferSize > cbMaxAudioData - pcbDataWritten) then
               BufferSize := cbMaxAudioData - pcbDataWritten;
-            if BufferSize > 0 then
-              Result := WriteToFile(hFile,AudioData^,BufferSize);
+            if (BufferSize > 0) then
+              Result := WriteToFile(hFile,
+                                    AudioData^,
+                                    BufferSize);
             if SUCCEEDED(Result) then
-              Inc(pcbDataWritten,BufferSize);
+              Inc(pcbDataWritten,
+                  BufferSize);
           finally
             UnlockResult := Buffer.Unlock;
             if SUCCEEDED(Result) then
@@ -401,7 +475,7 @@ begin
           if FAILED(Result) then
             Exit;
         end;
-      if (Flags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0 then
+      if ((Flags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0) then
         Break;
     end;
   if bFlush then
@@ -415,20 +489,26 @@ function FixUpChunkSizes(const hFile: THandle;
 var
   Position: Int64;
   RiffSize: DWORD;
+
 begin
+
   if (cbHeader < 8) or (UInt64(cbHeader) + cbAudioData > MAXDWORD) then
     Exit(E_INVALIDARG);
   Position := cbHeader - SizeOf(DWORD);
-  if not SampleSetFilePointerEx(hFile,Position,nil,FILE_BEGIN) then
+  if not SampleSetFilePointerEx(hFile, Position, nil, FILE_BEGIN) then
     Exit(HRESULT_FROM_WIN32(GetLastError));
-  Result := WriteToFile(hFile,cbAudioData,SizeOf(cbAudioData));
+  Result := WriteToFile(hFile,
+                        cbAudioData,
+                        SizeOf(cbAudioData));
   if FAILED(Result) then
     Exit;
   Position := 4;
-  if not SampleSetFilePointerEx(hFile,Position,nil,FILE_BEGIN) then
+  if not SampleSetFilePointerEx(hFile, Position, nil, FILE_BEGIN) then
     Exit(HRESULT_FROM_WIN32(GetLastError));
   RiffSize := cbHeader + cbAudioData - 8;
-  Result := WriteToFile(hFile,RiffSize,SizeOf(RiffSize));
+  Result := WriteToFile(hFile,
+                        RiffSize,
+                        SizeOf(RiffSize));
 end;
 
 
@@ -437,11 +517,13 @@ function WriteToFile(const hFile: THandle;
                      cb: DWORD): HResult;
 var
   Written: DWORD;
+
 begin
+
   Written := 0;
-  if not WriteFile(hFile,p,cb,Written,nil) then
+  if not WriteFile(hFile, p, cb, Written, nil) then
     Exit(HRESULT_FROM_WIN32(GetLastError));
-  if Written <> cb then
+  if (Written <> cb) then
     Exit(HRESULT_FROM_WIN32(ERROR_WRITE_FAULT));
   Result := S_OK;
   Application.ProcessMessages;
@@ -449,7 +531,9 @@ end;
 
 
 procedure FlushSourceReader(doFlush: Boolean);
+
 begin
+
   bFlush := doFlush;
 end;
 

@@ -88,7 +88,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+    {$ALIGN 8}
+    // Win64
   {$ENDIF}
 
 
@@ -123,16 +124,16 @@ type
 
 const
 
-  AMDDS_NONE    = $00;        // No use for DCI/DirectDraw
-  AMDDS_DCIPS   = $01;        // Use DCI primary surface
-  AMDDS_PS      = $02;        // Use DirectDraw primary
-  AMDDS_RGBOVR  = $04;        // RGB overlay surfaces
-  AMDDS_YUVOVR  = $08;        // YUV overlay surfaces
-  AMDDS_RGBOFF  = $10;        // RGB offscreen surfaces
-  AMDDS_YUVOFF  = $20;        // YUV offscreen surfaces
-  AMDDS_RGBFLP  = $40;        // RGB flipping surfaces
-  AMDDS_YUVFLP  = $80;        // YUV flipping surfaces
-  AMDDS_ALL     = $FF;        // ALL the previous flags
+  AMDDS_NONE = $00;        // No use for DCI/DirectDraw
+  AMDDS_DCIPS = $01;        // Use DCI primary surface
+  AMDDS_PS = $02;        // Use DirectDraw primary
+  AMDDS_RGBOVR = $04;        // RGB overlay surfaces
+  AMDDS_YUVOVR = $08;        // YUV overlay surfaces
+  AMDDS_RGBOFF = $10;        // RGB offscreen surfaces
+  AMDDS_YUVOFF = $20;        // YUV offscreen surfaces
+  AMDDS_RGBFLP = $40;        // RGB flipping surfaces
+  AMDDS_YUVFLP = $80;        // YUV flipping surfaces
+  AMDDS_ALL = $FF;        // ALL the previous flags
   AMDDS_DEFAULT = AMDDS_ALL;   // Use all available surfaces
 
   AMDDS_YUV = AMDDS_YUVOFF or AMDDS_YUVOVR or AMDDS_YUVFLP;
@@ -175,7 +176,8 @@ type
 
     function GetSurfaceDesc(out pSurfaceDesc: TDDSurfaceDesc): HResult; stdcall;
 
-    function GetFourCCCodes(out pCount, pCodes: DWORD): HResult; stdcall;
+    function GetFourCCCodes(out pCount,
+                            pCodes: DWORD): HResult; stdcall;
 
     function SetDirectDraw(pDirectDraw: IDirectDraw): HResult; stdcall;
 
@@ -567,11 +569,11 @@ type
   PAM_PROPERTY_FRAMESTEP = ^AM_PROPERTY_FRAMESTEP;
   AM_PROPERTY_FRAMESTEP = (
     //  Step
-    AM_PROPERTY_FRAMESTEP_STEP            = 1,
-    AM_PROPERTY_FRAMESTEP_CANCEL          = 2 ,
+    AM_PROPERTY_FRAMESTEP_STEP = 1,
+                           AM_PROPERTY_FRAMESTEP_CANCEL = 2,
     //  S_OK for these 2 means we can - S_FALSE if we can't
-    AM_PROPERTY_FRAMESTEP_CANSTEP         = 3,
-    AM_PROPERTY_FRAMESTEP_CANSTEPMULTIPLE = 4
+    AM_PROPERTY_FRAMESTEP_CANSTEP = 3,
+                           AM_PROPERTY_FRAMESTEP_CANSTEPMULTIPLE = 4
   );
 
 
@@ -615,7 +617,7 @@ implementation
   //        + (pbmi)->bmiHeader.biSize))
   function TRUECOLOR(pbmi: PVIDEOINFO): PTRUECOLORINFO;
     begin
-      Result:= PTRUECOLORINFO(SizeOf(LPBYTE) + SizeOf(pbmi.bmiHeader) + pbmi^.bmiHeader.biSize);
+      Result := PTRUECOLORINFO(SizeOf(LPBYTE) + SizeOf(pbmi.bmiHeader) + pbmi^.bmiHeader.biSize);
     end;
   // The TRUECOLOR macro returns the TRUECOLORINFO structure from a VIDEOINFO structure.
   // The TRUECOLORINFO structure contains color bitmasks followed by palette information,
@@ -635,7 +637,7 @@ implementation
   //                                      + (pbmi)->bmiHeader.biSize))
   function COLORS(pbmi: PVIDEOINFO): PRGBQUAD;
   begin
-    Result:= PRGBQUAD(SizeOf(LPBYTE) + SizeOf(pbmi.bmiHeader) + pbmi^.bmiHeader.biSize);
+    Result := PRGBQUAD(SizeOf(LPBYTE) + SizeOf(pbmi.bmiHeader) + pbmi^.bmiHeader.biSize);
   end;
   // RGBQUAD* COLORS(pbmi);
   //
@@ -655,7 +657,7 @@ implementation
   //                                      + (pbmi)->bmiHeader.biSize))
   function BITMASKS(pbmi: PVIDEOINFO): PDWORD;
     Begin
-      Result:= PDWORD(SizeOf(LPBYTE) + SizeOf(pbmi.bmiHeader) + pbmi^.bmiHeader.biSize);
+      Result := PDWORD(SizeOf(LPBYTE) + SizeOf(pbmi.bmiHeader) + pbmi^.bmiHeader.biSize);
     End;
   // The BITMASKS macro retrieves the color masks from a VIDEOINFO structure.
   // Parameters
@@ -687,9 +689,9 @@ implementation
   function BIT_MASKS_MATCH(pbmi1: PVIDEOINFO;
                            pbmi2: PVIDEOINFO): BOOL;
     begin
-      Result:= BOOL(CompareMem(pbmi1,
-                               pbmi2,
-                               SizeOf(pbmi1)));
+      Result := BOOL(CompareMem(pbmi1,
+                                pbmi2,
+                                SizeOf(pbmi1)));
     end;
   //Parameters
   // pbmi1

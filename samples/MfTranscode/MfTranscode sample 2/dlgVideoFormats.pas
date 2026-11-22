@@ -67,7 +67,7 @@ interface
 
 uses
   MfCaptureSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -85,7 +85,6 @@ uses
   {MediaFoundation}
   WinApi.MediaFoundationApi.MfMetLib,
   WinApi.MfPack.VideoStandardsCheat;
-
 
 type
   TVideoFormatDlg = class(TForm)
@@ -184,13 +183,14 @@ begin
 
   Result := E_FAIL;
 
-  for i := 0 to Length(pCont) -1 do
+  for i := 0 to Length(pCont) - 1 do
     begin
       if pCont[i].bSelected and (pCont[i].idStreamMediaType = mtVideo) then
         begin
           iVideoHeight := pCont[i].video_FrameSizeHeigth;
           iVideoWidth := pCont[i].video_FrameSizeWidth;
-          aFrameRate := Format('%f', [pCont[i].video_FrameRateNumerator / pCont[i].video_FrameRateDenominator]);
+          aFrameRate := Format('%f',
+                               [pCont[i].video_FrameRateNumerator / pCont[i].video_FrameRateDenominator]);
           Result := S_OK;
           Break;
         end;
@@ -202,7 +202,9 @@ end;
 
 
 procedure TVideoFormatDlg.butOkClick(Sender: TObject);
+
 begin
+
   if cbxKeepOriginal.Checked then
     iSelectedResolution := -1
   else
@@ -214,26 +216,34 @@ end;
 
 
 procedure TVideoFormatDlg.cbxFormatsCloseUp(Sender: TObject);
+
 begin
+
   GetResolutions();
 end;
 
 
 procedure TVideoFormatDlg.cbxFrameRatesCloseUp(Sender: TObject);
+
 begin
+
   iSelectedFrameRate := cbxFrameRates.ItemIndex;
   FVideoStandardsCheat.SetFrameRateByIndex(iSelectedFrameRate);
 end;
 
 
 procedure TVideoFormatDlg.cbxKeepOriginalClick(Sender: TObject);
+
 begin
+
   sgVideoFormats.Enabled := not cbxKeepOriginal.Checked;
 end;
 
 
 procedure TVideoFormatDlg.FormShow(Sender: TObject);
+
 begin
+
   // Get the media contents from the source mediafile.
   if SUCCEEDED(GetMediaContents(aFileName)) then
 
@@ -251,28 +261,29 @@ var
   tRes: string;
 
 begin
-try
-  tRes := aVideoResolutionType;
-  cbxFormats.Clear();
-  // NOTE: FVideoStandardsCheat is created in the TransCoder class as a global class.
-  // FVideoStandardsCheat := TVideoStandardsCheat.Create();
+
+  try
+    tRes := aVideoResolutionType;
+    cbxFormats.Clear();
+    // NOTE: FVideoStandardsCheat is created in the TransCoder class as a global class.
+    // FVideoStandardsCheat := TVideoStandardsCheat.Create();
 
 
-  for i := 0 to Length(FVideoStandardsCheat.Resolutions) - 1 do
-    begin
-      if (tRes = FVideoStandardsCheat.Resolutions[i].Resolution) then
-        begin
-          cbxFormats.Items.Append(string(FVideoStandardsCheat.Resolutions[i].Resolution));
-          Break;
-        end;
-      // Remember
-      //tRes := FVideoStandardsCheat.Resolutions[i].Resolution;
-    end;
+    for i := 0 to Length(FVideoStandardsCheat.Resolutions) - 1 do
+      begin
+        if (tRes = FVideoStandardsCheat.Resolutions[i].Resolution) then
+          begin
+            cbxFormats.Items.Append(string(FVideoStandardsCheat.Resolutions[i].Resolution));
+            Break;
+          end;
+        // Remember
+        //tRes := FVideoStandardsCheat.Resolutions[i].Resolution;
+      end;
 
-finally
-  cbxFormats.ItemIndex := 0;
-  GetResolutions();
-end;
+  finally
+    cbxFormats.ItemIndex := 0;
+    GetResolutions();
+  end;
 end;
 
 
@@ -281,6 +292,7 @@ var
   i: Integer;
 
 begin
+
   cbxFrameRates.Items.Clear;
   for i := 0 to Length(FVideoStandardsCheat.FrameRates) - 1 do
     cbxFrameRates.Items.Append(FVideoStandardsCheat.FrameRates[i].sFrameRate);
@@ -299,7 +311,9 @@ end;
 
 
 procedure TVideoFormatDlg.sgVideoFormatsClick(Sender: TObject);
+
 begin
+
   if not cbxKeepOriginal.Checked then
     begin
       iSelectedResolution := StrToInt(sgVideoFormats.Cells[2, sgVideoFormats.Row]);
@@ -315,6 +329,7 @@ var
   i, j: Integer;
 
 begin
+
   // Clear the grid.
   for i := 0 to sgVideoFormats.ColCount - 1 do
     sgVideoFormats.Cols[i].Clear;
@@ -343,7 +358,8 @@ begin
       begin
         inc(j);
         sgVideoFormats.RowCount := j;
-        sgVideoFormats.Cells[0, j] := Format('%d x %d', [FVideoStandardsCheat.Resolutions[i].iWidth, FVideoStandardsCheat.Resolutions[i].iHeight]);
+        sgVideoFormats.Cells[0, j] := Format('%d x %d',
+                                             [FVideoStandardsCheat.Resolutions[i].iWidth, FVideoStandardsCheat.Resolutions[i].iHeight]);
         sgVideoFormats.Cells[1, j] := string(FVideoStandardsCheat.Resolutions[i].StrAspectRatio);
         // Store the index in the invisible column.
         sgVideoFormats.Cells[2, j] := IntToStr(i); // = array index!
@@ -353,7 +369,7 @@ begin
   // Select the format of the original.
   for i := 0 to sgVideoFormats.RowCount - 1 do
     begin
-      if sgVideoFormats.Cells[0, j] = Format('%d x %d', [iVideoHeight, iVideoWidth]) then
+      if (sgVideoFormats.Cells[0, j] = Format('%d x %d', [iVideoHeight, iVideoWidth])) then
         begin
           sgVideoFormats.Row := j;
           iSelectedResolution := StrToInt(sgVideoFormats.Cells[2, j]);

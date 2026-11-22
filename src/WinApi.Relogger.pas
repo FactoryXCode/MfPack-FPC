@@ -84,7 +84,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -107,6 +108,7 @@ type
 
   PEVENT_DESCRIPTOR = ^EVENT_DESCRIPTOR;
   PCEVENT_DESCRIPTOR = ^EVENT_DESCRIPTOR;
+
   _EVENT_DESCRIPTOR = record
     Id: USHORT;
     Version: UCHAR;
@@ -120,6 +122,7 @@ type
 
 
   PEVENT_HEADER = ^EVENT_HEADER;
+
   _EVENT_HEADER = record
     Size: USHORT;                        // Event Size
     HeaderType: USHORT;                  // Header Type
@@ -130,11 +133,11 @@ type
     TimeStamp: LARGE_INTEGER;            // Event Timestamp
     ProviderId: TGUID;                   // Provider Id
     EventDescriptor: EVENT_DESCRIPTOR;   // Event Descriptor
-      DUMMYSTRUCTNAME: record
+    DUMMYSTRUCTNAME: record
       case Boolean of
-        True  : (KernelTime: ULONG;      // Kernel Mode CPU ticks
-                 UserTime: ULONG);       // User mode CPU ticks
-        False : (ProcessorTime: ULONG64;);  // Processor Clock for private session event
+        True: (KernelTime: ULONG;      // Kernel Mode CPU ticks
+          UserTime: ULONG);       // User mode CPU ticks
+        False: (ProcessorTime: ULONG64;);  // Processor Clock for private session event
       end;
     ActivityId: TGUID;                  // Activity Id
   end;
@@ -142,19 +145,21 @@ type
 
 
   PETW_BUFFER_CONTEXT = ^_ETW_BUFFER_CONTEXT;
+
   _ETW_BUFFER_CONTEXT = record
     DUMMYSTRUCTNAME: record
-    case Boolean of
-      True  : (ProcessorNumber: UCHAR;
-               Alignment: UCHAR);
-      False : (ProcessorIndex: USHORT;);
-    end;
+      case Boolean of
+        True: (ProcessorNumber: UCHAR;
+          Alignment: UCHAR);
+        False: (ProcessorIndex: USHORT;);
+      end;
     LoggerId: USHORT;
   end;
   ETW_BUFFER_CONTEXT = _ETW_BUFFER_CONTEXT;
 
 
   PEVENT_HEADER_EXTENDED_DATA_ITEM = ^EVENT_HEADER_EXTENDED_DATA_ITEM;
+
   _EVENT_HEADER_EXTENDED_DATA_ITEM = record
     Reserved1: USHORT;              // Reserved for internal use
     ExtType: USHORT;                // Extended info type
@@ -167,11 +172,12 @@ type
 
   PEVENT_RECORD = ^EVENT_RECORD;
   PCEVENT_RECORD = ^EVENT_RECORD;
+
   _EVENT_RECORD = record
     EventHeader: EVENT_HEADER;                        // Event header
     BufferContext: ETW_BUFFER_CONTEXT;                // Buffer context
     ExtendedDataCount: USHORT;                        // Number of extended
-                                                      // data items
+    // data items
     UserDataLength: USHORT;                           // User data length              // Pointer to an array of
     ExtendedData: PEVENT_HEADER_EXTENDED_DATA_ITEM;   // extended data items
     UserData: Pointer;                                // Pointer to user data
@@ -186,7 +192,7 @@ type
   // =====================
   //
   ITraceEvent = interface(IUnknown)
-	['{8CC97F40-9028-4FF3-9B62-7D1F79CA7BCB}']
+    ['{8CC97F40-9028-4FF3-9B62-7D1F79CA7BCB}']
 
     function Clone(out NewEvent: ITraceEvent): HResult; stdcall;
 
@@ -215,6 +221,7 @@ type
     function SetProviderId(ProviderId: PGUID): HResult; stdcall;
 
   end;
+
   IID_ITraceEvent = ITraceEvent;
 
 
@@ -223,7 +230,7 @@ type
   // =============================
   //
   ITraceEventCallback = interface(IUnknown)
-	['{3ED25501-593F-43E9-8F38-3AB46F5A4A52}']
+    ['{3ED25501-593F-43E9-8F38-3AB46F5A4A52}']
 
     function OnBeginProcessTrace(HeaderEvent: ITraceEvent;
                                  Relogger: ITraceRelogger): HResult; stdcall;
@@ -234,6 +241,7 @@ type
                      Relogger: ITraceRelogger): HResult; stdcall;
 
   end;
+
   IID_ITraceEventCallback = ITraceEventCallback;
 
 
@@ -242,7 +250,7 @@ type
   // ========================
   //
   ITraceRelogger = interface(IUnknown)
-	['{F754AD43-3BCC-4286-8009-9C5DA214E84E}']
+    ['{F754AD43-3BCC-4286-8009-9C5DA214E84E}']
 
     function AddLogfileTraceStream(LogfileName: BSTR;
                                    UserContext: Pointer;
@@ -269,6 +277,7 @@ type
     function Cancel(): HResult; stdcall;
 
   end;
+
   IID_ITraceRelogger = ITraceRelogger;
 
 
@@ -278,6 +287,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

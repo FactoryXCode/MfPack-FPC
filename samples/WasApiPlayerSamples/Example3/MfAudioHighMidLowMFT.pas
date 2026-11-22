@@ -107,13 +107,15 @@ type
                         Aa2,
                         Bb1,
                         Bb2:
-                        Double);
+      Double);
 
     function Process(const x: Double): Double;
   end;
 
 
-  THighMidLowMFT = class(TMfAudioEqBaseMFT, IMfHighMidLowControl)
+  THighMidLowMFT = class(TMfAudioEqBaseMFT,
+                         IMfHighMidLowControl)
+
   private
 
     FEnabled: Boolean;
@@ -143,8 +145,7 @@ type
 
     // Biquads per channel: LowShelf -> MidBell -> HighShelf.
     FLowL,
-    FLowR:
-    TBiquad;
+    FLowR: TBiquad;
     FMidL,
     FMidR: TBiquad;
 
@@ -218,6 +219,7 @@ implementation
 { TBiquad }
 
 procedure TBiquad.Reset;
+
 begin
 
   x1 := 0;
@@ -227,7 +229,12 @@ begin
 end;
 
 
-procedure TBiquad.SetCoeffs(const Aa0, Aa1, Aa2, Bb1, Bb2: Double);
+procedure TBiquad.SetCoeffs(const Aa0,
+                            Aa1,
+                            Aa2,
+                            Bb1,
+                            Bb2: Double);
+
 begin
 
   a0 := Aa0;
@@ -244,7 +251,8 @@ var
   y: Double;
 
 begin
-  y := a0*x + a1*x1 + a2*x2 - b1*y1 - b2*y2;
+
+  y := a0 * x + a1 * x1 + a2 * x2 - b1 * y1 - b2 * y2;
   x2 := x1;
   x1 := x;
   y2 := y1;
@@ -254,16 +262,21 @@ end;
 
 
 function DbToA(const Db: Double): Double;
+
 begin
+
   // Source: RBJ cookbook: A = 10^(dBgain/40)
-  Result := Power(10.0, Db / 40.0);
+  Result := Power(10.0,
+                  Db / 40.0);
 end;
 
 
 { THighMidLowMFT }
 
 constructor THighMidLowMFT.Create;
+
 begin
+
   inherited Create;
 
   // default mixer tuning
@@ -290,6 +303,7 @@ end;
 
 function THighMidLowMFT.ProcessInPlace(pData: PByte;
                                        cbData: Cardinal): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -305,6 +319,7 @@ end;
 
 
 function THighMidLowMFT.CurrentSampleRate(): Double;
+
 begin
 
   if (FSampleRate <> 0) then
@@ -318,6 +333,7 @@ function THighMidLowMFT.GetBiquadCoeffs(out Low,
                                         Mid,
                                         High: TBiquadCoeffs;
                                         out SampleRate: Double): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -354,6 +370,7 @@ end;
 
 
 procedure THighMidLowMFT.ClearStateLocked();
+
 begin
 
   FLowL.Reset;
@@ -366,6 +383,7 @@ end;
 
 
 procedure THighMidLowMFT.OnFormatChangedLocked();
+
 begin
 
   ClearStateLocked();
@@ -380,17 +398,18 @@ var
   step: Single;
   sr: Integer;
 
-  function ModeToMs(const Mode: TMfRampMode): Integer;
-    begin
 
-      case Mode of
-        rmOff:    Result := 0;
-        rmFast:   Result := 10;
-        rmSmooth: Result := 30;
-        rmCustom: Result := FRampTimeMs;
+  function ModeToMs(const Mode: TMfRampMode): Integer;
+  begin
+
+    case Mode of
+      rmOff: Result := 0;
+      rmFast: Result := 10;
+      rmSmooth: Result := 30;
+      rmCustom: Result := FRampTimeMs;
       else
         Result := 30;
-      end;
+    end;
   end;
 
 begin
@@ -417,8 +436,8 @@ begin
   step := Min(1.0,
               Frames / (FRampSamplesLeft * 1.0));
 
-  FLowDbCur  := FLowDbCur + (FLowDbTarget - FLowDbCur) * step;
-  FMidDbCur  := FMidDbCur + (FMidDbTarget - FMidDbCur) * step;
+  FLowDbCur := FLowDbCur + (FLowDbTarget - FLowDbCur) * step;
+  FMidDbCur := FMidDbCur + (FMidDbTarget - FMidDbCur) * step;
   FHighDbCur := FHighDbCur + (FHighDbTarget - FHighDbCur) * step;
 
   FRampSamplesLeft := Max(0,
@@ -429,6 +448,7 @@ end;
 
 
 procedure THighMidLowMFT.UpdateCoeffsLocked();
+
 begin
 
   ComputeLowShelf(FLowDbCur,
@@ -464,7 +484,9 @@ begin
 end;
 
 
-procedure THighMidLowMFT.ComputeLowShelf(const GainDb, FcHz: Double; out Bq: TBiquad);
+procedure THighMidLowMFT.ComputeLowShelf(const GainDb,
+                                         FcHz: Double;
+                                         out Bq: TBiquad);
 var
   A,
   w0,
@@ -493,12 +515,12 @@ begin
   alpha := sinw0 / 2 * Sqrt((A + 1 / A) * 1.0 - 2.0);
   sqrtA := Sqrt(A);
 
-  b0 := A *( (A + 1) - (A - 1) * cosw0 + 2 * sqrtA * alpha);
+  b0 := A * ((A + 1) - (A - 1) * cosw0 + 2 * sqrtA * alpha);
   b1 := 2 * A * ((A - 1) - (A + 1) * cosw0);
   b2 := A * ((A + 1) - (A - 1) * cosw0 - 2 * sqrtA * alpha);
-  a0 := (A+1) + (A-1) * cosw0 + 2 * sqrtA * alpha;
-  a1 := -2 * ((A-1) + (A+1) * cosw0 );
-  a2 := (A + 1) + ( A - 1) * cosw0 - 2 * sqrtA * alpha;
+  a0 := (A + 1) + (A - 1) * cosw0 + 2 * sqrtA * alpha;
+  a1 := -2 * ((A - 1) + (A + 1) * cosw0);
+  a2 := (A + 1) + (A - 1) * cosw0 - 2 * sqrtA * alpha;
 
   Bq.SetCoeffs(b0 / a0,
                b1 / a0,
@@ -509,7 +531,9 @@ begin
 end;
 
 
-procedure THighMidLowMFT.ComputeHighShelf(const GainDb, FcHz: Double; out Bq: TBiquad);
+procedure THighMidLowMFT.ComputeHighShelf(const GainDb,
+                                          FcHz: Double;
+                                          out Bq: TBiquad);
 var
   A,
   w0,
@@ -537,11 +561,11 @@ begin
   alpha := sinw0 / 2 * Sqrt((A + 1 / A) * 1.0 - 2.0);
   sqrtA := Sqrt(A);
 
-  b0 := A*((A + 1) + (A - 1) * cosw0 + 2 * sqrtA * alpha);
-  b1 := -2 * A * ((A-1) + (A + 1) * cosw0);
+  b0 := A * ((A + 1) + (A - 1) * cosw0 + 2 * sqrtA * alpha);
+  b1 := -2 * A * ((A - 1) + (A + 1) * cosw0);
   b2 := A * ((A + 1) + (A - 1) * cosw0 - 2 * sqrtA * alpha);
   a0 := (A + 1) - (A - 1) * cosw0 + 2 * sqrtA * alpha;
-  a1 := 2 * ((A - 1) - (A + 1) * cosw0 );
+  a1 := 2 * ((A - 1) - (A + 1) * cosw0);
   a2 := (A + 1) - (A - 1) * cosw0 - 2 * sqrtA * alpha;
 
   Bq.SetCoeffs(b0 / a0,
@@ -603,7 +627,8 @@ begin
 end;
 
 
-function THighMidLowMFT.ProcessAudioLocked(pData: PByte; cbData: Cardinal): HRESULT;
+function THighMidLowMFT.ProcessAudioLocked(pData: PByte;
+                                           cbData: Cardinal): HRESULT;
 var
   frames, i, c: Integer;
   ch: Integer;
@@ -643,39 +668,37 @@ begin
           s := Round(y * 32768.0);
           if (s < -32768) then
             s := -32768
-          else
-            if (s > 32767) then
-              s := 32767;
+          else if (s > 32767) then
+            s := 32767;
 
-      ps16^ := s;
-      Inc(ps16);
+          ps16^ := s;
+          Inc(ps16);
 
-      // Channel 1 if present
-      if (ch > 1) then
-        begin
+          // Channel 1 if present
+          if (ch > 1) then
+            begin
 
-          x := ps16^ / 32768.0;
-          y := FLowR.Process(x);
-          y := FMidR.Process(y);
-          y := FHighR.Process(y);
-          s := Round(y * 32768.0);
-          if (s < -32768) then
-            s := -32768
-          else
-            if (s > 32767) then
-              s := 32767;
+              x := ps16^ / 32768.0;
+              y := FLowR.Process(x);
+              y := FMidR.Process(y);
+              y := FHighR.Process(y);
+              s := Round(y * 32768.0);
+              if (s < -32768) then
+                s := -32768
+              else if (s > 32767) then
+                s := 32767;
 
-        ps16^ := s;
-        Inc(ps16);
+              ps16^ := s;
+              Inc(ps16);
+            end;
+
+          // remaining channels pass-through
+          for c := 2 to ch - 1 do
+            Inc(ps16);
         end;
 
-      // remaining channels pass-through
-      for c := 2 to ch - 1 do
-        Inc(ps16);
+      Exit(S_OK);
     end;
-
-    Exit(S_OK);
-  end;
 
   if (FBitsPerSample = 32) then
     begin
@@ -686,44 +709,57 @@ begin
       for i := 0 to frames - 1 do
         begin
 
-          if FIsFloat then x := pf32^
-          else x := PInteger(pf32)^ / 2147483648.0;
+          if FIsFloat then
+            x := pf32^
+          else
+            x := PInteger(pf32)^ / 2147483648.0;
           y := FLowL.Process(x);
           y := FMidL.Process(y);
           y := FHighL.Process(y);
-          if FIsFloat then pf32^ := y
-          else if y >= 1.0 then PInteger(pf32)^ := High(Integer)
-          else if y <= -1.0 then PInteger(pf32)^ := Low(Integer)
-          else PInteger(pf32)^ := Round(y * 2147483648.0);
+          if FIsFloat then
+            pf32^ := y
+          else if (y >= 1.0) then
+            PInteger(pf32)^ := High(Integer)
+          else if (y <= -1.0) then
+            PInteger(pf32)^ := Low(Integer)
+          else
+            PInteger(pf32)^ := Round(y * 2147483648.0);
           Inc(pf32);
 
           if (ch > 1) then
             begin
 
-              if FIsFloat then x := pf32^
-          else x := PInteger(pf32)^ / 2147483648.0;
+              if FIsFloat then
+                x := pf32^
+              else
+                x := PInteger(pf32)^ / 2147483648.0;
               y := FLowR.Process(x);
               y := FMidR.Process(y);
               y := FHighR.Process(y);
-              if FIsFloat then pf32^ := y
-          else if y >= 1.0 then PInteger(pf32)^ := High(Integer)
-          else if y <= -1.0 then PInteger(pf32)^ := Low(Integer)
-          else PInteger(pf32)^ := Round(y * 2147483648.0);
+              if FIsFloat then
+                pf32^ := y
+              else if (y >= 1.0) then
+                PInteger(pf32)^ := High(Integer)
+              else if (y <= -1.0) then
+                PInteger(pf32)^ := Low(Integer)
+              else
+                PInteger(pf32)^ := Round(y * 2147483648.0);
               Inc(pf32);
             end;
 
-      for c := 2 to ch - 1 do
-        Inc(pf32);
-    end;
+          for c := 2 to ch - 1 do
+            Inc(pf32);
+        end;
 
-    Exit(S_OK);
-  end;
+      Exit(S_OK);
+    end;
 
   Result := S_OK;
 end;
 
 
 function THighMidLowMFT.SetEnabled(const AEnabled: Boolean): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -740,6 +776,7 @@ end;
 
 
 function THighMidLowMFT.SetLowDb(const Db: Single): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -759,6 +796,7 @@ end;
 
 
 function THighMidLowMFT.SetMidDb(const Db: Single): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -778,6 +816,7 @@ end;
 
 
 function THighMidLowMFT.SetHighDb(const Db: Single): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -796,6 +835,7 @@ end;
 
 
 function THighMidLowMFT.SetLowFreqHz(const Hz: Single): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -815,6 +855,7 @@ end;
 
 
 function THighMidLowMFT.SetMidFreqHz(const Hz: Single): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -835,7 +876,9 @@ end;
 
 
 function THighMidLowMFT.SetHighFreqHz(const Hz: Single): HRESULT;
+
 begin
+
   FLock.Enter();
   try
     FHighFreqHz := ClampS(Hz,
@@ -851,6 +894,7 @@ end;
 
 
 function THighMidLowMFT.SetMidQ(const Q: Single): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -871,6 +915,7 @@ end;
 
 
 function THighMidLowMFT.SetLowShelfSlope(const S: Single): HRESULT;
+
 begin
 
   FLock.Enter;
@@ -892,6 +937,7 @@ end;
 
 
 function THighMidLowMFT.SetHighShelfSlope(const S: Single): HRESULT;
+
 begin
 
   FLock.Enter;
@@ -912,6 +958,7 @@ end;
 
 
 function THighMidLowMFT.SetMidMode(const Mode: TMfMidMode): HRESULT;
+
 begin
 
   FLock.Enter;
@@ -934,6 +981,7 @@ end;
 
 
 function THighMidLowMFT.SetRampMode(const Mode: TMfRampMode): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -952,6 +1000,7 @@ end;
 
 
 function THighMidLowMFT.SetRampTimeMs(const Ms: Integer): HRESULT;
+
 begin
 
   FLock.Enter();
@@ -972,6 +1021,7 @@ end;
 
 
 function CreateHighMidLowMFT(out pMft: IMFTransform): HRESULT;
+
 begin
 
   pMft := THighMidLowMFT.Create as IMFTransform;
@@ -980,4 +1030,3 @@ begin
 end;
 
 end.
-

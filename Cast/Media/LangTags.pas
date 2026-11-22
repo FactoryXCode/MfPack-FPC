@@ -99,14 +99,14 @@ type
   GEOTYPE = DWORD;
   GEOCLASS = DWORD;
 
-  TTXT_TYPE = (NONE      = $0,    // None
-               SUBRIB    = $1,    // SubRip
-               MICRODVD  = $2,    // MicroDvd
-               YOUTUBE   = $3,    // YouTube
-               SAMI      = $4,    // SAMI/SMI
-               WEBVTT    = $5,    // Web vtt HTML5
-               VOBSUB    = $6,    // DVD bitmap subtitles (.idx + .sub)
-               UNKNOWN   = $7FFFFFFF);  // Unknown format
+  TTXT_TYPE = (NONE = $0,    // None
+    SUBRIB = $1,    // SubRip
+    MICRODVD = $2,    // MicroDvd
+    YOUTUBE = $3,    // YouTube
+    SAMI = $4,    // SAMI/SMI
+    WEBVTT = $5,    // Web vtt HTML5
+    VOBSUB = $6,    // DVD bitmap subtitles (.idx + .sub)
+    UNKNOWN = $7FFFFFFF);  // Unknown format
 
 
   GEO_ENUMPROC = function(GeoId: GEOID): BOOL; stdcall;
@@ -135,6 +135,7 @@ type
 
 
   TLanguageTags = class(TObject)
+
   private
     {Private declarations}
     lp_MatchList: TStrings;
@@ -142,16 +143,16 @@ type
     // REGEX implementation
     procedure AddMatchToList(match: TMatch);
 
-{$HINTS OFF}
+    {$HINTS OFF}
     // Gets all matches and puts it in a matchlist (Not used, keep here for later implementations)
     function GetMatches(const pattern: string; // RegEx pattern
-                        const txt: string;     // Text to search in
-                        const options: TRegExOptions = [roNotEmpty]): Integer;
-{$HINTS ON}
+      const txt: string;     // Text to search in
+      const options: TRegExOptions = [roNotEmpty]): Integer;
+    {$HINTS ON}
     // Returns the single match
     function GetMatch(const pattern: string; // RegEx pattern
-                      const txt: string;     // Text to search in
-                      const options: TRegExOptions = [roNotEmpty]): string;
+      const txt: string;     // Text to search in
+      const options: TRegExOptions = [roNotEmpty]): string;
 
     // Compares pattern in string
     function IsMatch(const pattern: string;
@@ -159,11 +160,11 @@ type
 
   public
     {Public declarations}
-    TimedTxtPropsArray             : TTxtPropArray;
+    TimedTxtPropsArray: TTxtPropArray;
 
     {Public methods}
 
-    constructor  Create();
+    constructor Create();
     destructor Destroy(); override;
 
     procedure Clear();
@@ -197,7 +198,7 @@ type
 
     //Example: ext = '.srt' or '.*', sUrl = 'c:\myvideos\myvideo.avi' or 'c:\myvideos\'
     function ListTimedTextFiles(ext: string;
-                                sUrl: WideString): TArray<string>;
+                                sUrl: WideString): TArray < string > ;
     // Returns the type of a timed text file
     function GetTimedTextType(sUrl: string): TTXT_TYPE;
 
@@ -217,10 +218,10 @@ type
 
     // < Win 10
     function TryGetCountryNameByISO2(const Code: string;  // Like 'EN'
-                                     out Name: string): Boolean;  // The full language name
+      out Name: string): Boolean;  // The full language name
     // Win 10
     function TryGetCountryNameByISO2Ex(const Code: string;  // Like 'EN'
-                                       out Name: string): Boolean;  // The full language name
+      out Name: string): Boolean;  // The full language name
   end;
 
 var
@@ -228,92 +229,92 @@ var
 
 
 
-  // Simplyfied function of GetUserDefaultGeoName
-  function GetUserDefaultGeoName(): string;
+// Simplyfied function of GetUserDefaultGeoName
+function GetUserDefaultGeoName(): string;
 
-  // Retrieves the number of installed languages.
-  // Use this function before calling GetUserDefaultLanguageTag to determine the max
-  // number of languages (TagIndex).
-  function GetNumberOfUserDefaultLanguageTags(): Integer;
+// Retrieves the number of installed languages.
+// Use this function before calling GetUserDefaultLanguageTag to determine the max
+// number of languages (TagIndex).
+function GetNumberOfUserDefaultLanguageTags(): Integer;
 
-  // Get the language part bFullTag = False (xx) or full tag bFullTag = True (xx-XX)
-  // By default the first tag will be retrieved (TagIndex = 1)
-  function GetUserDefaultLanguageTag(TagIndex: ULONG = 1;
-                                     bFullTag: Boolean = False): string;
+// Get the language part bFullTag = False (xx) or full tag bFullTag = True (xx-XX)
+// By default the first tag will be retrieved (TagIndex = 1)
+function GetUserDefaultLanguageTag(TagIndex: ULONG = 1;
+                                   bFullTag: Boolean = False): string;
 
-  // Gets the country tag of the system  Win version <= 8.1
-  function TryGetGeoInfo(GeoId: GEOID;
-                         GeoType: GEOTYPE;
+// Gets the country tag of the system  Win version <= 8.1
+function TryGetGeoInfo(GeoId: GEOID;
+                       GeoType: GEOTYPE;
+                       out Value: string): Boolean;
+
+// Gets the country tag of the system  Win version > 8.1
+function TryGetGeoInfoEx(Arg1: PWideChar;  // tag, like 'EN'
+  GeoType: GEOTYPE;
                          out Value: string): Boolean;
 
-  // Gets the country tag of the system  Win version > 8.1
-  function TryGetGeoInfoEx(Arg1: PWideChar;  // tag, like 'EN'
-                           GeoType: GEOTYPE;
-                           out Value: string): Boolean;
+// Retrieves the two-letter International Organization for
+// Standardization (ISO) 3166-1 code or numeric United Nations (UN) Series M,
+// Number 49 (M.49) code for the default geographical location of the user.
+// NOTE: This is an aliased function for GetUserDefaultGeoName!
+function GetUserDefaultGeoTag(geoName: LPWSTR;
+                              geoNameCount: NativeInt): Integer; stdcall;
 
-  // Retrieves the two-letter International Organization for
-  // Standardization (ISO) 3166-1 code or numeric United Nations (UN) Series M,
-  // Number 49 (M.49) code for the default geographical location of the user.
-  // NOTE: This is an aliased function for GetUserDefaultGeoName!
-  function GetUserDefaultGeoTag(geoName: LPWSTR;
-                                geoNameCount: NativeInt): Integer; stdcall;
+function GetUserDefaultUILanguageTag(): LANGID; stdcall;
 
-  function GetUserDefaultUILanguageTag(): LANGID; stdcall;
+function GetUserPreferredUILanguageTags(dwFlags: DWORD;
+                                        pulNumLanguages: PULONG;
+                                        pwszLanguagesBuffer: PWideChar;
+                                        pcchLanguagesBuffer: PULONG): BOOL; stdcall;
 
-  function GetUserPreferredUILanguageTags(dwFlags: DWORD;
+function GetSystemPreferredUILanguageTags(dwFlags: DWORD;
                                           pulNumLanguages: PULONG;
                                           pwszLanguagesBuffer: PWideChar;
                                           pcchLanguagesBuffer: PULONG): BOOL; stdcall;
 
-  function GetSystemPreferredUILanguageTags(dwFlags: DWORD;
-                                            pulNumLanguages: PULONG;
-                                            pwszLanguagesBuffer: PWideChar;
-                                            pcchLanguagesBuffer: PULONG): BOOL; stdcall;
 
+// Enumerates the geographical location identifiers (type GEOID) that are
+// available on the operating system.
+// NOTE:
+function EnumSystemGeoID(GeoClass: GEOCLASS;  // Geographical location class for which to enumerate the identifiers. At present, only GEOCLASS_NATION is supported. This type causes the function to enumerate all geographical identifiers for nations on the operating system.
+  ParentGeoId: GEOID;  // Reserved. This parameter must be 0.
+  lpGeoEnumProc: GEO_ENUMPROC  // Pointer to the application-defined callback function EnumGeoInfoProc. The EnumSystemGeoID function makes repeated calls to this callback function until it returns FALSE.
+  ): BOOL; stdcall;
 
-  // Enumerates the geographical location identifiers (type GEOID) that are
-  // available on the operating system.
-  // NOTE:
-  function EnumSystemGeoID(GeoClass: GEOCLASS;  // Geographical location class for which to enumerate the identifiers. At present, only GEOCLASS_NATION is supported. This type causes the function to enumerate all geographical identifiers for nations on the operating system.
-                           ParentGeoId: GEOID;  // Reserved. This parameter must be 0.
-                           lpGeoEnumProc: GEO_ENUMPROC  // Pointer to the application-defined callback function EnumGeoInfoProc. The EnumSystemGeoID function makes repeated calls to this callback function until it returns FALSE.
-                          ): BOOL; stdcall;
+// Enumerates the two-letter International Organization for Standardization
+// (ISO) 3166-1 codes or numeric United Nations (UN) Series M,
+// Number 49 (M.49) codes for geographical locations that are available on the operating system.
+function EnumSystemGeoNames(geoClass: GEOCLASS;
+                            geoEnumProc: GEO_ENUMNAMEPROC;
+                            data: LPARAM
+  ): BOOL; stdcall;
 
-  // Enumerates the two-letter International Organization for Standardization
-  // (ISO) 3166-1 codes or numeric United Nations (UN) Series M,
-  // Number 49 (M.49) codes for geographical locations that are available on the operating system.
-  function EnumSystemGeoNames(geoClass: GEOCLASS;
-                              geoEnumProc: GEO_ENUMNAMEPROC;
-                              data: LPARAM
-                             ): BOOL; stdcall;
+// Retrieves information about a specified geographical location.
+// For Windows 10 >= version 1709, use GetGeoInfoEx
+function GetGeoInfo(Location: GEOID;
+                    GeoType: GEOTYPE;
+                    lpGeoData: PWideChar;
+                    cchData: Integer;
+                    LangId: LANGID): Integer; stdcall;
 
-  // Retrieves information about a specified geographical location.
-  // For Windows 10 >= version 1709, use GetGeoInfoEx
-  function GetGeoInfo(Location: GEOID;
-                      GeoType: GEOTYPE;
-                      lpGeoData: PWideChar;
-                      cchData: Integer;
-                      LangId: LANGID): Integer; stdcall;
+// Retrieves information about a geographic location that you specify by using
+// a two-letter International Organization for Standardization (ISO) 3166-1 code or
+// numeric United Nations (UN) Series M, Number 49 (M.49) code.
+// NOTE: Minimum supported client is Windows 10, version 1709 [desktop apps only]
+function GetGeoInfoEx(location: PWideChar;
+                      geoType: GEOTYPE;
+                      geoData: PWideChar;
+                      geoDataCount: Integer
+  ): Integer; stdcall;
 
-  // Retrieves information about a geographic location that you specify by using
-  // a two-letter International Organization for Standardization (ISO) 3166-1 code or
-  // numeric United Nations (UN) Series M, Number 49 (M.49) code.
-  // NOTE: Minimum supported client is Windows 10, version 1709 [desktop apps only]
-  function GetGeoInfoEx(location: PWideChar;
-                        geoType: GEOTYPE;
-                        geoData: PWideChar;
-                        geoDataCount: Integer
-                       ): Integer; stdcall;
+// Get the locale by LcId
+function LCIDToLocaleName(Locale: LCID;
+                          lpName: LPWSTR;
+                          cchName: Integer;
+                          dwFlags: DWord): Integer; stdcall;
 
-  // Get the locale by LcId
-  function LCIDToLocaleName(Locale: LCID;
-                            lpName: LPWSTR;
-                            cchName: Integer;
-                            dwFlags: DWord): Integer; stdcall;
-
-  // Get the LCID for the locale
-  function LocaleNameToLCID(lpName: LPCWSTR;
-                            dwFlags: DWord): LCID; stdcall;
+// Get the LCID for the locale
+function LocaleNameToLCID(lpName: LPCWSTR;
+                          dwFlags: DWord): LCID; stdcall;
 
 implementation
 
@@ -328,7 +329,7 @@ const
   GEOCLASS_NATION = 16;
   GEO_ISO2 = 4;
   GEO_FRIENDLYNAME = 8;
-  kernel32Lib ='kernel32.dll';
+  kernel32Lib = 'kernel32.dll';
   LOCALE_ALLOW_NEUTRAL_NAMES = $08000000;
 
 var
@@ -336,6 +337,7 @@ var
 
 
 constructor TLanguageTags.Create();
+
 begin
 
   inherited Create();
@@ -345,6 +347,7 @@ end;
 
 
 destructor TLanguageTags.Destroy();
+
 begin
 
   Clear();
@@ -362,7 +365,8 @@ begin
       lp_MatchList.Clear;
       FreeAndNil(lp_MatchList);
     end;
-  SetLength(TimedTxtPropsArray, 0);
+  SetLength(TimedTxtPropsArray,
+            0);
   Finalize(TimedTxtPropsArray);
   TimedTxtPropsArray := nil;
 end;
@@ -374,38 +378,38 @@ const
   MAXLINE = 254;
 
 var
-  pcResult : PWideChar;
+  pcResult: PWideChar;
 
 begin
 
-  Result:= '';
-  pcResult:= WideStrAlloc(MAXLINE);
+  Result := '';
+  pcResult := WideStrAlloc(MAXLINE);
 
-try
-  fillchar(pcResult^,
-           MAXLINE,
-           0);
-  GetLocaleInfoW(lcid,
-                siLocale,
-                pcResult,
-                MAXLINE);
-  Result := String(pcResult);
-finally
-  StrDispose(pcResult);
-end;
+  try
+    fillchar(pcResult^,
+             MAXLINE,
+             0);
+    GetLocaleInfoW(lcid,
+                   siLocale,
+                   pcResult,
+                   MAXLINE);
+    Result := String(pcResult);
+  finally
+    StrDispose(pcResult);
+  end;
 end;
 
 
 function TLanguageTags.GetLocaleNameByLcId(dwLcid: LCID): string;
 var
-  wsName : array [0..LOCALE_NAME_MAX_LENGTH - 1] of WideChar;
+  wsName: array [0..LOCALE_NAME_MAX_LENGTH - 1] of WideChar;
 
 begin
 
   if (LCIDToLocaleName(dwLcid,
-                       wsName,
-                       LOCALE_NAME_MAX_LENGTH,
-                       0) = 0) then
+    wsName,
+    LOCALE_NAME_MAX_LENGTH,
+    0) = 0) then
     Result := 'Error(0)'
   else
     Result := wsName;
@@ -413,26 +417,85 @@ end;
 
 
 function TLanguageTags.GetLcIdByLocaleName(lpName: LPWSTR): LCID;
+
 begin
 
   // 0 = error
   Result := LocaleNameToLCID(lpName,
-                            LOCALE_ALLOW_NEUTRAL_NAMES);
+                             LOCALE_ALLOW_NEUTRAL_NAMES);
 end;
 
 
 class function TLanguageTags.NormalizeLanguageTag(const Language: string): string;
 const
   ISO_639_2_TAGS: array[0..32] of string = (
-    'eng', 'nld', 'dut', 'deu', 'ger', 'fra', 'fre', 'spa', 'ita', 'por',
-    'rus', 'pol', 'ces', 'cze', 'slk', 'slo', 'dan', 'swe', 'nor', 'fin',
-    'ell', 'gre', 'tur', 'ara', 'heb', 'jpn', 'kor', 'zho', 'chi', 'ron',
-    'rum', 'hun', 'ukr');
+    'eng',
+                                            'nld',
+                                            'dut',
+                                            'deu',
+                                            'ger',
+                                            'fra',
+                                            'fre',
+                                            'spa',
+                                            'ita',
+                                            'por',
+                                            'rus',
+                                            'pol',
+                                            'ces',
+                                            'cze',
+                                            'slk',
+                                            'slo',
+                                            'dan',
+                                            'swe',
+                                            'nor',
+                                            'fin',
+                                            'ell',
+                                            'gre',
+                                            'tur',
+                                            'ara',
+                                            'heb',
+                                            'jpn',
+                                            'kor',
+                                            'zho',
+                                            'chi',
+                                            'ron',
+                                            'rum',
+                                            'hun',
+                                            'ukr');
   ISO_639_1_TAGS: array[0..32] of string = (
-    'en', 'nl', 'nl', 'de', 'de', 'fr', 'fr', 'es', 'it', 'pt',
-    'ru', 'pl', 'cs', 'cs', 'sk', 'sk', 'da', 'sv', 'no', 'fi',
-    'el', 'el', 'tr', 'ar', 'he', 'ja', 'ko', 'zh', 'zh', 'ro',
-    'ro', 'hu', 'uk');
+    'en',
+                                            'nl',
+                                            'nl',
+                                            'de',
+                                            'de',
+                                            'fr',
+                                            'fr',
+                                            'es',
+                                            'it',
+                                            'pt',
+                                            'ru',
+                                            'pl',
+                                            'cs',
+                                            'cs',
+                                            'sk',
+                                            'sk',
+                                            'da',
+                                            'sv',
+                                            'no',
+                                            'fi',
+                                            'el',
+                                            'el',
+                                            'tr',
+                                            'ar',
+                                            'he',
+                                            'ja',
+                                            'ko',
+                                            'zh',
+                                            'zh',
+                                            'ro',
+                                            'ro',
+                                            'hu',
+                                            'uk');
 
 var
   LanguageIndex: Integer;
@@ -444,7 +507,8 @@ begin
                                     '_',
                                     '-',
                                     [rfReplaceAll]));
-  SeparatorIndex := Pos('-', Result);
+  SeparatorIndex := Pos('-',
+                        Result);
 
   if (SeparatorIndex > 0) then
     Result := Copy(Result,
@@ -453,7 +517,7 @@ begin
 
   for LanguageIndex := Low(ISO_639_2_TAGS) to High(ISO_639_2_TAGS) do
     if SameText(Result,
-                ISO_639_2_TAGS[LanguageIndex]) then
+      ISO_639_2_TAGS[LanguageIndex]) then
       begin
         Result := ISO_639_1_TAGS[LanguageIndex];
         Break;
@@ -475,7 +539,7 @@ begin
 
   if not Length(tag) in [2, 5] then
     begin
-      Result:= 'Invalid Input';
+      Result := 'Invalid Input';
       Exit;
     end;
 
@@ -484,17 +548,17 @@ begin
 
       if (Length(tag) = 2) then
         sTag := AnsiLowerCase(tag)
-      else
-        if (Length(Tag) = 5) then
-          sTag := AnsiLowerCase(LeftStr(tag, 2));
+      else if (Length(Tag) = 5) then
+        sTag := AnsiLowerCase(LeftStr(tag,
+                                      2));
     end
   else
     begin
       if (Length(tag) = 2) then
         sTag := AnsiUpperCase(tag)
-      else
-        if (Length(Tag) = 5) then
-          sTag := AnsiUpperCase(RightStr(tag, 2));
+      else if (Length(Tag) = 5) then
+        sTag := AnsiUpperCase(RightStr(tag,
+                                       2));
     end;
 
   dwLcId := GetLcIdByLocaleName(LPWSTR(stag));
@@ -516,9 +580,13 @@ end;
 
 
 function GetCountryTag(sTag: string): string;
+
 begin
 
-  Result := MidStr(sTag, Pos('_', sTag) +1, 2);
+  Result := MidStr(sTag,
+                   Pos('_',
+                       sTag) + 1,
+                   2);
 end;
 
 // This function reads all the language tags from the timedtext filenames and stores them
@@ -536,7 +604,7 @@ var
   sMatch,
   sSidecarName,
   sSuffix: string;
-  ar: TArray<string>;
+  ar: TArray < string > ;
   I: Integer;
   ActiveIndex: Integer;
   DefaultIndex: Integer;
@@ -544,120 +612,145 @@ var
   K: Integer;
 
 begin
-try
 
-  ActiveIndex := -1;
-  DefaultIndex := -1;
-  sMediafile := ChangeFileExt(ExtractFileName(sUrl), '');
-  sPath := IncludeTrailingPathDelimiter(ExtractFileDir(sUrl));
+  try
 
-  ar := ListTimedTextFiles(TimedTextExt,
-                           sPath);
+    ActiveIndex := -1;
+    DefaultIndex := -1;
+    sMediafile := ChangeFileExt(ExtractFileName(sUrl),
+                                '');
+    sPath := IncludeTrailingPathDelimiter(ExtractFileDir(sUrl));
 
-  for I := Length(ar) - 1 downto 0 do
-    begin
-      sSidecarName := ChangeFileExt(ar[I], '');
-      if not (SameText(TimedTextExt, '.idx') or
-              SameText(sSidecarName,
-                        sMediafile) or
-              StartsText(sMediafile + '[', sSidecarName) or
-              StartsText(sMediafile + ' ', sSidecarName) or
-              StartsText(sMediafile + '.', sSidecarName) or
-              StartsText(sMediafile + '-', sSidecarName) or
-              StartsText(sMediafile + '_', sSidecarName)) then
-        Delete(ar, I, 1);
-    end;
+    ar := ListTimedTextFiles(TimedTextExt,
+                             sPath);
 
-  if (Length(ar) = 0) then
-    Exit;
+    for I := Length(ar) - 1 downto 0 do
+      begin
+        sSidecarName := ChangeFileExt(ar[I],
+                                      '');
+        if not (SameText(TimedTextExt, '.idx') or
+          SameText(sSidecarName,
+                   sMediafile) or
+          StartsText(sMediafile + '[',
+                     sSidecarName) or
+          StartsText(sMediafile + ' ',
+                     sSidecarName) or
+          StartsText(sMediafile + '.',
+                     sSidecarName) or
+          StartsText(sMediafile + '-',
+                     sSidecarName) or
+          StartsText(sMediafile + '_',
+                     sSidecarName)) then
+          Delete(ar,
+                 I,
+                 1);
+      end;
 
-  SetLength(Result, Length(ar));
+    if (Length(ar) = 0) then
+      Exit;
 
-  for I := 0 to Length(ar) - 1 do
-    begin
+    SetLength(Result,
+              Length(ar));
 
-      Result[I].sFile := sPath + ar[I];
-      Result[I].bActiveFile := False;
-      Result[I].sTTxtType := GetTimedTextType(sPath + ar[I]);
+    for I := 0 to Length(ar) - 1 do
+      begin
 
-      if Result[I].sTTxtType = VOBSUB then
-        begin
-          IdxLines := TStringList.Create();
-          try
-            IdxLines.LoadFromFile(sPath + ar[I]);
-            for K := 0 to IdxLines.Count - 1 do
-              if StartsText('id:', Trim(IdxLines[K])) then
-                begin
-                  sMatch := Trim(Copy(Trim(IdxLines[K]), 4, MaxInt));
-                  if Pos(',', sMatch) > 0 then
-                    sMatch := Copy(sMatch, 1, Pos(',', sMatch) - 1);
-                  Result[I].sLanguageTag := AnsiLowerCase(Trim(sMatch));
-                  Break;
-                end;
-          finally
-            IdxLines.Free();
+        Result[I].sFile := sPath + ar[I];
+        Result[I].bActiveFile := False;
+        Result[I].sTTxtType := GetTimedTextType(sPath + ar[I]);
+
+        if (Result[I].sTTxtType = VOBSUB) then
+          begin
+            IdxLines := TStringList.Create();
+            try
+              IdxLines.LoadFromFile(sPath + ar[I]);
+              for K := 0 to IdxLines.Count - 1 do
+                if StartsText('id:', Trim(IdxLines[K])) then
+                  begin
+                    sMatch := Trim(Copy(Trim(IdxLines[K]),
+                                        4,
+                                        MaxInt));
+                    if (Pos(',', sMatch) > 0) then
+                      sMatch := Copy(sMatch,
+                                     1,
+                                     Pos(',',
+                                         sMatch) - 1);
+                    Result[I].sLanguageTag := AnsiLowerCase(Trim(sMatch));
+                    Break;
+                  end;
+            finally
+              IdxLines.Free();
+            end;
           end;
-        end;
 
-      if Result[I].sLanguageTag <> '' then
-        begin
-          if (ActiveIndex < 0) and SameText(sPrefLang, Result[I].sLanguageTag) then
-            ActiveIndex := I;
-        end
-      else if IsMatch('[a-z][a-z]_[A-Z][A-Z]', ar[I]) then
-        begin
-          sMatch := GetMatch('\[\K[a-z][a-z]',
-                             ar[I],
-                             [roSingleLine, roNotEmpty]);
-          Result[I].sLanguageTag := sMatch;
+        if (Result[I].sLanguageTag <> '') then
+          begin
+            if (ActiveIndex < 0) and SameText(sPrefLang, Result[I].sLanguageTag) then
+              ActiveIndex := I;
+          end
+        else if IsMatch('[a-z][a-z]_[A-Z][A-Z]', ar[I]) then
+          begin
+            sMatch := GetMatch('\[\K[a-z][a-z]',
+                               ar[I],
+                               [roSingleLine, roNotEmpty]);
+            Result[I].sLanguageTag := sMatch;
 
-          if (ActiveIndex < 0) and SameText(sPrefLang, sMatch) then
-            ActiveIndex := I;
-        end
-      else
-        begin
-          sSidecarName := ChangeFileExt(ar[I], '');
-          sSuffix := Copy(sSidecarName,
-                          Length(sMediafile) + 1,
-                          MaxInt);
-          while (Length(sSuffix) > 0) and
-                CharInSet(sSuffix[1], [' ', '.', '-', '_', '[']) do
-            Delete(sSuffix, 1, 1);
-          if (Length(sSuffix) >= 2) and
-             CharInSet(sSuffix[1], ['A'..'Z', 'a'..'z']) and
-             CharInSet(sSuffix[2], ['A'..'Z', 'a'..'z']) then
-            Result[I].sLanguageTag := AnsiLowerCase(Copy(sSuffix, 1, 2))
-          else
-            Result[I].sLanguageTag := GetUserDefaultLanguageTag(1, False);
-          if (DefaultIndex < 0) then
-            DefaultIndex := I;
-        end;
+            if (ActiveIndex < 0) and SameText(sPrefLang, sMatch) then
+              ActiveIndex := I;
+          end
+        else
+          begin
+            sSidecarName := ChangeFileExt(ar[I],
+                                          '');
+            sSuffix := Copy(sSidecarName,
+                            Length(sMediafile) + 1,
+                            MaxInt);
+            while (Length(sSuffix) > 0) and
+              CharInSet(sSuffix[1],
+                        [' ', '.', '-', '_', '[']) do
+              Delete(sSuffix,
+                     1,
+                     1);
+            if (Length(sSuffix) >= 2) and
+              CharInSet(sSuffix[1],
+                        ['A'..'Z', 'a'..'z']) and
+              CharInSet(sSuffix[2],
+                        ['A'..'Z', 'a'..'z']) then
+              Result[I].sLanguageTag := AnsiLowerCase(Copy(sSuffix,
+                                                           1,
+                                                           2))
+            else
+              Result[I].sLanguageTag := GetUserDefaultLanguageTag(1,
+                                                                  False);
+            if (DefaultIndex < 0) then
+              DefaultIndex := I;
+          end;
 
-      Result[I].sFriendlyLanguageName := GetLangOrCountryFromTag(Result[I].sLanguageTag);
-    end;
+        Result[I].sFriendlyLanguageName := GetLangOrCountryFromTag(Result[I].sLanguageTag);
+      end;
 
-  if (ActiveIndex < 0) then
-    ActiveIndex := DefaultIndex;
+    if (ActiveIndex < 0) then
+      ActiveIndex := DefaultIndex;
 
-  if (ActiveIndex < 0) and (Length(Result) > 0) then
-    ActiveIndex := 0;
+    if (ActiveIndex < 0) and (Length(Result) > 0) then
+      ActiveIndex := 0;
 
-  if (ActiveIndex >= 0) then
-    Result[ActiveIndex].bActiveFile := True;
+    if (ActiveIndex >= 0) then
+      Result[ActiveIndex].bActiveFile := True;
 
-finally
-  Finalize(ar);
-end;
+  finally
+    Finalize(ar);
+  end;
 end;
 
 
 function TLanguageTags.ListTimedTextFiles(ext: string;
-                                          sUrl: WideString): TArray<string>;
+                                          sUrl: WideString): TArray < string > ;
 Var
   Path: string;
   CastIndex: Integer;
   searchrec: TSearchRec;
-  Dir : TStrings;
+  Dir: TStrings;
 
 begin
 
@@ -668,29 +761,31 @@ begin
 
   Dir := TStringList.Create;
 
-try
+  try
 
-{$WARN SYMBOL_PLATFORM OFF}
-  if (FindFirst(Path + '*' + ext,
-               faArchive,
-               searchrec) = 0) then
-{$WARN SYMBOL_PLATFORM ON}
-    begin
-      repeat
-        // Now we do a little check, because FindFirst will return all
-        // extensions that match ext in it. Like .srtw, .srt~, srt_bak etc.
-        // This is known as the 8.3 filename issue in Windows.
-        if (AnsiCompareText(ExtractFileExt(searchrec.Name),
-                                          ext) = 0) then
-          Dir.Add(searchrec.Name); // Add to list
-      until (FindNext(searchrec) <> 0);
-      FindClose(searchrec);
-    end;
-  SetLength(Result,Dir.Count);
-  for CastIndex := 0 to Dir.Count-1 do Result[CastIndex] := UTF8Decode(Dir[CastIndex]);
-finally
-  Dir.Free;
-end;
+    {$WARN SYMBOL_PLATFORM OFF}
+    if (FindFirst(Path + '*' + ext,
+      faArchive,
+      searchrec) = 0) then
+      {$WARN SYMBOL_PLATFORM ON}
+      begin
+        repeat
+          // Now we do a little check, because FindFirst will return all
+          // extensions that match ext in it. Like .srtw, .srt~, srt_bak etc.
+          // This is known as the 8.3 filename issue in Windows.
+          if (AnsiCompareText(ExtractFileExt(searchrec.Name),
+            ext) = 0) then
+            Dir.Add(searchrec.Name); // Add to list
+        until (FindNext(searchrec) <> 0);
+        FindClose(searchrec);
+      end;
+    SetLength(Result,
+              Dir.Count);
+    for CastIndex := 0 to Dir.Count - 1 do
+      Result[CastIndex] := UTF8Decode(Dir[CastIndex]);
+  finally
+    Dir.Free;
+  end;
 end;
 
 
@@ -705,18 +800,23 @@ var
   Dash: Integer;
 
 begin
+
   sExt := ExtractFileExt(sUrl);
 
   if (AnsiCompareText(sExt, '.idx') = 0) then
     begin
-      BaseName := ChangeFileExt(sUrl, '');
+      BaseName := ChangeFileExt(sUrl,
+                                '');
       if FileExists(BaseName + '.sub') then
         Result := VOBSUB
       else
         begin
-          Dash := LastDelimiter('-', BaseName);
+          Dash := LastDelimiter('-',
+                                BaseName);
           if (Dash > LastDelimiter('\/', BaseName)) and
-             FileExists(Copy(BaseName, 1, Dash - 1) + '.sub') then
+            FileExists(Copy(BaseName,
+                            1,
+                            Dash - 1) + '.sub') then
             Result := VOBSUB
           else
             Result := UNKNOWN;
@@ -724,54 +824,53 @@ begin
     end
   else if (AnsiCompareText(sExt, EXTSUBRIP) = 0) then
     Result := SUBRIB
-  else
-    if (AnsiCompareText(sExt, EXTMICRODVD) = 0) then
-      begin
-        // .sub is shared by text MicroDVD and binary VobSub. Sniff the
-        // contents so a SubRip file with a misleading .sub extension works,
-        // while bitmap VobSub is not handed to a text parser.
-        if not FileExists(sUrl) then
-          Result := MICRODVD
-        else
-          begin
-            Result := UNKNOWN;
-            Stream := TFileStream.Create(sUrl, fmOpenRead or fmShareDenyNone);
-            try
-              SetLength(Bytes, 4096);
-              BytesRead := Stream.Read(Bytes[0], Length(Bytes));
-              SetLength(Bytes, BytesRead);
-              Header := TEncoding.ASCII.GetString(Bytes);
-
-              if Pos('-->', Header) > 0 then
-                Result := SUBRIB
-              else
-                if TRegEx.IsMatch(Header, '^\s*\{\d+\}\{\d+\}') then
-                  Result := MICRODVD;
-            finally
-              Stream.Free;
-            end;
-          end;
-      end
-    else
-      if (AnsiCompareText(sExt, EXTYOUTUBE) = 0) then
-        Result := YOUTUBE
+  else if (AnsiCompareText(sExt, EXTMICRODVD) = 0) then
+    begin
+      // .sub is shared by text MicroDVD and binary VobSub. Sniff the
+      // contents so a SubRip file with a misleading .sub extension works,
+      // while bitmap VobSub is not handed to a text parser.
+      if not FileExists(sUrl) then
+        Result := MICRODVD
       else
-        if (AnsiCompareText(sExt, EXTSAMI) = 0) then
-          Result := SAMI
-        else
-          if (AnsiCompareText(sExt, EXTSMI) = 0) then
-            Result := SAMI
-          else
-            if (AnsiCompareText(sExt, EXTWEBVTT) = 0) then
-              Result := WEBVTT
-            else
-              Result := UNKNOWN;
+        begin
+          Result := UNKNOWN;
+          Stream := TFileStream.Create(sUrl,
+                                       fmOpenRead or fmShareDenyNone);
+          try
+            SetLength(Bytes,
+                      4096);
+            BytesRead := Stream.Read(Bytes[0],
+                                     Length(Bytes));
+            SetLength(Bytes,
+                      BytesRead);
+            Header := TEncoding.ASCII.GetString(Bytes);
+
+            if (Pos('-->', Header) > 0) then
+              Result := SUBRIB
+            else if TRegEx.IsMatch(Header, '^\s*\{\d+\}\{\d+\}') then
+              Result := MICRODVD;
+          finally
+            Stream.Free;
+          end;
+        end;
+    end
+  else if (AnsiCompareText(sExt, EXTYOUTUBE) = 0) then
+    Result := YOUTUBE
+  else if (AnsiCompareText(sExt, EXTSAMI) = 0) then
+    Result := SAMI
+  else if (AnsiCompareText(sExt, EXTSMI) = 0) then
+    Result := SAMI
+  else if (AnsiCompareText(sExt, EXTWEBVTT) = 0) then
+    Result := WEBVTT
+  else
+    Result := UNKNOWN;
 end;
 
 
 // API
 
 function TLanguageTags.GetUserDefaultGeoName(): string;
+
 begin
 
   Result := GetUserDefaultGeoName();
@@ -787,11 +886,9 @@ begin
 
   LanguagesBufSize := 0;
   Result := 0;
-  if GetUserPreferredUILanguageTags(MUI_LANGUAGE_NAME,
-                                    @ulNumLang,
-                                    nil,
-                                    @LanguagesBufSize) then
-  Result := ulNumLang;
+  if GetUserPreferredUILanguageTags(MUI_LANGUAGE_NAME, @ulNumLang,
+    nil, @LanguagesBufSize) then
+    Result := ulNumLang;
 end;
 
 
@@ -800,7 +897,7 @@ function GetUserDefaultLanguageTag(TagIndex: ULONG = 1;
 var
   ulNumLang: ULONG;
   LanguagesBufSize: ULONG;
-  LanguagesBuf: TArray<WideChar>;
+  LanguagesBuf: TArray < WideChar > ;
   wcp: PWideChar;
   ws: string;
   iTags: ULONG;
@@ -811,17 +908,13 @@ begin
   //GetUserPreferredUILanguages
   // Get the buffersize first
   // SEE: https://docs.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-getuserpreferreduilanguages
-  if GetUserPreferredUILanguageTags(MUI_LANGUAGE_NAME,
-                                    @ulNumLang,
-                                    Nil,
-                                    @LanguagesBufSize) then
-  // Set the size of the buffer
-  SetLength(LanguagesBuf, LanguagesBufSize);
+  if GetUserPreferredUILanguageTags(MUI_LANGUAGE_NAME, @ulNumLang,
+    Nil, @LanguagesBufSize) then
+    // Set the size of the buffer
+    SetLength(LanguagesBuf,
+              LanguagesBufSize);
 
-  if GetUserPreferredUILanguageTags(MUI_LANGUAGE_NAME,
-                                    @ulNumLang,
-                                    @LanguagesBuf[0],
-                                    @LanguagesBufSize) then
+  if GetUserPreferredUILanguageTags(MUI_LANGUAGE_NAME, @ulNumLang, @LanguagesBuf[0], @LanguagesBufSize) then
     begin
       iTags := 0;
       wcp := @LanguagesBuf[0];
@@ -829,9 +922,8 @@ begin
       // Check if TagIndex is inbetween boundaries
       if (TagIndex < 1) then
         TagIndex := 1
-      else
-        if (TagIndex > ulNumLang) then
-          TagIndex := ulNumLang;
+      else if (TagIndex > ulNumLang) then
+        TagIndex := ulNumLang;
 
       // Extract the null terminated tags
       while (wcp^ <> #0) and (iTags < TagIndex) do
@@ -839,14 +931,18 @@ begin
 
           ws := wcp;
           inc(iTags);
-          inc(wcp, Length(ws) + 1);
-       end;
+          inc(wcp,
+              Length(ws) + 1);
+        end;
 
       // Return the language part or the full part
       if bFullTag then
         Result := ws   // Full tag  xx-XX
       else
-        Result := copy(ws, 1, Pos('-', ws) - 1); // language part
+        Result := copy(ws,
+                       1,
+                       Pos('-',
+                           ws) - 1); // language part
     end;
 end;
 
@@ -861,8 +957,8 @@ begin
   // Get the default language tag from the system
   lid := GetUserDefaultUILanguageTag();
   VerLanguageNameW(lid,
-                  userlang,
-                  SizeOf(userlang));
+                   userlang,
+                   SizeOf(userlang));
   Result := string(userlang);
 end;
 
@@ -879,24 +975,26 @@ begin
   rSize := GetUserDefaultGeoTag(nil,
                                 0);
   // Reserve memory for the buffer
-  GetMem(Buffer, rSize);
+  GetMem(Buffer,
+         rSize);
 
-try
-  // Call the function again to retrieve the languagetag(s)
-  Size := GetUserDefaultGeoTag(Buffer,
-                               rSize);
-  if (Size > 0) then
-    Result := string(Buffer)
-  else
-    Result := 'Unknown Geo Tag';
+  try
+    // Call the function again to retrieve the languagetag(s)
+    Size := GetUserDefaultGeoTag(Buffer,
+                                 rSize);
+    if (Size > 0) then
+      Result := string(Buffer)
+    else
+      Result := 'Unknown Geo Tag';
 
-finally
-  FreeMem(Buffer);
-end;
+  finally
+    FreeMem(Buffer);
+  end;
 end;
 
 
 function TLanguageTags.GetUserGeoTag(): GEOID;
+
 begin
 
   Result := GetUserGeoID(DWORD(GEOCLASS_NATION));
@@ -905,7 +1003,7 @@ end;
 
 function TLanguageTags.GetUserVerLanguage(DefaultLangId: TLangIDType): string;
 var
-  lId : LangID;
+  lId: LangID;
   aLc: array [0..254] of WideChar;
 
 begin
@@ -916,8 +1014,8 @@ begin
     lId := GetSystemDefaultLangID();
 
   VerLanguageNameW(lId,
-                  aLc,
-                  SizeOf(aLc));
+                   aLc,
+                   SizeOf(aLc));
 
   Result := string(aLc);
 
@@ -933,23 +1031,24 @@ begin
 
   // Do a initiate first to get the size of the buffer
   Size := GetLocaleInfoW(LOCALE_USER_DEFAULT,
-                        dwLocales,
-                        nil,
-                        0);
-  GetMem(Buffer, Size);
+                         dwLocales,
+                         nil,
+                         0);
+  GetMem(Buffer,
+         Size);
 
-try
-  // Call the function again to retrieve the languagetag(s)
-  GetLocaleInfoW(LOCALE_USER_DEFAULT,
-                dwLocales,
-                Buffer,
-                Size);
+  try
+    // Call the function again to retrieve the languagetag(s)
+    GetLocaleInfoW(LOCALE_USER_DEFAULT,
+                   dwLocales,
+                   Buffer,
+                   Size);
 
-  Result := string(Buffer);
+    Result := string(Buffer);
 
-finally
-  FreeMem(Buffer);
-end;
+  finally
+    FreeMem(Buffer);
+  end;
 end;
 
 
@@ -966,28 +1065,29 @@ begin
   Result := False;
   // Get the needed buffersize
   BufferLen := GetGeoInfo(GeoId,
-               GeoType,
-               PWideChar(Buffer),
-               0,
-               0);
+                          GeoType,
+                          PWideChar(Buffer),
+                          0,
+                          0);
 
   if (BufferLen <> 0) then
     begin
 
-      SetLength(Buffer, BufferLen);
-      Result := GetGeoInfo(GeoId,
-                           GeoType,
-                           PWideChar(Buffer),
-                           BufferLen,
-                           0) <> 0;
+      SetLength(Buffer,
+                BufferLen);
+      Result := (GetGeoInfo(GeoId,
+                            GeoType,
+                            PWideChar(Buffer),
+                            BufferLen,
+                            0) <> 0);
       if Result then
         Value := Trim(Buffer);
-  end;
+    end;
 end;
 
 
 function TryGetGeoInfoEx(Arg1: PWideChar;  // tag, like 'EN'
-                         GeoType: GEOTYPE;
+  GeoType: GEOTYPE;
                          out Value: string): Boolean;
 var
   Buffer: string;
@@ -1007,13 +1107,13 @@ begin
       SetLength(Buffer,
                 BufferLen);
 
-      Result := GetGeoInfoEx(Arg1,
-                             GeoType,
-                             PWideChar(Buffer),
-                             BufferLen) <> 0;
+      Result := (GetGeoInfoEx(Arg1,
+                              GeoType,
+                              PWideChar(Buffer),
+                              BufferLen) <> 0);
       if Result then
         Value := Trim(Buffer);
-  end;
+    end;
 end;
 
 
@@ -1043,7 +1143,7 @@ end;
 
 //
 function EnumGeoInfoProcEx(Arg1: PWideChar;  // tag, like 'EN'
-                           Arg2: LPARAM): BOOL; stdcall;
+  Arg2: LPARAM): BOOL; stdcall;
 var
   S: string;
 
@@ -1057,28 +1157,31 @@ begin
     Result := False;
 
   if Result and (S = EnumGeoData.GeoCode) then
-  begin
-    // stop the enumeration since we've found the country by its ISO code
-    Result := False;
-    // return the success flag and try to return the friendly name of the country to the
-    // EnumData.GeoName record field; you can optionally query the GEO_OFFICIALNAME
-    EnumGeoData.Success := TryGetGeoInfoEx(Arg1,
-                                           GEOTYPE(GEO_FRIENDLYNAME),
-                                           EnumGeoData.GeoName);
-  end;
+    begin
+      // stop the enumeration since we've found the country by its ISO code
+      Result := False;
+      // return the success flag and try to return the friendly name of the country to the
+      // EnumData.GeoName record field; you can optionally query the GEO_OFFICIALNAME
+      EnumGeoData.Success := TryGetGeoInfoEx(Arg1,
+                                             GEOTYPE(GEO_FRIENDLYNAME),
+                                             EnumGeoData.GeoName);
+    end;
 end;
 
 
 function TLanguageTags.TryGetCountryNameByISO2(const Code: string;  // Like 'EN'
-                                               out Name: string): Boolean;  // The full language name
+  out Name: string): Boolean;  // The full language name
+
 begin
 
-  EnumGeoData.GeoCode := UpperCase(RightStr(Code, 2), loUserLocale);
+  EnumGeoData.GeoCode := UpperCase(RightStr(Code,
+                                            2),
+                                   loUserLocale);
   EnumGeoData.Success := False;
 
   if not EnumSystemGeoID(GEOCLASS(GEOCLASS_NATION),
-                         0,
-                         EnumGeoInfoProc) then
+    0,
+    EnumGeoInfoProc) then
     RaiseLastOSError;
 
   Result := EnumGeoData.Success;
@@ -1090,17 +1193,20 @@ end;
 
 
 function TLanguageTags.TryGetCountryNameByISO2Ex(const Code: string;  // Like 'EN'
-                                                 out Name: string): Boolean;  // The full language name
+  out Name: string): Boolean;  // The full language name
+
 begin
 
   // if the Code contains the full tag, like 'en_UK', we need to strip off the language part.
-  EnumGeoData.GeoCode := UpperCase(RightStr(Code, 2), loUserLocale);
+  EnumGeoData.GeoCode := UpperCase(RightStr(Code,
+                                            2),
+                                   loUserLocale);
   EnumGeoData.Success := False;
   EnumGeoData.LPar := 0;
 
   if not EnumSystemGeoNames(GEOCLASS(GEOCLASS_NATION),
-                            EnumGeoInfoProcEx,
-                            EnumGeoData.LPar) then
+    EnumGeoInfoProcEx,
+    EnumGeoData.LPar) then
     RaiseLastOSError;
 
   Result := EnumGeoData.Success;
@@ -1115,8 +1221,8 @@ end;
 
 procedure TLanguageTags.AddMatchToList(match: TMatch);
 var
-  Group : TGroup;
-  i : integer;
+  Group: TGroup;
+  i: integer;
 
 begin
 
@@ -1124,7 +1230,7 @@ begin
   if (match.Groups.Count > 1) then
     begin
       //group 0 is the entire match, so the first real group is 1
-      for i := 1 to match.Groups.Count -1 do
+      for i := 1 to match.Groups.Count - 1 do
         begin
           Group := match.Groups.Item[i];
           lp_MatchList.Append(Group.Value);
@@ -1138,51 +1244,53 @@ end;
 
 
 function TLanguageTags.GetMatches(const pattern: string; // RegEx pattern
-                                  const txt: string;     // Text to search in
-                                  const options: TRegExOptions = [roNotEmpty]): Integer;
+  const txt: string;     // Text to search in
+  const options: TRegExOptions = [roNotEmpty]): Integer;
 var
-  RegEx : TRegEx;
-  Match : TMatch;
+  RegEx: TRegEx;
+  Match: TMatch;
 
 begin
 
   if Not Assigned(lp_MatchList) then
     // Global stringlist to store matches
-  lp_MatchList := TStringList.Create();
+    lp_MatchList := TStringList.Create();
 
   lp_MatchList.Clear();
 
-try
+  try
 
-  RegEx := TRegEx.Create(pattern, options);
-  Match := RegEx.Match(txt);
-  if match.Success then
-    begin
-      AddMatchToList(Match);
-      Result := lp_MatchList.Count;
-    end
-  else
-    Result := 0;
+    RegEx := TRegEx.Create(pattern,
+                           options);
+    Match := RegEx.Match(txt);
+    if match.Success then
+      begin
+        AddMatchToList(Match);
+        Result := lp_MatchList.Count;
+      end
+    else
+      Result := 0;
 
-except
-  on e: Exception do
-    begin
-      Result := GetLastError();
-    end;
-end;
+  except
+    on e: Exception do
+      begin
+        Result := GetLastError();
+      end;
+  end;
 end;
 
 
 function TLanguageTags.GetMatch(const pattern: string; // RegEx pattern
-                                const txt: string;     // Text to search in
-                                const options: TRegExOptions = [roNotEmpty]): string;
+  const txt: string;     // Text to search in
+  const options: TRegExOptions = [roNotEmpty]): string;
 var
-  RegEx : TRegEx;
-  Match : TMatch;
+  RegEx: TRegEx;
+  Match: TMatch;
 
 begin
 
-  RegEx := TRegEx.Create(pattern, options);
+  RegEx := TRegEx.Create(pattern,
+                         options);
   Match := RegEx.Match(txt);
 
   if match.Success then
@@ -1194,27 +1302,35 @@ end;
 // compares given pattern with given string
 function TLanguageTags.IsMatch(const pattern: string;
                                const txt: string): Boolean;
+
 begin
 
-  Result := TRegEx.IsMatch(txt, pattern); // For example: '[a-z][a-z]_[A-Z][A-Z]' or '_[A-Z][A-Z]' or '[a-z][a-z]_' etc.
+  Result := TRegEx.IsMatch(txt,
+                           pattern); // For example: '[a-z][a-z]_[A-Z][A-Z]' or '_[A-Z][A-Z]' or '[a-z][a-z]_' etc.
 end;
 
 
 {$WARN SYMBOL_PLATFORM OFF}
 
-function GetUserDefaultGeoTag; external kernel32Lib name 'GetUserDefaultGeoName' ;
-function GetUserDefaultUILanguageTag; external kernel32Lib name 'GetUserDefaultUILanguage' ;
-function GetUserPreferredUILanguageTags; external kernel32Lib name 'GetUserPreferredUILanguages' ;
-function GetSystemPreferredUILanguageTags; external kernel32Lib name 'GetSystemPreferredUILanguages' ;
+function GetUserDefaultGeoTag; external kernel32Lib name 'GetUserDefaultGeoName';
+function GetUserDefaultUILanguageTag; external kernel32Lib name 'GetUserDefaultUILanguage';
+function GetUserPreferredUILanguageTags; external kernel32Lib name 'GetUserPreferredUILanguages';
+function GetSystemPreferredUILanguageTags; external kernel32Lib name 'GetSystemPreferredUILanguages';
 
-function EnumSystemGeoID; external kernel32Lib name 'EnumSystemGeoID' ;
-function EnumSystemGeoNames; external kernel32Lib name 'EnumSystemGeoNames' ;
+function EnumSystemGeoID; external kernel32Lib name 'EnumSystemGeoID';
+function EnumSystemGeoNames; external kernel32Lib name 'EnumSystemGeoNames';
 
-function GetGeoInfo; external kernel32Lib name {$IFDEF UNICODE}'GetGeoInfoW'{$ELSE}'GetGeoInfoA'{$ENDIF} ;
-function GetGeoInfoEx; external kernel32Lib name 'GetGeoInfoEx' ;
+function GetGeoInfo; external kernel32Lib name
+{$IFDEF UNICODE}
+'GetGeoInfoW'
+{$ELSE}
+'GetGeoInfoA'
+{$ENDIF}
+;
+function GetGeoInfoEx; external kernel32Lib name 'GetGeoInfoEx';
 
-function LCIDToLocaleName; external kernel32Lib name 'LCIDToLocaleName' ;
-function LocaleNameToLCID; external kernel32Lib name 'LocaleNameToLCID' ;
+function LCIDToLocaleName; external kernel32Lib name 'LCIDToLocaleName';
+function LocaleNameToLCID; external kernel32Lib name 'LocaleNameToLCID';
 
 {$WARN SYMBOL_PLATFORM ON}
 

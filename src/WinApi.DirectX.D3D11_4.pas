@@ -76,7 +76,7 @@ unit WinApi.DirectX.D3D11_4;
 interface
 
 uses
-  
+
   {WinApi}
   Windows,
   WinApi.WinApiTypes,
@@ -95,7 +95,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
@@ -139,6 +140,7 @@ type
     procedure UnregisterDeviceRemoved(dwCookie: DWORD); stdcall;
 
   end;
+
   IID_ID3D11Device4 = ID3D11Device4;
 
 
@@ -164,6 +166,7 @@ type
                          const ReturnedInterface: REFIID;
                          out ppFence: Pointer): HRESULT; stdcall;
   end;
+
   IID_ID3D11Device5 = ID3D11Device5;
 
 
@@ -188,6 +191,7 @@ type
     function GetMultithreadProtected(): BOOL; stdcall;
 
   end;
+
   IID_ID3D11Multithread = ID3D11Multithread;
 
 
@@ -227,6 +231,7 @@ type
 
 
   end;
+
   IID_ID3D11VideoContext2 = ID3D11VideoContext2;
 
 
@@ -238,9 +243,9 @@ type
 
 
   PD3D11_FEATURE_VIDEO = ^D3D11_FEATURE_VIDEO;
-  D3D11_FEATURE_VIDEO                     = (
+  D3D11_FEATURE_VIDEO = (
     D3D11_FEATURE_VIDEO_DECODER_HISTOGRAM = 0
-  );
+    );
 
   PD3D11_VIDEO_DECODER_HISTOGRAM_COMPONENT = ^D3D11_VIDEO_DECODER_HISTOGRAM_COMPONENT;
   D3D11_VIDEO_DECODER_HISTOGRAM_COMPONENT = LongInt;
@@ -252,6 +257,7 @@ type
   // DEFINE_ENUM_FLAG_OPERATORS(D3D11_VIDEO_DECODER_HISTOGRAM_COMPONENT_FLAGS)
 
   PD3D11_FEATURE_DATA_VIDEO_DECODER_HISTOGRAM = ^D3D11_FEATURE_DATA_VIDEO_DECODER_HISTOGRAM;
+
   D3D11_FEATURE_DATA_VIDEO_DECODER_HISTOGRAM = record
     DecoderDesc: D3D11_VIDEO_DECODER_DESC;                       // in
     Components: D3D11_VIDEO_DECODER_HISTOGRAM_COMPONENT_FLAGS;   // out
@@ -260,12 +266,12 @@ type
   end;
 
   PD3D11_CRYPTO_SESSION_KEY_EXCHANGE_FLAGS = ^D3D11_CRYPTO_SESSION_KEY_EXCHANGE_FLAGS;
-  D3D11_CRYPTO_SESSION_KEY_EXCHANGE_FLAGS       = (
+  D3D11_CRYPTO_SESSION_KEY_EXCHANGE_FLAGS = (
     D3D11_CRYPTO_SESSION_KEY_EXCHANGE_FLAG_NONE = $0
-  );
+    );
 
 
-//  DEFINE_ENUM_FLAG_OPERATORS(D3D11_CRYPTO_SESSION_KEY_EXCHANGE_FLAGS)
+  //  DEFINE_ENUM_FLAG_OPERATORS(D3D11_CRYPTO_SESSION_KEY_EXCHANGE_FLAGS)
 
   // Interface ID3D11VideoDevice2
   // ============================
@@ -283,6 +289,7 @@ type
                                                  pData: Pointer): HRESULT; stdcall;
 
   end;
+
   IID_ID3D11VideoDevice2 = ID3D11VideoDevice2;
 
 
@@ -293,6 +300,7 @@ type
   //////////////////////////////////////////////////////////////////////////////
 
   PD3D11_VIDEO_DECODER_BUFFER_DESC2 = ^D3D11_VIDEO_DECODER_BUFFER_DESC2;
+
   D3D11_VIDEO_DECODER_BUFFER_DESC2 = record
     BufferType: D3D11_VIDEO_DECODER_BUFFER_TYPE;
     DataOffset: UINT;
@@ -313,12 +321,12 @@ type
     ['{A9E2FAA0-CB39-418F-A0B7-D8AAD4DE672E}']
 
     function DecoderBeginFrame1(const pDecoder: ID3D11VideoDecoder;
-                const pView: ID3D11VideoDecoderOutputView;
-                ContentKeySize: UINT;
-                pContentKey: Pointer;
-                NumComponentHistograms: UINT;
-                pHistogramOffsets: UINT;
-                ppHistogramBuffers: PID3D11Buffer): HRESULT; stdcall;
+                                const pView: ID3D11VideoDecoderOutputView;
+                                ContentKeySize: UINT;
+                                pContentKey: Pointer;
+                                NumComponentHistograms: UINT;
+                                pHistogramOffsets: UINT;
+                                ppHistogramBuffers: PID3D11Buffer): HRESULT; stdcall;
 
     function SubmitDecoderBuffers2(const pDecoder: ID3D11VideoDecoder;
                                    NumBuffers: UINT;
@@ -326,10 +334,12 @@ type
 
 
   end;
+
   IID_ID3D11VideoContext3 = ID3D11VideoContext3;
 
 
   PD3D11_FEATURE_DATA_D3D11_OPTIONS4 = ^D3D11_FEATURE_DATA_D3D11_OPTIONS4;
+
   D3D11_FEATURE_DATA_D3D11_OPTIONS4 = record
     ExtendedNV12SharedTextureSupported: BOOL;
   end;
@@ -341,6 +351,6 @@ type
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

@@ -96,14 +96,15 @@ uses
   {WinShellApi}
   WinApi.WinShellApi.ShlObjIdl_Core,
   WinApi.WinShellApi.ShlObj_Core;
-  
+
   {$ALIGN ON}
   {$PACKENUM 4}
 
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$PACKRECORDS C} // Win64
+  {$PACKRECORDS C}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -186,48 +187,48 @@ type
   SHCDF_FLAGS = type DWORD;
 
 const
-  DWFRF_NORMAL           = DWORD($0000);
+  DWFRF_NORMAL = DWORD($0000);
   DWFRF_DELETECONFIGDATA = DWORD($0001);
 
-  DWFAF_HIDDEN   = DWORD($0001);
-  DWFAF_GROUP1   = DWORD($0002);
-  DWFAF_GROUP2   = DWORD($0004);
+  DWFAF_HIDDEN = DWORD($0001);
+  DWFAF_GROUP1 = DWORD($0002);
+  DWFAF_GROUP2 = DWORD($0004);
   DWFAF_AUTOHIDE = DWORD($0010);
 
-  ISFB_MASK_STATE       = ISFB_MASK($00000001);
-  ISFB_MASK_BKCOLOR     = ISFB_MASK($00000002);
-  ISFB_MASK_VIEWMODE    = ISFB_MASK($00000004);
+  ISFB_MASK_STATE = ISFB_MASK($00000001);
+  ISFB_MASK_BKCOLOR = ISFB_MASK($00000002);
+  ISFB_MASK_VIEWMODE = ISFB_MASK($00000004);
   ISFB_MASK_SHELLFOLDER = ISFB_MASK($00000008);
-  ISFB_MASK_IDLIST      = ISFB_MASK($00000010);
-  ISFB_MASK_COLORS      = ISFB_MASK($00000020);
+  ISFB_MASK_IDLIST = ISFB_MASK($00000010);
+  ISFB_MASK_COLORS = ISFB_MASK($00000020);
 
-  ISFB_STATE_DEFAULT     = ISFB_STATE($00000000);
-  ISFB_STATE_DEBOSSED    = ISFB_STATE($00000001);
+  ISFB_STATE_DEFAULT = ISFB_STATE($00000000);
+  ISFB_STATE_DEBOSSED = ISFB_STATE($00000001);
   ISFB_STATE_ALLOWRENAME = ISFB_STATE($00000002);
-  ISFB_STATE_NOSHOWTEXT  = ISFB_STATE($00000004);
-  ISFB_STATE_CHANNELBAR  = ISFB_STATE($00000010);
-  ISFB_STATE_QLINKSMODE  = ISFB_STATE($00000020);
-  ISFB_STATE_FULLOPEN    = ISFB_STATE($00000040);
-  ISFB_STATE_NONAMESORT  = ISFB_STATE($00000080);
-  ISFB_STATE_BTNMINSIZE  = ISFB_STATE($00000100);
+  ISFB_STATE_NOSHOWTEXT = ISFB_STATE($00000004);
+  ISFB_STATE_CHANNELBAR = ISFB_STATE($00000010);
+  ISFB_STATE_QLINKSMODE = ISFB_STATE($00000020);
+  ISFB_STATE_FULLOPEN = ISFB_STATE($00000040);
+  ISFB_STATE_NONAMESORT = ISFB_STATE($00000080);
+  ISFB_STATE_BTNMINSIZE = ISFB_STATE($00000100);
 
   ISFBVIEWMODE_SMALLICONS = ISFBVIEWMODE($0001);
   ISFBVIEWMODE_LARGEICONS = ISFBVIEWMODE($0002);
-  ISFBVIEWMODE_LOGOS      = ISFBVIEWMODE($0003);
+  ISFBVIEWMODE_LOGOS = ISFBVIEWMODE($0003);
 
-  SSM_CLEAR   = SSM_FLAGS($0000);
-  SSM_SET     = SSM_FLAGS($0001);
+  SSM_CLEAR = SSM_FLAGS($0000);
+  SSM_SET = SSM_FLAGS($0001);
   SSM_REFRESH = SSM_FLAGS($0002);
-  SSM_UPDATE  = SSM_FLAGS($0004);
+  SSM_UPDATE = SSM_FLAGS($0004);
 
-  SCHEME_DISPLAY  = SCHEME_FLAGS($0001);
-  SCHEME_EDIT     = SCHEME_FLAGS($0002);
-  SCHEME_LOCAL    = SCHEME_FLAGS($0004);
-  SCHEME_GLOBAL   = SCHEME_FLAGS($0008);
-  SCHEME_REFRESH  = SCHEME_FLAGS($0010);
-  SCHEME_UPDATE   = SCHEME_FLAGS($0020);
+  SCHEME_DISPLAY = SCHEME_FLAGS($0001);
+  SCHEME_EDIT = SCHEME_FLAGS($0002);
+  SCHEME_LOCAL = SCHEME_FLAGS($0004);
+  SCHEME_GLOBAL = SCHEME_FLAGS($0008);
+  SCHEME_REFRESH = SCHEME_FLAGS($0010);
+  SCHEME_UPDATE = SCHEME_FLAGS($0020);
   SCHEME_DONOTUSE = SCHEME_FLAGS($0040);
-  SCHEME_CREATE   = SCHEME_FLAGS($0080);
+  SCHEME_CREATE = SCHEME_FLAGS($0080);
 
   GADOF_DIRTY = GADOF_FLAGS($00000001);
 
@@ -326,6 +327,7 @@ type
 
   LPSHCOLUMNINIT = ^SHCOLUMNINIT;
   LPCSHCOLUMNINIT = ^SHCOLUMNINIT;
+
   SHCOLUMNINIT = record
     dwFlags: ULONG;
     dwReserved: ULONG;
@@ -334,6 +336,7 @@ type
 
   LPSHCOLUMNDATA = ^SHCOLUMNDATA;
   LPCSHCOLUMNDATA = ^SHCOLUMNDATA;
+
   SHCOLUMNDATA = record
     dwFlags: ULONG;
     dwFileAttributes: DWORD;
@@ -343,6 +346,7 @@ type
   end;
 
   LPTBINFO = ^TBINFO;
+
   TBINFO = record
     cbuttons: UINT;
     uFlags: UINT;
@@ -350,12 +354,14 @@ type
 
   LPSFV_SETITEMPOS = ^SFV_SETITEMPOS;
   PCSFV_SETITEMPOS = ^SFV_SETITEMPOS;
+
   SFV_SETITEMPOS = record
     pidl: PCUITEMID_CHILD;
     pt: POINT;
   end;
 
   LPAASHELLMENUFILENAME = ^AASHELLMENUFILENAME;
+
   AASHELLMENUFILENAME = record
     cbTotal: SHORT;
     rgbReserved: array[0..11] of BYTE;
@@ -363,6 +369,7 @@ type
   end;
 
   LPAASHELLMENUITEM = ^AASHELLMENUITEM;
+
   AASHELLMENUITEM = record
     lpReserved1: Pointer;
     iReserved: Integer;
@@ -395,6 +402,7 @@ type
                           cchExtension: Integer): HRESULT; stdcall;
 
   end;
+
   IID_INewShortcutHookA = INewShortcutHookA;
 
   // Interface INewShortcutHookW
@@ -421,6 +429,7 @@ type
                           cchExtension: Integer): HRESULT; stdcall;
 
   end;
+
   IID_INewShortcutHookW = INewShortcutHookW;
 
   {$IFDEF UNICODE}
@@ -444,6 +453,7 @@ type
                           dwDestAttribs: DWORD): UINT; stdcall;
 
   end;
+
   IID_ICopyHookA = ICopyHookA;
 
   LPCOPYHOOKA = ^ICopyHookA;
@@ -463,6 +473,7 @@ type
                           dwDestAttribs: DWORD): UINT; stdcall;
 
   end;
+
   IID_ICopyHookW = ICopyHookW;
 
   LPCOPYHOOKW = ^ICopyHookW;
@@ -487,6 +498,7 @@ type
     function SetDirectory(pwzPath: LPCWSTR): HRESULT; stdcall;
 
   end;
+
   IID_ICurrentWorkingDirectory = ICurrentWorkingDirectory;
 
   // Interface IDockingWindowFrame
@@ -507,6 +519,7 @@ type
                          out ppv): HRESULT; stdcall;
 
   end;
+
   IID_IDockingWindowFrame = IDockingWindowFrame;
 
   // Interface IThumbnailCapture
@@ -520,9 +533,11 @@ type
                               out phbmThumbnail: HBITMAP): HRESULT; stdcall;
 
   end;
+
   IID_IThumbnailCapture = IThumbnailCapture;
 
   PBANDINFOSFB = ^BANDINFOSFB;
+
   BANDINFOSFB = record
     dwMask: DWORD;
     dwStateMask: DWORD;
@@ -550,6 +565,7 @@ type
     function GetBandInfoSFB(pbi: PBANDINFOSFB): HRESULT; stdcall;
 
   end;
+
   IID_IShellFolderBand = IShellFolderBand;
 
   // Interface IDeskBarClient
@@ -568,6 +584,7 @@ type
                      prc: LPRECT): HRESULT; stdcall;
 
   end;
+
   IID_IDeskBarClient = IDeskBarClient;
 
   // Interface IActiveDesktopP
@@ -588,6 +605,7 @@ type
                        dwFlags: DWORD): HRESULT; stdcall;
 
   end;
+
   IID_IActiveDesktopP = IActiveDesktopP;
 
   LPACTIVEDESKTOPP = ^IActiveDesktopP;
@@ -608,6 +626,7 @@ type
     function MakeDynamicChanges(pOleObj: IOleObject): HRESULT; stdcall;
 
   end;
+
   IID_IADesktopP2 = IADesktopP2;
 
   LPADESKTOPP2 = ^IADesktopP2;
@@ -628,6 +647,7 @@ type
                          out pvarData: VARIANT): HRESULT; stdcall;
 
   end;
+
   IID_IColumnProvider = IColumnProvider;
 
   // Interface IDocViewSite
@@ -639,6 +659,7 @@ type
     function OnSetTitle(pvTitle: PVariantArg): HRESULT; stdcall;
 
   end;
+
   IID_IDocViewSite = IDocViewSite;
 
   // Interface IInitializeObject
@@ -650,6 +671,7 @@ type
     function Initialize(): HRESULT; stdcall;
 
   end;
+
   IID_IInitializeObject = IInitializeObject;
 
   // Interface IBanneredBar
@@ -667,6 +689,7 @@ type
     function GetBitmap(out phBitmap: HBITMAP): HRESULT; stdcall;
 
   end;
+
   IID_IBanneredBar = IBanneredBar;
 
 procedure SHChangeNotifyRegisterThread(status: SCNRT_STATUS); stdcall;
@@ -779,7 +802,7 @@ type
                   out pdwFlags: DWORD): HRESULT; stdcall;
   end;
 
-  function DoPrivacyDlg(hwndOwner: HWND;
+function DoPrivacyDlg(hwndOwner: HWND;
                       pszUrl: PCWSTR;
                       pPrivacyEnum: IEnumPrivacyRecords;
                       fReportAllSites: BOOL): HRESULT; stdcall;
@@ -795,61 +818,71 @@ const
 
 
 
-procedure SHChangeNotifyRegisterThread;   external Shell32Lib name 'SHChangeNotifyRegisterThread' ;
-procedure PathQualify;                     external Shell32Lib name 'PathQualify' ;
-function PathIsSlowA;                     external Shell32Lib name 'PathIsSlowA' ;
-function PathIsSlowW;                     external Shell32Lib name 'PathIsSlowW' ;
+procedure SHChangeNotifyRegisterThread; external Shell32Lib name 'SHChangeNotifyRegisterThread';
+procedure PathQualify; external Shell32Lib name 'PathQualify';
+function PathIsSlowA; external Shell32Lib name 'PathIsSlowA';
+function PathIsSlowW; external Shell32Lib name 'PathIsSlowW';
 
 {$IFDEF UNICODE}
-function PathIsSlow;                      external Shell32Lib name 'PathIsSlowW' ;
+function PathIsSlow;                      external Shell32Lib name 'PathIsSlowW';
 {$ELSE}
-function PathIsSlow;                      external Shell32Lib name 'PathIsSlowA' ;
+function PathIsSlow; external Shell32Lib name 'PathIsSlowA';
 {$ENDIF}
 
-function GetFileNameFromBrowse;           external Shell32Lib name 'GetFileNameFromBrowse' ;
-function DriveType;                       external Shell32Lib name 'DriveType' ;
-function SHCreatePropSheetExtArray;       external Shell32Lib name 'SHCreatePropSheetExtArray' ;
-function SHOpenPropSheetW;                external Shell32Lib name 'SHOpenPropSheetW' ;
+function GetFileNameFromBrowse; external Shell32Lib name 'GetFileNameFromBrowse';
+function DriveType; external Shell32Lib name 'DriveType';
+function SHCreatePropSheetExtArray; external Shell32Lib name 'SHCreatePropSheetExtArray';
+function SHOpenPropSheetW; external Shell32Lib name 'SHOpenPropSheetW';
 
 {$IFDEF UNICODE}
 {$ELSE}
 {$ENDIF}
 
-function SHShellFolderView_Message;       external Shell32Lib name 'SHShellFolderView_Message' ;
-function SHMultiFileProperties;           external Shell32Lib name 'SHMultiFileProperties' ;
-function SHCreateQueryCancelAutoPlayMoniker; external Shell32Lib name 'SHCreateQueryCancelAutoPlayMoniker' ;
-function ImportPrivacySettings;           external ShDocVwLib name 'ImportPrivacySettings' ;
-function DoPrivacyDlg;                    external ShDocVwLib name 'DoPrivacyDlg' ;
+function SHShellFolderView_Message; external Shell32Lib name 'SHShellFolderView_Message';
+function SHMultiFileProperties; external Shell32Lib name 'SHMultiFileProperties';
+function SHCreateQueryCancelAutoPlayMoniker; external Shell32Lib name 'SHCreateQueryCancelAutoPlayMoniker';
+function ImportPrivacySettings; external ShDocVwLib name 'ImportPrivacySettings';
+function DoPrivacyDlg; external ShDocVwLib name 'DoPrivacyDlg';
 
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 
 // Preserve nil, empty strings and integer resource identifiers when adapting
 // ANSI entry points that are absent from current Windows x64 Shell32.
 function AnsiShellStringToWide(Value: LPCSTR;
-                              out Storage: UnicodeString;
-                              out Text: LPCWSTR): HRESULT;
+                               out Storage: UnicodeString;
+                               out Text: LPCWSTR): HRESULT;
 var
   Count: Integer;
+
 begin
+
   Storage := '';
   Text := nil;
-  if NativeUInt(Value) <= $FFFF then
-  begin
-    Text := LPCWSTR(Value);
-    Exit(S_OK);
-  end;
-  Count := MultiByteToWideChar(CP_ACP,0,Value,-1,nil,0);
-  if Count = 0 then
+  if (NativeUInt(Value) <= $FFFF) then
+    begin
+      Text := LPCWSTR(Value);
+      Exit(S_OK);
+    end;
+  Count := MultiByteToWideChar(CP_ACP,
+                               0,
+                               Value,
+                               -1,
+                               nil,
+                               0);
+  if (Count = 0) then
     Exit(HRESULT_FROM_WIN32(GetLastError));
-  SetLength(Storage,Count);
-  if MultiByteToWideChar(CP_ACP,0,Value,-1,PWideChar(Storage),Count) = 0 then
+  SetLength(Storage,
+            Count);
+  if (MultiByteToWideChar(CP_ACP, 0, Value, -1, PWideChar(Storage), Count) = 0) then
     Exit(HRESULT_FROM_WIN32(GetLastError));
-  SetLength(Storage,Count - 1);
+  SetLength(Storage,
+            Count - 1);
   Text := PWideChar(Storage);
   Result := S_OK;
 end;
+
 
 function SHOpenPropSheetA(pszCaption: LPCSTR;
                           ahkeys: PHKEY;
@@ -864,17 +897,30 @@ var
   Caption: LPCWSTR;
   Page: LPCWSTR;
   Status: HRESULT;
+
 begin
-  Status := AnsiShellStringToWide(pszCaption,CaptionStorage,Caption);
-  if Status >= 0 then
-    Status := AnsiShellStringToWide(pStartPage,PageStorage,Page);
-  if Status < 0 then
-  begin
-    SetLastError(DWORD(Status) and $FFFF);
-    Exit(False);
-  end;
-  Result := SHOpenPropSheetW(Caption,ahkeys,ckeys,pclsidDefault,pdtobj,psb,Page);
+
+  Status := AnsiShellStringToWide(pszCaption,
+                                  CaptionStorage,
+                                  Caption);
+  if (Status >= 0) then
+    Status := AnsiShellStringToWide(pStartPage,
+                                    PageStorage,
+                                    Page);
+  if (Status < 0) then
+    begin
+      SetLastError(DWORD(Status) and $FFFF);
+      Exit(False);
+    end;
+  Result := SHOpenPropSheetW(Caption,
+                             ahkeys,
+                             ckeys,
+                             pclsidDefault,
+                             pdtobj,
+                             psb,
+                             Page);
 end;
+
 
 function SHOpenPropSheet(pszCaption: LPCTSTR;
                          ahkeys: PHKEY;
@@ -883,11 +929,25 @@ function SHOpenPropSheet(pszCaption: LPCTSTR;
                          pdtobj: IDataObject;
                          psb: IShellBrowser;
                          pStartPage: LPCTSTR): BOOL; stdcall;
+
 begin
+
   {$IFDEF UNICODE}
-  Result := SHOpenPropSheetW(pszCaption,ahkeys,ckeys,pclsidDefault,pdtobj,psb,pStartPage);
+  Result := SHOpenPropSheetW(pszCaption,
+                             ahkeys,
+                             ckeys,
+                             pclsidDefault,
+                             pdtobj,
+                             psb,
+                             pStartPage);
   {$ELSE}
-  Result := SHOpenPropSheetA(pszCaption,ahkeys,ckeys,pclsidDefault,pdtobj,psb,pStartPage);
+  Result := SHOpenPropSheetA(pszCaption,
+                             ahkeys,
+                             ckeys,
+                             pclsidDefault,
+                             pdtobj,
+                             psb,
+                             pStartPage);
   {$ENDIF}
 end;
 
@@ -900,52 +960,60 @@ var
   LibraryHandle: HMODULE;
   Entry: TPerUserInit;
   Status: DWORD;
+
 begin
+
   LibraryHandle := LoadLibraryW(PWideChar(UnicodeString(Shell32Lib)));
   Status := ERROR_CALL_NOT_IMPLEMENTED;
   try
     Entry := nil;
-    if LibraryHandle <> 0 then
-      Entry := TPerUserInit(GetProcAddress(LibraryHandle,'PerUserInit'));
+    if (LibraryHandle <> 0) then
+      Entry := TPerUserInit(GetProcAddress(LibraryHandle,
+                                           'PerUserInit'));
     if Assigned(Entry) then
-    begin
-      Entry;
-      Status := GetLastError;
-    end;
+      begin
+        Entry;
+        Status := GetLastError;
+      end;
   finally
-    if LibraryHandle <> 0 then
+    if (LibraryHandle <> 0) then
       FreeLibrary(LibraryHandle);
     SetLastError(Status);
   end;
 end;
 
+
 function SHRunControlPanel(lpcszCmdLine: PCWSTR;
-                            hwndMsgParent: HWND): BOOL; stdcall;
+                           hwndMsgParent: HWND): BOOL; stdcall;
 type
-  TRunControlPanel = function(CommandLine: PCWSTR;Parent: HWND): BOOL; stdcall;
+  TRunControlPanel = function(CommandLine: PCWSTR;
+                              Parent: HWND): BOOL; stdcall;
 var
   LibraryHandle: HMODULE;
   Entry: TRunControlPanel;
   Status: DWORD;
+
 begin
+
   Result := False;
   LibraryHandle := LoadLibraryW(PWideChar(UnicodeString(Shell32Lib)));
   Status := ERROR_CALL_NOT_IMPLEMENTED;
   try
     Entry := nil;
-    if LibraryHandle <> 0 then
-      Entry := TRunControlPanel(GetProcAddress(LibraryHandle,'SHRunControlPanel'));
+    if (LibraryHandle <> 0) then
+      Entry := TRunControlPanel(GetProcAddress(LibraryHandle,
+                                               'SHRunControlPanel'));
     if Assigned(Entry) then
-    begin
-      Result := Entry(lpcszCmdLine,hwndMsgParent);
-      Status := GetLastError;
-    end;
+      begin
+        Result := Entry(lpcszCmdLine,
+                        hwndMsgParent);
+        Status := GetLastError;
+      end;
   finally
-    if LibraryHandle <> 0 then
+    if (LibraryHandle <> 0) then
       FreeLibrary(LibraryHandle);
     SetLastError(Status);
   end;
 end;
 
 end.
-

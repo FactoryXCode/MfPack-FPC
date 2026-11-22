@@ -67,9 +67,9 @@ interface
 
 uses
   MfCapturePlatform,
-LMessages,
+  LMessages,
   LCLIntf,
-{Winapi}
+  {Winapi}
   Messages,
   Windows,
   {System}
@@ -99,12 +99,15 @@ type
   end;
 
   PSampleReply = ^TSampleReply;
+
   TSampleReply = record
     oSampleTimeStamp: TTimeSpan;
     oSample: IMFSample;
   end;
 
-  TFileCaptureAsync = class(TFileCapture, IMFSourceReaderCallback)
+  TFileCaptureAsync = class(TFileCapture,
+                            IMFSourceReaderCallback)
+
   private
     FMessageHandler: TMessageHandler;
     FPositionRequest: TPositionRequest;
@@ -162,40 +165,53 @@ uses
   {System}
   SysUtils;
 
-{ TFileCaptureAsync }
+  { TFileCaptureAsync }
 
 constructor TFileCaptureAsync.Create;
+
 begin
+
   inherited;
   FCritSec := TMFCritSec.Create;
 
   FMessageHandler := TMessageHandler.Create;
   FMessageHandler.OnMessage := HandleMessages;
 
-  FFlushEvent := CreateEventW(nil,True,False,nil);
-  if FFlushEvent=0 then RaiseLastOSError;
+  FFlushEvent := CreateEventW(nil,
+                              True,
+                              False,
+                              nil);
+  if (FFlushEvent = 0) then
+    RaiseLastOSError;
   FPositionRequest.Reset;
 end;
 
 
 destructor TFileCaptureAsync.Destroy;
-var Msg: TMsg;
+var
+  Msg: TMsg;
+
 begin
- FClosing:=True;
- CloseSource;
- if Assigned(FMessageHandler) then begin
-  while PeekMessageW(Msg,FMessageHandler.Handle,WM_SAMPLE_FOUND,WM_SAMPLE_FOUND,PM_REMOVE) do
-   Dispose(PSampleReply(Msg.LParam));
-  FreeAndNil(FMessageHandler);
- end;
- if FFlushEvent<>0 then CloseHandle(FFlushEvent);
- FreeAndNil(FCritSec);
- inherited;
+
+  FClosing := True;
+  CloseSource;
+  if Assigned(FMessageHandler) then
+    begin
+      while PeekMessageW(Msg, FMessageHandler.Handle, WM_SAMPLE_FOUND, WM_SAMPLE_FOUND, PM_REMOVE) do
+        Dispose(PSampleReply(Msg.LParam));
+      FreeAndNil(FMessageHandler);
+    end;
+  if (FFlushEvent <> 0) then
+    CloseHandle(FFlushEvent);
+  FreeAndNil(FCritSec);
+  inherited;
 end;
 
 
 procedure TFileCaptureAsync.HandleFlushComplete;
+
 begin
+
   inherited;
   FFindingSample := False;
 
@@ -205,14 +221,18 @@ end;
 
 
 procedure TFileCaptureAsync.ProcessPendingRequest;
+
 begin
+
   RequestFrame(FPositionRequest.oPosition);
   FPositionRequest.bPending := False;
 end;
 
 
 procedure TFileCaptureAsync.HandleMediaFormatChanged;
+
 begin
+
   inherited;
   ReadNextSample;
 end;
@@ -220,18 +240,20 @@ end;
 
 procedure TFileCaptureAsync.HandleMessages(var AMessage: TLMessage;
                                            var AHandled: Boolean);
+
 begin
-  if AMessage.Msg = WM_FLUSH_COMPLETE then
+
+  if (AMessage.Msg = WM_FLUSH_COMPLETE) then
     begin
       AHandled := True;
       HandleFlushComplete;
     end
-  else if AMessage.Msg = WM_MEDIA_FORMAT_CHANGED then
+  else if (AMessage.Msg = WM_MEDIA_FORMAT_CHANGED) then
     begin
       AHandled := True;
       HandleMediaFormatChanged;
     end
-  else if AMessage.Msg = WM_SAMPLE_FOUND then
+  else if (AMessage.Msg = WM_SAMPLE_FOUND) then
     begin
       AHandled := True;
       HandleSampleFoundMessage(AMessage);
@@ -245,33 +267,49 @@ end;
 // hide message H2077, this is true in sync mode, not in a-sync mode
 {$HINTS OFF}
 procedure TFileCaptureAsync.HandleSampleFoundMessage(var AMessage: TLMessage);
-var Reply: PSampleReply;
+var
+  Reply: PSampleReply;
+
 begin
- Reply:=PSampleReply(AMessage.LParam);
- try
-  if not FClosing then ReturnSample(Reply.oSample,Reply.oSampleTimeStamp);
- finally Dispose(Reply);end;
+
+  Reply := PSampleReply(AMessage.LParam);
+  try
+    if not FClosing then
+      ReturnSample(Reply.oSample,
+                   Reply.oSampleTimeStamp);
+  finally
+    Dispose(Reply);
+  end;
 end;
 {$HINTS ON}
 
 
 procedure TFileCaptureAsync.Flush;
-var Msg: TMsg;
+var
+  Msg: TMsg;
+
 begin
- if SourceReader=nil then Exit;
- inherited;
- ResetEvent(FFlushEvent);
- if SUCCEEDED(SourceReader.Flush(MF_SOURCE_READER_ALL_STREAMS)) then
-  WaitForSingleObject(FFlushEvent,5000);
- while PeekMessageW(Msg,FMessageHandler.Handle,WM_SAMPLE_FOUND,WM_SAMPLE_FOUND,PM_REMOVE) do
-  Dispose(PSampleReply(Msg.LParam));
- while PeekMessageW(Msg,FMessageHandler.Handle,WM_MEDIA_FORMAT_CHANGED,WM_MEDIA_FORMAT_CHANGED,PM_REMOVE) do begin end;
- HandleFlushComplete;
+
+  if (SourceReader = nil) then
+    Exit;
+  inherited;
+  ResetEvent(FFlushEvent);
+  if SUCCEEDED(SourceReader.Flush(MF_SOURCE_READER_ALL_STREAMS)) then
+    WaitForSingleObject(FFlushEvent,
+                        5000);
+  while PeekMessageW(Msg, FMessageHandler.Handle, WM_SAMPLE_FOUND, WM_SAMPLE_FOUND, PM_REMOVE) do
+    Dispose(PSampleReply(Msg.LParam));
+  while PeekMessageW(Msg, FMessageHandler.Handle, WM_MEDIA_FORMAT_CHANGED, WM_MEDIA_FORMAT_CHANGED, PM_REMOVE) do
+    begin
+    end;
+  HandleFlushComplete;
 end;
 
 
 procedure TFileCaptureAsync.RequestFrame(APosition: TTimeSpan);
+
 begin
+
   inherited;
 
   if FindingSample then
@@ -280,8 +318,8 @@ begin
       FPositionRequest := TPositionRequest.New(APosition,
                                                True);
 
-    if not AwaitingFlush then
-      Flush;
+      if not AwaitingFlush then
+        Flush;
     end
   else
     ReadNextSample;
@@ -289,7 +327,9 @@ end;
 
 
 procedure TFileCaptureAsync.ResetVariables;
+
 begin
+
   inherited;
   FFindingSample := False;
   FPositionRequest.Reset;
@@ -301,21 +341,22 @@ var
   oResult: HRESULT;
 
 begin
+
   Result := not FClosing and not AwaitingFlush and Assigned(SourceReader);
 
   if Result then
-  begin
-    FFindingSample := True;
-    oResult := SourceReader.ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
-                                       0,
-                                       nil,
-                                       nil,
-                                       nil,
-                                       nil);
-    Result := SUCCEEDED(oResult);
-    if not Result then
-      HandleSampleReadError(oResult);
-  end;
+    begin
+      FFindingSample := True;
+      oResult := SourceReader.ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+                                         0,
+                                         nil,
+                                         nil,
+                                         nil,
+                                         nil);
+      Result := SUCCEEDED(oResult);
+      if not Result then
+        HandleSampleReadError(oResult);
+    end;
 end;
 
 
@@ -324,6 +365,7 @@ var
   oResult: HRESULT;
 
 begin
+
   oResult := AAttributes.SetUnknown(MF_SOURCE_READER_ASYNC_CALLBACK,
                                     Self);
   if not SUCCEEDED(oResult) then
@@ -334,35 +376,50 @@ end;
 
 function TFileCaptureAsync.OnEvent(dwStreamIndex: DWord;
                                    pEvent: IMFMediaEvent): HRESULT;
+
 begin
+
   // Note: This will be called in a worker thread.
   Result := S_OK;
 end;
 
 
 function TFileCaptureAsync.OnFlush(dwStreamIndex: DWord): HRESULT;
+
 begin
- SetEvent(FFlushEvent); Result:=S_OK;
+
+  SetEvent(FFlushEvent);
+  Result := S_OK;
 end;
 
 
 procedure TFileCaptureAsync.NotifyMediaFormatChanged;
+
 begin
+
   // Note: This will be called in a worker thread.
   PostMessageW(FMessageHandler.Handle,
-              WM_MEDIA_FORMAT_CHANGED,
-              0,
-              0);
+               WM_MEDIA_FORMAT_CHANGED,
+               0,
+               0);
   HandleThreadMessages(GetCurrentThread());
 end;
 
 
-procedure TFileCaptureAsync.ProcessSample(ASample: IMFSample; ATimeStamp: TTimeSpan);
-var Reply: PSampleReply;
+procedure TFileCaptureAsync.ProcessSample(ASample: IMFSample;
+                                          ATimeStamp: TTimeSpan);
+var
+  Reply: PSampleReply;
+
 begin
- if FClosing then Exit;
- New(Reply); Reply.oSample:=ASample; Reply.oSampleTimeStamp:=ATimeStamp;
- if not PostMessageW(FMessageHandler.Handle,WM_SAMPLE_FOUND,0,LPARAM(Reply)) then Dispose(Reply);
+
+  if FClosing then
+    Exit;
+  New(Reply);
+  Reply.oSample := ASample;
+  Reply.oSampleTimeStamp := ATimeStamp;
+  if not PostMessageW(FMessageHandler.Handle, WM_SAMPLE_FOUND, 0, LPARAM(Reply)) then
+    Dispose(Reply);
 end;
 
 
@@ -378,52 +435,55 @@ var
   bReachedMaxFrames: Boolean;
 
 begin
+
   // Note: This will be called in a worker thread. Be careful of accessing anything outside of this method.
   Result := S_OK;
 
-try
-  FCritSec.Lock;
-try
-  if SUCCEEDED(hrStatus) then
-    begin
-
-      bEndOfStream := ((dwStreamFlags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0);
-
-      if ((dwStreamFlags and MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) <> 0) then
-        NotifyMediaFormatChanged
-      else if Assigned(pSample) and SUCCEEDED(pSample.GetSampleTime(@dSampleTimeStamp)) then
+  try
+    FCritSec.Lock;
+    try
+      if SUCCEEDED(hrStatus) then
         begin
-          bReachedMaxFrames := (FramesSkipped >= MaxFramesToSkip);
 
-          tsSampleTime := TTimeSpan.FromTicks(dSampleTimeStamp);
-          if bEndOfStream or SampleWithinTolerance(RequestedTime,
-                                                   tsSampleTime) or bReachedMaxFrames then
-            begin
-              if bReachedMaxFrames then
-                Log(Format('Reached maximum frames to skip %d. Using last frame returned at: %s',
-                           [FramesSkipped, TimeSpanToDisplay(tsSampleTime, True)]), ltWarning);
+          bEndOfStream := ((dwStreamFlags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0);
 
-            ProcessSample(pSample,
-                          tsSampleTime);
-            FFindingSample := False;
-            end
-          else
+          if ((dwStreamFlags and MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) <> 0) then
+            NotifyMediaFormatChanged
+          else if Assigned(pSample) and SUCCEEDED(pSample.GetSampleTime(@dSampleTimeStamp)) then
             begin
-              // Read the next sample
-              if (FramesSkipped < MaxFramesToSkip) then
+              bReachedMaxFrames := (FramesSkipped >= MaxFramesToSkip);
+
+              tsSampleTime := TTimeSpan.FromTicks(dSampleTimeStamp);
+              if bEndOfStream or SampleWithinTolerance(RequestedTime,
+                tsSampleTime) or bReachedMaxFrames then
                 begin
-                  ReadNextSample;
-                  HandleFrameSkipped;
+                  if bReachedMaxFrames then
+                    Log(Format('Reached maximum frames to skip %d. Using last frame returned at: %s',
+                               [FramesSkipped, TimeSpanToDisplay(tsSampleTime,
+                                                                 True)]),
+                        ltWarning);
+
+                  ProcessSample(pSample,
+                                tsSampleTime);
+                  FFindingSample := False;
+                end
+              else
+                begin
+                  // Read the next sample
+                  if (FramesSkipped < MaxFramesToSkip) then
+                    begin
+                      ReadNextSample;
+                      HandleFrameSkipped;
+                    end;
                 end;
             end;
         end;
+    finally
+      FCritSec.Unlock;
     end;
-finally
-  FCritSec.Unlock;
-end;
-finally
-  SafeRelease(pSample);
-end;
+  finally
+    SafeRelease(pSample);
+  end;
 
 end;
 
@@ -432,7 +492,9 @@ end;
 
 class function TPositionRequest.New(APosition: TTimeSpan;
                                     ARequestSample: Boolean): TPositionRequest;
+
 begin
+
   Result.oPosition := APosition;
   Result.bRequestNextSample := ARequestSample;
   Result.bPending := True;
@@ -440,7 +502,9 @@ end;
 
 
 procedure TPositionRequest.Reset;
+
 begin
+
   oPosition := TTimeSpan.Zero;
   bRequestNextSample := False;
   bPending := False;

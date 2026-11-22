@@ -68,7 +68,7 @@ interface
 
 uses
   MfSmallSamplesPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   MMSystem,
   {System}
@@ -83,18 +83,18 @@ type
     m_PreviousTime: DWORD;
     m_lPeriodMsec: LONG;
 
-    public
+  public
 
-      constructor Create();
-      destructor Destroy(); override;
+    constructor Create();
+    destructor Destroy(); override;
 
-      function InitializeTimer(lPeriodMsec: LONG): BOOL;
-      function GetFrameNumber(): DWORD;
+    function InitializeTimer(lPeriodMsec: LONG): BOOL;
+    function GetFrameNumber(): DWORD;
 
-    public
+  public
     { published methods }
 
-      property Handle: THandle read m_hTimer;
+    property Handle: THandle read m_hTimer;
   end;
 
 var
@@ -105,7 +105,9 @@ implementation
 
 
 constructor TSimpleTimer.Create();
+
 begin
+
   inherited Create();
   m_hTimer := 0;
   m_bBeginPeriod := FALSE;
@@ -116,7 +118,9 @@ end;
 
 
 destructor TSimpleTimer.Destroy();
+
 begin
+
   if (m_bBeginPeriod = TRUE) then
     begin
       timeEndPeriod(1);
@@ -138,8 +142,14 @@ var
   li: TLargeInteger;
 
 begin
-  if lPeriodMsec<=0 then Exit(False);
-  if m_hTimer<>0 then begin CloseHandle(m_hTimer);m_hTimer:=0;end;
+
+  if (lPeriodMsec <= 0) then
+    Exit(False);
+  if (m_hTimer <> 0) then
+    begin
+      CloseHandle(m_hTimer);
+      m_hTimer := 0;
+    end;
   m_hTimer := CreateWaitableTimer(Nil,
                                   FALSE,
                                   Nil);
@@ -153,11 +163,11 @@ begin
   li := 0;
 
   if Not SetWaitableTimer(m_hTimer,
-                          li,
-                          lPeriodMsec,
-                          Nil,
-                          Nil,
-                          FALSE) then
+    li,
+    lPeriodMsec,
+    Nil,
+    Nil,
+    FALSE) then
     begin
       Result := FALSE;
       Exit;
@@ -166,7 +176,7 @@ begin
   m_bBeginPeriod := (timeBeginPeriod(1) = TIMERR_NOERROR);
   m_StartSysTime := timeGetTime();
   m_lPeriodMsec := lPeriodMsec;
-  Result:= TRUE;
+  Result := TRUE;
 end;
 
 
@@ -178,7 +188,9 @@ var
   delta: DWORD;
 
 begin
-  if m_lPeriodMsec<=0 then Exit(0);
+
+  if (m_lPeriodMsec <= 0) then
+    Exit(0);
   currentSysTime := TimeGetTime();
 
   if (m_StartSysTime > currentSysTime) then

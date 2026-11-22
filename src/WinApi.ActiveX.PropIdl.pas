@@ -92,103 +92,104 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
 
 const
 
-  CCH_MAX_PROPSTG_NAME                = 31;
+  CCH_MAX_PROPSTG_NAME = 31;
 
-  PROPSETHDR_OSVERSION_UNKNOWN        = MAXDWORD;
+  PROPSETHDR_OSVERSION_UNKNOWN = MAXDWORD;
 
   // Flags for IPropertySetStorage.Create
-  PROPSETFLAG_DEFAULT                 = 0;
-  PROPSETFLAG_NONSIMPLE               = 1;
-  PROPSETFLAG_ANSI                    = 2;
+  PROPSETFLAG_DEFAULT = 0;
+  PROPSETFLAG_NONSIMPLE = 1;
+  PROPSETFLAG_ANSI = 2;
 
   // This flag is only supported on StgCreatePropStg & StgOpenPropStg
-  PROPSETFLAG_UNBUFFERED              = 4;
+  PROPSETFLAG_UNBUFFERED = 4;
 
   // This flag causes a version-1 property set to be created
-  PROPSETFLAG_CASE_SENSITIVE          = 8;
+  PROPSETFLAG_CASE_SENSITIVE = 8;
 
   // Flags for the reservied PID_BEHAVIOR property
-  PROPSET_BEHAVIOR_CASE_SENSITIVE     = 1;
+  PROPSET_BEHAVIOR_CASE_SENSITIVE = 1;
 
   // Reserved global Property IDs
-  PID_DICTIONARY                      = 0;
-  PID_CODEPAGE                        = $1;
-  PID_FIRST_USABLE                    = $2;
-  PID_FIRST_NAME_DEFAULT              = $FFF;
-  PID_LOCALE                          = $80000000;
-  PID_MODIFY_TIME                     = $80000001;
-  PID_SECURITY                        = $80000002;
-  PID_BEHAVIOR                        = $80000003;
-  PID_ILLEGAL                         = MAXDWORD;
+  PID_DICTIONARY = 0;
+  PID_CODEPAGE = $1;
+  PID_FIRST_USABLE = $2;
+  PID_FIRST_NAME_DEFAULT = $FFF;
+  PID_LOCALE = $80000000;
+  PID_MODIFY_TIME = $80000001;
+  PID_SECURITY = $80000002;
+  PID_BEHAVIOR = $80000003;
+  PID_ILLEGAL = MAXDWORD;
 
   // Range which is read-only to downlevel implementations
-  PID_MIN_READONLY                    = $80000000;
-  PID_MAX_READONLY                    = $BFFFFFFF;
+  PID_MIN_READONLY = $80000000;
+  PID_MAX_READONLY = $BFFFFFFF;
 
   // Property IDs for the DiscardableInformation Property Set
-  PIDDI_THUMBNAIL                     = $00000002;  // VT_BLOB
+  PIDDI_THUMBNAIL = $00000002;  // VT_BLOB
 
   // Property IDs for the SummaryInformation Property Set
-  PIDSI_TITLE                         = $00000002;  // VT_LPSTR
-  PIDSI_SUBJECT                       = $00000003;  // VT_LPSTR
-  PIDSI_AUTHOR                        = $00000004;  // VT_LPSTR
-  PIDSI_KEYWORDS                      = $00000005;  // VT_LPSTR
-  PIDSI_COMMENTS                      = $00000006;  // VT_LPSTR
-  PIDSI_TEMPLATE                      = $00000007;  // VT_LPSTR
-  PIDSI_LASTAUTHOR                    = $00000008;  // VT_LPSTR
-  PIDSI_REVNUMBER                     = $00000009;  // VT_LPSTR
-  PIDSI_EDITTIME                      = $0000000A;  // VT_FILETIME (UTC)
-  PIDSI_LASTPRINTED                   = $0000000B;  // VT_FILETIME (UTC)
-  PIDSI_CREATE_DTM                    = $0000000C;  // VT_FILETIME (UTC)
-  PIDSI_LASTSAVE_DTM                  = $0000000D;  // VT_FILETIME (UTC)
-  PIDSI_PAGECOUNT                     = $0000000E;  // VT_I4
-  PIDSI_WORDCOUNT                     = $0000000F;  // VT_I4
-  PIDSI_CHARCOUNT                     = $00000010;  // VT_I4
-  PIDSI_THUMBNAIL                     = $00000011;  // VT_CF
-  PIDSI_APPNAME                       = $00000012;  // VT_LPSTR
-  PIDSI_DOC_SECURITY                  = $00000013;  // VT_I4
+  PIDSI_TITLE = $00000002;  // VT_LPSTR
+  PIDSI_SUBJECT = $00000003;  // VT_LPSTR
+  PIDSI_AUTHOR = $00000004;  // VT_LPSTR
+  PIDSI_KEYWORDS = $00000005;  // VT_LPSTR
+  PIDSI_COMMENTS = $00000006;  // VT_LPSTR
+  PIDSI_TEMPLATE = $00000007;  // VT_LPSTR
+  PIDSI_LASTAUTHOR = $00000008;  // VT_LPSTR
+  PIDSI_REVNUMBER = $00000009;  // VT_LPSTR
+  PIDSI_EDITTIME = $0000000A;  // VT_FILETIME (UTC)
+  PIDSI_LASTPRINTED = $0000000B;  // VT_FILETIME (UTC)
+  PIDSI_CREATE_DTM = $0000000C;  // VT_FILETIME (UTC)
+  PIDSI_LASTSAVE_DTM = $0000000D;  // VT_FILETIME (UTC)
+  PIDSI_PAGECOUNT = $0000000E;  // VT_I4
+  PIDSI_WORDCOUNT = $0000000F;  // VT_I4
+  PIDSI_CHARCOUNT = $00000010;  // VT_I4
+  PIDSI_THUMBNAIL = $00000011;  // VT_CF
+  PIDSI_APPNAME = $00000012;  // VT_LPSTR
+  PIDSI_DOC_SECURITY = $00000013;  // VT_I4
 
   // Property IDs for the DocSummaryInformation Property Set
-  PIDDSI_CATEGORY                     = $00000002;  // VT_LPSTR
-  PIDDSI_PRESFORMAT                   = $00000003;  // VT_LPSTR
-  PIDDSI_BYTECOUNT                    = $00000004;  // VT_I4
-  PIDDSI_LINECOUNT                    = $00000005;  // VT_I4
-  PIDDSI_PARCOUNT                     = $00000006;  // VT_I4
-  PIDDSI_SLIDECOUNT                   = $00000007;  // VT_I4
-  PIDDSI_NOTECOUNT                    = $00000008;  // VT_I4
-  PIDDSI_HIDDENCOUNT                  = $00000009;  // VT_I4
-  PIDDSI_MMCLIPCOUNT                  = $0000000A;  // VT_I4
-  PIDDSI_SCALE                        = $0000000B;  // VT_BOOL
-  PIDDSI_HEADINGPAIR                  = $0000000C;  // VT_VARIANT | VT_VECTOR
-  PIDDSI_DOCPARTS                     = $0000000D;  // VT_LPSTR | VT_VECTOR
-  PIDDSI_MANAGER                      = $0000000E;  // VT_LPSTR
-  PIDDSI_COMPANY                      = $0000000F;  // VT_LPSTR
-  PIDDSI_LINKSDIRTY                   = $00000010;  // VT_BOOL
+  PIDDSI_CATEGORY = $00000002;  // VT_LPSTR
+  PIDDSI_PRESFORMAT = $00000003;  // VT_LPSTR
+  PIDDSI_BYTECOUNT = $00000004;  // VT_I4
+  PIDDSI_LINECOUNT = $00000005;  // VT_I4
+  PIDDSI_PARCOUNT = $00000006;  // VT_I4
+  PIDDSI_SLIDECOUNT = $00000007;  // VT_I4
+  PIDDSI_NOTECOUNT = $00000008;  // VT_I4
+  PIDDSI_HIDDENCOUNT = $00000009;  // VT_I4
+  PIDDSI_MMCLIPCOUNT = $0000000A;  // VT_I4
+  PIDDSI_SCALE = $0000000B;  // VT_BOOL
+  PIDDSI_HEADINGPAIR = $0000000C;  // VT_VARIANT | VT_VECTOR
+  PIDDSI_DOCPARTS = $0000000D;  // VT_LPSTR | VT_VECTOR
+  PIDDSI_MANAGER = $0000000E;  // VT_LPSTR
+  PIDDSI_COMPANY = $0000000F;  // VT_LPSTR
+  PIDDSI_LINKSDIRTY = $00000010;  // VT_BOOL
 
 
   // FMTID_MediaFileSummaryInfo - Property IDs
-  PIDMSI_EDITOR                       = $00000002;  // VT_LPWSTR
-  PIDMSI_SUPPLIER                     = $00000003;  // VT_LPWSTR
-  PIDMSI_SOURCE                       = $00000004;  // VT_LPWSTR
-  PIDMSI_SEQUENCE_NO                  = $00000005;  // VT_LPWSTR
-  PIDMSI_PROJECT                      = $00000006;  // VT_LPWSTR
-  PIDMSI_STATUS                       = $00000007;  // VT_UI4
-  PIDMSI_OWNER                        = $00000008;  // VT_LPWSTR
-  PIDMSI_RATING                       = $00000009;  // VT_LPWSTR
-  PIDMSI_PRODUCTION                   = $0000000A;  // VT_FILETIME (UTC)
-  PIDMSI_COPYRIGHT                    = $0000000B;  // VT_LPWSTR
+  PIDMSI_EDITOR = $00000002;  // VT_LPWSTR
+  PIDMSI_SUPPLIER = $00000003;  // VT_LPWSTR
+  PIDMSI_SOURCE = $00000004;  // VT_LPWSTR
+  PIDMSI_SEQUENCE_NO = $00000005;  // VT_LPWSTR
+  PIDMSI_PROJECT = $00000006;  // VT_LPWSTR
+  PIDMSI_STATUS = $00000007;  // VT_UI4
+  PIDMSI_OWNER = $00000008;  // VT_LPWSTR
+  PIDMSI_RATING = $00000009;  // VT_LPWSTR
+  PIDMSI_PRODUCTION = $0000000A;  // VT_FILETIME (UTC)
+  PIDMSI_COPYRIGHT = $0000000B;  // VT_LPWSTR
 
 
-  PRSPEC_INVALID                      = MAXDWORD;
-  PRSPEC_LPWSTR                       = 0;
-  PRSPEC_PROPID                       = 1;
+  PRSPEC_INVALID = MAXDWORD;
+  PRSPEC_LPWSTR = 0;
+  PRSPEC_PROPID = 1;
 
 type
 
@@ -199,6 +200,7 @@ type
 
 
   LPVERSIONEDSTREAM = ^VERSIONEDSTREAM;
+
   tagVersionedStream = record
     guidVersion: TGUID;
     pStream: IStream;
@@ -210,6 +212,7 @@ type
   PPROPVARIANT = ^PROPVARIANT;
 
   PCAC = ^CAC;
+
   tagCAC = record
     cElems: ULONG;
     pElems: PAnsiChar;
@@ -217,6 +220,7 @@ type
   CAC = tagCAC;
 
   PCAUB = ^CAUB;
+
   tagCAUB = record
     cElems: ULONG;
     pElems: PUCHAR;
@@ -224,6 +228,7 @@ type
   CAUB = tagCAUB;
 
   PCAI = ^CAI;
+
   tagCAI = record
     cElems: ULONG;
     pElems: PSHORT;
@@ -231,6 +236,7 @@ type
   CAI = tagCAI;
 
   PCAUI = ^CAUI;
+
   tagCAUI = record
     cElems: ULONG;
     pElems: PWord;
@@ -238,6 +244,7 @@ type
   CAUI = tagCAUI;
 
   PCAL = ^CAL;
+
   tagCAL = record
     cElems: ULONG;
     pElems: PLONG;
@@ -245,6 +252,7 @@ type
   CAL = tagCAL;
 
   PCAUL = ^CAUL;
+
   tagCAUL = record
     cElems: ULONG;
     pElems: PULONG;
@@ -252,6 +260,7 @@ type
   CAUL = tagCAUL;
 
   PCAFLT = ^CAFLT;
+
   tagCAFLT = record
     cElems: ULONG;
     pElems: PFLOAT;
@@ -259,6 +268,7 @@ type
   CAFLT = tagCAFLT;
 
   PCADBL = ^CADBL;
+
   tagCADBL = record
     cElems: ULONG;
     pElems: PDOUBLE;
@@ -266,6 +276,7 @@ type
   CADBL = tagCADBL;
 
   PCACY = ^CACY;
+
   tagCACY = record
     cElems: ULONG;
     pElems: PCY;
@@ -273,6 +284,7 @@ type
   CACY = tagCACY;
 
   PCADATE = ^CADATE;
+
   tagCADATE = record
     cElems: ULONG;
     pElems: PDATE;
@@ -280,6 +292,7 @@ type
   CADATE = tagCADATE;
 
   PCABSTR = ^CABSTR;
+
   tagCABSTR = record
     cElems: ULONG;
     pElems: PBSTR;
@@ -287,6 +300,7 @@ type
   CABSTR = tagCABSTR;
 
   PCABSTRBLOB = ^CABSTRBLOB;
+
   tagCABSTRBLOB = record
     cElems: ULONG;
     pElems: PBSTR;
@@ -294,6 +308,7 @@ type
   CABSTRBLOB = tagCABSTRBLOB;
 
   PCABOOL = ^CABOOL;
+
   tagCABOOL = record
     cElems: ULONG;
     pElems: PVARIANT_BOOL;
@@ -301,6 +316,7 @@ type
   CABOOL = tagCABOOL;
 
   PCASCODE = ^CASCODE;
+
   tagCASCODE = record
     cElems: ULONG;
     pElems: PSCODE;
@@ -308,6 +324,7 @@ type
   CASCODE = tagCASCODE;
 
   PCAPROPVARIANT = ^CAPROPVARIANT;
+
   tagCAPROPVARIANT = record
     cElems: ULONG;
     pElems: PPROPVARIANT;
@@ -315,6 +332,7 @@ type
   CAPROPVARIANT = tagCAPROPVARIANT;
 
   PCAH = ^CAH;
+
   tagCAH = record
     cElems: ULONG;
     pElems: PLARGE_INTEGER;
@@ -322,6 +340,7 @@ type
   CAH = tagCAH;
 
   PCAUH = ^CAUH;
+
   tagCAUH = record
     cElems: ULONG;
     pElems: PULARGE_INTEGER;
@@ -329,6 +348,7 @@ type
   CAUH = tagCAUH;
 
   PCALPSTR = ^CALPSTR;
+
   tagCALPSTR = record
     cElems: ULONG;
     pElems: PLPSTR;
@@ -336,6 +356,7 @@ type
   CALPSTR = tagCALPSTR;
 
   PCALPWSTR = ^CALPWSTR;
+
   tagCALPWSTR = record
     cElems: ULONG;
     pElems: PLPWSTR;
@@ -343,6 +364,7 @@ type
   CALPWSTR = tagCALPWSTR;
 
   PCAFILETIME = ^CAFILETIME;
+
   tagCAFILETIME = record
     cElems: ULONG;
     pElems: PFILETIME;
@@ -350,6 +372,7 @@ type
   CAFILETIME = tagCAFILETIME;
 
   PCACLIPDATA = ^CACLIPDATA;
+
   tagCACLIPDATA = record
     cElems: ULONG;
     pElems: PCLIPDATA;
@@ -357,6 +380,7 @@ type
   CACLIPDATA = tagCACLIPDATA;
 
   PCACLSID = ^CACLSID;
+
   tagCACLSID = record
     cElems: ULONG;
     pElems: PCLSID;
@@ -522,7 +546,7 @@ type
       VT_VECTOR or VT_CF: (caclipdata: CACLIPDATA);
       VT_VECTOR or VT_BSTR: (cabstr: CABSTR);
       VT_VECTOR or VT_LPSTR: (calpstr: CALPSTR);
-      VT_VECTOR or VT_LPWSTR: (calpwstr: CALPWSTR );
+      VT_VECTOR or VT_LPWSTR: (calpwstr: CALPWSTR);
       VT_VECTOR or VT_VARIANT: (capropvar: CAPROPVARIANT);
       VT_BYREF or VT_I1: (pcVal: PAnsiChar);
       VT_BYREF or VT_UI1: (pbVal: PByte);
@@ -542,7 +566,7 @@ type
       VT_BYREF or VT_BSTR: (pbstrVal: PBSTR);
       VT_BYREF or VT_UNKNOWN: (ppunkVal: PIUnknown);
       VT_BYREF or VT_DISPATCH: (ppdispVal: PPointer);
-      VT_BYREF or VT_SAFEARRAY:(pparray: PSAFEARRAY);
+      VT_BYREF or VT_SAFEARRAY: (pparray: PSAFEARRAY);
       VT_BYREF or VT_VARIANT: (pvarVal: PPROPVARIANT);
   end;
   PROPVARIANT = tagPROPVARIANT;
@@ -550,25 +574,26 @@ type
 
   // PIDMSI_STATUS value definitions
   PPIDMSI_STATUS_VALUE = ^PIDMSI_STATUS_VALUE;
-  PIDMSI_STATUS_VALUE                  = (
-   PIDMSI_STATUS_NORMAL                = 0,
-   PIDMSI_STATUS_NEW                   = PIDMSI_STATUS_NORMAL + 1,
-   PIDMSI_STATUS_PRELIM                = PIDMSI_STATUS_NEW + 1,
-   PIDMSI_STATUS_DRAFT                 = PIDMSI_STATUS_PRELIM + 1,
-   PIDMSI_STATUS_INPROGRESS            = PIDMSI_STATUS_DRAFT + 1,
-   PIDMSI_STATUS_EDIT                  = PIDMSI_STATUS_INPROGRESS + 1,
-   PIDMSI_STATUS_REVIEW                = PIDMSI_STATUS_EDIT + 1,
-   PIDMSI_STATUS_PROOF                 = PIDMSI_STATUS_REVIEW + 1,
-   PIDMSI_STATUS_FINAL                 = PIDMSI_STATUS_PROOF + 1,
-   PIDMSI_STATUS_OTHER                 = $7fff
-  );
+  PIDMSI_STATUS_VALUE = (
+    PIDMSI_STATUS_NORMAL = 0,
+                         PIDMSI_STATUS_NEW = PIDMSI_STATUS_NORMAL + 1,
+                         PIDMSI_STATUS_PRELIM = PIDMSI_STATUS_NEW + 1,
+                         PIDMSI_STATUS_DRAFT = PIDMSI_STATUS_PRELIM + 1,
+                         PIDMSI_STATUS_INPROGRESS = PIDMSI_STATUS_DRAFT + 1,
+                         PIDMSI_STATUS_EDIT = PIDMSI_STATUS_INPROGRESS + 1,
+                         PIDMSI_STATUS_REVIEW = PIDMSI_STATUS_EDIT + 1,
+                         PIDMSI_STATUS_PROOF = PIDMSI_STATUS_REVIEW + 1,
+                         PIDMSI_STATUS_FINAL = PIDMSI_STATUS_PROOF + 1,
+                         PIDMSI_STATUS_OTHER = $7fff
+    );
 
 
-{$IFNDEF _PROPSPEC_DEFINED}
-// Integers are always initialized to 0 in Delphi,
-// So, the default value here is 0.
+  {$IFNDEF _PROPSPEC_DEFINED}
+  // Integers are always initialized to 0 in Delphi,
+  // So, the default value here is 0.
 
   PPROPSPEC = ^tagPROPSPEC;
+
   tagPROPSPEC = record
     ulKind: ULONG;
     case Integer of
@@ -577,12 +602,13 @@ type
       2: (lpwstr: PWideChar);
   end;
   PROPSPEC = tagPROPSPEC;
-{$DEFINE _PROPSPEC_DEFINED}
-{$ENDIF}
+  {$DEFINE _PROPSPEC_DEFINED}
+  {$ENDIF}
 
 
 
   PSTATPROPSTG = ^tagSTATPROPSTG;
+
   tagSTATPROPSTG = record
     lpwstrName: PWideChar;
     propid: PROPID;
@@ -591,6 +617,7 @@ type
   STATPROPSTG = tagSTATPROPSTG;
 
   PSTATPROPSETSTG = ^tagSTATPROPSETSTG;
+
   tagSTATPROPSETSTG = record
     fmtid: FMTID;
     clsid: CLSID;
@@ -603,6 +630,7 @@ type
   STATPROPSETSTG = tagSTATPROPSETSTG;
 
   PSERIALIZEDPROPERTYVALUE = ^tagSERIALIZEDPROPERTYVALUE;
+
   tagSERIALIZEDPROPERTYVALUE = record
     dwType: DWORD;
     rgb: array[0..0] of Byte;
@@ -627,7 +655,7 @@ type
   // ==========================
   //
   IPropertyStorage = interface(IUnknown)
-  ['{00000138-0000-0000-C000-000000000046}']
+    ['{00000138-0000-0000-C000-000000000046}']
     function ReadMultiple(cpspec: ULONG;
                           rgpspec: PROPSPEC;
                           out rgpropvar: PROPVARIANT): HResult; stdcall;
@@ -666,6 +694,7 @@ type
     function Stat(out pstatpsstg: STATPROPSETSTG): HResult; stdcall;
 
   end;
+
   IID_IPropertyStorage = IPropertyStorage;
 
 
@@ -673,7 +702,7 @@ type
   // =============================
   //
   IPropertySetStorage = interface(IUnknown)
-  ['{0000013A-0000-0000-C000-000000000046}']
+    ['{0000013A-0000-0000-C000-000000000046}']
     function Create(const rfmtid: REFFMTID;
                     const pclsid: CLSID;
                     grfFlags: DWORD;
@@ -689,6 +718,7 @@ type
     function Enum(out ppenum: IEnumSTATPROPSETSTG): HResult; stdcall;
 
   end;
+
   IID_IPropertySetStorage = IPropertySetStorage;
 
 
@@ -697,7 +727,7 @@ type
   // ==========================
   //
   IEnumSTATPROPSTG = interface(IUnknown)
-  ['{00000139-0000-0000-C000-000000000046}']
+    ['{00000139-0000-0000-C000-000000000046}']
     function Next(celt: ULONG;
                   rgelt: STATPROPSTG;
                   out pceltFetched: ULONG): HResult; stdcall;
@@ -709,6 +739,7 @@ type
     function Clone(out ppenum: IEnumSTATPROPSTG): HResult; stdcall;
 
   end;
+
   IID_IEnumSTATPROPSTG = IEnumSTATPROPSTG;
 
 
@@ -717,7 +748,7 @@ type
   // =============================
   //
   IEnumSTATPROPSETSTG = interface(IUnknown)
-  ['{00000139-0000-0000-C000-000000000046}']
+    ['{00000139-0000-0000-C000-000000000046}']
     function Next(celt: ULONG;
                   out rgelt: STATPROPSETSTG;
                   out pceltFetched: ULONG): HResult; stdcall;
@@ -729,136 +760,146 @@ type
     function Clone(out ppenum: IEnumSTATPROPSETSTG): HResult; stdcall;
 
   end;
+
   IID_IEnumSTATPROPSETSTG = IEnumSTATPROPSETSTG;
 
 
 
   // functions /////////////////////////////////////////////////////////////////
 
-  // Macros for parsing the OS Version of the Property Set Header
-  function PROPSETHDR_OSVER_KIND(dwOSVer: DWORD): DWORD;
-  function PROPSETHDR_OSVER_MAJOR(dwOSVer: DWORD): DWORD;
-  function PROPSETHDR_OSVER_MINOR(dwOSVer: DWORD): DWORD;
+// Macros for parsing the OS Version of the Property Set Header
+function PROPSETHDR_OSVER_KIND(dwOSVer: DWORD): DWORD;
+function PROPSETHDR_OSVER_MAJOR(dwOSVer: DWORD): DWORD;
+function PROPSETHDR_OSVER_MINOR(dwOSVer: DWORD): DWORD;
 
 
 
 
-  // The PropVariantCopy function copies the contents of one PROPVARIANT structure to another.
-  //
-  // Remarks
-  //   Copies a PROPVARIANT structure by value so the original pvarSrc and new
-  //   pvarDest parameters may be freed independently with calls to PropVariantClear.
-  //   PropVariantCopy does not free the destination as the VariantCopy function does.
-  //   For nonsimple PROPVARIANT types such as VT_STREAM, VT_STORAGE, and so forth,
-  //   which require a subobject, the copy is made by reference.
-  //   The pointer is copied and IUnknown.AddRef is called on it.
-  //   It is illegal to pass Nil for either pvarDest or pvarSrc.
-  function PropVariantCopy(var pvarDest: PROPVARIANT;
-                           var pvarSrc: PROPVARIANT): HResult; stdcall;
+// The PropVariantCopy function copies the contents of one PROPVARIANT structure to another.
+//
+// Remarks
+//   Copies a PROPVARIANT structure by value so the original pvarSrc and new
+//   pvarDest parameters may be freed independently with calls to PropVariantClear.
+//   PropVariantCopy does not free the destination as the VariantCopy function does.
+//   For nonsimple PROPVARIANT types such as VT_STREAM, VT_STORAGE, and so forth,
+//   which require a subobject, the copy is made by reference.
+//   The pointer is copied and IUnknown.AddRef is called on it.
+//   It is illegal to pass Nil for either pvarDest or pvarSrc.
+function PropVariantCopy(var pvarDest: PROPVARIANT;
+                         var pvarSrc: PROPVARIANT): HResult; stdcall;
 
-  // The PropVariantClear function frees all elements that can be freed in a
-  // given PROPVARIANT structure.
-  // For complex elements with known element pointers,
-  // the underlying elements are freed prior to freeing the containing element.
-  //
-  // Remarks
-  //   At any level of indirection, NULL pointers are ignored.
-  //   For example, the pvar parameter points to a PROPVARIANT structure of type VT_CF.
-  //   The pclipdata member of the PROPVARIANT structure points to a CLIPDATA structure.
-  //   The pClipData pointer in the CLIPDATA structure is NULL.
-  //   In this example, the pClipData pointer is ignored.
-  //   However, the CLIPDATA structure pointed to by the pclipdata member of the
-  //   PROPVARIANT structure is freed.
-  //
-  //   On return, this function writes zeroes to the specified PROPVARIANT structure,
-  //   so the VT-type is VT_EMPTY.
-  //   Passing NULL as the pvar parameter produces a return code of S_OK.
-  //
-  // Note
-  //   Do not use this function to initialize PROPVARIANT structures.
-  //   Instead, initialize these structures using the PropVariantInit procedure (defined in this unit).
-  function PropVariantClear(var pvar: PROPVARIANT): HResult; stdcall;
+// The PropVariantClear function frees all elements that can be freed in a
+// given PROPVARIANT structure.
+// For complex elements with known element pointers,
+// the underlying elements are freed prior to freeing the containing element.
+//
+// Remarks
+//   At any level of indirection, NULL pointers are ignored.
+//   For example, the pvar parameter points to a PROPVARIANT structure of type VT_CF.
+//   The pclipdata member of the PROPVARIANT structure points to a CLIPDATA structure.
+//   The pClipData pointer in the CLIPDATA structure is NULL.
+//   In this example, the pClipData pointer is ignored.
+//   However, the CLIPDATA structure pointed to by the pclipdata member of the
+//   PROPVARIANT structure is freed.
+//
+//   On return, this function writes zeroes to the specified PROPVARIANT structure,
+//   so the VT-type is VT_EMPTY.
+//   Passing NULL as the pvar parameter produces a return code of S_OK.
+//
+// Note
+//   Do not use this function to initialize PROPVARIANT structures.
+//   Instead, initialize these structures using the PropVariantInit procedure (defined in this unit).
+function PropVariantClear(var pvar: PROPVARIANT): HResult; stdcall;
 
-  //
-  function FreePropVariantArray(cVariants: ULONG;
-                                rgvars: PPROPVARIANT): HResult; stdcall;
-
-
-  // Not included in Ole32.dll or defined in this unit,
-  // This function (and PropVariantClear) are defined in PropSys.pas
-  // procedure PropVariantInit(out pvar: PROPVARIANT);
+//
+function FreePropVariantArray(cVariants: ULONG;
+                              rgvars: PPROPVARIANT): HResult; stdcall;
 
 
-  function StgCreatePropStg(pUnk: IUnknown;
-                            const fmtid: REFFMTID;
-                            const pclsid: CLSID;
-                            grfFlags: DWORD;
-                            dwReserved: DWORD;
-                            out ppPropStg: IPropertyStorage): HResult; stdcall;
+// Not included in Ole32.dll or defined in this unit,
+// This function (and PropVariantClear) are defined in PropSys.pas
+// procedure PropVariantInit(out pvar: PROPVARIANT);
 
-  function StgOpenPropStg(pUnk: IUnknown;
+
+function StgCreatePropStg(pUnk: IUnknown;
                           const fmtid: REFFMTID;
+                          const pclsid: CLSID;
                           grfFlags: DWORD;
                           dwReserved: DWORD;
                           out ppPropStg: IPropertyStorage): HResult; stdcall;
 
-  function StgCreatePropSetStg(pStorage: IStorage;
-                               dwReserved: DWORD;
-                               out ppPropSetStg: IPropertySetStorage): HResult; stdcall;
+function StgOpenPropStg(pUnk: IUnknown;
+                        const fmtid: REFFMTID;
+                        grfFlags: DWORD;
+                        dwReserved: DWORD;
+                        out ppPropStg: IPropertyStorage): HResult; stdcall;
 
-  function FmtIdToPropStgName(const pfmtid: REFFMTID;
-                              out oszName: POLESTR): HResult; stdcall;
+function StgCreatePropSetStg(pStorage: IStorage;
+                             dwReserved: DWORD;
+                             out ppPropSetStg: IPropertySetStorage): HResult; stdcall;
 
-  function PropStgNameToFmtId(oszName: POLESTR;
-                              out pfmtid: REFFMTID): HResult; stdcall;
+function FmtIdToPropStgName(const pfmtid: REFFMTID;
+                            out oszName: POLESTR): HResult; stdcall;
 
-  function StgConvertVariantToProperty(pvar: PROPVARIANT;
-                                       CodePage: USHORT;
-                                       out pprop: SERIALIZEDPROPERTYVALUE;
-                                       pcb: PULONG;
-                                       const pid: PROPID;
-                                       __reserved: BOOLEAN;
-                                       pcIndirect: PULONG): SERIALIZEDPROPERTYVALUE; stdcall;
+function PropStgNameToFmtId(oszName: POLESTR;
+                            out pfmtid: REFFMTID): HResult; stdcall;
 
-  function StgConvertPropertyToVariant(prop: SERIALIZEDPROPERTYVALUE;
-                                       CodePage: USHORT;
-                                       out pvar: PROPVARIANT;
-                                       pma: PMemoryAllocator): BOOLEAN; stdcall;
+function StgConvertVariantToProperty(pvar: PROPVARIANT;
+                                     CodePage: USHORT;
+                                     out pprop: SERIALIZEDPROPERTYVALUE;
+                                     pcb: PULONG;
+                                     const pid: PROPID;
+                                     __reserved: BOOLEAN;
+                                     pcIndirect: PULONG): SERIALIZEDPROPERTYVALUE; stdcall;
+
+function StgConvertPropertyToVariant(prop: SERIALIZEDPROPERTYVALUE;
+                                     CodePage: USHORT;
+                                     out pvar: PROPVARIANT;
+                                     pma: PMemoryAllocator): BOOLEAN; stdcall;
 
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // Forward functions
-  procedure PropVariantInit(var pvar: PROPVARIANT); inline;
-  procedure PropVariantClearSafe(var pv: PROPVARIANT); inline;
-  //procedure PropVariantClear(var pv: TMfPROPVARIANT);
+// Forward functions
+procedure PropVariantInit(var pvar: PROPVARIANT); inline;
+procedure PropVariantClearSafe(var pv: PROPVARIANT); inline;
+//procedure PropVariantClear(var pv: TMfPROPVARIANT);
 
-  // end of Additional Prototypes
+// end of Additional Prototypes
 
 implementation
 
 const
   PropIdlLib = 'Ole32.dll';
 
-  // Macros for parsing the OS Version of the Property Set Header
-  function PROPSETHDR_OSVER_KIND(dwOSVer: DWORD): DWORD;
-  begin
-    Result:= HIWORD(dwOSVer);
-  end;
+// Macros for parsing the OS Version of the Property Set Header
+function PROPSETHDR_OSVER_KIND(dwOSVer: DWORD): DWORD;
 
-  function PROPSETHDR_OSVER_MAJOR(dwOSVer: DWORD): DWORD;
-  begin
-    Result:= LOBYTE(LOWORD(dwOSVer));
-  end;
+begin
 
-  function PROPSETHDR_OSVER_MINOR(dwOSVer: DWORD): DWORD;
-  begin
-    Result:= HIBYTE(LOWORD(dwOSVer));
-  end;
+  Result := HIWORD(dwOSVer);
+end;
+
+
+function PROPSETHDR_OSVER_MAJOR(dwOSVer: DWORD): DWORD;
+
+begin
+
+  Result := LOBYTE(LOWORD(dwOSVer));
+end;
+
+
+function PROPSETHDR_OSVER_MINOR(dwOSVer: DWORD): DWORD;
+
+begin
+
+  Result := HIBYTE(LOWORD(dwOSVer));
+end;
 
 
 procedure PropVariantInit(var pvar: PROPVARIANT);
+
 begin
 
   FillChar(pvar,
@@ -868,25 +909,28 @@ end;
 
 
 procedure PropVariantClearSafe(var pv: PROPVARIANT);
+
 begin
-  ZeroMemory(@pv, SizeOf(pv));
+
+  ZeroMemory(@pv,
+             SizeOf(pv));
 end;
 
 
-  //--------------------- External definitions ---------------------------------
-    
-  function PropVariantCopy;             external PropIdlLib name 'PropVariantCopy' ;
-  function PropVariantClear;            external PropIdlLib name 'PropVariantClear' ;
-  function FreePropVariantArray;        external PropIdlLib name 'FreePropVariantArray' ;
+//--------------------- External definitions ---------------------------------
 
-  function StgCreatePropStg;            external PropIdlLib name 'StgCreatePropStg' ;
-  function StgOpenPropStg;              external PropIdlLib name 'StgOpenPropStg' ;
-  function StgCreatePropSetStg;         external PropIdlLib name 'StgCreatePropSetStg' ;
-  function FmtIdToPropStgName;          external PropIdlLib name 'FmtIdToPropStgName' ;
-  function PropStgNameToFmtId;          external PropIdlLib name 'PropStgNameToFmtId' ;
-  function StgConvertVariantToProperty; external PropIdlLib name 'StgConvertVariantToProperty' ;
-  function StgConvertPropertyToVariant; external PropIdlLib name 'StgConvertPropertyToVariant' ;
+function PropVariantCopy; external PropIdlLib name 'PropVariantCopy';
+function PropVariantClear; external PropIdlLib name 'PropVariantClear';
+function FreePropVariantArray; external PropIdlLib name 'FreePropVariantArray';
 
-  // Implement Additional Prototypes here.
+function StgCreatePropStg; external PropIdlLib name 'StgCreatePropStg';
+function StgOpenPropStg; external PropIdlLib name 'StgOpenPropStg';
+function StgCreatePropSetStg; external PropIdlLib name 'StgCreatePropSetStg';
+function FmtIdToPropStgName; external PropIdlLib name 'FmtIdToPropStgName';
+function PropStgNameToFmtId; external PropIdlLib name 'PropStgNameToFmtId';
+function StgConvertVariantToProperty; external PropIdlLib name 'StgConvertVariantToProperty';
+function StgConvertPropertyToVariant; external PropIdlLib name 'StgConvertPropertyToVariant';
+
+// Implement Additional Prototypes here.
 
 end.

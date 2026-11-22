@@ -74,7 +74,7 @@ interface
 
 
 uses
-  
+
   {WinApi}
   WinApi.WinApiTypes,
   {ActiveX}
@@ -87,23 +87,25 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
 
 
-// These types should be inside a a WINAPI_PARTITION_DESKTOP region as well but MIDL generates references
-// to them that we cannot remove so they must exist outside of WINAPI_PARTITION_DESKTOP.
+  // These types should be inside a a WINAPI_PARTITION_DESKTOP region as well but MIDL generates references
+  // to them that we cannot remove so they must exist outside of WINAPI_PARTITION_DESKTOP.
 
 type
   tagCONDITION_TYPE = type DWord;
   CONDITION_TYPE = tagCONDITION_TYPE;
   PConditionType = ^tagCONDITION_TYPE;
+
 const
-  CT_AND_CONDITION  = CONDITION_TYPE(0);               // AND of subconditions
-  CT_OR_CONDITION   = CONDITION_TYPE(1);               // OR of subconditions
-  CT_NOT_CONDITION  = CONDITION_TYPE(2);               // NOT of a single subcondition
+  CT_AND_CONDITION = CONDITION_TYPE(0);               // AND of subconditions
+  CT_OR_CONDITION = CONDITION_TYPE(1);               // OR of subconditions
+  CT_NOT_CONDITION = CONDITION_TYPE(2);               // NOT of a single subcondition
   CT_LEAF_CONDITION = CONDITION_TYPE(3);               // No subcondition: property, operation, value.
 
 
@@ -112,21 +114,22 @@ type
   tagCONDITION_OPERATION = type DWord;
   CONDITION_OPERATION = tagCONDITION_OPERATION;
   PConditionOperation = ^tagCONDITION_OPERATION;
+
 const
-  COP_IMPLICIT             = CONDITION_OPERATION(0);
-  COP_EQUAL                = CONDITION_OPERATION(1);
-  COP_NOTEQUAL             = CONDITION_OPERATION(2);
-  COP_LESSTHAN             = CONDITION_OPERATION(3);
-  COP_GREATERTHAN          = CONDITION_OPERATION(4);
-  COP_LESSTHANOREQUAL      = CONDITION_OPERATION(5);
-  COP_GREATERTHANOREQUAL   = CONDITION_OPERATION(6);
-  COP_VALUE_STARTSWITH     = CONDITION_OPERATION(7);     // LIKE FOO%
-  COP_VALUE_ENDSWITH       = CONDITION_OPERATION(8);     // LIKE %FOO
-  COP_VALUE_CONTAINS       = CONDITION_OPERATION(9);     // LIKE %FOO%
-  COP_VALUE_NOTCONTAINS    = CONDITION_OPERATION(10);    // NOT LIKE %FOO%
-  COP_DOSWILDCARDS         = CONDITION_OPERATION(11);    // "DOS wildcards" and the like
-  COP_WORD_EQUAL           = CONDITION_OPERATION(12);    // Contains a word/phrase somewhere.
-  COP_WORD_STARTSWITH      = CONDITION_OPERATION(13);    // Contains a word/phrase beginning with this
+  COP_IMPLICIT = CONDITION_OPERATION(0);
+  COP_EQUAL = CONDITION_OPERATION(1);
+  COP_NOTEQUAL = CONDITION_OPERATION(2);
+  COP_LESSTHAN = CONDITION_OPERATION(3);
+  COP_GREATERTHAN = CONDITION_OPERATION(4);
+  COP_LESSTHANOREQUAL = CONDITION_OPERATION(5);
+  COP_GREATERTHANOREQUAL = CONDITION_OPERATION(6);
+  COP_VALUE_STARTSWITH = CONDITION_OPERATION(7);     // LIKE FOO%
+  COP_VALUE_ENDSWITH = CONDITION_OPERATION(8);     // LIKE %FOO
+  COP_VALUE_CONTAINS = CONDITION_OPERATION(9);     // LIKE %FOO%
+  COP_VALUE_NOTCONTAINS = CONDITION_OPERATION(10);    // NOT LIKE %FOO%
+  COP_DOSWILDCARDS = CONDITION_OPERATION(11);    // "DOS wildcards" and the like
+  COP_WORD_EQUAL = CONDITION_OPERATION(12);    // Contains a word/phrase somewhere.
+  COP_WORD_STARTSWITH = CONDITION_OPERATION(13);    // Contains a word/phrase beginning with this
   COP_APPLICATION_SPECIFIC = CONDITION_OPERATION(14);    // Application specific, presumably uses the Value.
 
   // Prefix COP
@@ -139,14 +142,16 @@ type
   // ====================
   //
   PIRichChunk = ^IRichChunk;
+
   IRichChunk = interface(IUnknown)
-  ['{4FDEF69C-DBC9-454e-9910-B34F3C64B510}']
+    ['{4FDEF69C-DBC9-454e-9910-B34F3C64B510}']
 
     function GetData(pFirstPos: PULONG;
                      pLength: PULONG;
                      ppsz: PPWideChar;
                      pValue: PPROPVARIANT): HResult; stdcall;
   end;
+
   IID_IRichChunk = IRichChunk;
   SID_IRichChunk = IRichChunk;
 
@@ -155,7 +160,7 @@ type
   // ====================
   //
   ICondition = interface(IPersistStream)
-  ['{0FC988D4-C935-4b97-A973-46282EA175C8}']
+    ['{0FC988D4-C935-4b97-A973-46282EA175C8}']
 
     function GetConditionType(var pNodeType: CONDITION_TYPE): HResult; stdcall;
     // For any node, return what kind of node it is.
@@ -196,6 +201,7 @@ type
 
     function Clone(out ppc: ICondition): HResult; stdcall;
   end;
+
   IID_ICondition = ICondition;
   SID_ICondition = ICondition;
 
@@ -204,7 +210,7 @@ type
   // =====================
   //
   ICondition2 = interface(ICondition)
-  ['{0DB8851D-2E5B-47eb-9208-D28C325A01D7}']
+    ['{0DB8851D-2E5B-47eb-9208-D28C325A01D7}']
 
     function GetLocale(var ppszLocaleName: PWideChar): HResult; stdcall;
     // If this is not a leaf node, E_FAIL will be returned.
@@ -218,6 +224,7 @@ type
     // Retrieve the property key, operation and value from the leaf node.
     // Any one of ppropkey, pcop and ppropvar may be NIL.
   end;
+
   IID_ICondition2 = ICondition2;
   SID_ICondition2 = ICondition2;
 
@@ -228,7 +235,6 @@ type
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.
-

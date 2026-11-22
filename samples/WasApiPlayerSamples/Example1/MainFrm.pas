@@ -70,7 +70,7 @@ interface
 
 uses
   WasApiSample.Platform,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   LMessages,
@@ -98,7 +98,9 @@ uses
   {}
   Tools,
   WASAPIEngine,
-  MfPeakMeter, MfPeakMeterMmcs, MfAudioVisualizer;  // Don't forget to add the Mfpeakmeter location in your project settings.
+  MfPeakMeter,
+  MfPeakMeterMmcs,
+  MfAudioVisualizer;  // Don't forget to add the Mfpeakmeter location in your project settings.
 
 type
 
@@ -130,14 +132,17 @@ type
     lblStatus: TLabel;
     MfAudioVisualizer1: TMfAudioVisualizer;
     procedure Open1Click(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure butPlayClick(Sender: TObject);
     procedure butStopClick(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure trbVolumeLChange(Sender: TObject);
     procedure trbVolumeRChange(Sender: TObject);
     procedure butPauseClick(Sender: TObject);
-    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyUp(Sender: TObject;
+                        var Key: Word;
+                        Shift: TShiftState);
 
   private
     { Private declarations }
@@ -173,6 +178,7 @@ implementation
 
 
 procedure TfrmMain.butPauseClick(Sender: TObject);
+
 begin
 
   if not Assigned(fWasApiEngine) then
@@ -184,6 +190,7 @@ end;
 
 
 procedure TfrmMain.butPlayClick(Sender: TObject);
+
 begin
 
   if not Assigned(fWasApiEngine) then
@@ -203,6 +210,7 @@ end;
 
 
 procedure TfrmMain.butStopClick(Sender: TObject);
+
 begin
 
   if not Assigned(fWasApiEngine) then
@@ -214,13 +222,16 @@ end;
 
 
 procedure TfrmMain.Exit1Click(Sender: TObject);
+
 begin
 
   Close();
 end;
 
 
-procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfrmMain.FormCloseQuery(Sender: TObject;
+                                  var CanClose: Boolean);
+
 begin
 
   CanClose := False;
@@ -235,8 +246,9 @@ begin
 end;
 
 
-procedure TfrmMain.FormKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TfrmMain.FormKeyUp(Sender: TObject;
+                             var Key: Word;
+                             Shift: TShiftState);
 var
   iPos: Integer;
 
@@ -252,35 +264,36 @@ begin
     end;
 
   case Key of
-    VK_SPACE:   if Assigned(fWasApiEngine) then
-                  begin
-                    butPlayClick(nil);
-                  end;
+    VK_SPACE: if Assigned(fWasApiEngine) then
+        begin
+          butPlayClick(nil);
+        end;
 
-    VK_END:     if Assigned(fWasApiEngine) then
-                  begin
-                    butStopClick(nil);
-                  end;
+    VK_END: if Assigned(fWasApiEngine) then
+        begin
+          butStopClick(nil);
+        end;
 
-    VK_F10:     if Assigned(fWasApiEngine) then
-                  begin
-                    butPauseClick(nil);
-                  end;
+    VK_F10: if Assigned(fWasApiEngine) then
+        begin
+          butPauseClick(nil);
+        end;
 
-    VK_F12:     begin
-                  Open1Click(nil);
-                end;
+      VK_F12: begin
+        Open1Click(nil);
+      end;
 
-    VK_F8:      begin
-                  iPos := trbVolumeL.Position + trbVolumeR.Position div 2;
-                  trbVolumeL.Position := iPos;
-                  trbVolumeR.Position := iPos;
-                end;
+      VK_F8: begin
+        iPos := trbVolumeL.Position + trbVolumeR.Position div 2;
+        trbVolumeL.Position := iPos;
+        trbVolumeR.Position := iPos;
+      end;
   end;
 end;
 
 
 function TfrmMain.GetAudioFile(): string;
+
 begin
 
   Result := 'No audiofile selected.';
@@ -328,10 +341,10 @@ begin
   SetVolumeChannels();
 
   vol := (MapRange((trbVolumeL.Position),
-                    trbVolumeL.Max,
-                    trbVolumeL.Min,
-                    MIN_VOLUME,
-                    MAX_VOLUME) / (MAX_VOLUME / 100));
+                   trbVolumeL.Max,
+                   trbVolumeL.Min,
+                   MIN_VOLUME,
+                   MAX_VOLUME) / (MAX_VOLUME / 100));
 
   lblLeftVolume.Caption := Format('%d',
                                   [Trunc(vol)]) + '%';
@@ -350,10 +363,10 @@ begin
   SetVolumeChannels();
 
   vol := (MapRange((trbVolumeR.Position),
-                    trbVolumeR.Max,
-                    trbVolumeR.Min,
-                    MIN_VOLUME,
-                    MAX_VOLUME) / (MAX_VOLUME / 100));
+                   trbVolumeR.Max,
+                   trbVolumeR.Min,
+                   MIN_VOLUME,
+                   MAX_VOLUME) / (MAX_VOLUME / 100));
 
   lblRightVolume.Caption := Format('%d',
                                    [Trunc(vol)]) + '%';
@@ -386,7 +399,8 @@ begin
     end;
 
   lblDuration.Caption := Format('Duration: %s',
-                                [HnsTimeToStr(llAudioDuration, False)]);
+                                [HnsTimeToStr(llAudioDuration,
+                                              False)]);
 
   // Create the engine
   if SUCCEEDED(hr) then
@@ -417,6 +431,7 @@ var
   tstr: string;
 
 begin
+
   iProgress := AMessage.WParam;
   iSamples := AMessage.LParam;
 
@@ -432,6 +447,7 @@ end;
 
 
 procedure TfrmMain.OnAudioReadyEvent(var AMessage: TLMessage);
+
 begin
 
   if (AMessage.WParam = 1) then
@@ -447,6 +463,7 @@ end;
 
 
 procedure TfrmMain.OnAudioEndedEvent(var AMessage: TLMessage);
+
 begin
 
   if (AMessage.WParam = 1) then
@@ -467,14 +484,14 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_LITE)) then
-      begin
-        MessageBoxW(0,
-                   lpcwstr('Your computer does not support this Media Foundation API version ' +
-                           IntToStr(MF_VERSION) + '.'),
-                   lpcwstr('MFStartup Failure!'),
-                           MB_ICONSTOP);
-      end;
+    MFSTARTUP_LITE)) then
+    begin
+      MessageBoxW(0,
+                  lpcwstr('Your computer does not support this Media Foundation API version ' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
+    end;
 
 finalization
 

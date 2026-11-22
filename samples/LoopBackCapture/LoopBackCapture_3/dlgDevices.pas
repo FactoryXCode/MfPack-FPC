@@ -66,7 +66,7 @@ interface
 
 uses
   MfLoopbackSamples.Platform,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   {System}
@@ -97,10 +97,13 @@ type
     procedure butOkClick(Sender: TObject);
     procedure butRefreshClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormClose(Sender: TObject;
+                        var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
-    procedure sgDevicesSelectCell(Sender: TObject; ACol, ARow: Integer;
-      var CanSelect: Boolean);
+    procedure sgDevicesSelectCell(Sender: TObject;
+                                  ACol,
+                                  ARow: Integer;
+                                  var CanSelect: Boolean);
 
   private
     { Private declarations }
@@ -133,6 +136,7 @@ implementation
 
 
 procedure TDevicesDlg.butCancelClick(Sender: TObject);
+
 begin
 
   prDataFlow := eDataFlow(-1);
@@ -143,6 +147,7 @@ end;
 
 
 procedure TDevicesDlg.butOkClick(Sender: TObject);
+
 begin
 
   if (Length(prDevices) > 0) and (sgDevices.Row > 0) and (sgDevices.Row <= Length(prDevices)) then
@@ -164,30 +169,35 @@ end;
 
 procedure TDevicesDlg.butRefreshClick(Sender: TObject);
 
-  procedure DoList(aDevices: TEndPointDevice; idx: Integer);
-    begin
-      sgDevices.Cells[0, idx] := aDevices.DevInterfaceName;
-      sgDevices.Cells[1, idx] := aDevices.DeviceName;
-      sgDevices.Cells[2, idx] := aDevices.DeviceDesc;
-      sgDevices.Cells[3, idx] := aDevices.sState;
-      sgDevices.Cells[4, idx] := aDevices.pwszID;
-      sgDevices.Cells[5, idx] := aDevices.iID.ToString();
-    end;
 
-  procedure populate(devices: TEndPointDeviceArray; StartAt: Integer);
+  procedure DoList(aDevices: TEndPointDevice;
+                   idx: Integer);
+  begin
+    sgDevices.Cells[0, idx] := aDevices.DevInterfaceName;
+    sgDevices.Cells[1, idx] := aDevices.DeviceName;
+    sgDevices.Cells[2, idx] := aDevices.DeviceDesc;
+    sgDevices.Cells[3, idx] := aDevices.sState;
+    sgDevices.Cells[4, idx] := aDevices.pwszID;
+    sgDevices.Cells[5, idx] := aDevices.iID.ToString();
+  end;
+
+
+  procedure populate(devices: TEndPointDeviceArray;
+                     StartAt: Integer);
   var
     i: Integer;
   begin
-  sgDevices.RowCount := Length(devices) + 1;
-  i := StartAt; // Start at at row 1
-  while (i <= Length(devices)) do
-    begin
-      // Write to new row
-      DoList(devices[i -1], i);
-      // Add new row
+    sgDevices.RowCount := Length(devices) + 1;
+    i := StartAt; // Start at at row 1
+    while (i <= Length(devices)) do
+      begin
+        // Write to new row
+        DoList(devices[i - 1],
+               i);
+        // Add new row
 
-      Inc(i);
-    end;
+        Inc(i);
+      end;
   end;
 
 var
@@ -210,7 +220,8 @@ begin
                            dwCount);
   if FAILED(hr) then
     begin
-      ShowMessage(Format('Finding Rendering devices failed with code %d !',[hr]));
+      ShowMessage(Format('Finding Rendering devices failed with code %d !',
+                         [hr]));
     end;
 
   if (dwCount = 0) then
@@ -227,7 +238,9 @@ begin
 end;
 
 
-procedure TDevicesDlg.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TDevicesDlg.FormClose(Sender: TObject;
+                                var Action: TCloseAction);
+
 begin
 
   SetLength(prDevices,
@@ -236,6 +249,7 @@ end;
 
 
 procedure TDevicesDlg.FormCreate(Sender: TObject);
+
 begin
 
   prEndPointDevice := nil;
@@ -243,6 +257,7 @@ end;
 
 
 procedure TDevicesDlg.FormShow(Sender: TObject);
+
 begin
 
   butRefreshClick(Self);
@@ -250,6 +265,7 @@ end;
 
 
 procedure TDevicesDlg.InitDeviceList();
+
 begin
 
   SetLength(prDevices,
@@ -277,12 +293,12 @@ begin
 
   // Calculate width of the stringgrid and dialog
   sgDevices.Width := sgDevices.ColWidths[0] +
-                              sgDevices.ColWidths[1] +
-                              sgDevices.ColWidths[2] +
-                              sgDevices.ColWidths[3] +
-                              sgDevices.ColWidths[4] +
-                              sgDevices.ColWidths[5] +
-                              (2 * 2) + 10 {scrollbar};
+    sgDevices.ColWidths[1] +
+    sgDevices.ColWidths[2] +
+    sgDevices.ColWidths[3] +
+    sgDevices.ColWidths[4] +
+    sgDevices.ColWidths[5] +
+    (2 * 2) + 10 {scrollbar};
   Width := sgDevices.Width + 60;
 
   // The header.
@@ -295,8 +311,11 @@ begin
 end;
 
 
-procedure TDevicesDlg.sgDevicesSelectCell(Sender: TObject; ACol, ARow: Integer;
-  var CanSelect: Boolean);
+procedure TDevicesDlg.sgDevicesSelectCell(Sender: TObject;
+                                          ACol,
+                                          ARow: Integer;
+                                          var CanSelect: Boolean);
+
 begin
 
   prSelectedDeviceRow := ARow;

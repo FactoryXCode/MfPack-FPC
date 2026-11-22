@@ -64,17 +64,17 @@ unit frmChannelDeck;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   CommDlg,
   Winapi.ComBaseApi,
   WinApi.ActiveX.ObjBase,
-  
   WinApi.WinApiTypes,
   UxTheme,
   {System}
@@ -193,11 +193,16 @@ type
     procedure tbPitchChange(Sender: TObject);
     procedure chkMuteClick(Sender: TObject);
     procedure jgsProgressChange(Sender: TObject;
-      const NewPosition: Integer);
-    procedure pbProgressMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
-    procedure pbProgressMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+                                const NewPosition: Integer);
+    procedure pbProgressMouseMove(Sender: TObject;
+                                  Shift: TShiftState;
+                                  X,
+                                  Y: Integer);
+    procedure pbProgressMouseUp(Sender: TObject;
+                                Button: TMouseButton;
+                                Shift: TShiftState;
+                                X,
+                                Y: Integer);
     procedure btnPlayPauseClick(Sender: TObject);
 
     // Callbacks
@@ -277,7 +282,7 @@ type
     FRepeatPlay: Boolean;
     FPlaylistShuffle: Boolean;
     FNextPlaylistPath: string;  // When a track starts, resolve the next track path and store it.
-    FShuffleHistory: TList<Integer>;
+    FShuffleHistory: TList < Integer > ;
     FShuffleHistoryPos: Integer;
     FSuppressPlaylistAutoAdvanceOnce: Boolean;
     // Icecast
@@ -432,8 +437,8 @@ begin
         hr := FDeckEngine.Start();
       end;
 
-  else
-    Exit;
+    else
+      Exit;
   end;
 
   if FAILED(hr) then
@@ -448,6 +453,7 @@ end;
 
 
 procedure TfrmChannelDeck.btnSetDownbeatClick(Sender: TObject);
+
 begin
 
   if Assigned(FDeckEngine) then
@@ -469,7 +475,7 @@ begin
     begin
 
       lblStatus.Caption := Format('Stop failed for file: %s with Error: %d',
-                                [ExtractFileName(FFileName), hr]);
+                                  [ExtractFileName(FFileName), hr]);
       lblStatus.Hint := lblStatus.Caption;
     end;
 end;
@@ -515,12 +521,14 @@ end;
 
 
 procedure TfrmChannelDeck.FormCreate(Sender: TObject);
+
 begin
 
   // No form caption
   SetWindowLong(Handle,
                 GWL_STYLE,
-                GetWindowLong(Handle, GWL_STYLE) and not WS_CAPTION or WS_BORDER);
+                GetWindowLong(Handle,
+                              GWL_STYLE) and not WS_CAPTION or WS_BORDER);
 
   SetWindowTheme(pbProgress.Handle,
                  '',
@@ -552,7 +560,7 @@ begin
   FRepeatPlay := False;
   FPlaylistShuffle := False;
   FNextPlaylistPath := '';
-  FShuffleHistory := TList<Integer>.Create;
+  FShuffleHistory := (TList < Integer > .Create);
   FShuffleHistoryPos := -1;
   FSuppressPlaylistAutoAdvanceOnce := False;
   Randomize;
@@ -574,6 +582,7 @@ end;
 
 
 procedure TfrmChannelDeck.FormDestroy(Sender: TObject);
+
 begin
 
   // 1) Unregister when the deck is going to be destroyed.
@@ -604,8 +613,8 @@ end;
 
 
 procedure TfrmChannelDeck.FormShow(Sender: TObject);
-begin
 
+begin
 
   //Height := 1538;
   //Width := 466;
@@ -642,11 +651,13 @@ begin
   // No form caption
   SetWindowLong(Handle,
                 GWL_STYLE,
-                GetWindowLong(Handle, GWL_STYLE) and not WS_CAPTION or WS_BORDER);
+                GetWindowLong(Handle,
+                              GWL_STYLE) and not WS_CAPTION or WS_BORDER);
 end;
 
 
 procedure TfrmChannelDeck.BeforeDestruction();
+
 begin
 
   DetachDeckEngineEvents();
@@ -656,6 +667,7 @@ end;
 
 
 procedure TfrmChannelDeck.DetachDeckEngineEvents();
+
 begin
 
   if not Assigned(FDeckEngine) then
@@ -672,6 +684,7 @@ end;
 
 // Audio rack ------------------------------------------------------------------
 procedure TfrmChannelDeck.BindAudioRack();
+
 begin
 
   FAudioRack := nil;
@@ -743,6 +756,7 @@ end;
 
 
 function TfrmChannelDeck.GetEqSlot(): TMfWasApiFxSlot;
+
 begin
 
   Result := nil;
@@ -755,6 +769,7 @@ end;
 // Audio rack end --------------------------------------------------------------
 
 procedure TfrmChannelDeck.UpdateTransportUi(const AState: TDeviceState);
+
 begin
 
   case AState of
@@ -832,7 +847,7 @@ begin
         btnPlayPause.Enabled := False;
         btnStop.Enabled := False;
       end;
-  else
+    else
       begin
 
         btnPlayPause.Caption := 'Play';
@@ -844,6 +859,7 @@ end;
 
 
 procedure TfrmChannelDeck.UpdateTransportUiFromEngine();
+
 begin
 
   if Assigned(FDeckEngine) then
@@ -854,6 +870,7 @@ end;
 
 // bpm -------------------------------------------------------------------------
 procedure TfrmChannelDeck.UpdateBpmGuiFromEngine();
+
 begin
 
   if not Assigned(FDeckEngine) then
@@ -864,16 +881,16 @@ begin
   if (FDeckEngine.GetCurrentBpm > 0.0) then
     lblBpm.Caption := Format('%.2f BPM',
                              [FDeckEngine.GetCurrentBpm])
+  else if (FDeckEngine.TrackBpm > 0.0) then
+    lblBpm.Caption := Format('%.2f BPM',
+                             [FDeckEngine.TrackBpm])
   else
-    if (FDeckEngine.TrackBpm > 0.0) then
-      lblBpm.Caption := Format('%.2f BPM',
-                               [FDeckEngine.TrackBpm])
-    else
-      lblBpm.Caption := '--.-- BPM';
+    lblBpm.Caption := '--.-- BPM';
 end;
 
 
 procedure TfrmChannelDeck.ResetBeatLamp();
+
 begin
 
   FBeatPulseActive := False;
@@ -884,6 +901,7 @@ end;
 
 // Register the deck in the mixer.
 procedure TfrmChannelDeck.RegisterToMixer();
+
 begin
 
   if Assigned(FMixerChannel) then
@@ -913,11 +931,12 @@ end;
 
 // Unregister when the deck is destroyed.
 procedure TfrmChannelDeck.UnregisterFromMixer();
+
 begin
 
   if Assigned(FMixerChannel) and
-     Assigned(MainMDIFrm) and
-     Assigned(MainMDIFrm.InternalMixer) then
+    Assigned(MainMDIFrm) and
+    Assigned(MainMDIFrm.InternalMixer) then
     MainMDIFrm.InternalMixer.RemoveChannel(FMixerChannel);
 
   FMixerChannel := nil;
@@ -960,6 +979,7 @@ procedure TfrmChannelDeck.EngineOutputPcmToVU(Sender: TObject;
                                               pData: PByte;
                                               const ByteCount: DWORD;
                                               Wfx: PWAVEFORMATEX);
+
 begin
 
   // Reset both when the engine signals silence / stop
@@ -985,6 +1005,7 @@ end;
 procedure TfrmChannelDeck.GetMixerVolumes(out AVolL,
                                           AVolR: Single);
 
+
   function Clamp01(const x: Single): Single; inline;
   begin
 
@@ -994,6 +1015,7 @@ procedure TfrmChannelDeck.GetMixerVolumes(out AVolL,
       Exit(1);
     Result := x;
   end;
+
 
   procedure CalcStereoVolumes_EqualPower(const VolPos,
                                          BalPos: Integer;
@@ -1107,23 +1129,23 @@ begin
   FLastXFadePosition := tbVolume.Position;
 
   if FApplyingXFade or
-     (not chkCrossFade.Checked) then
+    (not chkCrossFade.Checked) then
     Exit;
 
   Range := tbVolume.Maximum - tbVolume.Minimum;
-  if Range <= 0 then
+  if (Range <= 0) then
     Exit;
 
   // Move the other fader by the same percentage, from its current level.
   Delta := (NewPos - PreviousPosition) / Range;
-  if Delta = 0.0 then
+  if (Delta = 0.0) then
     Exit;
 
   FXFadeRemainder := 0.0;
 
   for I := 0 to Screen.FormCount - 1 do
     begin
-      if Screen.Forms[I] = Self then
+      if (Screen.Forms[I] = Self) then
         Continue;
 
       if Screen.Forms[I] is TfrmChannelDeck then
@@ -1160,14 +1182,14 @@ var
 
 begin
 
-  if ADelta = 0.0 then
+  if (ADelta = 0.0) then
     Exit;
 
   Position := tbVolume.Position + FXFadeRemainder -
-              ADelta * (tbVolume.Maximum - tbVolume.Minimum);
-  if Position < tbVolume.Minimum then
+    ADelta * (tbVolume.Maximum - tbVolume.Minimum);
+  if (Position < tbVolume.Minimum) then
     Position := tbVolume.Minimum
-  else if Position > tbVolume.Maximum then
+  else if (Position > tbVolume.Maximum) then
     Position := tbVolume.Maximum;
 
   FApplyingXFade := True;
@@ -1186,6 +1208,7 @@ end;
 // When using the TTrackBar, parameter tb = TTrackBar, AInvert (inversion) should be set to True.
 function TfrmChannelDeck.InvertTrackbarPos(const tb: TMfTrackBar;
                                            AInvert: Boolean): Integer;
+
 begin
 
   if (AInvert = True) then
@@ -1196,8 +1219,10 @@ end;
 
 
 procedure TfrmChannelDeck.jgsProgressChange(Sender: TObject;
-  const NewPosition: Integer);
+                                            const NewPosition: Integer);
+
 begin
+
   //
 
 end;
@@ -1217,7 +1242,7 @@ begin
   FPlaylistDb := TRDJPlaylistDb.Create();
 
   DbFileName := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) +
-                'Data\RDJLibrary.db';
+    'Data\RDJLibrary.db';
 
   FPlaylistDb.Open(DbFileName);
 
@@ -1228,6 +1253,7 @@ end;
 
 
 procedure TfrmChannelDeck.FreePlaylistInfra();
+
 begin
 
   FreeAndNil(FCurrentPlaylist);
@@ -1244,6 +1270,7 @@ end;
 
 
 procedure TfrmChannelDeck.StopPlaylistMode();
+
 begin
 
   FPlayingPlaylist := False;
@@ -1259,7 +1286,7 @@ end;
 
 procedure TfrmChannelDeck.BuildPlaylistPopup();
 var
-  L: TList<TRDJPlaylistInfo>;
+  L: TList < TRDJPlaylistInfo > ;
   i: Integer;
   Info: TRDJPlaylistInfo;
   MI: TMenuItem;
@@ -1325,6 +1352,7 @@ end;
 
 
 function TfrmChannelDeck.PlayPlaylistByID(const APlaylistID: Integer): HRESULT;
+
 begin
 
   Result := E_FAIL;
@@ -1366,6 +1394,7 @@ end;
 
 
 function TfrmChannelDeck.LoadPlaylistByID(const APlaylistID: Integer): HRESULT;
+
 begin
 
   Result := E_FAIL;
@@ -1545,16 +1574,15 @@ begin
         lblStatus.Hint := lblStatus.Caption;
 
         ShowMessage(Format('Failed to load file: %s' + sLineBreak +
-                           'HRESULT: $%.8x',
+          'HRESULT: $%.8x',
                            [ExtractFileName(SelectedFile),
-                            Cardinal(hr)]));
+          Cardinal(hr)]));
         Exit;
       end;
   finally
 
     btnLoad.Enabled := True;
   end;
-
 
 end;
 
@@ -1619,7 +1647,7 @@ begin
     begin
 
       if (FShuffleHistoryPos < 0) or
-         (FShuffleHistory[FShuffleHistoryPos] <> AIndex) then
+        (FShuffleHistory[FShuffleHistoryPos] <> AIndex) then
         AddCurrentToShuffleHistory(AIndex);
     end;
 
@@ -1634,9 +1662,9 @@ begin
 
   lblStatus.Caption := Format('Playlist %s (%d/%d): %s',
                               [FCurrentPlaylist.Info.Name,
-                               FCurrentPlaylistIndex + 1,
-                               FCurrentPlaylist.Count,
-                               BuildDisplaySongText(FFileName)]);
+    FCurrentPlaylistIndex + 1,
+    FCurrentPlaylist.Count,
+    BuildDisplaySongText(FFileName)]);
   lblStatus.Hint := lblStatus.Caption;
 
   UpdateNextPlaylistPath();
@@ -1715,7 +1743,7 @@ end;
 function TfrmChannelDeck.ResolveNextPlaylistIndex(): Integer;
 var
   CandidateIndex: Integer;
-  Candidates: TList<Integer>;
+  Candidates: TList < Integer > ;
   HistoryIndex: Integer;
   i: Integer;
 
@@ -1744,14 +1772,14 @@ begin
             Exit;
           end;
 
-      Candidates := TList<Integer>.Create();
+      Candidates := (TList < Integer > .Create());
       try
 
         // Continue the current shuffle cycle with playable, unvisited tracks.
         for i := 0 to FCurrentPlaylist.Count - 1 do
           if (i <> FCurrentPlaylistIndex) and
-             IsPlaylistEntryAvailable(i) and
-             (FShuffleHistory.IndexOf(i) < 0) then
+            IsPlaylistEntryAvailable(i) and
+            (FShuffleHistory.IndexOf(i) < 0) then
             Candidates.Add(i);
 
         if (Candidates.Count = 0) then
@@ -1769,12 +1797,12 @@ begin
 
             for i := 0 to FCurrentPlaylist.Count - 1 do
               if (i <> FCurrentPlaylistIndex) and
-                 IsPlaylistEntryAvailable(i) then
+                IsPlaylistEntryAvailable(i) then
                 Candidates.Add(i);
 
             // A one-track playlist may repeat its only playable entry.
             if (Candidates.Count = 0) and
-               IsPlaylistEntryAvailable(FCurrentPlaylistIndex) then
+              IsPlaylistEntryAvailable(FCurrentPlaylistIndex) then
               Candidates.Add(FCurrentPlaylistIndex);
           end;
 
@@ -1817,6 +1845,7 @@ end;
 
 
 function TfrmChannelDeck.ResolvePrevPlaylistIndex(): Integer;
+
 begin
 
   Result := -1;
@@ -1832,7 +1861,7 @@ begin
   if FPlaylistShuffle then
     begin
 
-      if FShuffleHistoryPos > 0 then
+      if (FShuffleHistoryPos > 0) then
         Result := FShuffleHistory[FShuffleHistoryPos - 1];
 
       Exit;
@@ -1870,7 +1899,7 @@ begin
     Exit;
 
   if FPlaylistShuffle and (FShuffleHistoryPos > 0) and
-     (FShuffleHistory[FShuffleHistoryPos - 1] = PrevIndex) then
+    (FShuffleHistory[FShuffleHistoryPos - 1] = PrevIndex) then
     Dec(FShuffleHistoryPos);
 
   Result := PlayPlaylistEntry(PrevIndex,
@@ -1903,6 +1932,7 @@ end;
 
 
 procedure TfrmChannelDeck.ResetShuffleHistory();
+
 begin
 
   FShuffleHistory.Clear;
@@ -1911,12 +1941,13 @@ end;
 
 
 procedure TfrmChannelDeck.AddCurrentToShuffleHistory(const AIndex: Integer);
+
 begin
 
   if not FPlaylistShuffle then
     Exit;
 
-  if AIndex < 0 then
+  if (AIndex < 0) then
     Exit;
 
   // If user went backwards in history and then moves forward again,
@@ -1966,10 +1997,10 @@ begin
 
   SongText := BuildDisplaySongText(AFileName);
 
-  if SongText <> '' then
+  if (SongText <> '') then
     lblStatus.Caption := Format('%s: %s',
                                 [APrefix,
-                                 SongText])
+      SongText])
   else
     lblStatus.Caption := APrefix;
 
@@ -1993,13 +2024,13 @@ begin
                                                Title);
 
   SongText := FFileNameParser.BuildIceCastSongText(Artist,
-                                                  Title);
+                                                   Title);
 
   if (SongText = '') then
     Exit;
 
   if SameText(SongText,
-              FLastSentNowPlaying) then
+    FLastSentNowPlaying) then
     Exit;
 
   if Assigned(MainMDIFrm) then
@@ -2013,10 +2044,11 @@ end;
 
 
 procedure TfrmChannelDeck.RepublishBroadcastNowPlaying();
+
 begin
 
   if not Assigned(FDeckEngine) or
-     (FDeckEngine.DeviceState <> dsPlay) then
+    (FDeckEngine.DeviceState <> dsPlay) then
     Exit;
 
   FLastSentNowPlaying := '';
@@ -2069,6 +2101,7 @@ end;
 procedure TfrmChannelDeck.DeckEngineError(Sender: TObject;
                                           const Hr: HRESULT;
                                           const Msg: string);
+
 begin
 
   lblStatus.Caption := Format('%s (error 0x%.8x)',
@@ -2078,8 +2111,8 @@ end;
 
 
 procedure TfrmChannelDeck.DeckEngineProcessed(Sender: TObject;
-                                                         const Position100ns: Int64;
-                                                         const RawPosition: UInt64);
+                                              const Position100ns: Int64;
+                                              const RawPosition: UInt64);
 var
   iProgress: LONGLONG;
   //iSamples: LONGLONG;
@@ -2130,6 +2163,7 @@ end;
 
 
 procedure TfrmChannelDeck.DeckEngineReady(Sender: TObject);
+
 begin
 
   UpdateTransportUiFromEngine();
@@ -2138,6 +2172,7 @@ end;
 
 procedure TfrmChannelDeck.DeckEngineStateChanged(Sender: TObject;
                                                  const NewState: TDeviceState);
+
 begin
 
   UpdateTransportUi(NewState);
@@ -2148,6 +2183,7 @@ procedure TfrmChannelDeck.DeckTick(Sender: TObject;
                                    const Position100ns: Int64;
                                    const CurrentBpm: Double;
                                    const BeatPhase: Double);
+
 begin
 
   bldBeat.UpdatePulse(Position100ns);
@@ -2164,6 +2200,7 @@ procedure TfrmChannelDeck.DeckBeat(Sender: TObject;
                                    const Position100ns: Int64;
                                    const BeatNumber: Int64;
                                    const CurrentBpm: Double);
+
 begin
 
   bldBeat.TriggerPulse(Position100ns);
@@ -2177,6 +2214,7 @@ end;
 // =============================================================================
 
 procedure TfrmChannelDeck.btnPFLClick(Sender: TObject);
+
 begin
 
   UpdateMixerChannelState();
@@ -2184,6 +2222,7 @@ end;
 
 
 procedure TfrmChannelDeck.tbBalanceChange(Sender: TObject);
+
 begin
 
   UpdateMixerChannelState();
@@ -2191,6 +2230,7 @@ end;
 
 
 procedure TfrmChannelDeck.tbBalanceDblClick(Sender: TObject);
+
 begin
 
   tbBalance.AnimateTrackBarToPosition(0,
@@ -2216,6 +2256,7 @@ end;
 
 
 procedure TfrmChannelDeck.tbEqCenterFreqHzDblClick(Sender: TObject);
+
 begin
 
   tbEqCenterFreqHz.AnimateTrackBarToPosition(1500,
@@ -2241,6 +2282,7 @@ end;
 
 
 procedure TfrmChannelDeck.tbEqGainDbDblClick(Sender: TObject);
+
 begin
 
   tbEqCenterFreqHz.AnimateTrackBarToPosition(0,
@@ -2271,6 +2313,7 @@ end;
 
 
 procedure TfrmChannelDeck.tbEqQDblClick(Sender: TObject);
+
 begin
 
   tbEqQ.AnimateTrackBarToPosition(10,
@@ -2279,6 +2322,7 @@ end;
 
 
 procedure TfrmChannelDeck.tbInputGainChange(Sender: TObject);
+
 begin
 
   ApplyInputGainToEngine();
@@ -2286,6 +2330,7 @@ end;
 
 
 procedure TfrmChannelDeck.tbInputGainDblClick(Sender: TObject);
+
 begin
 
   tbInputGain.AnimateTrackBarToPosition(0,
@@ -2305,7 +2350,7 @@ begin
   pct := (tbPitch.Position / 100.0) * 16.0;
 
   // Snap GUI to 0 if close (matches engine behavior).
-  snapped := Abs(pct) <= 0.30; // Must match FPitchAutoZeroPct (or read from engine).
+  snapped := (Abs(pct) <= 0.30); // Must match FPitchAutoZeroPct (or read from engine).
 
   if snapped and (tbPitch.Position <> 0) then
     begin
@@ -2330,10 +2375,11 @@ end;
 
 
 procedure TfrmChannelDeck.tbPitchDblClick(Sender: TObject);
+
 begin
 
- tbPitch.AnimateTrackBarToPosition(0,
-                                   2);
+  tbPitch.AnimateTrackBarToPosition(0,
+                                    2);
 end;
 
 
@@ -2345,12 +2391,12 @@ var
 begin
 
   if (AMasterDeck = nil) or
-     (AMasterDeck.FDeckEngine = nil) or
-     (FDeckEngine = nil) then
+    (AMasterDeck.FDeckEngine = nil) or
+    (FDeckEngine = nil) then
     Exit;
 
   if (AMasterDeck.FDeckEngine.TrackBpm <= 0.0) or
-     (FDeckEngine.TrackBpm <= 0.0) then
+    (FDeckEngine.TrackBpm <= 0.0) then
     Exit;
 
   hr := FDeckEngine.SyncTempoTo(AMasterDeck.FDeckEngine.TrackBpm);
@@ -2380,8 +2426,8 @@ begin
 
   // Auto start.
   if FDeckEngine.DeviceState in [dsReady, dsPause, dsStop] then
-   if chkAutoCue.Checked then
-     btnPlayPauseClick(Self);
+    if chkAutoCue.Checked then
+      btnPlayPauseClick(Self);
 end;
 
 
@@ -2402,7 +2448,9 @@ end;
 
 
 procedure TfrmChannelDeck.pbProgressMouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
+                                              Shift: TShiftState;
+                                              X,
+                                              Y: Integer);
 var
   secPos: Integer;
   hnsPos: Int64;
@@ -2420,9 +2468,8 @@ begin
 
       if (secPos < 0) then
         secPos := 0
-      else
-        if (secPos > pbProgress.Maximum) then
-          secPos := pbProgress.Maximum;
+      else if (secPos > pbProgress.Maximum) then
+        secPos := pbProgress.Maximum;
 
       pbProgress.ShowHint := True;
       pbProgress.Hint := Format('Position: %d s',
@@ -2437,7 +2484,10 @@ end;
 
 
 procedure TfrmChannelDeck.pbProgressMouseUp(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                            Button: TMouseButton;
+                                            Shift: TShiftState;
+                                            X,
+                                            Y: Integer);
 var
   hr: HRESULT;
   tickPos: Int64;  // 100ms ticks
@@ -2501,6 +2551,7 @@ end;
 
 
 procedure TfrmChannelDeck.chkMuteClick(Sender: TObject);
+
 begin
 
   UpdateMixerChannelState();
@@ -2531,6 +2582,7 @@ end;
 
 
 procedure TfrmChannelDeck.chkRepeatPlayClick(Sender: TObject);
+
 begin
 
   FRepeatPlay := chkRepeatPlay.Checked;
@@ -2541,6 +2593,7 @@ end;
 
 
 procedure TfrmChannelDeck.chkPlayListShuffleClick(Sender: TObject);
+
 begin
 
   FPlaylistShuffle := chkPlayList.Checked and chkPlayListShuffle.Checked;
@@ -2559,6 +2612,7 @@ end;
 
 
 procedure TfrmChannelDeck.btnPlayListNextClick(Sender: TObject);
+
 begin
 
   if FPlayingPlaylist then
@@ -2571,6 +2625,7 @@ end;
 
 
 procedure TfrmChannelDeck.btnPlayListPrevClick(Sender: TObject);
+
 begin
 
   if FPlayingPlaylist then
@@ -2582,4 +2637,3 @@ begin
 end;
 
 end.
-

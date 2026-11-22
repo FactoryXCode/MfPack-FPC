@@ -62,6 +62,7 @@ uses
 type
 
   TMfGuiRefreshTimer = class(TComponent)
+
   private
 
     FEnabled: Boolean;
@@ -116,6 +117,7 @@ const
 type
 
   TMfRefreshEntry = class
+
   public
 
     Registration: UInt64;
@@ -129,6 +131,7 @@ type
   TMfRefreshScheduler = class;
 
   TMfRefreshThread = class(TThread)
+
   private
 
     FScheduler: TMfRefreshScheduler;
@@ -143,10 +146,11 @@ type
   end;
 
   TMfRefreshScheduler = class
+
   private
 
     FLock: TCriticalSection;
-    FEntries: TObjectList<TMfRefreshEntry>;
+    FEntries: TObjectList < TMfRefreshEntry > ;
     FWorker: TMfRefreshThread;
     FWakeEvent: THandle;
     FWindow: HWND;
@@ -164,7 +168,7 @@ type
     constructor Create();
     destructor Destroy(); override;
     function AddTimer(ATimer: TMfGuiRefreshTimer;
-                        const AInterval: Cardinal): UInt64;
+                      const AInterval: Cardinal): UInt64;
     procedure RemoveTimer(const ARegistration: UInt64);
   end;
 
@@ -178,6 +182,7 @@ function RefreshTickCount(): UInt64; stdcall;
 
 
 procedure CheckMainThread();
+
 begin
 
   if (GetCurrentThreadId() <> MainThreadID) then
@@ -186,14 +191,16 @@ end;
 
 
 procedure Register();
+
 begin
 
   RegisterComponents('MfPack Timer Samples',
-                       [TMfGuiRefreshTimer]);
+                     [TMfGuiRefreshTimer]);
 end;
 
 
 constructor TMfRefreshThread.Create(AScheduler: TMfRefreshScheduler);
+
 begin
 
   inherited Create(True);
@@ -213,21 +220,22 @@ begin
 
       WaitMs := FScheduler.Advance();
       WaitForSingleObject(FScheduler.FWakeEvent,
-                            WaitMs);
+                          WaitMs);
     end;
 end;
 
 
 constructor TMfRefreshScheduler.Create();
+
 begin
 
   inherited Create();
   FLock := TCriticalSection.Create();
-  FEntries := TObjectList<TMfRefreshEntry>.Create(True);
+  FEntries := (TObjectList < TMfRefreshEntry > .Create(True));
   FWakeEvent := CreateEventW(nil,
-                              False,
-                              False,
-                              nil);
+                             False,
+                             False,
+                             nil);
   if (FWakeEvent = 0) then
     RaiseLastOSError();
 
@@ -238,6 +246,7 @@ end;
 
 
 destructor TMfRefreshScheduler.Destroy();
+
 begin
 
   if Assigned(FWorker) then
@@ -247,7 +256,7 @@ begin
       SetEvent(FWakeEvent);
       // The worker never synchronizes with, or waits for, the main thread.
       WaitForSingleObject(FWorker.Handle,
-                            INFINITE);
+                          INFINITE);
       FreeAndNil(FWorker);
     end;
 
@@ -276,7 +285,7 @@ end;
 
 
 function TMfRefreshScheduler.AddTimer(ATimer: TMfGuiRefreshTimer;
-                                       const AInterval: Cardinal): UInt64;
+                                      const AInterval: Cardinal): UInt64;
 var
   Entry: TMfRefreshEntry;
 
@@ -371,9 +380,9 @@ begin
       begin
 
         FMessagePending := PostMessage(FWindow,
-                                        WM_MF_GUI_REFRESH,
-                                        0,
-                                        0);
+                                       WM_MF_GUI_REFRESH,
+                                       0,
+                                       0);
         // Retry a full Windows message queue without spinning.
         if not FMessagePending and (Result > 100) then
           Result := 100;
@@ -387,7 +396,7 @@ end;
 
 procedure TMfRefreshScheduler.DispatchTimers();
 var
-  DueRegistrations: TArray<UInt64>;
+  DueRegistrations: TArray < UInt64 > ;
   Entry: TMfRefreshEntry;
   Timer: TMfGuiRefreshTimer;
   Registration: UInt64;
@@ -404,7 +413,7 @@ begin
     FMessagePending := False;
     FDispatching := True;
     SetLength(DueRegistrations,
-                 FEntries.Count);
+              FEntries.Count);
     Count := 0;
 
     for Entry in FEntries do
@@ -416,7 +425,7 @@ begin
         end;
 
     SetLength(DueRegistrations,
-                 Count);
+              Count);
   finally
 
     FLock.Release();
@@ -493,6 +502,7 @@ end;
 
 
 procedure TMfRefreshScheduler.WindowProc(var Message: TLMessage);
+
 begin
 
   if (Message.Msg = WM_MF_GUI_REFRESH) then
@@ -503,13 +513,14 @@ begin
     end
   else
     Message.Result := DefWindowProcW(FWindow,
-                                      Message.Msg,
-                                      Message.WParam,
-                                      Message.LParam);
+                                     Message.Msg,
+                                     Message.WParam,
+                                     Message.LParam);
 end;
 
 
 constructor TMfGuiRefreshTimer.Create(AOwner: TComponent);
+
 begin
 
   CheckMainThread();
@@ -520,6 +531,7 @@ end;
 
 
 destructor TMfGuiRefreshTimer.Destroy();
+
 begin
 
   CheckMainThread();
@@ -532,6 +544,7 @@ end;
 
 
 procedure TMfGuiRefreshTimer.Loaded();
+
 begin
 
   inherited Loaded();
@@ -540,6 +553,7 @@ end;
 
 
 procedure TMfGuiRefreshTimer.UpdateTimer();
+
 begin
 
   if Assigned(RefreshScheduler) and (FRegistration <> 0) then
@@ -547,9 +561,9 @@ begin
   FRegistration := 0;
 
   if RefreshShuttingDown or
-     (csDesigning in ComponentState) or
-     (csLoading in ComponentState) or
-     (csDestroying in ComponentState) then
+    (csDesigning in ComponentState) or
+    (csLoading in ComponentState) or
+    (csDestroying in ComponentState) then
     Exit;
 
   if FEnabled and (FInterval > 0) and Assigned(FOnTimer) then
@@ -558,12 +572,13 @@ begin
       if not Assigned(RefreshScheduler) then
         RefreshScheduler := TMfRefreshScheduler.Create();
       FRegistration := RefreshScheduler.AddTimer(Self,
-                                                  FInterval);
+                                                 FInterval);
     end;
 end;
 
 
 procedure TMfGuiRefreshTimer.SetEnabled(const Value: Boolean);
+
 begin
 
   CheckMainThread();
@@ -576,6 +591,7 @@ end;
 
 
 procedure TMfGuiRefreshTimer.SetInterval(const Value: Cardinal);
+
 begin
 
   CheckMainThread();
@@ -588,6 +604,7 @@ end;
 
 
 procedure TMfGuiRefreshTimer.SetOnTimer(const Value: TNotifyEvent);
+
 begin
 
   CheckMainThread();

@@ -123,6 +123,7 @@ type
   end;
 
   TMfSubtitleFramePump = class(TObject)
+
   private
     FCompositor: TMfSubtitleCompositor;
     FOnProgress: TMfSubtitleFramePumpProgress;
@@ -232,6 +233,7 @@ type
                                SampleTime: MFTIME;
                                SampleDuration: MFTIME;
                                out Sample: IMFSample): HRESULT;
+
   public
 
     constructor Create(Compositor: TMfSubtitleCompositor);
@@ -290,6 +292,7 @@ const
 type
 
   TMfSubtitleFramePumpCancelThread = class(TThread)
+
   private
     FReader: IMFSourceReader;
     FWriter: IMFSinkWriter;
@@ -305,9 +308,11 @@ type
                        StreamIndex: DWORD);
   end;
 
+
 constructor TMfSubtitleFramePumpCancelThread.Create(const Reader: IMFSourceReader;
                                                     const Writer: IMFSinkWriter;
                                                     StreamIndex: DWORD);
+
 begin
 
   inherited Create(True);
@@ -346,7 +351,7 @@ begin
         hr := FReader.Flush(FStreamIndex);
 
         OutputDebugStringW(PChar(Format('Export: cancel helper after reader Flush hr=%.8x',
-                                       [DWORD(hr)])));
+                                        [DWORD(hr)])));
       end;
 
     // Do not flush the sink writer during a graceful stop. We want samples that
@@ -363,6 +368,7 @@ end;
 
 
 constructor TMfSubtitleFramePump.Create(Compositor: TMfSubtitleCompositor);
+
 begin
 
   inherited Create();
@@ -399,7 +405,8 @@ begin
 
   Reader := nil;
   attribs := nil;
-  useNativeMp4Video := SameText(ExtractFileExt(InputFileName), '.mp4');
+  useNativeMp4Video := SameText(ExtractFileExt(InputFileName),
+                                '.mp4');
 
   Result := MFCreateAttributes(attribs,
                                3);
@@ -423,7 +430,7 @@ begin
     end;
 
   OutputDebugStringW(PChar(Format('Export: source reader native MP4 video=%s',
-                                 [BoolToStr(useNativeMp4Video)])));
+                                  [BoolToStr(useNativeMp4Video)])));
 
   Result := MFCreateSourceReaderFromURL(PWideChar(InputFileName),
                                         attribs,
@@ -594,8 +601,10 @@ begin
 
   OutputSample := nil;
   outputBuffer := nil;
-  ZeroMemory(@streamInfo, SizeOf(streamInfo));
-  ZeroMemory(@outputData, SizeOf(outputData));
+  ZeroMemory(@streamInfo,
+             SizeOf(streamInfo));
+  ZeroMemory(@outputData,
+             SizeOf(outputData));
   processStatus := 0;
   currentLength := 0;
   maxLength := 0;
@@ -622,7 +631,7 @@ begin
     Exit;
 
   bufferSize := Width * Height * 4;
-  if streamInfo.cbSize > bufferSize then
+  if (streamInfo.cbSize > bufferSize) then
     bufferSize := streamInfo.cbSize;
 
   Result := MFCreateSample(OutputSample);
@@ -660,11 +669,11 @@ begin
       FLoggedConverterGeometry := True;
       OutputDebugStringW(PChar(Format(
         'Export: converter output width=%d height=%d cbSize=%d current=%d max=%d',
-        [Width, Height, streamInfo.cbSize, currentLength, maxLength])));
+                                      [Width, Height, streamInfo.cbSize, currentLength, maxLength])));
     end;
 
   targetLength := Width * Height * 4;
-  if currentLength = targetLength then
+  if (currentLength = targetLength) then
     Exit;
 
   codedHeight := (Height + 15) and not UINT32(15);
@@ -675,7 +684,7 @@ begin
     end;
 
   sourceStride := currentLength div codedHeight;
-  if sourceStride < (Width * 4) then
+  if (sourceStride < (Width * 4)) then
     begin
       Result := E_UNEXPECTED;
       Exit;
@@ -726,9 +735,9 @@ end;
 
 
 function TMfSubtitleFramePump.NormalizeRgb32Sample(InputSample: IMFSample;
-                                                    Width: UINT32;
-                                                    Height: UINT32;
-                                                    out OutputSample: IMFSample): HRESULT;
+                                                   Width: UINT32;
+                                                   Height: UINT32;
+                                                   out OutputSample: IMFSample): HRESULT;
 var
   sourceBuffer: IMFMediaBuffer;
   targetBuffer: IMFMediaBuffer;
@@ -765,7 +774,7 @@ begin
     Exit;
 
   targetLength := Width * Height * 4;
-  if sourceLength < targetLength then
+  if (sourceLength < targetLength) then
     begin
       Result := MF_E_BUFFERTOOSMALL;
       Exit;
@@ -774,12 +783,12 @@ begin
   // Source Reader decoders are allowed to return padded IMF2DBuffer samples.
   // The H.264 Sink Writer is much stricter: it expects a normal, tightly
   // packed RGB32 memory buffer matching the input media type exactly.
-  if (sourceLength mod Height) = 0 then
+  if ((sourceLength mod Height) = 0) then
     sourceStride := sourceLength div Height
   else
     sourceStride := Width * 4;
 
-  if sourceStride < (Width * 4) then
+  if (sourceStride < (Width * 4)) then
     begin
       Result := E_UNEXPECTED;
       Exit;
@@ -875,7 +884,7 @@ begin
     Exit;
 
   OutputDebugStringW(PChar(Format('Export: hardware video encoder transforms=%s',
-                                 [BoolToStr(FUseHardwareVideoEncoder)])));
+                                  [BoolToStr(FUseHardwareVideoEncoder)])));
 
   Result := attribs.SetUINT32(MF_SINK_WRITER_DISABLE_THROTTLING,
                               UINT32(True));
@@ -959,7 +968,7 @@ begin
   if UseFragmentedMp4 then
     begin
       KeyFrameSpacing := FrameRateNum div FrameRateDen;
-      if (FrameRateNum mod FrameRateDen) <> 0 then
+      if ((FrameRateNum mod FrameRateDen) <> 0) then
         Inc(KeyFrameSpacing);
       if (KeyFrameSpacing = 0) then
         KeyFrameSpacing := 1;
@@ -1055,7 +1064,7 @@ begin
                                        @CodecValue);
           OutputDebugStringW(PChar(Format(
             'Export: live H.264 B-picture count=0 hr=%.8x',
-            [DWORD(CodecHr)])));
+                                          [DWORD(CodecHr)])));
 
           // The value zero is eAVEncCommonRateControlMode_CBR. MfPack's current
           // CodecApi translation exposes the property GUID but not this enum.
@@ -1070,7 +1079,7 @@ begin
                                        @CodecValue);
           OutputDebugStringW(PChar(Format(
             'Export: live H.264 rate control=CBR hr=%.8x',
-            [DWORD(CodecHr)])));
+                                          [DWORD(CodecHr)])));
 
           FillChar(CodecValue,
                    SizeOf(CodecValue),
@@ -1081,7 +1090,7 @@ begin
                                        @CodecValue);
           OutputDebugStringW(PChar(Format(
             'Export: live H.264 mean bitrate=%d hr=%.8x',
-            [Bitrate, DWORD(CodecHr)])));
+                                          [Bitrate, DWORD(CodecHr)])));
 
           FillChar(CodecValue,
                    SizeOf(CodecValue),
@@ -1100,7 +1109,7 @@ begin
 
       OutputDebugStringW(PChar(Format(
         'Export: live H.264 GOP configuration frames=%d hr=%.8x',
-        [KeyFrameSpacing, DWORD(CodecHr)])));
+                                      [KeyFrameSpacing, DWORD(CodecHr)])));
     end;
 
   Result := S_OK;
@@ -1110,6 +1119,7 @@ end;
 function TMfSubtitleFramePump.ForceVideoKeyFrame(): HRESULT;
 var
   CodecValue: VARIANT;
+
 begin
 
   if not Assigned(FVideoEncoderCodecApi) then
@@ -1141,6 +1151,7 @@ var
   streamIndex: DWORD;
   hr: HRESULT;
 
+
   function TryConfigureAudioStream(const AStreamIndex: DWORD): Boolean;
   var
     candidateReader: IMFSourceReader;
@@ -1165,32 +1176,31 @@ var
     // make a fallback AC3 stream deliver multichannel samples under the stale
     // stereo contract (audible as very slow, low-pitched playback).
     if FAILED(MFCreateSourceReaderFromURL(PWideChar(InputFileName),
-                                          nil,
-                                          candidateReader)) then
+      nil,
+      candidateReader)) then
       Exit;
     if FAILED(candidateReader.SetStreamSelection(MF_SOURCE_READER_ALL_STREAMS,
-                                                 False)) then
+      False)) then
       Exit;
     if FAILED(candidateReader.SetStreamSelection(AStreamIndex,
-                                                 True)) then
+      True)) then
       Exit;
     if FAILED(candidateReader.SetCurrentMediaType(AStreamIndex,
-                                                  0,
-                                                  partialType)) then
+      0,
+      partialType)) then
       Exit;
-    if FAILED(candidateReader.GetCurrentMediaType(AStreamIndex,
-                                                  @currentType)) then
+    if FAILED(candidateReader.GetCurrentMediaType(AStreamIndex, @currentType)) then
       Exit;
     if FAILED(currentType.GetUINT32(MF_MT_AUDIO_NUM_CHANNELS,
-                                    channels)) or (channels = 0) then
+      channels)) or (channels = 0) then
       Exit;
     if FAILED(currentType.GetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,
-                                    samplesPerSecond)) or
-       (samplesPerSecond = 0) then
+      samplesPerSecond)) or
+      (samplesPerSecond = 0) then
       Exit;
     if FAILED(currentType.GetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
-                                    bitsPerSample)) or
-       (bitsPerSample <> 16) then
+      bitsPerSample)) or
+      (bitsPerSample <> 16) then
       Exit;
 
     // Samples are explicitly normalized to stereo before reaching either the
@@ -1198,28 +1208,28 @@ var
     if FAILED(MFCreateMediaType(normalizedType)) then
       Exit;
     if FAILED(normalizedType.SetGUID(MF_MT_MAJOR_TYPE,
-                                     MFMediaType_Audio)) then
+      MFMediaType_Audio)) then
       Exit;
     if FAILED(normalizedType.SetGUID(MF_MT_SUBTYPE,
-                                     MFAudioFormat_PCM)) then
+      MFAudioFormat_PCM)) then
       Exit;
     if FAILED(normalizedType.SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
-                                       16)) then
+      16)) then
       Exit;
     if FAILED(normalizedType.SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,
-                                       samplesPerSecond)) then
+      samplesPerSecond)) then
       Exit;
     if FAILED(normalizedType.SetUINT32(MF_MT_AUDIO_NUM_CHANNELS,
-                                       2)) then
+      2)) then
       Exit;
     if FAILED(normalizedType.SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,
-                                       4)) then
+      4)) then
       Exit;
     if FAILED(normalizedType.SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
-                                       samplesPerSecond * 4)) then
+      samplesPerSecond * 4)) then
       Exit;
     if FAILED(normalizedType.SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT,
-                                       UINT32(True))) then
+      UINT32(True))) then
       Exit;
 
     AudioReader := candidateReader;
@@ -1228,7 +1238,7 @@ var
     FAudioInputChannels := channels;
     FAudioOutputSampleRate := samplesPerSecond;
     OutputDebugStringW(PChar(Format('Export: normalized audio stream=%d inputChannels=%d outputChannels=2 rate=%d bits=16',
-                                   [AStreamIndex, channels, samplesPerSecond])));
+                                    [AStreamIndex, channels, samplesPerSecond])));
     Result := True;
   end;
 
@@ -1308,7 +1318,7 @@ begin
   if FAudioStreamExplicitlySelected then
     begin
       OutputDebugStringW(PChar(Format('Export: explicitly selected audio stream %d cannot be decoded',
-                                     [selectedStreamIndex])));
+                                      [selectedStreamIndex])));
       Result := MF_E_TOPO_CODEC_NOT_FOUND;
       Exit;
     end;
@@ -1318,27 +1328,27 @@ begin
   // An audio-only Cast receiver is still useful in that situation, so try the
   // remaining audio tracks in container order rather than producing silence.
   OutputDebugStringW(PChar(Format('Export: selected audio stream %d cannot be decoded; searching for a fallback',
-                                 [selectedStreamIndex])));
+                                  [selectedStreamIndex])));
   streamIndex := 0;
-  while streamIndex < 256 do
+  while (streamIndex < 256) do
     begin
       nativeType := nil;
       hr := probeReader.GetNativeMediaType(streamIndex,
                                            0,
                                            @nativeType);
-      if hr = MF_E_INVALIDSTREAMNUMBER then
+      if (hr = MF_E_INVALIDSTREAMNUMBER) then
         Break;
 
       if SUCCEEDED(hr) and Assigned(nativeType) and
-         SUCCEEDED(nativeType.GetGUID(MF_MT_MAJOR_TYPE,
-                                      majorType)) and
-         IsEqualGUID(majorType,
-                     MFMediaType_Audio) and
-         (streamIndex <> selectedStreamIndex) and
-         TryConfigureAudioStream(streamIndex) then
+        SUCCEEDED(nativeType.GetGUID(MF_MT_MAJOR_TYPE,
+                                     majorType)) and
+        IsEqualGUID(majorType,
+                    MFMediaType_Audio) and
+        (streamIndex <> selectedStreamIndex) and
+        TryConfigureAudioStream(streamIndex) then
         begin
           OutputDebugStringW(PChar(Format('Export: using decodable fallback audio stream %d instead of %d',
-                                         [streamIndex, selectedStreamIndex])));
+                                          [streamIndex, selectedStreamIndex])));
           HasAudio := True;
           Result := S_OK;
           Exit;
@@ -1377,25 +1387,24 @@ begin
     end;
 
   if FAILED(AudioInputType.GetUINT32(MF_MT_AUDIO_NUM_CHANNELS,
-                                     channels)) or (channels = 0) then
+    channels)) or (channels = 0) then
     channels := 2;
   if FAILED(AudioInputType.GetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,
-                                     samplesPerSec)) or (samplesPerSec = 0) then
+    samplesPerSec)) or (samplesPerSec = 0) then
     samplesPerSec := 48000;
   if FAILED(AudioInputType.GetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE,
-                                     bitsPerSample)) or (bitsPerSample = 0) then
+    bitsPerSample)) or (bitsPerSample = 0) then
     bitsPerSample := 16;
 
   if (channels <= 1) then
     avgBytesPerSec := 12000
+  else if (channels <= 2) then
+    avgBytesPerSec := 24000
   else
-    if (channels <= 2) then
-      avgBytesPerSec := 24000
-    else
-      avgBytesPerSec := 48000;
+    avgBytesPerSec := 48000;
 
   OutputDebugStringW(PChar(Format('Export: audio input channels=%d rate=%d bits=%d aacBytesPerSec=%d',
-                                 [channels, samplesPerSec, bitsPerSample, avgBytesPerSec])));
+                                  [channels, samplesPerSec, bitsPerSample, avgBytesPerSec])));
 
   Result := MFCreateMediaType(audioOutputType);
   if FAILED(Result) then
@@ -1453,7 +1462,7 @@ begin
     begin
 
       OutputDebugStringW(PChar(Format('Export: audio AddStream failed hr=%.8x',
-                                     [DWORD(Result)])));
+                                      [DWORD(Result)])));
       Exit;
     end;
 
@@ -1461,13 +1470,14 @@ begin
                                      AudioInputType,
                                      nil);
   if FAILED(Result) then
-    OutputDebugStringW(PChar(Format('Export: audio SetInputMediaType failed hr=%.8x', [DWORD(Result)])));
+    OutputDebugStringW(PChar(Format('Export: audio SetInputMediaType failed hr=%.8x',
+                                    [DWORD(Result)])));
 end;
 
 
 function TMfSubtitleFramePump.GetAudioSampleDuration(Sample: IMFSample;
-                                                    const AudioState: TMfSubtitleAudioState;
-                                                    out SampleDuration: LONGLONG): HRESULT;
+                                                     const AudioState: TMfSubtitleAudioState;
+                                                     out SampleDuration: LONGLONG): HRESULT;
 var
   totalLength: DWORD;
 
@@ -1484,7 +1494,7 @@ begin
 
   totalLength := 0;
   if SUCCEEDED(Sample.GetTotalLength(@totalLength)) and
-     (totalLength > 0) and (AudioState.BytesPerSecond > 0) then
+    (totalLength > 0) and (AudioState.BytesPerSecond > 0) then
     SampleDuration := (Int64(totalLength) * 10000000) div Int64(AudioState.BytesPerSecond);
 
   if (SampleDuration <= 0) then
@@ -1522,8 +1532,8 @@ begin
                                                0);
 
   if (InterlockedCompareExchange(FAudioMuted,
-                                 0,
-                                 0) <> 0) then
+    0,
+    0) <> 0) then
     VolumePermille := 0;
 
   if (VolumePermille >= 1000) then
@@ -1599,7 +1609,7 @@ begin
       Exit;
     end;
 
-  if FAudioInputChannels = 2 then
+  if (FAudioInputChannels = 2) then
     begin
       Result := S_OK;
       Exit;
@@ -1621,7 +1631,7 @@ begin
     Exit;
 
   if (FAudioInputChannels = 0) or
-     (SourceLength mod (FAudioInputChannels * SizeOf(SmallInt)) <> 0) then
+    (SourceLength mod (FAudioInputChannels * SizeOf(SmallInt)) <> 0) then
     begin
       Result := MF_E_INVALIDMEDIATYPE;
       Exit;
@@ -1666,15 +1676,15 @@ begin
       for FrameIndex := 0 to FrameCount - 1 do
         begin
           SourceFrame := PSmallInt(NativeInt(SourceData) +
-                                   NativeInt(FrameIndex * FAudioInputChannels *
-                                             SizeOf(SmallInt)));
+            NativeInt(FrameIndex * FAudioInputChannels *
+            SizeOf(SmallInt)));
           TargetFrame := PSmallInt(NativeInt(TargetData) +
-                                   NativeInt(FrameIndex * 2 * SizeOf(SmallInt)));
+            NativeInt(FrameIndex * 2 * SizeOf(SmallInt)));
 
           // WAVEFORMATEXTENSIBLE mask $3F orders the first pair as front-left
           // and front-right. Discard centre, LFE and surround channels.
           TargetFrame^ := SourceFrame^;
-          if FAudioInputChannels > 1 then
+          if (FAudioInputChannels > 1) then
             PSmallInt(NativeInt(TargetFrame) + SizeOf(SmallInt))^ :=
               PSmallInt(NativeInt(SourceFrame) + SizeOf(SmallInt))^
           else
@@ -1694,6 +1704,7 @@ end;
 
 
 procedure TMfSubtitleFramePump.Cancel();
+
 begin
 
   if FCancelRequested then
@@ -1711,6 +1722,7 @@ end;
 
 
 procedure TMfSubtitleFramePump.Pause();
+
 begin
 
   if FCancelRequested or FPauseRequested then
@@ -1722,6 +1734,7 @@ end;
 
 
 procedure TMfSubtitleFramePump.Resume();
+
 begin
 
   if not FPauseRequested then
@@ -1741,9 +1754,8 @@ begin
   Volume := AVolume;
   if (Volume < 0.0) then
     Volume := 0.0
-  else
-    if (Volume > 1.0) then
-      Volume := 1.0;
+  else if (Volume > 1.0) then
+    Volume := 1.0;
 
   InterlockedExchange(FAudioVolumePermille,
                       Round(Volume * 1000.0));
@@ -1751,6 +1763,7 @@ end;
 
 
 procedure TMfSubtitleFramePump.SelectAudioStream(const AStreamIndex: DWORD);
+
 begin
 
   FAudioInputStreamIndex := AStreamIndex;
@@ -1759,6 +1772,7 @@ end;
 
 
 procedure TMfSubtitleFramePump.SetAudioMuted(const AMuted: Boolean);
+
 begin
 
   if AMuted then
@@ -1784,14 +1798,14 @@ begin
 
   pauseStartTick := GetTickCount();
   OutputDebugStringW(PChar(Format('Export: paused at frames=%d time=%d',
-                                 [FFramesWritten, SampleTime])));
+                                  [FFramesWritten, SampleTime])));
   while FPauseRequested and (not FCancelRequested) do
     Sleep(25);
 
   pauseElapsedMs := DWORD(GetTickCount() - pauseStartTick);
   AExportStartTick := DWORD(AExportStartTick + pauseElapsedMs);
   OutputDebugStringW(PChar(Format('Export: resumed after %d ms',
-                                 [pauseElapsedMs])));
+                                  [pauseElapsedMs])));
   Result := FCancelRequested;
 end;
 
@@ -1854,8 +1868,8 @@ begin
           Result := NormalizeAudioSample(sample);
           if SUCCEEDED(Result) then
             Result := GetAudioSampleDuration(sample,
-                                           AudioState,
-                                           sampleDuration);
+                                             AudioState,
+                                             sampleDuration);
           if FAILED(Result) then
             Exit;
           Result := sample.SetSampleTime(AudioState.PendingTime);
@@ -1883,9 +1897,9 @@ begin
 
                 Inc(writeRetryCount);
                 if (writeRetryCount = 1) or
-                   ((writeRetryCount mod 40) = 0) then
+                  ((writeRetryCount mod 40) = 0) then
                   OutputDebugStringW(PChar(Format('Export: pending audio WriteSample waiting for encoder retries=%d',
-                                                 [writeRetryCount])));
+                                                  [writeRetryCount])));
                 Sleep(25);
               until (writeRetryCount >= 1200) or FCancelRequested;
             end;
@@ -1919,11 +1933,11 @@ begin
         end;
 
       if ((flags and MF_SOURCE_READERF_ERROR) <> 0) or
-         ((flags and MF_SOURCE_READERF_NATIVEMEDIATYPECHANGED) <> 0) then
+        ((flags and MF_SOURCE_READERF_NATIVEMEDIATYPECHANGED) <> 0) then
         begin
 
           OutputDebugStringW(PChar(Format('Export: audio reader fatal flags=%.8x stream=%d',
-                                         [flags, FAudioInputStreamIndex])));
+                                          [flags, FAudioInputStreamIndex])));
           Result := E_FAIL;
           Break;
         end;
@@ -1955,10 +1969,10 @@ begin
             Break;
 
           if (currentChannels = 0) or
-             (currentSampleRate = 0) or
-             (currentBitsPerSample <> 16) or
-             ((FAudioOutputSampleRate <> 0) and
-              (currentSampleRate <> FAudioOutputSampleRate)) then
+            (currentSampleRate = 0) or
+            (currentBitsPerSample <> 16) or
+            ((FAudioOutputSampleRate <> 0) and
+            (currentSampleRate <> FAudioOutputSampleRate)) then
             begin
               Result := MF_E_INVALIDMEDIATYPE;
               Break;
@@ -1969,10 +1983,10 @@ begin
           AudioState.BytesPerSecond := currentSampleRate * 2 * SizeOf(SmallInt);
 
           OutputDebugStringW(PChar(Format('Export: audio reader changed output type stream=%d inputChannels=%d outputChannels=2 rate=%d bits=%d',
-                                         [FAudioInputStreamIndex,
-                                          currentChannels,
-                                          currentSampleRate,
-                                          currentBitsPerSample])));
+                                          [FAudioInputStreamIndex,
+            currentChannels,
+            currentSampleRate,
+            currentBitsPerSample])));
         end;
 
       if not Assigned(sample) then
@@ -1989,8 +2003,8 @@ begin
       Result := NormalizeAudioSample(sample);
       if SUCCEEDED(Result) then
         Result := GetAudioSampleDuration(sample,
-                                       AudioState,
-                                       sampleDuration);
+                                         AudioState,
+                                         sampleDuration);
       if FAILED(Result) then
         Break;
 
@@ -2018,9 +2032,9 @@ begin
 
             Inc(writeRetryCount);
             if (writeRetryCount = 1) or
-               ((writeRetryCount mod 40) = 0) then
+              ((writeRetryCount mod 40) = 0) then
               OutputDebugStringW(PChar(Format('Export: audio WriteSample waiting for encoder retries=%d time=%d',
-                                             [writeRetryCount, AudioState.OutputTime])));
+                                              [writeRetryCount, AudioState.OutputTime])));
             Sleep(25);
           until (writeRetryCount >= 1200) or FCancelRequested;
         end;
@@ -2034,10 +2048,10 @@ end;
 
 
 function TMfSubtitleFramePump.FlipRgb32InPlace(VideoBuffer: PByte;
-                                              BufferSize: DWORD;
-                                              Width: UINT32;
-                                              Height: UINT32;
-                                              Stride: Integer): HRESULT;
+                                               BufferSize: DWORD;
+                                               Width: UINT32;
+                                               Height: UINT32;
+                                               Stride: Integer): HRESULT;
 var
   rowBytes: Integer;
   row: Integer;
@@ -2052,9 +2066,9 @@ begin
   Result := S_OK;
 
   if (VideoBuffer = nil) or
-     (Width = 0) or
-     (Height = 0) or
-     (Stride <= 0) then
+    (Width = 0) or
+    (Height = 0) or
+    (Stride <= 0) then
     begin
 
       Result := E_INVALIDARG;
@@ -2169,7 +2183,7 @@ end;
 
 function TMfSubtitleFramePump.SetReaderPosition(
   const Reader: IMFSourceReader;
-  const Position100ns: MFTIME): HRESULT;
+                                                const Position100ns: MFTIME): HRESULT;
 var
   Position: PROPVARIANT;
 
@@ -2204,9 +2218,15 @@ function TMfSubtitleFramePump.LoadArtworkRgb32(const FileName: WideString;
                                                Width: UINT32;
                                                Height: UINT32;
                                                out Pixels: TBytes): HRESULT;
+
 begin
-  Result := MfCastLoadArtworkRgb32(FileName, Width, Height, Pixels);
+
+  Result := MfCastLoadArtworkRgb32(FileName,
+                                   Width,
+                                   Height,
+                                   Pixels);
 end;
+
 
 function TMfSubtitleFramePump.CreateRgb32Sample(const Pixels: TBytes;
                                                 SampleTime: MFTIME;
@@ -2224,7 +2244,7 @@ begin
   buffer := nil;
   data := nil;
 
-  if Length(Pixels) = 0 then
+  if (Length(Pixels) = 0) then
     begin
       Result := E_INVALIDARG;
       Exit;
@@ -2315,7 +2335,7 @@ begin
   audioState.Done := False;
 
   if (AudioFileName = '') or (ArtworkFileName = '') or
-     ((OutputFileName = '') and (not Assigned(OutputByteStream))) then
+    ((OutputFileName = '') and (not Assigned(OutputByteStream))) then
     begin
       Result := E_INVALIDARG;
       Exit;
@@ -2333,7 +2353,7 @@ begin
     StartTime100ns := 0;
 
   OutputDebugStringW(PChar(Format('Export: loading audio artwork "%s"',
-                                 [ArtworkFileName])));
+                                  [ArtworkFileName])));
 
   Result := LoadArtworkRgb32(ArtworkFileName,
                              OutputWidth,
@@ -2400,7 +2420,7 @@ begin
   while SUCCEEDED(Result) and (not audioState.Done) do
     begin
       if WaitIfPaused(exportStartTick,
-                      outputTime) or CancelRequested(outputTime) then
+        outputTime) or CancelRequested(outputTime) then
         begin
           Result := E_ABORT;
           Break;
@@ -2423,7 +2443,7 @@ begin
           while (paceElapsedMs < paceTargetMs) and (not FCancelRequested) do
             begin
               paceSleepMs := paceTargetMs - paceElapsedMs;
-              if paceSleepMs > 25 then
+              if (paceSleepMs > 25) then
                 paceSleepMs := 25;
               Sleep(DWORD(paceSleepMs));
               paceElapsedMs := DWORD(GetTickCount() - exportStartTick);
@@ -2482,7 +2502,7 @@ begin
   FReader := nil;
 
   OutputDebugStringW(PChar(Format('Export: audio artwork done hr=%.8x frames=%d videoSec=%.3f audioSec=%.3f',
-                                 [DWORD(Result), FFramesWritten, outputTime / 10000000.0, audioState.OutputTime / 10000000.0])));
+                                  [DWORD(Result), FFramesWritten, outputTime / 10000000.0, audioState.OutputTime / 10000000.0])));
 end;
 
 
@@ -2510,6 +2530,7 @@ var
   paceElapsedMs: Int64;
   paceSleepMs: Int64;
   samplesPerSecond: UINT32;
+
 begin
 
   FFramesWritten := 0;
@@ -2538,7 +2559,7 @@ begin
       Exit;
     end;
 
-  if StartTime100ns < 0 then
+  if (StartTime100ns < 0) then
     StartTime100ns := 0;
 
   Result := ConfigureAudioReader(InputFileName,
@@ -2553,7 +2574,7 @@ begin
       Exit;
     end;
 
-  if StartTime100ns > 0 then
+  if (StartTime100ns > 0) then
     begin
       Result := SetReaderPosition(audioReader,
                                   StartTime100ns);
@@ -2562,7 +2583,7 @@ begin
     end;
 
   samplesPerSecond := FAudioOutputSampleRate;
-  if samplesPerSecond = 0 then
+  if (samplesPerSecond = 0) then
     samplesPerSecond := 48000;
 
   Result := MFCreateMediaType(audioOutputType);
@@ -2652,8 +2673,8 @@ begin
   while SUCCEEDED(Result) and (not audioState.Done) do
     begin
       if WaitIfPaused(exportStartTick,
-                      audioState.OutputTime) or
-         CancelRequested(audioState.OutputTime) then
+        audioState.OutputTime) or
+        CancelRequested(audioState.OutputTime) then
         begin
           Result := E_ABORT;
           Break;
@@ -2674,13 +2695,13 @@ begin
       if FRealTimePacing then
         begin
           paceTargetMs := (audioState.OutputTime div 10000) - StartupLeadMs;
-          if paceTargetMs < 0 then
+          if (paceTargetMs < 0) then
             paceTargetMs := 0;
           paceElapsedMs := DWORD(GetTickCount() - exportStartTick);
           while (paceElapsedMs < paceTargetMs) and (not FCancelRequested) do
             begin
               paceSleepMs := paceTargetMs - paceElapsedMs;
-              if paceSleepMs > 25 then
+              if (paceSleepMs > 25) then
                 paceSleepMs := 25;
               Sleep(DWORD(paceSleepMs));
               paceElapsedMs := DWORD(GetTickCount() - exportStartTick);
@@ -2703,7 +2724,7 @@ begin
   FReader := nil;
 
   OutputDebugStringW(PChar(Format('Export: audio-only done hr=%.8x audioSec=%.3f',
-                                 [DWORD(Result), audioState.OutputTime / 10000000.0])));
+                                  [DWORD(Result), audioState.OutputTime / 10000000.0])));
 end;
 
 
@@ -2791,7 +2812,7 @@ begin
     paceLeadMs := 0;
 
   if (InputFileName = '') or
-     ((OutputFileName = '') and (not Assigned(OutputByteStream))) then
+    ((OutputFileName = '') and (not Assigned(OutputByteStream))) then
     begin
       Result := E_INVALIDARG;
       Exit;
@@ -2842,12 +2863,12 @@ begin
   // timestamp of the decoded picture, which is the correct subtitle lookup
   // time even though the cast MP4 itself is rebased to zero.
   useSourceSubtitleTime := not SameText(ExtractFileExt(InputFileName),
-                                        '.avi');
+                                        '.avi');
 
   // Do not flush a newly configured H.264 decoder merely to seek to zero.
   // Some MP4 Source Reader decoder chains accept that seek but then fail the
   // first ReadSample call. A non-zero cast restart still requires a real seek.
-  if StartTime100ns > 0 then
+  if (StartTime100ns > 0) then
     begin
       Result := SetReaderPosition(reader,
                                   StartTime100ns);
@@ -2880,7 +2901,7 @@ begin
   if FAILED(audioHr) then
     begin
       OutputDebugStringW(PChar(Format('Export: audio reader disabled hr=%.8x',
-                                     [DWORD(audioHr)])));
+                                      [DWORD(audioHr)])));
       hasAudio := False;
       audioReader := nil;
       audioType := nil;
@@ -2893,7 +2914,7 @@ begin
       if FAILED(audioHr) then
         begin
           OutputDebugStringW(PChar(Format('Export: audio seek disabled hr=%.8x',
-                                         [DWORD(audioHr)])));
+                                          [DWORD(audioHr)])));
           hasAudio := False;
           audioReader := nil;
           audioType := nil;
@@ -2909,7 +2930,7 @@ begin
         begin
 
           OutputDebugStringW(PChar(Format('Export: audio stream disabled hr=%.8x',
-                                         [DWORD(audioHr)])));
+                                          [DWORD(audioHr)])));
           hasAudio := False;
           audioReader := nil;
           audioType := nil;
@@ -2917,12 +2938,12 @@ begin
       else
         begin
           if FAILED(audioType.GetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
-                                        audioState.BytesPerSecond)) or
-             (audioState.BytesPerSecond = 0) then
+            audioState.BytesPerSecond)) or
+            (audioState.BytesPerSecond = 0) then
             audioState.BytesPerSecond := 48000 * 2 * 16 div 8;
 
           OutputDebugStringW(PChar(Format('Export: audio stream enabled index=%d bytesPerSec=%d',
-                                         [audioStreamIndex, audioState.BytesPerSecond])));
+                                          [audioStreamIndex, audioState.BytesPerSecond])));
         end;
     end;
 
@@ -2949,7 +2970,7 @@ begin
         end;
 
       if WaitIfPaused(exportStartTick,
-                      outputTime) then
+        outputTime) then
         begin
           if (FFramesWritten > 0) then
             Result := S_OK
@@ -2961,7 +2982,8 @@ begin
       if (FFramesWritten <> lastReadDebugFrame) and ((FFramesWritten mod 250) = 0) then
         begin
           lastReadDebugFrame := FFramesWritten;
-          OutputDebugStringW(PChar(Format('Export: before ReadSample frames=%d time=%d', [FFramesWritten, outputTime])));
+          OutputDebugStringW(PChar(Format('Export: before ReadSample frames=%d time=%d',
+                                          [FFramesWritten, outputTime])));
         end;
 
       Result := reader.ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
@@ -2973,7 +2995,7 @@ begin
 
       if (FFramesWritten = 0) then
         OutputDebugStringW(PChar(Format('Export: first ReadSample hr=%.8x flags=%.8x sample=%d time=%d',
-                                       [DWORD(Result), flags, Ord(Assigned(sample)), sampleTime])));
+                                        [DWORD(Result), flags, Ord(Assigned(sample)), sampleTime])));
       if FAILED(Result) then
         Break;
 
@@ -2990,7 +3012,7 @@ begin
         Break;
 
       if ((flags and MF_SOURCE_READERF_ERROR) <> 0) or
-         ((flags and MF_SOURCE_READERF_NATIVEMEDIATYPECHANGED) <> 0) then
+        ((flags and MF_SOURCE_READERF_NATIVEMEDIATYPECHANGED) <> 0) then
         begin
           Result := E_FAIL;
           Break;
@@ -3012,7 +3034,7 @@ begin
                                             converter);
 
               OutputDebugStringW(PChar(Format('Export: refreshed NV12 converter hr=%.8x',
-                                             [DWORD(Result)])));
+                                              [DWORD(Result)])));
 
               if FAILED(Result) then
                 Break;
@@ -3021,7 +3043,7 @@ begin
         end;
 
       if ((flags and MF_SOURCE_READERF_STREAMTICK) <> 0) or
-         (not Assigned(sample)) then
+        (not Assigned(sample)) then
         begin
           Inc(emptyReads);
 
@@ -3047,7 +3069,7 @@ begin
                                       rgbSample);
           if (FFramesWritten = 0) then
             OutputDebugStringW(PChar(Format('Export: first NV12 conversion hr=%.8x sample=%d',
-                                           [DWORD(Result), Ord(Assigned(rgbSample))])));
+                                            [DWORD(Result), Ord(Assigned(rgbSample))])));
           if FAILED(Result) then
             Break;
 
@@ -3063,7 +3085,7 @@ begin
                                          rgbSample);
           if (FFramesWritten = 0) then
             OutputDebugStringW(PChar(Format('Export: first RGB32 normalization hr=%.8x sample=%d',
-                                           [DWORD(Result), Ord(Assigned(rgbSample))])));
+                                            [DWORD(Result), Ord(Assigned(rgbSample))])));
           if FAILED(Result) then
             Break;
 
@@ -3077,7 +3099,7 @@ begin
       lastOutputTime := outputTime;
 
       if WaitIfPaused(exportStartTick,
-                      outputTime) then
+        outputTime) then
         Break;
 
       if FRealTimePacing then
@@ -3091,7 +3113,7 @@ begin
             paceElapsedMs := Int64(DWORD(GetTickCount() - exportStartTick));
 
             if (paceTargetMs <= 0) or
-               (paceElapsedMs + 5 >= paceTargetMs) then
+              (paceElapsedMs + 5 >= paceTargetMs) then
               Break;
 
             paceSleepMs := paceTargetMs - paceElapsedMs;
@@ -3123,7 +3145,7 @@ begin
       if (FFramesWritten = 0) then
         OutputDebugStringW(PChar(Format(
           'Export: first frame source=%d output=%d subtitle=%d requested=%d',
-          [sampleTime, outputTime, subtitleTime, StartTime100ns])));
+                                        [sampleTime, outputTime, subtitleTime, StartTime100ns])));
 
       Result := CompositeSample(sample,
                                 width,
@@ -3155,13 +3177,13 @@ begin
       writeRetryCount := 0;
 
       if (FVideoKeyFrameSpacing > 0) and
-         ((FFramesWritten mod FVideoKeyFrameSpacing) = 0) then
+        ((FFramesWritten mod FVideoKeyFrameSpacing) = 0) then
         begin
           audioHr := ForceVideoKeyFrame();
           if FAILED(audioHr) then
             OutputDebugStringW(PChar(Format(
               'Export: force H.264 keyframe failed frame=%d hr=%.8x',
-              [FFramesWritten, DWORD(audioHr)])));
+                                            [FFramesWritten, DWORD(audioHr)])));
         end;
 
       repeat
@@ -3174,7 +3196,7 @@ begin
 
         if (writeRetryCount = 1) or ((writeRetryCount mod 20) = 0) then
           OutputDebugStringW(PChar(Format('Export: video WriteSample waiting for encoder frames=%d retries=%d',
-                                         [FFramesWritten, writeRetryCount])));
+                                          [FFramesWritten, writeRetryCount])));
         Sleep(25);
       until (writeRetryCount >= 200) or CancelRequested(outputTime);
 
@@ -3188,7 +3210,7 @@ begin
                                        audioStreamIndex,
                                        audioState,
                                        outputTime + sampleDuration +
-                                       PreviewAudioLead100ns);
+            PreviewAudioLead100ns);
           if FAILED(audioHr) then
             begin
               Result := audioHr;
@@ -3208,13 +3230,13 @@ begin
     end;
 
   if Assigned(writer) and
-     SUCCEEDED(Result) and
-     hasAudio and
-     Assigned(audioReader) and
-     (FFramesWritten > 0) then
+    SUCCEEDED(Result) and
+    hasAudio and
+    Assigned(audioReader) and
+    (FFramesWritten > 0) then
     begin
       OutputDebugStringW(PChar(Format('Export: before audio copy stop=%d',
-                                     [lastOutputTime + frameDuration])));
+                                      [lastOutputTime + frameDuration])));
 
       audioHr := WriteAudioSamples(audioReader,
                                    writer,
@@ -3223,21 +3245,21 @@ begin
                                    lastOutputTime + frameDuration);
 
       OutputDebugStringW(PChar(Format('Export: after audio copy hr=%.8x',
-                                     [DWORD(audioHr)])));
+                                      [DWORD(audioHr)])));
     end;
 
   if Assigned(writer) and SUCCEEDED(Result) and (FFramesWritten > 0) then
     begin
 
       OutputDebugStringW(PChar(Format('Export: before Finalize cancel=%d',
-                                     [Integer(FCancelRequested)])));
+                                      [Integer(FCancelRequested)])));
       Result := writer.Finalize();
       OutputDebugStringW(PChar(Format('Export: after Finalize hr=%.8x',
-                                     [DWORD(Result)])));
+                                      [DWORD(Result)])));
     end
   else
     OutputDebugStringW(PChar(Format('Export: skipping Finalize hr=%.8x cancel=%d frames=%d',
-                                   [DWORD(Result), Integer(FCancelRequested), FFramesWritten])));
+                                    [DWORD(Result), Integer(FCancelRequested), FFramesWritten])));
 
   sample := nil;
   audioState.PendingSample := nil;
@@ -3250,7 +3272,7 @@ begin
   FReader := nil;
 
   OutputDebugStringW(PChar(Format('Export: done hr=%.8x frames=%d videoSec=%.3f audioSec=%.3f audioBps=%d',
-                                 [DWORD(Result), FFramesWritten, (lastOutputTime + frameDuration) / 10000000.0, audioState.OutputTime / 10000000.0, audioState.BytesPerSecond])));
+                                  [DWORD(Result), FFramesWritten, (lastOutputTime + frameDuration) / 10000000.0, audioState.OutputTime / 10000000.0, audioState.BytesPerSecond])));
 end;
 
 end.

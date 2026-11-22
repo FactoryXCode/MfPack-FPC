@@ -67,7 +67,7 @@ interface
 uses
   MfLoopbackSamples.Platform,
   LMessages,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   ShellAPI,
@@ -97,8 +97,8 @@ uses
   LoopbackCapture,
   Common,
   dlgDevices,
-  UniThreadTimer, Dialogs;
-
+  UniThreadTimer,
+  Dialogs;
 
 type
 
@@ -145,17 +145,22 @@ type
     procedure FormCreate(Sender: TObject);
 
     procedure butStartStopClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure butPlayDataClick(Sender: TObject);
     procedure cbxStayOnTopClick(Sender: TObject);
     procedure butShowdlgDevicesClick(Sender: TObject);
     procedure tbBufferDurationChange(Sender: TObject);
-    procedure rbConsoleMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure rbConsoleMouseUp(Sender: TObject;
+                               Button: TMouseButton;
+                               Shift: TShiftState;
+                               X,
+                               Y: Integer);
     procedure butResetEngineClick(Sender: TObject);
     procedure cbxAutoBufferSizeClick(Sender: TObject);
-    procedure edFileNameKeyUp(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
+    procedure edFileNameKeyUp(Sender: TObject;
+                              var Key: Word;
+                              Shift: TShiftState);
     procedure cbxOutputFormatChange(Sender: TObject);
 
   private
@@ -219,6 +224,7 @@ implementation
 
 
 procedure TMainForm.EnablePanels(aEnabled: Boolean);
+
 begin
 
   Panel1.Enabled := aEnabled;
@@ -228,9 +234,10 @@ end;
 
 
 procedure TMainForm.CreateTimer();
+
 begin
 
-  if(thrTimer <> nil) then
+  if (thrTimer <> nil) then
     KillTimer();
 
   thrTimer := TUniThreadedTimer.Create(nil);
@@ -242,6 +249,7 @@ end;
 
 
 procedure TMainForm.KillTimer();
+
 begin
 
   if (thrTimer <> nil) then
@@ -254,6 +262,7 @@ end;
 
 
 procedure TMainForm.OnCapturingStartEvent(Sender: TObject);
+
 begin
 
   CreateTimer();
@@ -289,7 +298,8 @@ begin
   else if (Status = Error) then
     begin
 
-      lblStatus.Caption := Format('Capturing stopped because of an error (hr = %d).', [E_FAIL]);
+      lblStatus.Caption := Format('Capturing stopped because of an error (hr = %d).',
+                                  [E_FAIL]);
       butPlayData.Enabled := False;
     end;
 
@@ -299,7 +309,11 @@ end;
 
 
 procedure TMainForm.rbConsoleMouseUp(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                     Button: TMouseButton;
+                                     Shift: TShiftState;
+                                     X,
+                                     Y: Integer);
+
 begin
 
   lblStatus.Caption := 'Start Capture';
@@ -307,18 +321,20 @@ end;
 
 
 procedure TMainForm.OnTimer(Sender: TObject);
+
 begin
 
   if Assigned(prWASCapture) then
     if (prWASCapture.DeviceState = Capturing) then
-     lblStatus.Caption := 'Capturing from source: ' + FormatDateTime('hh:nn:ss.zzz',
-                                                                     aStopWatch.ElapsedMilliseconds / MSecsPerDay);
+      lblStatus.Caption := 'Capturing from source: ' + FormatDateTime('hh:nn:ss.zzz',
+                                                                      aStopWatch.ElapsedMilliseconds / MSecsPerDay);
 
   Application.ProcessMessages;
 end;
 
 
 procedure TMainForm.butPlayDataClick(Sender: TObject);
+
 begin
 
   ShellExecute(Handle,
@@ -338,125 +354,127 @@ var
 
 begin
 
- if (tag = 1) then
-   begin
+  if (tag = 1) then
+    begin
 
-     // Stop capture
-     prWASCapture.Stop();
+      // Stop capture
+      prWASCapture.Stop();
 
-     // Destroy the engine
-     prWASCapture.Shutdown();
+      // Destroy the engine
+      prWASCapture.Shutdown();
 
-     tag := 0;
-     butStartStop.Caption := 'Start capture';
-     EnablePanels(True);
-     Self.BorderIcons := [biSystemMenu, biMinimize];
-   end
- else
-   begin
+      tag := 0;
+      butStartStop.Caption := 'Start capture';
+      EnablePanels(True);
+      Self.BorderIcons := [biSystemMenu, biMinimize];
+    end
+  else
+    begin
 
-     // Start capture
+      // Start capture
 
-     pvTargetLatency := spedLatency.Value * REFTIMES_PER_MILLISEC;
+      pvTargetLatency := spedLatency.Value * REFTIMES_PER_MILLISEC;
 
-     // Set output format/extension from UI (WAV/FLAC)
-     cbxOutputFormatChange(nil);
+      // Set output format/extension from UI (WAV/FLAC)
+      cbxOutputFormatChange(nil);
 
-     // Create the engine with setup-parameters
-     if not CreateEngine() then
-       Exit;
+      // Create the engine with setup-parameters
+      if not CreateEngine() then
+        Exit;
 
-     // Check filename.
-     prFileName := Format('%s', [edFileName.Text]);
+      // Check filename.
+      prFileName := Format('%s',
+                           [edFileName.Text]);
 
-     if (prOrgFileName = '') or prEdited then
-       begin
+      if (prOrgFileName = '') or prEdited then
+        begin
 
-         prOrgFileName := prFileName;
-         prEdited := False;
-       end;
+          prOrgFileName := prFileName;
+          prEdited := False;
+        end;
 
-     if cbxDontOverWrite.Checked then
-       begin
+      if cbxDontOverWrite.Checked then
+        begin
 
-         bFileExists := True;
-         i := 0;
+          bFileExists := True;
+          i := 0;
 
-         while (bFileExists = True) do
-           begin
+          while (bFileExists = True) do
+            begin
 
-             if FileExists(prFileName + lblFileExt.Caption) then
-               begin
-                 if (prOrgFileName = prFileName) then
-                   prFileName := Format('%s(%d)',
-                                        [edFileName.Text,
-                                         i])
-                 else
-                   begin
-                     prFileName := Format('%s(%d)',
-                                          [prOrgFileName,
-                                           i]);
-                     edFileName.Text := prFileName;
-                   end;
-                 Inc(i);
-               end
-             else
-               bFileExists := False;
-           end;
-       end;
+              if FileExists(prFileName + lblFileExt.Caption) then
+                begin
+                  if (prOrgFileName = prFileName) then
+                    prFileName := Format('%s(%d)',
+                                         [edFileName.Text,
+                      i])
+                  else
+                    begin
+                      prFileName := Format('%s(%d)',
+                                           [prOrgFileName,
+                        i]);
+                      edFileName.Text := prFileName;
+                    end;
+                  Inc(i);
+                end
+              else
+                bFileExists := False;
+            end;
+        end;
 
-     // Show new filename to user.
-     edFileName.Text := prFileName;
+      // Show new filename to user.
+      edFileName.Text := prFileName;
 
-     butStartStop.Enabled := False;
-     butPlayData.Enabled := False;
-     EnablePanels(False);
+      butStartStop.Enabled := False;
+      butPlayData.Enabled := False;
+      EnablePanels(False);
 
-     // Initialize.
-     bSuccess := prWASCapture.Initialize(pvBufferDuration,
-                                         pvTargetLatency,
-                                         cbxUseDefaultAudioFmt.Checked);
+      // Initialize.
+      bSuccess := prWASCapture.Initialize(pvBufferDuration,
+                                          pvTargetLatency,
+                                          cbxUseDefaultAudioFmt.Checked);
 
-     if bSuccess then
-       begin
-         if not BufferDurationCaptionSet then
-           begin
+      if bSuccess then
+        begin
+          if not BufferDurationCaptionSet then
+            begin
 
-             lblCaptureBufferDuration.Caption := Format('Capture buffer duration: %d ms.',
-                                                        [prWASCapture.FrameSize div 10000]);
-             BufferDurationCaptionSet := True;
-           end;
-         // Capture the audio stream from the choosen rendering device.
-         bSuccess := prWASCapture.Start(prFileName + lblFileExt.Caption);
-       end;
+              lblCaptureBufferDuration.Caption := Format('Capture buffer duration: %d ms.',
+                                                         [prWASCapture.FrameSize div 10000]);
+              BufferDurationCaptionSet := True;
+            end;
+          // Capture the audio stream from the choosen rendering device.
+          bSuccess := prWASCapture.Start(prFileName + lblFileExt.Caption);
+        end;
 
-     if not bSuccess then
-         begin
+      if not bSuccess then
+        begin
 
-           InfoMsg(optIDE,
-                   'Unable to start capture.',
-                   E_FAIL,
-                   Handle);
+          InfoMsg(optIDE,
+                  'Unable to start capture.',
+                  E_FAIL,
+                  Handle);
 
-           butStartStop.Enabled := True;
-           EnablePanels(True);
-           Exit;
-         end
-       else
-         begin
+          butStartStop.Enabled := True;
+          EnablePanels(True);
+          Exit;
+        end
+      else
+        begin
 
-           // Enable the timer.
-           BufferDurationCaptionSet := False;
-           butStartStop.Enabled := True;
-           butStartStop.Caption := 'Stop capture';
-           tag := 1;
-         end;
-   end; // Start
+          // Enable the timer.
+          BufferDurationCaptionSet := False;
+          butStartStop.Enabled := True;
+          butStartStop.Caption := 'Stop capture';
+          tag := 1;
+        end;
+    end; // Start
   Sleep(10);
 end;
 
 
 procedure TMainForm.butResetEngineClick(Sender: TObject);
+
 begin
 
   RemoveEngine();
@@ -465,7 +483,7 @@ begin
 
   EnablePanels(True);
   Self.BorderIcons := [biSystemMenu,
-                       biMinimize];
+    biMinimize];
   butPlayData.Enabled := False;
   butStartStop.Enabled := True;
   lblStatus.Caption := 'The engine has been reset.'
@@ -473,6 +491,7 @@ end;
 
 
 procedure TMainForm.butShowdlgDevicesClick(Sender: TObject);
+
 begin
 
   // Create the dialog if it's not allready done.
@@ -511,6 +530,7 @@ end;
 
 
 procedure TMainForm.cbxAutoBufferSizeClick(Sender: TObject);
+
 begin
 
   if cbxAutoBufferSize.Checked then
@@ -525,10 +545,11 @@ end;
 
 
 procedure TMainForm.cbxOutputFormatChange(Sender: TObject);
+
 begin
 
   // Optional: update filter and default extension dynamically
-  if OutputFormatFromCombo(cbxOutputFormat) = ofFlac then
+  if (OutputFormatFromCombo(cbxOutputFormat) = ofFlac) then
     begin
       dlgSave.Filter := 'FLAC audio (*.flac)|*.flac';
       dlgSave.DefaultExt := 'flac';
@@ -544,6 +565,7 @@ end;
 
 
 procedure TMainForm.cbxStayOnTopClick(Sender: TObject);
+
 begin
 
   if cbxStayOnTop.Checked then
@@ -567,6 +589,7 @@ end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject;
                                    var CanClose: Boolean);
+
 begin
 
   CanClose := False;
@@ -588,6 +611,7 @@ end;
 
 
 procedure TMainForm.FormCreate(Sender: TObject);
+
 begin
 
   // Prevents flickering.
@@ -602,7 +626,7 @@ begin
   edFileName.WindowProc := FileNameEditWindowProc;
 
   cbxUseDefaultAudioFmt.Hint := 'Use the default audio format (44.1 khz/ 16 bit/ 2 channels/ PCM).' + #13 +
-                                 'If you disable this option, the endpoint''s audio format will be used.';
+    'If you disable this option, the endpoint''s audio format will be used.';
 end;
 
 
@@ -643,6 +667,7 @@ end;
 
 
 procedure TMainForm.SetParameters();
+
 begin
 
   // Set dataflow.
@@ -667,6 +692,7 @@ end;
 
 
 function TMainForm.CreateEngine(): Boolean;
+
 begin
 
   // Destroy an existing capture engine.
@@ -696,7 +722,8 @@ begin
       prWASCapture.OnStoppedCapturing := OnCapturingStoppedEvent;
 
       InfoMsg(optIDE,
-              Format('The WASCapture engine "%s" successfully initialized.', [WideCharToString(prDeviceName)]),
+              Format('The WASCapture engine "%s" successfully initialized.',
+                     [WideCharToString(prDeviceName)]),
               S_OK,
               Handle);
 
@@ -707,8 +734,10 @@ begin
 end;
 
 
-procedure TMainForm.edFileNameKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TMainForm.edFileNameKeyUp(Sender: TObject;
+                                    var Key: Word;
+                                    Shift: TShiftState);
+
 begin
 
   prEdited := True;
@@ -716,6 +745,7 @@ end;
 
 
 procedure TMainForm.RemoveEngine();
+
 begin
 
   if Assigned(prWASCapture) then
@@ -729,6 +759,7 @@ end;
 
 
 procedure TMainForm.tbBufferDurationChange(Sender: TObject);
+
 begin
 
   SetBufferDuration();
@@ -756,11 +787,12 @@ begin
   else
     lblBufferDuration.Caption := Format('Capture buffer duration(%d %s)',
                                         [sedBufferSize.Value,
-                                         sms])
+      sms])
 end;
 
 
 function TMainForm.OutputFormatFromCombo(cb: TComboBox): TOutputFormat;
+
 begin
 
   if (cb.ItemIndex = 1) then
@@ -776,14 +808,14 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_LITE)) then
-      begin
-        MessageBoxW(0,
-                   lpcwstr('Your computer does not support this Media Foundation API version ' +
-                           IntToStr(MF_VERSION) + '.'),
-                   lpcwstr('MFStartup Failure!'),
-                           MB_ICONSTOP);
-      end;
+    MFSTARTUP_LITE)) then
+    begin
+      MessageBoxW(0,
+                  lpcwstr('Your computer does not support this Media Foundation API version ' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
+    end;
 
 finalization
 

@@ -86,11 +86,12 @@ type
   //
   IServiceProvider = interface(IUnknown)
 
-  ['{6d5140c1-7436-11ce-8034-00aa006009fa}']
-    function  QueryService(const guidService: TGUID;
-                           const riid: TGUID;
-                           var ppvObject: Pointer): HResult; stdcall;
+    ['{6d5140c1-7436-11ce-8034-00aa006009fa}']
+    function QueryService(const guidService: TGUID;
+                          const riid: TGUID;
+                          var ppvObject: Pointer): HResult; stdcall;
   end;
+
   IID_IServiceProvider = IServiceProvider;
 
 
@@ -100,6 +101,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

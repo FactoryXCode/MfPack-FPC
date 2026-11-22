@@ -86,7 +86,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 type
@@ -100,16 +101,22 @@ type
   // facing API.
   //
   ID2D1EffectContext1 = interface(ID2D1EffectContext)
-  ['{84ab595a-fc81-4546-bacd-e8ef4d8abe7a}']
+    ['{84ab595a-fc81-4546-bacd-e8ef4d8abe7a}']
     // SDK native virtual methods.
-    function CreateLookupTable3D(precision: D2D1_BUFFER_PRECISION; extents: PUINT32; data: PByte; dataCount: UINT32; strides: PUINT32; out lookupTable: ID2D1LookupTable3D): HRESULT; stdcall;
+    function CreateLookupTable3D(precision: D2D1_BUFFER_PRECISION;
+                                 extents: PUINT32;
+                                 data: PByte;
+                                 dataCount: UINT32;
+                                 strides: PUINT32;
+                                 out lookupTable: ID2D1LookupTable3D): HRESULT; stdcall;
 
 
   end;
+
   IID_ID2D1EffectContext1 = ID2D1EffectContext1;
 
 
-//#if NTDDI_VERSION >= NTDDI_WIN10_RS2
+  //#if NTDDI_VERSION >= NTDDI_WIN10_RS2
 
 
   // Interface ID2D1EffectContext2
@@ -119,13 +126,16 @@ type
   // facing API.
   //
   ID2D1EffectContext2 = interface(ID2D1EffectContext1)
-  ['{577ad2a0-9fc7-4dda-8b18-dab810140052}']
+    ['{577ad2a0-9fc7-4dda-8b18-dab810140052}']
     // SDK native virtual methods.
-    function CreateColorContextFromDxgiColorSpace(colorSpace: DXGI_COLOR_SPACE_TYPE; out colorContext: ID2D1ColorContext1): HRESULT; stdcall;
-    function CreateColorContextFromSimpleColorProfile(simpleProfile: PD2D1_SIMPLE_COLOR_PROFILE; out colorContext: ID2D1ColorContext1): HRESULT; stdcall;
+    function CreateColorContextFromDxgiColorSpace(colorSpace: DXGI_COLOR_SPACE_TYPE;
+                                                  out colorContext: ID2D1ColorContext1): HRESULT; stdcall;
+    function CreateColorContextFromSimpleColorProfile(simpleProfile: PD2D1_SIMPLE_COLOR_PROFILE;
+                                                      out colorContext: ID2D1ColorContext1): HRESULT; stdcall;
 
 
   end;
+
   IID_ID2D1EffectContext2 = ID2D1EffectContext2;
 
 
@@ -135,6 +145,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

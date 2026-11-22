@@ -97,18 +97,21 @@ type
 
   // Callback method for endpoint-volume-change notifications from IAudioEndpointVolumeCallback.
   // NOTE: pNotify points to a COPY, valid only during this event call.
-  TOnNotify = procedure (Sender: TObject;
-                         pNotify: PAUDIO_VOLUME_NOTIFICATION_DATA) of object;
+  TOnNotify = procedure(Sender: TObject;
+                        pNotify: PAUDIO_VOLUME_NOTIFICATION_DATA) of object;
 
 
   TMfAudioEndPoint = class; // forward
 
   // Volume callback COM interface
-  TOnEndPointNotify = class(TInterfacedObject, IAudioEndpointVolumeCallback)
+  TOnEndPointNotify = class(TInterfacedObject,
+                            IAudioEndpointVolumeCallback)
+
   private
 
     FOwner: TMfAudioEndPoint;
     FCallbackLock: TCriticalSection;
+
   public
 
     constructor Create(AOwner: TMfAudioEndPoint);
@@ -120,12 +123,16 @@ type
 
 
   // Device notification COM interface (default-device switching etc.)
-  TOnDeviceNotify = class(TInterfacedObject, IMMNotificationClient)
+  TOnDeviceNotify = class(TInterfacedObject,
+                          IMMNotificationClient)
+
   private
 
     FOwner: TMfAudioEndPoint;
     FCallbackLock: TCriticalSection;
-    function QueueRefresh(Msg: UINT;Flow: WPARAM;Role: LPARAM): HRESULT;
+    function QueueRefresh(Msg: UINT;
+                          Flow: WPARAM;
+                          Role: LPARAM): HRESULT;
 
   public
 
@@ -146,6 +153,7 @@ type
 
 
   TMfAudioEndPoint = class(TComponent)
+
   private
 
     FLock: TCriticalSection;
@@ -184,7 +192,9 @@ type
     fOnEndPointNotifyIntf: IAudioEndpointVolumeCallback;
 
     procedure CreateNotificationWindow;
-    procedure DeliverNotification(Msg: UINT;WParam: WPARAM;LParam: LPARAM);
+    procedure DeliverNotification(Msg: UINT;
+                                  WParam: WPARAM;
+                                  LParam: LPARAM);
     procedure ShutdownCallbacks;
 
     function GetGuidContextAsString(): string;
@@ -229,7 +239,8 @@ type
                              out pflVolumeIncrementdB: Single);
 
     function GetChannelScalarVolume(Index: UINT): Single;
-    procedure SetChannelScalarVolume(Index: UINT; chVolume: Single);
+    procedure SetChannelScalarVolume(Index: UINT;
+                                     chVolume: Single);
 
     function GetStateAsString(): string;
     function SupportsHardware(HardwareSupportMask: DWord = 0): Boolean;
@@ -292,6 +303,7 @@ implementation
 
 
 procedure Register;
+
 begin
 
   RegisterComponents('MfPack Core Audio Samples',
@@ -348,78 +360,130 @@ const
   WM_MFPACK_DEFAULT = WM_APP + 723;
   EndpointWindowClass: PWideChar = 'MfPack.EndpointNotifications.4.1';
 
-function EndpointGetWindowData(Wnd: HWND;Index: Integer): NativeInt; stdcall;
-  external 'user32.dll' name {$IFDEF WIN64}'GetWindowLongPtrW'{$ELSE}'GetWindowLongW'{$ENDIF};
-function EndpointSetWindowData(Wnd: HWND;Index: Integer;Value: NativeInt): NativeInt; stdcall;
-  external 'user32.dll' name {$IFDEF WIN64}'SetWindowLongPtrW'{$ELSE}'SetWindowLongW'{$ENDIF};
+function EndpointGetWindowData(Wnd: HWND;
+                               Index: Integer): NativeInt; stdcall;
+  external 'user32.dll' name
+{$IFDEF WIN64}
+  'GetWindowLongPtrW'
+{$ELSE}
+  'GetWindowLongW'
+{$ENDIF}
+  ;
+function EndpointSetWindowData(Wnd: HWND;
+                               Index: Integer;
+                               Value: NativeInt): NativeInt; stdcall;
+  external 'user32.dll' name
+{$IFDEF WIN64}
+  'SetWindowLongPtrW'
+{$ELSE}
+  'SetWindowLongW'
+{$ENDIF}
+  ;
 
-function EndpointWindowProc(Wnd: HWND;Msg: UINT;WParam: WPARAM;LParam: LPARAM): LRESULT; stdcall;
+
+function EndpointWindowProc(Wnd: HWND;
+                            Msg: UINT;
+                            WParam: WPARAM;
+                            LParam: LPARAM): LRESULT; stdcall;
 var
   Owner: TMfAudioEndPoint;
+
 begin
-  if Msg = WM_NCCREATE then
+
+  if (Msg = WM_NCCREATE) then
     // CREATESTRUCTW begins with the lpCreateParams pointer on both Windows targets.
-    EndpointSetWindowData(Wnd,GWLP_USERDATA,NativeInt(PPointer(LParam)^));
-  Owner := TMfAudioEndPoint(EndpointGetWindowData(Wnd,GWLP_USERDATA));
+    EndpointSetWindowData(Wnd,
+                          GWLP_USERDATA,
+                          NativeInt(PPointer(LParam)^));
+  Owner := TMfAudioEndPoint(EndpointGetWindowData(Wnd,
+                                                  GWLP_USERDATA));
   if (Owner <> nil) and (Msg >= WM_MFPACK_VOLUME) and (Msg <= WM_MFPACK_DEFAULT) then
     begin
       // Exceptions must not cross the native window-procedure boundary.
       try
-        Owner.DeliverNotification(Msg,WParam,LParam);
+        Owner.DeliverNotification(Msg,
+                                  WParam,
+                                  LParam);
       except
       end;
       Exit(0);
     end;
-  if Msg = WM_NCDESTROY then
-    EndpointSetWindowData(Wnd,GWLP_USERDATA,0);
-  Result := DefWindowProcW(Wnd,Msg,WParam,LParam);
+  if (Msg = WM_NCDESTROY) then
+    EndpointSetWindowData(Wnd,
+                          GWLP_USERDATA,
+                          0);
+  Result := DefWindowProcW(Wnd,
+                           Msg,
+                           WParam,
+                           LParam);
 end;
 
 
 procedure TMfAudioEndPoint.CreateNotificationWindow;
 var
   WindowClass: TWndClassW;
+
 begin
-  FillChar(WindowClass,SizeOf(WindowClass),0);
+
+  FillChar(WindowClass,
+           SizeOf(WindowClass),
+           0);
   WindowClass.lpfnWndProc := @EndpointWindowProc;
   WindowClass.hInstance := GetModuleHandleW(nil);
   WindowClass.lpszClassName := EndpointWindowClass;
   if (RegisterClassW(WindowClass) = 0) and (GetLastError <> ERROR_CLASS_ALREADY_EXISTS) then
     RaiseLastOSError;
-  FNotificationWindow := CreateWindowExW(0,EndpointWindowClass,nil,0,0,0,0,0,0,0,GetModuleHandleW(nil),Self);
-  if FNotificationWindow = 0 then
+  FNotificationWindow := CreateWindowExW(0,
+                                         EndpointWindowClass,
+                                         nil,
+                                         0,
+                                         0,
+                                         0,
+                                         0,
+                                         0,
+                                         0,
+                                         0,
+                                         GetModuleHandleW(nil),
+                                         Self);
+  if (FNotificationWindow = 0) then
     RaiseLastOSError;
 end;
 
 
-procedure TMfAudioEndPoint.DeliverNotification(Msg: UINT;WParam: WPARAM;LParam: LPARAM);
+procedure TMfAudioEndPoint.DeliverNotification(Msg: UINT;
+                                               WParam: WPARAM;
+                                               LParam: LPARAM);
+
 begin
-  if Msg = WM_MFPACK_VOLUME then
+
+  if (Msg = WM_MFPACK_VOLUME) then
     begin
       try
-        if FShuttingDown = 0 then
+        if (FShuttingDown = 0) then
           DoVolumeNotifyOnMainThread(PAUDIO_VOLUME_NOTIFICATION_DATA(LParam));
       finally
         FreeMem(Pointer(LParam));
       end;
     end
-  else if FShuttingDown = 0 then
+  else if (FShuttingDown = 0) then
     begin
-      if Msg = WM_MFPACK_REFRESH then
+      if (Msg = WM_MFPACK_REFRESH) then
         begin
           RebuildEndpointCache;
           if FFollowDefaultDevice then
             GetDefaultDevice;
         end
       else if FFollowDefaultDevice and (Integer(WParam) = Ord(fDataFlow)) and
-              (Integer(LParam) = Ord(fRole)) then
+        (Integer(LParam) = Ord(fRole)) then
         GetDefaultDevice;
     end;
 end;
 
 
 constructor TOnEndPointNotify.Create(AOwner: TMfAudioEndPoint);
+
 begin
+
   inherited Create;
   FCallbackLock := TCriticalSection.Create;
   FOwner := AOwner;
@@ -427,14 +491,18 @@ end;
 
 
 destructor TOnEndPointNotify.Destroy;
+
 begin
+
   FCallbackLock.Free;
   inherited Destroy;
 end;
 
 
 procedure TOnEndPointNotify.DetachOwner;
+
 begin
+
   FCallbackLock.Enter;
   try
     FOwner := nil;
@@ -447,7 +515,9 @@ end;
 function TOnEndPointNotify.OnNotify(pNotify: PAUDIO_VOLUME_NOTIFICATION_DATA): HRESULT;
 var
   CopyPtr: PAUDIO_VOLUME_NOTIFICATION_DATA;
+
 begin
+
   Result := S_OK;
   FCallbackLock.Enter;
   try
@@ -460,9 +530,9 @@ begin
     except
       Exit(E_OUTOFMEMORY);
     end;
-    if CopyPtr = nil then
+    if (CopyPtr = nil) then
       Exit(E_OUTOFMEMORY);
-    if not PostMessage(FOwner.FNotificationWindow,WM_MFPACK_VOLUME,0,LPARAM(CopyPtr)) then
+    if not PostMessage(FOwner.FNotificationWindow, WM_MFPACK_VOLUME, 0, LPARAM(CopyPtr)) then
       begin
         Result := HRESULT_FROM_WIN32(GetLastError);
         FreeMem(CopyPtr);
@@ -474,7 +544,9 @@ end;
 
 
 constructor TOnDeviceNotify.Create(AOwner: TMfAudioEndPoint);
+
 begin
+
   inherited Create;
   FCallbackLock := TCriticalSection.Create;
   FOwner := AOwner;
@@ -482,14 +554,18 @@ end;
 
 
 destructor TOnDeviceNotify.Destroy;
+
 begin
+
   FCallbackLock.Free;
   inherited Destroy;
 end;
 
 
 procedure TOnDeviceNotify.DetachOwner;
+
 begin
+
   FCallbackLock.Enter;
   try
     FOwner := nil;
@@ -499,13 +575,17 @@ begin
 end;
 
 
-function TOnDeviceNotify.QueueRefresh(Msg: UINT;Flow: WPARAM;Role: LPARAM): HRESULT;
+function TOnDeviceNotify.QueueRefresh(Msg: UINT;
+                                      Flow: WPARAM;
+                                      Role: LPARAM): HRESULT;
+
 begin
+
   Result := S_OK;
   FCallbackLock.Enter;
   try
     if (FOwner <> nil) and (FOwner.FShuttingDown = 0) then
-      if not PostMessage(FOwner.FNotificationWindow,Msg,Flow,Role) then
+      if not PostMessage(FOwner.FNotificationWindow, Msg, Flow, Role) then
         Result := HRESULT_FROM_WIN32(GetLastError);
   finally
     FCallbackLock.Leave;
@@ -514,36 +594,56 @@ end;
 
 
 function TOnDeviceNotify.OnDeviceStateChanged(pwstrDeviceId: LPCWSTR;
-                                             dwNewState: DWORD): HRESULT;
+                                              dwNewState: DWORD): HRESULT;
+
 begin
-  Result := QueueRefresh(WM_MFPACK_REFRESH,0,0);
+
+  Result := QueueRefresh(WM_MFPACK_REFRESH,
+                         0,
+                         0);
 end;
 
 
 function TOnDeviceNotify.OnDeviceAdded(pwstrDeviceId: LPCWSTR): HRESULT;
+
 begin
-  Result := QueueRefresh(WM_MFPACK_REFRESH,0,0);
+
+  Result := QueueRefresh(WM_MFPACK_REFRESH,
+                         0,
+                         0);
 end;
 
 
 function TOnDeviceNotify.OnDeviceRemoved(pwstrDeviceId: LPCWSTR): HRESULT;
+
 begin
-  Result := QueueRefresh(WM_MFPACK_REFRESH,0,0);
+
+  Result := QueueRefresh(WM_MFPACK_REFRESH,
+                         0,
+                         0);
 end;
 
 
 function TOnDeviceNotify.OnDefaultDeviceChanged(flow: EDataFlow;
-                                               role: ERole;
-                                               pwstrDefaultDeviceId: PWideChar): HRESULT;
+                                                role: ERole;
+                                                pwstrDefaultDeviceId: PWideChar): HRESULT;
+
 begin
-  Result := QueueRefresh(WM_MFPACK_DEFAULT,WPARAM(Ord(flow)),LPARAM(Ord(role)));
+
+  Result := QueueRefresh(WM_MFPACK_DEFAULT,
+                         WPARAM(Ord(flow)),
+                         LPARAM(Ord(role)));
 end;
 
 
 function TOnDeviceNotify.OnPropertyValueChanged(pwstrDeviceId: LPCWSTR;
-                                               const key: PROPERTYKEY): HRESULT;
+                                                const key: PROPERTYKEY): HRESULT;
+
 begin
-  Result := QueueRefresh(WM_MFPACK_REFRESH,0,0);
+
+  Result := QueueRefresh(WM_MFPACK_REFRESH,
+                         0,
+                         0);
 end;
 
 
@@ -573,10 +673,10 @@ begin
 
   // IMMDeviceEnumerator
   hr := CoCreateInstance(CLSID_MMDeviceEnumerator,
-                            nil,
-                            INT(CLSCTX_INPROC_SERVER),
-                            IID_IMMDeviceEnumerator,
-                            fDeviceEnumerator);
+                         nil,
+                         INT(CLSCTX_INPROC_SERVER),
+                         IID_IMMDeviceEnumerator,
+                         fDeviceEnumerator);
   OleCheck(hr);
 
   // Register device notifications.
@@ -606,9 +706,10 @@ end;
 
 
 procedure TMfAudioEndPoint.ShutdownCallbacks;
+
 begin
 
-  if InterlockedExchange(FShuttingDown,1) <> 0 then
+  if (InterlockedExchange(FShuttingDown, 1) <> 0) then
     Exit;
 
   // Make sure we do not try to auto-follow during teardown.
@@ -643,7 +744,9 @@ end;
 
 
 procedure TMfAudioEndPoint.BeforeDestruction();
+
 begin
+
   ShutdownCallbacks;
   inherited BeforeDestruction;
 end;
@@ -652,14 +755,15 @@ end;
 destructor TMfAudioEndPoint.Destroy();
 var
   Msg: TMsg;
+
 begin
 
   try
     ShutdownCallbacks;
-    if FNotificationWindow <> 0 then
+    if (FNotificationWindow <> 0) then
       begin
         // Detach serializes with posting. No producer can enqueue after this drain.
-        while PeekMessage(Msg,FNotificationWindow,WM_MFPACK_VOLUME,WM_MFPACK_VOLUME,PM_REMOVE) do
+        while PeekMessage(Msg, FNotificationWindow, WM_MFPACK_VOLUME, WM_MFPACK_VOLUME, PM_REMOVE) do
           FreeMem(Pointer(Msg.lParam));
         DestroyWindow(FNotificationWindow);
         FNotificationWindow := 0;
@@ -681,6 +785,7 @@ end;
 
 
 procedure TMfAudioEndPoint.DoVolumeNotifyOnMainThread(pNotifyCopy: PAUDIO_VOLUME_NOTIFICATION_DATA);
+
 begin
 
   if (pNotifyCopy = nil) then
@@ -703,14 +808,15 @@ end;
 
 
 procedure TMfAudioEndPoint.RebuildEndpointCache;
+
 begin
 
   ClearEndpointDevices(fEndPointDevices);
   dwEndPointsCount := 0;
   OleCheck(GetEndpointDevices(fDataFlow,
-                             DWord(fState),
-                             fEndPointDevices,
-                             dwEndPointsCount));
+                              DWord(fState),
+                              fEndPointDevices,
+                              dwEndPointsCount));
 end;
 
 
@@ -722,7 +828,7 @@ begin
 
   Result := -1;
   for i := 0 to Integer(dwEndPointsCount) - 1 do
-    if (fEndPointDevices[i].pwszID <> nil) and (lstrcmpiW(fEndPointDevices[i].pwszID,PWideChar(DeviceId)) = 0) then
+    if (fEndPointDevices[i].pwszID <> nil) and (lstrcmpiW(fEndPointDevices[i].pwszID, PWideChar(DeviceId)) = 0) then
       Exit(i);
 end;
 
@@ -734,7 +840,7 @@ var
 begin
 
   Result := E_INVALIDARG;
-  if ADeviceId = '' then
+  if (ADeviceId = '') then
     Exit;
 
   // Ensure cache is current.
@@ -793,6 +899,7 @@ end;
 
 
 function TMfAudioEndPoint.GetGuidContextAsString: string;
+
 begin
 
   Result := UnicodeString(GuidToString(FguidEventContext));
@@ -810,18 +917,18 @@ begin
     fAudioEndpoint.GetChannelCount(cc);
 
   if (cc = 0) then
-  begin
+    begin
 
-    FLock.Enter();
+      FLock.Enter();
 
-    try
+      try
 
-      cc := uiChannels;
-    finally
+        cc := uiChannels;
+      finally
 
-      FLock.Leave();
+        FLock.Leave();
+      end;
     end;
-  end;
 
   Result := cc;
 end;
@@ -840,17 +947,19 @@ begin
 
   b := 0;
   if Succeeded(fAudioEndpoint.GetMute(b)) then
-    Result := b <> 0;
+    Result := (b <> 0);
 end;
 
 
 procedure TMfAudioEndPoint.SetMute(aValue: Boolean);
+
 begin
 
   if (csLoading in ComponentState) or (csDesigning in ComponentState) then
     Exit;
   if Assigned(fAudioEndpoint) then
-    OleCheck(fAudioEndpoint.SetMute(Ord(aValue),@FguidEventContext));
+    OleCheck(fAudioEndpoint.SetMute(Ord(aValue),
+                                    @FguidEventContext));
 end;
 
 
@@ -868,13 +977,14 @@ end;
 
 
 procedure TMfAudioEndPoint.SetMasterScalarVolume(aValue: Single);
+
 begin
 
   if (csLoading in ComponentState) or (csDesigning in ComponentState) then
     Exit;
   if Assigned(fAudioEndpoint) then
     OleCheck(fAudioEndpoint.SetMasterVolumeLevelScalar(aValue,
-                                              @FguidEventContext));
+                                                       @FguidEventContext));
 end;
 
 
@@ -892,19 +1002,21 @@ end;
 
 
 procedure TMfAudioEndPoint.SetMasterDbVolume(aValue: Single);
+
 begin
 
   if (csLoading in ComponentState) or (csDesigning in ComponentState) then
     Exit;
   if Assigned(fAudioEndpoint) then
     OleCheck(fAudioEndpoint.SetMasterVolumeLevel(aValue,
-                                        @FguidEventContext));
+                                                 @FguidEventContext));
 end;
 
 
 procedure TMfAudioEndPoint.GetVolumeRange(out pflVolumeMindB,
                                           pflVolumeMaxdB,
                                           pflVolumeIncrementdB: Single);
+
 begin
 
   pflVolumeMindB := 0;
@@ -931,8 +1043,11 @@ begin
 end;
 
 
-procedure TMfAudioEndPoint.SetChannelScalarVolume(Index: UINT; chVolume: Single);
+procedure TMfAudioEndPoint.SetChannelScalarVolume(Index: UINT;
+                                                  chVolume: Single);
+
 begin
+
   if Assigned(fAudioEndpoint) then
     fAudioEndpoint.SetChannelVolumeLevelScalar(Index,
                                                chVolume,
@@ -941,6 +1056,7 @@ end;
 
 
 function TMfAudioEndPoint.GetStateAsString: string;
+
 begin
 
   Result := GetDeviceStateAsString(DWord(fState));
@@ -955,19 +1071,15 @@ begin
 
   S1 := Trim(aValue);
 
-  if (lstrcmpiW(PWideChar(S1),PWideChar(UnicodeString(DEV_STATE_ACTIVE))) = 0) then
+  if (lstrcmpiW(PWideChar(S1), PWideChar(UnicodeString(DEV_STATE_ACTIVE))) = 0) then
     fState := DEVICE_STATE_ACTIVE
-  else
-    if (lstrcmpiW(PWideChar(S1),PWideChar(UnicodeString(DEV_STATE_DISABLED))) = 0) then
-      fState := DEVICE_STATE_DISABLED
-  else
-    if (lstrcmpiW(PWideChar(S1),PWideChar(UnicodeString(DEV_STATE_NOTPRESENT))) = 0) then
-      fState := DEVICE_STATE_NOTPRESENT
-  else
-    if (lstrcmpiW(PWideChar(S1),PWideChar(UnicodeString(DEV_STATE_UNPLUGGED))) = 0) then
-      fState := DEVICE_STATE_UNPLUGGED
-  else
-    if (lstrcmpiW(PWideChar(S1),PWideChar(UnicodeString(DEV_STATEMASK_ALL))) = 0) then
+  else if (lstrcmpiW(PWideChar(S1), PWideChar(UnicodeString(DEV_STATE_DISABLED))) = 0) then
+    fState := DEVICE_STATE_DISABLED
+  else if (lstrcmpiW(PWideChar(S1), PWideChar(UnicodeString(DEV_STATE_NOTPRESENT))) = 0) then
+    fState := DEVICE_STATE_NOTPRESENT
+  else if (lstrcmpiW(PWideChar(S1), PWideChar(UnicodeString(DEV_STATE_UNPLUGGED))) = 0) then
+    fState := DEVICE_STATE_UNPLUGGED
+  else if (lstrcmpiW(PWideChar(S1), PWideChar(UnicodeString(DEV_STATEMASK_ALL))) = 0) then
     fState := DEVICE_STATEMASK_ALL
   else
     fState := DEVICE_STATE_ACTIVE;
@@ -979,6 +1091,7 @@ end;
 
 
 procedure TMfAudioEndPoint.SetDataFlow(aValue: EDataFlow);
+
 begin
 
   if (fDataFlow <> aValue) then
@@ -1100,6 +1213,7 @@ end;
 
 
 function TMfAudioEndPoint.VolumeStepUp(const GuidEventContext: TGuid): HResult;
+
 begin
 
   if not Assigned(fAudioEndpoint) then
@@ -1109,6 +1223,7 @@ end;
 
 
 function TMfAudioEndPoint.VolumeStepDown(const GuidEventContext: TGuid): HResult;
+
 begin
 
   if not Assigned(fAudioEndpoint) then
@@ -1118,7 +1233,9 @@ end;
 
 
 function TMfAudioEndPoint.RegisterAudioEndpointVolumeCallback(pNotify: IAudioEndpointVolumeCallback): HResult;
+
 begin
+
   if (pNotify = nil) or not Assigned(fAudioEndpoint) then
     Exit(E_POINTER);
   Result := fAudioEndpoint.RegisterControlChangeNotify(pNotify);
@@ -1126,6 +1243,7 @@ end;
 
 
 function TMfAudioEndPoint.UnregisterAudioEndpointVolumeCallback(pNotify: IAudioEndpointVolumeCallback): HResult;
+
 begin
 
   if (pNotify = nil) or not Assigned(fAudioEndpoint) then
@@ -1137,6 +1255,7 @@ end;
 function TMfAudioEndPoint.GetAudioDeviceDescriptions(DefaultDevice: IMMDevice;
                                                      const DevicePkey: PROPERTYKEY;
                                                      out deviceDesc: WideString): HResult;
+
 begin
 
   Result := GetDeviceDescriptions(DefaultDevice,
@@ -1163,6 +1282,7 @@ end;
 
 
 function TMfAudioEndPoint.GetDefaultAudioEndPointDevice(out audioEndPoint: IMMDevice): HResult;
+
 begin
 
   Result := GetDefaultEndPointAudioDevice(audioEndPoint,
@@ -1174,6 +1294,7 @@ initialization
   RegisterClass(TMfAudioEndPoint);
 
 finalization
-  UnregisterClassW(EndpointWindowClass,GetModuleHandleW(nil));
+  UnregisterClassW(EndpointWindowClass,
+                   GetModuleHandleW(nil));
 
 end.

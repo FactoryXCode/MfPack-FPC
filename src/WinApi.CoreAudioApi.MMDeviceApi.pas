@@ -79,7 +79,7 @@ unit WinApi.CoreAudioApi.MMDeviceApi;
 interface
 
 uses
-  
+
   {WinApi}
   WinApi.WinError,
   WinApi.WinApiTypes,
@@ -93,7 +93,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -114,157 +115,294 @@ const
   HDMI = LongInt(DigitalAudioDisplayDevice);
 
 
-  CLSID_MMDeviceEnumerator            : TGUID = '{BCDE0395-E52F-467C-8E3D-C4579291692E}';
+  CLSID_MMDeviceEnumerator: TGUID = '{BCDE0395-E52F-467C-8E3D-C4579291692E}';
 
   // Error types
-  E_NOTFOUND                          = HResult(ERROR_NOT_FOUND);
-  E_UNSUPPORTED_TYPE                  = HResult(ERROR_UNSUPPORTED_TYPE);
+  E_NOTFOUND = HResult(ERROR_NOT_FOUND);
+  E_UNSUPPORTED_TYPE = HResult(ERROR_UNSUPPORTED_TYPE);
 
   // The DEVICE_STATE_XXX constants indicate the current state of an audio endpoint device.
 
-  DEVICE_STATE_ACTIVE                 = DWORD($00000001);  // The audio endpoint device is active.
-  {$EXTERNALSYM DEVICE_STATE_ACTIVE}                       // That is, the audio adapter that connects to the endpoint device is present and enabled.
-                                                           // In addition, if the endpoint device plugs into a jack on the adapter,
-                                                           // then the endpoint device is plugged in.
+  DEVICE_STATE_ACTIVE = DWORD($00000001);  // The audio endpoint device is active.
+  {$EXTERNALSYM DEVICE_STATE_ACTIVE}
+  // That is, the audio adapter that connects to the endpoint device is present and enabled.
+  // In addition, if the endpoint device plugs into a jack on the adapter,
+  // then the endpoint device is plugged in.
 
-  DEVICE_STATE_DISABLED               = DWORD($00000002);  // The audio endpoint device is disabled.
-  {$EXTERNALSYM DEVICE_STATE_DISABLED}                     // The user has disabled the device in the Windows multimedia control panel,
-                                                           // Mmsys.cpl.
+  DEVICE_STATE_DISABLED = DWORD($00000002);  // The audio endpoint device is disabled.
+  {$EXTERNALSYM DEVICE_STATE_DISABLED}
+  // The user has disabled the device in the Windows multimedia control panel,
+  // Mmsys.cpl.
 
-  DEVICE_STATE_NOTPRESENT             = DWORD($00000004);  // The audio endpoint device is not present because the audio adapter that connects to
-  {$EXTERNALSYM DEVICE_STATE_NOTPRESENT}                   // the endpoint device has been removed from the system,
-                                                           // or the user has disabled the adapter device in Device Manager.
+  DEVICE_STATE_NOTPRESENT = DWORD($00000004);  // The audio endpoint device is not present because the audio adapter that connects to
+  {$EXTERNALSYM DEVICE_STATE_NOTPRESENT}
+  // the endpoint device has been removed from the system,
+  // or the user has disabled the adapter device in Device Manager.
 
-  DEVICE_STATE_UNPLUGGED              = DWORD($00000008);  // The audio endpoint device is unplugged.
-  {$EXTERNALSYM DEVICE_STATE_UNPLUGGED}                    // The audio adapter that contains the jack for the endpoint device is present and enabled,
-                                                           // but the endpoint device is not plugged into the jack.
-                                                           // Only a device with jack-presence detection can be in this state.
-                                                           // For more information about jack-presence detection, see Audio Endpoint Devices.
+  DEVICE_STATE_UNPLUGGED = DWORD($00000008);  // The audio endpoint device is unplugged.
+  {$EXTERNALSYM DEVICE_STATE_UNPLUGGED}
+  // The audio adapter that contains the jack for the endpoint device is present and enabled,
+  // but the endpoint device is not plugged into the jack.
+  // Only a device with jack-presence detection can be in this state.
+  // For more information about jack-presence detection, see Audio Endpoint Devices.
 
-  DEVICE_STATEMASK_ALL                = DWORD($0000000F);  // Includes audio endpoint devices in all states—active, disabled, not present, and unplugged.
+  DEVICE_STATEMASK_ALL = DWORD($0000000F);  // Includes audio endpoint devices in all states—active, disabled, not present, and unplugged.
 
 
-  ENDPOINT_SYSFX_ENABLED              = DWORD($00000000);  // System Effects are enabled.
+  ENDPOINT_SYSFX_ENABLED = DWORD($00000000);  // System Effects are enabled.
 
-  ENDPOINT_SYSFX_DISABLED             = DWORD($00000001);  // System Effects are disabled.
+  ENDPOINT_SYSFX_DISABLED = DWORD($00000001);  // System Effects are disabled.
 
 
   // PKEY_AUDIOENDPOINT_XXX
   // Indicates the physical attributes of the audio endpoint device.
   PKEY_AudioEndpoint_FormFactor: PROPERTYKEY = (
-                fmtid: (D1:$1da5d803; D2:$d492; D3:$4edd;
-                D4: ($8c, $23, $e0, $c0, $ff, $ee, $7f, $0e));
-                pid: 0);
+    fmtid: (D1: $1da5d803; D2: $d492; D3: $4edd;
+    D4: ($8c,
+         $23,
+         $e0,
+         $c0,
+         $ff,
+         $ee,
+         $7f,
+         $0e));
+    pid: 0);
 
   // Specifies the CLSID of the registered provider of the device-properties extension for the audio endpoint device.
   PKEY_AudioEndpoint_ControlPanelPageProvider: PROPERTYKEY = (
-                fmtid: (D1:$1da5d803; D2:$d492; D3:$4edd;
-                D4: ($8c, $23, $e0, $c0, $ff, $ee, $7f, $0e));
-                pid: 1);
+    fmtid: (D1: $1da5d803; D2: $d492; D3: $4edd;
+    D4: ($8c,
+         $23,
+         $e0,
+         $c0,
+         $ff,
+         $ee,
+         $7f,
+         $0e));
+    pid: 1);
 
   // Associates a kernel-streaming (KS) pin category with an audio endpoint device.
   PKEY_AudioEndpoint_Association: PROPERTYKEY = (
-                fmtid: (D1:$1da5d803; D2:$d492; D3:$4edd;
-                D4: ($8c, $23, $e0, $c0, $ff, $ee, $7f, $0e));
-                pid: 2);
+    fmtid: (D1: $1da5d803; D2: $d492; D3: $4edd;
+    D4: ($8c,
+         $23,
+         $e0,
+         $c0,
+         $ff,
+         $ee,
+         $7f,
+         $0e));
+    pid: 2);
 
   // Defines the physical speaker configuration for the audio endpoint device.
   PKEY_AudioEndpoint_PhysicalSpeakers: PROPERTYKEY = (
-                fmtid: (D1:$1da5d803; D2:$d492; D3:$4edd;
-                D4: ($8c, $23, $e0, $c0, $ff, $ee, $7f, $0e));
-                pid: 3);
+    fmtid: (D1: $1da5d803; D2: $d492; D3: $4edd;
+    D4: ($8c,
+         $23,
+         $e0,
+         $c0,
+         $ff,
+         $ee,
+         $7f,
+         $0e));
+    pid: 3);
 
   // Specifies the CLSID of the registered provider of the device-properties extension for the audio endpoint device.
   PKEY_AudioEndpoint_GUID: PROPERTYKEY = (
-                fmtid: (D1:$1da5d803; D2:$d492; D3:$4edd;
-                D4: ($8c, $23, $e0, $c0, $ff, $ee, $7f, $0e));
-                pid: 4);
+    fmtid: (D1: $1da5d803; D2: $d492; D3: $4edd;
+    D4: ($8c,
+         $23,
+         $e0,
+         $c0,
+         $ff,
+         $ee,
+         $7f,
+         $0e));
+    pid: 4);
 
   // FX - Indicates whether system effects are enabled in the shared-mode stream that flows to or from the audio endpoint device.
   // Note: You may also access the DirectSound FX interfaces to do this. (See also: DSFx.pas (not included with Media Foundation))
   PKEY_AudioEndpoint_Disable_SysFx: PROPERTYKEY = (
-                fmtid: (D1:$1da5d803; D2:$d492; D3:$4edd;
-                D4: ($8c, $23, $e0, $c0, $ff, $ee, $7f, $0e));
-                pid: 5);
+    fmtid: (D1: $1da5d803; D2: $d492; D3: $4edd;
+    D4: ($8c,
+         $23,
+         $e0,
+         $c0,
+         $ff,
+         $ee,
+         $7f,
+         $0e));
+    pid: 5);
 
   // Specifies the channel-configuration mask for the full-range speakers that are connected to the audio endpoint device.
   PKEY_AudioEndpoint_FullRangeSpeakers: PROPERTYKEY = (
-                fmtid: (D1:$1da5d803; D2:$d492; D3:$4edd;
-                D4: ($8c, $23, $e0, $c0, $ff, $ee, $7f, $0e));
-                pid: 6);
+    fmtid: (D1: $1da5d803; D2: $d492; D3: $4edd;
+    D4: ($8c,
+         $23,
+         $e0,
+         $c0,
+         $ff,
+         $ee,
+         $7f,
+         $0e));
+    pid: 6);
 
   // Indicates whether the endpoint supports the event-driven mode. The values are populated by the OEM in an .inf file.
   PKEY_AudioEndpoint_Supports_EventDriven_Mode: PROPERTYKEY = (
-                fmtid: (D1:$1da5d803; D2:$d492; D3:$4edd;
-                D4: ($8c, $23, $e0, $c0, $ff, $ee, $7f, $0e));
-                pid: 7);
+    fmtid: (D1: $1da5d803; D2: $d492; D3: $4edd;
+    D4: ($8c,
+         $23,
+         $e0,
+         $c0,
+         $ff,
+         $ee,
+         $7f,
+         $0e));
+    pid: 7);
 
   // Contains an output category GUID for an audio endpoint device.
   PKEY_AudioEndpoint_JackSubType: PROPERTYKEY = (
-                fmtid: (D1:$1da5d803; D2:$d492; D3:$4edd;
-                D4: ($8c, $23, $e0, $c0, $ff, $ee, $7f, $0e));
-                pid: 8);
+    fmtid: (D1: $1da5d803; D2: $d492; D3: $4edd;
+    D4: ($8c,
+         $23,
+         $e0,
+         $c0,
+         $ff,
+         $ee,
+         $7f,
+         $0e));
+    pid: 8);
 
   PKEY_AudioEndpoint_Default_VolumeInDb: PROPERTYKEY = (
-                fmtid: (D1:$1da5d803; D2:$d492; D3:$4edd;
-                D4: ($8c, $23, $e0, $c0, $ff, $ee, $7f, $0e));
-                pid: 9);
+    fmtid: (D1: $1da5d803; D2: $d492; D3: $4edd;
+    D4: ($8c,
+         $23,
+         $e0,
+         $c0,
+         $ff,
+         $ee,
+         $7f,
+         $0e));
+    pid: 9);
 
-{ 10.0.28000.0  }
+  { 10.0.28000.0  }
   PKEY_AudioEndpoint_Max_VolumeInDb: PROPERTYKEY = (
-                fmtid: (D1:$1da5d803; D2:$d492; D3:$4edd;
-                D4: ($8c, $23, $e0, $c0, $ff, $ee, $7f, $0e));
-                pid: 10);
+    fmtid: (D1: $1da5d803; D2: $d492; D3: $4edd;
+    D4: ($8c,
+         $23,
+         $e0,
+         $c0,
+         $ff,
+         $ee,
+         $7f,
+         $0e));
+    pid: 10);
 
   PKEY_AudioEndpoint_Min_VolumeInDb: PROPERTYKEY = (
-                fmtid: (D1:$1da5d803; D2:$d492; D3:$4edd;
-                D4: ($8c, $23, $e0, $c0, $ff, $ee, $7f, $0e));
-                pid: 11);
+    fmtid: (D1: $1da5d803; D2: $d492; D3: $4edd;
+    D4: ($8c,
+         $23,
+         $e0,
+         $c0,
+         $ff,
+         $ee,
+         $7f,
+         $0e));
+    pid: 11);
 
   PKEY_AudioEndpoint_StableId: PROPERTYKEY = (
-                fmtid: (D1:$1da5d803; D2:$d492; D3:$4edd;
-                D4: ($8c, $23, $e0, $c0, $ff, $ee, $7f, $0e));
-                pid: 12);
+    fmtid: (D1: $1da5d803; D2: $d492; D3: $4edd;
+    D4: ($8c,
+         $23,
+         $e0,
+         $c0,
+         $ff,
+         $ee,
+         $7f,
+         $0e));
+    pid: 12);
 
 
-// Defined in WinApi.CoreAudioApi.FunctionDiscoveryKeys_devpkey if OS >= Vista
-//  PKEY_Device_FriendlyName: PROPERTYKEY = (
-//                fmtid: (D1:$a45c254e; D2:$df1c; D3:$4efd;
-//                D4: ($80, $20, $67, $d1, $46, $a8, $50, $e0));
-//                pid: 14);
-//  {$EXTERNALSYM PKEY_Device_FriendlyName}
+  // Defined in WinApi.CoreAudioApi.FunctionDiscoveryKeys_devpkey if OS >= Vista
+  //  PKEY_Device_FriendlyName: PROPERTYKEY = (
+  //                fmtid: (D1:$a45c254e; D2:$df1c; D3:$4efd;
+  //                D4: ($80, $20, $67, $d1, $46, $a8, $50, $e0));
+  //                pid: 14);
+  //  {$EXTERNALSYM PKEY_Device_FriendlyName}
 
 
   //PKEY_AudioEndpoint_XXX
   PKEY_AudioEngine_DeviceFormat: PROPERTYKEY = (
-                fmtid: (D1:$f19f064d; D2:$82c; D3:$4e27;
-                D4: ($bc, $73, $68, $82, $a1, $bb, $8e, $4c));
-                pid: 0);
+    fmtid: (D1: $f19f064d; D2: $82c; D3: $4e27;
+    D4: ($bc,
+         $73,
+         $68,
+         $82,
+         $a1,
+         $bb,
+         $8e,
+         $4c));
+    pid: 0);
 
   PKEY_AudioEngine_OEMFormat: PROPERTYKEY = (
-                fmtid: (D1:$e4870e26; D2:$3cc5; D3:$4cd2;
-                D4: ($ba, $46, $ca, $a, $9a, $70, $ed, $4));
-                pid: 3);
+    fmtid: (D1: $e4870e26; D2: $3cc5; D3: $4cd2;
+    D4: ($ba,
+         $46,
+         $ca,
+         $a,
+         $9a,
+         $70,
+         $ed,
+         $4));
+    pid: 3);
 
-  PKEY_AudioEndpointLogo_IconEffects :  PROPERTYKEY = (
-                fmtid: (D1: $f1ab780d; D2: $2010; D3: $4ed3;
-                D4: ($a3, $a6, $8b, $87, $f0, $f0, $c4, $76));
-                pid: 0);
+  PKEY_AudioEndpointLogo_IconEffects: PROPERTYKEY = (
+    fmtid: (D1: $f1ab780d; D2: $2010; D3: $4ed3;
+    D4: ($a3,
+         $a6,
+         $8b,
+         $87,
+         $f0,
+         $f0,
+         $c4,
+         $76));
+    pid: 0);
 
-  PKEY_AudioEndpointLogo_IconPath :  PROPERTYKEY = (
-                fmtid: (D1: $f1ab780d; D2: $2010; D3: $4ed3;
-                D4: ($a3, $a6, $8b, $87, $f0, $f0, $c4, $76));
-                pid: 1);
+  PKEY_AudioEndpointLogo_IconPath: PROPERTYKEY = (
+    fmtid: (D1: $f1ab780d; D2: $2010; D3: $4ed3;
+    D4: ($a3,
+         $a6,
+         $8b,
+         $87,
+         $f0,
+         $f0,
+         $c4,
+         $76));
+    pid: 1);
 
-  PKEY_AudioEndpointSettings_MenuText :  PROPERTYKEY = (
-                fmtid: (D1: $14242002; D2: $0320; D3: $4de4;
-                D4: ($95, $55, $a7, $d8, $2b, $73, $c2, $86));
-                pid: 0);
+  PKEY_AudioEndpointSettings_MenuText: PROPERTYKEY = (
+    fmtid: (D1: $14242002; D2: $0320; D3: $4de4;
+    D4: ($95,
+         $55,
+         $a7,
+         $d8,
+         $2b,
+         $73,
+         $c2,
+         $86));
+    pid: 0);
 
-  PKEY_AudioEndpointSettings_LaunchContract :  PROPERTYKEY = (
-                fmtid: (D1: $14242002; D2: $0320; D3: $4de4;
-                D4: ($95, $55, $a7, $d8, $2b, $73, $c2, $86));
-                pid: 1);
+  PKEY_AudioEndpointSettings_LaunchContract: PROPERTYKEY = (
+    fmtid: (D1: $14242002; D2: $0320; D3: $4de4;
+    D4: ($95,
+         $55,
+         $a7,
+         $d8,
+         $2b,
+         $73,
+         $c2,
+         $86));
+    pid: 1);
 
 
 type
@@ -276,6 +414,7 @@ type
 
 
   PDIRECTX_AUDIO_ACTIVATION_PARAMS = ^tagDIRECTX_AUDIO_ACTIVATION_PARAMS;
+
   tagDIRECTX_AUDIO_ACTIVATION_PARAMS = record
     cbDirectXAudioActivationParams: DWORD;
     guidAudioSession: TGUID;
@@ -286,20 +425,20 @@ type
 
   PEDataFlow = ^TEDataFlow;
   __MIDL___MIDL_itf_mmdeviceapi_0000_0000_0001 = (
-    eRender              = 0,              // Audio rendering stream.
-                                           // Audio data flows from the application to the audio endpoint device,
-                                           // which renders the stream.
+    eRender = 0,              // Audio rendering stream.
+    // Audio data flows from the application to the audio endpoint device,
+    // which renders the stream.
 
-    eCapture             = (eRender + 1),  // Audio capture stream.
-                                           // Audio data flows from the audio endpoint device that captures the stream,
-                                           // to the application.
+    eCapture = (eRender + 1),  // Audio capture stream.
+    // Audio data flows from the audio endpoint device that captures the stream,
+    // to the application.
 
-    eAll                 = (eCapture + 1), // Audio rendering or capture stream.
-                                           // Audio data can flow either from the application to the audio endpoint device,
-                                           // or from the audio endpoint device to the application.
+    eAll = (eCapture + 1), // Audio rendering or capture stream.
+    // Audio data can flow either from the application to the audio endpoint device,
+    // or from the audio endpoint device to the application.
 
     EDataFlow_enum_count = (eAll + 1)      // The number of members in the EDataFlow enumeration (not counting the EDataFlow_enum_count member).
-  );
+    );
   EDataFlow = __MIDL___MIDL_itf_mmdeviceapi_0000_0000_0001;
   TEDataFlow = __MIDL___MIDL_itf_mmdeviceapi_0000_0000_0001;
   _tagEDataFlow = __MIDL___MIDL_itf_mmdeviceapi_0000_0000_0001; // For compatibility with earlier MfPack versions
@@ -311,11 +450,11 @@ type
 
   PeRole = ^TeRole;
   __MIDL___MIDL_itf_mmdeviceapi_0000_0000_0002 = (
-    eConsole         = 0,                    // Games, system notification sounds, and voice commands.
-    eMultimedia      = (eConsole + 1),       // Music, movies, narration, and live music recording.
-    eCommunications  = (eMultimedia + 1),    // Voice communications (talking to another person).
+    eConsole = 0,                    // Games, system notification sounds, and voice commands.
+    eMultimedia = (eConsole + 1),       // Music, movies, narration, and live music recording.
+    eCommunications = (eMultimedia + 1),    // Voice communications (talking to another person).
     eRole_enum_count = (eCommunications + 1) // The number of members in the ERole enumeration (not counting the ERole_enum_count member).
-  );
+    );
   ERole = __MIDL___MIDL_itf_mmdeviceapi_0000_0000_0002;
   TERole = __MIDL___MIDL_itf_mmdeviceapi_0000_0000_0002;
   _tagERole = __MIDL___MIDL_itf_mmdeviceapi_0000_0000_0002; // For compatibility with earlier MfPack versions
@@ -332,12 +471,12 @@ type
 
   {Win 11}
   PAUDIO_SYSTEMEFFECTS_PROPERTYSTORE_TYPE = ^AUDIO_SYSTEMEFFECTS_PROPERTYSTORE_TYPE;
-  AUDIO_SYSTEMEFFECTS_PROPERTYSTORE_TYPE            = (
-    AUDIO_SYSTEMEFFECTS_PROPERTYSTORE_TYPE_DEFAULT  = 0,
-    AUDIO_SYSTEMEFFECTS_PROPERTYSTORE_TYPE_USER     = 1,
-    AUDIO_SYSTEMEFFECTS_PROPERTYSTORE_TYPE_VOLATILE = 2,
-    AUDIO_SYSTEMEFFECTS_PROPERTYSTORE_TYPE_ENUM_COUNT
-  );
+  AUDIO_SYSTEMEFFECTS_PROPERTYSTORE_TYPE = (
+    AUDIO_SYSTEMEFFECTS_PROPERTYSTORE_TYPE_DEFAULT = 0,
+                                            AUDIO_SYSTEMEFFECTS_PROPERTYSTORE_TYPE_USER = 1,
+                                            AUDIO_SYSTEMEFFECTS_PROPERTYSTORE_TYPE_VOLATILE = 2,
+                                            AUDIO_SYSTEMEFFECTS_PROPERTYSTORE_TYPE_ENUM_COUNT
+    );
 
 
 const
@@ -345,19 +484,19 @@ const
   // Device Interface Classes
   // ----------------------------------------------------------------------
   // {E6327CAD-DCEC-4949-AE8A-991E976A79D2}
-  DEVINTERFACE_AUDIO_RENDER  : TGUID = '{e6327cad-dcec-4949-ae8a-991e976a79d2}';
+  DEVINTERFACE_AUDIO_RENDER: TGUID = '{e6327cad-dcec-4949-ae8a-991e976a79d2}';
   // {2EEF81BE-33FA-4800-9670-1CD474972C3F}
-  DEVINTERFACE_AUDIO_CAPTURE : TGUID = '{2eef81be-33fa-4800-9670-1cd474972c3f}';
+  DEVINTERFACE_AUDIO_CAPTURE: TGUID = '{2eef81be-33fa-4800-9670-1cd474972c3f}';
 
-//#if (NTDDI_VERSION > NTDDI_WINBLUE || \
-//    (NTDDI_VERSION == NTDDI_WINBLUE && defined(WINBLUE_KBSPRING14)))
+  //#if (NTDDI_VERSION > NTDDI_WINBLUE || \
+  //    (NTDDI_VERSION == NTDDI_WINBLUE && defined(WINBLUE_KBSPRING14)))
 
   // {6DC23320-AB33-4CE4-80D4-BBB3EBBF2814}
-  DEVINTERFACE_MIDI_OUTPUT   : TGUID = '{6dc23320-ab33-4ce4-80d4-bbb3ebbf2814}';
+  DEVINTERFACE_MIDI_OUTPUT: TGUID = '{6dc23320-ab33-4ce4-80d4-bbb3ebbf2814}';
   // {504BE32C-CCF6-4D2C-B73F-6F8B3747E22B}
-  DEVINTERFACE_MIDI_INPUT    : TGUID = '{504be32c-ccf6-4d2c-b73f-6f8b3747e22b}';
+  DEVINTERFACE_MIDI_INPUT: TGUID = '{504be32c-ccf6-4d2c-b73f-6f8b3747e22b}';
 
-// #endif
+  // #endif
 
 type
 
@@ -379,10 +518,10 @@ type
    as a parameter to the IMMDeviceEnumerator.RegisterEndpointNotificationCallback method.
   }
   IMMNotificationClient = interface(IUnknown)
-  ['{7991EEC9-7E89-4D85-8390-6C703CEC60C0}']
+    ['{7991EEC9-7E89-4D85-8390-6C703CEC60C0}']
 
-     function OnDeviceStateChanged(pwstrDeviceId: LPCWSTR;
-                                   dwNewState: DWord): HResult; stdcall;
+    function OnDeviceStateChanged(pwstrDeviceId: LPCWSTR;
+                                  dwNewState: DWord): HResult; stdcall;
     // Parameters
     // pwstrDeviceId [in]
     //  Pointer to the endpoint ID string that identifies the audio endpoint device.
@@ -460,6 +599,7 @@ type
     //   For more information about IPropertyStore.SetValue, see the Windows SDK documentation.
     //   A client can use the key parameter to retrieve the new property value.
   end;
+
   IID_IMMNotificationClient = IMMNotificationClient;
 
 
@@ -477,14 +617,14 @@ type
       IMMDeviceEnumerator.GetDevice
   }
   IMMDevice = interface(IUnknown)
-  ['{D666063F-1587-4E43-81F1-B948E807363F}']
+    ['{D666063F-1587-4E43-81F1-B948E807363F}']
 
     function Activate(const iid: REFIID;
                       dwClsCtx: DWORD;
-                      {In_opt} pActivationParams: PPROPVARIANT;
+    {In_opt} pActivationParams: PPROPVARIANT;
                       out ppInterface: Pointer): HResult; stdcall;  // Replaced IUNKOWN pointer to a pointer, as described on ms-docs:
-                                                                    // https://learn.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immdevice-activate
-                                                                    // So, you have to cast the result like this: Pointer(YourInterface).
+    // https://learn.microsoft.com/en-us/windows/win32/api/mmdeviceapi/nf-mmdeviceapi-immdevice-activate
+    // So, you have to cast the result like this: Pointer(YourInterface).
     function OpenPropertyStore(stgmAccess: DWORD;
                                out ppProperties: IPropertyStore): HResult; stdcall;
     // Parameter stgmAccess declares the storage-access mode.
@@ -510,6 +650,7 @@ type
     //    DEVICE_STATE_UNPLUGGED
 
   end;
+
   IID_IMMDevice = IMMDevice;
 
 
@@ -526,7 +667,7 @@ type
    Each endpoint object in the collection supports the IMMDevice and IMMEndpoint interfaces.
   }
   IMMDeviceCollection = interface(IUnknown)
-  ['{0BD7A1BE-7A1A-44DB-8397-CC5392387B5E}']
+    ['{0BD7A1BE-7A1A-44DB-8397-CC5392387B5E}']
 
     function GetCount(out pcDevices: UINT): HResult; stdcall;
 
@@ -534,6 +675,7 @@ type
                   out ppDevice: IMMDevice): HResult; stdcall;
 
   end;
+
   IID_IMMDeviceCollection = IMMDeviceCollection;
 
 
@@ -547,11 +689,12 @@ type
    Call the IMMDevice.QueryInterface method with parameter iid set to REFIID IID_IMMEndpoint.
   }
   IMMEndpoint = interface(IUnknown)
-  ['{1BE09788-6894-4089-8586-9A2A6C265AC5}']
+    ['{1BE09788-6894-4089-8586-9A2A6C265AC5}']
 
     function GetDataFlow(out pDataFlow: eDataFlow): HResult; stdcall;
 
   end;
+
   IID_IMMEndpoint = IMMEndpoint;
 
 
@@ -561,12 +704,13 @@ type
   // receive notifications when audio system effect properties change.
   //
   IAudioSystemEffectsPropertyChangeNotificationClient = interface(IUnknown)
-  ['{20049D40-56D5-400E-A2EF-385599FEED49}']
+    ['{20049D40-56D5-400E-A2EF-385599FEED49}']
 
     function OnPropertyChanged(_type: AUDIO_SYSTEMEFFECTS_PROPERTYSTORE_TYPE;
                                const key: PROPERTYKEY): HResult; stdcall;
 
   end;
+
   IID_IAudioSystemEffectsPropertyChangeNotificationClient = IAudioSystemEffectsPropertyChangeNotificationClient;
 
 
@@ -576,7 +720,7 @@ type
   // to register for notifications when audio system effect properties change.
   //
   IAudioSystemEffectsPropertyStore = interface(IUnknown)
-  ['{302AE7F9-D7E0-43E4-971B-1F8293613D2A}']
+    ['{302AE7F9-D7E0-43E4-971B-1F8293613D2A}']
 
     function OpenDefaultPropertyStore(stgmAccess: DWORD;
                                       out propStore: IPropertyStore): HResult; stdcall;
@@ -596,6 +740,7 @@ type
     function UnregisterPropertyChangeNotification(callback: IAudioSystemEffectsPropertyChangeNotificationClient): HResult; stdcall;
 
   end;
+
   IID_IAudioSystemEffectsPropertyStore = IAudioSystemEffectsPropertyStore;
 
 
@@ -618,26 +763,27 @@ type
    the client calls the IMMDeviceCollection.Item method.
   }
   IMMDeviceEnumerator = interface(IUnknown)
-  ['{A95664D2-9614-4F35-A746-DE8DB63617E6}']
+    ['{A95664D2-9614-4F35-A746-DE8DB63617E6}']
 
     function EnumAudioEndpoints(dataFlow: EDataFlow;
                                 const dwStateMask: DWORD;   // DEVICE_STATE_XXX constants
-                                out ppDevices: IMMDeviceCollection): HResult; stdcall;
+      out ppDevices: IMMDeviceCollection): HResult; stdcall;
 
     function GetDefaultAudioEndpoint(dataFlow: EDataFlow;
                                      role: eRole;
                                      out ppEndpoint: IMMDevice): HResult; stdcall;
 
     function GetDevice(pwstrId: LPCWSTR;  // Pointer to a string containing the endpoint ID.
-                                          // The caller typically obtains this string from the IMMDevice.GetId method or
-                                          // from one of the methods in the IMMNotificationClient interface.
-                       out ppDevice: IMMDevice): HResult; stdcall;
+    // The caller typically obtains this string from the IMMDevice.GetId method or
+    // from one of the methods in the IMMNotificationClient interface.
+      out ppDevice: IMMDevice): HResult; stdcall;
 
     function RegisterEndpointNotificationCallback(pClient: IMMNotificationClient): HResult; stdcall;
 
     function UnregisterEndpointNotificationCallback(pClient: IMMNotificationClient): HResult; stdcall;
 
   end;
+
   IID_IMMDeviceEnumerator = IMMDeviceEnumerator;
 
 
@@ -648,7 +794,7 @@ type
   // NOTE: IMMDeviceActivator is reserved for system use.
   //
   IMMDeviceActivator = interface(IUnknown)
-  ['{3B0D0EA4-D0A9-4B0E-935B-09516746FAC0}']
+    ['{3B0D0EA4-D0A9-4B0E-935B-09516746FAC0}']
     function Activate(const iid: REFIID;
                       pDevice: IMMDevice;
                       pActivationParams: PROPVARIANT;
@@ -664,6 +810,7 @@ type
     //      The caller is responsible for releasing ppInterface.
     //
   end;
+
   IID_IMMDeviceActivator = IMMDeviceActivator;
 
 
@@ -672,12 +819,14 @@ type
   // ==================================================
   //
   PIActivateAudioInterfaceCompletionHandler = ^IActivateAudioInterfaceCompletionHandler;
+
   IActivateAudioInterfaceCompletionHandler = interface(IUnknown)
-  ['{41D949AB-9862-444A-80F6-C261334DA5EB}']
+    ['{41D949AB-9862-444A-80F6-C261334DA5EB}']
 
     function ActivateCompleted(activateOperation: IActivateAudioInterfaceAsyncOperation): HResult; stdcall;
 
   end;
+
   IID_IActivateAudioInterfaceCompletionHandler = IActivateAudioInterfaceCompletionHandler;
 
 
@@ -686,34 +835,36 @@ type
   // ===============================================
   //
   IActivateAudioInterfaceAsyncOperation = interface(IUnknown)
-  ['{72A22D78-CDE4-431D-B8CC-843A71199B6D}']
+    ['{72A22D78-CDE4-431D-B8CC-843A71199B6D}']
 
     function GetActivateResult(out activateResult: HResult;
                                out activatedInterface: IUnknown): HResult; stdcall;
 
   end;
+
   IID_IActivateAudioInterfaceAsyncOperation = IActivateAudioInterfaceAsyncOperation;
 
 
-  // ----------------------------------------------------------------------
-  // Function: ActivateAudioInterfaceAsync
-  // This function takes
-  // * a device interface instance identifier representing either
-  //     - an audio device interface instance (e.g., built-in speakers), or
-  //     - an device interface class (e.g., audio render devices)
-  // * a COM interface identifier
-  // * activation parameters specific to the interface being activated
-  //   and asynchronously returns a pointer to the specified interface
-  // ----------------------------------------------------------------------
-  function ActivateAudioInterfaceAsync(const deviceInterfacePath: LPCWSTR;
-                                       const riid: TGUID;
-                                       const activationParams: {P}PROPVARIANT;
-                                       completionDelegate: IActivateAudioInterfaceCompletionHandler;
-                                       out activationOperation: IActivateAudioInterfaceAsyncOperation): HResult; stdcall;
+// ----------------------------------------------------------------------
+// Function: ActivateAudioInterfaceAsync
+// This function takes
+// * a device interface instance identifier representing either
+//     - an audio device interface instance (e.g., built-in speakers), or
+//     - an device interface class (e.g., audio render devices)
+// * a COM interface identifier
+// * activation parameters specific to the interface being activated
+//   and asynchronously returns a pointer to the specified interface
+// ----------------------------------------------------------------------
+function ActivateAudioInterfaceAsync(const deviceInterfacePath: LPCWSTR;
+                                     const riid: TGUID;
+                                     const activationParams: {P}PROPVARIANT;
+                                     completionDelegate: IActivateAudioInterfaceCompletionHandler;
+                                     out activationOperation: IActivateAudioInterfaceAsyncOperation): HResult; stdcall;
 
 type
 
   PAudioExtensionParams = ^AudioExtensionParams;
+
   AudioExtensionParams = record
     AddPageParam: LPARAM;
     pEndpoint: IMMDevice;
@@ -728,11 +879,11 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 const
   MMDeviceApiLib = 'Mmdevapi.dll';
 
-  function ActivateAudioInterfaceAsync; external MMDeviceApiLib name 'ActivateAudioInterfaceAsync' ;
+function ActivateAudioInterfaceAsync; external MMDeviceApiLib name 'ActivateAudioInterfaceAsync';
 
 end.

@@ -74,7 +74,7 @@ unit System.Services.Avrt;
 
 {$I MfPack.Fpc.inc}
 
-  {$HPPEMIT '#include "avrt.h"'}
+{$HPPEMIT '#include "avrt.h"'}
 
 interface
 
@@ -86,7 +86,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 type
@@ -100,7 +101,7 @@ type
                     AVRT_PRIORITY_NORMAL = 0,
                     AVRT_PRIORITY_HIGH = 1,
                     AVRT_PRIORITY_CRITICAL = 2
-                   );
+    );
   {$EXTERNALSYM _AVRT_PRIORITY}
   AVRT_PRIORITY = _AVRT_PRIORITY;
   {$EXTERNALSYM AVRT_PRIORITY}
@@ -120,103 +121,103 @@ const
 
   // The following functions returns a handle if succeeded and 0 if failed
 
-  function AvSetMmThreadCharacteristicsA({_In_} TaskName: PAnsiChar;
-                                         {_Inout_} TaskIndex: LPDWORD): THandle; stdcall;
-  {$EXTERNALSYM AvSetMmThreadCharacteristicsA}
+function AvSetMmThreadCharacteristicsA({_In_} TaskName: PAnsiChar;
+  {_Inout_} TaskIndex: LPDWORD): THandle; stdcall;
+{$EXTERNALSYM AvSetMmThreadCharacteristicsA}
 
 
-  function AvSetMmThreadCharacteristicsW({_In_} TaskName: PWideChar;
-                                         {_Inout_} TaskIndex: LPDWORD): THandle; stdcall;
-  {$EXTERNALSYM AvSetMmThreadCharacteristicsW}
+function AvSetMmThreadCharacteristicsW({_In_} TaskName: PWideChar;
+  {_Inout_} TaskIndex: LPDWORD): THandle; stdcall;
+{$EXTERNALSYM AvSetMmThreadCharacteristicsW}
 
-  function AvSetMmThreadCharacteristics({_In_} TaskName: PWideChar;
-                                        {_Inout_} TaskIndex: LPDWORD): THandle; stdcall;
-  {$EXTERNALSYM AvSetMmThreadCharacteristics}
-
-
-  function AvSetMmMaxThreadCharacteristicsA({_In_} FirstTask: PAnsiChar;
-                                            {_In_} SecondTask: PAnsiChar;
-                                            {_Inout_} TaskIndex: LPDWORD): THandle; stdcall;
-  {$EXTERNALSYM AvSetMmMaxThreadCharacteristicsA}
-
-  function AvSetMmMaxThreadCharacteristicsW({_In_} FirstTask: PWideChar;
-                                            {_In_} SecondTask: PWideChar;
-                                            {_Inout_} TaskIndex: LPDWORD): THandle; stdcall;
-  {$EXTERNALSYM AvSetMmMaxThreadCharacteristicsW}
-
-  function AvSetMmMaxThreadCharacteristics({_In_} FirstTask: PWideChar;
-                                           {_In_} SecondTask: PWideChar;
-                                           {_Inout_} TaskIndex: LPDWORD): THandle; stdcall;
-  {$EXTERNALSYM AvSetMmMaxThreadCharacteristics}
+function AvSetMmThreadCharacteristics({_In_} TaskName: PWideChar;
+  {_Inout_} TaskIndex: LPDWORD): THandle; stdcall;
+{$EXTERNALSYM AvSetMmThreadCharacteristics}
 
 
-  // Returns False if failed
-  function AvRevertMmThreadCharacteristics({_In_} AvrtHandle: THandle): Bool; stdcall;
-  {$EXTERNALSYM AvRevertMmThreadCharacteristics}
+function AvSetMmMaxThreadCharacteristicsA({_In_} FirstTask: PAnsiChar;
+  {_In_} SecondTask: PAnsiChar;
+  {_Inout_} TaskIndex: LPDWORD): THandle; stdcall;
+{$EXTERNALSYM AvSetMmMaxThreadCharacteristicsA}
 
-  // Returns False if failed
-  function AvSetMmThreadPriority({_In_} AvrtHandle: THandle;
-                                 {_In_} Priority: AVRT_PRIORITY): Bool; stdcall;
-  {$EXTERNALSYM AvSetMmThreadPriority}
+function AvSetMmMaxThreadCharacteristicsW({_In_} FirstTask: PWideChar;
+  {_In_} SecondTask: PWideChar;
+  {_Inout_} TaskIndex: LPDWORD): THandle; stdcall;
+{$EXTERNALSYM AvSetMmMaxThreadCharacteristicsW}
 
-  // Returns False if failed
-  function AvRtCreateThreadOrderingGroup({_Out_} out Context: THandle;
-                                         {_In_} Period: PLargeInteger;
-                                         {_Inout_} ThreadOrderingGuid: PGUID;
-                                         {_In_opt_} Timeout: PLargeInteger ): Bool; stdcall;
-  {$EXTERNALSYM AvRtCreateThreadOrderingGroup}
-
-  // Returns False if failed
-  function AvRtCreateThreadOrderingGroupExA({_Out_} out Context: THandle;
-                                            {_In_} Period: PLargeInteger;
-                                            {_Inout_} ThreadOrderingGuid: PGUID;
-                                            {_In_opt_} Timeout: PLargeInteger;
-                                            {_In_} TaskName: PAnsiChar): Bool; stdcall;
-  {$EXTERNALSYM AvRtCreateThreadOrderingGroupExA}
-
-  // Returns False if failed
-  function AvRtCreateThreadOrderingGroupExW({_Out_} out Context: THandle;
-                                            {_In_} Period: PLargeInteger;
-                                            {_Inout_} ThreadOrderingGuid: PGUID;
-                                            {_In_opt_} Timeout: PLargeInteger;
-                                            {_In_} TaskName: PWideChar): Bool; stdcall;
-  {$EXTERNALSYM AvRtCreateThreadOrderingGroupExW}
-
-  // Returns False if failed
-  function AvRtCreateThreadOrderingGroupEx({_Out_} out Context: THandle;
-                                           {_In_} Period: PLargeInteger;
-                                           {_Inout_} ThreadOrderingGuid: PGUID;
-                                           {_In_opt_} Timeout: PLargeInteger;
-                                           {_In_} TaskName: PWideChar): Bool; stdcall;
-  {$EXTERNALSYM AvRtCreateThreadOrderingGroupEx}
-
-  // Returns False if failed
-  function AvRtJoinThreadOrderingGroup({_Out_} out Context: THandle;
-                                       {_In_} const ThreadOrderingGuid: TGUID;
-                                       {_In_} Before: BOOL): Bool; stdcall;
-  {$EXTERNALSYM AvRtJoinThreadOrderingGroup}
-
-  // Returns False if failed
-  function AvRtWaitOnThreadOrderingGroup({_In_} Context: THandle): Bool; stdcall;
-  {$EXTERNALSYM AvRtWaitOnThreadOrderingGroup}
-
-  // Returns False if failed
-  function AvRtLeaveThreadOrderingGroup({_In_} Context: THandle): Bool; stdcall;
-  {$EXTERNALSYM AvRtLeaveThreadOrderingGroup}
-
-  // Returns False if failed
-  function AvRtDeleteThreadOrderingGroup({_In_} Context: THandle): Bool; stdcall;
-   {$EXTERNALSYM AvRtDeleteThreadOrderingGroup}
-
-  // Returns False if failed
-  function AvQuerySystemResponsiveness({_In_} Context: THandle;
-                                       {_Out_} out SystemResponsivenessValue: ULONG): Bool; stdcall;
-  {$EXTERNALSYM AvQuerySystemResponsiveness}
+function AvSetMmMaxThreadCharacteristics({_In_} FirstTask: PWideChar;
+  {_In_} SecondTask: PWideChar;
+  {_Inout_} TaskIndex: LPDWORD): THandle; stdcall;
+{$EXTERNALSYM AvSetMmMaxThreadCharacteristics}
 
 
-  // Additional Prototypes for ALL interfaces
+// Returns False if failed
+function AvRevertMmThreadCharacteristics({_In_} AvrtHandle: THandle): Bool; stdcall;
+{$EXTERNALSYM AvRevertMmThreadCharacteristics}
 
-  // End of Additional Prototypes
+// Returns False if failed
+function AvSetMmThreadPriority({_In_} AvrtHandle: THandle;
+  {_In_} Priority: AVRT_PRIORITY): Bool; stdcall;
+{$EXTERNALSYM AvSetMmThreadPriority}
+
+// Returns False if failed
+function AvRtCreateThreadOrderingGroup({_Out_} out Context: THandle;
+  {_In_} Period: PLargeInteger;
+  {_Inout_} ThreadOrderingGuid: PGUID;
+  {_In_opt_} Timeout: PLargeInteger): Bool; stdcall;
+{$EXTERNALSYM AvRtCreateThreadOrderingGroup}
+
+// Returns False if failed
+function AvRtCreateThreadOrderingGroupExA({_Out_} out Context: THandle;
+  {_In_} Period: PLargeInteger;
+  {_Inout_} ThreadOrderingGuid: PGUID;
+  {_In_opt_} Timeout: PLargeInteger;
+  {_In_} TaskName: PAnsiChar): Bool; stdcall;
+{$EXTERNALSYM AvRtCreateThreadOrderingGroupExA}
+
+// Returns False if failed
+function AvRtCreateThreadOrderingGroupExW({_Out_} out Context: THandle;
+  {_In_} Period: PLargeInteger;
+  {_Inout_} ThreadOrderingGuid: PGUID;
+  {_In_opt_} Timeout: PLargeInteger;
+  {_In_} TaskName: PWideChar): Bool; stdcall;
+{$EXTERNALSYM AvRtCreateThreadOrderingGroupExW}
+
+// Returns False if failed
+function AvRtCreateThreadOrderingGroupEx({_Out_} out Context: THandle;
+  {_In_} Period: PLargeInteger;
+  {_Inout_} ThreadOrderingGuid: PGUID;
+  {_In_opt_} Timeout: PLargeInteger;
+  {_In_} TaskName: PWideChar): Bool; stdcall;
+{$EXTERNALSYM AvRtCreateThreadOrderingGroupEx}
+
+// Returns False if failed
+function AvRtJoinThreadOrderingGroup({_Out_} out Context: THandle;
+  {_In_} const ThreadOrderingGuid: TGUID;
+  {_In_} Before: BOOL): Bool; stdcall;
+{$EXTERNALSYM AvRtJoinThreadOrderingGroup}
+
+// Returns False if failed
+function AvRtWaitOnThreadOrderingGroup({_In_} Context: THandle): Bool; stdcall;
+{$EXTERNALSYM AvRtWaitOnThreadOrderingGroup}
+
+// Returns False if failed
+function AvRtLeaveThreadOrderingGroup({_In_} Context: THandle): Bool; stdcall;
+{$EXTERNALSYM AvRtLeaveThreadOrderingGroup}
+
+// Returns False if failed
+function AvRtDeleteThreadOrderingGroup({_In_} Context: THandle): Bool; stdcall;
+{$EXTERNALSYM AvRtDeleteThreadOrderingGroup}
+
+// Returns False if failed
+function AvQuerySystemResponsiveness({_In_} Context: THandle;
+  {_Out_} out SystemResponsivenessValue: ULONG): Bool; stdcall;
+{$EXTERNALSYM AvQuerySystemResponsiveness}
+
+
+// Additional Prototypes for ALL interfaces
+
+// End of Additional Prototypes
 
 implementation
 
@@ -224,26 +225,25 @@ const
   AvrtLib = 'avrt.dll';
 
 
-  function AvSetMmThreadCharacteristicsA; external AvrtLib name 'AvSetMmThreadCharacteristicsA';
-  function AvSetMmThreadCharacteristicsW; external AvrtLib name 'AvSetMmThreadCharacteristicsW';
-  function AvSetMmThreadCharacteristics; external AvrtLib name 'AvSetMmThreadCharacteristicsW';
-  function AvSetMmMaxThreadCharacteristicsA; external AvrtLib name 'AvSetMmMaxThreadCharacteristicsA';
-  function AvSetMmMaxThreadCharacteristicsW; external AvrtLib name 'AvSetMmMaxThreadCharacteristicsW';
-  function AvSetMmMaxThreadCharacteristics; external AvrtLib name 'AvSetMmMaxThreadCharacteristicsW';
-  function AvRevertMmThreadCharacteristics; external AvrtLib name 'AvRevertMmThreadCharacteristics';
-  function AvSetMmThreadPriority; external AvrtLib name 'AvSetMmThreadPriority';
-  function AvRtCreateThreadOrderingGroup; external AvrtLib name 'AvRtCreateThreadOrderingGroup';
-  function AvRtCreateThreadOrderingGroupExA; external AvrtLib name 'AvRtCreateThreadOrderingGroupExA';
-  function AvRtCreateThreadOrderingGroupExW; external AvrtLib name 'AvRtCreateThreadOrderingGroupExW';
-  function AvRtCreateThreadOrderingGroupEx; external AvrtLib name 'AvRtCreateThreadOrderingGroupExW';
-  function AvRtJoinThreadOrderingGroup; external AvrtLib name 'AvRtJoinThreadOrderingGroup';
-  function AvRtLeaveThreadOrderingGroup; external AvrtLib name 'AvRtLeaveThreadOrderingGroup';
-  function AvRtWaitOnThreadOrderingGroup; external AvrtLib name 'AvRtWaitOnThreadOrderingGroup';
-  function AvRtDeleteThreadOrderingGroup; external AvrtLib name 'AvRtDeleteThreadOrderingGroup';
-  function AvQuerySystemResponsiveness; external AvrtLib name 'AvQuerySystemResponsiveness';
+function AvSetMmThreadCharacteristicsA; external AvrtLib name 'AvSetMmThreadCharacteristicsA';
+function AvSetMmThreadCharacteristicsW; external AvrtLib name 'AvSetMmThreadCharacteristicsW';
+function AvSetMmThreadCharacteristics; external AvrtLib name 'AvSetMmThreadCharacteristicsW';
+function AvSetMmMaxThreadCharacteristicsA; external AvrtLib name 'AvSetMmMaxThreadCharacteristicsA';
+function AvSetMmMaxThreadCharacteristicsW; external AvrtLib name 'AvSetMmMaxThreadCharacteristicsW';
+function AvSetMmMaxThreadCharacteristics; external AvrtLib name 'AvSetMmMaxThreadCharacteristicsW';
+function AvRevertMmThreadCharacteristics; external AvrtLib name 'AvRevertMmThreadCharacteristics';
+function AvSetMmThreadPriority; external AvrtLib name 'AvSetMmThreadPriority';
+function AvRtCreateThreadOrderingGroup; external AvrtLib name 'AvRtCreateThreadOrderingGroup';
+function AvRtCreateThreadOrderingGroupExA; external AvrtLib name 'AvRtCreateThreadOrderingGroupExA';
+function AvRtCreateThreadOrderingGroupExW; external AvrtLib name 'AvRtCreateThreadOrderingGroupExW';
+function AvRtCreateThreadOrderingGroupEx; external AvrtLib name 'AvRtCreateThreadOrderingGroupExW';
+function AvRtJoinThreadOrderingGroup; external AvrtLib name 'AvRtJoinThreadOrderingGroup';
+function AvRtLeaveThreadOrderingGroup; external AvrtLib name 'AvRtLeaveThreadOrderingGroup';
+function AvRtWaitOnThreadOrderingGroup; external AvrtLib name 'AvRtWaitOnThreadOrderingGroup';
+function AvRtDeleteThreadOrderingGroup; external AvrtLib name 'AvRtDeleteThreadOrderingGroup';
+function AvQuerySystemResponsiveness; external AvrtLib name 'AvQuerySystemResponsiveness';
 
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.
-

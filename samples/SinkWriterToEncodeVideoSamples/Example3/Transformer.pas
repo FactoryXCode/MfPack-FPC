@@ -86,7 +86,7 @@ interface
 
 uses
   MfEncodeAudio.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ActiveX.ObjBase,
   WinApi.ComBaseApi,
@@ -128,6 +128,7 @@ type
   eVideoFormatException = class(Exception);
 
   TVideoTransformer = class
+
   private
     pReader: IMFSourceReader;
     fVideoInfo: TVideoInfo;
@@ -158,7 +159,7 @@ type
     property VideoInfo: TVideoInfo read fVideoInfo;
   end;
 
-  function GetVideoInfo(const VideoFileName: string): TVideoInfo;
+function GetVideoInfo(const VideoFileName: string): TVideoInfo;
 
 
 implementation
@@ -228,7 +229,7 @@ begin
     goto done;
 
   hr := pPartialType.SetGUID(MF_MT_MAJOR_TYPE,
-                                MFMediaType_Video);
+                             MFMediaType_Video);
   if FAILED(hr) then
     goto done;
 
@@ -259,24 +260,24 @@ begin
 
   Result.Codec := GUID;
 
-  if IsEqualGUID(GUID,MFVideoFormat_MPEG2) then
-      Result.CodecName := 'mpeg2'
+  if IsEqualGUID(GUID, MFVideoFormat_MPEG2) then
+    Result.CodecName := 'mpeg2'
   else
-      begin
-        FourCC := GUID.D1;
-        pb := PByte(@FourCC);
+    begin
+      FourCC := GUID.D1;
+      pb := PByte(@FourCC);
 
-        SetLength(FourCCString,
-                  4);
+      SetLength(FourCCString,
+                4);
 
-        for I := 1 to 4 do
-          begin
-            FourCCString[I] := AnsiChar(pb^);
-            Inc(pb);
-          end;
+      for I := 1 to 4 do
+        begin
+          FourCCString[I] := AnsiChar(pb^);
+          Inc(pb);
+        end;
 
-        Result.CodecName := string(FourCCString);
-      end;
+      Result.CodecName := string(FourCCString);
+    end;
 
   PropVariantInit(_var);
 
@@ -363,8 +364,8 @@ begin
     5: Result.InterlaceModeName := 'SingleUpper';
     6: Result.InterlaceModeName := 'SingleLower';
     7: Result.InterlaceModeName := 'InterlaceOrProgressive';
-  else
-    Result.InterlaceModeName := 'Unknown';
+    else
+      Result.InterlaceModeName := 'Unknown';
   end;
 
   // Get the nr. of audio-streams
@@ -377,36 +378,36 @@ begin
                                      0,
                                      @pMediaTypeIn);
     if FAILED(hr) then
-    //don't raise exception if AudioStreamNo doesn't exist!
-    //this is the condition to break out of the loop
-    //with the correct result.
-    begin
-      hr := S_OK;
-      goto done;
-    end;
+      //don't raise exception if AudioStreamNo doesn't exist!
+      //this is the condition to break out of the loop
+      //with the correct result.
+      begin
+        hr := S_OK;
+        goto done;
+      end;
 
     hr := pMediaTypeIn.GetMajorType(GUID);
     if FAILED(hr) then
       goto done;
 
-    if IsEqualGUID(GUID,MFMediaType_Audio) then
+    if IsEqualGUID(GUID, MFMediaType_Audio) then
       Inc(Result.AudioStreamCount);
 
     Inc(AudioStreamNo);
   until False;
 
-done:
+  done:
 
-  if SUCCEEDED(hrStartup) then
-    MFShutdown();
+    if SUCCEEDED(hrStartup) then
+      MFShutdown();
 
   if FAILED(hr) then
     begin
       raise Exception.CreateFmt('%s %s Result: %s. Change your choosen audio settings.',
                                 [SysErrorMessage(hr) + #13,
-                                 ProcName + #13,
-                                 IntToHex(hr,
-                                          8)]);
+        ProcName + #13,
+        IntToHex(hr,
+                 8)]);
     end;
 end;
 
@@ -433,7 +434,7 @@ begin
   fNewHeight := NewHeight;
 
   fVideoInfo := GetVideoInfo(fInputFile);
-  if NewFrameRate = 0 then
+  if (NewFrameRate = 0) then
     fNewFrameRate := fVideoInfo.FrameRate
   else
     fNewFrameRate := NewFrameRate;
@@ -443,10 +444,10 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(0,
-                 LPCWSTR('Your computer does not support this Media Foundation API version' +
-                         IntToStr(MF_VERSION) + '.'),
-                 LPCWSTR('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  LPCWSTR('Your computer does not support this Media Foundation API version' +
+        IntToStr(MF_VERSION) + '.'),
+                  LPCWSTR('MFStartup Failure!'),
+                  MB_ICONSTOP);
       Abort();
     end;
 
@@ -461,17 +462,17 @@ begin
   if FAILED(hr) then
     goto done;
 
-    // The next causes problems for some video formats
-    // CheckFail(attribs.SetUInt32
-    // (MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS, UInt32(True)));
-    // Create a sourcereader for the video file
+  // The next causes problems for some video formats
+  // CheckFail(attribs.SetUInt32
+  // (MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS, UInt32(True)));
+  // Create a sourcereader for the video file
   hr := MFCreateSourceReaderFromURL(PWideChar(fInputFile),
                                     attribs,
                                     pReader);
   if FAILED(hr) then
     goto done;
 
-    // Configure the sourcereader to decode to RGB32
+  // Configure the sourcereader to decode to RGB32
   hr := MFCreateMediaType(pPartialType);
   if FAILED(hr) then
     goto done;
@@ -538,17 +539,19 @@ begin
                                    True);
   fEndOfFile := False;
 
-done:
+  done:
 
-  if FAILED(hr) then
-    begin
-      raise eVideoFormatException.Create('Video format of the input file is not supported.');
-    end;
+    if FAILED(hr) then
+      begin
+        raise eVideoFormatException.Create('Video format of the input file is not supported.');
+      end;
 end;
 
 
 destructor TVideoTransformer.Destroy();
+
 begin
+
   MFShutdown();
   inherited;
 end;
@@ -590,14 +593,14 @@ begin
     // further reading would not make any sense
     // and set EndOfFile to True
     if ((Flags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0) or
-       ((Flags and MF_SOURCE_READERF_ERROR) <> 0) or
-       ((Flags and MF_SOURCE_READERF_NEWSTREAM) <> 0) or
-       ((Flags and MF_SOURCE_READERF_NATIVEMEDIATYPECHANGED) <> 0) or
-       ((Flags and MF_SOURCE_READERF_ALLEFFECTSREMOVED) <> 0) then
-    begin
-      fEndOfFile := True;
-      Break;
-    end;
+      ((Flags and MF_SOURCE_READERF_ERROR) <> 0) or
+      ((Flags and MF_SOURCE_READERF_NEWSTREAM) <> 0) or
+      ((Flags and MF_SOURCE_READERF_NATIVEMEDIATYPECHANGED) <> 0) or
+      ((Flags and MF_SOURCE_READERF_ALLEFFECTSREMOVED) <> 0) then
+      begin
+        fEndOfFile := True;
+        Break;
+      end;
 
     if (pSampleLoc <> nil) then
       begin
@@ -626,9 +629,9 @@ begin
     begin
       raise Exception.CreateFmt('%s Procedure: %s Result: %s.',
                                 [SysErrorMessage(hr) + #13,
-                                 ProcName + #13,
-                                 IntToHex(hr,
-                                          8)]);
+        ProcName + #13,
+        IntToHex(hr,
+                 8)]);
     end;
 end;
 
@@ -652,6 +655,7 @@ label
   done;
 
 begin
+
   hr := S_OK;
 
   if fEndOfFile then
@@ -683,12 +687,12 @@ begin
 
           // Assert(ImageSize = 4 * fNewWidth * fNewHeight);
           hr := MFCopyImage(pRow { Destination buffer. },
-                                -Stride { Destination stride. },
-                                pData,
-                                { First row in source. }
-                                Stride { Source stride. },
-                                Stride { Image width in bytes. },
-                                fNewHeight { Image height in pixels. } );
+                            -Stride { Destination stride. },
+                            pData,
+            { First row in source. }
+            Stride { Source stride. },
+                            Stride { Image width in bytes. },
+                            fNewHeight { Image height in pixels. });
           if FAILED(hr) then
             goto done;
 
@@ -701,18 +705,18 @@ begin
             goto done;
           SafeRelease(pBuffer);
         end;
-    HandleThreadMessages(GetCurrentThread());
-  end;
-
-done:
-  if FAILED(hr) then
-    begin
-      raise Exception.CreateFmt('%s Procedure: %s Result: %s.',
-                                [SysErrorMessage(hr) + #13,
-                                 ProcName + #13,
-                                 IntToHex(hr,
-                                          8)]);
+      HandleThreadMessages(GetCurrentThread());
     end;
+
+  done:
+    if FAILED(hr) then
+      begin
+        raise Exception.CreateFmt('%s Procedure: %s Result: %s.',
+                                  [SysErrorMessage(hr) + #13,
+        ProcName + #13,
+        IntToHex(hr,
+                 8)]);
+      end;
 end;
 
 {$IFDEF O_PLUS}
@@ -721,4 +725,3 @@ end;
 {$ENDIF}
 
 end.
-

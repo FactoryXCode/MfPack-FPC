@@ -88,6 +88,7 @@ type
                        cekError);
 
   TCaptureNotice = class
+
   public
     SessionNumber: Cardinal;
     Kind: TCaptureEventKind;
@@ -99,13 +100,16 @@ type
   end;
 
   ICaptureSession = interface
-  ['{7E6F4AAE-3B90-4A32-9A88-C784A0507E71}']
-    procedure Open(AVideoDevice, AAudioDevice: IMFActivate;
+    ['{7E6F4AAE-3B90-4A32-9A88-C784A0507E71}']
+    procedure Open(AVideoDevice,
+                   AAudioDevice: IMFActivate;
                    const APreviewWindow: HWND;
-                   const ADelayMs, AWetPercent: Cardinal);
+                   const ADelayMs,
+                   AWetPercent: Cardinal);
     procedure Start();
     procedure Stop();
-    procedure UpdateEffect(const ADelayMs, AWetPercent: Cardinal);
+    procedure UpdateEffect(const ADelayMs,
+                           AWetPercent: Cardinal);
     procedure Close(const ADetachWindow: Boolean);
   end;
 
@@ -127,8 +131,9 @@ uses
 
 type
   TCaptureSession = class(TInterfacedObject,
-                               ICaptureSession,
-                               IMFAsyncCallback)
+                          ICaptureSession,
+                          IMFAsyncCallback)
+
   private
     FLock: TRTLCriticalSection;
     FNotifyWindow: HWND;
@@ -142,15 +147,18 @@ type
     FTransform: IMFTransform;
     FClosedEvent: THandle;
 
-    procedure Check(const AOperation: string; const AHr: HResult);
+    procedure Check(const AOperation: string;
+                    const AHr: HResult);
     procedure PostNotice(const AKind: TCaptureEventKind;
                          const AText: string);
     function CreateCaptureTopology(const ASource: IMFMediaSource;
                                    const APreviewWindow: HWND;
-                                   const ADelayMs, AWetPercent: Cardinal;
+                                   const ADelayMs,
+                                   AWetPercent: Cardinal;
                                    out ATopology: IMFTopology;
                                    out ATransform: IMFTransform): HResult;
-    function GetParameters(out pdwFlags, pdwQueue: DWORD): HResult; stdcall;
+    function GetParameters(out pdwFlags,
+                           pdwQueue: DWORD): HResult; stdcall;
     function Invoke(pAsyncResult: IMFAsyncResult): HResult; stdcall;
 
   public
@@ -159,20 +167,25 @@ type
                        const ASessionNumber: Cardinal);
     destructor Destroy(); override;
 
-    procedure Open(AVideoDevice, AAudioDevice: IMFActivate;
+    procedure Open(AVideoDevice,
+                   AAudioDevice: IMFActivate;
                    const APreviewWindow: HWND;
-                   const ADelayMs, AWetPercent: Cardinal);
+                   const ADelayMs,
+                   AWetPercent: Cardinal);
     procedure Start();
     procedure Stop();
-    procedure UpdateEffect(const ADelayMs, AWetPercent: Cardinal);
+    procedure UpdateEffect(const ADelayMs,
+                           AWetPercent: Cardinal);
     procedure Close(const ADetachWindow: Boolean);
   end;
 
 
 constructor TCaptureNotice.Create(const ASessionNumber: Cardinal;
-                                        const AKind: TCaptureEventKind;
-                                        const AText: string);
+                                  const AKind: TCaptureEventKind;
+                                  const AText: string);
+
 begin
+
   inherited Create;
   SessionNumber := ASessionNumber;
   Kind := AKind;
@@ -181,16 +194,18 @@ end;
 
 
 function CreateCaptureSession(const ANotifyWindow: HWND;
-                                   const ASessionNumber: Cardinal): ICaptureSession;
+                              const ASessionNumber: Cardinal): ICaptureSession;
+
 begin
 
   Result := TCaptureSession.Create(ANotifyWindow,
-                                        ASessionNumber);
+                                   ASessionNumber);
 end;
 
 
 constructor TCaptureSession.Create(const ANotifyWindow: HWND;
-                                        const ASessionNumber: Cardinal);
+                                   const ASessionNumber: Cardinal);
+
 begin
 
   inherited Create;
@@ -200,9 +215,9 @@ begin
   FSessionNumber := ASessionNumber;
 
   FClosedEvent := CreateEventW(nil,
-                              True,
-                              False,
-                              nil);
+                               True,
+                               False,
+                               nil);
 
   if (FClosedEvent = 0) then
     begin
@@ -213,6 +228,7 @@ end;
 
 
 destructor TCaptureSession.Destroy();
+
 begin
 
   Close(True);
@@ -227,24 +243,26 @@ end;
 
 
 procedure TCaptureSession.Check(const AOperation: string;
-                                     const AHr: HResult);
+                                const AHr: HResult);
+
 begin
 
   if FAILED(AHr) then
     raise Exception.CreateFmt('%s failed: $%.8x (0x%.8x): %s',
                               [AOperation,
-                               Cardinal(AHr),
-                               Cardinal(AHr),
-                               SysErrorMessage(Cardinal(AHr))]);
+      Cardinal(AHr),
+      Cardinal(AHr),
+      SysErrorMessage(Cardinal(AHr))]);
 end;
 
 
 function TCaptureSession.CreateCaptureTopology(
   const ASource: IMFMediaSource;
-  const APreviewWindow: HWND;
-  const ADelayMs, AWetPercent: Cardinal;
-  out ATopology: IMFTopology;
-  out ATransform: IMFTransform): HResult;
+                                               const APreviewWindow: HWND;
+                                               const ADelayMs,
+                                               AWetPercent: Cardinal;
+                                               out ATopology: IMFTopology;
+                                               out ATransform: IMFTransform): HResult;
 var
   Presentation: IMFPresentationDescriptor;
   Stream: IMFStreamDescriptor;
@@ -256,6 +274,7 @@ var
   I: DWORD;
   Selected: BOOL;
   Control: IMfAudioDelayControl;
+
 
   function AddBranch(const AStream: IMFStreamDescriptor;
                      const AKind: TGUID;
@@ -285,7 +304,7 @@ var
 
     if IsEqualGUID(AKind, MFMediaType_Video) then
       Result := MFCreateVideoRendererActivate(APreviewWindow,
-                                               Renderer)
+                                              Renderer)
     else
       Result := MFCreateAudioRendererActivate(Renderer);
     if FAILED(Result) then
@@ -330,6 +349,7 @@ var
   end;
 
 begin
+
   ATopology := nil;
   ATransform := nil;
   VideoStream := nil;
@@ -344,7 +364,7 @@ begin
   Result := Presentation.GetStreamDescriptorCount(StreamCount);
   if FAILED(Result) then
     Exit;
-  if StreamCount = 0 then
+  if (StreamCount = 0) then
     Exit(MF_E_INVALIDMEDIATYPE);
 
   for I := 0 to StreamCount - 1 do
@@ -363,13 +383,15 @@ begin
         Exit;
 
       if not Assigned(VideoStream) and
-         IsEqualGUID(MajorType, MFMediaType_Video) then
+        IsEqualGUID(MajorType,
+                    MFMediaType_Video) then
         begin
           VideoStream := Stream;
           Result := Presentation.SelectStream(I);
         end
       else if not Assigned(AudioStream) and
-              IsEqualGUID(MajorType, MFMediaType_Audio) then
+        IsEqualGUID(MajorType,
+                    MFMediaType_Audio) then
         begin
           AudioStream := Stream;
           Result := Presentation.SelectStream(I);
@@ -402,9 +424,12 @@ begin
                         ATransform);
 end;
 
-procedure TCaptureSession.Open(AVideoDevice, AAudioDevice: IMFActivate;
+
+procedure TCaptureSession.Open(AVideoDevice,
+                               AAudioDevice: IMFActivate;
                                const APreviewWindow: HWND;
-                               const ADelayMs, AWetPercent: Cardinal);
+                               const ADelayMs,
+                               AWetPercent: Cardinal);
 var
   VideoSource: IMFMediaSource;
   AudioSource: IMFMediaSource;
@@ -504,7 +529,7 @@ end;
 
 
 procedure TCaptureSession.PostNotice(const AKind: TCaptureEventKind;
-                                          const AText: string);
+                                     const AText: string);
 var
   WindowHandle: HWND;
   Notice: TCaptureNotice;
@@ -524,19 +549,20 @@ begin
     Exit;
 
   Notice := TCaptureNotice.Create(FSessionNumber,
-                                        AKind,
-                                        AText);
+                                  AKind,
+                                  AText);
 
   if not PostMessageW(WindowHandle,
-                     WM_CAPTURE_EVENT,
-                     0,
-                     LPARAM(Notice)) then
+    WM_CAPTURE_EVENT,
+    0,
+    LPARAM(Notice)) then
     Notice.Free;
 end;
 
 
 function TCaptureSession.GetParameters(out pdwFlags,
-                                            pdwQueue: DWORD): HResult;
+                                       pdwQueue: DWORD): HResult;
+
 begin
 
   pdwFlags := 0;
@@ -553,16 +579,17 @@ var
   EventStatus: HResult;
   TopologyStatus: UINT32;
 
+
   function EventName(const AType: MediaEventType): string;
   begin
     case AType of
       MESessionTopologyStatus: Result := 'topology';
-      MESessionStarted:        Result := 'start';
-      MESessionStopped:        Result := 'stop';
-      MEEndOfPresentation:     Result := 'end of presentation';
-    else
-      Result := Format('event %d',
-                       [Integer(AType)]);
+      MESessionStarted: Result := 'start';
+      MESessionStopped: Result := 'stop';
+      MEEndOfPresentation: Result := 'end of presentation';
+      else
+        Result := Format('event %d',
+                         [Integer(AType)]);
     end;
   end;
 
@@ -607,9 +634,9 @@ begin
       PostNotice(cekError,
                  Format('Media Session %s failed: $%.8x (0x%.8x): %s',
                         [EventName(EventType),
-                         Cardinal(EventStatus),
-                         Cardinal(EventStatus),
-                         SysErrorMessage(Cardinal(EventStatus))]));
+        Cardinal(EventStatus),
+        Cardinal(EventStatus),
+        SysErrorMessage(Cardinal(EventStatus))]));
       Exit(S_OK);
     end;
 
@@ -619,13 +646,16 @@ begin
         TopologyStatus := 0;
 
         if SUCCEEDED((MediaEvent as IMFAttributes).GetUINT32(MF_EVENT_TOPOLOGY_STATUS, TopologyStatus)) and
-                     (TopologyStatus = UINT32(MF_TOPOSTATUS_READY)) then
+          (TopologyStatus = UINT32(MF_TOPOSTATUS_READY)) then
           PostNotice(cekReady,
                      'Camera and microphone topology is ready.');
       end;
-    MESessionStarted:    PostNotice(cekStarted, 'Live preview and audio started.');
-    MESessionStopped:    PostNotice(cekStopped, 'Live preview stopped.');
-    MEEndOfPresentation: PostNotice(cekEnded, 'End of presentation.');
+    MESessionStarted: PostNotice(cekStarted,
+                                 'Live preview and audio started.');
+    MESessionStopped: PostNotice(cekStopped,
+                                 'Live preview stopped.');
+    MEEndOfPresentation: PostNotice(cekEnded,
+                                    'End of presentation.');
   end;
 
   Result := S_OK;
@@ -684,7 +714,7 @@ end;
 
 
 procedure TCaptureSession.UpdateEffect(const ADelayMs,
-                                             AWetPercent: Cardinal);
+                                       AWetPercent: Cardinal);
 var
   Transform: IMFTransform;
   Control: IMfAudioDelayControl;

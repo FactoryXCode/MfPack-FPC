@@ -69,9 +69,9 @@ interface
 
 uses
   MfCapturePlatform,
-LMessages,
+  LMessages,
   LCLIntf,
-{WinAPI}
+  {WinAPI}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -101,7 +101,6 @@ LMessages,
   dlgSelDevice,
   Preview;
 
-
 const
   WM_WINDOWVISIBLE = WM_APP + 111;
 
@@ -116,7 +115,8 @@ type
     N1: TMenuItem;
     procedure SelectDevice1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure Exit1Click(Sender: TObject);
 
   private
@@ -157,38 +157,56 @@ var
 implementation
 
 {$R *.lfm}
+
 destructor TfrmMain.Destroy;
+
 begin
- CleanUp;
- inherited;
+
+  CleanUp;
+  inherited;
 end;
+
+
 procedure TfrmMain.OnCaptureTime(var Msg: TLMessage);
-begin Caption:='Capturing: '+IntToStr(Msg.WParam)+' ms';end;
+
+begin
+
+  Caption := 'Capturing: ' + IntToStr(Msg.WParam) + ' ms';
+end;
 
 
 
 procedure TfrmMain.OnPreviewError(var Msg: TLMessage);
+
 begin
+
   ShowMessage('Preview error ' + IntToStr(Msg.wParam));
 end;
 
 
 procedure TfrmMain.WMEraseBkGnd(var Msg: TLMessage);
+
 begin
+
   inherited;
 end;
 
 
 procedure TfrmMain.OnQueryEndSession(var Msg: TLMessage);
+
 begin
-   //
-   // Here you should do savings, destroy objects etc.
-   //
+
+  //
+  // Here you should do savings, destroy objects etc.
+  //
 end;
 
 
-procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfrmMain.FormCloseQuery(Sender: TObject;
+                                  var CanClose: Boolean);
+
 begin
+
   CanClose := False;
   if ShutDown() then
     CanClose := True;
@@ -197,18 +215,22 @@ end;
 
 // Post message OK to init d3d objects
 procedure TfrmMain.FormShow(Sender: TObject);
+
 begin
+
   hwWindowHandle := Self.Handle;
 
   SendMessageW(hwWindowHandle,
-              WM_WINDOWVISIBLE,
-              0,
-              0);
+               WM_WINDOWVISIBLE,
+               0,
+               0);
 end;
 
 
 procedure TfrmMain.SelectDevice1Click(Sender: TObject);
+
 begin
+
   //Initialize for new device.
   OnChooseDevice(hwWindowHandle,
                  True);
@@ -221,6 +243,7 @@ end;
 // Releases resources.
 //-------------------------------------------------------------------
 procedure TfrmMain.CleanUp();
+
 begin
 
   if Assigned(g_pPreview) then
@@ -230,10 +253,13 @@ begin
   if Assigned(dlgSelectDevice) then
     dlgSelectDevice.Close();
 
-  if NativeUInt(g_hdevnotify) <> 0 then begin
-    UnRegisterForDeviceNotification(g_hdevnotify);
-    FillChar(g_hdevnotify,SizeOf(g_hdevnotify),0);
-  end;
+  if (NativeUInt(g_hdevnotify) <> 0) then
+    begin
+      UnRegisterForDeviceNotification(g_hdevnotify);
+      FillChar(g_hdevnotify,
+               SizeOf(g_hdevnotify),
+               0);
+    end;
 
 end;
 
@@ -247,6 +273,7 @@ label
   done;
 
 begin
+
   // Initialize an attribute store to specify enumeration parameters.
   hr := MFCreateAttributes(pAttributes,
                            1);
@@ -261,8 +288,8 @@ begin
     goto done;
   // NOTE: param.count might be zero.
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 //-------------------------------------------------------------------
@@ -322,7 +349,7 @@ begin
 
   // NOTE: param.count might be zero.
 
-{$POINTERMATH ON}
+  {$POINTERMATH ON}
 
   if (bPrompt = True) then
     begin
@@ -341,7 +368,7 @@ begin
               // Append the friendly name to the combobox.
               dlgSelectDevice.ComboBox1.Items.Append(szName);
               // Show the first in the list
-              dlgSelectDevice.ComboBox1.ItemIndex:= 0;
+              dlgSelectDevice.ComboBox1.ItemIndex := 0;
             end;
 
           // Show dialog and let user select a device.
@@ -387,11 +414,11 @@ begin
         hr := E_FAIL;
     end;
 
-done:
+  done:
 
-  CoTaskMemFree(param.ppDevices);
+    CoTaskMemFree(param.ppDevices);
 
-{$POINTERMATH OFF}
+  {$POINTERMATH OFF}
 
   if FAILED(hr) then
     ShowMessage('Cannot create a video capture device. ' + IntToStr(hr));
@@ -413,6 +440,7 @@ var
   hr: HResult;
 
 begin
+
   if not Assigned(g_pPreview) then
     Exit;
 
@@ -442,12 +470,13 @@ begin
         if (g_pPreview.State = stCapturing) then
           begin
             if (StrIComp(PWideChar(g_pPreview.DeviceSymbolicLink),
-                         PWideChar(pwDevSymbolicLink)) = 0) then
+              PWideChar(pwDevSymbolicLink)) = 0) then
               bDeviceLost := True;
 
             if (FAILED(hr) or bDeviceLost) then
               begin
-                MessageDlg(Format('Lost capture device %s.', [g_pPreview.DeviceName]),
+                MessageDlg(Format('Lost capture device %s.',
+                                  [g_pPreview.DeviceName]),
                            mtError,
                            mbOKCancel,
                            MB_OK);
@@ -460,7 +489,9 @@ end;
 
 // OnMove
 procedure TfrmMain.OnMove(var Message: TLMMove);
+
 begin
+
   inherited;
   //
 end;
@@ -468,7 +499,9 @@ end;
 
 // OnResize
 procedure TfrmMain.OnSize(var Message: TLMSize);
+
 begin
+
   inherited;
 
   if Assigned(g_pPreview) and (Self.WindowState <> wsMinimized) then
@@ -476,7 +509,7 @@ begin
       // Send a request to adjust the source rect to destination rect.
       // This must be handled after a sample has token. See Preview.pas OnReadSample event.
       g_pPreview.m_request := reqResize;
-   end;
+    end;
 end;
 
 
@@ -488,14 +521,18 @@ end;
 // when it's state is not visible during startup.
 // Only when the form is in visible state, it's safe to initiate D3D9 objects.
 procedure TfrmMain.OnWindowVisible(var message: TLMessage);
+
 begin
+
   if not RegisterDeviceNotifications() then
     application.Terminate;  //
 end;
 
 
 function TfrmMain.ShutDown(): Boolean;
+
 begin
+
   // Clean up all instances
   CleanUp();
 
@@ -507,10 +544,12 @@ end;
 // Initiate DeviceNotifications
 //
 function TfrmMain.RegisterDeviceNotifications(): BOOL;
+
 begin
+
   Result := False;
   if not RegisterForDeviceNotification(hwWindowHandle,
-                                       g_hdevnotify) then
+    g_hdevnotify) then
     begin
       ShowMessage('RegisterDeviceNotification failed. ' + IntToStr(GetLastError()));
       Exit;
@@ -520,7 +559,9 @@ end;
 
 
 procedure TfrmMain.Exit1Click(Sender: TObject);
+
 begin
+
   Close();
 end;
 
@@ -532,13 +573,13 @@ initialization
   // Initialize the COM library
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_FULL)) then
+    MFSTARTUP_FULL)) then
     begin
       MessageBoxW(0,
-                 lpcwstr('Your computer does not support this Media Foundation API version' +
-                         IntToStr(MF_VERSION) + '.'),
-                 lpcwstr('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  lpcwstr('Your computer does not support this Media Foundation API version' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
     end;
 
 
@@ -546,4 +587,3 @@ finalization
   //
   MFShutdown();
 end.
-

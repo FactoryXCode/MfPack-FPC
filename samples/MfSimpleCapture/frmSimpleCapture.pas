@@ -73,7 +73,7 @@ interface
 uses
   LMessages,
   MfCaptureSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.Ks,
@@ -119,7 +119,8 @@ type
     procedure pnlVideoResize(Sender: TObject);
     procedure butGetDeviceClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure HandleRotationChanged(Sender: TObject);
 
   private
@@ -157,7 +158,9 @@ implementation
 // CleanUp: Frees resources before the application exits
 //-------------------------------------------------------------------
 procedure TFrm_SimpleCapture.QuitSession();
+
 begin
+
   if Assigned(MfDeviceCapture) then
     begin
       if SUCCEEDED(MfDeviceCapture.ShutDownEngine()) then
@@ -188,14 +191,18 @@ end;
 
 
 procedure TFrm_SimpleCapture.Button1Click(Sender: TObject);
+
 begin
+
   Close();
 end;
 
 
 procedure TFrm_SimpleCapture.FormCloseQuery(Sender: TObject;
-  var CanClose: Boolean);
+                                            var CanClose: Boolean);
+
 begin
+
   // Before closing the app, clean up.
   QuitSession();
   CanClose := True;
@@ -203,7 +210,9 @@ end;
 
 
 procedure TFrm_SimpleCapture.FormCreate(Sender: TObject);
+
 begin
+
   bAppIsClosing := False;
   bFullScreenMode := False;
 
@@ -218,8 +227,9 @@ var
   vHdc: HDC;
 
 begin
+
   vHdc := BeginPaint(Self.Handle,
-             ps);
+                     ps);
 
   try
     if Assigned(MfDeviceCapture) and (MfDeviceCapture.VideoDetected()) then
@@ -237,15 +247,17 @@ end;
 
 // Create the capture engine
 function TFrm_SimpleCapture.GetFmCapture(): HRESULT;
+
 begin
-  Result:= E_FAIL;
+
+  Result := E_FAIL;
 
   if not Assigned(MfDeviceCapture) then
     begin
       FreeAndNil(MfDeviceCapture);
       // We want the video to be played on the VideoPanel, so, we use that handle.
       TMfCaptureEngine.CreateInstance(pnlVideo.Handle,       // The clipping window / control
-                                      Frm_SimpleCapture.Handle,
+        Frm_SimpleCapture.Handle,
                                       MfDeviceCapture);  // Must be main form or parent window !!!
       // If you want to switch to a different clipping surface while the session is active:
       // MfDeviceCapture.SetVideoSurface := myFormOrControl.Handle;
@@ -255,7 +267,9 @@ end;
 
 
 procedure TFrm_SimpleCapture.HandleRotationChanged(Sender: TObject);
+
 begin
+
   if Assigned(MfDeviceCapture) then
     MfDeviceCapture.Rotation := StrToInt(cboRotation.Text);
 end;
@@ -267,6 +281,7 @@ var
   hr: HResult;
 
 begin
+
   hr := S_OK;
 
   if not Assigned(MfDeviceCapture) then
@@ -280,7 +295,8 @@ begin
     begin
       QuitSession();
       // Show dialog with info about which device is disconnected.
-      MessageDlg(Format('Lost capture device %s.', [FDevicePropertiesArray[iSelectedDevice].lpFriendlyName]),
+      MessageDlg(Format('Lost capture device %s.',
+                        [FDevicePropertiesArray[iSelectedDevice].lpFriendlyName]),
                  mtError,
                  mbOKCancel,
                  0);
@@ -298,6 +314,7 @@ var
   pcrD: LPRECT;
 
 begin
+
   // Set video size
   if Assigned(MfDeviceCapture) then
     begin

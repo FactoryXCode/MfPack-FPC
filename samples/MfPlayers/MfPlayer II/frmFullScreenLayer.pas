@@ -67,7 +67,7 @@ interface
 
 uses
   MfPlayerSample.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -86,10 +86,15 @@ type
     PopupMenu1: TPopupMenu;
     Fullscreen1: TMenuItem;
     mnuEnableSubtitling: TMenuItem;
-    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormKeyUp(Sender: TObject;
+                        var Key: Word;
+                        Shift: TShiftState);
     procedure Fullscreen1Click(Sender: TObject);
-    procedure FormMouseUp(Sender: TObject; Button: TMouseButton;
-                          Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseUp(Sender: TObject;
+                          Button: TMouseButton;
+                          Shift: TShiftState;
+                          X,
+                          Y: Integer);
 
   private
     { Private declarations }
@@ -109,69 +114,79 @@ uses
   frmMfPlayer;
 
 
-procedure TFullScreenLayer.FormMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TFullScreenLayer.FormMouseUp(Sender: TObject;
+                                       Button: TMouseButton;
+                                       Shift: TShiftState;
+                                       X,
+                                       Y: Integer);
+
 begin
+
   if (Button = mbRight) then
-    PopUpMenu1.Popup(X, Y);
+    PopUpMenu1.Popup(X,
+                     Y);
 end;
 
 
 procedure TFullScreenLayer.Fullscreen1Click(Sender: TObject);
+
 begin
+
   frm_MfPlayer.butFullScreenClick(Self);
 end;
 
 
 // a sort of dejavu...
-procedure TFullScreenLayer.FormKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TFullScreenLayer.FormKeyUp(Sender: TObject;
+                                     var Key: Word;
+                                     Shift: TShiftState);
 var
   bm: TBitmap;
 
 begin
-case Key of
-    VK_SPACE:   if Assigned(MfPlayer) then
-                  begin
-                    case MfPlayer.State of
-                      Started: frm_MfPlayer.butPauseClick(Self);
-                      OpenPending: frm_MfPlayer.butPlayClick(Self);
-                      Stopped, Paused: frm_MfPlayer.butPlayClick(Self);
-                    end;
 
-                  end;
-    VK_END:     if Assigned(MfPlayer) then
-                  begin
-                    MfPlayer.SendPlayerRequest(reqStop);
-                  end;
-    VK_F11:     begin  //DestroyMfPlayer;   //Kick ass...
-                  if Assigned(MfPlayer) then
-                    MfPlayer.ShutDown();
-                end;
+  case Key of
+    VK_SPACE: if Assigned(MfPlayer) then
+        begin
+          case MfPlayer.State of
+            Started: frm_MfPlayer.butPauseClick(Self);
+            OpenPending: frm_MfPlayer.butPlayClick(Self);
+            Stopped, Paused: frm_MfPlayer.butPlayClick(Self);
+          end;
 
-    VK_F12:     frm_MfPlayer.muOpenClick(Self);
+        end;
+    VK_END: if Assigned(MfPlayer) then
+        begin
+          MfPlayer.SendPlayerRequest(reqStop);
+        end;
+      VK_F11: begin  //DestroyMfPlayer;   //Kick ass...
+        if Assigned(MfPlayer) then
+          MfPlayer.ShutDown();
+      end;
+
+    VK_F12: frm_MfPlayer.muOpenClick(Self);
 
     //take a snapshot and copy the bitmap to the clipboard
-    VK_F8:      begin
-                  bm := TBitmap.Create;
-                  MfPlayer.TakeSnapShot(bm);
-                  Clipboard.Assign(bm);
-                  FreeAndNil(bm);
-                end;
+      VK_F8: begin
+        bm := TBitmap.Create;
+        MfPlayer.TakeSnapShot(bm);
+        Clipboard.Assign(bm);
+        FreeAndNil(bm);
+      end;
 
     // Use left and right arrows to adjust the volume.
     // since there is a trackbar, this one will have the focus.
-    VK_LEFT:    begin
-                  MfPlayer.SetVolume(MfPlayer.Volume - 0.1);
-                end;
+      VK_LEFT: begin
+        MfPlayer.SetVolume(MfPlayer.Volume - 0.1);
+      end;
 
-    VK_RIGHT:   begin
-                  MfPlayer.SetVolume(MfPlayer.Volume + 0.1);
-                end;
+      VK_RIGHT: begin
+        MfPlayer.SetVolume(MfPlayer.Volume + 0.1);
+      end;
 
-    VK_ESCAPE:  begin
-                  frm_MfPlayer.butFullScreenClick(Self);
-                end;
+      VK_ESCAPE: begin
+        frm_MfPlayer.butFullScreenClick(Self);
+      end;
   end;
 end;
 

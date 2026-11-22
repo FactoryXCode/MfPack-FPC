@@ -101,18 +101,17 @@ unit MfAudioFileBrowserDlg;
 
 interface
 
-uses Rdj.FileControls,MfCastPlayerFileControls,
-Rdj.Platform,
-LMessages,
+uses
+  Rdj.FileControls,
+  MfCastPlayerFileControls,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-Windows,
+  Windows,
   Messages,
-
   SysUtils,
-
   Classes,
-
   Controls,
   Forms,
   StdCtrls,
@@ -125,6 +124,7 @@ Windows,
 type
 
   TfrmAudioFileBrowser = class(TForm)
+
   private
     FAccepted: Boolean;
     FSelectedFile: UnicodeString;
@@ -164,8 +164,10 @@ type
     procedure OpenClick(Sender: TObject);
     procedure CancelClick(Sender: TObject);
     procedure FileNameChange(Sender: TObject);
-    procedure FileNameKeyPress(Sender: TObject; var Key: AnsiChar);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FileNameKeyPress(Sender: TObject;
+                               var Key: AnsiChar);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
 
   protected
 
@@ -179,11 +181,11 @@ type
     property SelectedFile: UnicodeString read FSelectedFile;
   end;
 
-  procedure PreloadAudioFileBrowser(AOwner: TComponent);
-  function BrowseAudioFileLightweight(const AOwner: TComponent;
-                                      out AFileName: UnicodeString;
-                                      const AInitialPath: string = ''): Boolean;
-  procedure ReleaseAudioFileBrowser();
+procedure PreloadAudioFileBrowser(AOwner: TComponent);
+function BrowseAudioFileLightweight(const AOwner: TComponent;
+                                    out AFileName: UnicodeString;
+                                    const AInitialPath: string = ''): Boolean;
+procedure ReleaseAudioFileBrowser();
 
 
 implementation
@@ -206,6 +208,7 @@ const
 
 
 function NormalizeExistingPath(const APath: string): string;
+
 begin
 
   Result := Trim(APath);
@@ -215,15 +218,15 @@ begin
 
   if FileExists(Result) then
     Result := ExtractFilePath(Result)
-  else
-    if not SysUtils.DirectoryExists(Result) then
-      Result := '';
+  else if not SysUtils.DirectoryExists(Result) then
+    Result := '';
 end;
 
 
 { TfrmAudioFileBrowser }
 
 constructor TfrmAudioFileBrowser.Create(AOwner: TComponent);
+
 begin
 
   inherited CreateNew(AOwner);
@@ -254,20 +257,22 @@ end;
 
 
 procedure TfrmAudioFileBrowser.CreateParams(var Params: TCreateParams);
+
 begin
 
   inherited CreateParams(Params);
 
   Params.Style := Params.Style or
-                  WS_CAPTION or
-                  WS_SYSMENU or
-                  WS_CLIPCHILDREN;
+    WS_CAPTION or
+    WS_SYSMENU or
+    WS_CLIPCHILDREN;
 
   Params.ExStyle := Params.ExStyle or WS_EX_CONTROLPARENT;
 end;
 
 
 procedure TfrmAudioFileBrowser.BuildUi;
+
 begin
 
   pnlTop := TPanel.Create(Self);
@@ -410,6 +415,7 @@ end;
 
 
 procedure TfrmAudioFileBrowser.UpdateOkState;
+
 begin
 
   btnOpen.Enabled := FileExists(FSelectedFile);
@@ -432,7 +438,7 @@ begin
       Exit;
     end;
 
-  if ExtractFilePath(Candidate) = '' then
+  if (ExtractFilePath(Candidate) = '') then
     Candidate := IncludeTrailingPathDelimiter(dirFolders.Directory) + Candidate;
 
   FSelectedFile := ExpandFileName(Candidate);
@@ -466,7 +472,9 @@ begin
   UpdateOkState;
 end;
 
+
 procedure TfrmAudioFileBrowser.DriveChanged(Sender: TObject);
+
 begin
 
   UpdateSelectedFileFromControls();
@@ -474,6 +482,7 @@ end;
 
 
 procedure TfrmAudioFileBrowser.FolderChanged(Sender: TObject);
+
 begin
 
   UpdateSelectedFileFromControls();
@@ -481,6 +490,7 @@ end;
 
 
 procedure TfrmAudioFileBrowser.FileSelectionChanged(Sender: TObject);
+
 begin
 
   if (flbFiles.ItemIndex >= 0) then
@@ -491,6 +501,7 @@ end;
 
 
 procedure TfrmAudioFileBrowser.FileDoubleClick(Sender: TObject);
+
 begin
 
   FileSelectionChanged(Sender);
@@ -500,6 +511,7 @@ end;
 
 
 procedure TfrmAudioFileBrowser.FilterChanged(Sender: TObject);
+
 begin
 
   UpdateSelectedFileFromControls();
@@ -507,6 +519,7 @@ end;
 
 
 procedure TfrmAudioFileBrowser.OpenClick(Sender: TObject);
+
 begin
 
   UpdateSelectedFileFromControls;
@@ -520,6 +533,7 @@ end;
 
 
 procedure TfrmAudioFileBrowser.CancelClick(Sender: TObject);
+
 begin
 
   FAccepted := False;
@@ -528,25 +542,30 @@ end;
 
 
 procedure TfrmAudioFileBrowser.FileNameChange(Sender: TObject);
+
 begin
 
   UpdateSelectedFileFromControls;
 end;
 
 
-procedure TfrmAudioFileBrowser.FileNameKeyPress(Sender: TObject; var Key: AnsiChar);
+procedure TfrmAudioFileBrowser.FileNameKeyPress(Sender: TObject;
+                                                var Key: AnsiChar);
+
 begin
 
   if (Key = #13) then
-  begin
+    begin
 
-    Key := #0;
-    OpenClick(btnOpen);
-  end;
+      Key := #0;
+      OpenClick(btnOpen);
+    end;
 end;
 
 
-procedure TfrmAudioFileBrowser.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfrmAudioFileBrowser.FormCloseQuery(Sender: TObject;
+                                              var CanClose: Boolean);
+
 begin
 
   CanClose := True;
@@ -554,7 +573,7 @@ end;
 
 
 function TfrmAudioFileBrowser.Execute(out AFileName: UnicodeString;
-  const AInitialPath: string): Boolean;
+                                      const AInitialPath: string): Boolean;
 
 begin
 
@@ -564,7 +583,7 @@ begin
 
   ApplyInitialPath(AInitialPath);
 
-  if ShowModal = mrOk then
+  if (ShowModal = mrOk) then
     Result := FAccepted and FileExists(FSelectedFile)
   else
     Result := False;
@@ -575,6 +594,7 @@ end;
 
 
 procedure PreloadAudioFileBrowser(AOwner: TComponent);
+
 begin
 
   if Assigned(GAudioFileBrowser) then
@@ -586,17 +606,21 @@ end;
 
 
 function BrowseAudioFileLightweight(const AOwner: TComponent;
-  out AFileName: UnicodeString; const AInitialPath: string): Boolean;
+                                    out AFileName: UnicodeString;
+                                    const AInitialPath: string): Boolean;
 
 begin
 
   PreloadAudioFileBrowser(TComponent(AOwner));
-  Result := GAudioFileBrowser.Execute(AFileName, AInitialPath);
+  Result := GAudioFileBrowser.Execute(AFileName,
+                                      AInitialPath);
 end;
 
 
 procedure ReleaseAudioFileBrowser;
+
 begin
+
   FreeAndNil(GAudioFileBrowser);
 end;
 

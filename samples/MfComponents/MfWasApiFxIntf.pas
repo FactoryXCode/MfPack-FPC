@@ -76,7 +76,7 @@ uses
 type
   // Provider contract for engine-compatible FX.
   IMfWasApiFxProvider = interface(IInterface)
-  ['{2F1F5A62-6C4D-4D67-8A6A-0A83E9E73A8E}']
+    ['{2F1F5A62-6C4D-4D67-8A6A-0A83E9E73A8E}']
 
     function GetMFT(): IMFTransform; stdcall;
 
@@ -90,4 +90,3 @@ type
 implementation
 
 end.
-

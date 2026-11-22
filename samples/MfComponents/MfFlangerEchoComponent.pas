@@ -82,6 +82,7 @@ uses
 type
 
   TMfFlangerEchoEffect = class(TMfWasApiFxComponentBase)
+
   private
 
     FMft: IMFTransform;
@@ -131,6 +132,7 @@ implementation
 
 
 procedure Register;
+
 begin
 
   RegisterComponents('MfPack Core Audio Samples',
@@ -139,6 +141,7 @@ end;
 
 
 constructor TMfFlangerEchoEffect.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
@@ -156,7 +159,9 @@ end;
 
 
 procedure TMfFlangerEchoEffect.AfterConstruction();
+
 begin
+
   inherited;
 
   CheckForMft();
@@ -164,6 +169,7 @@ end;
 
 
 destructor TMfFlangerEchoEffect.Destroy();
+
 begin
 
   // Release interface views first.
@@ -179,6 +185,7 @@ end;
 
 
 procedure TMfFlangerEchoEffect.CheckForMft();
+
 begin
 
   if (FMftObj <> nil) then
@@ -205,6 +212,7 @@ end;
 
 
 function TMfFlangerEchoEffect.GetMftInstance(): IMFTransform;
+
 begin
 
   Result := FMft;
@@ -212,6 +220,7 @@ end;
 
 
 procedure TMfFlangerEchoEffect.SetEnabled(Value: Boolean);
+
 begin
 
   FEnabled := Value;
@@ -225,6 +234,7 @@ end;
 
 
 procedure TMfFlangerEchoEffect.SetBaseDelayMs(Value: Single);
+
 begin
 
   FBaseDelayMs := Value;
@@ -238,6 +248,7 @@ end;
 
 
 procedure TMfFlangerEchoEffect.SetDepthMs(Value: Single);
+
 begin
 
   FDepthMs := Value;
@@ -251,6 +262,7 @@ end;
 
 
 procedure TMfFlangerEchoEffect.SetRateHz(Value: Single);
+
 begin
 
   FRateHz := Value;
@@ -264,6 +276,7 @@ end;
 
 
 procedure TMfFlangerEchoEffect.SetFeedback(Value: Single);
+
 begin
 
   FFeedback := Value;
@@ -277,6 +290,7 @@ end;
 
 
 procedure TMfFlangerEchoEffect.SetWet(Value: Single);
+
 begin
 
   FWet := Value;
@@ -289,4 +303,3 @@ begin
 end;
 
 end.
-

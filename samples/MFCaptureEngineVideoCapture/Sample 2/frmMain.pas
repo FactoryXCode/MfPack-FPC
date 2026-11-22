@@ -68,7 +68,7 @@ interface
 uses
   LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.ComBaseApi,
@@ -159,7 +159,8 @@ type
     procedure butTakePhotoClick(Sender: TObject);
     procedure mnuStartRecordingClick(Sender: TObject);
     procedure butSaveToFileClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure FormDestroy(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure mnuSetVideoOutputFormatClick(Sender: TObject);
@@ -261,6 +262,7 @@ var
   pcrD: PMFVideoNormalizedRect;
 
 begin
+
   inherited;
 
   if not Visible then
@@ -281,8 +283,11 @@ end;
 procedure TMainWindow.OnRecievedSample(var AMessage: TLMessage);
 var
   pSample: IMFSample;
+
 begin
-  if AMessage.WParam = 0 then Exit;
+
+  if (AMessage.WParam = 0) then
+    Exit;
   pSample := IMFSample(Pointer(AMessage.WParam));
   IMFSample(Pointer(AMessage.WParam))._Release();
   // process the sample
@@ -296,11 +301,13 @@ var
   hr: HResult;
 
 begin
+
   hr := FCaptureManager.OnCaptureEvent(AMessage.WParam,
                                        AMessage.LParam);
   if FAILED(hr) then
     begin
-      ErrMsg(Format('Capturemanager.OnCaptureEvent reported error: %d', [hr]),
+      ErrMsg(Format('Capturemanager.OnCaptureEvent reported error: %d',
+                    [hr]),
              hr);
     end;
 end;
@@ -311,6 +318,7 @@ var
   amsg: TGUID;
 
 begin
+
   amsg := PGUID(AMessage.LParam)^;
 
   if SUCCEEDED(HRESULT(DWORD(AMessage.WParam))) then
@@ -331,6 +339,7 @@ var
   strCurrentDeviceName: string;
 
 begin
+
   if (AMessage.WParam = DBT_DEVICEREMOVECOMPLETE) then
     begin
       // remember the current device that is activated
@@ -361,12 +370,13 @@ begin
         if FCaptureManager.IsPreviewing or FCaptureManager.IsRecording then
           begin
             if (StrIComp(pwcCurrentDeviceSymLink,
-                         pwcDevSymbolicLink) = 0) then
+              pwcDevSymbolicLink) = 0) then
               bDeviceLost := True;
 
             if (FAILED(hr) or bDeviceLost) then
               begin
-                MessageDlg(Format('Lost capture device: %s', [strCurrentDeviceName]),
+                MessageDlg(Format('Lost capture device: %s',
+                                  [strCurrentDeviceName]),
                            mtError,
                            mbOKCancel,
                            0);
@@ -434,9 +444,9 @@ begin
   else
     hr := E_POINTER;
 
-done:
-  if Assigned(FMemoryStream) then
-    FMemoryStream.Destroy();
+  done:
+    if Assigned(FMemoryStream) then
+      FMemoryStream.Destroy();
   Result := hr;
 end;
 
@@ -449,6 +459,7 @@ var
   iLeft: Integer;
 
 begin
+
   if not bImageCleared and Assigned(bm) and not bm.Empty then
     begin
       // Clear the area
@@ -500,6 +511,7 @@ var
   iWidthRatio: Double;
 
 begin
+
   iHeightRatio := pbCapture.Height / AImage.Height;
   iWidthRatio := pbCapture.Width / AImage.Width;
   if (iHeightRatio > iWidthRatio) then
@@ -517,11 +529,13 @@ end;
 
 
 procedure TMainWindow.butSaveToFileClick(Sender: TObject);
+
 begin
 
-  dlgSaveSnapShot.FileName := Format('Capture_%s', [HnsTimeToStr(lSampleTime,
-                                                    '_',
-                                                    False)]);
+  dlgSaveSnapShot.FileName := Format('Capture_%s',
+                                     [HnsTimeToStr(lSampleTime,
+                                                   '_',
+                                                   False)]);
   if dlgSaveSnapShot.Execute then
     begin
       SaveImage(bmCapturedFrame,
@@ -555,15 +569,17 @@ begin
   if FAILED(hr) then
     goto Done;
 
-done:
-  if FAILED(hr) then
-    ErrMsg('butTakePhotoClick: ' + ERR_PHOTO,
-            hr);
+  done:
+    if FAILED(hr) then
+      ErrMsg('butTakePhotoClick: ' + ERR_PHOTO,
+             hr);
 end;
 
 
 procedure TMainWindow.DestroyCaptureObjects();
+
 begin
+
   if Assigned(bmCapturedFrame) then
     FreeAndNil(bmCapturedFrame);
 
@@ -578,27 +594,31 @@ end;
 
 
 // FormCreate
-procedure TMainWindow.FormCloseQuery(Sender: TObject;var CanClose: Boolean);
+procedure TMainWindow.FormCloseQuery(Sender: TObject;
+                                     var CanClose: Boolean);
+
 begin
+
   CanClose := True;
 end;
 
+
 procedure TMainWindow.FormDestroy(Sender: TObject);
+
 begin
 
   DestroyCaptureObjects();
 
   if Assigned(FSampleConverter) then
-     FreeAndNil(FSampleConverter);
+    FreeAndNil(FSampleConverter);
 
   if Assigned(FDeviceExplorer) then
-     begin
-       FreeAndNil(FDeviceExplorer);
-     end;
+    begin
+      FreeAndNil(FDeviceExplorer);
+    end;
 
   UnRegisterForDeviceNotification(ptrDevNotify);
   ptrDevNotify := 0;
-
 
 end;
 
@@ -622,9 +642,9 @@ begin
   if (hr = MF_E_NO_CAPTURE_DEVICES_AVAILABLE) then
     begin
       MessageBoxW(0,
-                 lpcwstr('Currently there are no devices found: Please insert a device.'),
-                 lpcwstr('No capture devices found.'),
-                 MB_ICONWARNING);
+                  lpcwstr('Currently there are no devices found: Please insert a device.'),
+                  lpcwstr('No capture devices found.'),
+                  MB_ICONWARNING);
       hr := S_OK;
       goto done;
     end;
@@ -632,9 +652,9 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(0,
-                 lpcwstr('Failed to create the DeviceExplorer, Resultcode = (' + IntToStr(hr) + ').'),
-                 lpcwstr('DeviceExplorer Failure!'),
-                 MB_ICONSTOP);
+                  lpcwstr('Failed to create the DeviceExplorer, Resultcode = (' + IntToStr(hr) + ').'),
+                  lpcwstr('DeviceExplorer Failure!'),
+                  MB_ICONSTOP);
       goto done;
     end;
 
@@ -660,7 +680,7 @@ begin
 
   //
   if not RegisterForDeviceNotification(Handle,
-                                       ptrDevNotify) then
+    ptrDevNotify) then
     hr := E_FAIL;
 
   //
@@ -671,9 +691,9 @@ begin
   bPhotoMade := False;
   bCaptureManInitialized := False;
 
-done:
-  if FAILED(hr) then
-    Application.Terminate;
+  done:
+    if FAILED(hr) then
+      Application.Terminate;
 end;
 
 
@@ -704,8 +724,8 @@ begin
                          [hr]));
       goto Done;
     end;
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -779,9 +799,9 @@ begin
       if FAILED(hr) then
         begin
           MessageBoxW(0,
-                     lpcwstr('Set camera properties failed with error code: ' + IntToStr(hr) + ''),
-                     lpcwstr('Camera properties Failure!'),
-                     MB_ICONSTOP);
+                      lpcwstr('Set camera properties failed with error code: ' + IntToStr(hr) + ''),
+                      lpcwstr('Camera properties Failure!'),
+                      MB_ICONSTOP);
           Exit;
         end;
 
@@ -790,9 +810,9 @@ begin
       if FAILED(hr) then
         begin
           MessageBoxW(0,
-                     lpcwstr('Set video properties failed with error code: ' + IntToStr(hr) + ''),
-                     lpcwstr('Video properties Failure!'),
-                     MB_ICONSTOP);
+                      lpcwstr('Set video properties failed with error code: ' + IntToStr(hr) + ''),
+                      lpcwstr('Video properties Failure!'),
+                      MB_ICONSTOP);
         end;
 
       pvPreviewMode := smVirgin;
@@ -804,17 +824,17 @@ begin
       hr := S_OK;
     end;
 
-done:
+  done:
 
-  if (hr = MF_E_NO_CAPTURE_DEVICES_AVAILABLE) or (FChooseDeviceParam.Count = 0) then
-    ShowMessage(format('No capture devices found on this system (hr = %d)',
-                       [hr]))
-  else if FAILED(hr) then
-    begin
-      ErrMsg(ERR_INITIALIZE + ' The application will be closed.',
-             hr);
-      Application.Terminate();
-    end;
+    if (hr = MF_E_NO_CAPTURE_DEVICES_AVAILABLE) or (FChooseDeviceParam.Count = 0) then
+      ShowMessage(format('No capture devices found on this system (hr = %d)',
+                         [hr]))
+    else if FAILED(hr) then
+      begin
+        ErrMsg(ERR_INITIALIZE + ' The application will be closed.',
+               hr);
+        Application.Terminate();
+      end;
 
   mnuCameraVideoSettings.Enabled := SUCCEEDED(hr);
 
@@ -823,9 +843,10 @@ end;
 
 // UpdateUI
 procedure TMainWindow.UpdateUI(const pGuidType: TGUID);
+
 begin
 
-  if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_INITIALIZED) then
+  if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_INITIALIZED) then
     begin
       bCaptureManInitialized := True;
       pnlInfo.Caption := 'Please select ''Choose Device '' or ''Start Preview''';
@@ -835,7 +856,7 @@ begin
       mnuStartRecording.Tag := 0;
       pnlControls.Enabled := False;
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_PREVIEW_STARTED) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_PREVIEW_STARTED) then
     begin
       mnuStartPreview.Caption := 'Stop Preview';
       pnlInfo.Caption := 'Previewing.';
@@ -846,7 +867,7 @@ begin
       pnlControls.Enabled := True;
 
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_PREVIEW_STOPPED) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_PREVIEW_STOPPED) then
     begin
       mnuStartPreview.Caption := 'Start Preview';
       pnlInfo.Caption := 'Stopped Previewing.';
@@ -856,37 +877,39 @@ begin
       mnuChooseDevice.Enabled := True;
       pnlControls.Enabled := False;
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_RECORD_STARTED) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_RECORD_STARTED) then
     begin
       mnuStartRecording.Caption := 'Stop Recording';
-      pnlInfo.Caption := Format('Recording to file %s', [pvVideoFile]);
+      pnlInfo.Caption := Format('Recording to file %s',
+                                [pvVideoFile]);
       bRecording := True;
       pnlControls.Enabled := True;
       mnuStartRecording.Enabled := True;
       pnlControls.Enabled := True;
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_RECORD_STOPPED) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_RECORD_STOPPED) then
     begin
       mnuStartRecording.Caption := 'Start Recording';
-      pnlInfo.Caption := Format('Stopped recording to file %s', [pvVideoFile]);
+      pnlInfo.Caption := Format('Stopped recording to file %s',
+                                [pvVideoFile]);
       Sleep(1000);
       pnlInfo.Caption := 'Previewing.';
       bRecording := False;
       mnuStartRecording.Enabled := True;
       pnlControls.Enabled := bPreviewing;
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_PHOTO_TAKEN) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_PHOTO_TAKEN) then
     begin
       pnlInfo.Caption := 'Photo has been made.';
       bPhotoMade := True;
       pnlControls.Enabled := True;
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_SINK_PREPARED) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_SINK_PREPARED) then
     begin
       // Stub.
       // pnlInfo.Caption := 'The capture sink has been initialized.';
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_ERROR) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_ERROR) then
     begin
       // The capture engine will be destroyed.
       // So, at this point we have to reinitialize the capture engine again.
@@ -919,7 +942,9 @@ end;
 
 
 procedure TMainWindow.mnuSetVideoOutputFormatClick(Sender: TObject);
+
 begin
+
   dlgSaveVideo.FileName := CreateNewFileName('.mp4');
   if dlgSaveVideo.Execute then
     pvVideoFile := dlgSaveVideo.FileName;
@@ -943,12 +968,12 @@ begin
       if (pvPreviewMode = smVirgin) then
         // Set video preview and recording formats.
         hr := FCaptureManager.SetVideoFormat();
-        if FAILED(hr) then
-          begin
-            ErrMsg('mnuStartPreviewClick ' + ERR_OUTPUT_MEDIATYPE_SET,
-                   hr);
-            Exit;
-          end;
+      if FAILED(hr) then
+        begin
+          ErrMsg('mnuStartPreviewClick ' + ERR_OUTPUT_MEDIATYPE_SET,
+                 hr);
+          Exit;
+        end;
 
       if (mnuStartPreview.Tag = 0) then
         begin
@@ -976,9 +1001,9 @@ begin
                 end;
             end;
 
-            butSaveToFile.Enabled := False;
-            butTakePhoto.Enabled := True;
-            mnuStartPreview.Tag := 1;
+          butSaveToFile.Enabled := False;
+          butTakePhoto.Enabled := True;
+          mnuStartPreview.Tag := 1;
 
         end
       else
@@ -1043,6 +1068,7 @@ var
   sfileName: string;
 
 begin
+
   i := 0;
   sfileName := 'VideoCapture' + ext;
 
@@ -1054,7 +1080,8 @@ begin
   else
     while FileExists(sFileName) do
       begin
-        sFileName := Format('VideoCapture(%d)%s', [i, ext]);
+        sFileName := Format('VideoCapture(%d)%s',
+                            [i, ext]);
         Inc(i);
       end;
   Result := sFileName;
@@ -1062,12 +1089,15 @@ end;
 
 
 procedure TMainWindow.Exit1Click(Sender: TObject);
+
 begin
+
   Close();
 end;
 
 
 procedure TMainWindow.SetCameraPropFlags();
+
 begin
 
   case cbxCameraControlFlags.ItemIndex of
@@ -1081,6 +1111,7 @@ end;
 
 
 procedure TMainWindow.SetVideoPropFlags();
+
 begin
 
   case cbxVideoControlFlags.ItemIndex of
@@ -1145,6 +1176,7 @@ end;
 
 
 function TMainWindow.SetCameraProperties(pIndex: Integer): HRESULT;
+
 begin
 
   Result := S_OK;
@@ -1169,120 +1201,121 @@ begin
   }
 
   case pIndex of
-    0: begin
+      0: begin
 
-         if FCaptureManager.CameraProperties.CameraCtl_Pan.IsSupported then
-           begin
+        if FCaptureManager.CameraProperties.CameraCtl_Pan.IsSupported then
+          begin
 
-             SetCbxValues(cbxCameraValues,
-                          pIndex,
-                          FCaptureManager.CameraProperties.CameraCtl_Pan.prMax,
-                          FCaptureManager.CameraProperties.CameraCtl_Pan.prMin,
-                          FCaptureManager.CameraProperties.CameraCtl_Pan.prDelta,
-                          FCaptureManager.CameraProperties.CameraCtl_Pan.prDefault,
-                          FCaptureManager.CameraProperties.CameraCtl_Pan.prflags,
-                          LONG(CameraControl_Pan));
-           end;
-       end;
+            SetCbxValues(cbxCameraValues,
+                         pIndex,
+                         FCaptureManager.CameraProperties.CameraCtl_Pan.prMax,
+                         FCaptureManager.CameraProperties.CameraCtl_Pan.prMin,
+                         FCaptureManager.CameraProperties.CameraCtl_Pan.prDelta,
+                         FCaptureManager.CameraProperties.CameraCtl_Pan.prDefault,
+                         FCaptureManager.CameraProperties.CameraCtl_Pan.prflags,
+                         LONG(CameraControl_Pan));
+          end;
+      end;
 
-    1: begin
+      1: begin
 
-         if FCaptureManager.CameraProperties.CameraCtl_Tilt.IsSupported then
-           begin
+        if FCaptureManager.CameraProperties.CameraCtl_Tilt.IsSupported then
+          begin
 
-             SetCbxValues(cbxCameraValues,
-                          pIndex,
-                          FCaptureManager.CameraProperties.CameraCtl_Tilt.prMax,
-                          FCaptureManager.CameraProperties.CameraCtl_Tilt.prMin,
-                          FCaptureManager.CameraProperties.CameraCtl_Tilt.prDelta,
-                          FCaptureManager.CameraProperties.CameraCtl_Tilt.prDefault,
-                          FCaptureManager.CameraProperties.CameraCtl_Tilt.prflags,
-                          LONG(CameraControl_Tilt));
-           end;
-       end;
+            SetCbxValues(cbxCameraValues,
+                         pIndex,
+                         FCaptureManager.CameraProperties.CameraCtl_Tilt.prMax,
+                         FCaptureManager.CameraProperties.CameraCtl_Tilt.prMin,
+                         FCaptureManager.CameraProperties.CameraCtl_Tilt.prDelta,
+                         FCaptureManager.CameraProperties.CameraCtl_Tilt.prDefault,
+                         FCaptureManager.CameraProperties.CameraCtl_Tilt.prflags,
+                         LONG(CameraControl_Tilt));
+          end;
+      end;
 
-    2: begin
+      2: begin
 
-         if FCaptureManager.CameraProperties.CameraCtl_Roll.IsSupported then
-           begin
+        if FCaptureManager.CameraProperties.CameraCtl_Roll.IsSupported then
+          begin
 
-             SetCbxValues(cbxCameraValues,
-                          pIndex,
-                          FCaptureManager.CameraProperties.CameraCtl_Roll.prMax,
-                          FCaptureManager.CameraProperties.CameraCtl_Roll.prMin,
-                          FCaptureManager.CameraProperties.CameraCtl_Roll.prDelta,
-                          FCaptureManager.CameraProperties.CameraCtl_Roll.prDefault,
-                          FCaptureManager.CameraProperties.CameraCtl_Roll.prflags,
-                          LONG(CameraControl_Roll));
-           end;
-       end;
+            SetCbxValues(cbxCameraValues,
+                         pIndex,
+                         FCaptureManager.CameraProperties.CameraCtl_Roll.prMax,
+                         FCaptureManager.CameraProperties.CameraCtl_Roll.prMin,
+                         FCaptureManager.CameraProperties.CameraCtl_Roll.prDelta,
+                         FCaptureManager.CameraProperties.CameraCtl_Roll.prDefault,
+                         FCaptureManager.CameraProperties.CameraCtl_Roll.prflags,
+                         LONG(CameraControl_Roll));
+          end;
+      end;
 
-    3: begin
+      3: begin
 
-         if FCaptureManager.CameraProperties.CameraCtl_Zoom.IsSupported then
-           begin
+        if FCaptureManager.CameraProperties.CameraCtl_Zoom.IsSupported then
+          begin
 
-             SetCbxValues(cbxCameraValues,
-                          pIndex,
-                          FCaptureManager.CameraProperties.CameraCtl_Zoom.prMax,
-                          FCaptureManager.CameraProperties.CameraCtl_Zoom.prMin,
-                          FCaptureManager.CameraProperties.CameraCtl_Zoom.prDelta,
-                          FCaptureManager.CameraProperties.CameraCtl_Zoom.prDefault,
-                          FCaptureManager.CameraProperties.CameraCtl_Zoom.prflags,
-                          LONG(CameraControl_Zoom));
-           end;
-       end;
+            SetCbxValues(cbxCameraValues,
+                         pIndex,
+                         FCaptureManager.CameraProperties.CameraCtl_Zoom.prMax,
+                         FCaptureManager.CameraProperties.CameraCtl_Zoom.prMin,
+                         FCaptureManager.CameraProperties.CameraCtl_Zoom.prDelta,
+                         FCaptureManager.CameraProperties.CameraCtl_Zoom.prDefault,
+                         FCaptureManager.CameraProperties.CameraCtl_Zoom.prflags,
+                         LONG(CameraControl_Zoom));
+          end;
+      end;
 
-    4: begin
+      4: begin
 
-         if FCaptureManager.CameraProperties.CameraCtl_Exposure.IsSupported then
-           begin
-             SetCbxValues(cbxCameraValues,
-                          pIndex,
-                          FCaptureManager.CameraProperties.CameraCtl_Exposure.prMax,
-                          FCaptureManager.CameraProperties.CameraCtl_Exposure.prMin,
-                          FCaptureManager.CameraProperties.CameraCtl_Exposure.prDelta,
-                          FCaptureManager.CameraProperties.CameraCtl_Exposure.prDefault,
-                          FCaptureManager.CameraProperties.CameraCtl_Exposure.prflags,
-                          LONG(CameraControl_Exposure));
-           end;
-       end;
+        if FCaptureManager.CameraProperties.CameraCtl_Exposure.IsSupported then
+          begin
+            SetCbxValues(cbxCameraValues,
+                         pIndex,
+                         FCaptureManager.CameraProperties.CameraCtl_Exposure.prMax,
+                         FCaptureManager.CameraProperties.CameraCtl_Exposure.prMin,
+                         FCaptureManager.CameraProperties.CameraCtl_Exposure.prDelta,
+                         FCaptureManager.CameraProperties.CameraCtl_Exposure.prDefault,
+                         FCaptureManager.CameraProperties.CameraCtl_Exposure.prflags,
+                         LONG(CameraControl_Exposure));
+          end;
+      end;
 
-    5: begin
+      5: begin
 
-         if FCaptureManager.CameraProperties.CameraCtl_Iris.IsSupported then
-           begin
-             SetCbxValues(cbxCameraValues,
-                          pIndex,
-                          FCaptureManager.CameraProperties.CameraCtl_Iris.prMax,
-                          FCaptureManager.CameraProperties.CameraCtl_Iris.prMin,
-                          FCaptureManager.CameraProperties.CameraCtl_Iris.prDelta,
-                          FCaptureManager.CameraProperties.CameraCtl_Iris.prDefault,
-                          FCaptureManager.CameraProperties.CameraCtl_Iris.prflags,
-                          LONG(CameraControl_Iris));
-           end;
-       end;
+        if FCaptureManager.CameraProperties.CameraCtl_Iris.IsSupported then
+          begin
+            SetCbxValues(cbxCameraValues,
+                         pIndex,
+                         FCaptureManager.CameraProperties.CameraCtl_Iris.prMax,
+                         FCaptureManager.CameraProperties.CameraCtl_Iris.prMin,
+                         FCaptureManager.CameraProperties.CameraCtl_Iris.prDelta,
+                         FCaptureManager.CameraProperties.CameraCtl_Iris.prDefault,
+                         FCaptureManager.CameraProperties.CameraCtl_Iris.prflags,
+                         LONG(CameraControl_Iris));
+          end;
+      end;
 
-    6: begin
+      6: begin
 
-         if FCaptureManager.CameraProperties.CameraCtl_Focus.IsSupported then
-           begin
+        if FCaptureManager.CameraProperties.CameraCtl_Focus.IsSupported then
+          begin
 
-             SetCbxValues(cbxCameraValues,
-                          pIndex,
-                          FCaptureManager.CameraProperties.CameraCtl_Focus.prMax,
-                          FCaptureManager.CameraProperties.CameraCtl_Focus.prMin,
-                          FCaptureManager.CameraProperties.CameraCtl_Focus.prDelta,
-                          FCaptureManager.CameraProperties.CameraCtl_Focus.prDefault,
-                          FCaptureManager.CameraProperties.CameraCtl_Focus.prflags,
-                          LONG(CameraControl_Focus));
-           end;
-       end;
+            SetCbxValues(cbxCameraValues,
+                         pIndex,
+                         FCaptureManager.CameraProperties.CameraCtl_Focus.prMax,
+                         FCaptureManager.CameraProperties.CameraCtl_Focus.prMin,
+                         FCaptureManager.CameraProperties.CameraCtl_Focus.prDelta,
+                         FCaptureManager.CameraProperties.CameraCtl_Focus.prDefault,
+                         FCaptureManager.CameraProperties.CameraCtl_Focus.prflags,
+                         LONG(CameraControl_Focus));
+          end;
+      end;
   end;
 end;
 
 
 function TMainWindow.SetVideoProperties(pIndex: Integer): HRESULT;
+
 begin
 
   Result := S_OK;
@@ -1309,146 +1342,146 @@ begin
   }
 
   case pIndex of
-    0: begin
-         if FCaptureManager.VideoProperties.VideoCtl_Brightness.IsSupported then
-           begin
+      0: begin
+        if FCaptureManager.VideoProperties.VideoCtl_Brightness.IsSupported then
+          begin
 
-             SetCbxValues(cbxVideoValues,
-                          pIndex,
-                          FCaptureManager.VideoProperties.VideoCtl_Brightness.prMax,
-                          FCaptureManager.VideoProperties.VideoCtl_Brightness.prMin,
-                          FCaptureManager.VideoProperties.VideoCtl_Brightness.prDelta,
-                          FCaptureManager.VideoProperties.VideoCtl_Brightness.prDefault,
-                          FCaptureManager.VideoProperties.VideoCtl_Brightness.prflags,
-                          LONG(VideoProcAmp_Contrast));
-           end;
-       end;
-    1: begin
-         if FCaptureManager.VideoProperties.VideoCtl_Contrast.IsSupported then
-           begin
+            SetCbxValues(cbxVideoValues,
+                         pIndex,
+                         FCaptureManager.VideoProperties.VideoCtl_Brightness.prMax,
+                         FCaptureManager.VideoProperties.VideoCtl_Brightness.prMin,
+                         FCaptureManager.VideoProperties.VideoCtl_Brightness.prDelta,
+                         FCaptureManager.VideoProperties.VideoCtl_Brightness.prDefault,
+                         FCaptureManager.VideoProperties.VideoCtl_Brightness.prflags,
+                         LONG(VideoProcAmp_Contrast));
+          end;
+      end;
+      1: begin
+        if FCaptureManager.VideoProperties.VideoCtl_Contrast.IsSupported then
+          begin
 
-             SetCbxValues(cbxVideoValues,
-                          pIndex,
-                          FCaptureManager.VideoProperties.VideoCtl_Contrast.prMax,
-                          FCaptureManager.VideoProperties.VideoCtl_Contrast.prMin,
-                          FCaptureManager.VideoProperties.VideoCtl_Contrast.prDelta,
-                          FCaptureManager.VideoProperties.VideoCtl_Contrast.prDefault,
-                          FCaptureManager.VideoProperties.VideoCtl_Brightness.prflags,
-                          LONG(VideoProcAmp_Contrast));
-           end;
-       end;
-    2: begin
-         if FCaptureManager.VideoProperties.VideoCtl_Hue.IsSupported then
-           begin
+            SetCbxValues(cbxVideoValues,
+                         pIndex,
+                         FCaptureManager.VideoProperties.VideoCtl_Contrast.prMax,
+                         FCaptureManager.VideoProperties.VideoCtl_Contrast.prMin,
+                         FCaptureManager.VideoProperties.VideoCtl_Contrast.prDelta,
+                         FCaptureManager.VideoProperties.VideoCtl_Contrast.prDefault,
+                         FCaptureManager.VideoProperties.VideoCtl_Brightness.prflags,
+                         LONG(VideoProcAmp_Contrast));
+          end;
+      end;
+      2: begin
+        if FCaptureManager.VideoProperties.VideoCtl_Hue.IsSupported then
+          begin
 
-             SetCbxValues(cbxVideoValues,
-                          pIndex,
-                          FCaptureManager.VideoProperties.VideoCtl_Hue.prMax,
-                          FCaptureManager.VideoProperties.VideoCtl_Hue.prMin,
-                          FCaptureManager.VideoProperties.VideoCtl_Hue.prDelta,
-                          FCaptureManager.VideoProperties.VideoCtl_Hue.prDefault,
-                          FCaptureManager.VideoProperties.VideoCtl_Brightness.prflags,
-                          LONG(VideoProcAmp_Contrast));
-           end;
-       end;
-    3: begin
-         if FCaptureManager.VideoProperties.VideoCtl_Saturation.IsSupported then
-           begin
+            SetCbxValues(cbxVideoValues,
+                         pIndex,
+                         FCaptureManager.VideoProperties.VideoCtl_Hue.prMax,
+                         FCaptureManager.VideoProperties.VideoCtl_Hue.prMin,
+                         FCaptureManager.VideoProperties.VideoCtl_Hue.prDelta,
+                         FCaptureManager.VideoProperties.VideoCtl_Hue.prDefault,
+                         FCaptureManager.VideoProperties.VideoCtl_Brightness.prflags,
+                         LONG(VideoProcAmp_Contrast));
+          end;
+      end;
+      3: begin
+        if FCaptureManager.VideoProperties.VideoCtl_Saturation.IsSupported then
+          begin
 
-             SetCbxValues(cbxVideoValues,
-                          pIndex,
-                          FCaptureManager.VideoProperties.VideoCtl_Saturation.prMax,
-                          FCaptureManager.VideoProperties.VideoCtl_Saturation.prMin,
-                          FCaptureManager.VideoProperties.VideoCtl_Saturation.prDelta,
-                          FCaptureManager.VideoProperties.VideoCtl_Saturation.prDefault,
-                          FCaptureManager.VideoProperties.VideoCtl_Saturation.prflags,
-                          LONG(VideoProcAmp_Saturation));
-           end;
-       end;
-    4: begin
-         if FCaptureManager.VideoProperties.VideoCtl_Sharpness.IsSupported then
-           begin
+            SetCbxValues(cbxVideoValues,
+                         pIndex,
+                         FCaptureManager.VideoProperties.VideoCtl_Saturation.prMax,
+                         FCaptureManager.VideoProperties.VideoCtl_Saturation.prMin,
+                         FCaptureManager.VideoProperties.VideoCtl_Saturation.prDelta,
+                         FCaptureManager.VideoProperties.VideoCtl_Saturation.prDefault,
+                         FCaptureManager.VideoProperties.VideoCtl_Saturation.prflags,
+                         LONG(VideoProcAmp_Saturation));
+          end;
+      end;
+      4: begin
+        if FCaptureManager.VideoProperties.VideoCtl_Sharpness.IsSupported then
+          begin
 
-             SetCbxValues(cbxVideoValues,
-                          pIndex,
-                          FCaptureManager.VideoProperties.VideoCtl_Sharpness.prMax,
-                          FCaptureManager.VideoProperties.VideoCtl_Sharpness.prMin,
-                          FCaptureManager.VideoProperties.VideoCtl_Sharpness.prDelta,
-                          FCaptureManager.VideoProperties.VideoCtl_Sharpness.prDefault,
-                          FCaptureManager.VideoProperties.VideoCtl_Sharpness.prflags,
-                          LONG(VideoProcAmp_Sharpness));
-           end;
-       end;
-    5: begin
-         if FCaptureManager.VideoProperties.VideoCtl_Gamma.IsSupported then
-           begin
+            SetCbxValues(cbxVideoValues,
+                         pIndex,
+                         FCaptureManager.VideoProperties.VideoCtl_Sharpness.prMax,
+                         FCaptureManager.VideoProperties.VideoCtl_Sharpness.prMin,
+                         FCaptureManager.VideoProperties.VideoCtl_Sharpness.prDelta,
+                         FCaptureManager.VideoProperties.VideoCtl_Sharpness.prDefault,
+                         FCaptureManager.VideoProperties.VideoCtl_Sharpness.prflags,
+                         LONG(VideoProcAmp_Sharpness));
+          end;
+      end;
+      5: begin
+        if FCaptureManager.VideoProperties.VideoCtl_Gamma.IsSupported then
+          begin
 
-             SetCbxValues(cbxVideoValues,
-                          pIndex,
-                          FCaptureManager.VideoProperties.VideoCtl_Gamma.prMax,
-                          FCaptureManager.VideoProperties.VideoCtl_Gamma.prMin,
-                          FCaptureManager.VideoProperties.VideoCtl_Gamma.prDelta,
-                          FCaptureManager.VideoProperties.VideoCtl_Gamma.prDefault,
-                          FCaptureManager.VideoProperties.VideoCtl_Gamma.prflags,
-                          LONG(VideoProcAmp_Gamma));
-           end;
-       end;
-    6: begin
-         if FCaptureManager.VideoProperties.VideoCtl_ColorEnable.IsSupported then
-           begin
+            SetCbxValues(cbxVideoValues,
+                         pIndex,
+                         FCaptureManager.VideoProperties.VideoCtl_Gamma.prMax,
+                         FCaptureManager.VideoProperties.VideoCtl_Gamma.prMin,
+                         FCaptureManager.VideoProperties.VideoCtl_Gamma.prDelta,
+                         FCaptureManager.VideoProperties.VideoCtl_Gamma.prDefault,
+                         FCaptureManager.VideoProperties.VideoCtl_Gamma.prflags,
+                         LONG(VideoProcAmp_Gamma));
+          end;
+      end;
+      6: begin
+        if FCaptureManager.VideoProperties.VideoCtl_ColorEnable.IsSupported then
+          begin
 
-             SetCbxValues(cbxVideoValues,
-                          pIndex,
-                          FCaptureManager.VideoProperties.VideoCtl_ColorEnable.prMax,
-                          FCaptureManager.VideoProperties.VideoCtl_ColorEnable.prMin,
-                          FCaptureManager.VideoProperties.VideoCtl_ColorEnable.prDelta,
-                          FCaptureManager.VideoProperties.VideoCtl_ColorEnable.prDefault,
-                          FCaptureManager.VideoProperties.VideoCtl_ColorEnable.prflags,
-                          LONG(VideoProcAmp_ColorEnable));
-           end;
-       end;
-    7: begin
-         if FCaptureManager.VideoProperties.VideoCtl_WhiteBalance.IsSupported then
-           begin
+            SetCbxValues(cbxVideoValues,
+                         pIndex,
+                         FCaptureManager.VideoProperties.VideoCtl_ColorEnable.prMax,
+                         FCaptureManager.VideoProperties.VideoCtl_ColorEnable.prMin,
+                         FCaptureManager.VideoProperties.VideoCtl_ColorEnable.prDelta,
+                         FCaptureManager.VideoProperties.VideoCtl_ColorEnable.prDefault,
+                         FCaptureManager.VideoProperties.VideoCtl_ColorEnable.prflags,
+                         LONG(VideoProcAmp_ColorEnable));
+          end;
+      end;
+      7: begin
+        if FCaptureManager.VideoProperties.VideoCtl_WhiteBalance.IsSupported then
+          begin
 
-             SetCbxValues(cbxVideoValues,
-                          pIndex,
-                          FCaptureManager.VideoProperties.VideoCtl_WhiteBalance.prMax,
-                          FCaptureManager.VideoProperties.VideoCtl_WhiteBalance.prMin,
-                          FCaptureManager.VideoProperties.VideoCtl_WhiteBalance.prDelta,
-                          FCaptureManager.VideoProperties.VideoCtl_WhiteBalance.prDefault,
-                          FCaptureManager.VideoProperties.VideoCtl_WhiteBalance.prflags,
-                          LONG(VideoProcAmp_WhiteBalance));
-           end;
-       end;
-    8: begin
-         if FCaptureManager.VideoProperties.VideoCtl_BacklightCompensation.IsSupported then
-           begin
+            SetCbxValues(cbxVideoValues,
+                         pIndex,
+                         FCaptureManager.VideoProperties.VideoCtl_WhiteBalance.prMax,
+                         FCaptureManager.VideoProperties.VideoCtl_WhiteBalance.prMin,
+                         FCaptureManager.VideoProperties.VideoCtl_WhiteBalance.prDelta,
+                         FCaptureManager.VideoProperties.VideoCtl_WhiteBalance.prDefault,
+                         FCaptureManager.VideoProperties.VideoCtl_WhiteBalance.prflags,
+                         LONG(VideoProcAmp_WhiteBalance));
+          end;
+      end;
+      8: begin
+        if FCaptureManager.VideoProperties.VideoCtl_BacklightCompensation.IsSupported then
+          begin
 
-             SetCbxValues(cbxVideoValues,
-                          pIndex,
-                          FCaptureManager.VideoProperties.VideoCtl_BacklightCompensation.prMax,
-                          FCaptureManager.VideoProperties.VideoCtl_BacklightCompensation.prMin,
-                          FCaptureManager.VideoProperties.VideoCtl_BacklightCompensation.prDelta,
-                          FCaptureManager.VideoProperties.VideoCtl_BacklightCompensation.prDefault,
-                          FCaptureManager.VideoProperties.VideoCtl_BacklightCompensation.prflags,
-                          LONG(VideoProcAmp_BacklightCompensation));
-           end;
-       end;
-    9: begin
-         if FCaptureManager.VideoProperties.VideoCtl_Gain.IsSupported then
-           begin
+            SetCbxValues(cbxVideoValues,
+                         pIndex,
+                         FCaptureManager.VideoProperties.VideoCtl_BacklightCompensation.prMax,
+                         FCaptureManager.VideoProperties.VideoCtl_BacklightCompensation.prMin,
+                         FCaptureManager.VideoProperties.VideoCtl_BacklightCompensation.prDelta,
+                         FCaptureManager.VideoProperties.VideoCtl_BacklightCompensation.prDefault,
+                         FCaptureManager.VideoProperties.VideoCtl_BacklightCompensation.prflags,
+                         LONG(VideoProcAmp_BacklightCompensation));
+          end;
+      end;
+      9: begin
+        if FCaptureManager.VideoProperties.VideoCtl_Gain.IsSupported then
+          begin
 
-             SetCbxValues(cbxVideoValues,
-                          pIndex,
-                          FCaptureManager.VideoProperties.VideoCtl_Gain.prMax,
-                          FCaptureManager.VideoProperties.VideoCtl_Gain.prMin,
-                          FCaptureManager.VideoProperties.VideoCtl_Gain.prDelta,
-                          FCaptureManager.VideoProperties.VideoCtl_Gain.prDefault,
-                          FCaptureManager.VideoProperties.VideoCtl_Gain.prflags,
-                          LONG(VideoProcAmp_Gain));
-           end;
-       end;
+            SetCbxValues(cbxVideoValues,
+                         pIndex,
+                         FCaptureManager.VideoProperties.VideoCtl_Gain.prMax,
+                         FCaptureManager.VideoProperties.VideoCtl_Gain.prMin,
+                         FCaptureManager.VideoProperties.VideoCtl_Gain.prDelta,
+                         FCaptureManager.VideoProperties.VideoCtl_Gain.prDefault,
+                         FCaptureManager.VideoProperties.VideoCtl_Gain.prflags,
+                         LONG(VideoProcAmp_Gain));
+          end;
+      end;
   end;
 end;
 
@@ -1473,6 +1506,7 @@ end;
 
 
 procedure TMainWindow.cbxCameraControlFlagsSelect(Sender: TObject);
+
 begin
 
   SetCameraPropFlags();
@@ -1482,12 +1516,14 @@ end;
 
 
 procedure TMainWindow.cbxCameraControlPropertySelect(Sender: TObject);
+
 begin
+
   if FAILED(SetCameraProperties(cbxCameraControlProperty.ItemIndex)) then
     MessageBoxW(0,
-               lpcwstr('Could not get camera property, because the engine in not initialized.'),
-               lpcwstr('Failure'),
-               MB_ICONSTOP);
+                lpcwstr('Could not get camera property, because the engine in not initialized.'),
+                lpcwstr('Failure'),
+                MB_ICONSTOP);
 end;
 
 
@@ -1504,20 +1540,21 @@ begin
 
   if FAILED(hr) and (hr <> E_POINTER) then
     MessageBoxW(0,
-               lpcwstr('Could not set camera property.'),
-               lpcwstr('Failure'),
-               MB_ICONSTOP);
+                lpcwstr('Could not set camera property.'),
+                lpcwstr('Failure'),
+                MB_ICONSTOP);
 end;
 
 
 procedure TMainWindow.cbxVideoControlFlagsSelect(Sender: TObject);
+
 begin
 
   if FAILED(SetVideoProperties(cbxVideoControlProperty.ItemIndex)) then
     MessageBoxW(0,
-               lpcwstr('Could not get camera property, because the engine in not initialized.'),
-               lpcwstr('Failure'),
-               MB_ICONSTOP);
+                lpcwstr('Could not get camera property, because the engine in not initialized.'),
+                lpcwstr('Failure'),
+                MB_ICONSTOP);
 end;
 
 
@@ -1534,14 +1571,15 @@ begin
 
   if FAILED(hr) and (hr <> E_POINTER) then
     MessageBoxW(0,
-               lpcwstr('Could not set video property.'),
-               lpcwstr('Failure'),
-                       MB_ICONSTOP);
+                lpcwstr('Could not set video property.'),
+                lpcwstr('Failure'),
+                MB_ICONSTOP);
 end;
 
 // Initialization and finalization =============================================
 
 procedure TMainWindow.mnuCameraVideoSettingsClick(Sender: TObject);
+
 begin
 
   if not pnlCameraAndVideoControl.Visible then
@@ -1554,14 +1592,14 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_LITE)) then
-      begin
-        MessageBoxW(0,
-                   lpcwstr('Your computer does not support this Media Foundation API version ' +
-                           IntToStr(MF_VERSION) + '.'),
-                   lpcwstr('MFStartup Failure!'),
-                           MB_ICONSTOP);
-      end;
+    MFSTARTUP_LITE)) then
+    begin
+      MessageBoxW(0,
+                  lpcwstr('Your computer does not support this Media Foundation API version ' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
+    end;
 
 finalization
 

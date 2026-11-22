@@ -85,7 +85,7 @@ type
 
   // Control interface.
   IMfFlangerEchoControl = interface(IInterface)
-  ['{A1A4F7A0-7FA1-4B1C-9A0C-6B7D0F5C3C6E}']
+    ['{A1A4F7A0-7FA1-4B1C-9A0C-6B7D0F5C3C6E}']
 
     procedure EnableFX(const AEnabled: Boolean); stdcall;
 
@@ -128,7 +128,11 @@ type
 
 type
 
-  TMfFlangerEchoMFT = class(TMfAudioEffectMFTBase, IMFTransform, IMfFlangerEchoControl, IMfFlangerEchoInspect)
+  TMfFlangerEchoMFT = class(TMfAudioEffectMFTBase,
+                            IMFTransform,
+                            IMfFlangerEchoControl,
+                            IMfFlangerEchoInspect)
+
   private
 
     FEnabledInt: Integer;
@@ -232,6 +236,7 @@ implementation
 
 
 function FloatToBits(const x: Single): Integer; inline;
+
 begin
 
   Result := PInteger(@x)^;
@@ -239,6 +244,7 @@ end;
 
 
 function BitsToFloat(const b: Integer): Single; inline;
+
 begin
 
   Result := PSingle(@b)^;
@@ -246,6 +252,7 @@ end;
 
 
 constructor TMfFlangerEchoMFT.Create();
+
 begin
 
   inherited Create;
@@ -295,6 +302,7 @@ end;
 
 
 destructor TMfFlangerEchoMFT.Destroy();
+
 begin
 
   FDelay := nil;
@@ -306,6 +314,7 @@ end;
 function TMfFlangerEchoMFT.ClampMs(const v,
                                    lo,
                                    hi: Single): Single;
+
 begin
 
   Result := EnsureRange(v,
@@ -315,6 +324,7 @@ end;
 
 
 function TMfFlangerEchoMFT.ClampHz(const v: Single): Single;
+
 begin
 
   Result := EnsureRange(v,
@@ -324,6 +334,7 @@ end;
 
 
 function TMfFlangerEchoMFT.ClampFeedback(const v: Single): Single;
+
 begin
 
   Result := EnsureRange(v,
@@ -333,6 +344,7 @@ end;
 
 
 function TMfFlangerEchoMFT.ClampWet(const v: Single): Single;
+
 begin
 
   Result := EnsureRange(v,
@@ -388,9 +400,9 @@ begin
     rmFast: ms := 10;
     rmSmooth: ms := 30;
     rmManual: ms := FRampTimeMs;
-  else
+    else
 
-    ms := 30;
+      ms := 30;
   end;
 
   if (ms <= 0) then
@@ -423,7 +435,7 @@ begin
   // readPos in frame domain
   readPos := FWritePos - DelayFrames;
 
-  while (readPos < 0 )do
+  while (readPos < 0) do
     readPos := readPos + FDelayFrames;
 
   while (readPos >= FDelayFrames) do
@@ -435,8 +447,8 @@ begin
   i1 := base;
   i0 := i1 - 1;
 
-  if i0 < 0 then
-  i0 := i0 + FDelayFrames;
+  if (i0 < 0) then
+    i0 := i0 + FDelayFrames;
 
   i2 := i1 + 1;
   if (i2 >= FDelayFrames) then
@@ -461,6 +473,7 @@ end;
 
 procedure TMfFlangerEchoMFT.WriteDelay(const Ch: Integer;
                                        const v: Single);
+
 begin
 
   FDelay[Ch * FDelayFrames + FWritePos] := v;
@@ -509,8 +522,8 @@ var
 begin
 
   if (Frames <= 0) or
-     (Channels <= 0) or
-     (pData = nil) then
+    (Channels <= 0) or
+    (pData = nil) then
     Exit;
 
   // Bypass the effect when disabled.
@@ -528,28 +541,28 @@ begin
 
   // Snapshot targets (lock-free).
   tBase := ClampMs(BitsToFloat(InterlockedCompareExchange(FTBaseDelayBits,
-                                                         0,
-                                                         0)),
+                                                          0,
+                                                          0)),
                    0.0,
                    2000.0);
 
   tDepth := ClampMs(BitsToFloat(InterlockedCompareExchange(FTDepthBits,
-                                                          0,
-                                                          0)),
+                                                           0,
+                                                           0)),
                     0.0,
                     50.0);
 
   tRate := ClampHz(BitsToFloat(InterlockedCompareExchange(FTRateBits,
-                                                         0,
-                                                         0)));
+                                                          0,
+                                                          0)));
 
   tFb := ClampFeedback(BitsToFloat(InterlockedCompareExchange(FTFeedbackBits,
-                                                             0,
-                                                             0)));
+                                                              0,
+                                                              0)));
 
   tWet := ClampWet(BitsToFloat(InterlockedCompareExchange(FTWetBits,
-                                                         0,
-                                                         0)));
+                                                          0,
+                                                          0)));
 
   tPhase := BitsToFloat(InterlockedCompareExchange(FTStereoPhaseBits,
                                                    0,
@@ -615,7 +628,7 @@ begin
             FWritePos := 0;
 
           FPhase := FPhase + phaseStep;
-          if (FPhase > 2 * PI ) then
+          if (FPhase > 2 * PI) then
             FPhase := FPhase - 2 * PI;
         end;
       Exit;
@@ -679,7 +692,7 @@ begin
 
       FPhase := FPhase + phaseStep;
       if (FPhase > 2 * PI) then
-        FPhase := FPhase - 2*PI;
+        FPhase := FPhase - 2 * PI;
     end;
 end;
 
@@ -697,6 +710,7 @@ end;
 
 
 procedure TMfFlangerEchoMFT.SetBaseDelayMs(const Ms: Single);
+
 begin
 
   InterlockedExchange(FTBaseDelayBits,
@@ -705,6 +719,7 @@ end;
 
 
 procedure TMfFlangerEchoMFT.SetDepthMs(const Ms: Single);
+
 begin
 
   InterlockedExchange(FTDepthBits,
@@ -713,6 +728,7 @@ end;
 
 
 procedure TMfFlangerEchoMFT.SetRateHz(const Hz: Single);
+
 begin
 
   InterlockedExchange(FTRateBits,
@@ -721,6 +737,7 @@ end;
 
 
 procedure TMfFlangerEchoMFT.SetFeedback(const v: Single);
+
 begin
 
   InterlockedExchange(FTFeedbackBits,
@@ -729,6 +746,7 @@ end;
 
 
 procedure TMfFlangerEchoMFT.SetWet(const v: Single);
+
 begin
 
   InterlockedExchange(FTWetBits,
@@ -737,6 +755,7 @@ end;
 
 
 procedure TMfFlangerEchoMFT.SetStereoPhaseDeg(const Deg: Single);
+
 begin
 
   InterlockedExchange(FTStereoPhaseBits,
@@ -745,6 +764,7 @@ end;
 
 
 procedure TMfFlangerEchoMFT.SetPresetFlanger();
+
 begin
 
   InterlockedExchange(FTBaseDelayBits,
@@ -768,6 +788,7 @@ end;
 
 
 procedure TMfFlangerEchoMFT.SetPresetEcho();
+
 begin
 
   InterlockedExchange(FTBaseDelayBits,
@@ -791,6 +812,7 @@ end;
 
 
 procedure TMfFlangerEchoMFT.SetRampMode(const Mode: TMfRampMode);
+
 begin
 
   FRampMode := Mode;
@@ -798,6 +820,7 @@ end;
 
 
 procedure TMfFlangerEchoMFT.SetRampTimeMs(const Ms: Integer);
+
 begin
 
   FRampTimeMs := EnsureRange(Ms,
@@ -807,6 +830,7 @@ end;
 
 
 procedure TMfFlangerEchoMFT.EnableTruePeakGuard(const AEnabled: Boolean);
+
 begin
 
   SetTruePeakEnabled(AEnabled);
@@ -814,6 +838,7 @@ end;
 
 
 procedure TMfFlangerEchoMFT.SetTruePeakCeilingDbTP(const DbTP: Single);
+
 begin
 
   inherited SetTruePeakCeilingDbTP(DbTP);
@@ -821,6 +846,7 @@ end;
 
 
 procedure TMfFlangerEchoMFT.SetTruePeakOversample(const Factor: Integer);
+
 begin
 
   inherited SetTruePeakOversample(Factor);
@@ -834,6 +860,7 @@ function TMfFlangerEchoMFT.GetCurrentParams(out BaseDelayMs,
                                             Feedback,
                                             Wet,
                                             StereoPhaseDeg: Double): Boolean;
+
 begin
 
   BaseDelayMs := FCBaseDelayMs;
@@ -846,4 +873,3 @@ begin
 end;
 
 end.
-

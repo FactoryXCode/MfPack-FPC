@@ -64,11 +64,12 @@ unit MicrophoneDeckFrm;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -101,6 +102,7 @@ LMessages,
 type
 
   PMicInputDeviceItem = ^TMicInputDeviceItem;
+
   TMicInputDeviceItem = record
     DeviceID: string;
     FriendlyName: string;
@@ -213,7 +215,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormClose(Sender: TObject;
+                        var Action: TCloseAction);
     procedure tbVolumeChange(Sender: TObject);
     procedure tbBalanceChange(Sender: TObject);
     procedure chkMuteClick(Sender: TObject);
@@ -357,6 +360,7 @@ uses
 
 
 procedure TFrmMicrophoneDeck.FormCreate(Sender: TObject);
+
 begin
 
   FEngine := TMfMicrophoneDeckEngine.Create;
@@ -390,6 +394,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.FormDestroy(Sender: TObject);
+
 begin
 
   tmrUi.Enabled := False;
@@ -403,14 +408,16 @@ end;
 
 
 procedure TFrmMicrophoneDeck.FormShow(Sender: TObject);
+
 begin
 
   // No form caption
   SetWindowLong(Handle,
                 GWL_STYLE,
-                GetWindowLong(Handle, GWL_STYLE) and not WS_CAPTION or WS_BORDER);
- // Height := 1538;
-//  Width := 479 - 10;
+                GetWindowLong(Handle,
+                              GWL_STYLE) and not WS_CAPTION or WS_BORDER);
+  // Height := 1538;
+  //  Width := 479 - 10;
 
   LoadAudioRackToGui();
   UpdateAllCaptions();
@@ -419,6 +426,7 @@ end;
 
 procedure TFrmMicrophoneDeck.FormClose(Sender: TObject;
                                        var Action: TCloseAction);
+
 begin
 
   tmrUi.Enabled := False;
@@ -429,6 +437,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbVolumeChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -455,6 +464,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tmrUiTimer(Sender: TObject);
+
 begin
 
   UpdateMeterUi();
@@ -462,6 +472,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbBalanceChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -472,6 +483,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbCompThresholdChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -482,6 +494,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbCompRatioChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -492,6 +505,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbCompAttackChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -502,6 +516,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbCompReleaseChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -512,6 +527,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbCompMakeupChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -522,6 +538,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbCompKneeChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -532,6 +549,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbEchoMixChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -542,6 +560,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbEchoDelayChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -552,6 +571,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbEchoFeedbackChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -562,6 +582,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbEchoToneChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -572,6 +593,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbEchoSpringChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -582,6 +604,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbEchoWowDepthChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -592,6 +615,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbInputGainChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -602,6 +626,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbInputGainDblClick(Sender: TObject);
+
 begin
 
   tbInputGain.AnimateTrackBarToPosition(0,
@@ -610,6 +635,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbEchoWowRateChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -620,6 +646,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.chkMuteClick(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -630,6 +657,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.chkPFLClick(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -640,6 +668,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.chkNoiseGateClick(Sender: TObject);
+
 begin
 
   pnlNoiseGate.BringToFront;
@@ -650,6 +679,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.chkCompressorSettingsClick(Sender: TObject);
+
 begin
 
   pnlCompressor.BringToFront;
@@ -660,6 +690,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.chkEchoSettingsClick(Sender: TObject);
+
 begin
 
   pnlEcho.BringToFront;
@@ -670,6 +701,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.chkCompEnabledClick(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -680,6 +712,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.chkEchoEnabledClick(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -690,6 +723,7 @@ end;
 
 // Parametric eq
 procedure TFrmMicrophoneDeck.chkGateEnabledClick(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -700,6 +734,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.BindAudioRack();
+
 begin
 
   FAudioRack := nil;
@@ -752,7 +787,7 @@ begin
 
       Fx := TMfWasApiFxSlot(FAudioRack.Slots[I]).Effect;
       if Assigned(Fx) and
-         (Fx is TMfParametricEqEffect) then
+        (Fx is TMfParametricEqEffect) then
         begin
 
           Result := TMfParametricEqEffect(Fx);
@@ -821,6 +856,7 @@ end;
 // Noise gate
 
 procedure TFrmMicrophoneDeck.tbGateThresholdChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -831,6 +867,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbGateAttackChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -841,6 +878,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbGateReleaseChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -851,6 +889,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbGateFloorChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -861,6 +900,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbGateHoldChange(Sender: TObject);
+
 begin
 
   if FInitializingUi then
@@ -871,6 +911,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbEqQDblClick(Sender: TObject);
+
 begin
 
   tbEqQ.AnimateTrackBarToPosition(10,
@@ -879,6 +920,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbEqCenterFreqHzDblClick(Sender: TObject);
+
 begin
 
   tbEqCenterFreqHz.AnimateTrackBarToPosition(1500,
@@ -887,6 +929,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.tbEqGainDbDblClick(Sender: TObject);
+
 begin
 
   tbEqGainDb.AnimateTrackBarToPosition(0,
@@ -896,6 +939,7 @@ end;
 
 // VU
 procedure TFrmMicrophoneDeck.ClearMeters();
+
 begin
 
   pmLeft.AudioEnded();
@@ -973,13 +1017,13 @@ begin
                   @MeterWfx);
 
   SetClipLamp((PeakL >= 0.98) or
-              (PeakR >= 0.98));
+    (PeakR >= 0.98));
 end;
 
 
 procedure TfrmMicrophoneDeck.BuildDefaultUi();
-begin
 
+begin
 
   tbInputGain.Minimum := -240;
   tbInputGain.Maximum := 360;
@@ -1075,6 +1119,7 @@ end;
 
 
 procedure TfrmMicrophoneDeck.ApplyAllSettings();
+
 begin
 
   ApplyInputGain();
@@ -1089,6 +1134,7 @@ end;
 
 
 procedure TfrmMicrophoneDeck.ApplyInputGain();
+
 begin
 
   if not Assigned(FEngine) then
@@ -1141,6 +1187,7 @@ end;
 
 
 procedure TfrmMicrophoneDeck.ApplyMute();
+
 begin
 
   if not Assigned(FEngine) then
@@ -1152,6 +1199,7 @@ end;
 
 
 procedure TfrmMicrophoneDeck.ApplyPFL();
+
 begin
 
   ApplyPflToMixer();
@@ -1159,6 +1207,7 @@ end;
 
 
 procedure TfrmMicrophoneDeck.ApplyCompressor();
+
 begin
 
   if not Assigned(FEngine) then
@@ -1176,6 +1225,7 @@ end;
 
 
 procedure TfrmMicrophoneDeck.ApplyEcho();
+
 begin
 
   if not Assigned(FEngine) then
@@ -1195,6 +1245,7 @@ end;
 
 
 procedure TfrmMicrophoneDeck.UpdateAllCaptions();
+
 begin
 
   UpdateInputGainCaption();
@@ -1206,6 +1257,7 @@ end;
 
 
 procedure TfrmMicrophoneDeck.UpdateInputGainCaption();
+
 begin
 
   lblInputGainValue.Caption := Format('%+.1f dB',
@@ -1214,6 +1266,7 @@ end;
 
 
 procedure TfrmMicrophoneDeck.UpdateVolumeCaption();
+
 begin
 
   lblVolumePerc.Caption := Format('%.0f %%',
@@ -1222,44 +1275,47 @@ end;
 
 
 procedure TfrmMicrophoneDeck.UpdateCompCaptions();
+
 begin
 
-    lblCompThresholdValue.Caption := Format('%.1f dB',
-                                            [TrackToCompThresholdDb]);
-    lblCompRatioValue.Caption := Format('%.1f : 1',
-                                        [TrackToCompRatio]);
-    lblCompAttackValue.Caption := Format('%.0f ms',
-                                         [TrackToCompAttackMs]);
-    lblCompReleaseValue.Caption := Format('%.0f ms',
-                                          [TrackToCompReleaseMs]);
-    lblCompMakeupValue.Caption := Format('%.1f dB',
-                                         [TrackToCompMakeupDb]);
-    lblCompKneeValue.Caption := Format('%.1f dB',
-                                       [TrackToCompKneeDb]);
+  lblCompThresholdValue.Caption := Format('%.1f dB',
+                                          [TrackToCompThresholdDb]);
+  lblCompRatioValue.Caption := Format('%.1f : 1',
+                                      [TrackToCompRatio]);
+  lblCompAttackValue.Caption := Format('%.0f ms',
+                                       [TrackToCompAttackMs]);
+  lblCompReleaseValue.Caption := Format('%.0f ms',
+                                        [TrackToCompReleaseMs]);
+  lblCompMakeupValue.Caption := Format('%.1f dB',
+                                       [TrackToCompMakeupDb]);
+  lblCompKneeValue.Caption := Format('%.1f dB',
+                                     [TrackToCompKneeDb]);
 end;
 
 
 procedure TfrmMicrophoneDeck.UpdateEchoCaptions();
+
 begin
 
-    lblEchoMixValue.Caption := Format('%.0f %%',
-                                      [TrackToEchoMix * 100.0]);
-    lblEchoDelayValue.Caption := Format('%.0f ms',
-                                        [TrackToEchoDelayMs]);
-    lblEchoFeedbackValue.Caption := Format('%.0f %%',
-                                           [TrackToEchoFeedback * 100.0]);
-    lblEchoToneValue.Caption := Format('%.0f %%',
-                                       [TrackToEchoTone * 100.0]);
-    lblEchoSpringValue.Caption := Format('%.0f %%',
-                                         [TrackToEchoSpring * 100.0]);
-    lblEchoWowDepthValue.Caption := Format('%.2f ms',
-                                           [TrackToEchoWowDepthMs]);
-    lblEchoWowRateValue.Caption := Format('%.2f Hz',
-                                          [TrackToEchoWowRateHz]);
+  lblEchoMixValue.Caption := Format('%.0f %%',
+                                    [TrackToEchoMix * 100.0]);
+  lblEchoDelayValue.Caption := Format('%.0f ms',
+                                      [TrackToEchoDelayMs]);
+  lblEchoFeedbackValue.Caption := Format('%.0f %%',
+                                         [TrackToEchoFeedback * 100.0]);
+  lblEchoToneValue.Caption := Format('%.0f %%',
+                                     [TrackToEchoTone * 100.0]);
+  lblEchoSpringValue.Caption := Format('%.0f %%',
+                                       [TrackToEchoSpring * 100.0]);
+  lblEchoWowDepthValue.Caption := Format('%.2f ms',
+                                         [TrackToEchoWowDepthMs]);
+  lblEchoWowRateValue.Caption := Format('%.2f Hz',
+                                        [TrackToEchoWowRateHz]);
 end;
 
 
 procedure TfrmMicrophoneDeck.SetUiRunning(const AValue: Boolean);
+
 begin
 
   if Assigned(tmrUi) then
@@ -1301,6 +1357,7 @@ end;
 
 
 procedure TfrmMicrophoneDeck.SetClipLamp(const AActive: Boolean);
+
 begin
 
   if AActive then
@@ -1311,6 +1368,7 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToInputGainDb(): Single;
+
 begin
 
   Result := tbInputGain.Position / 10.0;
@@ -1318,6 +1376,7 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToVolumeLinear(): Single;
+
 begin
 
   Result := tbVolume.Position / 100.0;
@@ -1325,6 +1384,7 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToBalance(): Single;
+
 begin
 
   Result := tbBalance.Position / 100.0;
@@ -1332,6 +1392,7 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToCompThresholdDb(): Single;
+
 begin
 
   Result := tbCompThreshold.Position / 10.0;
@@ -1339,6 +1400,7 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToCompRatio(): Single;
+
 begin
 
   Result := tbCompRatio.Position / 10.0;
@@ -1346,13 +1408,15 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToCompAttackMs(): Single;
+
 begin
 
-   Result := tbCompAttack.Position;
+  Result := tbCompAttack.Position;
 end;
 
 
 function TfrmMicrophoneDeck.TrackToCompReleaseMs(): Single;
+
 begin
 
   Result := tbCompRelease.Position;
@@ -1360,6 +1424,7 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToCompMakeupDb(): Single;
+
 begin
 
   Result := tbCompMakeup.Position / 10.0;
@@ -1367,6 +1432,7 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToCompKneeDb(): Single;
+
 begin
 
   Result := tbCompKnee.Position / 10.0;
@@ -1374,6 +1440,7 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToEchoMix(): Single;
+
 begin
 
   Result := tbEchoMix.Position / 100.0;
@@ -1381,13 +1448,15 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToEchoDelayMs(): Single;
+
 begin
 
-    Result := tbEchoDelay.Position;
+  Result := tbEchoDelay.Position;
 end;
 
 
 function TfrmMicrophoneDeck.TrackToEchoFeedback(): Single;
+
 begin
 
   Result := tbEchoFeedback.Position / 100.0;
@@ -1395,6 +1464,7 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToEchoTone(): Single;
+
 begin
 
   Result := tbEchoTone.Position / 100.0;
@@ -1402,6 +1472,7 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToEchoSpring(): Single;
+
 begin
 
   Result := tbEchoSpring.Position / 100.0;
@@ -1409,6 +1480,7 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToEchoWowDepthMs(): Single;
+
 begin
 
   Result := tbEchoWowDepth.Position / 10.0;
@@ -1416,6 +1488,7 @@ end;
 
 
 function TfrmMicrophoneDeck.TrackToEchoWowRateHz(): Single;
+
 begin
 
   Result := tbEchoWowRate.Position / 100.0;
@@ -1424,6 +1497,7 @@ end;
 
 // Noise gate
 procedure TFrmMicrophoneDeck.UpdateNoiseGateCaptions();
+
 begin
 
   lblGateThresholdValue.Caption := Format('%.0f dB',
@@ -1444,6 +1518,7 @@ end;
 
 
 procedure TFrmMicrophoneDeck.ApplyNoiseGate();
+
 begin
 
   if not Assigned(FEngine) then
@@ -1462,6 +1537,7 @@ end;
 
 
 function TFrmMicrophoneDeck.TrackToGateThresholdDb(): Single;
+
 begin
 
   Result := tbGateThreshold.Position;
@@ -1469,6 +1545,7 @@ end;
 
 
 function TFrmMicrophoneDeck.TrackToGateAttackMs(): Single;
+
 begin
 
   Result := tbGateAttack.Position;
@@ -1476,6 +1553,7 @@ end;
 
 
 function TFrmMicrophoneDeck.TrackToGateReleaseMs(): Single;
+
 begin
 
   Result := tbGateRelease.Position;
@@ -1483,6 +1561,7 @@ end;
 
 
 function TFrmMicrophoneDeck.TrackToGateFloorDb(): Single;
+
 begin
 
   Result := tbGateFloor.Position;
@@ -1490,6 +1569,7 @@ end;
 
 
 function TFrmMicrophoneDeck.TrackToGateHoldMs(): Single;
+
 begin
 
   Result := tbGateHold.Position;
@@ -1530,6 +1610,7 @@ end;
 
 
 procedure TfrmMicrophoneDeck.StopEngine();
+
 begin
 
   if Assigned(FEngine) then
@@ -1549,9 +1630,7 @@ begin
   if FMixerRegistered then
     Exit;
 
-  if not Assigned(MainMDIFrm) or
-     not Assigned(MainMDIFrm.InternalMixer) or
-     not Assigned(FEngine) then
+  if not Assigned(MainMDIFrm) or not Assigned(MainMDIFrm.InternalMixer) or not Assigned(FEngine) then
     Exit;
 
   Ch := MainMDIFrm.InternalMixer.FindChannelByDeckEngine(FEngine);
@@ -1589,8 +1668,8 @@ begin
     Exit;
 
   if Assigned(MainMDIFrm) and
-     Assigned(MainMDIFrm.InternalMixer) and
-     Assigned(FEngine) then
+    Assigned(MainMDIFrm.InternalMixer) and
+    Assigned(FEngine) then
     begin
       Ch := MainMDIFrm.InternalMixer.FindChannelByDeckEngine(FEngine);
       if (Ch <> nil) then
@@ -1646,8 +1725,8 @@ begin
                                   R])));
   }
   if Assigned(MainMDIFrm) and
-     Assigned(MainMDIFrm.InternalMixer) and
-     Assigned(FEngine) then
+    Assigned(MainMDIFrm.InternalMixer) and
+    Assigned(FEngine) then
     begin
 
       Ch := MainMDIFrm.InternalMixer.FindChannelByDeckEngine(FEngine);
@@ -1662,8 +1741,8 @@ end;
 
 
 procedure TFrmMicrophoneDeck.btnStartClick(Sender: TObject);
-begin
 
+begin
 
   StartEngine();
   btnStart.Enabled := False;
@@ -1673,12 +1752,13 @@ end;
 
 
 procedure TFrmMicrophoneDeck.btnStopClick(Sender: TObject);
+
 begin
 
-   StopEngine();
-   btnStart.Enabled := True;
-   btnStop.Enabled := False;
-   SetUiRunning(False);
+  StopEngine();
+  btnStart.Enabled := True;
+  btnStop.Enabled := False;
+  SetUiRunning(False);
 end;
 
 
@@ -1692,8 +1772,8 @@ begin
     Exit;
 
   if Assigned(MainMDIFrm) and
-     Assigned(MainMDIFrm.InternalMixer) and
-     Assigned(FEngine) then
+    Assigned(MainMDIFrm.InternalMixer) and
+    Assigned(FEngine) then
     begin
 
       Ch := MainMDIFrm.InternalMixer.FindChannelByDeckEngine(FEngine);
@@ -1717,8 +1797,7 @@ begin
   if not FMixerRegistered then
     Exit;
 
-  if not Assigned(MainMDIFrm) or
-     not Assigned(MainMDIFrm.InternalMixer) then
+  if not Assigned(MainMDIFrm) or not Assigned(MainMDIFrm.InternalMixer) then
     Exit;
 
   Ch := MainMDIFrm.InternalMixer.FindChannelByDeckEngine(FEngine);
@@ -1780,16 +1859,16 @@ end;
 function TfrmMicrophoneDeck.MixerReadOutputPcmFloat32(const Frames: Integer;
                                                       const OutBuffer: PSingle;
                                                       out Flags: DWORD): HResult;
+
 begin
 
   Flags := 0;
 
   if (OutBuffer = nil) or
-     (Frames <= 0) then
+    (Frames <= 0) then
     Exit(S_OK);
 
-  if not Assigned(FEngine) or
-     not FEngine.IsRunning then
+  if not Assigned(FEngine) or not FEngine.IsRunning then
     begin
 
       FillChar(OutBuffer^,

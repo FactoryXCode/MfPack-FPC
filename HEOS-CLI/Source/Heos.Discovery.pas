@@ -65,9 +65,10 @@ unit Heos.Discovery;
 
 interface
 
-uses Heos.Fpc.Text,
-Heos.Fpc.Platform,
-{WinApi}
+uses
+  Heos.Fpc.Text,
+  Heos.Fpc.Platform,
+  {WinApi}
   Windows,
   {System}
   Classes,
@@ -82,8 +83,9 @@ type
   end;
 
   THEOSDiscovery = class(TThread)
+
   private
-    FDevices: TArray<THEOSDevice>;
+    FDevices: TArray < THEOSDevice > ;
     FError: string;
 
   protected
@@ -92,14 +94,14 @@ type
   public
     constructor Create();
 
-    property Devices: TArray<THEOSDevice> read FDevices;
+    property Devices: TArray < THEOSDevice > read FDevices;
     property ErrorText: string read FError;
   end;
 
-  function SsdpLocation(const Response: string): string;
-  function ParseHEOSDescription(const Xml: string;
-                                const Address: string;
-                                out Device: THEOSDevice): Boolean;
+function SsdpLocation(const Response: string): string;
+function ParseHEOSDescription(const Xml: string;
+                              const Address: string;
+                              out Device: THEOSDevice): Boolean;
 
 
 implementation
@@ -115,25 +117,29 @@ uses
   {Application}
   Heos.Sockets;
 
+
 function SsdpLocation(const Response: string): string;
 var
   Line: string;
+
 begin
 
   Result := '';
   if not StartsText('HTTP/1.1 200', Response) then
     Exit;
 
-  for Line in MfCastSplit(Response,#10) do
+  for Line in MfCastSplit(Response,
+                          #10) do
     if StartsText('LOCATION:',
-                  Trim(Line)) then
+      Trim(Line)) then
       Exit(Trim(Copy(Trim(Line),
-                10,
-                MaxInt)));
+                     10,
+                     MaxInt)));
 end;
 
 
-function XmlText(const Xml, Tag: string): string;
+function XmlText(const Xml,
+                 Tag: string): string;
 var
   StartAt: Integer;
   EndAt: Integer;
@@ -191,11 +197,12 @@ begin
 
   Device := Default(THEOSDevice);
   Description := LowerCase(Xml);
-  Device.Model := XmlText(Xml, 'modelName');
+  Device.Model := XmlText(Xml,
+                          'modelName');
 
   Result := IPv4Valid(Address) and
-            (Pos('urn:schemas-denon-com:device:act-denon:1',
-                 Description) > 0);
+    (Pos('urn:schemas-denon-com:device:act-denon:1',
+         Description) > 0);
 
   if not Result then
     Exit;
@@ -253,14 +260,14 @@ begin
                       SizeOf(Timeout));
 
     Request := InternetOpenUrlW(Session,
-                               PChar(Url),
-                               nil,
-                               0,
-                               INTERNET_FLAG_RELOAD or
-                               INTERNET_FLAG_NO_CACHE_WRITE or
-                               INTERNET_FLAG_NO_AUTO_REDIRECT or
-                               INTERNET_FLAG_NO_COOKIES,
-                               0);
+                                PChar(Url),
+                                nil,
+                                0,
+                                INTERNET_FLAG_RELOAD or
+      INTERNET_FLAG_NO_CACHE_WRITE or
+      INTERNET_FLAG_NO_AUTO_REDIRECT or
+      INTERNET_FLAG_NO_COOKIES,
+                                0);
     if (Request = nil) then
       Exit;
 
@@ -272,10 +279,9 @@ begin
 
         Count := 0;
 
-        if not InternetReadFile(Request,
-                                @Buffer[0],
-                                SizeOf(Buffer),
-                                Count) then
+        if not InternetReadFile(Request, @Buffer[0],
+          SizeOf(Buffer),
+          Count) then
           Exit;
 
         if (Count = 0) then
@@ -283,7 +289,7 @@ begin
 
         OldLength := Length(Data);
 
-        if OldLength + Integer(Count) > 262144 then
+        if (OldLength + Integer(Count) > 262144) then
           Exit;
 
         SetLength(Data,
@@ -307,6 +313,7 @@ end;
 
 
 constructor THEOSDiscovery.Create();
+
 begin
 
   inherited Create(True);
@@ -319,7 +326,7 @@ const
   Targets: array[0..0] of string = ('urn:schemas-denon-com:device:ACT-Denon:1');
 
 var
-  Sockets: TList<TSocket>;
+  Sockets: TList < TSocket > ;
   Locations: TStringList;
   Addresses: TStringList;
   Known: TStringList;
@@ -347,7 +354,7 @@ var
 
 begin
 
-  Sockets := TList<TSocket>.Create;
+  Sockets := (TList < TSocket > .Create);
   Locations := TStringList.Create;
   Addresses := TStringList.Create;
   Known := TStringList.Create;
@@ -358,13 +365,19 @@ begin
                SizeOf(Host),
                0);
 
-      if gethostname(Host, SizeOf(Host)) = SOCKET_ERROR then
-        begin FError := 'Could not read the local network host'; Exit; end;
+      if (gethostname(Host, SizeOf(Host)) = SOCKET_ERROR) then
+        begin
+          FError := 'Could not read the local network host';
+          Exit;
+        end;
 
       Entry := gethostbyname(Host);
 
-      if Entry = nil then
-        begin FError := 'Could not enumerate network interfaces'; Exit; end;
+      if (Entry = nil) then
+        begin
+          FError := 'Could not enumerate network interfaces';
+          Exit;
+        end;
 
       FillChar(Group,
                SizeOf(Group),
@@ -399,37 +412,40 @@ begin
           Addr.sin_addr := Local;
 
           if (bind(S,
-                   Addr,
-                   SizeOf(Addr)) = SOCKET_ERROR) then
+            Addr,
+            SizeOf(Addr)) = SOCKET_ERROR) then
             begin
               closesocket(S);
               Continue;
             end;
 
-        setsockopt(S,
-                   IPPROTO_IP,
-                   IP_MULTICAST_IF,
-                   PAnsiChar(@Local),
-                   SizeOf(Local));
-        Sockets.Add(S);
+          setsockopt(S,
+                     IPPROTO_IP,
+                     IP_MULTICAST_IF,
+                     PAnsiChar(@Local),
+                     SizeOf(Local));
+          Sockets.Add(S);
 
-        for Target in Targets do
-          begin
-            Search := AnsiString('M-SEARCH * HTTP/1.1'#13#10 +
-                                 'HOST: 239.255.255.250:1900'#13#10 +
-                                 'MAN: "ssdp:discover"'#13#10 + 'MX: 2'#13#10 +
-                                 'ST: ' + Target + #13#10#13#10);
-            sendto(S,
-                   Search[1],
-                   Length(Search),
-                   0,
-                   Group,
-                   SizeOf(Group));
-          end;
-      end;
+          for Target in Targets do
+            begin
+              Search := AnsiString('M-SEARCH * HTTP/1.1'#13#10 +
+                'HOST: 239.255.255.250:1900'#13#10 +
+                'MAN: "ssdp:discover"'#13#10 + 'MX: 2'#13#10 +
+                'ST: ' + Target + #13#10#13#10);
+              sendto(S,
+                     Search[1],
+                     Length(Search),
+                     0,
+                     Group,
+                     SizeOf(Group));
+            end;
+        end;
 
       if (Sockets.Count = 0) then
-        begin FError := 'No active IPv4 network interface was found'; Exit; end;
+        begin
+          FError := 'No active IPv4 network interface was found';
+          Exit;
+        end;
 
       Clock := TStopwatch.StartNew();
 
@@ -437,8 +453,8 @@ begin
         for S in Sockets do
           begin
             if not SocketReady(S,
-                               False,
-                               20) then
+              False,
+              20) then
               Continue;
 
             PeerSize := SizeOf(Peer);
@@ -462,7 +478,7 @@ begin
 
             // Follow only an HTTP description hosted by the responding device.
             if not StartsText('http://',
-                              Location) then
+              Location) then
               Continue;
 
             Authority := Copy(Location,
@@ -505,12 +521,12 @@ begin
           Xml := FetchDescription(Locations[I]);
 
           if ParseHEOSDescription(Xml,
-                                  Address,
-                                  Device) and
-             ProbeReceiver(Address,
-                           1255,
-                           800,
-                           ErrorText) then
+            Address,
+            Device) and
+            ProbeReceiver(Address,
+                          1255,
+                          800,
+                          ErrorText) then
             begin
               Known.Add(Address);
 
@@ -538,4 +554,3 @@ begin
 end;
 
 end.
-

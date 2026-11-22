@@ -78,7 +78,7 @@ uses
   MfEncodeAudio.Platform,
   MfEncodeAudio.Wic,
   WinApi.WinMM.TimeApi,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WIC.WinCodec,
   Messages,
@@ -95,18 +95,18 @@ uses
   {MediaFoundationApi}
   WinApi.MediaFoundationApi.MfUtils;
 
-  /// <summary> Assigns a TWICImage to a TBitmap without setting its alphaformat to afDefined.
-  /// A TWICImage can be used for fast decoding of image formats .jpg, .bmp, .png, .ico, .tif. </summary>
-  procedure WICToBmp(const aWic: TWICImage;
-                     const bmp: TBitmap);
+/// <summary> Assigns a TWICImage to a TBitmap without setting its alphaformat to afDefined.
+/// A TWICImage can be used for fast decoding of image formats .jpg, .bmp, .png, .ico, .tif. </summary>
+procedure WICToBmp(const aWic: TWICImage;
+                   const bmp: TBitmap);
 
-  function LogicalCompare(List: TStringlist;
-                          Index1: Integer;
-                          Index2: Integer): Integer;
+function LogicalCompare(List: TStringlist;
+                        Index1: Integer;
+                        Index2: Integer): Integer;
 
-  /// <summary> Usage: HandleThreadMessages(GetCurrentThread()).</summary>
-  procedure HandleThreadMessages(AThread: THandle;
-                                 AWait: Cardinal = 0);
+/// <summary> Usage: HandleThreadMessages(GetCurrentThread()).</summary>
+procedure HandleThreadMessages(AThread: THandle;
+                               AWait: Cardinal = 0);
 
 //Procedure to change system timer resolution for precise waits. In later versions
 //of Windows10 and in Windows11 this change is no longer system-wide
@@ -114,36 +114,41 @@ uses
 /// <summary> Changes system timer resolution [ms]. Must be matched with TimeEndPeriod(SetResolution). </summary>
 /// <param name = "TargetResolution">Desired timer resolution in ms </param>
 /// <param name = "SetResolution"> Resolution actually set </param>
-function SetTimerResolution(TargetResolution:  UInt32;
+function SetTimerResolution(TargetResolution: UInt32;
                             var SetResolution: UInt32): HResult;
 
 function GetFileSize(const fileName: String): int64;
 
 implementation
 
-function GetFileSize(const fileName: String)
-  : int64;
+
+function GetFileSize(const fileName: String): int64;
 var
   info: TWin32FileAttributeData;
+
 begin
-  if not GetFileAttributesExW(PWideChar(fileName), GetFileExInfoStandard, @info)
-  then
+
+  if not GetFileAttributesExW(PWideChar(fileName), GetFileExInfoStandard, @info) then
     RaiseLastOSError;
   Result := int64(info.nFileSizeLow) or (int64(info.nFileSizeHigh) shl 32);
 end;
 
-function SetTimerResolution(TargetResolution:  UInt32;
+
+function SetTimerResolution(TargetResolution: UInt32;
                             var SetResolution: UInt32): HResult;
 var
   tc: TimeCaps;
+
 begin
+
   Result := E_Fail;
-  if TimeGetDevCaps(@tc, SizeOF(TimeCaps)) <> TIMERR_NOERROR then
+  if (TimeGetDevCaps(@tc, SizeOF(TimeCaps)) <> TIMERR_NOERROR) then
     exit;
   SetResolution := min(
-    max(tc.wPeriodMin, TargetResolution),
-    tc.wPeriodMax);
-  if TimeBeginPeriod(SetResolution) = TIMERR_NOERROR then
+    max(tc.wPeriodMin,
+        TargetResolution),
+                       tc.wPeriodMax);
+  if (TimeBeginPeriod(SetResolution) = TIMERR_NOERROR) then
     Result := S_OK;
 end;
 
@@ -160,6 +165,7 @@ var
   Row: Integer;
 
 begin
+
   w := aWic.Width;
   h := aWic.Height;
   Stride := w * 4;
@@ -198,7 +204,10 @@ begin
 
   bmp.BeginUpdate();
   try
-    for Row := 0 to h-1 do Move(Buffer[Row * Stride],bmp.ScanLine[Row]^,Stride);
+    for Row := 0 to h - 1 do
+      Move(Buffer[Row * Stride],
+           bmp.ScanLine[Row]^,
+           Stride);
   finally
     bmp.EndUpdate();
   end;
@@ -208,7 +217,9 @@ end;
 function LogicalCompare(List: TStringlist;
                         Index1: Integer;
                         Index2: Integer): Integer;
+
 begin
+
   Result := StrCmpLogicalW(PWideChar(List[Index1]),
                            PWideChar(List[Index2]));
 end;
@@ -222,16 +233,16 @@ var
 begin
 
   while (MsgWaitForMultipleObjects(1,
-                                   AThread,
-                                   False,
-                                   AWait,
-                                   QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
+      AThread,
+      False,
+      AWait,
+      QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
     begin
       PeekMessageW(mMsg,
-                  0,
-                  0,
-                  0,
-                  PM_REMOVE);
+                   0,
+                   0,
+                   0,
+                   PM_REMOVE);
 
       if (mMsg.Message = WM_QUIT) then
         Exit;

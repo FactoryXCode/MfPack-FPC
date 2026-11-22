@@ -67,7 +67,7 @@ interface
 
 uses
   MfCapturePlatform,
-{Winapi}
+  {Winapi}
   Windows,
   WinApi.ComBaseApi,
   WinApi.ActiveX.ObjBase,
@@ -97,6 +97,7 @@ uses
 type
 
   TInternalTrackBar = class(TTrackbar)
+
   published
     property OnMouseDown;
     property OnMouseUp;
@@ -153,7 +154,7 @@ type
     FDefaultVideoPath: string;
     FFrequency: int64;
     FCaptureStart: int64;
-    FLastFrameTime : TTimeSpan;
+    FLastFrameTime: TTimeSpan;
 
     FCapture: TFileCapture;
     FCaptureMethod: TCaptureMethod;
@@ -161,7 +162,8 @@ type
     function OpenSource(const AURL: string): Boolean;
     function GetMemoryUsed: string;
 
-    procedure Log(const AText: string; ALogType: TLogType);
+    procedure Log(const AText: string;
+                  ALogType: TLogType);
     procedure GetVideoFrame;
     procedure UpdateCapturePositionDisplay;
     procedure CloseSource;
@@ -169,7 +171,9 @@ type
     procedure UpdateEnabledStates;
     procedure HandleTrackbarMouseUp(Sender: TObject;
                                     Button: TMouseButton;
-                                    Shift: TShiftState; X, Y: Integer);
+                                    Shift: TShiftState;
+                                    X,
+                                    Y: Integer);
     procedure BeginBusy;
     procedure EndBusy;
     procedure UpdateLogLevelMenu;
@@ -179,6 +183,7 @@ type
     procedure HandleFrameFound(ABitmap: TBitmap;
                                ATimeStamp: TTimeSpan);
     function GetDefaultSaveName: string;
+
   public
     property CaptureMethod: TCaptureMethod read FCaptureMethod write SetCaptureMethod;
   end;
@@ -194,9 +199,10 @@ uses
   Math,
   FPReadJPEG;
 
-{$R *.lfm}
+  {$R *.lfm}
 
 procedure TFrmMain.HandleFormCreate(Sender: TObject);
+
 begin
 
   FFrequency := 0;
@@ -210,9 +216,9 @@ begin
   if FAILED(MFStartup(MF_VERSION, 0)) then
     begin
       MessageBoxW(0,
-                 lpcwstr('Your computer does not support this Media Foundation API version' + IntToStr(MF_VERSION) + '.'),
-                 lpcwstr('MFStartup Failure!'),
-                 MB_ICONSTOP);
+                  lpcwstr('Your computer does not support this Media Foundation API version' + IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
       Application.Terminate;
     end;
 
@@ -227,7 +233,9 @@ end;
 
 
 procedure TFrmMain.HandleFormDestroy(Sender: TObject);
+
 begin
+
   CloseSource;
   DestroyCapture;
   MFShutdown();
@@ -235,12 +243,14 @@ end;
 
 
 procedure TFrmMain.SetCaptureMethod(const AValue: TCaptureMethod);
+
 begin
+
   FCaptureMethod := AValue;
 
   DestroyCapture;
 
-  if FCaptureMethod = cmSync then
+  if (FCaptureMethod = cmSync) then
     FCapture := TFileCaptureSync.Create
   else
     FCapture := TFileCaptureAsync.Create;
@@ -251,14 +261,18 @@ end;
 
 
 procedure TFrmMain.DestroyCapture;
+
 begin
+
   if Assigned(FCapture) then
     FreeAndNil(FCapture);
 end;
 
 
 procedure TFrmMain.SetDefaults;
+
 begin
+
   FLogLevel := ltInfo;
   CaptureMethod := cmASync;
 
@@ -272,6 +286,7 @@ var
   sLastURL: string;
 
 begin
+
   if Sender is TComboBox then
     begin
       if FCapture.SourceOpen then
@@ -280,7 +295,7 @@ begin
       ClearImage;
 
       CaptureMethod := TCaptureMethod(TComboBox(Sender).ItemIndex);
-      if sLastURL <> '' then
+      if (sLastURL <> '') then
         OpenSource(sLastURL);
     end;
 end;
@@ -291,17 +306,21 @@ var
   oPreviousRounding: TFPURoundingMode;
 
 begin
+
   ClearImage;
 
-  Log(Format('Opening video: "%s"', [AURL]), ltInfo);
+  Log(Format('Opening video: "%s"',
+             [AURL]),
+      ltInfo);
   try
     Result := FCapture.OpenSource(AURL);
   finally
-    Log(Format('Opened video. Width: %d. Height: %d. Duration: %s. Supports Seek: %s', [FCapture.VideoInfo.iVideoWidth,
-                                                                                        FCapture.VideoInfo.iVideoHeight,
-                                                                                        TimeSpanToDisplay(FCapture.Duration),
-                                                                                        BoolToStr(FCapture.SupportsSeek)]),
-                                                                                        ltInfo);
+    Log(Format('Opened video. Width: %d. Height: %d. Duration: %s. Supports Seek: %s',
+               [FCapture.VideoInfo.iVideoWidth,
+      FCapture.VideoInfo.iVideoHeight,
+      TimeSpanToDisplay(FCapture.Duration),
+      BoolToStr(FCapture.SupportsSeek)]),
+        ltInfo);
   end;
 
   if Result then
@@ -310,15 +329,15 @@ begin
       tbVideoPosition.Position := 0;
 
       oPreviousRounding := GetRoundMode;
-    try
-      SetRoundMode(rmDown);
-      // Set trackbar max range, maybe in frames?
-      tbVideoPosition.Max := Round(FCapture.Duration.TotalSeconds);
-    finally
-      SetRoundMode(oPreviousRounding);
-    end;
+      try
+        SetRoundMode(rmDown);
+        // Set trackbar max range, maybe in frames?
+        tbVideoPosition.Max := Round(FCapture.Duration.TotalSeconds);
+      finally
+        SetRoundMode(oPreviousRounding);
+      end;
 
-    UpdateCapturePositionDisplay;
+      UpdateCapturePositionDisplay;
     end;
 
   UpdateEnabledStates;
@@ -326,7 +345,9 @@ end;
 
 
 procedure TFrmMain.HandleLogLevelChange(Sender: TObject);
+
 begin
+
   if Sender is TMenuItem then
     begin
       FLogLevel := TLogType(TMenuItem(Sender).Tag);
@@ -340,21 +361,28 @@ var
   i: Integer;
 
 begin
+
   for i := 0 to mnLogLevel.Count - 1 do
-    mnLogLevel.Items[i].Checked := Ord(FLogLevel) = mnLogLevel.Items[i].Tag;
+    mnLogLevel.Items[i].Checked := (Ord(FLogLevel) = mnLogLevel.Items[i].Tag);
 end;
 
 
 procedure TFrmMain.HandleTrackbarMouseUp(Sender: TObject;
                                          Button: TMouseButton;
-                                         Shift: TShiftState; X, Y: Integer);
+                                         Shift: TShiftState;
+                                         X,
+                                         Y: Integer);
+
 begin
+
   GetVideoFrame;
 end;
 
 
 procedure TFrmMain.HandleOpenClick(Sender: TObject);
+
 begin
+
   ClearImage;
   CloseSource;
   OpenSource(edtVideoFile.Text);
@@ -368,58 +396,67 @@ var
   //sFilter: string;
 
 begin
+
   if not picFrame.Picture.Bitmap.Empty then
     begin
       sdSaveFrame.FileName := GetDefaultSaveName;
 
-     // Tip:
-     // Stores a filter with all available image extensions and is compatible with the savedialog filter property
-     // sFilter := GraphicFilter(TGraphic);
+      // Tip:
+      // Stores a filter with all available image extensions and is compatible with the savedialog filter property
+      // sFilter := GraphicFilter(TGraphic);
 
       if sdSaveFrame.Execute then
         begin
           case sdSaveFrame.FilterIndex of
             {BMP}
-            1: begin
-                 picFrame.Picture.SaveToFile(sdSaveFrame.FileName);
-               end;
+              1: begin
+                picFrame.Picture.SaveToFile(sdSaveFrame.FileName);
+              end;
             {PNG}
-            2: begin
-                 pPng := TPortableNetworkGraphic.Create;
-                 pPng.Assign(picFrame.Picture.Bitmap);
-                 pPng.SaveToFile(sdSaveFrame.FileName);
+              2: begin
+                pPng := TPortableNetworkGraphic.Create;
+                pPng.Assign(picFrame.Picture.Bitmap);
+                pPng.SaveToFile(sdSaveFrame.FileName);
 
-                 if Assigned(pPng) then
-                   pPng.Free;
-               end;
+                if Assigned(pPng) then
+                  pPng.Free;
+              end;
             {JPG}
-            3: begin
-                 pJpg := TJPEGImage.Create;
-                 // Adjust performance, compression etc.
-                 pJpg.Performance := jpBestQuality;
-                 pJpg.ProgressiveEncoding := True;
-                 //pJpg.CompressionQuality := 30;
-                 pJpg.Compress;
-                 pJpg.Assign(picFrame.Picture.Bitmap);
-                 pjpg.SaveToFile(sdSaveFrame.FileName);
+              3: begin
+                pJpg := TJPEGImage.Create;
+                // Adjust performance, compression etc.
+                pJpg.Performance := jpBestQuality;
+                pJpg.ProgressiveEncoding := True;
+                //pJpg.CompressionQuality := 30;
+                pJpg.Compress;
+                pJpg.Assign(picFrame.Picture.Bitmap);
+                pjpg.SaveToFile(sdSaveFrame.FileName);
 
-                 if Assigned(pJpg) then
-                   pJpg.Free;
-               end;
+                if Assigned(pJpg) then
+                  pJpg.Free;
+              end;
           end;
         end;
     end;
 end;
 
 
-function TFrmMain.GetDefaultSaveName : string;
+function TFrmMain.GetDefaultSaveName: string;
+
 begin
-  Result := 'Capture_' + StringReplace(TimeSpanToDisplay(FLastFrameTime,True),':','.',[rfReplaceAll]);
+
+  Result := 'Capture_' + StringReplace(TimeSpanToDisplay(FLastFrameTime,
+                                                         True),
+                                       ':',
+                                       '.',
+                                       [rfReplaceAll]);
 end;
 
 
 procedure TFrmMain.HandleBrowseClick(Sender: TObject);
+
 begin
+
   if fdOpenVideo.Execute then
     OpenSource(fdOpenVideo.Filename);
 end;
@@ -430,6 +467,7 @@ var
   oRequestedFramePosition: TTimeSpan;
 
 begin
+
   if FCapture.SourceOpen then
     begin
       ClearImage;
@@ -440,17 +478,17 @@ begin
       Log('Requesting image...',
           ltInfo);
       BeginBusy;
-try
-      QueryPerformanceFrequency(FFrequency);
-      QueryPerformanceCounter(FCaptureStart);
+      try
+        QueryPerformanceFrequency(FFrequency);
+        QueryPerformanceCounter(FCaptureStart);
 
-      FCapture.MaxFramesToSkip := spMaxSkipFrames.Value;
-      FCapture.Accuracy := spAccuracy.Value;
+        FCapture.MaxFramesToSkip := spMaxSkipFrames.Value;
+        FCapture.Accuracy := spAccuracy.Value;
 
-      FCapture.RequestFrame(oRequestedFramePosition);
-finally
-      EndBusy;
-end;
+        FCapture.RequestFrame(oRequestedFramePosition);
+      finally
+        EndBusy;
+      end;
     end;
 end;
 
@@ -461,13 +499,14 @@ var
   iCaptureEnd: int64;
 
 begin
+
   QueryPerformanceCounter(iCaptureEnd);
   Log(Format('Image found in %f milliseconds. Time Stamp: %s. Frames Skipped: %d',
              [(iCaptureEnd - FCaptureStart) / FFrequency * 1000,
-             TimeSpanToDisplay(ATimeStamp,
-                               True),
-                               FCapture.FramesSkipped]),
-                               ltInfo);
+    TimeSpanToDisplay(ATimeStamp,
+                      True),
+    FCapture.FramesSkipped]),
+      ltInfo);
 
   try
     pnlFrameCapture.Caption := '';
@@ -483,86 +522,111 @@ end;
 
 
 procedure TFrmMain.BeginBusy;
+
 begin
+
   if (FCaptureMethod = cmSync) then
     Screen.Cursor := crHourGlass;
 end;
 
+
 procedure TFrmMain.EndBusy;
+
 begin
+
   if (FCaptureMethod = cmSync) then
     Screen.Cursor := crDefault;
 end;
 
 
 procedure TFrmMain.HandleClearLogClick(Sender: TObject);
+
 begin
+
   memLog.Lines.Clear;
 end;
 
 
 procedure TFrmMain.HandleCloseVideoClick(Sender: TObject);
+
 begin
+
   CloseSource;
   ClearImage;
 end;
 
 
 procedure TFrmMain.HandleExitClick(Sender: TObject);
+
 begin
+
   Application.Terminate;
 end;
 
 
 procedure TFrmMain.HandleTrackbarChange(Sender: TObject);
+
 begin
+
   UpdateCapturePositionDisplay;
 end;
 
 
 procedure TFrmMain.UpdateCapturePositionDisplay;
+
 begin
+
   lblCurrentPosition.Caption := TimeSpanToDisplay(TTimeSpan.Create(0,
                                                                    0,
                                                                    tbVideoPosition.Position)) + ' / ' +
-                                                                   TimeSpanToDisplay(FCapture.Duration, True);
+    TimeSpanToDisplay(FCapture.Duration,
+                      True);
 end;
 
 
 procedure TFrmMain.Log(const AText: string;
                        ALogType: TLogType);
+
 begin
-  if ALogType >= FLogLevel then
+
+  if (ALogType >= FLogLevel) then
     memLog.Lines.Add(FormatDateTime('yyyy/mm/dd HH:mm:ss.zzz',
                                     Now,
                                     FFormatSettings) + cTab + ALogType.AsDisplay + cTab + 'Memory Used: ' + GetMemoryUsed + cTab + AText);
 end;
 
+
 function TFrmMain.GetMemoryUsed: string;
+
 begin
+
   Result := ToSize(Round(ProcessMemoryUsage / 1024));
 end;
 
 
 procedure TFrmMain.CloseSource;
+
 begin
+
   FCapture.CloseSource;
   UpdateEnabledStates;
 end;
 
 
 procedure TFrmMain.UpdateEnabledStates;
+
 begin
+
   tbVideoPosition.Enabled := FCapture.SourceOpen and FCapture.SupportsSeek;
 
   if not FCapture.SourceOpen then
-  begin
-    lblCurrentPosition.Caption := 'N/A';
-    lblCurrentPosition.Invalidate;
-    tbVideoPosition.Min := 1;
-    tbVideoPosition.Max := 1;
-    tbVideoPosition.Position := 1;
-  end;
+    begin
+      lblCurrentPosition.Caption := 'N/A';
+      lblCurrentPosition.Invalidate;
+      tbVideoPosition.Min := 1;
+      tbVideoPosition.Max := 1;
+      tbVideoPosition.Position := 1;
+    end;
 
   btnClose.Enabled := FCapture.SourceOpen;
   btnOpen.Enabled := not FCapture.SourceOpen;
@@ -571,7 +635,9 @@ end;
 
 
 procedure TFrmMain.ClearImage;
+
 begin
+
   pnlFrameCapture.Caption := 'No Image. Waiting frame capture...';
   picFrame.Picture := nil;
 end;

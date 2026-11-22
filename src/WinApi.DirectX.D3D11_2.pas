@@ -76,7 +76,7 @@ unit WinApi.DirectX.D3D11_2;
 interface
 
 uses
-  
+
   {WinApi}
   Windows,
   WinApi.WinApiTypes,
@@ -92,12 +92,14 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
 type
   PD3D11_TILED_RESOURCE_COORDINATE = ^D3D11_TILED_RESOURCE_COORDINATE;
+
   D3D11_TILED_RESOURCE_COORDINATE = record
     X: UINT;
     Y: UINT;
@@ -106,6 +108,7 @@ type
   end;
 
   PD3D11_TILE_REGION_SIZE = ^D3D11_TILE_REGION_SIZE;
+
   D3D11_TILE_REGION_SIZE = record
     NumTiles: UINT;
     bUseBox: BOOL;
@@ -115,18 +118,19 @@ type
   end;
 
   PD3D11_TILE_MAPPING_FLAG = ^D3D11_TILE_MAPPING_FLAG;
-  D3D11_TILE_MAPPING_FLAG           = (
+  D3D11_TILE_MAPPING_FLAG = (
     D3D11_TILE_MAPPING_NO_OVERWRITE = $00000001
-  );
+    );
 
   PD3D11_TILE_RANGE_FLAG = ^D3D11_TILE_RANGE_FLAG;
-  D3D11_TILE_RANGE_FLAG                = (
-    D3D11_TILE_RANGE_NULL              = $00000001,
-    D3D11_TILE_RANGE_SKIP              = $00000002,
-    D3D11_TILE_RANGE_REUSE_SINGLE_TILE = $00000004
-  );
+  D3D11_TILE_RANGE_FLAG = (
+    D3D11_TILE_RANGE_NULL = $00000001,
+                           D3D11_TILE_RANGE_SKIP = $00000002,
+                           D3D11_TILE_RANGE_REUSE_SINGLE_TILE = $00000004
+    );
 
   PD3D11_SUBRESOURCE_TILING = ^D3D11_SUBRESOURCE_TILING;
+
   D3D11_SUBRESOURCE_TILING = record
     WidthInTiles: UINT;
     HeightInTiles: UINT16;
@@ -140,6 +144,7 @@ const
 type
 
   PD3D11_TILE_SHAPE = ^D3D11_TILE_SHAPE;
+
   D3D11_TILE_SHAPE = record
     WidthInTexels: UINT;
     HeightInTexels: UINT;
@@ -147,6 +152,7 @@ type
   end;
 
   PD3D11_PACKED_MIP_DESC = ^D3D11_PACKED_MIP_DESC;
+
   D3D11_PACKED_MIP_DESC = record
     NumStandardMips: UINT8;
     NumPackedMips: UINT8;
@@ -155,16 +161,16 @@ type
   end;
 
   PD3D11_CHECK_MULTISAMPLE_QUALITY_LEVELS_FLAG = ^D3D11_CHECK_MULTISAMPLE_QUALITY_LEVELS_FLAG;
-  D3D11_CHECK_MULTISAMPLE_QUALITY_LEVELS_FLAG             = (
+  D3D11_CHECK_MULTISAMPLE_QUALITY_LEVELS_FLAG = (
     D3D11_CHECK_MULTISAMPLE_QUALITY_LEVELS_TILED_RESOURCE = $00000001
-  );
+    );
 
   PD3D11_TILE_COPY_FLAG = ^D3D11_TILE_COPY_FLAG;
-  D3D11_TILE_COPY_FLAG                                       = (
-    D3D11_TILE_COPY_NO_OVERWRITE                             = $00000001,
-    D3D11_TILE_COPY_LINEAR_BUFFER_TO_SWIZZLED_TILED_RESOURCE = $00000002,
-    D3D11_TILE_COPY_SWIZZLED_TILED_RESOURCE_TO_LINEAR_BUFFER = $00000004
-  );
+  D3D11_TILE_COPY_FLAG = (
+    D3D11_TILE_COPY_NO_OVERWRITE = $00000001,
+                          D3D11_TILE_COPY_LINEAR_BUFFER_TO_SWIZZLED_TILED_RESOURCE = $00000002,
+                          D3D11_TILE_COPY_SWIZZLED_TILED_RESOURCE_TO_LINEAR_BUFFER = $00000004
+    );
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -178,6 +184,7 @@ type
   // ==============================
   //
   PID3D11DeviceContext2 = ^ID3D11DeviceContext2;
+
   ID3D11DeviceContext2 = interface(ID3D11DeviceContext1)
     ['{420d5b32-b90c-4da4-bef0-359f6a24a83a}']
 
@@ -229,6 +236,7 @@ type
     procedure EndEvent(); stdcall;
 
   end;
+
   IID_ID3D11DeviceContext2 = ID3D11DeviceContext2;
 
 
@@ -257,6 +265,7 @@ type
                                             out pNumQualityLevels: UINT): HResult; stdcall;
 
   end;
+
   IID_ID3D11Device2 = ID3D11Device2;
 
 
@@ -266,6 +275,6 @@ type
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

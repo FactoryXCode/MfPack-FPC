@@ -78,6 +78,7 @@ uses
 type
 
   TFxServeLogger = class
+
   private
     FFileName: string;
     FRetentionDays: Integer;
@@ -113,13 +114,14 @@ implementation
 
 constructor TFxServeLogger.Create(const AFileName: string;
                                   const ARetentionDays: Integer);
+
 begin
 
   inherited Create;
 
   FFileName := AFileName;
   FRetentionDays := ARetentionDays;
-  if FRetentionDays < 1 then
+  if (FRetentionDays < 1) then
     FRetentionDays := 1;
 
   FCurrentLogDay := 0;
@@ -129,6 +131,7 @@ end;
 
 
 destructor TFxServeLogger.Destroy();
+
 begin
 
   FLock.Free;
@@ -138,18 +141,20 @@ end;
 
 
 function TFxServeLogger.ArchiveFileName(const ADay: TDateTime): string;
+
 begin
 
   Result := ChangeFileExt(FFileName,
                           '') + '-' +
-            FormatDateTime('yyyy-mm-dd',
-                           ADay) +
-            ExtractFileExt(FFileName);
+    FormatDateTime('yyyy-mm-dd',
+                   ADay) +
+    ExtractFileExt(FFileName);
 end;
 
 
 function TFxServeLogger.FileModifiedDay(const AFileName: string;
                                         const ADefault: TDateTime): TDateTime;
+
 begin
 
   Result := Trunc(ADefault);
@@ -172,10 +177,10 @@ begin
   try
     if FileExists(ADestinationFileName) then
       DestinationStream := TFileStream.Create(ADestinationFileName,
-                                               fmOpenReadWrite or fmShareDenyNone)
+                                              fmOpenReadWrite or fmShareDenyNone)
     else
       DestinationStream := TFileStream.Create(ADestinationFileName,
-                                               fmCreate or fmShareDenyNone);
+                                              fmCreate or fmShareDenyNone);
     try
       DestinationStream.Seek(0,
                              soEnd);
@@ -207,10 +212,9 @@ begin
   if FileExists(ArchiveName) then
     AppendFile(FFileName,
                ArchiveName)
-  else
-    if not RenameFile(FFileName,
-                      ArchiveName) then
-      RaiseLastOSError();
+  else if not RenameFile(FFileName,
+    ArchiveName) then
+    RaiseLastOSError();
 end;
 
 
@@ -232,7 +236,7 @@ var
 
 begin
 
-  if FFileName = '' then
+  if (FFileName = '') then
     Exit;
 
   DirectoryName := IncludeTrailingPathDelimiter(ExtractFileDir(FFileName));
@@ -242,23 +246,23 @@ begin
   Prefix := FileStem + '-';
   CutoffDay := Trunc(AToday) - (FRetentionDays - 1);
 
-  if FindFirst(DirectoryName + Prefix + '*' + FileExtension,
-               faAnyFile,
-               SearchRec) <> 0 then
+  if (FindFirst(DirectoryName + Prefix + '*' + FileExtension,
+    faAnyFile,
+    SearchRec) <> 0) then
     Exit;
 
   try
     repeat
-      if (SearchRec.Attr and faDirectory) <> 0 then
+      if ((SearchRec.Attr and faDirectory) <> 0) then
         Continue;
 
       CandidateStem := ChangeFileExt(SearchRec.Name,
                                      '');
 
       if (Length(CandidateStem) <> Length(Prefix) + 10) or
-         (Copy(CandidateStem,
-               1,
-               Length(Prefix)) <> Prefix) then
+        (Copy(CandidateStem,
+              1,
+              Length(Prefix)) <> Prefix) then
         Continue;
 
       DateText := Copy(CandidateStem,
@@ -283,17 +287,17 @@ begin
 
       ArchiveDay := 0;
       ValidDate := True;
-      try
-        ArchiveDay := EncodeDate(YearValue,
-                                 MonthValue,
-                                 DayValue);
-      except
-        ValidDate := False;
-      end;
+    try
+      ArchiveDay := EncodeDate(YearValue,
+                               MonthValue,
+                               DayValue);
+    except
+      ValidDate := False;
+    end;
 
       if ValidDate and (ArchiveDay < CutoffDay) then
         FxDeleteFile(DirectoryName + SearchRec.Name);
-    until FindNext(SearchRec) <> 0;
+    until (FindNext(SearchRec) <> 0);
   finally
     FindClose(SearchRec);
   end;
@@ -308,7 +312,7 @@ begin
 
   TodayValue := Trunc(AToday);
 
-  if FCurrentLogDay = 0 then
+  if (FCurrentLogDay = 0) then
     begin
       if FileExists(FFileName) then
         FCurrentLogDay := FileModifiedDay(FFileName,
@@ -322,7 +326,7 @@ begin
 
   FCurrentLogDay := TodayValue;
 
-  if FLastPruneDay <> TodayValue then
+  if (FLastPruneDay <> TodayValue) then
     begin
       PruneArchives(TodayValue);
       FLastPruneDay := TodayValue;
@@ -351,7 +355,8 @@ begin
     ConsoleLine := string(Line);
 
     while (ConsoleLine <> '') and
-          CharInSet(ConsoleLine[Length(ConsoleLine)], [#10, #13]) do
+      CharInSet(ConsoleLine[Length(ConsoleLine)],
+                [#10, #13]) do
       Delete(ConsoleLine,
              Length(ConsoleLine),
              1);
@@ -412,6 +417,7 @@ end;
 
 
 procedure TFxServeLogger.Info(const AMessage: string);
+
 begin
 
   Write('INFO',
@@ -420,6 +426,7 @@ end;
 
 
 procedure TFxServeLogger.Error(const AMessage: string);
+
 begin
 
   Write('ERROR',

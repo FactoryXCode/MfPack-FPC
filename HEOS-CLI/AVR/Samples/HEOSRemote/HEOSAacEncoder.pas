@@ -68,11 +68,12 @@ unit HEOSAacEncoder;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   WinApi.ComBaseApi,
@@ -101,6 +102,7 @@ type
   end;
 
   THEOSAacEncoder = class(TObject)
+
   private
 
     FTransform: IMFTransform;
@@ -140,7 +142,7 @@ const
 
   CLSID_CMSAACEncMFT: TGUID = '{93AF0C51-2275-45D2-A35B-F2BA21CAED00}';
 
-{ THEOSAacEncoder }
+  { THEOSAacEncoder }
 
 // Helper
 function _AppendBytes(const A: TBytes;
@@ -170,6 +172,7 @@ end;
 
 
 constructor THEOSAacEncoder.Create();
+
 begin
 
   inherited Create();
@@ -183,6 +186,7 @@ end;
 
 
 destructor THEOSAacEncoder.Destroy();
+
 begin
 
   FOutputType := nil;
@@ -239,8 +243,10 @@ begin
     Exit(hr);
 
   // Denon HTTP live playback needs ADTS framing, rather than raw AAC.
-  hr := FOutputType.SetUINT32(MF_MT_AAC_PAYLOAD_TYPE, 1);
-  if Failed(hr) then Exit(hr);
+  hr := FOutputType.SetUINT32(MF_MT_AAC_PAYLOAD_TYPE,
+                              1);
+  if Failed(hr) then
+    Exit(hr);
 
   hr := FTransform.SetOutputType(0,
                                  FOutputType,
@@ -287,7 +293,7 @@ begin
   if Failed(hr) then
     Exit(hr);
 
-  if FChannels = 1 then
+  if (FChannels = 1) then
     hr := FInputType.SetUINT32(MF_MT_AUDIO_CHANNEL_MASK,
                                $4)
   else
@@ -326,8 +332,8 @@ begin
 
   // Windows AAC-LC supports these rates for mono and stereo.
   if ((FSampleRate <> 44100) and (FSampleRate <> 48000)) or
-     ((FChannels <> 1) and (FChannels <> 2)) or not
-     (FBitrateKbps in [96, 128, 160, 192]) then
+    ((FChannels <> 1) and (FChannels <> 2)) or not
+    (FBitrateKbps in [96, 128, 160, 192]) then
     Exit(E_INVALIDARG);
 
   FBytesPerFrame := FChannels * SizeOf(SmallInt);
@@ -365,8 +371,8 @@ end;
 
 
 function THEOSAacEncoder.CreateInputSample(const pData: PSingle;
-                                                  AFrames: Integer;
-                                                  out ASample: IMFSample): HRESULT;
+                                           AFrames: Integer;
+                                           out ASample: IMFSample): HRESULT;
 var
   hr: HResult;
   Buffer: IMFMediaBuffer;
@@ -392,7 +398,7 @@ begin
   if (SampleBytes <= 0) then
     Exit;
 
-  if Length(FTemp16) < SampleBytes then
+  if (Length(FTemp16) < SampleBytes) then
     SetLength(FTemp16,
               SampleBytes);
 
@@ -409,9 +415,8 @@ begin
 
       if (X > 1.0) then
         X := 1.0
-      else
-        if (X < -1.0) then
-          X := -1.0;
+      else if (X < -1.0) then
+        X := -1.0;
 
       Dst^ := Round(X * 32767.0);
 
@@ -600,6 +605,7 @@ var
   OldLen: Integer;
   ChunkLen: Integer;
 
+
   procedure AppendChunk(const AChunk: TBytes);
   var
     LOldLen: Integer;
@@ -760,4 +766,3 @@ end;
 
 
 end.
-

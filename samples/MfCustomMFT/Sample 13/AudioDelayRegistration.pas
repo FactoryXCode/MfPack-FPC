@@ -74,14 +74,14 @@ uses
 
 const
   CLSID_FactoryXAudioDelayMFT: TGUID = '{A63BF709-564A-4F5B-A6B4-9EA48E0FC9AE}';
-  FACTORYX_AUDIO_DELAY_MFT_NAME      = 'FactoryX PCM Audio Delay MFT';
+  FACTORYX_AUDIO_DELAY_MFT_NAME = 'FactoryX PCM Audio Delay MFT';
 
 type
   // The IID and method signature must match Sample 9. Keeping this small
   // client-side declaration avoids linking the MFT implementation into the
   // registered player executable.
   IMfAudioDelayControl = interface(IUnknown)
-  ['{48222613-78FC-4A40-B95B-7E67E22443EE}']
+    ['{48222613-78FC-4A40-B95B-7E67E22443EE}']
     function SetEffect(const ADelayMs: Cardinal;
                        const AWetPercent: Cardinal): HResult; stdcall;
   end;

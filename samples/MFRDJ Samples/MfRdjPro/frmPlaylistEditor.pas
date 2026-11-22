@@ -64,14 +64,15 @@ unit frmPlaylistEditor;
 
 interface
 
-  {$WARN SYMBOL_PLATFORM OFF}
+{$WARN SYMBOL_PLATFORM OFF}
 
-uses FxProxy.Dialogs,
-Rdj.Platform,
-LMessages,
+uses
+  FxProxy.Dialogs,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   ShellAPI,
@@ -93,7 +94,7 @@ LMessages,
   ExtCtrls,
   Grids,
   Menus,
-  {FireDAC}  {Application}
+  {FireDAC}{Application}
   RDJ_Common,
   RDJ.PlaylistTypes,
   RDJ.PlaylistDb,
@@ -158,17 +159,22 @@ type
     procedure btnMoveUpClick(Sender: TObject);
     procedure btnMoveDownClick(Sender: TObject);
     procedure grdLibraryDblClick(Sender: TObject);
-    procedure grdLibrarySelectCell(Sender: TObject; ACol, ARow: LongInt;
-      var CanSelect: Boolean);
-    procedure grdLibrarySetEditText(Sender: TObject; ACol, ARow: LongInt;
-      const Value: string);
+    procedure grdLibrarySelectCell(Sender: TObject;
+                                   ACol,
+                                   ARow: LongInt;
+                                   var CanSelect: Boolean);
+    procedure grdLibrarySetEditText(Sender: TObject;
+                                    ACol,
+                                    ARow: LongInt;
+                                    const Value: string);
     procedure cbPlaylistsDblClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure btnTagEditorClick(Sender: TObject);
     procedure grdLibraryMouseDown(Sender: TObject;
                                   Button: TMouseButton;
                                   Shift: TShiftState;
-                                  X, Y: Integer);
+                                  X,
+                                  Y: Integer);
     procedure mnuScanFolderClick(Sender: TObject);
     procedure LibraryPopupPrelistenClick(Sender: TObject); // Pre listen from source, before adding it to a playlist.
     procedure LibraryPopupLoadToChannelClick(Sender: TObject);
@@ -176,20 +182,27 @@ type
     procedure LibraryPopupEditTagsClick(Sender: TObject);
     procedure LibraryPopupOpenFileLocationClick(Sender: TObject);
     procedure LibraryPopupRemoveFromLibraryClick(Sender: TObject);
-    procedure grdPlaylistMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure grdPlaylistMouseDown(Sender: TObject;
+                                   Button: TMouseButton;
+                                   Shift: TShiftState;
+                                   X,
+                                   Y: Integer);
     procedure btnOpenFileClick(Sender: TObject);
     procedure edFileNameMouseDown(Sender: TObject;
                                   Button: TMouseButton;
                                   Shift: TShiftState;
-                                  X, Y: Integer);
+                                  X,
+                                  Y: Integer);
     procedure LoadedFilePopupClick(Sender: TObject);
     procedure btnClearLibraryClick(Sender: TObject);
     procedure btnClearMissingTracksClick(Sender: TObject);
     procedure btnCancelScanClick(Sender: TObject);
     procedure btnScanFolderClick(Sender: TObject);
-    procedure pnlCaptionMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure pnlCaptionMouseDown(Sender: TObject;
+                                  Button: TMouseButton;
+                                  Shift: TShiftState;
+                                  X,
+                                  Y: Integer);
     procedure btnExitClick(Sender: TObject);
     procedure btnMinimizeClick(Sender: TObject);
     procedure btnMaxNormalClick(Sender: TObject);
@@ -203,8 +216,8 @@ type
     FScanThread: TRDJLibraryScanThread;
 
     FCurrentPlaylist: TRDJPlaylist;
-    FLibraryRows: TList<Integer>;    // row -> TrackID
-    FPlaylistRows: TList<Integer>;   // row -> PlaylistItemID
+    FLibraryRows: TList < Integer > ;    // row -> TrackID
+    FPlaylistRows: TList < Integer > ;   // row -> PlaylistItemID
     FCurrentPlaylistDurationMs: Int64; // Gets the total duration of a playlist.
 
     FSendToChannelPopup: TPopupMenu;
@@ -302,10 +315,11 @@ begin
   // No form caption
   SetWindowLong(Handle,
                 GWL_STYLE,
-                GetWindowLong(Handle, GWL_STYLE) and not WS_CAPTION or WS_BORDER);
+                GetWindowLong(Handle,
+                              GWL_STYLE) and not WS_CAPTION or WS_BORDER);
 
-  FLibraryRows := TList<Integer>.Create;
-  FPlaylistRows := TList<Integer>.Create;
+  FLibraryRows := (TList < Integer > .Create);
+  FPlaylistRows := (TList < Integer > .Create);
   FCurrentPlaylist := nil;
   FCurrentPlaylistDurationMs := 0;
 
@@ -318,7 +332,7 @@ begin
 
   FDb := TRDJPlaylistDb.Create;
   DbFileName := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) +
-                'Data\RDJLibrary.db';
+    'Data\RDJLibrary.db';
   FDb.Open(DbFileName);
 
   FLibrary := TRDJTrackLibrary.Create(FDb);
@@ -338,6 +352,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.FormDestroy(Sender: TObject);
+
 begin
 
   if Assigned(FScanThread) then
@@ -362,6 +377,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.FormShow(Sender: TObject);
+
 begin
 
   ApplyDarkWindowFrame(Handle);
@@ -376,12 +392,13 @@ procedure TfrmPlaylistEditor.ScanThreadProgress(Sender: TObject;
                                                 const AFileName: string;
                                                 ACurrentIndex: Integer;
                                                 ATotalCount: Integer);
+
 begin
 
   SetStatus(Format('Scanning %d/%d: %s',
                    [ACurrentIndex,
-                    ATotalCount,
-                    ExtractFileName(AFileName)]));
+    ATotalCount,
+    ExtractFileName(AFileName)]));
 end;
 
 
@@ -389,6 +406,7 @@ procedure TfrmPlaylistEditor.ScanThreadFinished(Sender: TObject;
                                                 AProcessedCount: Integer;
                                                 ACancelled: Boolean;
                                                 const AErrorMsg: string);
+
 begin
 
   FScanThread := nil;
@@ -414,6 +432,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.InitLibraryGrid();
+
 begin
 
   grdLibrary.ColCount := 5;  //7 if we want "genre" and "album"
@@ -421,8 +440,8 @@ begin
   grdLibrary.FixedRows := 1;
   grdLibrary.FixedCols := 0;
   grdLibrary.Options := grdLibrary.Options + [goRowSelect,
-                                              goColSizing,
-                                              goEditing];
+    goColSizing,
+    goEditing];
 
   grdLibrary.Cells[0, 0] := 'Artist';
   grdLibrary.Cells[1, 0] := 'Title';
@@ -443,6 +462,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.InitPlaylistGrid;
+
 begin
 
   grdPlaylist.ColCount := 5;
@@ -493,12 +513,12 @@ begin
   if ALongFormat or (Hours > 0) then
     Result := Format('%.2d:%.2d:%.2d',
                      [Hours,
-                      Mins,
-                      Secs])
+      Mins,
+      Secs])
   else
     Result := Format('%.2d:%.2d',
                      [Mins,
-                      Secs]);
+      Secs]);
 end;
 
 
@@ -527,19 +547,21 @@ end;
 
 
 procedure TfrmPlaylistEditor.UpdatePlaylistDurationStatus();
+
 begin
 
   FCurrentPlaylistDurationMs := CalculateCurrentPlaylistDurationMs();
 
   lblPlayListDuration.Caption := Format('Playlist loaded: %s - %d track(s), total duration %s.',
                                         [FCurrentPlaylist.Info.Name,
-                                        FCurrentPlaylist.Count,
-                                        FormatDurationMs(FCurrentPlaylistDurationMs,
-                                        True)]);
+    FCurrentPlaylist.Count,
+    FormatDurationMs(FCurrentPlaylistDurationMs,
+                     True)]);
 end;
 
 
 procedure TfrmPlaylistEditor.SetStatus(const S: string);
+
 begin
 
   lblStatus.Caption := S;
@@ -550,18 +572,20 @@ procedure TfrmPlaylistEditor.ScannerProgress(Sender: TObject;
                                              const AFileName: string;
                                              ACurrentIndex: Integer;
                                              ATotalCount: Integer);
+
 begin
 
   SetStatus(Format('Scanning %d/%d: %s',
                    [ACurrentIndex,
-                    ATotalCount,
-                    ExtractFileName(AFileName)]));
+    ATotalCount,
+    ExtractFileName(AFileName)]));
 
   Application.ProcessMessages;
 end;
 
 
 procedure TfrmPlaylistEditor.SavePlaylist();
+
 begin
 
   if (FCurrentPlaylist = nil) then
@@ -578,9 +602,10 @@ end;
 
 procedure TfrmPlaylistEditor.RefreshLibraryGrid(const ASearchText: string);
 var
-  L: TList<TRDJTrack>;
+  L: TList < TRDJTrack > ;
   i: Integer;
   T: TRDJTrack;
+
 
   function FormatDuration(const AMs: Int64): string;
   var
@@ -599,7 +624,7 @@ var
 
     Result := Format('%.2d:%.2d',
                      [Mins,
-                      RemSecs]);
+      RemSecs]);
   end;
 
 begin
@@ -646,10 +671,10 @@ begin
 
     SetStatus(Format('%d track(s) found.',
                      [L.Count]));
-    finally
+  finally
 
-      L.Free;
-    end;
+    L.Free;
+  end;
 end;
 
 
@@ -700,7 +725,7 @@ end;
 
 procedure TfrmPlaylistEditor.RefreshPlaylistsCombo();
 var
-  L: TList<TRDJPlaylistInfo>;
+  L: TList < TRDJPlaylistInfo > ;
   i: Integer;
   Info: TRDJPlaylistInfo;
   CurID: Integer;
@@ -737,7 +762,7 @@ begin
           begin
 
             for i := 0 to cbPlaylists.Items.Count - 1 do
-              if Integer(cbPlaylists.Items.Objects[i]) = CurID then
+              if (Integer(cbPlaylists.Items.Objects[i]) = CurID) then
                 begin
 
                   cbPlaylists.ItemIndex := i;
@@ -779,6 +804,7 @@ end;
 
 
 function TfrmPlaylistEditor.GetSelectedPlaylistIndex: Integer;
+
 begin
 
   Result := grdPlaylist.Row - 1;
@@ -792,6 +818,7 @@ end;
 
 
 function TfrmPlaylistEditor.GetCurrentPlaylistIDFromCombo: Integer;
+
 begin
 
   Result := 0;
@@ -804,6 +831,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.LoadPlaylistByID(const APlaylistID: Integer);
+
 begin
 
   FreeAndNil(FCurrentPlaylist);
@@ -846,6 +874,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.btnSearchClick(Sender: TObject);
+
 begin
 
   RefreshLibraryGrid(edtSearch.Text);
@@ -853,6 +882,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.btnTagEditorClick(Sender: TObject);
+
 begin
 
   EditSelectedLibraryTrackTags();
@@ -860,6 +890,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.btnCancelScanClick(Sender: TObject);
+
 begin
 
   if Assigned(FScanThread) then
@@ -868,13 +899,14 @@ end;
 
 
 procedure TfrmPlaylistEditor.btnClearLibraryClick(Sender: TObject);
+
 begin
 
-  if MessageDlg('Clear the entire library database?' + sLineBreak +
-                'This removes all tracks from the library and playlist items that reference them.',
-                mtConfirmation,
-                [mbYes, mbNo],
-                0) <> mrYes then
+  if (MessageDlg('Clear the entire library database?' + sLineBreak +
+    'This removes all tracks from the library and playlist items that reference them.',
+    mtConfirmation,
+    [mbYes, mbNo],
+    0) <> mrYes) then
     Exit;
 
   FLibrary.ClearLibrary(True);
@@ -890,6 +922,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.btnClearMissingTracksClick(Sender: TObject);
+
 begin
 
   FLibrary.RemoveMissingTracks();
@@ -903,6 +936,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.btnClearSearchClick(Sender: TObject);
+
 begin
 
   edtSearch.Clear();
@@ -941,6 +975,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.btnOpenFileClick(Sender: TObject);
+
 begin
 
   DlgLWFileBrowserEx.FileFilter := fbxAudio;
@@ -1001,10 +1036,10 @@ begin
   if (ID = 0) then
     Exit;
 
-  if MessageDlg('Delete selected playlist?',
-                mtConfirmation,
-                [mbYes, mbNo],
-                0) <> mrYes then
+  if (MessageDlg('Delete selected playlist?',
+    mtConfirmation,
+    [mbYes, mbNo],
+    0) <> mrYes) then
     Exit;
 
   FPlaylistMgr.DeletePlaylist(ID);
@@ -1016,6 +1051,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.btnExitClick(Sender: TObject);
+
 begin
 
   Close();
@@ -1068,7 +1104,8 @@ begin
                                   TrackID);
   RefreshPlaylistGrid();
   lblPlayListDuration.Caption := Format('Total duration: %s.',
-                                        [FormatDurationMs(FCurrentPlaylistDurationMs, True)]);
+                                        [FormatDurationMs(FCurrentPlaylistDurationMs,
+                                                          True)]);
   SavePlaylist();
 end;
 
@@ -1079,18 +1116,19 @@ var
 
 begin
 
-  if (FCurrentPlaylist = nil )then
+  if (FCurrentPlaylist = nil) then
     Exit;
 
   Idx := GetSelectedPlaylistIndex();
-  if Idx < 0 then
+  if (Idx < 0) then
     Exit;
 
   FPlaylistMgr.RemovePlaylistItem(FCurrentPlaylist,
                                   Idx);
   RefreshPlaylistGrid;
   lblPlayListDuration.Caption := Format('Total duration: %s.',
-                                        [FormatDurationMs(FCurrentPlaylistDurationMs, True)]);
+                                        [FormatDurationMs(FCurrentPlaylistDurationMs,
+                                                          True)]);
   SavePlaylist();
 end;
 
@@ -1118,7 +1156,7 @@ begin
     Exit;
 
   Idx := GetSelectedPlaylistIndex();
-  if Idx <= 0 then
+  if (Idx <= 0) then
     Exit;
 
   FPlaylistMgr.MovePlaylistItem(FCurrentPlaylist,
@@ -1127,27 +1165,29 @@ begin
   RefreshPlaylistGrid();
   grdPlaylist.Row := Idx;
   lblPlayListDuration.Caption := Format('Total duration: %s.',
-                                        [FormatDurationMs(FCurrentPlaylistDurationMs, True)]);
+                                        [FormatDurationMs(FCurrentPlaylistDurationMs,
+                                                          True)]);
   SavePlaylist();
 end;
 
 
 procedure TfrmPlaylistEditor.btnMaxNormalClick(Sender: TObject);
+
 begin
 
   if (WindowState = wsMaximized) then
     WindowState := wsNormal
-  else
-    if (WindowState = wsNormal) then
-      WindowState := wsMaximized;
+  else if (WindowState = wsNormal) then
+    WindowState := wsMaximized;
   Invalidate;
 end;
 
 
 procedure TfrmPlaylistEditor.btnMinimizeClick(Sender: TObject);
+
 begin
 
-   WindowState := wsMinimized;
+  WindowState := wsMinimized;
 end;
 
 
@@ -1170,12 +1210,14 @@ begin
   RefreshPlaylistGrid();
   grdPlaylist.Row := Idx + 2;
   lblPlayListDuration.Caption := Format('Total duration: %s.',
-                                        [FormatDurationMs(FCurrentPlaylistDurationMs, True)]);
+                                        [FormatDurationMs(FCurrentPlaylistDurationMs,
+                                                          True)]);
   SavePlaylist();
 end;
 
 
 procedure TfrmPlaylistEditor.grdLibraryDblClick(Sender: TObject);
+
 begin
 
   btnAddToPlaylistClick(Sender);
@@ -1183,7 +1225,10 @@ end;
 
 
 procedure TfrmPlaylistEditor.grdLibraryMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                                 Button: TMouseButton;
+                                                 Shift: TShiftState;
+                                                 X,
+                                                 Y: Integer);
 var
   GC: TGridCoord;
   P: TPoint;
@@ -1202,7 +1247,7 @@ begin
   BuildLibraryPopup();
 
   P := grdLibrary.ClientToScreen(Point(X,
-                                      Y));
+                                       Y));
 
   FLibraryPopup.Popup(P.X,
                       P.Y);
@@ -1210,8 +1255,10 @@ end;
 
 
 procedure TfrmPlaylistEditor.grdLibrarySelectCell(Sender: TObject;
-                                                  ACol, ARow: Integer;
+                                                  ACol,
+                                                  ARow: Integer;
                                                   var CanSelect: Boolean);
+
 begin
 
   CanSelect := True;
@@ -1233,7 +1280,8 @@ end;
 
 
 procedure TfrmPlaylistEditor.grdLibrarySetEditText(Sender: TObject;
-                                                   ACol, ARow: Integer;
+                                                   ACol,
+                                                   ARow: Integer;
                                                    const Value: string);
 var
   TrackID: Integer;
@@ -1249,11 +1297,11 @@ begin
     Exit;
 
   TrackID := FLibraryRows[ARow - 1];
-  if TrackID = 0 then
+  if (TrackID = 0) then
     Exit;
 
   if not FLibrary.FindTrackByID(TrackID,
-                                Track) then
+    Track) then
     Exit;
 
   Changed := False;
@@ -1299,7 +1347,10 @@ end;
 
 
 procedure TfrmPlaylistEditor.grdPlaylistMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                                  Button: TMouseButton;
+                                                  Shift: TShiftState;
+                                                  X,
+                                                  Y: Integer);
 var
   P: TPoint;
 
@@ -1320,7 +1371,13 @@ end;
 
 
 function TfrmPlaylistEditor.SelectFolderDialog(var AFolder: string): Boolean;
-begin Result:=FxSelectDirectory('Select Directory','',AFolder);end;
+
+begin
+
+  Result := FxSelectDirectory('Select Directory',
+                              '',
+                              AFolder);
+end;
 
 
 procedure TfrmPlaylistEditor.BuildSendToChannelPopup();
@@ -1441,18 +1498,20 @@ begin
   if SUCCEEDED(Result) then
     SetStatus(Format('Selected row sent to channel %d.',
                      [AChannelIndex + 1]))
+  else if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
+    SetStatus(Format('File not found %s.',
+                     [Entry.Track.FullPath]))
   else
-    if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
-      SetStatus(Format('File not found %s.',
-                       [Entry.Track.FullPath]))
-    else
-      SetStatus(Format('Failed to send selected row to channel %d (Result: %d).',
-                       [AChannelIndex + 1, Result]));
+    SetStatus(Format('Failed to send selected row to channel %d (Result: %d).',
+                     [AChannelIndex + 1, Result]));
 end;
 
 
 procedure TfrmPlaylistEditor.pnlCaptionMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+                                                 Button: TMouseButton;
+                                                 Shift: TShiftState;
+                                                 X,
+                                                 Y: Integer);
 const
   SC_DRAGMOVE = $F012;
 
@@ -1503,13 +1562,12 @@ begin
   if SUCCEEDED(Result) then
     SetStatus(Format('Selected row loaded on channel %d.',
                      [AChannelIndex + 1]))
+  else if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
+    SetStatus(Format('File not found %s.',
+                     [Entry.Track.FullPath]))
   else
-    if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
-      SetStatus(Format('File not found %s.',
-                       [Entry.Track.FullPath]))
-    else
-      SetStatus(Format('Failed to load selected row on channel %d (Result: %d).',
-                       [AChannelIndex + 1, Result]));
+    SetStatus(Format('Failed to load selected row on channel %d (Result: %d).',
+                     [AChannelIndex + 1, Result]));
 end;
 
 
@@ -1541,21 +1599,20 @@ begin
 
   Result := Deck.PlayPlaylistByID(PlaylistID);
 
-done:
+  done:
 
-  if SUCCEEDED(Result) then
-    SetStatus(Format('Playlist "%s" sent to channel %d.',
-                     [FCurrentPlaylist.Info.Name,
-                      AChannelIndex + 1]))
-  else
-    if (Result = ERROR_FILE_NOT_FOUND) then
+    if SUCCEEDED(Result) then
+      SetStatus(Format('Playlist "%s" sent to channel %d.',
+                       [FCurrentPlaylist.Info.Name,
+      AChannelIndex + 1]))
+    else if (Result = ERROR_FILE_NOT_FOUND) then
       SetStatus(Format('Failed to send playlist "%s" to channel %d :File not found.',
                        [FCurrentPlaylist.Info.Name,
-                        AChannelIndex + 1]))
+      AChannelIndex + 1]))
     else
       SetStatus(Format('Failed to send playlist "%s" to channel %d.',
                        [FCurrentPlaylist.Info.Name,
-                        AChannelIndex + 1]));
+      AChannelIndex + 1]));
 
 end;
 
@@ -1588,16 +1645,15 @@ begin
   if SUCCEEDED(Result) then
     SetStatus(Format('Playlist "%s" loaded on channel %d.',
                      [FCurrentPlaylist.Info.Name,
-                      AChannelIndex + 1]))
+      AChannelIndex + 1]))
+  else if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
+    SetStatus(Format('Failed to load playlist "%s" on channel %d: file not found.',
+                     [FCurrentPlaylist.Info.Name,
+      AChannelIndex + 1]))
   else
-    if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
-      SetStatus(Format('Failed to load playlist "%s" on channel %d: file not found.',
-                       [FCurrentPlaylist.Info.Name,
-                        AChannelIndex + 1]))
-    else
-      SetStatus(Format('Failed to load playlist "%s" on channel %d.',
-                       [FCurrentPlaylist.Info.Name,
-                        AChannelIndex + 1]));
+    SetStatus(Format('Failed to load playlist "%s" on channel %d.',
+                     [FCurrentPlaylist.Info.Name,
+      AChannelIndex + 1]));
 
 end;
 
@@ -1616,7 +1672,7 @@ begin
     Exit;
 
   if not FLibrary.FindTrackByID(TrackID,
-                                Track) then
+    Track) then
     Exit;
 
   if not TfrmTagEditor.Execute(Track) then
@@ -1680,6 +1736,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.CMDialogKey(var Message: TCMDialogKey);
+
 begin
 
   if (ActiveControl = edtSearch) and (Message.CharCode = VK_RETURN) then
@@ -1753,7 +1810,8 @@ end;
 procedure TfrmPlaylistEditor.edFileNameMouseDown(Sender: TObject;
                                                  Button: TMouseButton;
                                                  Shift: TShiftState;
-                                                 X, Y: Integer);
+                                                 X,
+                                                 Y: Integer);
 var
   P: TPoint;
   FileName: string;
@@ -1801,18 +1859,18 @@ begin
       LoadLoadedFileOnChannel(ChIdx,
                               True);
     end
-  else
-    if (TagValue >= 1000) then
-      begin
+  else if (TagValue >= 1000) then
+    begin
 
-        ChIdx := TagValue - 1000;
-        LoadLoadedFileOnChannel(ChIdx,
-                                False);
-      end;
+      ChIdx := TagValue - 1000;
+      LoadLoadedFileOnChannel(ChIdx,
+                              False);
+    end;
 end;
 
 
 function TfrmPlaylistEditor.GetLoadedFileNameFromEdit(out AFileName: string): Boolean;
+
 begin
 
   AFileName := Trim(edFileName.Hint);
@@ -1833,15 +1891,16 @@ var
   Artist: string;
   Title: string;
 
+
   function TrySearch(const AText: string): Boolean;
   var
-    L: TList<TRDJTrack>;
+    L: TList < TRDJTrack > ;
     I: Integer;
   begin
 
     Result := False;
 
-    if Trim(AText) = '' then
+    if (Trim(AText) = '') then
       Exit;
 
     L := FLibrary.SearchTrackSummaries(AText);
@@ -1851,7 +1910,7 @@ var
         begin
 
           if SameText(ExpandFileName(L[I].FullPath),
-                      ExpandFileName(AFileName)) then
+            ExpandFileName(AFileName)) then
             begin
 
               ATrack := L[I];
@@ -1901,25 +1960,26 @@ begin
   if (Trim(AFileName) = '') or not FileExists(AFileName) then
     Exit;
 
-  AliasName := 'RDJDuration' + IntToHex(GetTickCount(), 8);
+  AliasName := 'RDJDuration' + IntToHex(GetTickCount(),
+                                        8);
 
   Cmd := Format('open "%s" alias %s',
                 [AFileName,
-                 AliasName]);
+    AliasName]);
 
   Err := mciSendStringW(PChar(Cmd),
-                       nil,
-                       0,
-                       0);
+                        nil,
+                        0,
+                        0);
   if (Err <> 0) then
     Exit;
 
   try
 
     mciSendStringW(PChar('set ' + AliasName + ' time format milliseconds'),
-                  nil,
-                  0,
-                  0);
+                   nil,
+                   0,
+                   0);
 
     FillChar(Buffer,
              SizeOf(Buffer),
@@ -1928,18 +1988,18 @@ begin
     Cmd := 'status ' + AliasName + ' length';
 
     Err := mciSendStringW(PChar(Cmd),
-                         Buffer,
-                         Length(Buffer),
-                         0);
+                          Buffer,
+                          Length(Buffer),
+                          0);
     if (Err = 0) then
       Result := StrToInt64Def(Trim(string(Buffer)),
                               0);
   finally
 
     mciSendStringW(PChar('close ' + AliasName),
-                  nil,
-                  0,
-                  0);
+                   nil,
+                   0,
+                   0);
   end;
 end;
 
@@ -1968,7 +2028,7 @@ begin
     Exit;
 
   if not FindLibraryTrackByFullPath(FileName,
-                                    Track) then
+    Track) then
     begin
 
       TFileNameParser.ResolveArtistTitle(FileName,
@@ -2050,8 +2110,8 @@ begin
 
   SetStatus(Format('Added "%s - %s" to playlist "%s".',
                    [Track.Artist,
-                    Track.Title,
-                    FCurrentPlaylist.Info.Name]));
+    Track.Title,
+    FCurrentPlaylist.Info.Name]));
 
   // Save the playlist.
   SavePlaylist();
@@ -2059,8 +2119,9 @@ begin
   Result := True;
 end;
 
+
 function TfrmPlaylistEditor.LoadLoadedFileOnChannel(const AChannelIndex: Integer;
-  const AStartPlayback: Boolean): HRESULT;
+                                                    const AStartPlayback: Boolean): HRESULT;
 var
   Deck: TfrmChannelDeck;
   FileName: string;
@@ -2101,13 +2162,12 @@ begin
         SetStatus(Format('Loaded "%s" on channel %d.',
                          [DisplayName, AChannelIndex + 1]));
     end
+  else if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
+    SetStatus(Format('Failed to open "%s" on channel %d: file not found.',
+                     [DisplayName, AChannelIndex + 1]))
   else
-    if (Result = HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) then
-      SetStatus(Format('Failed to open "%s" on channel %d: file not found.',
-                       [DisplayName, AChannelIndex + 1]))
-    else
-      SetStatus(Format('Failed to open "%s" on channel %d.',
-                       [DisplayName, AChannelIndex + 1]));
+    SetStatus(Format('Failed to open "%s" on channel %d.',
+                     [DisplayName, AChannelIndex + 1]));
 end;
 
 
@@ -2217,6 +2277,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.LibraryPopupAddToPlaylistClick(Sender: TObject);
+
 begin
 
   btnAddToPlaylistClick(Sender);
@@ -2224,6 +2285,7 @@ end;
 
 
 procedure TfrmPlaylistEditor.LibraryPopupEditTagsClick(Sender: TObject);
+
 begin
 
   EditSelectedLibraryTrackTags();
@@ -2239,11 +2301,11 @@ var
 begin
 
   TrackID := GetSelectedLibraryTrackID();
-  if TrackID = 0 then
+  if (TrackID = 0) then
     Exit;
 
   if not FLibrary.FindTrackByID(TrackID,
-                                Track) then
+    Track) then
     Exit;
 
   if not FileExists(Track.FullPath) then
@@ -2256,15 +2318,16 @@ begin
   Param := '/select,"' + Track.FullPath + '"';
 
   ShellExecuteW(Handle,
-               'open',
-               'explorer.exe',
-               PChar(Param),
-               nil,
-               SW_SHOWNORMAL);
+                'open',
+                'explorer.exe',
+                PChar(Param),
+                nil,
+                SW_SHOWNORMAL);
 end;
 
 
 procedure TfrmPlaylistEditor.LibraryPopupRemoveFromLibraryClick(Sender: TObject);
+
 begin
 
   RemoveSelectedLibraryTrack();
@@ -2285,14 +2348,14 @@ begin
     Exit;
 
   if not FLibrary.FindTrackByID(TrackID,
-                                Track) then
+    Track) then
     Exit;
 
-  if MessageDlg(Format('Remove "%s" from the library?',
-                       [Track.Title]),
-                mtConfirmation,
-                [mbYes, mbNo],
-                0) <> mrYes then
+  if (MessageDlg(Format('Remove "%s" from the library?',
+    [Track.Title]),
+    mtConfirmation,
+    [mbYes, mbNo],
+    0) <> mrYes) then
     Exit;
 
   FLibrary.DeleteTrackByID(TrackID);
@@ -2329,7 +2392,7 @@ begin
     Exit;
 
   if not FLibrary.FindTrackByID(TrackID,
-                                Track) then
+    Track) then
     Exit;
 
   Result := Deck.LoadSingleTrack(Track.FullPath);
@@ -2342,14 +2405,13 @@ begin
   if SUCCEEDED(Result) then
     SetStatus(Format('Loaded "%s" on channel %d.',
                      [DisplayName,
-                      AChannelIndex + 1]))
+      AChannelIndex + 1]))
+  else if (Result = ERROR_FILE_NOT_FOUND) then
+    SetStatus(Format('Failed to load selected track on channel %d: file not found.',
+                     [AChannelIndex + 1]))
   else
-    if (Result = ERROR_FILE_NOT_FOUND) then
-      SetStatus(Format('Failed to load selected track on channel %d: file not found.',
-                       [AChannelIndex + 1]))
-    else
-      SetStatus(Format('Failed to load selected track on channel %d.',
-                       [AChannelIndex + 1]));
+    SetStatus(Format('Failed to load selected track on channel %d.',
+                     [AChannelIndex + 1]));
 end;
 
 
@@ -2376,7 +2438,7 @@ begin
     Exit;
 
   if not FLibrary.FindTrackByID(TrackID,
-                                Track) then
+    Track) then
     Exit;
 
   //Result := Deck.PlaySingleTrack(Track.FullPath);
@@ -2391,14 +2453,13 @@ begin
   if SUCCEEDED(Result) then
     SetStatus(Format('Prelistening "%s" on channel %d.',
                      [DisplayName,
-                      AChannelIndex + 1]))
+      AChannelIndex + 1]))
+  else if (Result = ERROR_FILE_NOT_FOUND) then
+    SetStatus(Format('Failed to prelisten selected track on channel %d.',
+                     [ExtractFileName(Track.FullPath)]))
   else
-    if (Result = ERROR_FILE_NOT_FOUND) then
-      SetStatus(Format('Failed to prelisten selected track on channel %d.',
-                       [ExtractFileName(Track.FullPath)]))
-    else
-      SetStatus(Format('Failed to prelisten selected track on channel %d.',
-                       [AChannelIndex + 1]));
+    SetStatus(Format('Failed to prelisten selected track on channel %d.',
+                     [AChannelIndex + 1]));
 end;
 
 end.

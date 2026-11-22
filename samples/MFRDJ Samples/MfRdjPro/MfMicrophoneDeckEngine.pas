@@ -64,11 +64,12 @@ unit MfMicrophoneDeckEngine;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   WinApi.WinApiTypes,
@@ -99,19 +100,24 @@ type
   TMfMicrophoneDeckEngine = class;
 
   TMfMicrophoneCaptureThread = class(TThread)
+
   private
 
     FOwner: TMfMicrophoneDeckEngine;
+
   protected
 
     procedure Execute(); override;
+
   public
 
     constructor Create(const AOwner: TMfMicrophoneDeckEngine);
   end;
 
   TMfMicrophoneDeckEngine = class
-  private const
+
+  private
+  const
 
     CDefaultBufferMs = 120;
     CMinRingFrames = 8192;
@@ -257,14 +263,15 @@ implementation
 
 const
   CLSCTX_ALL_ = CLSCTX_INPROC_SERVER or CLSCTX_INPROC_HANDLER or
-                CLSCTX_LOCAL_SERVER or CLSCTX_REMOTE_SERVER;
+    CLSCTX_LOCAL_SERVER or CLSCTX_REMOTE_SERVER;
 
-  REFTIMES_PER_SEC  = 10000000;
+  REFTIMES_PER_SEC = 10000000;
   REFTIMES_PER_MSEC = 10000;
 
-{ TMfMicrophoneCaptureThread }
+  { TMfMicrophoneCaptureThread }
 
 constructor TMfMicrophoneCaptureThread.Create(const AOwner: TMfMicrophoneDeckEngine);
+
 begin
 
   inherited Create(False);
@@ -275,6 +282,7 @@ end;
 
 
 procedure TMfMicrophoneCaptureThread.Execute();
+
 begin
 
   if Assigned(FOwner) then
@@ -284,6 +292,7 @@ end;
 { TMfMicrophoneDeckEngine }
 
 constructor TMfMicrophoneDeckEngine.Create();
+
 begin
 
   inherited Create;
@@ -354,13 +363,13 @@ begin
   FreeWaveFormat();
 
   if Assigned(FAudioRack) and
-     (FAudioRack.Slots.Count > 0) then
+    (FAudioRack.Slots.Count > 0) then
     begin
 
       Slot := TMfWasApiFxSlot(FAudioRack.Slots[0]);
 
       if Assigned(Slot) and
-         (Slot.Effect = FParamEq) then
+        (Slot.Effect = FParamEq) then
         Slot.Effect := nil;
     end;
 
@@ -378,6 +387,7 @@ end;
 
 
 procedure TMfMicrophoneDeckEngine.FreeWaveFormat();
+
 begin
 
   if Assigned(FWaveFormat) then
@@ -390,6 +400,7 @@ end;
 
 
 procedure TMfMicrophoneDeckEngine.ResetRuntimeState();
+
 begin
 
   FRunning := False;
@@ -429,13 +440,14 @@ end;
 
 
 procedure TMfMicrophoneDeckEngine.ClearRingBuffer;
+
 begin
 
   FRingReadPos := 0;
   FRingWritePos := 0;
   FRingBufferedFrames := 0;
 
-  if Length(FRingBuffer) > 0 then
+  if (Length(FRingBuffer) > 0) then
     FillChar(FRingBuffer[0],
              Length(FRingBuffer) * SizeOf(Single),
              0);
@@ -456,8 +468,8 @@ begin
   Result := 0;
 
   if (AData = nil) or
-     (AFrames <= 0) or
-     (FRingCapacityFrames <= 0) then
+    (AFrames <= 0) or
+    (FRingCapacityFrames <= 0) then
     Exit;
 
   FramesToWrite := AFrames;
@@ -468,11 +480,14 @@ begin
     begin
 
       FramesToDrop := (FRingBufferedFrames + FramesToWrite) - FRingCapacityFrames;
-      Inc(FRingReadPos, FramesToDrop);
+      Inc(FRingReadPos,
+          FramesToDrop);
 
       while (FRingReadPos >= FRingCapacityFrames) do
-        Dec(FRingReadPos, FRingCapacityFrames);
-      Dec(FRingBufferedFrames, FramesToDrop);
+        Dec(FRingReadPos,
+            FRingCapacityFrames);
+      Dec(FRingBufferedFrames,
+          FramesToDrop);
 
       if (FRingBufferedFrames < 0) then
         FRingBufferedFrames := 0;
@@ -486,35 +501,43 @@ begin
        FRingBuffer[FRingWritePos * 2],
        FirstPart * 2 * SizeOf(Single));
 
-  Inc(Src, FirstPart * 2);
+  Inc(Src,
+      FirstPart * 2);
 
   if (FramesToWrite > FirstPart) then
     Move(Src^,
          FRingBuffer[0],
          (FramesToWrite - FirstPart) * 2 * SizeOf(Single));
 
-  Inc(FRingWritePos, FramesToWrite);
+  Inc(FRingWritePos,
+      FramesToWrite);
   while (FRingWritePos >= FRingCapacityFrames) do
-    Dec(FRingWritePos, FRingCapacityFrames);
+    Dec(FRingWritePos,
+        FRingCapacityFrames);
 
-  Inc(FRingBufferedFrames, FramesToWrite);
+  Inc(FRingBufferedFrames,
+      FramesToWrite);
   if (FRingBufferedFrames > FRingCapacityFrames) then
     FRingBufferedFrames := FRingCapacityFrames;
 
   // Keep the microphone source close to real-time.
   // If the capture side gets ahead, drop old buffered mic audio.
-  TargetBufferedFrames := Max(256, FRingCapacityFrames div 4);
+  TargetBufferedFrames := Max(256,
+                              FRingCapacityFrames div 4);
 
   if (FRingBufferedFrames > TargetBufferedFrames) then
     begin
 
       FramesToDrop := FRingBufferedFrames - TargetBufferedFrames;
 
-      Inc(FRingReadPos, FramesToDrop);
+      Inc(FRingReadPos,
+          FramesToDrop);
       while (FRingReadPos >= FRingCapacityFrames) do
-        Dec(FRingReadPos, FRingCapacityFrames);
+        Dec(FRingReadPos,
+            FRingCapacityFrames);
 
-      Dec(FRingBufferedFrames, FramesToDrop);
+      Dec(FRingBufferedFrames,
+          FramesToDrop);
       if (FRingBufferedFrames < 0) then
         FRingBufferedFrames := 0;
     end;
@@ -535,30 +558,36 @@ begin
   Result := 0;
 
   if (AData = nil) or
-     (AFrames <= 0) or
-     (FRingBufferedFrames <= 0) then
+    (AFrames <= 0) or
+    (FRingBufferedFrames <= 0) then
     Exit;
 
-  FramesToRead := Min(AFrames, FRingBufferedFrames);
+  FramesToRead := Min(AFrames,
+                      FRingBufferedFrames);
   Dst := AData;
 
-  FirstPart := Min(FramesToRead, FRingCapacityFrames - FRingReadPos);
+  FirstPart := Min(FramesToRead,
+                   FRingCapacityFrames - FRingReadPos);
   Move(FRingBuffer[FRingReadPos * 2],
        Dst^,
        FirstPart * 2 * SizeOf(Single));
 
-  Inc(Dst, FirstPart * 2);
+  Inc(Dst,
+      FirstPart * 2);
 
   if (FramesToRead > FirstPart) then
     Move(FRingBuffer[0],
          Dst^,
          (FramesToRead - FirstPart) * 2 * SizeOf(Single));
 
-  Inc(FRingReadPos, FramesToRead);
+  Inc(FRingReadPos,
+      FramesToRead);
   while (FRingReadPos >= FRingCapacityFrames) do
-    Dec(FRingReadPos, FRingCapacityFrames);
+    Dec(FRingReadPos,
+        FRingCapacityFrames);
 
-  Dec(FRingBufferedFrames, FramesToRead);
+  Dec(FRingBufferedFrames,
+      FramesToRead);
   if (FRingBufferedFrames < 0) then
     FRingBufferedFrames := 0;
 
@@ -567,6 +596,7 @@ end;
 
 
 procedure TMfMicrophoneDeckEngine.UpdateInputGainLinear();
+
 begin
 
   FInputGainDb := EnsureRange(FInputGainDb,
@@ -600,12 +630,16 @@ begin
       R := ABuffer^;
       Inc(ABuffer);
 
-      PeakL := Max(PeakL, Abs(L));
-      PeakR := Max(PeakR, Abs(R));
+      PeakL := Max(PeakL,
+                   Abs(L));
+      PeakR := Max(PeakR,
+                   Abs(R));
     end;
 
-  FPeakL := Max(PeakL, FPeakL * 0.92);
-  FPeakR := Max(PeakR, FPeakR * 0.92);
+  FPeakL := Max(PeakL,
+                FPeakL * 0.92);
+  FPeakR := Max(PeakR,
+                FPeakR * 0.92);
 end;
 
 
@@ -616,6 +650,7 @@ var
   P: PSingle;
   L: Single;
   R: Single;
+
 
   function LimitSample(const X: Single): Single; inline;
   begin
@@ -632,7 +667,7 @@ var
 begin
 
   if (ABuffer = nil) or
-     (AFrames <= 0) then
+    (AFrames <= 0) then
     Exit;
 
   P := ABuffer;
@@ -718,7 +753,8 @@ begin
   if (AFrames <= 0) then
     Exit;
 
-  SetLength(FTempStereo, AFrames * 2);
+  SetLength(FTempStereo,
+            AFrames * 2);
 
   if ASilent or (AData = nil) then
     begin
@@ -761,7 +797,8 @@ begin
       begin
 
         SampleCount := AFrames * Ch;
-        SetLength(Temp24, SampleCount);
+        SetLength(Temp24,
+                  SampleCount);
 
         Int24ToFloat(PByte(AData),
                      @Temp24[0],
@@ -778,7 +815,7 @@ begin
             else
               R := Temp24[BaseIndex + 1];
 
-            FTempStereo[(I * 2)]     := L;
+            FTempStereo[(I * 2)] := L;
             FTempStereo[(I * 2) + 1] := R;
           end;
       end;
@@ -799,16 +836,18 @@ begin
                 else
                   R := PSingle(NativeUInt(SrcFloat) + SizeOf(Single))^;
 
-                FTempStereo[(I * 2)]     := L;
+                FTempStereo[(I * 2)] := L;
                 FTempStereo[(I * 2) + 1] := R;
 
-                Inc(SrcFloat, Ch);
+                Inc(SrcFloat,
+                    Ch);
               end;
           end
         else
           begin
             SampleCount := AFrames * Ch;
-            SetLength(Temp24, SampleCount);
+            SetLength(Temp24,
+                      SampleCount);
 
             Int32ToFloat(PByte(AData),
                          @Temp24[0],
@@ -825,18 +864,18 @@ begin
                 else
                   R := Temp24[BaseIndex + 1];
 
-                FTempStereo[(I * 2)]     := L;
+                FTempStereo[(I * 2)] := L;
                 FTempStereo[(I * 2) + 1] := R;
               end;
           end;
       end;
-  else
-    begin
+    else
+      begin
 
-      FillChar(FTempStereo[0],
-               Length(FTempStereo) * SizeOf(Single),
-                                            0);
-    end;
+        FillChar(FTempStereo[0],
+                 Length(FTempStereo) * SizeOf(Single),
+                 0);
+      end;
   end;
 
   Result := AFrames;
@@ -844,6 +883,7 @@ end;
 
 
 function TMfMicrophoneDeckEngine.OpenDevice(const ADeviceId: string): HRESULT;
+
 begin
 
   if FRunning then
@@ -864,6 +904,7 @@ end;
 
 
 procedure TMfMicrophoneDeckEngine.CloseDevice();
+
 begin
 
   InternalStopThread();
@@ -882,6 +923,7 @@ end;
 
 
 function TMfMicrophoneDeckEngine.InternalStartThread(): HRESULT;
+
 begin
 
   Result := S_OK;
@@ -892,10 +934,16 @@ begin
   FStateEvent.ResetEvent;
 
   if (FStopEvent = 0) then
-    FStopEvent := CreateEventW(nil, True, False, nil);
+    FStopEvent := CreateEventW(nil,
+                               True,
+                               False,
+                               nil);
 
   if (FCaptureEvent = 0) then
-    FCaptureEvent := CreateEventW(nil, False, False, nil);
+    FCaptureEvent := CreateEventW(nil,
+                                  False,
+                                  False,
+                                  nil);
 
   if (FStopEvent = 0) or (FCaptureEvent = 0) then
     begin
@@ -913,6 +961,7 @@ end;
 
 
 procedure TMfMicrophoneDeckEngine.InternalStopThread();
+
 begin
 
   FStopping := True;
@@ -956,6 +1005,7 @@ end;
 
 
 procedure TMfMicrophoneDeckEngine.FlushLiveState;
+
 begin
 
   ClearRingBuffer();
@@ -969,6 +1019,7 @@ end;
 
 
 function TMfMicrophoneDeckEngine.Start(): HRESULT;
+
 begin
 
   FLock.Acquire;
@@ -984,6 +1035,7 @@ end;
 
 
 procedure TMfMicrophoneDeckEngine.Stop();
+
 begin
 
   InternalStopThread();
@@ -1013,7 +1065,7 @@ begin
   Result := S_OK;
 
   if (ABuffer = nil) or
-     (AFrames <= 0) then
+    (AFrames <= 0) then
     Exit(E_INVALIDARG);
 
   // TEST: if we get the right wav format if it's like frames = 441 and samplerate is 48000, we got 44100: that's wrong.
@@ -1026,15 +1078,15 @@ begin
 
   try
 
-  ReadFrames := RingReadFrames(ABuffer,
-                               AFrames);
+    ReadFrames := RingReadFrames(ABuffer,
+                                 AFrames);
 
-  Remaining := AFrames - ReadFrames;
-  if (Remaining > 0) then
-    FillChar(PByte(NativeUInt(ABuffer) +
-                   NativeUInt(ReadFrames * 2 * SizeOf(Single)))^,
-             Remaining * 2 * SizeOf(Single),
-             0);
+    Remaining := AFrames - ReadFrames;
+    if (Remaining > 0) then
+      FillChar(PByte(NativeUInt(ABuffer) +
+        NativeUInt(ReadFrames * 2 * SizeOf(Single)))^,
+               Remaining * 2 * SizeOf(Single),
+               0);
   finally
 
     FLock.Release;
@@ -1043,6 +1095,7 @@ end;
 
 
 procedure TMfMicrophoneDeckEngine.SetInputGainDb(const AValue: Single);
+
 begin
 
   FLock.Acquire;
@@ -1060,6 +1113,7 @@ end;
 
 procedure TMfMicrophoneDeckEngine.SetVolume(const ALeft,
                                             ARight: Single);
+
 begin
 
   FLock.Acquire;
@@ -1080,6 +1134,7 @@ end;
 
 
 procedure TMfMicrophoneDeckEngine.SetMute(const AValue: Boolean);
+
 begin
 
   FLock.Acquire;
@@ -1095,6 +1150,7 @@ end;
 
 
 procedure TMfMicrophoneDeckEngine.SetCompressorEnabled(const AValue: Boolean);
+
 begin
 
   FLock.Acquire;
@@ -1122,6 +1178,7 @@ procedure TMfMicrophoneDeckEngine.SetCompressorParams(const AThresholdDb,
                                                       AReleaseMs,
                                                       AMakeupDb,
                                                       ASoftKneeDb: Single);
+
 begin
 
   FLock.Acquire;
@@ -1143,6 +1200,7 @@ end;
 
 
 procedure TMfMicrophoneDeckEngine.SetEchoEnabled(const AValue: Boolean);
+
 begin
 
   FLock.Acquire;
@@ -1171,6 +1229,7 @@ procedure TMfMicrophoneDeckEngine.SetEchoParams(const AMix,
                                                 ASpring,
                                                 AWowDepthMs,
                                                 AWowRateHz: Single);
+
 begin
 
   FLock.Acquire;
@@ -1192,6 +1251,7 @@ end;
 
 
 function TMfMicrophoneDeckEngine.GetMeterPeakL: Single;
+
 begin
 
   FLock.Acquire;
@@ -1207,6 +1267,7 @@ end;
 
 
 function TMfMicrophoneDeckEngine.GetMeterPeakR: Single;
+
 begin
 
   FLock.Acquire;
@@ -1222,6 +1283,7 @@ end;
 
 
 function TMfMicrophoneDeckEngine.GetSampleRate: Integer;
+
 begin
 
   FLock.Acquire;
@@ -1237,6 +1299,7 @@ end;
 
 
 function TMfMicrophoneDeckEngine.GetDeviceId: string;
+
 begin
 
   FLock.Acquire;
@@ -1252,6 +1315,7 @@ end;
 
 
 function TMfMicrophoneDeckEngine.GetLastError: HRESULT;
+
 begin
 
   FLock.Acquire;
@@ -1267,6 +1331,7 @@ end;
 
 
 function TMfMicrophoneDeckEngine.IsRunning(): Boolean;
+
 begin
 
   FLock.Acquire;
@@ -1282,6 +1347,7 @@ end;
 
 // Noise gate
 procedure TMfMicrophoneDeckEngine.SetNoiseGateEnabled(const AValue: Boolean);
+
 begin
 
   FLock.Acquire;
@@ -1306,6 +1372,7 @@ procedure TMfMicrophoneDeckEngine.SetNoiseGateParams(const AThresholdDb,
                                                      AReleaseMs,
                                                      AFloorDb,
                                                      AHoldMs: Single);
+
 begin
 
   FLock.Acquire;
@@ -1354,7 +1421,7 @@ begin
   if Failed(Hr) then
     Exit(Hr);
 
-  if FDeviceId <> '' then
+  if (FDeviceId <> '') then
     Hr := AEnumerator.GetDevice(PWideChar(WideString(FDeviceId)),
                                 ADevice)
   else
@@ -1385,7 +1452,9 @@ begin
   FSampleRate := FWaveFormat^.nSamplesPerSec;
   FSourceChannels := FWaveFormat^.nChannels;
   FValidBitsPerSample := FWaveFormat^.wBitsPerSample;
-  GetWfxBitsAndFloat(FWaveFormat, FSourceBits, FSourceIsFloat);
+  GetWfxBitsAndFloat(FWaveFormat,
+                     FSourceBits,
+                     FSourceIsFloat);
   if (FSourceBits <= 0) then
     FSourceBits := FWaveFormat^.wBitsPerSample;
 
@@ -1398,7 +1467,9 @@ begin
 
   // Force capture into Carmen's current engine format.
   // Current mixer/master path is effectively 44100 Hz stereo float.
-  FillChar(TargetWfx, SizeOf(TargetWfx), 0);
+  FillChar(TargetWfx,
+           SizeOf(TargetWfx),
+           0);
   TargetWfx.wFormatTag := WAVE_FORMAT_IEEE_FLOAT;
   TargetWfx.nChannels := 2;
   TargetWfx.nSamplesPerSec := 44100;
@@ -1411,9 +1482,9 @@ begin
 
   Hr := AAudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED,
                                 AUDCLNT_STREAMFLAGS_EVENTCALLBACK or
-                                AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM or
-                                AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY or
-                                AUDCLNT_STREAMFLAGS_NOPERSIST,
+    AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM or
+    AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY or
+    AUDCLNT_STREAMFLAGS_NOPERSIST,
                                 HnsBufferDuration,
                                 0,
                                 @TargetWfx,
@@ -1429,7 +1500,8 @@ begin
   if Failed(Hr) then
     Exit(Hr);
 
-  Hr := AAudioClient.GetService(IAudioCaptureClient, ACaptureClient);
+  Hr := AAudioClient.GetService(IAudioCaptureClient,
+                                ACaptureClient);
   if Failed(Hr) then
     Exit(Hr);
 
@@ -1457,13 +1529,16 @@ procedure TMfMicrophoneDeckEngine.ThreadCloseAudio(var AEnumerator: IMMDeviceEnu
                                                    var ADevice: IMMDevice;
                                                    var AAudioClient: IAudioClient;
                                                    var ACaptureClient: IAudioCaptureClient);
+
 begin
+
   ACaptureClient := nil;
   AAudioClient := nil;
   ADevice := nil;
   AEnumerator := nil;
   FreeWaveFormat;
 end;
+
 
 procedure TMfMicrophoneDeckEngine.ThreadExecute;
 var
@@ -1594,9 +1669,9 @@ begin
                                           False,
                                           INFINITE);
 
-         // Extra security when stopping, can't hurt either.
-         if FStopping then
-           Break;
+        // Extra security when stopping, can't hurt either.
+        if FStopping then
+          Break;
 
         if (WaitRes = WAIT_OBJECT_0) then
           Break;
@@ -1673,8 +1748,10 @@ begin
 
                   try
 
-                    ProcessCapturedBlock(@FTempStereo[0], Integer(NumFramesAvailable));
-                    RingWriteFrames(@FTempStereo[0], Integer(NumFramesAvailable));
+                    ProcessCapturedBlock(@FTempStereo[0],
+                                         Integer(NumFramesAvailable));
+                    RingWriteFrames(@FTempStereo[0],
+                                    Integer(NumFramesAvailable));
                   finally
 
                     FLock.Release;

@@ -86,7 +86,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
@@ -94,9 +95,10 @@ type
   // Specifies the extent to which D2D will throttle work sent to the GPU.
   PD2D1_RENDERING_PRIORITY = ^D2D1_RENDERING_PRIORITY;
   D2D1_RENDERING_PRIORITY = DWord;
+
 const
-  D2D1_RENDERING_PRIORITY_NORMAL      = D2D1_RENDERING_PRIORITY(0);
-  D2D1_RENDERING_PRIORITY_LOW         = D2D1_RENDERING_PRIORITY(1);
+  D2D1_RENDERING_PRIORITY_NORMAL = D2D1_RENDERING_PRIORITY(0);
+  D2D1_RENDERING_PRIORITY_LOW = D2D1_RENDERING_PRIORITY(1);
   //D2D1_RENDERING_PRIORITY_FORCE_DWORD = FORCEDWORD;
 
 
@@ -111,10 +113,11 @@ type
   // stroked geometry.
   //
   ID2D1GeometryRealization = interface(ID2D1Resource)
-  ['{a16907d7-bc02-4801-99e8-8cf7f485f774}']
+    ['{a16907d7-bc02-4801-99e8-8cf7f485f774}']
     // SDK native virtual methods.
 
   end;
+
   IID_ID2D1GeometryRealization = ID2D1GeometryRealization;
 
 
@@ -124,14 +127,22 @@ type
   // Enables creation and drawing of geometry realization objects.
   //
   ID2D1DeviceContext1 = interface(ID2D1DeviceContext)
-  ['{d37f57e4-6908-459f-a199-e72f24f79987}']
+    ['{d37f57e4-6908-459f-a199-e72f24f79987}']
     // SDK native virtual methods.
-    function CreateFilledGeometryRealization(geometry: ID2D1Geometry; flatteningTolerance: Single; out geometryRealization: ID2D1GeometryRealization): HRESULT; stdcall; overload;
+    function CreateFilledGeometryRealization(geometry: ID2D1Geometry;
+                                             flatteningTolerance: Single;
+                                             out geometryRealization: ID2D1GeometryRealization): HRESULT; stdcall; overload;
 
-    function CreateStrokedGeometryRealization(geometry: ID2D1Geometry; flatteningTolerance: Single; strokeWidth: Single; strokeStyle: ID2D1StrokeStyle; out geometryRealization: ID2D1GeometryRealization): HRESULT; stdcall; overload;
+    function CreateStrokedGeometryRealization(geometry: ID2D1Geometry;
+                                              flatteningTolerance: Single;
+                                              strokeWidth: Single;
+                                              strokeStyle: ID2D1StrokeStyle;
+                                              out geometryRealization: ID2D1GeometryRealization): HRESULT; stdcall; overload;
 
-    procedure DrawGeometryRealization(geometryRealization: ID2D1GeometryRealization; brush: ID2D1Brush); stdcall; overload;
+    procedure DrawGeometryRealization(geometryRealization: ID2D1GeometryRealization;
+                                      brush: ID2D1Brush); stdcall; overload;
   end;
+
   IID_ID2D1DeviceContext1 = ID2D1DeviceContext1;
 
 
@@ -142,14 +153,16 @@ type
   // together.
   //
   ID2D1Device1 = interface(ID2D1Device)
-  ['{d21768e1-23a4-4823-a14b-7c3eba85d658}']
+    ['{d21768e1-23a4-4823-a14b-7c3eba85d658}']
     // SDK native virtual methods.
     function GetRenderingPriority(): D2D1_RENDERING_PRIORITY; stdcall; overload;
 
     procedure SetRenderingPriority(renderingPriority: D2D1_RENDERING_PRIORITY); stdcall; overload;
 
-    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS; out deviceContext1: ID2D1DeviceContext1): HRESULT; stdcall; overload;
+    function CreateDeviceContext(options: D2D1_DEVICE_CONTEXT_OPTIONS;
+                                 out deviceContext1: ID2D1DeviceContext1): HRESULT; stdcall; overload;
   end;
+
   IID_ID2D1Device1 = ID2D1Device1;
 
 
@@ -159,10 +172,12 @@ type
   // ID2D1Device1 objects.
   //
   ID2D1Factory2 = interface(ID2D1Factory1)
-  ['{94f81a73-9212-4376-9c58-b16a3a0d3992}']
+    ['{94f81a73-9212-4376-9c58-b16a3a0d3992}']
     // SDK native virtual methods.
-    function CreateDevice(dxgiDevice: IDXGIDevice; out d2dDevice1: ID2D1Device1): HRESULT; stdcall; overload;
+    function CreateDevice(dxgiDevice: IDXGIDevice;
+                          out d2dDevice1: ID2D1Device1): HRESULT; stdcall; overload;
   end;
+
   IID_ID2D1Factory2 = ID2D1Factory2;
 
 
@@ -173,25 +188,26 @@ type
   // through its SetPrimitiveBlend1 method.
   //
   ID2D1CommandSink1 = interface(ID2D1CommandSink)
-  ['{9eb767fd-4269-4467-b8c2-eb30cb305743}']
+    ['{9eb767fd-4269-4467-b8c2-eb30cb305743}']
     // SDK native virtual methods.
     function SetPrimitiveBlend1(primitiveBlend: D2D1_PRIMITIVE_BLEND): HRESULT; stdcall; overload;
   end;
+
   IID_ID2D1CommandSink1 = ID2D1CommandSink1;
 
 
-//#if NTDDI_VERSION >= NTDDI_WINBLUE
+  //#if NTDDI_VERSION >= NTDDI_WINBLUE
 
-  // Computes the maximum factor by which a given transform can stretch any vector.
-  // See: https://docs.microsoft.com/en-us/windows/desktop/api/d2d1_2/nf-d2d1_2-d2d1computemaximumscalefactor
-  function D2D1ComputeMaximumScaleFactor(const matrix: D2D1_MATRIX_3X2_F): Single; stdcall;
+// Computes the maximum factor by which a given transform can stretch any vector.
+// See: https://docs.microsoft.com/en-us/windows/desktop/api/d2d1_2/nf-d2d1_2-d2d1computemaximumscalefactor
+function D2D1ComputeMaximumScaleFactor(const matrix: D2D1_MATRIX_3X2_F): Single; stdcall;
 
 //#endif // #if NTDDI_VERSION >= NTDDI_WINBLUE
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 
 implementation
@@ -200,8 +216,8 @@ implementation
 const
   D2D1_2Lib = 'D2d1.dll';
 
-  function D2D1ComputeMaximumScaleFactor; external D2D1_2Lib name 'D2D1ComputeMaximumScaleFactor' ;
+function D2D1ComputeMaximumScaleFactor; external D2D1_2Lib name 'D2D1ComputeMaximumScaleFactor';
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

@@ -64,17 +64,17 @@ unit RDJ.Setup;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-WinApi.WinApiTypes,
+  WinApi.WinApiTypes,
   {System}
   SysUtils,
   IniFiles,
   {Vcl}
   Forms;
-
 
 const
 
@@ -221,24 +221,24 @@ type
   TRecordTapPoint = (rtpPreFx,
                      rtpPostFx);
 
-  procedure SetGlobalSetupOnce(const ASetupRec: TRDJSetup);
-  procedure LockGlobalSetup();
-  function GetGlobalSetup(): TRDJSetup;
-  function IsGlobalSetupLocked: Boolean;
+procedure SetGlobalSetupOnce(const ASetupRec: TRDJSetup);
+procedure LockGlobalSetup();
+function GetGlobalSetup(): TRDJSetup;
+function IsGlobalSetupLocked: Boolean;
 
-  function GetDefaultSetupFileName(): string;
+function GetDefaultSetupFileName(): string;
 
-  function FxKindToIniName(const AFxKind: TRDJFxKind): string;
-  function IniNameToFxKind(const S: string): TRDJFxKind;
+function FxKindToIniName(const AFxKind: TRDJFxKind): string;
+function IniNameToFxKind(const S: string): TRDJFxKind;
 
-  procedure InitDefaultFxRack(var ARack: TRDJFxRackSetup);
-  procedure InitDefaultSetup(var ASetupRec: TRDJSetup);
+procedure InitDefaultFxRack(var ARack: TRDJFxRackSetup);
+procedure InitDefaultSetup(var ASetupRec: TRDJSetup);
 
-  procedure LoadSetupFromIni(const FileName: string;
-                             var ASetupRec: TRDJSetup);
+procedure LoadSetupFromIni(const FileName: string;
+                           var ASetupRec: TRDJSetup);
 
-  procedure SaveSetupToIni(const FileName: string;
-                           const ASetupRec: TRDJSetup);
+procedure SaveSetupToIni(const FileName: string;
+                         const ASetupRec: TRDJSetup);
 
 
 implementation
@@ -250,6 +250,7 @@ var
 
 
 function FxKindToIniName(const AFxKind: TRDJFxKind): string;
+
 begin
 
   case AFxKind of
@@ -264,29 +265,30 @@ begin
 
     fxkPitchTempo:
       Result := 'PitchTempo';
-  else
-    Result := 'Unknown';
+    else
+      Result := 'Unknown';
   end;
 end;
 
 
 function IniNameToFxKind(const S: string): TRDJFxKind;
+
 begin
 
   if SameText(S,
-              'ParametricEq') then
+    'ParametricEq') then
     Exit(fxkParametricEq);
 
   if SameText(S,
-              'CompressorLimiter') then
+    'CompressorLimiter') then
     Exit(fxkCompressorLimiter);
 
   if SameText(S,
-              'FlangerEcho') then
+    'FlangerEcho') then
     Exit(fxkFlangerEcho);
 
   if SameText(S,
-              'PitchTempo') then
+    'PitchTempo') then
     Exit(fxkPitchTempo);
 
   Result := fxkUnknown;
@@ -399,24 +401,27 @@ begin
   ASetupRec.AudioRecorderRecordPostFx := False;
 
   ASetupRec.AudioRecordingsDir := 'Recordings';
-  ASetupRec.AudioRecordingsPath := Format('%s\%s\', [ExtractFileDir(Application.ExeName),
-                                          ASetupRec.AudioRecordingsDir]);
+  ASetupRec.AudioRecordingsPath := Format('%s\%s\',
+                                          [ExtractFileDir(Application.ExeName),
+    ASetupRec.AudioRecordingsDir]);
 
   if not DirectoryExists(ASetupRec.AudioRecordingsPath) then
     if not CreateDir(ASetupRec.AudioRecordingsPath) then
       ASetupRec.AudioRecordingsPath := ExpandFileName(ExtractFileDir(Application.ExeName));
 
   ASetupRec.DatabaseDir := 'Data';
-  ASetupRec.DatabasePath := Format('%s\%s\', [ExtractFileDir(Application.ExeName),
-                                          ASetupRec.DatabaseDir]);
+  ASetupRec.DatabasePath := Format('%s\%s\',
+                                   [ExtractFileDir(Application.ExeName),
+    ASetupRec.DatabaseDir]);
 
   if not DirectoryExists(ASetupRec.DatabasePath) then
     if not CreateDir(ASetupRec.DatabasePath) then
       ASetupRec.DatabasePath := ExpandFileName(ExtractFileDir(Application.ExeName));
 
   ASetupRec.LocalCoversDir := 'Covers';
-  ASetupRec.LocalCoversPath := Format('%s\%s\', [ExtractFileDir(Application.ExeName),
-                                                 ASetupRec.LocalCoversDir]);
+  ASetupRec.LocalCoversPath := Format('%s\%s\',
+                                      [ExtractFileDir(Application.ExeName),
+    ASetupRec.LocalCoversDir]);
 
   if not DirectoryExists(ASetupRec.LocalCoversPath) then
     if not CreateDir(ASetupRec.LocalCoversPath) then
@@ -437,6 +442,7 @@ end;
 
 
 procedure SetGlobalSetupOnce(const ASetupRec: TRDJSetup);
+
 begin
 
   if gSetupLocked then
@@ -448,6 +454,7 @@ end;
 
 
 procedure LockGlobalSetup();
+
 begin
 
   gSetupLocked := True;
@@ -455,6 +462,7 @@ end;
 
 
 function GetGlobalSetup: TRDJSetup;
+
 begin
 
   if not gSetupIsSet then
@@ -469,6 +477,7 @@ end;
 
 
 function IsGlobalSetupLocked: Boolean;
+
 begin
 
   Result := gSetupLocked;
@@ -476,6 +485,7 @@ end;
 
 
 function GetDefaultSetupFileName(): string;
+
 begin
 
   Result := ChangeFileExt(ParamStr(0),
@@ -687,7 +697,7 @@ begin
 
     ASetupRec.AudioRecordingsPath := iniFile.ReadString('Paths',
                                                         'Recordings',
-                                                         ASetupRec.AudioRecordingsPath);
+                                                        ASetupRec.AudioRecordingsPath);
 
     // Database
     ASetupRec.DatabaseDir := iniFile.ReadString('Dir',
@@ -769,8 +779,8 @@ begin
                                                         ASetupRec.Broadcast.Channels);
 
     ASetupRec.Broadcast.TapPoint := TRDJBroadcastTapPoint(iniFile.ReadInteger('SetupBroadcast',
-                                                          'TapPoint',
-                                                          Ord(ASetupRec.Broadcast.TapPoint)));
+                                                                              'TapPoint',
+                                                                              Ord(ASetupRec.Broadcast.TapPoint)));
 
     ASetupRec.Broadcast.AutoReconnect := iniFile.ReadBool('SetupBroadcast',
                                                           'AutoReconnect',

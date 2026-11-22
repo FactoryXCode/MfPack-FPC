@@ -88,33 +88,33 @@ type
   PByteArray = ^TByteArray;
 
 
-  procedure Int16ToFloat(const InBytes: PByte;
-                         OutF: PSingle;
-                         Samples: Integer); //inline;
+procedure Int16ToFloat(const InBytes: PByte;
+                       OutF: PSingle;
+                       Samples: Integer); //inline;
 
-  procedure Int32ToFloat(const InBytes: PByte;
-                         OutF: PSingle;
-                         Samples: Integer); inline;
+procedure Int32ToFloat(const InBytes: PByte;
+                       OutF: PSingle;
+                       Samples: Integer); inline;
 
-  procedure Int24ToFloat(const InBytes: PByte;
-                         OutF: PSingle;
-                         Samples: Integer); inline;
+procedure Int24ToFloat(const InBytes: PByte;
+                       OutF: PSingle;
+                       Samples: Integer); inline;
 
-  procedure FloatToInt16(const InF: PSingle;
-                         OutBytes: PByte;
-                         Samples: Integer); inline;
+procedure FloatToInt16(const InF: PSingle;
+                       OutBytes: PByte;
+                       Samples: Integer); inline;
 
-  procedure FloatToInt32(const InF: PSingle;
-                         OutBytes: PByte;
-                         Samples: Integer); inline;
+procedure FloatToInt32(const InF: PSingle;
+                       OutBytes: PByte;
+                       Samples: Integer); inline;
 
-  procedure FloatToInt24(const InF: PSingle;
-                         OutBytes: PByte;
-                         Samples: Integer); inline;
+procedure FloatToInt24(const InF: PSingle;
+                       OutBytes: PByte;
+                       Samples: Integer); inline;
 
-  procedure EnsureDynFloatBuf(var Buf: PSingle;
-                              var CapacitySamples: Integer;
-                              NeededSamples: Integer); inline;
+procedure EnsureDynFloatBuf(var Buf: PSingle;
+                            var CapacitySamples: Integer;
+                            NeededSamples: Integer); inline;
 
 
 implementation
@@ -182,18 +182,21 @@ begin
   pOut := OutF;
 
   for i := 0 to Samples - 1 do
-  begin
-    b0 := p^; Inc(p);
-    b1 := p^; Inc(p);
-    b2 := p^; Inc(p);
+    begin
+      b0 := p^;
+      Inc(p);
+      b1 := p^;
+      Inc(p);
+      b2 := p^;
+      Inc(p);
 
-    v := (b0) or (b1 shl 8) or (b2 shl 16);
-    if (v and $00800000) <> 0 then
-      v := v or Integer($FF000000);
+      v := (b0) or (b1 shl 8) or (b2 shl 16);
+      if ((v and $00800000) <> 0) then
+        v := v or Integer($FF000000);
 
-    pOut^ := v * (1.0 / 8388608.0);
-    Inc(pOut);
-  end;
+      pOut^ := v * (1.0 / 8388608.0);
+      Inc(pOut);
+    end;
 end;
 
 
@@ -218,16 +221,14 @@ begin
       x := pIn^;
       if (x < -1.0) then
         x := -1.0
-      else
-        if (x > 0.9999695) then
-          x := 0.9999695;
+      else if (x > 0.9999695) then
+        x := 0.9999695;
 
       v := Round(x * 32768.0);
       if (v < -32768) then
         v := -32768
-      else
-        if (v > 32767) then
-          v := 32767;
+      else if (v > 32767) then
+        v := 32767;
 
       pOut^ := SmallInt(v);
 
@@ -259,16 +260,14 @@ begin
 
       if (x < -1.0) then
         x := -1.0
-      else
-        if (x > 0.99999994) then
-          x := 0.99999994;
+      else if (x > 0.99999994) then
+        x := 0.99999994;
 
       v64 := Round(x * 2147483648.0);
       if (v64 < Int64(-2147483648)) then
         v64 := Int64(-2147483648)
-      else
-        if (v64 > Int64(2147483647)) then
-          v64 := Int64(2147483647);
+      else if (v64 > Int64(2147483647)) then
+        v64 := Int64(2147483647);
 
       pOut^ := Integer(v64);
 
@@ -300,16 +299,14 @@ begin
 
       if (x < -1.0) then
         x := -1.0
-      else
-        if (x > 0.99999994) then
-          x := 0.99999994;
+      else if (x > 0.99999994) then
+        x := 0.99999994;
 
       v := Round(x * 8388608.0);
       if (v < -8388608) then
         v := -8388608
-      else
-        if (v > 8388607) then
-          v := 8388607;
+      else if (v > 8388607) then
+        v := 8388607;
 
       p^ := Byte(v and $FF);
       Inc(p);
@@ -321,7 +318,7 @@ begin
       Inc(p);
 
       Inc(pIn);
-  end;
+    end;
 end;
 
 

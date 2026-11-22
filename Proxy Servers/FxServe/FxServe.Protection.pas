@@ -77,6 +77,7 @@ type
                               prConcurrentLimited);
 
   TFxServeProtectionEntry = class
+
   public
     Tokens: Double;
     LastRefillMs: UInt64;
@@ -86,16 +87,18 @@ type
   end;
 
   TFxServeRequestProtection = class
+
   private
     FRequestsPerMinute: Integer;
     FBurst: Integer;
     FMaxConcurrentPerAddress: Integer;
     FBlockSeconds: Integer;
-    FEntries: TObjectDictionary<string, TFxServeProtectionEntry>;
+    FEntries: TObjectDictionary < string, TFxServeProtectionEntry > ;
     FLock: SyncObjs.TCriticalSection;
     FCheckCount: Cardinal;
 
     procedure Prune(ANowMs: UInt64);
+
   public
     constructor Create(ARequestsPerMinute,
                        ABurst,
@@ -125,12 +128,14 @@ function MonotonicMilliseconds(): UInt64;
 var
   Counter: Int64;
   Frequency: Int64;
+
 begin
+
   if QueryPerformanceCounter(Counter) and
-     QueryPerformanceFrequency(Frequency) and
-     (Frequency > 0) then
+    QueryPerformanceFrequency(Frequency) and
+    (Frequency > 0) then
     Result := UInt64(Counter div Frequency) * 1000 +
-              UInt64((Counter mod Frequency) * 1000 div Frequency)
+      UInt64((Counter mod Frequency) * 1000 div Frequency)
   else
     Result := GetTickCount();
 end;
@@ -140,20 +145,25 @@ constructor TFxServeRequestProtection.Create(ARequestsPerMinute,
                                              ABurst,
                                              AMaxConcurrentPerAddress,
                                              ABlockSeconds: Integer);
+
 begin
+
   inherited Create();
 
   FRequestsPerMinute := ARequestsPerMinute;
   FBurst := ABurst;
   FMaxConcurrentPerAddress := AMaxConcurrentPerAddress;
   FBlockSeconds := ABlockSeconds;
-  FEntries := TObjectDictionary<string, TFxServeProtectionEntry>.Create([doOwnsValues]);
+  FEntries := (TObjectDictionary < string,
+               TFxServeProtectionEntry > .Create([doOwnsValues]));
   FLock := SyncObjs.TCriticalSection.Create;
 end;
 
 
 destructor TFxServeRequestProtection.Destroy();
+
 begin
+
   FLock.Free;
   FEntries.Free;
 
@@ -163,29 +173,33 @@ end;
 
 procedure TFxServeRequestProtection.Prune(ANowMs: UInt64);
 var
-  Keys: TArray<string>;
+  Keys: TArray < string > ;
   Key: string;
   Entry: TFxServeProtectionEntry;
   MaxIdleMs: UInt64;
+
 begin
+
   MaxIdleMs := ENTRY_IDLE_MS;
-  if UInt64(FBlockSeconds) * 1000 > MaxIdleMs then
+  if (UInt64(FBlockSeconds) * 1000 > MaxIdleMs) then
     MaxIdleMs := UInt64(FBlockSeconds) * 1000;
 
   Keys := FEntries.Keys.ToArray;
   for Key in Keys do
     if FEntries.TryGetValue(Key, Entry) and
-       (Entry.ActiveRequests = 0) and
-       (ANowMs >= Entry.LastSeenMs) and
-       (ANowMs - Entry.LastSeenMs >= MaxIdleMs) then
+      (Entry.ActiveRequests = 0) and
+      (ANowMs >= Entry.LastSeenMs) and
+      (ANowMs - Entry.LastSeenMs >= MaxIdleMs) then
       FEntries.Remove(Key);
 end;
 
 
 function TFxServeRequestProtection.TryBeginRequest(
   const AAddress: string;
-  out ARetryAfterSeconds: Integer): TFxServeProtectionResult;
+                                                   out ARetryAfterSeconds: Integer): TFxServeProtectionResult;
+
 begin
+
   Result := TryBeginRequestAt(AAddress,
                               MonotonicMilliseconds(),
                               ARetryAfterSeconds);
@@ -194,25 +208,27 @@ end;
 
 function TFxServeRequestProtection.TryBeginRequestAt(
   const AAddress: string;
-  ANowMs: UInt64;
-  out ARetryAfterSeconds: Integer): TFxServeProtectionResult;
+                                                     ANowMs: UInt64;
+                                                     out ARetryAfterSeconds: Integer): TFxServeProtectionResult;
 var
   Key: string;
   Entry: TFxServeProtectionEntry;
   ElapsedMs: UInt64;
   RemainingMs: UInt64;
+
 begin
+
   ARetryAfterSeconds := 0;
   Key := Trim(AAddress);
 
   // Do not combine unrelated clients into one bucket when no address exists.
-  if Key = '' then
+  if (Key = '') then
     Exit(prAllowed);
 
   FLock.Acquire;
   try
     Inc(FCheckCount);
-    if (FCheckCount and $FF) = 0 then
+    if ((FCheckCount and $FF) = 0) then
       Prune(ANowMs);
 
     if not FEntries.TryGetValue(Key, Entry) then
@@ -221,35 +237,36 @@ begin
         Entry.Tokens := FBurst;
         Entry.LastRefillMs := ANowMs;
         Entry.LastSeenMs := ANowMs;
-        FEntries.Add(Key, Entry);
+        FEntries.Add(Key,
+                     Entry);
       end;
 
     Entry.LastSeenMs := ANowMs;
 
-    if Entry.BlockedUntilMs > ANowMs then
+    if (Entry.BlockedUntilMs > ANowMs) then
       begin
         RemainingMs := Entry.BlockedUntilMs - ANowMs;
         ARetryAfterSeconds := (RemainingMs + 999) div 1000;
         Exit(prRateLimited);
       end;
 
-    if ANowMs >= Entry.LastRefillMs then
+    if (ANowMs >= Entry.LastRefillMs) then
       begin
         ElapsedMs := ANowMs - Entry.LastRefillMs;
         Entry.Tokens := Entry.Tokens +
           (ElapsedMs * (FRequestsPerMinute / 60000.0));
-        if Entry.Tokens > FBurst then
+        if (Entry.Tokens > FBurst) then
           Entry.Tokens := FBurst;
         Entry.LastRefillMs := ANowMs;
       end;
 
-    if Entry.ActiveRequests >= FMaxConcurrentPerAddress then
+    if (Entry.ActiveRequests >= FMaxConcurrentPerAddress) then
       begin
         ARetryAfterSeconds := 1;
         Exit(prConcurrentLimited);
       end;
 
-    if Entry.Tokens < 1.0 then
+    if (Entry.Tokens < 1.0) then
       begin
         Entry.BlockedUntilMs := ANowMs + UInt64(FBlockSeconds) * 1000;
         ARetryAfterSeconds := FBlockSeconds;
@@ -269,15 +286,17 @@ procedure TFxServeRequestProtection.EndRequest(const AAddress: string);
 var
   Key: string;
   Entry: TFxServeProtectionEntry;
+
 begin
+
   Key := Trim(AAddress);
-  if Key = '' then
+  if (Key = '') then
     Exit;
 
   FLock.Acquire;
   try
     if FEntries.TryGetValue(Key, Entry) and
-       (Entry.ActiveRequests > 0) then
+      (Entry.ActiveRequests > 0) then
       Dec(Entry.ActiveRequests);
   finally
     FLock.Release;

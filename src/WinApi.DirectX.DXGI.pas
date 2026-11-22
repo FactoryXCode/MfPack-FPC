@@ -86,97 +86,99 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
-//--------------------------------------------------------------------------------------------------------
-// DXGI API-only types
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
+  // DXGI API-only types
+  //--------------------------------------------------------------------------------------------------------
 
 const
-//--------------------------------------------------------------------------------------------------------
-// DXGI usages are a UINT with the following fields:
-// 33222222222211111111110000000000
-// 10987654321098765432109876543210
-// [PC][PRIVATE][     DXGI    ][DA]
-//
-// DA is a 4-bit field that encodes CPU data access patterns.
-//    0     No CPU access. Maps should be validated to fail on this access.
-//    1     Dynamic: Frequent CPU write-only access, high-performance GPU read-only access.
-//    2     CPU-friendly: Frequent CPU read/write access, non-optimal GPU read-only access.
-//    3     CPU-scratch: Frequent CPU read/write access, no GPU access.
-  DXGI_CPU_ACCESS_NONE                = 0;
-  DXGI_CPU_ACCESS_DYNAMIC             = 1;
-  DXGI_CPU_ACCESS_READ_WRITE          = 2;
-  DXGI_CPU_ACCESS_SCRATCH             = 3;
-  DXGI_CPU_ACCESS_FIELD               = 15;
+  //--------------------------------------------------------------------------------------------------------
+  // DXGI usages are a UINT with the following fields:
+  // 33222222222211111111110000000000
+  // 10987654321098765432109876543210
+  // [PC][PRIVATE][     DXGI    ][DA]
+  //
+  // DA is a 4-bit field that encodes CPU data access patterns.
+  //    0     No CPU access. Maps should be validated to fail on this access.
+  //    1     Dynamic: Frequent CPU write-only access, high-performance GPU read-only access.
+  //    2     CPU-friendly: Frequent CPU read/write access, non-optimal GPU read-only access.
+  //    3     CPU-scratch: Frequent CPU read/write access, no GPU access.
+  DXGI_CPU_ACCESS_NONE = 0;
+  DXGI_CPU_ACCESS_DYNAMIC = 1;
+  DXGI_CPU_ACCESS_READ_WRITE = 2;
+  DXGI_CPU_ACCESS_SCRATCH = 3;
+  DXGI_CPU_ACCESS_FIELD = 15;
 
-//
-// DXGI is a 15-bit field containing DXGI-defined usages. In DXGI's first revision, these usages refer only to 2D
-// non-mipped resources: the only resource type that DXGI intends to share cross-process, cross-API. Further
-// 2D non-mipped uses can be added here (for example, DXVA extensions)
-//
-// Bitfield meanings: (Shift these into bits 18:4)
-  DXGI_USAGE_SHADER_INPUT             = $00000010;
-  DXGI_USAGE_RENDER_TARGET_OUTPUT     = $00000020;
-  DXGI_USAGE_BACK_BUFFER              = $00000040;
-  DXGI_USAGE_SHARED                   = $00000080;
-  DXGI_USAGE_READ_ONLY                = $00000100;
-  DXGI_USAGE_DISCARD_ON_PRESENT       = $00000200;
-  DXGI_USAGE_UNORDERED_ACCESS         = $00000400;
+  //
+  // DXGI is a 15-bit field containing DXGI-defined usages. In DXGI's first revision, these usages refer only to 2D
+  // non-mipped resources: the only resource type that DXGI intends to share cross-process, cross-API. Further
+  // 2D non-mipped uses can be added here (for example, DXVA extensions)
+  //
+  // Bitfield meanings: (Shift these into bits 18:4)
+  DXGI_USAGE_SHADER_INPUT = $00000010;
+  DXGI_USAGE_RENDER_TARGET_OUTPUT = $00000020;
+  DXGI_USAGE_BACK_BUFFER = $00000040;
+  DXGI_USAGE_SHARED = $00000080;
+  DXGI_USAGE_READ_ONLY = $00000100;
+  DXGI_USAGE_DISCARD_ON_PRESENT = $00000200;
+  DXGI_USAGE_UNORDERED_ACCESS = $00000400;
 
-// See dxgiinternal.idl for private DXGI USAGE BITS, e.g.
-// #define DXGI_USAGE_REMOTE_SWAPCHAIN_BUFFER  ( 1L << (15 + 4) )
-// #define DXGI_USAGE_GDI_COMPATIBLE           ( 1L << (16 + 4) )
+  // See dxgiinternal.idl for private DXGI USAGE BITS, e.g.
+  // #define DXGI_USAGE_REMOTE_SWAPCHAIN_BUFFER  ( 1L << (15 + 4) )
+  // #define DXGI_USAGE_GDI_COMPATIBLE           ( 1L << (16 + 4) )
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
 
   DXGI_RESOURCE_PRIORITY_MINIMUM: UINT = $28000000;
-  DXGI_RESOURCE_PRIORITY_LOW:     UINT = $50000000;
-  DXGI_RESOURCE_PRIORITY_NORMAL:  UINT = $78000000;
-  DXGI_RESOURCE_PRIORITY_HIGH:    UINT = $a0000000;
+  DXGI_RESOURCE_PRIORITY_LOW: UINT = $50000000;
+  DXGI_RESOURCE_PRIORITY_NORMAL: UINT = $78000000;
+  DXGI_RESOURCE_PRIORITY_HIGH: UINT = $a0000000;
   DXGI_RESOURCE_PRIORITY_MAXIMUM: UINT = $c8000000;
 
-  DXGI_MAP_READ:    UINT = 1;
-  DXGI_MAP_WRITE:   UINT = 2;
+  DXGI_MAP_READ: UINT = 1;
+  DXGI_MAP_WRITE: UINT = 2;
   DXGI_MAP_DISCARD: UINT = 4;
 
   DXGI_ENUM_MODES_INTERLACED: UINT = 1;
-  DXGI_ENUM_MODES_SCALING:    UINT = 2;
+  DXGI_ENUM_MODES_SCALING: UINT = 2;
 
-  DXGI_MAX_SWAP_CHAIN_BUFFERS         = 16;
-  DXGI_PRESENT_TEST                   = $00000001;
-  DXGI_PRESENT_DO_NOT_SEQUENCE        = $00000002;
-  DXGI_PRESENT_RESTART                = $00000004;
-  DXGI_PRESENT_DO_NOT_WAIT            = $00000008;
-  DXGI_PRESENT_STEREO_PREFER_RIGHT    = $00000010;
-  DXGI_PRESENT_STEREO_TEMPORARY_MONO  = $00000020;
-  DXGI_PRESENT_RESTRICT_TO_OUTPUT     = $00000040;
+  DXGI_MAX_SWAP_CHAIN_BUFFERS = 16;
+  DXGI_PRESENT_TEST = $00000001;
+  DXGI_PRESENT_DO_NOT_SEQUENCE = $00000002;
+  DXGI_PRESENT_RESTART = $00000004;
+  DXGI_PRESENT_DO_NOT_WAIT = $00000008;
+  DXGI_PRESENT_STEREO_PREFER_RIGHT = $00000010;
+  DXGI_PRESENT_STEREO_TEMPORARY_MONO = $00000020;
+  DXGI_PRESENT_RESTRICT_TO_OUTPUT = $00000040;
   // See dxgidwm.idl for private DXGI Present Bits.
   // DXGI_PRESENT_DDA_PROTECTED_CONTENT = $00000080 // reserved
-  DXGI_PRESENT_USE_DURATION           = $00000100;
-  DXGI_PRESENT_ALLOW_TEARING          = $00000200;
+  DXGI_PRESENT_USE_DURATION = $00000100;
+  DXGI_PRESENT_ALLOW_TEARING = $00000200;
 
-  DXGI_MWA_NO_WINDOW_CHANGES          = (1 shl 0);
-  DXGI_MWA_NO_ALT_ENTER               = (1 shl 1);
-  DXGI_MWA_NO_PRINT_SCREEN            = (1 shl 2);
-  DXGI_MWA_VALID                      = $7;
+  DXGI_MWA_NO_WINDOW_CHANGES = (1 shl 0);
+  DXGI_MWA_NO_ALT_ENTER = (1 shl 1);
+  DXGI_MWA_NO_PRINT_SCREEN = (1 shl 2);
+  DXGI_MWA_VALID = $7;
 
 type
-//
-//
-// PRIVATE is a 9-bit field that has usages private to a particular producer implementation that are irrelevant to 2D bitmaps (for example, d3d index buffers)
-//
-// PC is a producer-code that defines the namespace within which PRIVATE bits exist. The
-// following PC codes are defined:
-//    0           DXGI (implying that DXGI usages can be extended to 24 bits (DXGI field plus the 9-bit private field)
-//    1           D3D (covering d3d10 and later revisions)typedef DXGI_USAGE UINT;
+  //
+  //
+  // PRIVATE is a 9-bit field that has usages private to a particular producer implementation that are irrelevant to 2D bitmaps (for example, d3d index buffers)
+  //
+  // PC is a producer-code that defines the namespace within which PRIVATE bits exist. The
+  // following PC codes are defined:
+  //    0           DXGI (implying that DXGI usages can be extended to 24 bits (DXGI field plus the 9-bit private field)
+  //    1           D3D (covering d3d10 and later revisions)typedef DXGI_USAGE UINT;
   PDXGI_USAGE = ^DXGI_USAGE;
   DXGI_USAGE = UINT;
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
   PDXGI_FRAME_STATISTICS = ^DXGI_FRAME_STATISTICS;
+
   DXGI_FRAME_STATISTICS = record
     PresentCount: UINT;
     PresentRefreshCount: UINT;
@@ -185,29 +187,32 @@ type
     SyncGPUTime: LARGE_INTEGER;
   end;
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
   PDXGI_MAPPED_RECT = ^DXGI_MAPPED_RECT;
+
   DXGI_MAPPED_RECT = record
     Pitch: Integer;
     pBits: PByte;
   end;
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
   // The system LUID struct isn't defined in wtypes, so we repeat it here just
   // for the MIDL compiler.
   // Delphi Note: The LUID (// Locally Unique Identifier) is also defined in MfpTypes.pas
 
-{$IFNDEF MFP_LUID}
+  {$IFNDEF MFP_LUID}
   PLUID = ^_LUID;
+
   _LUID = record
     LowPart: DWORD;
     HighPart: LONG;
   end;
   LUID = _LUID;
-{$ENDIF}
+  {$ENDIF}
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
   PDXGI_ADAPTER_DESC = ^DXGI_ADAPTER_DESC;
+
   DXGI_ADAPTER_DESC = record
     Description: array[0..127] of WideChar;
     VendorId: UINT;
@@ -220,16 +225,17 @@ type
     AdapterLuid: LUID;
   end;
 
-//--------------------------------------------------------------------------------------------------------
-// HMONITOR: This appears to be best (!) practice for preprocessor-declared windows macros that
-// need to be expressed as actual types in midl...
+  //--------------------------------------------------------------------------------------------------------
+  // HMONITOR: This appears to be best (!) practice for preprocessor-declared windows macros that
+  // need to be expressed as actual types in midl...
 
-{$IFNDEF MFP_HMONITOR}
+  {$IFNDEF MFP_HMONITOR}
   HMONITOR = THandle;
   PHMONITOR = ^HMONITOR;
-{$ENDIF}
+  {$ENDIF}
 
   PDXGI_OUTPUT_DESC = ^DXGI_OUTPUT_DESC;
+
   DXGI_OUTPUT_DESC = record
     DeviceName: array[0..31] of WideChar;  // Device name for GDI (ex. \\.\DISPLAY1)
     DesktopCoordinates: TRect;
@@ -238,24 +244,27 @@ type
     Monitor: HMONITOR;
   end;
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
   PDXGI_SHARED_RESOURCE = ^DXGI_SHARED_RESOURCE;
+
   DXGI_SHARED_RESOURCE = record
     Handle: THandle;
   end;
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
 type
   PDXGI_RESIDENCY = ^DXGI_RESIDENCY;
   DXGI_RESIDENCY = DWord;
-const
-  DXGI_RESIDENCY_FULLY_RESIDENT            = DXGI_RESIDENCY(1);
-  DXGI_RESIDENCY_RESIDENT_IN_SHARED_MEMORY = DXGI_RESIDENCY(2);
-  DXGI_RESIDENCY_EVICTED_TO_DISK           = DXGI_RESIDENCY(3);
 
-//--------------------------------------------------------------------------------------------------------
+const
+  DXGI_RESIDENCY_FULLY_RESIDENT = DXGI_RESIDENCY(1);
+  DXGI_RESIDENCY_RESIDENT_IN_SHARED_MEMORY = DXGI_RESIDENCY(2);
+  DXGI_RESIDENCY_EVICTED_TO_DISK = DXGI_RESIDENCY(3);
+
+  //--------------------------------------------------------------------------------------------------------
 type
   PDXGI_SURFACE_DESC = ^DXGI_SURFACE_DESC;
+
   DXGI_SURFACE_DESC = record
     Width: UINT;
     Height: UINT;
@@ -263,50 +272,54 @@ type
     SampleDesc: DXGI_SAMPLE_DESC;
   end;
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
 type
   PDXGI_SWAP_EFFECT = ^DXGI_SWAP_EFFECT;
   DXGI_SWAP_EFFECT = DWord;
-const
-  DXGI_SWAP_EFFECT_DISCARD         = DXGI_SWAP_EFFECT(0);
-  DXGI_SWAP_EFFECT_SEQUENTIAL      = DXGI_SWAP_EFFECT(1);
-  DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL = DXGI_SWAP_EFFECT(3);
-  DXGI_SWAP_EFFECT_FLIP_DISCARD    = DXGI_SWAP_EFFECT(4);
 
-//--------------------------------------------------------------------------------------------------------
+const
+  DXGI_SWAP_EFFECT_DISCARD = DXGI_SWAP_EFFECT(0);
+  DXGI_SWAP_EFFECT_SEQUENTIAL = DXGI_SWAP_EFFECT(1);
+  DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL = DXGI_SWAP_EFFECT(3);
+  DXGI_SWAP_EFFECT_FLIP_DISCARD = DXGI_SWAP_EFFECT(4);
+
+  //--------------------------------------------------------------------------------------------------------
 type
   PDXGI_SWAP_CHAIN_FLAG = ^DXGI_SWAP_CHAIN_FLAG;
   DXGI_SWAP_CHAIN_FLAG = DWord;
+
 const
-  DXGI_SWAP_CHAIN_FLAG_NONPREROTATED                          = DXGI_SWAP_CHAIN_FLAG(1);
-  DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH                      = DXGI_SWAP_CHAIN_FLAG(2);
-  DXGI_SWAP_CHAIN_FLAG_GDI_COMPATIBLE                         = DXGI_SWAP_CHAIN_FLAG(4);
-  DXGI_SWAP_CHAIN_FLAG_RESTRICTED_CONTENT                     = DXGI_SWAP_CHAIN_FLAG(8);
-  DXGI_SWAP_CHAIN_FLAG_RESTRICT_SHARED_RESOURCE_DRIVER        = DXGI_SWAP_CHAIN_FLAG(16);
-  DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY                           = DXGI_SWAP_CHAIN_FLAG(32);
-  DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT          = DXGI_SWAP_CHAIN_FLAG(64);
-  DXGI_SWAP_CHAIN_FLAG_FOREGROUND_LAYER                       = DXGI_SWAP_CHAIN_FLAG(128);
-  DXGI_SWAP_CHAIN_FLAG_FULLSCREEN_VIDEO                       = DXGI_SWAP_CHAIN_FLAG(256);
-  DXGI_SWAP_CHAIN_FLAG_YUV_VIDEO                              = DXGI_SWAP_CHAIN_FLAG(512);
-  DXGI_SWAP_CHAIN_FLAG_HW_PROTECTED                           = DXGI_SWAP_CHAIN_FLAG(1024);
-  DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING                          = DXGI_SWAP_CHAIN_FLAG(2048);
+  DXGI_SWAP_CHAIN_FLAG_NONPREROTATED = DXGI_SWAP_CHAIN_FLAG(1);
+  DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH = DXGI_SWAP_CHAIN_FLAG(2);
+  DXGI_SWAP_CHAIN_FLAG_GDI_COMPATIBLE = DXGI_SWAP_CHAIN_FLAG(4);
+  DXGI_SWAP_CHAIN_FLAG_RESTRICTED_CONTENT = DXGI_SWAP_CHAIN_FLAG(8);
+  DXGI_SWAP_CHAIN_FLAG_RESTRICT_SHARED_RESOURCE_DRIVER = DXGI_SWAP_CHAIN_FLAG(16);
+  DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY = DXGI_SWAP_CHAIN_FLAG(32);
+  DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT = DXGI_SWAP_CHAIN_FLAG(64);
+  DXGI_SWAP_CHAIN_FLAG_FOREGROUND_LAYER = DXGI_SWAP_CHAIN_FLAG(128);
+  DXGI_SWAP_CHAIN_FLAG_FULLSCREEN_VIDEO = DXGI_SWAP_CHAIN_FLAG(256);
+  DXGI_SWAP_CHAIN_FLAG_YUV_VIDEO = DXGI_SWAP_CHAIN_FLAG(512);
+  DXGI_SWAP_CHAIN_FLAG_HW_PROTECTED = DXGI_SWAP_CHAIN_FLAG(1024);
+  DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING = DXGI_SWAP_CHAIN_FLAG(2048);
   DXGI_SWAP_CHAIN_FLAG_RESTRICTED_TO_ALL_HOLOGRAPHIC_DISPLAYS = DXGI_SWAP_CHAIN_FLAG(4096);
   { 10.0.28000.0  }
-  DXGI_SWAP_CHAIN_FLAG_USE_DEFAULT_COLOR_SPACE                = DXGI_SWAP_CHAIN_FLAG(32768);
+  DXGI_SWAP_CHAIN_FLAG_USE_DEFAULT_COLOR_SPACE = DXGI_SWAP_CHAIN_FLAG(32768);
 
 type
   PDXGI_ADAPTER_FLAG = ^DXGI_ADAPTER_FLAG;
   DXGI_ADAPTER_FLAG = DWord;
+
 const
-  DXGI_ADAPTER_FLAG_NONE        = DXGI_ADAPTER_FLAG(0);
-  DXGI_ADAPTER_FLAG_REMOTE      = DXGI_ADAPTER_FLAG(1);
-  DXGI_ADAPTER_FLAG_SOFTWARE    = DXGI_ADAPTER_FLAG(2);
+  DXGI_ADAPTER_FLAG_NONE = DXGI_ADAPTER_FLAG(0);
+  DXGI_ADAPTER_FLAG_REMOTE = DXGI_ADAPTER_FLAG(1);
+  DXGI_ADAPTER_FLAG_SOFTWARE = DXGI_ADAPTER_FLAG(2);
   //DXGI_ADAPTER_FLAG_FORCE_DWORD = FORCEDWORD;
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
 type
   PDXGISwapChainDesc = ^DXGI_SWAP_CHAIN_DESC;
   PDXGI_SWAP_CHAIN_DESC = ^DXGI_SWAP_CHAIN_DESC;
+
   DXGI_SWAP_CHAIN_DESC = record
     BufferDesc: DXGI_MODE_DESC;
     SampleDesc: DXGI_SAMPLE_DESC;
@@ -333,7 +346,7 @@ type
   // =====================
   //
   IDXGIObject = interface(IUnknown)
-  ['{aec22fb8-76f3-4639-9be0-28eb43a67a2e}']
+    ['{aec22fb8-76f3-4639-9be0-28eb43a67a2e}']
 
     //ULONG   Release();
     function SetPrivateData(const Name: TGuid;
@@ -345,37 +358,39 @@ type
 
     function GetPrivateData(const Name: TGuid;
                             var pDataSize: UINT;
-                      {out} var pData: Pointer): HResult; stdcall;
+    {out} var pData: Pointer): HResult; stdcall;
 
     function GetParent(const riid: TGuid;
-                       var ppParent: pointer ): HResult; stdcall;
+                       var ppParent: pointer): HResult; stdcall;
 
   end;
+
   IID_IDXGIObject = IDXGIObject;
 
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
 
   // Interface IDXGIDeviceSubObject
   // ==============================
   //
   IDXGIDeviceSubObject = interface(IDXGIObject)
-  ['{3d3e0379-f9de-4d58-bb6c-18d62992f1a6}']
+    ['{3d3e0379-f9de-4d58-bb6c-18d62992f1a6}']
 
     function GetDevice(const riid: TGuid;
-                       var ppDevice: pointer ): HResult; stdcall;
+                       var ppDevice: pointer): HResult; stdcall;
 
   end;
+
   IID_IDXGIDeviceSubObject = IDXGIDeviceSubObject;
 
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
 
   // Interface IDXGIResource
   // =======================
   //
   IDXGIResource = interface(IDXGIDeviceSubObject)
-  ['{035f3ab4-482e-4e50-b41f-8a7f8bd8960b}']
+    ['{035f3ab4-482e-4e50-b41f-8a7f8bd8960b}']
 
     function GetSharedHandle(out pSharedHandle: THandle): HResult; stdcall;
 
@@ -386,15 +401,16 @@ type
     function GetEvictionPriority(out pEvictionPriority: UINT): HResult; stdcall;
 
   end;
+
   IID_IDXGIResource = IDXGIResource;
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
 
   // Interface IDXGIKeyedMutex
   // =========================
   //
   IDXGIKeyedMutex = interface(IDXGIDeviceSubObject)
-  ['{9d8e1289-d7b3-465f-8126-250e349af85d}']
+    ['{9d8e1289-d7b3-465f-8126-250e349af85d}']
 
     function AcquireSync(Key: UINT64;
                          dwMilliseconds: DWORD): HResult; stdcall;
@@ -402,18 +418,19 @@ type
     function ReleaseSync(Key: UINT64): HResult; stdcall;
 
   end;
+
   IID_IDXGIKeyedMutex = IDXGIKeyedMutex;
 
 
-//--------------------------------------------------------------------------------------------------------
-// The DXGISurface
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
+  // The DXGISurface
+  //--------------------------------------------------------------------------------------------------------
 
   // Interface IDXGISurface
   // ======================
   //
   IDXGISurface = interface(IDXGIDeviceSubObject)
-  ['{cafcb56c-6ac3-4889-bf47-9e23bbd260ec}']
+    ['{cafcb56c-6ac3-4889-bf47-9e23bbd260ec}']
 
     function GetDesc(out pDesc: DXGI_SURFACE_DESC): HResult; stdcall;
 
@@ -423,18 +440,19 @@ type
     function Unmap(): HResult; stdcall;
 
   end;
+
   IID_IDXGISurface = IDXGISurface;
 
 
-//--------------------------------------------------------------------------------------------------------
-// The DXGISurface1
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
+  // The DXGISurface1
+  //--------------------------------------------------------------------------------------------------------
 
   // Interface IDXGISurface1
   // =======================
   //
   IDXGISurface1 = interface(IDXGISurface)
-  ['{4AE63092-6327-4c1b-80AE-BFE12EA32B86}']
+    ['{4AE63092-6327-4c1b-80AE-BFE12EA32B86}']
 
     function GetDC(Discard: BOOL;
                    out phdc: HDC): HResult; stdcall;
@@ -442,6 +460,7 @@ type
     function ReleaseDC(pDirtyRect: TRect): HResult; stdcall;
 
   end;
+
   IID_IDXGISurface1 = IDXGISurface1;
 
 
@@ -452,7 +471,7 @@ type
   // ======================
   //
   IDXGIAdapter = interface(IDXGIObject)
-  ['{2411e7e1-12ac-4ccf-bd14-9798e8534dc0}']
+    ['{2411e7e1-12ac-4ccf-bd14-9798e8534dc0}']
 
     function EnumOutputs(Output: UINT;
                          var ppOutput: IDXGIOutput): HResult; stdcall;
@@ -463,21 +482,22 @@ type
                                    out pUMDVersion: LARGE_INTEGER): HResult; stdcall;
 
   end;
+
   IID_IDXGIAdapter = IDXGIAdapter;
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
 
-// Additional mode enumerations in DXGI 1.2
+  // Additional mode enumerations in DXGI 1.2
 
-//--------------------------------------------------------------------------------------------------------
-// The DXGIOutput
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
+  // The DXGIOutput
+  //--------------------------------------------------------------------------------------------------------
 
   // Interface IDXGIOutput
   // =====================
   //
   IDXGIOutput = interface(IDXGIObject)
-  ['{ae02eedb-c735-4690-8d52-5a8dc20213aa}']
+    ['{ae02eedb-c735-4690-8d52-5a8dc20213aa}']
 
     function GetDesc(out pDesc: DXGI_OUTPUT_DESC): HResult; stdcall;
 
@@ -512,6 +532,7 @@ type
     function GetFrameStatistics(out pStats: DXGI_FRAME_STATISTICS): HResult; stdcall;
 
   end;
+
   IID_IDXGIOutput = IDXGIOutput;
 
   //--------------------------------------------------------------------------------------------------------
@@ -521,8 +542,9 @@ type
   // ========================
   //
   PIDXGISwapChain = ^IDXGISwapChain;
+
   IDXGISwapChain = interface(IDXGIDeviceSubObject)
-  ['{310d36a0-d2e7-4c0a-aa04-6a9d23b8886a}']
+    ['{310d36a0-d2e7-4c0a-aa04-6a9d23b8886a}']
 
     function Present(SyncInterval: UINT;
                      Flags: UINT): HResult; stdcall;
@@ -554,6 +576,7 @@ type
     function GetLastPresentCount(out pLastPresentCount: UINT): HResult; stdcall;
 
   end;
+
   IID_IDXGISwapChain = IDXGISwapChain;
 
   //--------------------------------------------------------------------------------------------------------
@@ -563,7 +586,7 @@ type
   // ======================
   //
   IDXGIFactory = interface(IDXGIObject)
-  ['{7b7166ec-21c7-44ae-b21a-c9ae321ae369}']
+    ['{7b7166ec-21c7-44ae-b21a-c9ae321ae369}']
 
     function EnumAdapters(Adapter: UINT;
                           out ppAdapter: IDXGIAdapter): HResult; stdcall;
@@ -581,6 +604,7 @@ type
                                    out ppAdapter: IDXGIAdapter): HResult; stdcall;
 
   end;
+
   IID_IDXGIFactory = IDXGIFactory;
 
 
@@ -591,8 +615,9 @@ type
   // =====================
   //
   PIDXGIDevice = ^IDXGIDevice;
+
   IDXGIDevice = interface(IDXGIObject)
-  ['{54ec77fa-1377-44e6-8c32-88fd5f44c84c}']
+    ['{54ec77fa-1377-44e6-8c32-88fd5f44c84c}']
 
     function GetAdapter(out pAdapter: IDXGIAdapter): HResult; stdcall;
 
@@ -611,6 +636,7 @@ type
     function GetGPUThreadPriority(out pPriority: Integer): HResult; stdcall;
 
   end;
+
   IID_IDXGIDevice = IDXGIDevice;
 
 
@@ -618,8 +644,9 @@ type
   // DXGI 1.1
   //--------------------------------------------------------------------------------------------------------
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
   PDXGI_ADAPTER_DESC1 = ^DXGI_ADAPTER_DESC1;
+
   DXGI_ADAPTER_DESC1 = record
     Description: array[0..127] of WideChar;
     VendorId: UINT;
@@ -633,22 +660,23 @@ type
     Flags: UINT;                    // DXGI_ADAPTER_FLAG
   end;
 
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
   PDXGI_DISPLAY_COLOR_SPACE = ^DXGI_DISPLAY_COLOR_SPACE;
+
   DXGI_DISPLAY_COLOR_SPACE = record
     PrimaryCoordinates: array[0..7, 0..1] of Single;
     WhitePoints: array[0..15, 0..1] of Single;
   end;
 
-//--------------------------------------------------------------------------------------------------------
-// The DXGIFactory1
-//--------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------
+  // The DXGIFactory1
+  //--------------------------------------------------------------------------------------------------------
 
   // Interface IDXGIFactory1
   // =======================
   //
   IDXGIFactory1 = interface(IDXGIFactory)
-  ['{770aae78-f26f-4dba-a829-253c83d1b387}']
+    ['{770aae78-f26f-4dba-a829-253c83d1b387}']
 
     function EnumAdapters1(Adapter: UINT;
                            out ppAdapter: IDXGIAdapter1): HResult; stdcall;
@@ -656,6 +684,7 @@ type
     function IsCurrent(): BOOL; stdcall;
 
   end;
+
   IID_IDXGIFactory1 = IDXGIFactory1;
 
   //--------------------------------------------------------------------------------------------------------
@@ -665,11 +694,12 @@ type
   // =======================
   //
   IDXGIAdapter1 = interface(IDXGIAdapter)
-  ['{29038f61-3839-4626-91fd-086879011a05}']
+    ['{29038f61-3839-4626-91fd-086879011a05}']
 
     function GetDesc1(out pDesc: DXGI_ADAPTER_DESC1): HResult; stdcall;
 
   end;
+
   IID_IDXGIAdapter1 = IDXGIAdapter1;
 
   //--------------------------------------------------------------------------------------------------------
@@ -679,13 +709,14 @@ type
   // ======================
   //
   IDXGIDevice1 = interface(IDXGIDevice)
-  ['{77db970f-6276-48ba-ba28-070143b4392c}']
+    ['{77db970f-6276-48ba-ba28-070143b4392c}']
 
     function SetMaximumFrameLatency(MaxLatency: UINT): HResult; stdcall;
 
     function GetMaximumFrameLatency(out pMaxLatency: UINT): HResult; stdcall;
 
   end;
+
   IID_IDXGIDevice1 = IDXGIDevice1;
 
 
@@ -693,25 +724,25 @@ type
   // DXGI instantiation
   //--------------------------------------------------------------------------------------------------------
 
-  function CreateDXGIFactory(const riid: TGuid;
-                             out ppFactory: IDXGIFactory): HResult; stdcall;
+function CreateDXGIFactory(const riid: TGuid;
+                           out ppFactory: IDXGIFactory): HResult; stdcall;
 
-  function CreateDXGIFactory1(const riid: TGuid;
-                              var ppFactory: pointer): HResult; stdcall;
+function CreateDXGIFactory1(const riid: TGuid;
+                            var ppFactory: pointer): HResult; stdcall;
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
 
 const
   DXGIlib = 'dxgi.dll';
 
-function CreateDXGIFactory; external DXGIlib name 'CreateDXGIFactory' ;
-function CreateDXGIFactory1; external DXGIlib name 'CreateDXGIFactory1' ;
+function CreateDXGIFactory; external DXGIlib name 'CreateDXGIFactory';
+function CreateDXGIFactory1; external DXGIlib name 'CreateDXGIFactory1';
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

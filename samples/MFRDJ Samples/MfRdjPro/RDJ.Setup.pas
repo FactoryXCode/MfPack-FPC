@@ -64,11 +64,12 @@ unit RDJ.Setup;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinApiTypes,
   {System}
@@ -76,7 +77,6 @@ LMessages,
   IniFiles,
   {Vcl}
   Forms;
-
 
 const
 
@@ -191,24 +191,24 @@ type
   TRecordTapPoint = (rtpPreFx,
                      rtpPostFx);
 
-  procedure SetGlobalSetupOnce(const ASetupRec: TRDJSetup);
-  procedure LockGlobalSetup();
-  function GetGlobalSetup(): TRDJSetup;
-  function IsGlobalSetupLocked: Boolean;
+procedure SetGlobalSetupOnce(const ASetupRec: TRDJSetup);
+procedure LockGlobalSetup();
+function GetGlobalSetup(): TRDJSetup;
+function IsGlobalSetupLocked: Boolean;
 
-  function GetDefaultSetupFileName(): string;
+function GetDefaultSetupFileName(): string;
 
-  function FxKindToIniName(const AFxKind: TRDJFxKind): string;
-  function IniNameToFxKind(const S: string): TRDJFxKind;
+function FxKindToIniName(const AFxKind: TRDJFxKind): string;
+function IniNameToFxKind(const S: string): TRDJFxKind;
 
-  procedure InitDefaultFxRack(var ARack: TRDJFxRackSetup);
-  procedure InitDefaultSetup(var ASetupRec: TRDJSetup);
+procedure InitDefaultFxRack(var ARack: TRDJFxRackSetup);
+procedure InitDefaultSetup(var ASetupRec: TRDJSetup);
 
-  procedure LoadSetupFromIni(const FileName: string;
-                             var ASetupRec: TRDJSetup);
+procedure LoadSetupFromIni(const FileName: string;
+                           var ASetupRec: TRDJSetup);
 
-  procedure SaveSetupToIni(const FileName: string;
-                           const ASetupRec: TRDJSetup);
+procedure SaveSetupToIni(const FileName: string;
+                         const ASetupRec: TRDJSetup);
 
 var
   FRDJSetup: TRDJSetup;
@@ -222,6 +222,7 @@ var
 
 
 function FxKindToIniName(const AFxKind: TRDJFxKind): string;
+
 begin
 
   case AFxKind of
@@ -236,29 +237,30 @@ begin
 
     fxkPitchTempo:
       Result := 'PitchTempo';
-  else
-    Result := 'Unknown';
+    else
+      Result := 'Unknown';
   end;
 end;
 
 
 function IniNameToFxKind(const S: string): TRDJFxKind;
+
 begin
 
   if SameText(S,
-              'ParametricEq') then
+    'ParametricEq') then
     Exit(fxkParametricEq);
 
   if SameText(S,
-              'CompressorLimiter') then
+    'CompressorLimiter') then
     Exit(fxkCompressorLimiter);
 
   if SameText(S,
-              'FlangerEcho') then
+    'FlangerEcho') then
     Exit(fxkFlangerEcho);
 
   if SameText(S,
-              'PitchTempo') then
+    'PitchTempo') then
     Exit(fxkPitchTempo);
 
   Result := fxkUnknown;
@@ -281,16 +283,18 @@ begin
 end;
 
 
-function ClampInteger(const AValue, AMin, AMax: Integer): Integer;
+function ClampInteger(const AValue,
+                      AMin,
+                      AMax: Integer): Integer;
+
 begin
 
   Result := AValue;
 
   if (Result < AMin) then
     Result := AMin
-  else
-    if (Result > AMax) then
-      Result := AMax;
+  else if (Result > AMax) then
+    Result := AMax;
 end;
 
 
@@ -345,8 +349,9 @@ begin
 
   // local audio
   ASetupRec.AudioRecordingsDir := 'AudioRecordings';
-  ASetupRec.AudioRecordingsPath := Format('%s\%s\', [ExtractFileDir(Application.ExeName),
-                                                     ASetupRec.AudioRecordingsDir]);
+  ASetupRec.AudioRecordingsPath := Format('%s\%s\',
+                                          [ExtractFileDir(Application.ExeName),
+    ASetupRec.AudioRecordingsDir]);
 
   if not DirectoryExists(ASetupRec.AudioRecordingsPath) then
     if not CreateDir(ASetupRec.AudioRecordingsPath) then
@@ -354,16 +359,18 @@ begin
 
   // Local video
   ASetupRec.VideoRecordingsDir := 'VideoRecordings';
-  ASetupRec.VideoRecordingsPath := Format('%s\%s\', [ExtractFileDir(Application.ExeName),
-                                                     ASetupRec.VideoRecordingsDir]);
+  ASetupRec.VideoRecordingsPath := Format('%s\%s\',
+                                          [ExtractFileDir(Application.ExeName),
+    ASetupRec.VideoRecordingsDir]);
 
   if not DirectoryExists(ASetupRec.VideoRecordingsPath) then
     if not CreateDir(ASetupRec.VideoRecordingsPath) then
       ASetupRec.VideoRecordingsPath := ExpandFileName(ExtractFileDir(Application.ExeName));
 
   ASetupRec.DatabaseDir := 'Data';
-  ASetupRec.DatabasePath := Format('%s\%s\', [ExtractFileDir(Application.ExeName),
-                                              ASetupRec.DatabaseDir]);
+  ASetupRec.DatabasePath := Format('%s\%s\',
+                                   [ExtractFileDir(Application.ExeName),
+    ASetupRec.DatabaseDir]);
   // Database
   if not DirectoryExists(ASetupRec.DatabasePath) then
     if not CreateDir(ASetupRec.DatabasePath) then
@@ -383,6 +390,7 @@ end;
 
 
 procedure SetGlobalSetupOnce(const ASetupRec: TRDJSetup);
+
 begin
 
   if gSetupLocked then
@@ -394,6 +402,7 @@ end;
 
 
 procedure LockGlobalSetup();
+
 begin
 
   gSetupLocked := True;
@@ -401,6 +410,7 @@ end;
 
 
 function GetGlobalSetup(): TRDJSetup;
+
 begin
 
   if not gSetupIsSet then
@@ -415,6 +425,7 @@ end;
 
 
 function IsGlobalSetupLocked: Boolean;
+
 begin
 
   Result := gSetupLocked;
@@ -422,6 +433,7 @@ end;
 
 
 function GetDefaultSetupFileName(): string;
+
 begin
 
   Result := ChangeFileExt(ParamStr(0),
@@ -587,8 +599,8 @@ begin
 
     // Audio recorder
     ASetupRec.AudioRecorderCaptureBufferMs := iniFile.ReadInteger('SetupAudioRecorder',
-                                                                'CaptureBufferMs',
-                                                                ASetupRec.AudioRecorderCaptureBufferMs);
+                                                                  'CaptureBufferMs',
+                                                                  ASetupRec.AudioRecorderCaptureBufferMs);
 
     ASetupRec.AudioRecorderAutoBufferSize := iniFile.ReadBool('SetupAudioRecorder',
                                                               'AutoBufferSize',
@@ -635,16 +647,16 @@ begin
                                                        ASetupRec.AudioRecordingsDir);
 
     ASetupRec.AudioRecordingsPath := iniFile.ReadString('Paths',
-                                                         'Recordings',
-                                                          ASetupRec.AudioRecordingsPath);
+                                                        'Recordings',
+                                                        ASetupRec.AudioRecordingsPath);
 
     ASetupRec.VideoRecordingsDir := iniFile.ReadString('Dir',
-                                                        'VideoRecordings',
-                                                        ASetupRec.VideoRecordingsDir);
+                                                       'VideoRecordings',
+                                                       ASetupRec.VideoRecordingsDir);
 
     ASetupRec.VideoRecordingsPath := iniFile.ReadString('Paths',
-                                                         'VideoRecordings',
-                                                         ASetupRec.VideoRecordingsPath);
+                                                        'VideoRecordings',
+                                                        ASetupRec.VideoRecordingsPath);
 
     // Database
     ASetupRec.DatabaseDir := iniFile.ReadString('Dir',
@@ -657,8 +669,8 @@ begin
 
     // Covers
     ASetupRec.LocalArtworkDir := iniFile.ReadString('Dir',
-                                                   'Artwork',
-                                                   ASetupRec.LocalArtworkDir);
+                                                    'Artwork',
+                                                    ASetupRec.LocalArtworkDir);
 
     ASetupRec.LocalArtworkPath := iniFile.ReadString('Paths',
                                                      'Artwork',
@@ -716,7 +728,7 @@ begin
     // the old RdjPro section once, but SaveSetupToIni writes MediaServer only.
     sectionName := 'MediaServer';
     if (not iniFile.SectionExists(sectionName)) and
-       iniFile.SectionExists('RdjPro') then
+      iniFile.SectionExists('RdjPro') then
       sectionName := 'RdjPro';
 
     ASetupRec.MediaServerEnabled := iniFile.ReadBool(sectionName,
@@ -726,8 +738,8 @@ begin
     ASetupRec.MsePublicSegmentTargetMs := ClampInteger(iniFile.ReadInteger(sectionName,
                                                                            'MsePublicFragmentTargetMs',
                                                                            ASetupRec.MsePublicSegmentTargetMs),
-                                                                           RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MIN_MS,
-                                                                           RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MAX_MS);
+                                                       RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MIN_MS,
+                                                       RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MAX_MS);
     // Camera
     ASetupRec.CameraName := iniFile.ReadString('Camera',
                                                'CameraName',

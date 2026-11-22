@@ -85,12 +85,12 @@ interface
 
 uses
   MfSmallSamplesPlatform,
-LMessages,
+  LMessages,
   LCLIntf,
-WinApi.ComBaseApi,
+  WinApi.ComBaseApi,
   WinApi.MediaFoundationApi.MfApi,
   WinApi.MediaFoundationApi.MfObjects,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.Ks,
@@ -113,8 +113,10 @@ type
                                dmo_Both);
 
   TDeviceLoss = class(TObject)
+
   private
     procedure ClearDevices;
+
   private
     FSymbolicLink: UnicodeString;
     FFriendlyName: UnicodeString;
@@ -152,32 +154,44 @@ var
   FDeviceLoss: TDeviceLoss;
 
 
-{$POINTERMATH ON}
+  {$POINTERMATH ON}
 implementation
 
 uses
   SysUtils;
 
 
-constructor TDeviceLoss.Create(hwndAppWindow: HWND;aDeviceIndex: Integer;msgOptions: TDeviceLossMessageOptions);
+constructor TDeviceLoss.Create(hwndAppWindow: HWND;
+                               aDeviceIndex: Integer;
+                               msgOptions: TDeviceLossMessageOptions);
+
 begin
- inherited Create;
- p_ActiveDeviceIndex:=aDeviceIndex;p_hwndSource:=hwndAppWindow;p_DeviceLossMessageOptions:=msgOptions;
- if (aDeviceIndex<0) or (EnumDevices<=aDeviceIndex) then raise Exception.Create('Invalid capture device index');
- FSymbolicLink:=UnicodeString(p_dpa[aDeviceIndex].lpSymbolicLink);
- FFriendlyName:=UnicodeString(p_dpa[aDeviceIndex].lpFriendlyName);
- p_pwszSymbolicLink:=PWideChar(FSymbolicLink);p_pwszFriendlyName:=PWideChar(FFriendlyName);
- p_HWND:=LCLIntf.AllocateHWnd(OnDeviceChange);
- if not RegisterForDeviceNotification then RaiseLastOSError;
+
+  inherited Create;
+  p_ActiveDeviceIndex := aDeviceIndex;
+  p_hwndSource := hwndAppWindow;
+  p_DeviceLossMessageOptions := msgOptions;
+  if (aDeviceIndex < 0) or (EnumDevices <= aDeviceIndex) then
+    raise Exception.Create('Invalid capture device index');
+  FSymbolicLink := UnicodeString(p_dpa[aDeviceIndex].lpSymbolicLink);
+  FFriendlyName := UnicodeString(p_dpa[aDeviceIndex].lpFriendlyName);
+  p_pwszSymbolicLink := PWideChar(FSymbolicLink);
+  p_pwszFriendlyName := PWideChar(FFriendlyName);
+  p_HWND := LCLIntf.AllocateHWnd(OnDeviceChange);
+  if not RegisterForDeviceNotification then
+    RaiseLastOSError;
 end;
 
 
 destructor TDeviceLoss.Destroy();
+
 begin
- CloseDeviceNotify;
- if p_HWND<>0 then LCLIntf.DeallocateHWnd(p_HWND);
- ClearDevices;
- inherited;
+
+  CloseDeviceNotify;
+  if (p_HWND <> 0) then
+    LCLIntf.DeallocateHWnd(p_HWND);
+  ClearDevices;
+  inherited;
 end;
 
 
@@ -185,6 +199,7 @@ function TDeviceLoss.RegisterForDeviceNotification(): Boolean;
 var
   devbroadcastdevice: DEV_BROADCAST_DEVICEINTERFACE;
   iSize: Integer;
+
 begin
 
   if (p_HWND > 0) then
@@ -200,50 +215,88 @@ begin
       devbroadcastdevice.dbcc_name[0] := #0;
 
       p_hdevnotify := RegisterDeviceNotificationW(p_HWND,
-                                                 @devbroadcastdevice,
-                                                 DEVICE_NOTIFY_WINDOW_HANDLE);
+                                                  @devbroadcastdevice,
+                                                  DEVICE_NOTIFY_WINDOW_HANDLE);
     end;
-  Result := (NativeUInt(p_hdevnotify)<>0);
+  Result := (NativeUInt(p_hdevnotify) <> 0);
 end;
 
 
 procedure TDeviceLoss.CloseDeviceNotify();
+
 begin
- if NativeUInt(p_hdevnotify)<>0 then begin
-  UnregisterDeviceNotification(p_hdevnotify);
-  FillChar(p_hdevnotify,SizeOf(p_hdevnotify),0);
- end;
+
+  if (NativeUInt(p_hdevnotify) <> 0) then
+    begin
+      UnregisterDeviceNotification(p_hdevnotify);
+      FillChar(p_hdevnotify,
+               SizeOf(p_hdevnotify),
+               0);
+    end;
 end;
 
 
 procedure TDeviceLoss.ClearDevices;
-var I: Integer;
+var
+  I: Integer;
+
 begin
- for I:=0 to Length(p_dpa)-1 do begin
-  CoTaskMemFree(p_dpa[I].lpFriendlyName);CoTaskMemFree(p_dpa[I].lpSymbolicLink);
- end;
- SetLength(p_dpa,0);
+
+  for I := 0 to Length(p_dpa) - 1 do
+    begin
+      CoTaskMemFree(p_dpa[I].lpFriendlyName);
+      CoTaskMemFree(p_dpa[I].lpSymbolicLink);
+    end;
+  SetLength(p_dpa,
+            0);
 end;
+
+
 function TDeviceLoss.EnumDevices(): Integer;
-var Attributes: IMFAttributes; Devices: PIMFActivate; Count,N: UINT32; I: Integer; HR: HResult;
+var
+  Attributes: IMFAttributes;
+  Devices: PIMFActivate;
+  Count, N: UINT32;
+  I: Integer;
+  HR: HResult;
+
 begin
- ClearDevices;Devices:=nil;Count:=0;
- HR:=MFCreateAttributes(Attributes,1);
- if SUCCEEDED(HR) then HR:=Attributes.SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
- if SUCCEEDED(HR) then HR:=MFEnumDeviceSources(Attributes,Devices,Count);
- if FAILED(HR) then Exit(-1);
- try
-  SetLength(p_dpa,Count);
-  for I:=0 to Integer(Count)-1 do begin
-   p_dpa[I].riId:=MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID;p_dpa[I].iDeviceIndex:=I;p_dpa[I].pActivate:=Devices[I];
-   Devices[I].GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,p_dpa[I].lpFriendlyName,N);
-   Devices[I].GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,p_dpa[I].lpSymbolicLink,N);
+
+  ClearDevices;
+  Devices := nil;
+  Count := 0;
+  HR := MFCreateAttributes(Attributes,
+                           1);
+  if SUCCEEDED(HR) then
+    HR := Attributes.SetGUID(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
+                             MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
+  if SUCCEEDED(HR) then
+    HR := MFEnumDeviceSources(Attributes,
+                              Devices,
+                              Count);
+  if FAILED(HR) then
+    Exit(-1);
+  try
+    SetLength(p_dpa,
+              Count);
+    for I := 0 to Integer(Count) - 1 do
+      begin
+        p_dpa[I].riId := MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID;
+        p_dpa[I].iDeviceIndex := I;
+        p_dpa[I].pActivate := Devices[I];
+        Devices[I].GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
+                                      p_dpa[I].lpFriendlyName,
+                                      N);
+        Devices[I].GetAllocatedString(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,
+                                      p_dpa[I].lpSymbolicLink,
+                                      N);
+      end;
+    Result := Count;
+  finally
+    for I := 0 to Integer(Count) - 1 do
+      Devices[I] := nil;
+    CoTaskMemFree(Devices);
   end;
-  Result:=Count;
- finally
-  for I:=0 to Integer(Count)-1 do Devices[I]:=nil;
-  CoTaskMemFree(Devices);
- end;
 end;
 
 
@@ -254,12 +307,12 @@ var
 
 begin
 
-  if not (NativeUInt(p_hdevnotify)<>0) then
+  if not (NativeUInt(p_hdevnotify) <> 0) then
     Exit;
 
   bDeviceLost := False;
 
-  if (AMessage.Msg=WM_DEVICECHANGE) and (AMessage.WParam=DBT_DEVICEREMOVECOMPLETE) and (AMessage.LParam <> 0) then
+  if (AMessage.Msg = WM_DEVICECHANGE) and (AMessage.WParam = DBT_DEVICEREMOVECOMPLETE) and (AMessage.LParam <> 0) then
     begin
       hr := CheckDeviceLost(PDEV_BROADCAST_HDR(Pointer(AMessage.LParam)),
                             bDeviceLost);
@@ -270,38 +323,54 @@ begin
             begin
               // Send a WM_DEVICELOST message to the application window
               SendMessageW(p_hwndSource,
-                          WM_DEVICELOST,
-                          WPARAM(p_pwszFriendlyName),
-                          LPARAM(p_ActiveDeviceIndex));
+                           WM_DEVICELOST,
+                           WPARAM(p_pwszFriendlyName),
+                           LPARAM(p_ActiveDeviceIndex));
             end;
 
           if (p_DeviceLossMessageOptions = dmo_MessageBox) or (p_DeviceLossMessageOptions = dmo_Both) then
             begin
               // Show a MessageBoxDialog from the application window
               MessageBoxW(p_hwndSource,
-                         LPCWSTR(Format('Lost capture device: %s', [p_pwszFriendlyName])),
-                         LPCWSTR('Capture device'),
-                         MB_OK);
+                          LPCWSTR(Format('Lost capture device: %s',
+                                         [p_pwszFriendlyName])),
+                          LPCWSTR('Capture device'),
+                          MB_OK);
             end;
         end;
     end;
 end;
 
 
-function TDeviceLoss.CheckDeviceLost(pHdr: PDEV_BROADCAST_HDR;out pbDeviceLost: Boolean): HResult;
-var Device: PDEV_BROADCAST_DEVICEINTERFACE; Name: PWideChar; Count,I: Integer;
+function TDeviceLoss.CheckDeviceLost(pHdr: PDEV_BROADCAST_HDR;
+                                     out pbDeviceLost: Boolean): HResult;
+var
+  Device: PDEV_BROADCAST_DEVICEINTERFACE;
+  Name: PWideChar;
+  Count, I: Integer;
+
 begin
- Result:=S_OK;pbDeviceLost:=False;
- if pHdr=nil then Exit;
- if (pHdr.dbch_size<SizeOf(DEV_BROADCAST_HDR)) then Exit(E_INVALIDARG);
- if pHdr.dbch_devicetype<>DBT_DEVTYP_DEVICEINTERFACE then Exit;
- Device:=PDEV_BROADCAST_DEVICEINTERFACE(pHdr);
- Count:=(Integer(pHdr.dbch_size)-(NativeUInt(@Device.dbcc_name)-NativeUInt(Device))) div SizeOf(WideChar);
- if Count<=0 then Exit(E_INVALIDARG);
- Name:=PWideChar(@Device.dbcc_name);I:=0;
- while (I<Count) and (Name[I]<>#0) do Inc(I);
- if I=Count then Exit(E_INVALIDARG);
- pbDeviceLost:=(FSymbolicLink<>'') and SameText(FSymbolicLink,UnicodeString(Name));
+
+  Result := S_OK;
+  pbDeviceLost := False;
+  if (pHdr = nil) then
+    Exit;
+  if (pHdr.dbch_size < SizeOf(DEV_BROADCAST_HDR)) then
+    Exit(E_INVALIDARG);
+  if (pHdr.dbch_devicetype <> DBT_DEVTYP_DEVICEINTERFACE) then
+    Exit;
+  Device := PDEV_BROADCAST_DEVICEINTERFACE(pHdr);
+  Count := (Integer(pHdr.dbch_size) - (NativeUInt(@Device.dbcc_name) - NativeUInt(Device))) div SizeOf(WideChar);
+  if (Count <= 0) then
+    Exit(E_INVALIDARG);
+  Name := PWideChar(@Device.dbcc_name);
+  I := 0;
+  while (I < Count) and (Name[I] <> #0) do
+    Inc(I);
+  if (I = Count) then
+    Exit(E_INVALIDARG);
+  pbDeviceLost := (FSymbolicLink <> '') and SameText(FSymbolicLink,
+                                                     UnicodeString(Name));
 end;
 
 end.

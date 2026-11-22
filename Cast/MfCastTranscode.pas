@@ -91,6 +91,7 @@ uses
 type
   TMfCastTranscodePipeline = class(TInterfacedObject,
                                    IMfCastTranscodePipeline)
+
   private
     FSettings: TMfCastEncodingSettings;
     FLogger: IMfCastLogger;
@@ -139,6 +140,7 @@ implementation
 
 type
   TMfCastTranscodeWorker = class(TThread)
+
   private
     FOwner: TMfCastTranscodePipeline;
     FPump: TMfSubtitleFramePump;
@@ -161,6 +163,7 @@ type
                               const Sample: IMFSample;
                               SampleTime: MFTIME;
                               SampleDuration: MFTIME);
+
   protected
     procedure Execute(); override;
 
@@ -177,6 +180,7 @@ type
 
 
 constructor TMfCastTranscodeWorker.Create(AOwner: TMfCastTranscodePipeline);
+
 begin
 
   inherited Create(True);
@@ -196,6 +200,7 @@ end;
 
 
 procedure TMfCastTranscodeWorker.CancelTranscode();
+
 begin
 
   Terminate();
@@ -205,6 +210,7 @@ end;
 
 
 procedure TMfCastTranscodeWorker.PauseTranscode();
+
 begin
 
   if Assigned(FPump) then
@@ -213,6 +219,7 @@ end;
 
 
 procedure TMfCastTranscodeWorker.ResumeTranscode();
+
 begin
 
   if Assigned(FPump) then
@@ -221,6 +228,7 @@ end;
 
 
 procedure TMfCastTranscodeWorker.SetAudioVolume(const AVolume: Single);
+
 begin
 
   if Assigned(FPump) then
@@ -229,6 +237,7 @@ end;
 
 
 procedure TMfCastTranscodeWorker.SetAudioMuted(const AMuted: Boolean);
+
 begin
 
   if Assigned(FPump) then
@@ -262,10 +271,10 @@ begin
       Exit;
     end;
 
-  if GetTempFileNameW(TempPath,
-                      'MFX',
-                      0,
-                      TempFileName) = 0 then
+  if (GetTempFileNameW(TempPath,
+    'MFX',
+    0,
+    TempFileName) = 0) then
     begin
       Result := HRESULT_FROM_WIN32(GetLastError());
       Exit;
@@ -293,7 +302,7 @@ begin
       on E: Exception do
         begin
           OutputDebugStringW(PChar('MfCast subtitle temp file exception: ' +
-                                  E.Message));
+            E.Message));
           Result := E_FAIL;
         end;
     end;
@@ -319,6 +328,7 @@ var
   WallElapsedMs: DWORD;
   MediaElapsedMs: Int64;
   ProductionPercent: Double;
+
 begin
 
   Cancel := Terminated;
@@ -332,7 +342,7 @@ begin
         FOwner.Log(cllDebug,
                    Format('First encoded output produced: frames=%d sampleTime100ns=%d.',
                           [FramesWritten,
-                           SampleTime]));
+          SampleTime]));
     end;
 
   if FLoggedFirstProgress and Assigned(FOwner) then
@@ -343,7 +353,7 @@ begin
           FLastProgressLogTick := CurrentTick;
           WallElapsedMs := CurrentTick - FProgressStartTick;
           MediaElapsedMs := (SampleTime - FProgressStartSampleTime) div 10000;
-          if WallElapsedMs > 0 then
+          if (WallElapsedMs > 0) then
             ProductionPercent := (MediaElapsedMs * 100.0) / WallElapsedMs
           else
             ProductionPercent := 0.0;
@@ -351,22 +361,24 @@ begin
           FOwner.Log(cllDebug,
                      Format('Video production: frames=%d mediaMs=%d wallMs=%d rate=%.1f%% leadMs=%d.',
                             [FramesWritten,
-                             MediaElapsedMs,
-                             WallElapsedMs,
-                             ProductionPercent,
-                             MediaElapsedMs - Int64(WallElapsedMs)]));
+            MediaElapsedMs,
+            WallElapsedMs,
+            ProductionPercent,
+            MediaElapsedMs - Int64(WallElapsedMs)]));
         end;
     end;
 end;
 
 
 procedure TMfCastTranscodeWorker.PumpVideoSample(Sender: TObject;
-                                                  const Sample: IMFSample;
-                                                  Width: UINT32;
-                                                  Height: UINT32;
-                                                  SampleTime: MFTIME;
-                                                  SampleDuration: MFTIME);
+                                                 const Sample: IMFSample;
+                                                 Width: UINT32;
+                                                 Height: UINT32;
+                                                 SampleTime: MFTIME;
+                                                 SampleDuration: MFTIME);
+
 begin
+
   if not Assigned(FOwner) or not Assigned(FOwner.FPreviewSink) then
     Exit;
   if SUCCEEDED(FOwner.FPreviewSink.ConfigureVideo(Width, Height)) then
@@ -377,19 +389,21 @@ end;
 
 
 procedure TMfCastTranscodeWorker.PumpAudioSample(Sender: TObject;
-                                                  const Sample: IMFSample;
-                                                  SampleTime: MFTIME;
-                                                  SampleDuration: MFTIME);
+                                                 const Sample: IMFSample;
+                                                 SampleTime: MFTIME;
+                                                 SampleDuration: MFTIME);
 var
   SampleRate: UINT32;
+
 begin
+
   if not Assigned(FOwner) or not Assigned(FOwner.FPreviewSink) then
     Exit;
 
   SampleRate := 48000;
   if Sender is TMfSubtitleFramePump then
     SampleRate := TMfSubtitleFramePump(Sender).AudioOutputSampleRate;
-  if SampleRate = 0 then
+  if (SampleRate = 0) then
     SampleRate := 48000;
 
   // The pump explicitly normalizes decoded PCM to stereo while preserving the
@@ -426,13 +440,12 @@ begin
                           COINIT_MULTITHREADED);
   if SUCCEEDED(HrCom) then
     ComInitialized := True
-  else
-    if (HrCom <> RPC_E_CHANGED_MODE) then
-      begin
-        FOwner.FWorkerResult := HrCom;
-        FOwner.SetState(csError);
-        Exit;
-      end;
+  else if (HrCom <> RPC_E_CHANGED_MODE) then
+    begin
+      FOwner.FWorkerResult := HrCom;
+      FOwner.SetState(csError);
+      Exit;
+    end;
 
   try
     try
@@ -452,30 +465,30 @@ begin
           if (Length(FOwner.FRequest.SubtitleData) > 0) then
             begin
               FOwner.FWorkerResult := WriteSubtitleTempFile(SubtitleTempFileName);
-              if FOwner.FWorkerResult = S_OK then
+              if (FOwner.FWorkerResult = S_OK) then
                 FOwner.FWorkerResult := Compositor.OpenTimedTextFile(
-                                         SubtitleTempFileName,
-                                         FOwner.FRequest.SubtitleLanguage,
-                                         nil,
-                                         False);
+                  SubtitleTempFileName,
+                                                                     FOwner.FRequest.SubtitleLanguage,
+                                                                     nil,
+                                                                     False);
             end
           else
             begin
               SubtitleSourceName := FOwner.FRequest.SubtitleSourceName;
-              if SubtitleSourceName = '' then
+              if (SubtitleSourceName = '') then
                 SubtitleSourceName := FOwner.FRequest.SourceName;
               FOwner.FWorkerResult := Compositor.OpenTimedTextFile(
-                                       SubtitleSourceName,
-                                       FOwner.FRequest.SubtitleLanguage);
+                SubtitleSourceName,
+                                                                   FOwner.FRequest.SubtitleLanguage);
               if (FOwner.FWorkerResult = S_OK) and
-                 FOwner.FRequest.HasSubtitleStreamIndex then
+                FOwner.FRequest.HasSubtitleStreamIndex then
                 FOwner.FWorkerResult := Compositor.SelectEmbeddedSubtitleTrack(
-                                         FOwner.FRequest.SubtitleStreamIndex);
+                  FOwner.FRequest.SubtitleStreamIndex);
             end;
 
           if (FOwner.FWorkerResult <> S_OK) then
             begin
-              if FOwner.FWorkerResult = S_FALSE then
+              if (FOwner.FWorkerResult = S_FALSE) then
                 FOwner.FWorkerResult := HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
               Exit;
             end;
@@ -518,41 +531,41 @@ begin
           FOwner.Log(cllInfo,
                      Format('Starting audio-only Media Foundation conversion: source="%s" start100ns=%d',
                             [FOwner.FRequest.SourceName,
-                             FOwner.FRequest.StartTime100ns]));
+            FOwner.FRequest.StartTime100ns]));
 
           FOwner.FWorkerResult := FPump.AudioOnlyToFile(
-                                   FOwner.FRequest.SourceName,
-                                   'mfcast.m4a',
-                                   FOwner.FByteStream,
-                                   FOwner.FRequest.Encoding.OutputMode = comFragmentedMp4,
-                                   FOwner.FRequest.StartTime100ns);
+            FOwner.FRequest.SourceName,
+                                                        'mfcast.m4a',
+                                                        FOwner.FByteStream,
+                                                        FOwner.FRequest.Encoding.OutputMode = comFragmentedMp4,
+                                                        FOwner.FRequest.StartTime100ns);
         end
-      else if FOwner.FRequest.ArtworkSourceName <> '' then
+      else if (FOwner.FRequest.ArtworkSourceName <> '') then
         begin
           FOwner.Log(cllInfo,
                      Format('Starting audio artwork conversion: source="%s" artwork="%s" bitrate=%d start100ns=%d',
                             [FOwner.FRequest.SourceName,
-                             FOwner.FRequest.ArtworkSourceName,
-                             Bitrate,
-                             FOwner.FRequest.StartTime100ns]));
+            FOwner.FRequest.ArtworkSourceName,
+            Bitrate,
+            FOwner.FRequest.StartTime100ns]));
 
           FOwner.FWorkerResult := FPump.AudioWithArtworkToFile(
-                                   FOwner.FRequest.SourceName,
-                                   FOwner.FRequest.ArtworkSourceName,
-                                   'mfcast.mp4',
-                                   Bitrate,
-                                   FOwner.FByteStream,
-                                   FOwner.FRequest.Encoding.OutputMode = comFragmentedMp4,
-                                   FOwner.FRequest.StartTime100ns,
-                                   FOwner.FRequest.ArtworkFrameRate);
+            FOwner.FRequest.SourceName,
+                                                               FOwner.FRequest.ArtworkSourceName,
+                                                               'mfcast.mp4',
+                                                               Bitrate,
+                                                               FOwner.FByteStream,
+                                                               FOwner.FRequest.Encoding.OutputMode = comFragmentedMp4,
+                                                               FOwner.FRequest.StartTime100ns,
+                                                               FOwner.FRequest.ArtworkFrameRate);
         end
       else
         begin
           FOwner.Log(cllInfo,
                      Format('Starting Media Foundation conversion: source="%s" bitrate=%d start100ns=%d',
                             [FOwner.FRequest.SourceName,
-                             Bitrate,
-                             FOwner.FRequest.StartTime100ns]));
+            Bitrate,
+            FOwner.FRequest.StartTime100ns]));
 
           FOwner.FWorkerResult := FPump.BurnSubtitlesToFile(FOwner.FRequest.SourceName,
                                                             'mfcast.mp4',
@@ -577,12 +590,12 @@ begin
       DeleteFileW(PWideChar(SubtitleTempFileName));
 
     Cancelled := Terminated and
-                 (FOwner.FWorkerResult = E_ABORT);
+      (FOwner.FWorkerResult = E_ABORT);
 
     if Assigned(FOwner.FPublisher) then
       begin
         if SUCCEEDED(FOwner.FWorkerResult) and
-           (not Cancelled) then
+          (not Cancelled) then
           FOwner.FPublisher.CompletePresentation()
         else
           FOwner.FPublisher.AbortPresentation(FOwner.FWorkerResult);
@@ -609,6 +622,7 @@ end;
 
 
 constructor TMfCastTranscodePipeline.Create();
+
 begin
 
   inherited Create;
@@ -621,6 +635,7 @@ end;
 
 
 destructor TMfCastTranscodePipeline.Destroy();
+
 begin
 
   Stop();
@@ -633,6 +648,7 @@ end;
 
 
 function TMfCastTranscodePipeline.Configure(const ASettings: TMfCastEncodingSettings): HRESULT;
+
 begin
 
   if not (FState in [csIdle, csStopped]) then
@@ -647,6 +663,7 @@ end;
 
 
 procedure TMfCastTranscodePipeline.SetLogger(const ALogger: IMfCastLogger);
+
 begin
 
   FLogger := ALogger;
@@ -656,6 +673,7 @@ end;
 function TMfCastTranscodePipeline.Start(const ARequest: TMfCastTranscodeRequest;
                                         const APublisher: IMfCastSegmentPublisher;
                                         const APreviewSink: IMfCastPreviewSink): HRESULT;
+
 begin
 
   if not Assigned(APublisher) then
@@ -691,9 +709,9 @@ begin
   Log(cllInfo,
       Format('Start requested: source="%s" outputMode=%d videoBitrate=%d audioBitrate=%d',
              [ARequest.SourceName,
-              Ord(ARequest.Encoding.OutputMode),
-              ARequest.Encoding.VideoBitrate,
-              ARequest.Encoding.AudioBitrate]));
+    Ord(ARequest.Encoding.OutputMode),
+    ARequest.Encoding.VideoBitrate,
+    ARequest.Encoding.AudioBitrate]));
   SetState(csPreparingMedia);
 
   Result := PrepareMediaFoundationPipeline;
@@ -715,6 +733,7 @@ end;
 
 
 function TMfCastTranscodePipeline.Pause(): HRESULT;
+
 begin
 
   if Assigned(FWorker) then
@@ -730,6 +749,7 @@ end;
 
 
 function TMfCastTranscodePipeline.Resume(): HRESULT;
+
 begin
 
   if Assigned(FWorker) then
@@ -738,7 +758,7 @@ begin
   if Assigned(FPreviewSink) then
     FPreviewSink.ResumeAudio();
 
-  if FState = csPaused then
+  if (FState = csPaused) then
     SetState(csBuffering);
   Result := S_OK;
 end;
@@ -753,9 +773,8 @@ begin
   Volume := AVolume;
   if (Volume < 0.0) then
     Volume := 0.0
-  else
-    if (Volume > 1.0) then
-      Volume := 1.0;
+  else if (Volume > 1.0) then
+    Volume := 1.0;
 
   InterlockedExchange(FAudioVolumePermille,
                       Round(Volume * 1000.0));
@@ -768,6 +787,7 @@ end;
 
 
 function TMfCastTranscodePipeline.SetMuted(const AMuted: Boolean): HRESULT;
+
 begin
 
   if AMuted then
@@ -785,11 +805,10 @@ end;
 
 
 function TMfCastTranscodePipeline.Stop(): HRESULT;
+
 begin
 
-  if (FState = csIdle) and
-     not Assigned(FWorker) and
-     not Assigned(FByteStream) then
+  if (FState = csIdle) and not Assigned(FWorker) and not Assigned(FByteStream) then
     begin
       FPublisher := nil;
       if Assigned(FPreviewSink) then
@@ -818,6 +837,7 @@ end;
 
 
 function TMfCastTranscodePipeline.Seek(const APosition100ns: Int64): HRESULT;
+
 begin
 
   Result := E_NOTIMPL;
@@ -825,6 +845,7 @@ end;
 
 
 function TMfCastTranscodePipeline.GetState(): TMfCastState;
+
 begin
 
   Result := FState;
@@ -832,6 +853,7 @@ end;
 
 
 function TMfCastTranscodePipeline.PrepareMediaFoundationPipeline(): HRESULT;
+
 begin
 
   Result := S_OK;
@@ -839,6 +861,7 @@ end;
 
 
 function TMfCastTranscodePipeline.StartWorkers(): HRESULT;
+
 begin
 
   if not Assigned(FPublisher) then
@@ -895,6 +918,7 @@ end;
 
 procedure TMfCastTranscodePipeline.Log(const ALevel: TMfCastLogLevel;
                                        const AMessage: string);
+
 begin
 
   if Assigned(FLogger) then
@@ -907,13 +931,14 @@ end;
 
 
 procedure TMfCastTranscodePipeline.SetState(const AState: TMfCastState);
+
 begin
 
   if (FState <> AState) then
     Log(cllDebug,
         Format('State changed: %s -> %s',
                [MfCastStateToString(FState),
-                MfCastStateToString(AState)]));
+      MfCastStateToString(AState)]));
   FState := AState;
 end;
 

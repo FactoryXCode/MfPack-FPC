@@ -107,9 +107,10 @@ uses
   Math;
 
 
-// Helpers ---------------------------------------------------------------------
+  // Helpers ---------------------------------------------------------------------
 
-function TryReadSingle(const S: string; out V: Single): Boolean;
+function TryReadSingle(const S: string;
+                       out V: Single): Boolean;
 var
   fs: TFormatSettings;
   tmp: string;
@@ -148,8 +149,8 @@ begin
                                         ',',
                                         '.',
                                         [rfReplaceAll]),
-                                        Def,
-                                        fs);
+                          Def,
+                          fs);
 end;
 
 
@@ -161,13 +162,15 @@ begin
 
   fs := DefaultFormatSettings;
   fs.DecimalSeparator := '.';
-  Result := FloatToStr(V, fs);
+  Result := FloatToStr(V,
+                       fs);
 end;
 
 // -----------------------------------------------------------------------------
 
 
 procedure TfrmEqSettings.FormCreate(Sender: TObject);
+
 begin
 
   // UpDowns are integer-only; we store scaled ints for slope/Q (x100).
@@ -191,7 +194,9 @@ begin
   rgMidMode.ItemIndex := 0;
 
   // Reasonable built-in defaults (can be overridden by ConfigureStorage)
-  FillChar(FDefaults, SizeOf(FDefaults), 0);
+  FillChar(FDefaults,
+           SizeOf(FDefaults),
+           0);
   FDefaults.LowFreqHz := 100.0;
   FDefaults.MidFreqHz := 1000.0;
   FDefaults.HighFreqHz := 10000.0;
@@ -205,6 +210,7 @@ end;
 
 
 procedure TfrmEqSettings.SetInitialTuning(const T: TEqTuning);
+
 begin
 
   FTuning := T;
@@ -224,30 +230,39 @@ begin
   WriteTuningToUi(FTuning);
 
   if Assigned(FOnApply) then
-    FOnApply(Self, T);
+    FOnApply(Self,
+             T);
 
   // If storage is configured, save what we just applied.
   if (FIniFileName <> '') and (FIniSection <> '') then
-    SaveToIni(FIniFileName, FIniSection, FTuning);
+    SaveToIni(FIniFileName,
+              FIniSection,
+              FTuning);
 end;
 
 
 procedure TfrmEqSettings.btnDefaultsClick(Sender: TObject);
+
 begin
 
   FTuning := FDefaults;
   WriteTuningToUi(FTuning);
 
   if Assigned(FOnApply) then
-    FOnApply(Self, FTuning);
+    FOnApply(Self,
+             FTuning);
 
   if (FIniFileName <> '') and (FIniSection <> '') then
-    SaveToIni(FIniFileName, FIniSection, FTuning);
+    SaveToIni(FIniFileName,
+              FIniSection,
+              FTuning);
 end;
 
 
 procedure TfrmEqSettings.btnOKClick(Sender: TObject);
+
 begin
+
   // Apply once on OK for convenience
   btnApplyClick(Sender);
   ModalResult := mrOk;
@@ -265,27 +280,27 @@ begin
   Result := FTuning;
 
   if TryReadSingle(Trim(edtLowFreqHz.Text),
-                        v) then
+    v) then
     Result.LowFreqHz := v;
 
   if TryReadSingle(Trim(edtMidFreqHz.Text),
-                        v) then
+    v) then
     Result.MidFreqHz := v;
 
   if TryReadSingle(Trim(edtHighFreqHz.Text),
-                        v) then
+    v) then
     Result.HighFreqHz := v;
 
   if TryReadSingle(Trim(edtMidQ.Text),
-                        v) then
+    v) then
     Result.MidQ := v;
 
   if TryReadSingle(Trim(edtLowSlope.Text),
-                        v) then
+    v) then
     Result.LowShelfSlope := v;
 
   if TryReadSingle(Trim(edtHighSlope.Text),
-                        v) then
+    v) then
     Result.HighShelfSlope := v;
 
   // Notch or Bell
@@ -296,14 +311,14 @@ begin
 
   // Clamp UI values (engine also clamps, but keep UI sane)
   Result.LowFreqHz := EnsureRange(Result.LowFreqHz,
-                              10.0,
-                              400.0);
+                                  10.0,
+                                  400.0);
   Result.MidFreqHz := EnsureRange(Result.MidFreqHz,
-                              200.0,
-                              6000.0);
+                                  200.0,
+                                  6000.0);
   Result.HighFreqHz := EnsureRange(Result.HighFreqHz,
-                               2000.0,
-                               22000.0);
+                                   2000.0,
+                                   22000.0);
 
   Result.MidQ := EnsureRange(Result.MidQ,
                              0.30,
@@ -322,6 +337,7 @@ end;
 procedure TfrmEqSettings.ConfigureStorage(const IniFileName: string;
                                           const Section: string;
                                           const Defaults: TEqTuning);
+
 begin
 
   FIniFileName := IniFileName;
@@ -329,13 +345,14 @@ begin
   FDefaults := Defaults;
   // Keep a sane base.
   if (FTuning.LowFreqHz = 0) and
-     (FTuning.MidFreqHz = 0) and
-     (FTuning.HighFreqHz = 0) then
+    (FTuning.MidFreqHz = 0) and
+    (FTuning.HighFreqHz = 0) then
     FTuning := FDefaults;
 end;
 
 
 procedure TfrmEqSettings.WriteTuningToUi(const T: TEqTuning);
+
 begin
 
   edtLowFreqHz.Text := IntToStr(Round(EnsureRange(T.LowFreqHz,
@@ -461,13 +478,27 @@ begin
   ini := TIniFile.Create(IniFileName);
 
   try
-    ini.WriteFloat(Section, 'LowFreqHz', T.LowFreqHz);
-    ini.WriteFloat(Section, 'MidFreqHz', T.MidFreqHz);
-    ini.WriteFloat(Section, 'HighFreqHz', T.HighFreqHz);
-    ini.WriteFloat(Section, 'MidQ', T.MidQ);
-    ini.WriteFloat(Section, 'LowShelfSlope', T.LowShelfSlope);
-    ini.WriteFloat(Section, 'HighShelfSlope', T.HighShelfSlope);
-    ini.WriteInteger(Section, 'MidMode', Ord(T.MidMode));
+    ini.WriteFloat(Section,
+                   'LowFreqHz',
+                   T.LowFreqHz);
+    ini.WriteFloat(Section,
+                   'MidFreqHz',
+                   T.MidFreqHz);
+    ini.WriteFloat(Section,
+                   'HighFreqHz',
+                   T.HighFreqHz);
+    ini.WriteFloat(Section,
+                   'MidQ',
+                   T.MidQ);
+    ini.WriteFloat(Section,
+                   'LowShelfSlope',
+                   T.LowShelfSlope);
+    ini.WriteFloat(Section,
+                   'HighShelfSlope',
+                   T.HighShelfSlope);
+    ini.WriteInteger(Section,
+                     'MidMode',
+                     Ord(T.MidMode));
   finally
 
     ini.Free();

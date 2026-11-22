@@ -65,7 +65,7 @@ interface
 uses
   LMessages,
   MfCaptureSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   ShellApi,
@@ -199,6 +199,7 @@ end;
 
 
 function TfrmMain.IniFileName(): string;
+
 begin
 
   Result := ChangeFileExt(UnicodeString(Application.ExeName),
@@ -220,7 +221,7 @@ begin
     edPublicUrl.Text := Ini.ReadString(SETTINGS_SECTION,
                                        SETTINGS_BROWSER_URL,
                                        'http://127.0.0.1:8080' +
-                                       WEBCAM_STREAM_URL_PATH);
+      WEBCAM_STREAM_URL_PATH);
   finally
     Ini.Free;
   end;
@@ -249,6 +250,7 @@ end;
 
 
 function TfrmMain.DefaultPublishFolder(): string;
+
 begin
 
   // FxServe's self-contained installer uses this location. Do not derive the
@@ -279,8 +281,8 @@ begin
     Exit(Candidate);
 
   Candidate := ExpandFileName(
-                 IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) +
-                 '..\..\www\' + WEBCAM_STREAM_PAGE);
+    IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) +
+    '..\..\www\' + WEBCAM_STREAM_PAGE);
   if FileExists(Candidate) then
     Exit(Candidate);
 
@@ -311,30 +313,43 @@ begin
   // Convert a mapped network drive to its UNC share before extracting the
   // server. This makes X:\FxServe\www\WebCam work like a direct UNC path.
   if (Length(PathText) >= 3) and
-     (PathText[2] = ':') and
-     (GetDriveTypeW(PChar(Copy(PathText, 1, 3))) = DRIVE_REMOTE) then
+    (PathText[2] = ':') and
+    (GetDriveTypeW(PChar(Copy(PathText,
+                              1,
+                              3))) = DRIVE_REMOTE) then
     begin
-      LocalDevice := Copy(PathText, 1, 2);
+      LocalDevice := Copy(PathText,
+                          1,
+                          2);
       BufferSize := REMOTE_PATH_BUFFER_SIZE;
-      SetLength(RemotePath, BufferSize);
+      SetLength(RemotePath,
+                BufferSize);
 
-      if WNetGetConnectionW(PChar(LocalDevice),
-                           PChar(RemotePath),
-                           BufferSize) <> NO_ERROR then
+      if (WNetGetConnectionW(PChar(LocalDevice),
+        PChar(RemotePath),
+        BufferSize) <> NO_ERROR) then
         Exit;
 
-      SetLength(RemotePath, StrLen(PChar(RemotePath)));
+      SetLength(RemotePath,
+                StrLen(PChar(RemotePath)));
       PathText := ExcludeTrailingPathDelimiter(RemotePath) +
-                  Copy(PathText, 3, MaxInt);
+        Copy(PathText,
+             3,
+             MaxInt);
     end;
 
-  if Copy(PathText, 1, 2) = '\\' then
+  if (Copy(PathText, 1, 2) = '\\') then
     begin
-      Delete(PathText, 1, 2);
-      SeparatorPosition := Pos('\', PathText);
+      Delete(PathText,
+             1,
+             2);
+      SeparatorPosition := Pos('\',
+                               PathText);
 
-      if SeparatorPosition > 0 then
-        AHostName := Copy(PathText, 1, SeparatorPosition - 1)
+      if (SeparatorPosition > 0) then
+        AHostName := Copy(PathText,
+                          1,
+                          SeparatorPosition - 1)
       else
         AHostName := PathText;
     end
@@ -350,7 +365,7 @@ begin
     end;
 
   AHostName := Trim(AHostName);
-  Result := AHostName <> '';
+  Result := (AHostName <> '');
 end;
 
 
@@ -367,10 +382,10 @@ begin
   Result := False;
   AAddress := '';
 
-  if Trim(AHostName) = '' then
+  if (Trim(AHostName) = '') then
     Exit;
 
-  if WSAStartup($0202, WsaData) <> 0 then
+  if (WSAStartup($0202, WsaData) <> 0) then
     Exit;
 
   try
@@ -378,14 +393,12 @@ begin
     HostEntry := gethostbyname(PAnsiChar(HostName));
 
     if not Assigned(HostEntry) or
-       (HostEntry^.h_addrtype <> AF_INET) or
-       not Assigned(HostEntry^.h_addr_list) or
-       not Assigned(HostEntry^.h_addr_list^) then
+      (HostEntry^.h_addrtype <> AF_INET) or not Assigned(HostEntry^.h_addr_list) or not Assigned(HostEntry^.h_addr_list^) then
       Exit;
 
     Address := PInAddr(HostEntry^.h_addr_list^);
     AAddress := string(AnsiString(inet_ntoa(Address^)));
-    Result := AAddress <> '';
+    Result := (AAddress <> '');
   finally
     WSACleanup();
   end;
@@ -415,15 +428,17 @@ begin
   try
     Config.LoadFromFile(ConfigFile);
     Text := Config.Text;
-    Position := Pos('"lanUrl"', Text);
+    Position := Pos('"lanUrl"',
+                    Text);
 
-    if Position = 0 then
+    if (Position = 0) then
       Exit;
 
     Text := Copy(Text,
                  Position + Length('"lanUrl"'),
                  MaxInt);
-    Position := Pos(':', Text);
+    Position := Pos(':',
+                    Text);
 
     if (Position = 0) then
       Exit;
@@ -431,7 +446,8 @@ begin
     Text := Copy(Text,
                  Position + 1,
                  MaxInt);
-    Position := Pos('"', Text);
+    Position := Pos('"',
+                    Text);
 
     if (Position = 0) then
       Exit;
@@ -439,7 +455,8 @@ begin
     Text := Copy(Text,
                  Position + 1,
                  MaxInt);
-    EndPosition := Pos('"', Text);
+    EndPosition := Pos('"',
+                       Text);
 
     if (EndPosition = 0) then
       Exit;
@@ -508,6 +525,7 @@ end;
 
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+
 begin
 
   FVideoDevices := TSimpleDeviceList.Create(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
@@ -532,6 +550,7 @@ end;
 
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
+
 begin
 
   tmrStatus.Enabled := False;
@@ -568,7 +587,7 @@ begin
       begin
         for I := 0 to FVideoDevices.Count - 1 do
           if SUCCEEDED(FVideoDevices.GetFriendlyName(I,
-                                                     DeviceName)) then
+            DeviceName)) then
             cbCamera.Items.Add(DeviceName);
       end;
 
@@ -603,8 +622,8 @@ begin
 
   Capturing := Assigned(FCapture) and (FCapture.State = csCapturing);
   btnStart.Enabled := not Capturing and
-                      (cbCamera.ItemIndex >= 0) and
-                      (cbMicrophone.ItemIndex >= 0);
+    (cbCamera.ItemIndex >= 0) and
+    (cbMicrophone.ItemIndex >= 0);
 
   btnStop.Enabled := Capturing;
   btnOpenBrowser.Enabled := (Trim(edPublicUrl.Text) <> '');
@@ -633,8 +652,8 @@ begin
     Folder := ExtractFilePath(Application.ExeName);
 
   if MfSelectDirectory('Select or create FxServe www\WebCam folder',
-                     '',
-                     Folder) then
+    '',
+    Folder) then
     edPublishFolder.Text := ExcludeTrailingPathDelimiter(Folder);
 end;
 
@@ -656,8 +675,8 @@ begin
     SelectedFolder := ExtractFilePath(Application.ExeName);
 
   if not MfSelectDirectory('Select the FxServe WebCam folder',
-                         '',
-                         SelectedFolder) then
+    '',
+    SelectedFolder) then
     Exit;
 
   SelectedFolder := ExcludeTrailingPathDelimiter(SelectedFolder);
@@ -665,9 +684,9 @@ begin
   if SameText(ExtractFileName(SelectedFolder), 'WebCam') then
     WebCamFolder := SelectedFolder
   else if SysUtils.DirectoryExists(
-            IncludeTrailingPathDelimiter(SelectedFolder) + 'WebCam') then
+    IncludeTrailingPathDelimiter(SelectedFolder) + 'WebCam') then
     WebCamFolder := IncludeTrailingPathDelimiter(SelectedFolder) +
-                    'WebCam'
+      'WebCam'
   else
     begin
       MessageDlg('The selected location does not contain a WebCam folder.',
@@ -682,7 +701,7 @@ begin
   if not FileExists(PlayerFile) then
     begin
       MessageDlg(WEBCAM_STREAM_PAGE + ' was not found in:'#13#10 +
-                 WebCamFolder,
+        WebCamFolder,
                  mtError,
                  [mbOK],
                  0);
@@ -701,7 +720,7 @@ begin
   if not ResolveIPv4Address(HostName, IPv4Address) then
     begin
       MessageDlg('Unable to resolve the IPv4 address of server "' +
-                 HostName + '".',
+        HostName + '".',
                  mtError,
                  [mbOK],
                  0);
@@ -753,7 +772,7 @@ begin
     end;
 
   if not FPublisher.Start(PublishFolder,
-                          PlayerSource) then
+    PlayerSource) then
     begin
       MessageDlg('Unable to prepare FxServe publication.'#13#10 + FPublisher.LastError,
                  mtError,
@@ -844,6 +863,7 @@ end;
 
 
 procedure TfrmMain.btnStopClick(Sender: TObject);
+
 begin
 
   StopStreaming();
@@ -859,13 +879,13 @@ begin
 
   Url := Trim(edPublicUrl.Text);
   if (Pos('http://',
-          LowerCase(Url)) <> 1) and
-     (Pos('https://',
-          LowerCase(Url)) <> 1) then
+    LowerCase(Url)) <> 1) and
+    (Pos('https://',
+         LowerCase(Url)) <> 1) then
     begin
       MessageDlg('Browser URL must be an HTTP or HTTPS address served by FxServe.'#13#10#13#10 +
-                 'Example:'#13#10 +
-                 'http://192.168.50.101:8080' + WEBCAM_STREAM_URL_PATH,
+        'Example:'#13#10 +
+        'http://192.168.50.101:8080' + WEBCAM_STREAM_URL_PATH,
                  mtError,
                  [mbOK],
                  0);
@@ -896,7 +916,7 @@ begin
   if Assigned(FCapture) and (FCapture.State = csCapturing) then
     begin
       if not FPublisher.Service(FCapture,
-                                PublishedCount) then
+        PublishedCount) then
         begin
           if (FPublisher.LastError <> FLastPublisherError) then
             begin
@@ -904,39 +924,40 @@ begin
               AddStatus('Publish error: ' + FLastPublisherError);
             end;
         end
-      else
-        if (PublishedCount > 0) then
-          AddStatus(Format('Published through FxServe: fragments %d-%d.',
-                           [FPublisher.FirstPublishedSequence, FPublisher.LastPublishedSequence]));
+      else if (PublishedCount > 0) then
+        AddStatus(Format('Published through FxServe: fragments %d-%d.',
+                         [FPublisher.FirstPublishedSequence, FPublisher.LastPublishedSequence]));
 
       Caption := Format('MfWebCamStreamer - Video %d / Audio %d / Preview %d',
                         [FCapture.VideoSamples,
-                         FCapture.AudioSamples,
-                         FCapture.PreviewVideoSamples]);
+        FCapture.AudioSamples,
+        FCapture.PreviewVideoSamples]);
 
       if (FCapture.PreviewLastError <> S_OK) and
-         (FCapture.PreviewLastError <> FLastPreviewError) then
+        (FCapture.PreviewLastError <> FLastPreviewError) then
         begin
           FLastPreviewError := FCapture.PreviewLastError;
           AddStatus(Format('EVR preview error: 0x%.8x',
                            [Cardinal(FLastPreviewError)]));
         end
       else if not FPreviewWarningShown and
-              (FCapture.VideoSamples >= 30) and
-              (FCapture.PreviewVideoSamples = 0) then
+        (FCapture.VideoSamples >= 30) and
+        (FCapture.PreviewVideoSamples = 0) then
         begin
           FPreviewWarningShown := True;
           AddStatus(Format('EVR preview has no frames: requests=%d, preroll=%s, clock=%s.',
                            [FCapture.PreviewVideoRequests,
-                            BoolToStr(FCapture.PreviewVideoPrerolled, True),
-                            BoolToStr(FCapture.PreviewClockStarted, True)]));
+            BoolToStr(FCapture.PreviewVideoPrerolled,
+                      True),
+            BoolToStr(FCapture.PreviewClockStarted,
+                      True)]));
         end;
 
       if FCapture.GetFmp4Diagnostics(InitBytes,
-                                     FragmentBytes,
-                                     FragmentCount,
-                                     TotalBytes) and
-         (FragmentCount <> FLastFragmentCount) then
+        FragmentBytes,
+        FragmentCount,
+        TotalBytes) and
+        (FragmentCount <> FLastFragmentCount) then
         FLastFragmentCount := FragmentCount;
     end
   else
@@ -945,6 +966,7 @@ end;
 
 
 procedure TfrmMain.FormResize(Sender: TObject);
+
 begin
 
   if Assigned(FCapture) and Assigned(pnlPreview) then
@@ -954,12 +976,13 @@ end;
 
 
 procedure TfrmMain.PreviewWindowProc(var Message: TLMessage);
+
 begin
 
   if (Message.Msg = WM_ERASEBKGND) and
-     Assigned(FCapture) and
-     (FCapture.State = csCapturing) and
-     (FCapture.PreviewVideoSamples > 0) then
+    Assigned(FCapture) and
+    (FCapture.State = csCapturing) and
+    (FCapture.PreviewVideoSamples > 0) then
     begin
       Message.Result := 1;
       Exit;
@@ -968,8 +991,8 @@ begin
   FOldPreviewWindowProc(Message);
 
   if (Message.Msg = WM_PAINT) and
-     Assigned(FCapture) and
-     (FCapture.State = csCapturing) then
+    Assigned(FCapture) and
+    (FCapture.State = csCapturing) then
     FCapture.RepaintPreview();
 end;
 

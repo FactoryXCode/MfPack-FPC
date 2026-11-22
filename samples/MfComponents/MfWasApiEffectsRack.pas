@@ -112,6 +112,7 @@ type
   TMfWasApiEffectsRack = class;
 
   TMfWasApiFxSlot = class(TCollectionItem)
+
   private
 
     FEnabled: Boolean;
@@ -133,11 +134,13 @@ type
 
 
   TMfWasApiFxSlots = class(TOwnedCollection)
+
   private
 
     function GetItem(Index: Integer): TMfWasApiFxSlot;
     procedure SetItem(Index: Integer;
                       const Value: TMfWasApiFxSlot);
+
   public
 
     constructor Create(AOwner: TPersistent);
@@ -150,6 +153,7 @@ type
   // Called from engine thread via Engine.OnProcessPcm.
 
   TMfWasApiEffectsRack = class(TComponent)
+
   private
 
     FSlots: TMfWasApiFxSlots;
@@ -179,6 +183,7 @@ type
     function ProcessMftInPlace(const AMft: IMFTransform;
                                pData: PByte;
                                const ByteCount: DWORD): HRESULT;
+
   protected
 
     procedure Notification(AComponent: TComponent;
@@ -208,6 +213,7 @@ type
     function FindSlotByEffect(const AEffect: TMfWasApiFxComponentBase): TMfWasApiFxSlot;
     function FindSlotByEffectName(const AName: string): TMfWasApiFxSlot;
     function FindFirstSlotByEffectClass(const AClass: TClass): TMfWasApiFxSlot;
+
   published
 
     property Slots: TMfWasApiFxSlots read FSlots write SetSlots;
@@ -220,6 +226,7 @@ implementation
 
 
 procedure Register;
+
 begin
 
   RegisterComponents('MfPack Core Audio Samples',
@@ -229,6 +236,7 @@ end;
 { TMfWasApiFxSlot }
 
 constructor TMfWasApiFxSlot.Create(Collection: TCollection);
+
 begin
 
   inherited Create(Collection);
@@ -239,6 +247,7 @@ end;
 
 
 procedure TMfWasApiFxSlot.SetEnabled(const Value: Boolean);
+
 begin
 
   FEnabled := Value;
@@ -272,6 +281,7 @@ end;
 { TMfWasApiFxSlots }
 
 constructor TMfWasApiFxSlots.Create(AOwner: TPersistent);
+
 begin
 
   inherited Create(AOwner,
@@ -280,6 +290,7 @@ end;
 
 
 destructor TMfWasApiFxSlots.Destroy();
+
 begin
 
   inherited;
@@ -287,13 +298,16 @@ end;
 
 
 function TMfWasApiFxSlots.GetItem(Index: Integer): TMfWasApiFxSlot;
+
 begin
 
   Result := TMfWasApiFxSlot(inherited GetItem(Index));
 end;
 
 
-procedure TMfWasApiFxSlots.SetItem(Index: Integer; const Value: TMfWasApiFxSlot);
+procedure TMfWasApiFxSlots.SetItem(Index: Integer;
+                                   const Value: TMfWasApiFxSlot);
+
 begin
 
   inherited SetItem(Index,
@@ -304,6 +318,7 @@ end;
 { TMfWasApiEffectsRack helpers }
 
 procedure TMfWasApiEffectsRack.SetSlots(const Value: TMfWasApiFxSlots);
+
 begin
 
   // Delphi streaming will call the setter to load the collection from DFM.
@@ -318,6 +333,7 @@ end;
 { TMfWasApiEffectsRack }
 
 constructor TMfWasApiEffectsRack.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
@@ -336,6 +352,7 @@ end;
 
 
 destructor TMfWasApiEffectsRack.Destroy();
+
 begin
 
   FreeAndNil(FSlots);
@@ -355,7 +372,9 @@ procedure TMfWasApiEffectsRack.Notification(AComponent: TComponent;
                                             Operation: TOperation);
 var
   i: Integer;
+
 begin
+
   inherited;
 
   if (Operation <> opRemove) then
@@ -365,10 +384,10 @@ begin
     Exit;
 
   for i := 0 to FSlots.Count - 1 do
-  begin
-    if (FSlots[i] <> nil) and (FSlots[i].Effect = AComponent) then
-      FSlots[i].Effect := nil;
-  end;
+    begin
+      if (FSlots[i] <> nil) and (FSlots[i].Effect = AComponent) then
+        FSlots[i].Effect := nil;
+    end;
 end;
 
 
@@ -385,8 +404,8 @@ begin
     Exit(E_INVALIDARG);
 
   if (FFloat32Type <> nil) and
-     (FFloat32SR = SampleRate) and
-     (FFloat32Ch = Channels) then
+    (FFloat32SR = SampleRate) and
+    (FFloat32Ch = Channels) then
     Exit(S_OK);
 
   FFloat32Type := nil;
@@ -502,8 +521,8 @@ var
 begin
 
   if (AMft = nil) or
-     (pData = nil) or
-     (ByteCount = 0) then
+    (pData = nil) or
+    (ByteCount = 0) then
     Exit(S_OK);
 
   // --- Create input sample ---
@@ -570,7 +589,8 @@ begin
 
       hr := AMft.ProcessOutput(0,
                                1,
-                               @outData, status);
+                               @outData,
+                               status);
       if FAILED(hr) and (hr <> MF_E_TRANSFORM_NEED_MORE_INPUT) then
         Exit(hr);
 
@@ -617,13 +637,14 @@ begin
     // Only copy what the MFT actually produced.
     Move(pOut^,
          pData^,
-         Min(cbCur, ByteCount));
+         Min(cbCur,
+             ByteCount));
 
     // Optional: if cbCur < ByteCount, zero the tail to avoid old samples bleeding through.
     if (cbCur < ByteCount) then
       FillChar((pData + cbCur)^,
-                ByteCount - cbCur,
-                0);
+               ByteCount - cbCur,
+               0);
   finally
 
     outBuf.Unlock();
@@ -657,13 +678,13 @@ begin
     Exit;
 
   if (pData = nil) or
-     (ByteCount = 0) or
-     (pwfx = nil) then
+    (ByteCount = 0) or
+    (pwfx = nil) then
     Exit;
 
   if not GetWfxBitsAndFloat(pwfx,
-                            Bits,
-                            IsFloat) then
+    Bits,
+    IsFloat) then
     Exit;
 
   // Fast path: already Float32 interleaved.
@@ -679,13 +700,13 @@ begin
 
             slot := FSlots[i];
             if (slot = nil) or
-               (not slot.Enabled) or
-               (slot.Effect = nil) then
+              (not slot.Enabled) or
+              (slot.Effect = nil) then
               Continue;
 
             if not Supports(slot.Effect,
-                            IMfWasApiFxProvider,
-                            prov) then
+              IMfWasApiFxProvider,
+              prov) then
               Continue;
 
             mft := prov.GetMft();
@@ -739,8 +760,8 @@ begin
     32: Int32ToFloat(pData,
                      pFloat,
                      Samples);
-  else
-    Exit; // unsupported PCM bit depth
+    else
+      Exit; // unsupported PCM bit depth
   end;
 
   // Safety: avoid NaN/Inf propagation if any upstream produced junk.
@@ -759,13 +780,13 @@ begin
 
         slot := FSlots[i];
         if (slot = nil) or
-           (not slot.Enabled) or
-           (slot.Effect = nil) then
+          (not slot.Enabled) or
+          (slot.Effect = nil) then
           Continue;
 
         if not Supports(slot.Effect,
-                        IMfWasApiFxProvider,
-                        prov) then
+          IMfWasApiFxProvider,
+          prov) then
           Continue;
 
         mft := prov.GetMft;
@@ -795,7 +816,8 @@ begin
                      Samples);
 
     24: FloatToInt24(pFloat,
-                     pData, Samples);
+                     pData,
+                     Samples);
 
     32: FloatToInt32(pFloat,
                      pData,
@@ -822,9 +844,9 @@ begin
     Exit;
 
   if (pData = nil) or
-     (Frames <= 0) or
-     (Channels <= 0) or
-     (SampleRate <= 0) then
+    (Frames <= 0) or
+    (Channels <= 0) or
+    (SampleRate <= 0) then
     Exit;
 
   byteCount := DWORD(Frames * Channels * SizeOf(Single));
@@ -838,13 +860,13 @@ begin
 
         slot := FSlots[i];
         if (slot = nil) or
-           (not slot.Enabled) or
-           (slot.Effect = nil) then
+          (not slot.Enabled) or
+          (slot.Effect = nil) then
           Continue;
 
         if not Supports(slot.Effect,
-                        IMfWasApiFxProvider,
-                        prov) then
+          IMfWasApiFxProvider,
+          prov) then
           Continue;
 
         mft := prov.GetMft;
@@ -914,7 +936,7 @@ begin
         begin
 
           eff := slot.Effect;
-          if (eff <> nil) and (lstrcmpiW(PWideChar(UnicodeString(eff.Name)),PWideChar(AName)) = 0) then
+          if (eff <> nil) and (lstrcmpiW(PWideChar(UnicodeString(eff.Name)), PWideChar(AName)) = 0) then
             Exit(slot);
         end;
     end;

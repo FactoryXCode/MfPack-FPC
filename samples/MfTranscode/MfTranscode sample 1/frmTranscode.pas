@@ -70,7 +70,7 @@ interface
 uses
   LMessages,
   MfCaptureSamples.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -119,7 +119,9 @@ type
     procedure butExecuteClick(Sender: TObject);
     procedure butStopClick(Sender: TObject);
     procedure mnuExitClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
+
   private
     { Private declarations }
     sInputFile: PWideChar;   // Audio source file name
@@ -131,6 +133,7 @@ type
     procedure Start();
     procedure Reset(const hr: HResult);
     procedure WMProgressEvent(var Msg: TLMessage); message WM_PROGRESSNOTIFY;
+
   public
     { Public declarations }
 
@@ -148,14 +151,17 @@ var
   tmp: string;
 
 begin
+
   tmp := ExtractFileName(string(sInputFile));
-  Savedialog1.FileName := ChangeFileExt(tmp, '.wmv');
+  Savedialog1.FileName := ChangeFileExt(tmp,
+                                        '.wmv');
 
   if Savedialog1.execute then
     begin
       // If choosen the source as target, change it to wav
-      if sInputFile = Savedialog1.FileName then
-        Savedialog1.FileName := ChangeFileExt(sInputFile, '.wmv');
+      if (sInputFile = Savedialog1.FileName) then
+        Savedialog1.FileName := ChangeFileExt(sInputFile,
+                                              '.wmv');
       // delete existing target
       if FileExists(Savedialog1.FileName) then
         DeleteFile(Savedialog1.FileName);
@@ -168,7 +174,9 @@ end;
 
 // The "main" method
 procedure TfrmTranscoder.butExecuteClick(Sender: TObject);
+
 begin
+
   Start();
 end;
 
@@ -178,6 +186,7 @@ var
   hr: HResult;
 
 begin
+
   // Create the transcoder object
   FTranscoder := TTranscoder.Create(Self.Handle);
   // Create a stopwatch to calculate the estimated rendering time.
@@ -191,7 +200,8 @@ begin
   hr := FTranscoder.OpenFile(sInputFile);
   if SUCCEEDED(hr) then
     begin
-      Caption := Format('Opened file: %s.', [sInputFile]);
+      Caption := Format('Opened file: %s.',
+                        [sInputFile]);
       // Configure the profile and build a topology.
       hr := FTranscoder.ConfigureAudioOutput();
     end;
@@ -214,13 +224,15 @@ begin
     hr := FTranscoder.EncodeToFile(sOutputFile);
 
   if SUCCEEDED(hr) then
-    Caption := Format('Output file created: %s', [sOutputFile]);
+    Caption := Format('Output file created: %s',
+                      [sOutputFile]);
 
   if FAILED(hr) then
-    if hr = E_ABORT then
+    if (hr = E_ABORT) then
       Caption := 'Rendering aborted by user.'
     else
-      Caption := Format('Could not create the output file (Error %d).',[hr]);
+      Caption := Format('Could not create the output file (Error %d).',
+                        [hr]);
 
   stopwatch.Stop;
   Sleep(2000);
@@ -231,7 +243,9 @@ end;
 
 
 procedure TfrmTranscoder.Reset(const hr: HResult);
+
 begin
+
   // When finished, release the engine.
   if Assigned(FTranscoder) then
     begin
@@ -243,7 +257,7 @@ begin
   butStop.Enabled := False;
 
   // When the process encountered an error or abortion, delete the targetfile.
-  if hr <> S_OK then
+  if (hr <> S_OK) then
     DeleteFile(sOutputFile);
 
   edTargetFile.Text := 'None';
@@ -255,29 +269,38 @@ end;
 
 
 procedure TfrmTranscoder.butStopClick(Sender: TObject);
+
 begin
+
   {void} FTranscoder.Stop();
 end;
 
 
 procedure TfrmTranscoder.mnuExitClick(Sender: TObject);
+
 begin
+
   Close();
 end;
 
 
-procedure TfrmTranscoder.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfrmTranscoder.FormCloseQuery(Sender: TObject;
+                                        var CanClose: Boolean);
+
 begin
+
   CanClose := False;
   // Terminate a running Transcode process.
   if Assigned(FTranscoder) then
-      FTranscoder.Stop();
+    FTranscoder.Stop();
   CanClose := True;
 end;
 
 
 procedure TfrmTranscoder.mnuOpenSourceFileClick(Sender: TObject);
+
 begin
+
   // Pick a file to extract the audio from
   butExecute.Enabled := False;
   butStop.Enabled := False;
@@ -307,12 +330,15 @@ begin //Position
         begin
           ElapsedSet := true;
           stopwatch.Stop;
-          lblEstFinish.Caption := Format('Estimated finish at: %s', [MSecToStr((stopwatch.ElapsedMilliseconds * 100) + MillisecondOfTheDay(Now), False)]);
+          lblEstFinish.Caption := Format('Estimated finish at: %s',
+                                         [MSecToStr((stopwatch.ElapsedMilliseconds * 100) + MillisecondOfTheDay(Now),
+                                                    False)]);
         end;
 
       // Progress percentage calculation: (100 * position) / totallength; Where progressbar.Max = 100 and Min = 0
       ProgressBar.Position := CurrPosition;
-      lblProgress.Caption := Format('Processed: %d%%', [CurrPosition]);
+      lblProgress.Caption := Format('Processed: %d%%',
+                                    [CurrPosition]);
     end;
 end;
 

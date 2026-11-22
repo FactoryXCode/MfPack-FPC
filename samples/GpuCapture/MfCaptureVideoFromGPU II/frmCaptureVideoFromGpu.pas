@@ -72,7 +72,7 @@ uses
   LMessages,
   WinApi.WinApiTypes,
   WinApi.Coml2Api,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   ShellApi,
@@ -183,7 +183,7 @@ type
   private
 
     FEngine: TCaptureStreamEngine;
-    FOutputs: TArray<TDXGIOutputInfo>;
+    FOutputs: TArray < TDXGIOutputInfo > ;
     FLastFrameTime: Double;
     // FPS smoothing (UI only)
     FFpsAvg: Double;
@@ -254,6 +254,7 @@ implementation
 procedure TfrmCapture.StartNewLogFile(const OutputFileName: string);
 var
   LogDir: string;
+
 begin
 
   StopLogFile();
@@ -268,10 +269,13 @@ begin
   LogDir := IncludeTrailingPathDelimiter(LogDir);
   ForceDirectories(LogDir);
 
-  FLogFileName := LogDir + 'Log_' + FormatDateTime('yyyymmdd_hhnnss', Now) + '.txt';
+  FLogFileName := LogDir + 'Log_' + FormatDateTime('yyyymmdd_hhnnss',
+                                                   Now) + '.txt';
 
   try
-    TFile.WriteAllText(FLogFileName, '', TEncoding.UTF8);
+    TFile.WriteAllText(FLogFileName,
+                       '',
+                       TEncoding.UTF8);
     FLoggingActive := True;
     WriteLog('Log file: ' + FLogFileName);
   except
@@ -282,6 +286,7 @@ end;
 
 
 procedure TfrmCapture.StopLogFile();
+
 begin
 
   if FLoggingActive then
@@ -295,15 +300,19 @@ end;
 procedure TfrmCapture.WriteLog(const Msg: string);
 var
   Line: string;
+
 begin
 
   if (not FLoggingActive) or (FLogFileName = '') then
     Exit;
 
-  Line := FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz', Now) + '  ' + Msg + sLineBreak;
+  Line := FormatDateTime('yyyy-mm-dd hh:nn:ss.zzz',
+                         Now) + '  ' + Msg + sLineBreak;
 
   try
-    TFile.AppendAllText(FLogFileName, Line, TEncoding.UTF8);
+    TFile.AppendAllText(FLogFileName,
+                        Line,
+                        TEncoding.UTF8);
   except
     FLoggingActive := False;
   end;
@@ -311,6 +320,7 @@ end;
 
 
 procedure TfrmCapture.FormCreate(Sender: TObject);
+
 begin
 
   lblStatus.Caption := 'Idle';
@@ -352,12 +362,18 @@ begin
   Self.ShowHint := True;
 
   // Wire generic UI-change handler (guardrails + indicators) without changing behavior
-  if Assigned(cbxMonitor) then cbxMonitor.OnChange := AnyUiChanged;
-  if Assigned(edtOutput) then edtOutput.OnChange := AnyUiChanged;
-  if Assigned(cbxAudioDevice) then cbxAudioDevice.OnChange := AnyUiChanged;
-  if Assigned(cbxAudioBitrate) then cbxAudioBitrate.OnChange := AnyUiChanged;
-  if Assigned(cbxResolutions) then cbxResolutions.OnChange := AnyUiChanged;
-  if Assigned(cbxFrameRate) then cbxFrameRate.OnChange := AnyUiChanged;
+  if Assigned(cbxMonitor) then
+    cbxMonitor.OnChange := AnyUiChanged;
+  if Assigned(edtOutput) then
+    edtOutput.OnChange := AnyUiChanged;
+  if Assigned(cbxAudioDevice) then
+    cbxAudioDevice.OnChange := AnyUiChanged;
+  if Assigned(cbxAudioBitrate) then
+    cbxAudioBitrate.OnChange := AnyUiChanged;
+  if Assigned(cbxResolutions) then
+    cbxResolutions.OnChange := AnyUiChanged;
+  if Assigned(cbxFrameRate) then
+    cbxFrameRate.OnChange := AnyUiChanged;
 
   ApplyUiGuardrails();
   UpdateUiIndicators();
@@ -365,6 +381,7 @@ end;
 
 
 procedure TfrmCapture.FormDestroy(Sender: TObject);
+
 begin
 
   FreeAndNil(FAudioOnly);
@@ -430,141 +447,138 @@ begin
     end;
 
   try
-  CheckChecks();
+    CheckChecks();
 
 
-  // Reset FPS smoothing (UI only)
-  FFpsAvg := 0.0;
-  FFpsAvgCount := 0;
+    // Reset FPS smoothing (UI only)
+    FFpsAvg := 0.0;
+    FFpsAvgCount := 0;
 
-  butStart.Enabled := False;
-  butStop.Enabled := True;
-  butPlayOutput.Enabled := False;
+    butStart.Enabled := False;
+    butStop.Enabled := True;
+    butPlayOutput.Enabled := False;
 
-  // The file to write to
-  sFileName := edtOutput.Text;
-  StartNewLogFile(sFileName);
+    // The file to write to
+    sFileName := edtOutput.Text;
+    StartNewLogFile(sFileName);
 
-  // Get height, width and sample rate if changed inbetween.
-  GetRenderSettings();
+    // Get height, width and sample rate if changed inbetween.
+    GetRenderSettings();
 
-  FEngine.SetFrameWidth := FCaptureWidth;
-  FEngine.SetFrameHeight := FCaptureHeigth;
-  FEngine.SetFrameRate := FFrameRate;
+    FEngine.SetFrameWidth := FCaptureWidth;
+    FEngine.SetFrameHeight := FCaptureHeigth;
+    FEngine.SetFrameRate := FFrameRate;
 
-  // Set the audio device ID.
-  FEngine.AudioDeviceID := GetSelectedAudioDeviceId();
+    // Set the audio device ID.
+    FEngine.AudioDeviceID := GetSelectedAudioDeviceId();
 
-  // Recorder selection
-  if rbRecVideo.Checked then
-    FEngine.CaptureMode := cmVideoOnly
-  else
-    if rbRecAudio.Checked then
+    // Recorder selection
+    if rbRecVideo.Checked then
+      FEngine.CaptureMode := cmVideoOnly
+    else if rbRecAudio.Checked then
       FEngine.CaptureMode := cmAudioOnly
-  else
-    FEngine.CaptureMode := cmAudioVideo;
+    else
+      FEngine.CaptureMode := cmAudioVideo;
 
 
-  // ---------------------------------------------------------------------------
-  // AUDIO ONLY: use separate recorder unit, do NOT start FEngine
-  // ---------------------------------------------------------------------------
-  if (FEngine.CaptureMode = cmAudioOnly) then
-    begin
+    // ---------------------------------------------------------------------------
+    // AUDIO ONLY: use separate recorder unit, do NOT start FEngine
+    // ---------------------------------------------------------------------------
+    if (FEngine.CaptureMode = cmAudioOnly) then
+      begin
 
-      // Stop activity pinger (audio-only should not use it)
-      FreeAndNil(FActivityPinger);
+        // Stop activity pinger (audio-only should not use it)
+        FreeAndNil(FActivityPinger);
 
-      // Create recorder if needed
-      if not Assigned(FAudioOnly) then
-        FAudioOnly := TLoopbackAudioOnlyRecorder.Create(Self);
+        // Create recorder if needed
+        if not Assigned(FAudioOnly) then
+          FAudioOnly := TLoopbackAudioOnlyRecorder.Create(Self);
 
-      WriteLog('Starting AUDIO-ONLY recording: ' + sFileName);
+        WriteLog('Starting AUDIO-ONLY recording: ' + sFileName);
 
-      // Start recorder ////////////////////////////////////////////////////////
+        // Start recorder ////////////////////////////////////////////////////////
 
-      FAudioOnly.StartToFile(sFileName,
-                             FAudioFileFormat,
-                             0,
-                             FEngine.AudioDeviceID);
-
-
-      //////////////////////////////////////////////////////////////////////////
-      lblStatus.Caption := 'Recording (audio only)...';
-      lblStatus.Font.Color := clLime;
-
-      FIsRecording := True;
-      FRecordingStartTick := GetTickCount64;
-
-      if Assigned(tmrGUI) then
-        tmrGUI.Enabled := True;
-
-      ApplyUiGuardrails();
-      UpdateUiIndicators();
-
-      WriteLog('--- Audio-Only Capture Started ---');
-      WriteLog('Output file: ' + sFileName);
-
-      // Check full path.
-      WriteLog('Audio-only file (absolute): ' + ExpandFileName(FAudioOnly.OutputFileName));
-
-      Exit; // IMPORTANT: Don't start video pipeline and ActivityPinger.
-    end;
+        FAudioOnly.StartToFile(sFileName,
+                               FAudioFileFormat,
+                               0,
+                               FEngine.AudioDeviceID);
 
 
-  // Audio&Video and Video only. ///////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////
+        lblStatus.Caption := 'Recording (audio only)...';
+        lblStatus.Font.Color := clLime;
 
-  if (FAudioCodec = acAac) then
-    FEngine.EnableLoopbackAudioAacMp4($3 {stereo mask},
-                                      SelectedAacAvgBytesPerSec)
-  else
-    if FAudioCodec = acFlac then
+        FIsRecording := True;
+        FRecordingStartTick := GetTickCount64;
+
+        if Assigned(tmrGUI) then
+          tmrGUI.Enabled := True;
+
+        ApplyUiGuardrails();
+        UpdateUiIndicators();
+
+        WriteLog('--- Audio-Only Capture Started ---');
+        WriteLog('Output file: ' + sFileName);
+
+        // Check full path.
+        WriteLog('Audio-only file (absolute): ' + ExpandFileName(FAudioOnly.OutputFileName));
+
+        Exit; // IMPORTANT: Don't start video pipeline and ActivityPinger.
+      end;
+
+
+    // Audio&Video and Video only. ///////////////////////////////////////////////
+
+    if (FAudioCodec = acAac) then
+      FEngine.EnableLoopbackAudioAacMp4($3 {stereo mask},
+                                        SelectedAacAvgBytesPerSec)
+    else if (FAudioCodec = acFlac) then
       FEngine.EnableLoopbackAudioFlacMp4(nil,
                                          $3)
-  else
-    if (FAudioCodec = acNone) then
+    else if (FAudioCodec = acNone) then
       FEngine.DisableAudio;
 
-  WriteLog('Starting capture: ' + sFileName);
+    WriteLog('Starting capture: ' + sFileName);
 
-  // Start recording ///////////////////////////////////////////////////////////
+    // Start recording ///////////////////////////////////////////////////////////
 
-  FEngine.StartCapture(sFileName,
-                       FOutputs[cbxMonitor.ItemIndex]);
+    FEngine.StartCapture(sFileName,
+                         FOutputs[cbxMonitor.ItemIndex]);
 
-  //////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
 
-  // Create and start the activity pinger on the SAME DXGI output.
-  // The pinger is used to keep the capturing alive especially when
-  // using 2 screens on separate video outputs.
-  // The pinger unit is ScreenActivityPinger.pas
-  rOutputRect := FEngine.GetSelectedOutputRect();
+    // Create and start the activity pinger on the SAME DXGI output.
+    // The pinger is used to keep the capturing alive especially when
+    // using 2 screens on separate video outputs.
+    // The pinger unit is ScreenActivityPinger.pas
+    rOutputRect := FEngine.GetSelectedOutputRect();
 
-  if Assigned(FActivityPinger) then
-    begin
-      FActivityPinger.Stop();
-      FreeAndNil(FActivityPinger);
-    end;
+    if Assigned(FActivityPinger) then
+      begin
+        FActivityPinger.Stop();
+        FreeAndNil(FActivityPinger);
+      end;
 
-  FActivityPinger := TScreenActivityPinger.Create(rOutputRect,
-                                                  FFrameRate,
-                                                  3, // pixels, width
-                                                  1, // pixels, height
-                                                  clLime); // pixel color
+    FActivityPinger := TScreenActivityPinger.Create(rOutputRect,
+                                                    FFrameRate,
+                                                    3, // pixels, width
+      1, // pixels, height
+      clLime); // pixel color
 
-  FActivityPinger.Start();
-  lblStatus.Caption := 'Recording...';
-  lblStatus.Font.Color := clLime;
+    FActivityPinger.Start();
+    lblStatus.Caption := 'Recording...';
+    lblStatus.Font.Color := clLime;
 
-  FIsRecording := True;
-  FRecordingStartTick := GetTickCount64;
+    FIsRecording := True;
+    FRecordingStartTick := GetTickCount64;
 
-  if Assigned(tmrGUI) then
-    tmrGUI.Enabled := True;
+    if Assigned(tmrGUI) then
+      tmrGUI.Enabled := True;
 
-  UpdateUiIndicators();
+    UpdateUiIndicators();
 
-  WriteLog('--- Capture Started ---');
-  WriteLog('Output file: ' + sFileName);
+    WriteLog('--- Capture Started ---');
+    WriteLog('Output file: ' + sFileName);
   except
     butStopClick(Self);
     raise;
@@ -573,6 +587,7 @@ end;
 
 
 procedure TfrmCapture.butStopClick(Sender: TObject);
+
 begin
 
   if Assigned(FAudioOnly) then
@@ -643,20 +658,20 @@ begin
   FOutputs := FEngine.EnumerateOutputs();
 
   cbxMonitor.Items.BeginUpdate;
-    try
-      cbxMonitor.Items.Clear;
-      for i := 0 to High(FOutputs) do
-        begin
-          Monitorinfo := FOutputs[i];
-          cbxMonitor.Items.Add(
+  try
+    cbxMonitor.Items.Clear;
+    for i := 0 to High(FOutputs) do
+      begin
+        Monitorinfo := FOutputs[i];
+        cbxMonitor.Items.Add(
           Format('Display %d - %s',
                  [Monitorinfo.OutputIndex,
-                  Monitorinfo.DeviceName]));
+          Monitorinfo.DeviceName]));
 
-        end;
-    finally
-      cbxMonitor.Items.EndUpdate;
-    end;
+      end;
+  finally
+    cbxMonitor.Items.EndUpdate;
+  end;
 
   if (cbxMonitor.Items.Count > 0) then
     cbxMonitor.ItemIndex := 0;
@@ -664,6 +679,7 @@ end;
 
 
 procedure TfrmCapture.rbRecAudioClick(Sender: TObject);
+
 begin
 
   CheckChecks();
@@ -671,6 +687,7 @@ end;
 
 
 procedure TfrmCapture.rbRecVideoAndAudioClick(Sender: TObject);
+
 begin
 
   CheckChecks();
@@ -678,6 +695,7 @@ end;
 
 
 procedure TfrmCapture.rbRecVideoClick(Sender: TObject);
+
 begin
 
   CheckChecks();
@@ -745,25 +763,25 @@ begin
             Continue;
           end;
 
-      PropVariantInit(PropVar);
+        PropVariantInit(PropVar);
 
-      hr := Prop.GetValue(PKEY_Device_FriendlyName,
-                          PropVar);
-      if FAILED(hr) then
-        begin
-          PropVariantClear(PropVar);
-          CoTaskMemFree(IdW);
-          Continue;
-        end;
+        hr := Prop.GetValue(PKEY_Device_FriendlyName,
+                            PropVar);
+        if FAILED(hr) then
+          begin
+            PropVariantClear(PropVar);
+            CoTaskMemFree(IdW);
+            Continue;
+          end;
 
-      sFriendlyName := PropVar.pwszVal;
+        sFriendlyName := PropVar.pwszVal;
 
-      cbxAudioDevice.Items.Add(sFriendlyName);
-      FAudioDeviceIds.Add(IdW);
+        cbxAudioDevice.Items.Add(sFriendlyName);
+        FAudioDeviceIds.Add(IdW);
 
-      CoTaskMemFree(IdW);
-      PropVariantClear(PropVar);
-    end;
+        CoTaskMemFree(IdW);
+        PropVariantClear(PropVar);
+      end;
 
     cbxAudioDevice.ItemIndex := 0;
   finally
@@ -795,6 +813,7 @@ end;
 
 
 procedure TfrmCapture.cbxKeepOnTopClick(Sender: TObject);
+
 begin
 
   // Keep on top.
@@ -819,6 +838,7 @@ end;
 
 
 procedure TfrmCapture.cbxEnableLoggingClick(Sender: TObject);
+
 begin
 
   if not FIsRecording then
@@ -856,14 +876,12 @@ begin
   if rbRecVideoAndAudio.Checked or rbRecVideo.Checked then
     edtOutput.Text := ChangeFileExt(fn,
                                     '.mp4')
-  else
-    if rbRecAudio.Checked and (cbxAudioFormat.ItemIndex = 0) then
-      edtOutput.Text := ChangeFileExt(fn,
-                                      '.wav')
-  else
-    if rbRecAudio.Checked and (cbxAudioFormat.ItemIndex = 1) then
-      edtOutput.Text := ChangeFileExt(fn,
-                                      '.flac');
+  else if rbRecAudio.Checked and (cbxAudioFormat.ItemIndex = 0) then
+    edtOutput.Text := ChangeFileExt(fn,
+                                    '.wav')
+  else if rbRecAudio.Checked and (cbxAudioFormat.ItemIndex = 1) then
+    edtOutput.Text := ChangeFileExt(fn,
+                                    '.flac');
 
   if rbRecVideoAndAudio.Checked then
     begin
@@ -936,7 +954,8 @@ begin
   H := TotalSec div 3600;
   M := (TotalSec div 60) mod 60;
   S := TotalSec mod 60;
-  Result := Format('%.2d:%.2d:%.2d', [H, M, S]);
+  Result := Format('%.2d:%.2d:%.2d',
+                   [H, M, S]);
 end;
 
 
@@ -1013,6 +1032,7 @@ end;
 procedure TfrmCapture.tmrGUITimer(Sender: TObject);
 var
   Elapsed: UInt64;
+
 begin
 
   // Lightweight UI refresher. Does not affect capture behavior.
@@ -1028,7 +1048,9 @@ end;
 
 
 procedure TfrmCapture.AnyUiChanged(Sender: TObject);
+
 begin
+
   // UI-only guardrails: do not change capture behavior, only enable/disable and show hints
   ApplyUiGuardrails();
   UpdateUiIndicators();
@@ -1057,7 +1079,7 @@ begin
   IsAudio := rbRecAudio.Checked or rbRecVideoAndAudio.Checked;
 
   OutExt := LowerCase(ExtractFileExt(Trim(edtOutput.Text)));
-  HasOutput := Trim(edtOutput.Text) <> '';
+  HasOutput := (Trim(edtOutput.Text) <> '');
 
   // Determine selected codec (only meaningful in Video+Audio mode)
   IsAac := (Assigned(cbxAudioCodec) and (cbxAudioCodec.ItemIndex = 0));
@@ -1103,8 +1125,8 @@ begin
   if Assigned(cbxAudioDevice) then
     begin
 
-    cbxAudioDevice.ShowHint := True;
-    cbxAudioDevice.Hint := 'Select the Windows render endpoint used for loopback capture.';
+      cbxAudioDevice.ShowHint := True;
+      cbxAudioDevice.Hint := 'Select the Windows render endpoint used for loopback capture.';
     end;
 
   if Assigned(cbxMonitor) then
@@ -1173,20 +1195,19 @@ begin
 
   if NeedsMonitor then
     CanStart := CanStart and
-                (Assigned(cbxMonitor) and
-                (cbxMonitor.ItemIndex >= 0));
+      (Assigned(cbxMonitor) and
+      (cbxMonitor.ItemIndex >= 0));
 
   // Soft warning via hint if extension does not match expected container
   if (not IsAudioOnly) and
-     (OutExt <> '') and
-     (OutExt <> '.mp4') then
+    (OutExt <> '') and
+    (OutExt <> '.mp4') then
     edtOutput.Hint := edtOutput.Hint + sLineBreak + 'Note: Video capture expects .mp4 output.'
-  else
-    if IsAudioOnly and
-       (OutExt <> '') and
-       (OutExt <> '.wav') and
-       (OutExt <> '.flac') then
-      edtOutput.Hint := edtOutput.Hint + sLineBreak + 'Note: Audio-only expects .wav or .flac output.';
+  else if IsAudioOnly and
+    (OutExt <> '') and
+    (OutExt <> '.wav') and
+    (OutExt <> '.flac') then
+    edtOutput.Hint := edtOutput.Hint + sLineBreak + 'Note: Audio-only expects .wav or .flac output.';
 
   butStart.Enabled := CanStart;
   butStop.Enabled := FIsRecording;
@@ -1195,6 +1216,7 @@ end;
 
 
 procedure TfrmCapture.GetRenderSettings();
+
 begin
 
   // Preview window size = 0
@@ -1205,50 +1227,52 @@ begin
   // 4K (3840 x 2160) = 4
 
   case cbxResolutions.ItemIndex of
-    0:  begin
-          FCaptureWidth := pnlPreview.Width;
-          FCaptureHeigth := pnlPreview.Height;
-        end;
+      0: begin
+        FCaptureWidth := pnlPreview.Width;
+        FCaptureHeigth := pnlPreview.Height;
+      end;
 
-    1:  begin
-          FCaptureWidth := 1280;
-          FCaptureHeigth := 720;
-        end;
+      1: begin
+        FCaptureWidth := 1280;
+        FCaptureHeigth := 720;
+      end;
 
-    2:  begin
-          FCaptureWidth := 1920;
-          FCaptureHeigth := 1080;
-        end;
+      2: begin
+        FCaptureWidth := 1920;
+        FCaptureHeigth := 1080;
+      end;
 
-    3:  begin
-          FCaptureWidth := 1920;
-          FCaptureHeigth := 1200;
-        end;
+      3: begin
+        FCaptureWidth := 1920;
+        FCaptureHeigth := 1200;
+      end;
 
-    4:  begin
-          FCaptureWidth := 2560;
-          FCaptureHeigth := 1440;
-        end;
+      4: begin
+        FCaptureWidth := 2560;
+        FCaptureHeigth := 1440;
+      end;
 
-    5:  begin
-          FCaptureWidth := 3840;
-          FCaptureHeigth := 2160;
-        end;
+      5: begin
+        FCaptureWidth := 3840;
+        FCaptureHeigth := 2160;
+      end;
   end;
 
   FCaptureWidth := FCaptureWidth and not 1;
   FCaptureHeigth := FCaptureHeigth and not 1;
 
   case cbxFrameRate.ItemIndex of
-    0:  FFrameRate := 30;
+    0: FFrameRate := 30;
 
-    1:  FFrameRate := 60;
+    1: FFrameRate := 60;
   end;
 end;
 
 
 function TfrmCapture.SelectedAacAvgBytesPerSec: Cardinal;
+
 begin
+
   // SinkWriter AAC target in BYTES/sec (approx). 20000 ~= 160 kbps.
   case cbxAudioBitrate.ItemIndex of
     0: Result := 12000; // 96 kbps
@@ -1256,8 +1280,8 @@ begin
     2: Result := 20000; // 160 kbps
     3: Result := 24000; // 192 kbps
     4: Result := 32000; // 256 kbps
-  else
-    Result := 20000;
+    else
+      Result := 20000;
   end;
 end;
 
@@ -1284,23 +1308,24 @@ begin
     InstFps := 0.0;
 
   // Smooth it into an average (simple sliding/EMA hybrid).
-  if FFpsAvgCount < FPS_AVG_WINDOW then
+  if (FFpsAvgCount < FPS_AVG_WINDOW) then
     Inc(FFpsAvgCount);
 
-  if FFpsAvgCount > 0 then
+  if (FFpsAvgCount > 0) then
     W := 1.0 / FFpsAvgCount
   else
     W := 1.0;
 
   // After the window is filled, keep a constant smoothing factor.
-  if FFpsAvgCount >= FPS_AVG_WINDOW then
+  if (FFpsAvgCount >= FPS_AVG_WINDOW) then
     W := 1.0 / FPS_AVG_WINDOW;
 
   FFpsAvg := FFpsAvg + (InstFps - FFpsAvg) * W;
 
-  
+
   // Show averaged FPS to avoid jitter.
-  lblFPS.Caption := Format('FPS: %.1f', [FFpsAvg]);
+  lblFPS.Caption := Format('FPS: %.1f',
+                           [FFpsAvg]);
 
   // Keep the instantaneous value available as a tooltip.
   lblFPS.ShowHint := True;
@@ -1309,12 +1334,13 @@ begin
 
   if ((FrameIndex mod 30) = 0) then
     WriteLog(Format('Frame %d Elapsed time: %.3f ms',
-                     [FrameIndex, Msec * 1000]));
+                    [FrameIndex, Msec * 1000]));
 
 end;
 
 
 procedure TfrmCapture.cbxAudioCodecChange(Sender: TObject);
+
 begin
 
   case cbxAudioCodec.ItemIndex of
@@ -1330,6 +1356,7 @@ end;
 
 
 procedure TfrmCapture.cbxAudioCodecCloseUp(Sender: TObject);
+
 begin
 
   CheckChecks();
@@ -1337,6 +1364,7 @@ end;
 
 
 procedure TfrmCapture.cbxHotKeysClick(Sender: TObject);
+
 begin
 
   ApplyHotkeyOption();
@@ -1345,9 +1373,9 @@ end;
 
 procedure TfrmCapture.CaptureError(Sender: TObject;
                                    const Msg: string);
+
 begin
 
-  
   WriteLog('ERROR: ' + Msg);
   lblStatus.Caption := 'Error';
   lblStatus.Font.Color := clRed;
@@ -1381,8 +1409,8 @@ begin
   // Optional: toggle UI hotkey (F10)
   ok3 := RegisterHotKey(Handle,
                         HOTKEY_TOGGLE_UI,
-                         MOD_NOREPEAT,
-                         VK_F11);
+                        MOD_NOREPEAT,
+                        VK_F11);
 
   FHotkeysActive := ok1 and ok2 and ok3;
 
@@ -1399,11 +1427,12 @@ begin
                        HOTKEY_TOGGLE_UI);
 
       ShowMessage('Hotkeys could not be registered (already in use?)');
-  end;
+    end;
 end;
 
 
 procedure TfrmCapture.DisableGlobalHotkeys();
+
 begin
 
   if not FHotkeysActive then
@@ -1423,6 +1452,7 @@ end;
 
 // Call this whenever the checkbox changes and during FormCreate.
 procedure TfrmCapture.ApplyHotkeyOption;
+
 begin
 
   if Assigned(cbxHotKeys) and cbxHotKeys.Checked then
@@ -1433,6 +1463,7 @@ end;
 
 
 procedure TfrmCapture.HideUI();
+
 begin
 
   // Keep capture running; only hide window
@@ -1442,6 +1473,7 @@ end;
 
 
 procedure TfrmCapture.ShowUI();
+
 begin
 
   Show();
@@ -1452,6 +1484,7 @@ end;
 
 
 procedure TfrmCapture.ToggleUI();
+
 begin
 
   if Visible or (frmCapture.WindowState = wsNormal) then
@@ -1465,24 +1498,25 @@ end;
 
 // Message handler.
 procedure TfrmCapture.WMHotKey(var Msg: TLMessage);
+
 begin
 
   inherited;
 
   case Msg.WParam of
     HOTKEY_START: if butStart.Enabled then
-                    begin
-                      butStartClick(nil);
-                      Beep;
-                    end;
+        begin
+          butStartClick(nil);
+          Beep;
+        end;
 
     HOTKEY_STOP: if butStop.Enabled then
-                   begin
-                     butStopClick(nil);
-                     Beep;
-                     Sleep(2000);
-                     Beep;
-                   end;
+        begin
+          butStopClick(nil);
+          Beep;
+          Sleep(2000);
+          Beep;
+        end;
 
     HOTKEY_TOGGLE_UI: ToggleUI();
   end;

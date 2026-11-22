@@ -70,7 +70,7 @@ interface
 uses
   MfEncodeAudio.Platform,
   LMessages,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   ShellApi,
@@ -93,7 +93,6 @@ uses
   {Application}
   SinkWriterClass;
 
-
 type
   TMainForm = class(TForm)
     lblInfo: TLabel;
@@ -111,7 +110,8 @@ type
     mnuSelectMultipleBitmaps: TMenuItem;
     N2: TMenuItem;
     procedure FormCreate(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure FormDestroy(Sender: TObject);
     procedure mnuSelectOneBitmapClick(Sender: TObject);
     procedure mnuRenderClick(Sender: TObject);
@@ -175,36 +175,47 @@ begin
   else
     begin
       lblInfo.Font.Color := clRed;
-      lblInfo.Caption := format('Oops, something went wrong :-(   HResult code = %d', [hr]);
+      lblInfo.Caption := format('Oops, something went wrong :-(   HResult code = %d',
+                                [hr]);
       mnuPlayVideoFile.Enabled := False;
     end;
 end;
 
 
 procedure TMainForm.mnuPlayVideoFileClick(Sender: TObject);
+
 begin
+
   ShellExecute(Handle,
                'open',
                PWideChar(FSinkWriter.SinkWriterParams.pwcVideoFileName),
                nil,
                nil,
-               SW_SHOWNORMAL) ;
+               SW_SHOWNORMAL);
 end;
 
 
 procedure TMainForm.Exit1Click(Sender: TObject);
+
 begin
+
   Close();
 end;
 
 
-procedure TMainForm.FormCloseQuery(Sender: TObject;var CanClose: Boolean);
+procedure TMainForm.FormCloseQuery(Sender: TObject;
+                                   var CanClose: Boolean);
+
 begin
+
   CanClose := True;
 end;
 
+
 procedure TMainForm.FormDestroy(Sender: TObject);
+
 begin
+
   FreeAndNil(FSinkWriter);
   FreeAndNil(FBitmapFiles);
 
@@ -212,6 +223,7 @@ end;
 
 
 procedure TMainForm.FormCreate(Sender: TObject);
+
 begin
 
   FSinkWriter := TSinkWriter.Create(Handle);
@@ -227,30 +239,31 @@ var
   bm: TBitmap;
 
 begin
-try
-  bm := TBitmap.Create();
-  FBitmapFiles.Clear();
-  dlgOpenPicture := TOpenPictureDialog.Create(Self);
-  dlgOpenPicture.InitialDir := GetCurrentDir();
 
-  if dlgOpenPicture.Execute then
-    begin
-      FBitmapFiles.Append(dlgOpenPicture.FileName);
-      bm.LoadFromFile(FBitmapFiles.Strings[0]);
-      imgBitmap.Picture.Assign(bm);
-      lblInfo.Caption := 'Select ''Render Video File'' or select ''Video output'' to configure the video.';
-      mnuRender.Enabled := True;
-    end
-  else
-    begin
-      lblInfo.Caption := 'Select ''Select Single Bitmap'' or ''Select Multiple Bitmaps''';
-      mnuRender.Enabled := False;
-    end;
+  try
+    bm := TBitmap.Create();
+    FBitmapFiles.Clear();
+    dlgOpenPicture := TOpenPictureDialog.Create(Self);
+    dlgOpenPicture.InitialDir := GetCurrentDir();
 
-finally
-  FreeAndNil(bm);
-  FreeAndNil(dlgOpenPicture);
-end;
+    if dlgOpenPicture.Execute then
+      begin
+        FBitmapFiles.Append(dlgOpenPicture.FileName);
+        bm.LoadFromFile(FBitmapFiles.Strings[0]);
+        imgBitmap.Picture.Assign(bm);
+        lblInfo.Caption := 'Select ''Render Video File'' or select ''Video output'' to configure the video.';
+        mnuRender.Enabled := True;
+      end
+    else
+      begin
+        lblInfo.Caption := 'Select ''Select Single Bitmap'' or ''Select Multiple Bitmaps''';
+        mnuRender.Enabled := False;
+      end;
+
+  finally
+    FreeAndNil(bm);
+    FreeAndNil(dlgOpenPicture);
+  end;
 end;
 
 
@@ -277,14 +290,14 @@ begin
         lblInfo.Caption := 'Moment, processing the bitmaps...';
 
         {$WARN SYMBOL_PLATFORM OFF}
-        if FindFirst(IncludeTrailingPathDelimiter(Path) + '*.bmp',
-                     faArchive,
-                     SearchRec) = 0 then
-        {$WARN SYMBOL_PLATFORM ON}
+        if (FindFirst(IncludeTrailingPathDelimiter(Path) + '*.bmp',
+          faArchive,
+          SearchRec) = 0) then
+          {$WARN SYMBOL_PLATFORM ON}
           begin
             repeat
               DirList.Add(IncludeTrailingPathDelimiter(Path) + SearchRec.Name); //Fill the list
-            until FindNext(SearchRec) <> 0;
+            until (FindNext(SearchRec) <> 0);
             FindClose(SearchRec);
           end;
 
@@ -311,7 +324,9 @@ end;
 
 
 procedure TMainForm.mnuVideoOutputClick(Sender: TObject);
+
 begin
+
   // Create the dialog if it's not allready done.
   if not Assigned(dlgVideoSetttings) then
     begin
@@ -333,29 +348,33 @@ end;
 
 
 procedure TMainForm.OnProcesBmp(var Msg: TLMessage);
+
 begin
+
   // We did recieve a message from SinkWriter.SetBitmapToVideoFormat
   lblInfo.Caption := Format('Processing Bitmap %d of %d.',
-                             [Msg.LParam,
-                              FBitmapFiles.Count]);
+                            [Msg.LParam,
+    FBitmapFiles.Count]);
   lblInfo.Update();
 end;
 
 
 procedure TMainForm.OnSinkWriterMsg(var Msg: TLMessage);
+
 begin
+
   // We did recieve a message from SinkWriter.RunSinkWriter
   lblInfo.Caption := Format('Writing Frame %d of %d to file: %s.',
                             [Msg.LParam,
-                             FBitmapFiles.Count,
-                             FSinkWriter.SinkWriterParams.pwcVideoFileName]);
+    FBitmapFiles.Count,
+    FSinkWriter.SinkWriterParams.pwcVideoFileName]);
   lblInfo.Update();
 end;
 
 
 initialization
 
-  
+
 
 
 end.

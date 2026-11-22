@@ -6,25 +6,29 @@ unit RDJ.ListenerScan;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-Windows,
+  Windows,
   Classes;
 
 type
 
   TRdjListenerScan = class(TThread)
+
   private
     FFileName: string;
     FListenerCount: Integer;
     FElapsedMs: Cardinal;
     FErrorText: string;
     function GetCompleted(): Boolean;
+
   protected
     procedure Execute(); override;
     function ReadListenerCount(): Integer; virtual;
+
   public
     constructor Create(const AFileName: string);
     destructor Destroy(); override;
@@ -43,7 +47,6 @@ function CancelListenerScanIo(AThread: THandle): BOOL; stdcall;
 implementation
 
 uses
-
   SysUtils,
   DateUtils,
   FxProxy.JSON;
@@ -53,7 +56,9 @@ const
   RDJ_CADDY_ACTIVE_LISTENER_SECONDS = 180;
   RDJ_CADDY_LOG_TAIL_BYTES = 262144;
 
+
 constructor TRdjListenerScan.Create(const AFileName: string);
+
 begin
 
   inherited Create(True);
@@ -64,6 +69,7 @@ end;
 
 
 destructor TRdjListenerScan.Destroy();
+
 begin
 
   Terminate();
@@ -79,13 +85,16 @@ end;
 
 
 function TRdjListenerScan.GetCompleted(): Boolean;
+
 begin
 
-  Result := (WaitForSingleObject(Handle, 0) = WAIT_OBJECT_0);
+  Result := (WaitForSingleObject(Handle,
+                                 0) = WAIT_OBJECT_0);
 end;
 
 
 function TRdjListenerScan.ReadListenerCount(): Integer;
+
 begin
 
   Result := ReadRdjListenerCount(FFileName);
@@ -111,6 +120,7 @@ begin
   FElapsedMs := Cardinal(GetTickCount() - Started);
 end;
 
+
 function ReadRdjListenerCount(const AFileName: string): Integer;
 var
   LogFileName: string;
@@ -133,6 +143,7 @@ var
   NowUtc: TDateTime;
   NowUnix: Double;
 
+
   function JsonText(const AJson: TJSONObject;
                     const AName: string): string;
   var
@@ -149,6 +160,7 @@ var
       Result := V.Value;
   end;
 
+
   function RelevantUri(const AUri: string): Boolean;
   var
     S: string;
@@ -159,16 +171,17 @@ var
     Result := (Copy(S,
                     1,
                     8) = '/stream/') or
-              (Copy(S,
-                    1,
-                    7) = '/video/') or
-              (Copy(S,
-                    1,
-                    5) = '/live') or
-              (Copy(S,
-                    1,
-                    11) = '/video.mjpg');
+      (Copy(S,
+            1,
+            7) = '/video/') or
+      (Copy(S,
+            1,
+            5) = '/live') or
+      (Copy(S,
+            1,
+            11) = '/video.mjpg');
   end;
+
 
   function CleanClientIp(const AValue: string): string;
   var
@@ -279,17 +292,17 @@ begin
                                  0);
 
           if (LogTs > 0) and
-             ((NowUnix - LogTs) > RDJ_CADDY_ACTIVE_LISTENER_SECONDS) then
+            ((NowUnix - LogTs) > RDJ_CADDY_ACTIVE_LISTENER_SECONDS) then
             Continue;
 
           ClientIp := CleanClientIp(JsonText(RequestJson,
-                                            'client_ip'));
+                                             'client_ip'));
           if (ClientIp = '') then
             ClientIp := CleanClientIp(JsonText(RequestJson,
-                                              'remote_ip'));
+                                               'remote_ip'));
           if (ClientIp = '') then
             ClientIp := CleanClientIp(JsonText(Json,
-                                              'remote_ip'));
+                                               'remote_ip'));
 
           if (ClientIp <> '') then
             Clients.Add(ClientIp);

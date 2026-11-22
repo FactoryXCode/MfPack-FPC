@@ -69,7 +69,7 @@ interface
 
 uses
   MfCapturePlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.ComBaseApi,
@@ -88,18 +88,18 @@ uses
   WinApi.MediaFoundationApi.MfReadWrite,
   WinApi.MediaFoundationApi.Evr;
 
-//////////////////////////////////////////////////////////////////////////
-//
-// capture.h: Manages video capture.
-//
-// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-// PARTICULAR PURPOSE.
-//
-// Copyright (c) Microsoft Corporation. All rights reserved.
-//
-//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  //
+  // capture.h: Manages video capture.
+  //
+  // THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+  // ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+  // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+  // PARTICULAR PURPOSE.
+  //
+  // Copyright (c) Microsoft Corporation. All rights reserved.
+  //
+  //////////////////////////////////////////////////////////////////////////
 
 
 
@@ -109,11 +109,12 @@ const
 type
 
   TDeviceList = class(TObject)
-   private
-     m_cDevices: UINT32;
-     m_ppDevices: PIMFActivate;
 
-   public
+  private
+    m_cDevices: UINT32;
+    m_ppDevices: PIMFActivate;
+
+  public
     constructor Create(); overload;
     destructor Destroy(); override;
 
@@ -139,9 +140,10 @@ type
             State_Capturing,
             State_DeviceLost,
             State_SessionEnded
-           );
+    );
 
-  TMfCaptureEngine = class(TInterfacedPersistent, IMFSourceReaderCallback)
+  TMfCaptureEngine = class(TInterfacedPersistent,
+                           IMFSourceReaderCallback)
 
   protected
 
@@ -198,7 +200,7 @@ type
 
     // Use this function to create the capture engine !
     class function CreateInstance(hwWindow: HWND; {Handle to the window to receive events}
-                                  out cCaptureEngine: TMfCaptureEngine {Receives a pointer to the CCapture object.}): HRESULT;
+      out cCaptureEngine: TMfCaptureEngine {Receives a pointer to the CCapture object.}): HRESULT;
     function StartCapture(pActivate: IMFActivate;
                           const pwszFileName: PWideChar;
                           const param: EncodingParameters): HResult;
@@ -208,7 +210,7 @@ type
 
     property DeviceFriendlyName: PWideChar read m_DeviceFriendlyName;
     property DeviceSymbolicLink: PWideChar read m_DeviceSymbolicLink;
-end;
+  end;
 
 
 
@@ -218,7 +220,9 @@ implementation
 // TDeviceList
 
 constructor TDeviceList.Create();
+
 begin
+
   inherited Create();
   m_ppDevices := nil;
   m_cDevices := 0;
@@ -226,7 +230,9 @@ end;
 
 
 destructor TDeviceList.Destroy();
+
 begin
+
   Clear();
 
   inherited Destroy();
@@ -239,9 +245,10 @@ var
   i: Integer;
 
 begin
+
   if Assigned(m_ppDevices) then
     begin
-      for i := 0 to m_cDevices -1 do
+      for i := 0 to m_cDevices - 1 do
         m_ppDevices[i] := nil;
 
       CoTaskMemFree(m_ppDevices);
@@ -257,6 +264,7 @@ var
   pAttributes: IMFAttributes;
 
 begin
+
   Clear();
 
   // Initialize an attribute store. We will use this to
@@ -283,8 +291,10 @@ end;
 {$POINTERMATH ON}
 function TDeviceList.GetDevice(index: UINT32;
                                out pActivate: IMFActivate): HResult;
+
 begin
-  if index >= Count then
+
+  if (index >= Count) then
     begin
       Result := E_INVALIDARG;
       Exit;
@@ -307,7 +317,8 @@ var
   chLength: UINT32;
 
 begin
-  if index >= Count then
+
+  if (index >= Count) then
     begin
       Result := E_INVALIDARG;
       Exit;
@@ -329,7 +340,7 @@ end;
 //  Static class method to create the CCapture object.
 //-------------------------------------------------------------------
 class function TMfCaptureEngine.CreateInstance(hwWindow: HWND; {Handle to the window to receive events}
-                                               out cCaptureEngine: TMfCaptureEngine {Receives a pointer to the CCapture object.}): HRESULT;
+  out cCaptureEngine: TMfCaptureEngine {Receives a pointer to the CCapture object.}): HRESULT;
 var
   pCaptureEngine: TMfCaptureEngine;
 
@@ -352,15 +363,21 @@ end;
 //  constructor
 //-------------------------------------------------------------------
 constructor TMfCaptureEngine.Create(hwWindow: HWND);
+
 begin
+
   inherited Create();
   m_hwndEvent := hwWindow;
   m_bFirstSample := False;
   m_llBaseTime := 0;
   SetSubTypes();
   m_critsec := TCriticalSection.Create();
-  FFlushEvent := CreateEventW(nil,True,False,nil);
-  if FFlushEvent=0 then RaiseLastOSError;
+  FFlushEvent := CreateEventW(nil,
+                              True,
+                              False,
+                              nil);
+  if (FFlushEvent = 0) then
+    RaiseLastOSError;
 end;
 
 
@@ -368,22 +385,26 @@ end;
 //  destructor
 //-------------------------------------------------------------------
 destructor TMfCaptureEngine.Destroy();
+
 begin
- EndCaptureSession;
- if FFlushEvent<>0 then CloseHandle(FFlushEvent);
- FreeAndNil(m_critsec);
- inherited;
+
+  EndCaptureSession;
+  if (FFlushEvent <> 0) then
+    CloseHandle(FFlushEvent);
+  FreeAndNil(m_critsec);
+  inherited;
 end;
 
 
 // Sends a message to the owner with corresponding hwnd
 procedure TMfCaptureEngine.NotifyError(hr: HResult);
+
 begin
 
   PostMessageW(m_hwndEvent,
-              WM_APP_PREVIEW_ERROR,
-              WPARAM(hr),
-              0);
+               WM_APP_PREVIEW_ERROR,
+               WPARAM(hr),
+               0);
 end;
 
 
@@ -426,6 +447,7 @@ var
 
 
 begin
+
   sink_stream := 0;
 
   hr := ConfigureSourceReader(m_pReader);
@@ -486,6 +508,7 @@ label
   done;
 
 begin
+
   m_critsec.Enter;
 
   if (IsCapturing() <> State_Capturing) then
@@ -533,9 +556,9 @@ begin
                              nil,
                              nil);
 
-done:
-  if FAILED(hr) then
-    NotifyError(hr);
+  done:
+    if FAILED(hr) then
+      NotifyError(hr);
 
   m_critsec.Leave;
   Result := hr;
@@ -543,7 +566,9 @@ end;
 
 
 function TMfCaptureEngine.OnFlush(dwStreamIndex: DWORD): HResult; stdcall;
+
 begin
+
   SetEvent(FFlushEvent);
   Result := S_OK;
 end;
@@ -551,7 +576,9 @@ end;
 
 function TMfCaptureEngine.OnEvent(dwStreamIndex: DWORD;
                                   pEvent: IMFMediaEvent): HResult; stdcall;
+
 begin
+
   Result := S_OK;
 end;
 
@@ -572,7 +599,8 @@ var
 
 begin
 
-  if (pActivate=nil) or (pwszFileName=nil) then Exit(E_INVALIDARG);
+  if (pActivate = nil) or (pwszFileName = nil) then
+    Exit(E_INVALIDARG);
   EndCaptureSession;
   m_critsec.Enter;
 
@@ -594,8 +622,8 @@ begin
 
   if SUCCEEDED(hr) then
     begin
-      FSource:=pSource;
-      FActivation:=pActivate;
+      FSource := pSource;
+      FActivation := pActivate;
       hr := OpenMediaSource(pSource);
     end;
 
@@ -643,29 +671,48 @@ end;
 // To start another capture session, call SetCaptureFile.
 //-------------------------------------------------------------------
 function TMfCaptureEngine.EndCaptureSession(): HResult;
-var Reader: IMFSourceReader; Writer: IMFSinkWriter; Source: IMFMediaSource;
+var
+  Reader: IMFSourceReader;
+  Writer: IMFSinkWriter;
+  Source: IMFMediaSource;
+
 begin
- Result:=S_OK;
- if m_critsec=nil then Exit;
- m_critsec.Enter;
- try
-  State:=State_NotReady;
-  Reader:=m_pReader; m_pReader:=nil;
-  Writer:=m_pWriter; m_pWriter:=nil;
-  Source:=FSource; FSource:=nil;
- finally m_critsec.Leave;end;
- if Reader<>nil then begin
-  ResetEvent(FFlushEvent);
-  if SUCCEEDED(Reader.Flush(MF_SOURCE_READER_ALL_STREAMS)) then WaitForSingleObject(FFlushEvent,5000);
- end;
- if Source<>nil then Source.Shutdown;
- if FActivation<>nil then FActivation.ShutdownObject;
- FActivation:=nil;
- Reader:=nil;
- if Writer<>nil then Result:=Writer.Finalize;
- Writer:=nil;
- CoTaskMemFree(m_DeviceFriendlyName);m_DeviceFriendlyName:=nil;
- CoTaskMemFree(m_DeviceSymbolicLink);m_DeviceSymbolicLink:=nil;
+
+  Result := S_OK;
+  if (m_critsec = nil) then
+    Exit;
+  m_critsec.Enter;
+  try
+    State := State_NotReady;
+    Reader := m_pReader;
+    m_pReader := nil;
+    Writer := m_pWriter;
+    m_pWriter := nil;
+    Source := FSource;
+    FSource := nil;
+  finally
+    m_critsec.Leave;
+  end;
+  if (Reader <> nil) then
+    begin
+      ResetEvent(FFlushEvent);
+      if SUCCEEDED(Reader.Flush(MF_SOURCE_READER_ALL_STREAMS)) then
+        WaitForSingleObject(FFlushEvent,
+                            5000);
+    end;
+  if (Source <> nil) then
+    Source.Shutdown;
+  if (FActivation <> nil) then
+    FActivation.ShutdownObject;
+  FActivation := nil;
+  Reader := nil;
+  if (Writer <> nil) then
+    Result := Writer.Finalize;
+  Writer := nil;
+  CoTaskMemFree(m_DeviceFriendlyName);
+  m_DeviceFriendlyName := nil;
+  CoTaskMemFree(m_DeviceSymbolicLink);
+  m_DeviceSymbolicLink := nil;
 end;
 
 
@@ -674,9 +721,10 @@ var
   bIsCapturing: Boolean;
 
 begin
+
   m_critsec.Enter;
 
-  bIsCapturing := (m_pWriter <> nil) and (State=State_Capturing);
+  bIsCapturing := (m_pWriter <> nil) and (State = State_Capturing);
 
   if bIsCapturing then
     State := State_Capturing
@@ -689,7 +737,9 @@ end;
 
 
 procedure TMfCaptureEngine.DeviceLost(bDeviceLost: Boolean);
+
 begin
+
   if bDeviceLost then
     State := State_DeviceLost;
 end;
@@ -717,6 +767,7 @@ label
   done;
 
 begin
+
   bUseNativeType := False;
 
   // If the source's native format matches any of the formats in
@@ -730,7 +781,7 @@ begin
 
   hr := pReader.GetNativeMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
                                    0,  // Type index
-                                   @pType);
+    @pType);
 
   if FAILED(hr) then
     goto done;
@@ -743,7 +794,7 @@ begin
 
   for i := 0 to High(m_SubTypes) do
     begin
-      if IsEqualGUID(subtype,m_SubTypes[i]) then
+      if IsEqualGUID(subtype, m_SubTypes[i]) then
         begin
           hr := pReader.SetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
                                             0,
@@ -762,7 +813,7 @@ begin
 
       // Try adding a decoder.
 
-      for i := 0 to Length(m_SubTypes) -1 do
+      for i := 0 to Length(m_SubTypes) - 1 do
         begin
           hr := pType.SetGUID(MF_MT_SUBTYPE,
                               m_SubTypes[i]);
@@ -773,19 +824,19 @@ begin
           hr := pReader.SetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
                                             0,
                                             pType);
-{$IFDEF DEBUG}
-    if hr = $C00D5212 then
-      OutputDebugStringW(PChar('No suitable transform was found to encode or decode the content.'));
-{$ENDIF}
+          {$IFDEF DEBUG}
+        if (hr = $C00D5212) then
+          OutputDebugStringW(PChar('No suitable transform was found to encode or decode the content.'));
+          {$ENDIF}
 
           if SUCCEEDED(hr) then
             break;
         end;
     end;
 
-done:
-  // SafeRelease(pType); will be done by compiler
-  Result := hr;
+  done:
+    // SafeRelease(pType); will be done by compiler
+    Result := hr;
 end;
 
 
@@ -803,7 +854,7 @@ begin
 
   if SUCCEEDED(hr) then
     hr := pType2.SetGUID(MF_MT_MAJOR_TYPE,
-                         MFMediaType_Video );
+                         MFMediaType_Video);
 
   if SUCCEEDED(hr) then
     hr := pType2.SetGUID(MF_MT_SUBTYPE,
@@ -857,9 +908,11 @@ var
   propvar: PROPVARIANT;
 
 begin
+
   PropVariantInit(propvar);
 
-  hr := Src.GetItem(key,@propvar);
+  hr := Src.GetItem(key,
+                    @propvar);
 
   if SUCCEEDED(hr) then
     hr := Dest.SetItem(key,
@@ -871,8 +924,11 @@ end;
 
 
 procedure TMfCaptureEngine.SetSubTypes();
+
 begin
-  SetLength(m_SubTypes, 5);
+
+  SetLength(m_SubTypes,
+            5);
   m_SubTypes[0] := MFVideoFormat_NV12;
   m_SubTypes[1] := MFVideoFormat_YUY2;
   m_SubTypes[2] := MFVideoFormat_UYVY;

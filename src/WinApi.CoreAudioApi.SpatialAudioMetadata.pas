@@ -93,7 +93,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -109,28 +110,30 @@ type
   // maxItems specified when metadataBuffer was created
 
   PSpatialAudioMetadataWriterOverflowMode = ^SpatialAudioMetadataWriterOverflowMode;
-  SpatialAudioMetadataWriterOverflowMode    = (
+  SpatialAudioMetadataWriterOverflowMode = (
     SpatialAudioMetadataWriterOverflow_Fail = 0,        // Overflow will fail
     SpatialAudioMetadataWriterOverflow_MergeWithNew,    // Overflow will succeed, will merge overflow item with previous item and adopt frame offset of newest item
     SpatialAudioMetadataWriterOverflow_MergeWithLast    // Overflow will succeed, will merge overflow item with previous item and keep existing frame offset
-  );
+    );
 
 
   // Copier modes of operation.  Supports full overwrite copy, appending and appending with item overflow merge behaviors
   // When there are more items than the destination can hold (overflow), the merge options allow the overflow items to
   // be merged together, and will take the most recent of duplicate commands.  Can adopt the offset of last or first items merged.
   PSpatialAudioMetadataCopyMode = ^SpatialAudioMetadataCopyMode;
-  SpatialAudioMetadataCopyMode         = (
+  SpatialAudioMetadataCopyMode = (
     SpatialAudioMetadataCopy_Overwrite = 0,          // Creates a direct copy of the specfied frameCount in destination buffer, overwrites any previous data
     SpatialAudioMetadataCopy_Append,                 // Normal append - will fail is resulting metadataBuffer has too many items
     SpatialAudioMetadataCopy_AppendMergeWithLast,    // Appends, if overflow occurs, extra items are merged into last item adopting last merged items offset
     SpatialAudioMetadataCopy_AppendMergeWithFirst    // Appends, if overflow occurs, extra items are merged assigning the offset of the first non-overflow item offset
-  );
+    );
 
   // provides full set of data available on a SpatialAudioMetadataItems object
 
-  {$ALIGN 1} // SDK pack(push, 1) begins with SpatialAudioMetadataItemsInfo.
+  {$ALIGN 1}
+  // SDK pack(push, 1) begins with SpatialAudioMetadataItemsInfo.
   PSpatialAudioMetadataItemsInfo = ^SpatialAudioMetadataItemsInfo;
+
   SpatialAudioMetadataItemsInfo = record
     FrameCount: UINT16;              // total frame count that defines valid item offsets
     ItemCount: UINT16;               // Current number of items stored
@@ -138,9 +141,10 @@ type
     MaxValueBufferLength: UINT32;    // Size of largest command value defined by metadataFormat
   end;
 
-{$ALIGN 1}
+  {$ALIGN 1}
 
   PSpatialAudioObjectRenderStreamForMetadataActivationParams = ^SpatialAudioObjectRenderStreamForMetadataActivationParams;
+
   SpatialAudioObjectRenderStreamForMetadataActivationParams = record
     ObjectFormat: PWAVEFORMATEX;              // Format descriptor for a single spatial audio objects. All objects must have the same format and must be of type WAVEFORMATEX or WAVEFORMATEXTENSIBLE.
     StaticObjectTypeMask: AudioObjectType;   // (static channel bed mask) mask of static audio object type that are allowed
@@ -155,6 +159,7 @@ type
   end;
 
   PSpatialAudioObjectRenderStreamForMetadataActivationParams2 = ^SpatialAudioObjectRenderStreamForMetadataActivationParams2;
+
   SpatialAudioObjectRenderStreamForMetadataActivationParams2 = record
     ObjectFormat: PWAVEFORMATEX;              // Format descriptor for a single spatial audio objects. All objects must have the same format and must be of type WAVEFORMATEX or WAVEFORMATEXTENSIBLE.
     StaticObjectTypeMask: AudioObjectType;   // (static channel bed mask) mask of static audio object type that are allowed
@@ -169,9 +174,10 @@ type
     Options: SPATIAL_AUDIO_STREAM_OPTIONS;
   end;
 
-//#pragma pack(pop) set back to initial alignment
+  //#pragma pack(pop) set back to initial alignment
   {$IFNDEF WIN32}
-    {$ALIGN 8} // for Win64
+  {$ALIGN 8}
+  // for Win64
   {$ENDIF}
 
 type
@@ -190,7 +196,7 @@ type
   // </summary>
   //
   ISpatialAudioMetadataItems = interface(IUnknown)
-  ['{BCD7C78F-3098-4F22-B547-A2F25A381269}']
+    ['{BCD7C78F-3098-4F22-B547-A2F25A381269}']
 
     function GetFrameCount(out frameCount: UINT16): HRESULT; stdcall;
     // total frame count that defines valid item offsets
@@ -208,6 +214,7 @@ type
     // provides full set of data available on a SpatialAudioMetadataItems object
 
   end;
+
   IID_ISpatialAudioMetadataItems = ISpatialAudioMetadataItems;
 
 
@@ -227,7 +234,7 @@ type
   // </summary>
   //
   ISpatialAudioMetadataWriter = interface(IUnknown)
-  ['{1B17CA01-2955-444D-A430-537DC589A844}']
+    ['{1B17CA01-2955-444D-A430-537DC589A844}']
 
     function Open(metadataItems: ISpatialAudioMetadataItems): HRESULT; stdcall;
     // <summary>
@@ -282,6 +289,7 @@ type
     // </summary>
 
   end;
+
   IID_ISpatialAudioMetadataWriter = ISpatialAudioMetadataWriter;
 
 
@@ -296,8 +304,8 @@ type
   // </summary>
   //
   ISpatialAudioMetadataReader = interface(IUnknown)
-  ['{B78E86A2-31D9-4C32-94D2-7DF40FC7EBEC}']
-    
+    ['{B78E86A2-31D9-4C32-94D2-7DF40FC7EBEC}']
+
     function Open(metadataItems: ISpatialAudioMetadataItems): HRESULT; stdcall;
     // <summary>
     //     The Open() method reads metadata commands and value data from specified SpatialAudioMetadataItems object
@@ -306,7 +314,7 @@ type
     //     Specifies the SpatialAudioMetadataItems object which contains metadata populated by ISpatialAudioMetadataWriter,
     //     or ISpatialAudioMetadataCopier.
     // </param>
-    
+
     function ReadNextItem(out commandCount: UINT8;
                           out frameOffset: UINT16): HRESULT; stdcall;
     // <summary>
@@ -323,7 +331,7 @@ type
     // <remarks>
     //  Must be called before ReadNextItemCommand.
     // </remarks>
-    
+
     function ReadNextItemCommand(out commandID: Byte;
                                  valueBuffer: Pointer;
                                  maxValueBufferLength: UINT32;
@@ -348,7 +356,7 @@ type
     // <remarks>
     //  Can only be called after ReadNextItem.
     // </remarks>
-    
+
     function Close(): HRESULT; stdcall;
     // <summary>
     //     The Close() method completes any needed operations on the SpatialAudioMetadataItems and will
@@ -356,6 +364,7 @@ type
     // </summary>
 
   end;
+
   IID_ISpatialAudioMetadataReader = ISpatialAudioMetadataReader;
 
 
@@ -375,7 +384,7 @@ type
   // </summary>
   //
   ISpatialAudioMetadataCopier = interface(IUnknown)
-  ['{D224B233-E251-4FD0-9CA2-D5ECF9A68404}']
+    ['{D224B233-E251-4FD0-9CA2-D5ECF9A68404}']
 
     function Open(metadataItems: ISpatialAudioMetadataItems): HRESULT; stdcall;
     // <summary>
@@ -423,6 +432,7 @@ type
     // </summary>
 
   end;
+
   IID_ISpatialAudioMetadataCopier = ISpatialAudioMetadataCopier;
 
 
@@ -436,7 +446,7 @@ type
   // </summary>
   //
   ISpatialAudioMetadataItemsBuffer = interface(IUnknown)
-  ['{42640A16-E1BD-42D9-9FF6-031AB71A2DBA}']
+    ['{42640A16-E1BD-42D9-9FF6-031AB71A2DBA}']
 
     function AttachToBuffer(buffer: PByte;
                             bufferLength: UINT32): HRESULT; stdcall;
@@ -469,6 +479,7 @@ type
     // </summary>
 
   end;
+
   IID_ISpatialAudioMetadataItemsBuffer = ISpatialAudioMetadataItemsBuffer;
   PISpatialAudioMetadataItemsBuffer = ^ISpatialAudioMetadataItemsBuffer;
 
@@ -486,7 +497,7 @@ type
   // </summary>
   //
   ISpatialAudioMetadataClient = interface(IUnknown)
-  ['{777D4A3B-F6FF-4A26-85DC-68D7CDEDA1D4}']
+    ['{777D4A3B-F6FF-4A26-85DC-68D7CDEDA1D4}']
 
 
     function ActivateSpatialAudioMetadataItems(maxItemCount: UINT16;
@@ -559,6 +570,7 @@ type
     // </param>
 
   end;
+
   IID_ISpatialAudioMetadataClient = ISpatialAudioMetadataClient;
 
 
@@ -569,7 +581,7 @@ type
   // The data written via this interface must adhere to the format defined by the spatial rendering engine.
   //
   ISpatialAudioObjectForMetadataCommands = interface(ISpatialAudioObjectBase)
-  ['{0DF2C94B-F5F9-472D-AF6B-C46E0AC9CD05}']
+    ['{0DF2C94B-F5F9-472D-AF6B-C46E0AC9CD05}']
 
     function WriteNextMetadataCommand(commandID: Byte;
                                       valueBuffer: Pointer;
@@ -578,6 +590,7 @@ type
     // per object per processing cycle. Valid commands and value lengths are defined by the metadataFormatId.
 
   end;
+
   IID_ISpatialAudioObjectForMetadataCommands = ISpatialAudioObjectForMetadataCommands;
 
 
@@ -590,12 +603,13 @@ type
   // The data written via this interface must adhere to the format defined by the spatial rendering engine.
   //
   ISpatialAudioObjectForMetadataItems = interface(ISpatialAudioObjectBase)
-  ['{DDEA49FF-3BC0-4377-8AAD-9FBCFD808566}']
+    ['{DDEA49FF-3BC0-4377-8AAD-9FBCFD808566}']
 
     function GetSpatialAudioMetadataItems(out metadataItems: ISpatialAudioMetadataItems): HRESULT; stdcall;
     // Get a pointer to the ISpatialAudioMetadataItems object to add metadata items, release when done.
 
   end;
+
   IID_ISpatialAudioObjectForMetadataItems = ISpatialAudioObjectForMetadataItems;
 
 
@@ -603,7 +617,7 @@ type
   // ====================================================
   //
   ISpatialAudioObjectRenderStreamForMetadata = interface(ISpatialAudioObjectRenderStreamBase)
-  ['{BBC9C907-48D5-4A2E-A0C7-F7F0D67C1FB1}']
+    ['{BBC9C907-48D5-4A2E-A0C7-F7F0D67C1FB1}']
 
     function ActivateSpatialAudioObjectForMetadataCommands(_type: AudioObjectType;
                                                            out audioObject: ISpatialAudioObjectForMetadataCommands): HRESULT; stdcall;
@@ -622,6 +636,7 @@ type
     // and there is no more data to feed or after SetEndOfStream()
 
   end;
+
   IID_ISpatialAudioObjectRenderStreamForMetadata = ISpatialAudioObjectRenderStreamForMetadata;
 
 
@@ -631,32 +646,32 @@ const
   // Since XE2 these needs to be hardcoded.
   // The AUDCLNT_ERR macro is defined in MfPack.AudioClient.pas
 
-  SPTLAUD_MD_CLNT_E_COMMAND_NOT_FOUND             =   $88890200; //   AUDCLNT_ERR($0200);
-  SPTLAUD_MD_CLNT_E_OBJECT_NOT_INITIALIZED        =   $88890201; //   AUDCLNT_ERR($0201);
-  SPTLAUD_MD_CLNT_E_INVALID_ARGS                  =   $88890202; //   AUDCLNT_ERR($0202);
-  SPTLAUD_MD_CLNT_E_METADATA_FORMAT_NOT_FOUND     =   $88890203; //   AUDCLNT_ERR($0203);
-  SPTLAUD_MD_CLNT_E_VALUE_BUFFER_INCORRECT_SIZE   =   $88890204; //   AUDCLNT_ERR($0204);
-  SPTLAUD_MD_CLNT_E_MEMORY_BOUNDS                 =   $88890205; //   AUDCLNT_ERR($0205);
-  SPTLAUD_MD_CLNT_E_NO_MORE_COMMANDS              =   $88890206; //   AUDCLNT_ERR($0206);
-  SPTLAUD_MD_CLNT_E_BUFFER_ALREADY_ATTACHED       =   $88890207; //   AUDCLNT_ERR($0207);
-  SPTLAUD_MD_CLNT_E_BUFFER_NOT_ATTACHED           =   $88890208; //   AUDCLNT_ERR($0208);
-  SPTLAUD_MD_CLNT_E_FRAMECOUNT_OUT_OF_RANGE       =   $88890209; //   AUDCLNT_ERR($0209);
-  SPTLAUD_MD_CLNT_E_NO_ITEMS_FOUND                =   $88890210; //   AUDCLNT_ERR($0210);
-  SPTLAUD_MD_CLNT_E_ITEM_COPY_OVERFLOW            =   $88890211; //   AUDCLNT_ERR($0211);
-  SPTLAUD_MD_CLNT_E_NO_ITEMS_OPEN                 =   $88890212; //   AUDCLNT_ERR($0212);
-  SPTLAUD_MD_CLNT_E_ITEMS_ALREADY_OPEN            =   $88890213; //   AUDCLNT_ERR($0213);
-  SPTLAUD_MD_CLNT_E_ATTACH_FAILED_INTERNAL_BUFFER =   $88890214; //   AUDCLNT_ERR($0214);
-  SPTLAUD_MD_CLNT_E_DETACH_FAILED_INTERNAL_BUFFER =   $88890215; //   AUDCLNT_ERR($0215);
-  SPTLAUD_MD_CLNT_E_NO_BUFFER_ATTACHED            =   $88890216; //   AUDCLNT_ERR($0216);
-  SPTLAUD_MD_CLNT_E_NO_MORE_ITEMS                 =   $88890217; //   AUDCLNT_ERR($0217);
-  SPTLAUD_MD_CLNT_E_FRAMEOFFSET_OUT_OF_RANGE      =   $88890218; //   AUDCLNT_ERR($0218);
-  SPTLAUD_MD_CLNT_E_ITEM_MUST_HAVE_COMMANDS       =   $88890219; //   AUDCLNT_ERR($0219);
-  SPTLAUD_MD_CLNT_E_NO_ITEMOFFSET_WRITTEN         =   $88890220; //   AUDCLNT_ERR($0220);
-  SPTLAUD_MD_CLNT_E_NO_ITEMS_WRITTEN              =   $88890221; //   AUDCLNT_ERR($0221);
-  SPTLAUD_MD_CLNT_E_COMMAND_ALREADY_WRITTEN       =   $88890222; //   AUDCLNT_ERR($0222);
-  SPTLAUD_MD_CLNT_E_FORMAT_MISMATCH               =   $88890223; //   AUDCLNT_ERR($0223);
-  SPTLAUD_MD_CLNT_E_BUFFER_STILL_ATTACHED         =   $88890224; //   AUDCLNT_ERR($0224);
-  SPTLAUD_MD_CLNT_E_ITEMS_LOCKED_FOR_WRITING      =   $88890225; //   AUDCLNT_ERR($0225);
+  SPTLAUD_MD_CLNT_E_COMMAND_NOT_FOUND = $88890200; //   AUDCLNT_ERR($0200);
+  SPTLAUD_MD_CLNT_E_OBJECT_NOT_INITIALIZED = $88890201; //   AUDCLNT_ERR($0201);
+  SPTLAUD_MD_CLNT_E_INVALID_ARGS = $88890202; //   AUDCLNT_ERR($0202);
+  SPTLAUD_MD_CLNT_E_METADATA_FORMAT_NOT_FOUND = $88890203; //   AUDCLNT_ERR($0203);
+  SPTLAUD_MD_CLNT_E_VALUE_BUFFER_INCORRECT_SIZE = $88890204; //   AUDCLNT_ERR($0204);
+  SPTLAUD_MD_CLNT_E_MEMORY_BOUNDS = $88890205; //   AUDCLNT_ERR($0205);
+  SPTLAUD_MD_CLNT_E_NO_MORE_COMMANDS = $88890206; //   AUDCLNT_ERR($0206);
+  SPTLAUD_MD_CLNT_E_BUFFER_ALREADY_ATTACHED = $88890207; //   AUDCLNT_ERR($0207);
+  SPTLAUD_MD_CLNT_E_BUFFER_NOT_ATTACHED = $88890208; //   AUDCLNT_ERR($0208);
+  SPTLAUD_MD_CLNT_E_FRAMECOUNT_OUT_OF_RANGE = $88890209; //   AUDCLNT_ERR($0209);
+  SPTLAUD_MD_CLNT_E_NO_ITEMS_FOUND = $88890210; //   AUDCLNT_ERR($0210);
+  SPTLAUD_MD_CLNT_E_ITEM_COPY_OVERFLOW = $88890211; //   AUDCLNT_ERR($0211);
+  SPTLAUD_MD_CLNT_E_NO_ITEMS_OPEN = $88890212; //   AUDCLNT_ERR($0212);
+  SPTLAUD_MD_CLNT_E_ITEMS_ALREADY_OPEN = $88890213; //   AUDCLNT_ERR($0213);
+  SPTLAUD_MD_CLNT_E_ATTACH_FAILED_INTERNAL_BUFFER = $88890214; //   AUDCLNT_ERR($0214);
+  SPTLAUD_MD_CLNT_E_DETACH_FAILED_INTERNAL_BUFFER = $88890215; //   AUDCLNT_ERR($0215);
+  SPTLAUD_MD_CLNT_E_NO_BUFFER_ATTACHED = $88890216; //   AUDCLNT_ERR($0216);
+  SPTLAUD_MD_CLNT_E_NO_MORE_ITEMS = $88890217; //   AUDCLNT_ERR($0217);
+  SPTLAUD_MD_CLNT_E_FRAMEOFFSET_OUT_OF_RANGE = $88890218; //   AUDCLNT_ERR($0218);
+  SPTLAUD_MD_CLNT_E_ITEM_MUST_HAVE_COMMANDS = $88890219; //   AUDCLNT_ERR($0219);
+  SPTLAUD_MD_CLNT_E_NO_ITEMOFFSET_WRITTEN = $88890220; //   AUDCLNT_ERR($0220);
+  SPTLAUD_MD_CLNT_E_NO_ITEMS_WRITTEN = $88890221; //   AUDCLNT_ERR($0221);
+  SPTLAUD_MD_CLNT_E_COMMAND_ALREADY_WRITTEN = $88890222; //   AUDCLNT_ERR($0222);
+  SPTLAUD_MD_CLNT_E_FORMAT_MISMATCH = $88890223; //   AUDCLNT_ERR($0223);
+  SPTLAUD_MD_CLNT_E_BUFFER_STILL_ATTACHED = $88890224; //   AUDCLNT_ERR($0224);
+  SPTLAUD_MD_CLNT_E_ITEMS_LOCKED_FOR_WRITING = $88890225; //   AUDCLNT_ERR($0225);
 
 
   // Additional Prototypes for ALL interfaces
@@ -665,6 +680,6 @@ const
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

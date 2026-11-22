@@ -74,8 +74,8 @@ interface
 
 uses
   LMessages,
-MfCapturePlatform,
-{Winapi}
+  MfCapturePlatform,
+  {Winapi}
   Windows,
   Messages,
   CommCtrl,
@@ -131,9 +131,11 @@ type
     procedure tbVolumeSliderChange(Sender: TObject);
     procedure tmrProgressTimer(Sender: TObject);
     procedure cbCheckMuteClick(Sender: TObject);
+
   private
     { Private declarations }
     procedure WndProc(var Message: TLMessage); override;
+
   private
     AppHandle: HWND;
     volume: Single;
@@ -141,7 +143,8 @@ type
     fileName: WideString;
     //progressTimer: UIntPtr;
 
-    procedure MediaPlayerDialogProc(var Msg: TMsg; var Handled: Boolean);
+    procedure MediaPlayerDialogProc(var Msg: TMsg;
+                                    var Handled: Boolean);
 
   public
     { Public declarations }
@@ -154,16 +157,33 @@ var
 implementation
 
 {$R *.lfm}
+
 procedure TForm1.WndProc(var Message: TLMessage);
-var Msg: TMsg; Handled: Boolean;
+var
+  Msg: TMsg;
+  Handled: Boolean;
+
 begin
- if (Message.Msg>=WM_APP) and (Message.Msg<=WM_APP+3) and Assigned(g_MediaPlayer) then begin
-  FillChar(Msg,SizeOf(Msg),0); Msg.hwnd:=AppHandle; Msg.message:=Message.Msg;
-  Msg.wParam:=Message.WParam; Msg.lParam:=Message.LParam; Handled:=False;
-  MediaPlayerDialogProc(Msg,Handled);
-  if Handled then begin Message.Result:=0;Exit;end;
- end;
- inherited WndProc(Message);
+
+  if (Message.Msg >= WM_APP) and (Message.Msg <= WM_APP + 3) and Assigned(g_MediaPlayer) then
+    begin
+      FillChar(Msg,
+               SizeOf(Msg),
+               0);
+      Msg.hwnd := AppHandle;
+      Msg.message := Message.Msg;
+      Msg.wParam := Message.WParam;
+      Msg.lParam := Message.LParam;
+      Handled := False;
+      MediaPlayerDialogProc(Msg,
+                            Handled);
+      if Handled then
+        begin
+          Message.Result := 0;
+          Exit;
+        end;
+    end;
+  inherited WndProc(Message);
 end;
 
 
@@ -174,7 +194,9 @@ end;
 //  the file into the player.
 //
 procedure TForm1.butBrowseClick(Sender: TObject);
+
 begin
+
   if dlgOpen.Execute then
     begin
       trbPlayBackPosition.Max := 1000;
@@ -216,7 +238,9 @@ end;
 //  Toggle the "Pause" state in the player and update the button text as appropriate.
 //
 procedure TForm1.butPauseClick(Sender: TObject);
+
 begin
+
   if g_MediaPlayer.TogglePauseState() then
     begin
       butPause.Caption := 'Continue';
@@ -243,7 +267,9 @@ end;
 //  Then disable the "Play" button and enable the "Pause" and "Stop" buttons.
 //
 procedure TForm1.butPlayClick(Sender: TObject);
+
 begin
+
   g_MediaPlayer.SyncPauseOnDuck(cbCheckPauseOnDuck.Checked);
   g_MediaPlayer.SyncDuckingOptOut(cbOptOutOnDucking.Checked);
 
@@ -262,7 +288,9 @@ end;
 
 
 procedure TForm1.butStopClick(Sender: TObject);
+
 begin
+
   g_MediaPlayer.Stop();
 
   tmrProgress.Enabled := False;
@@ -278,31 +306,40 @@ end;
 
 
 procedure TForm1.butOKClick(Sender: TObject);
+
 begin
+
   Close(); // Close the dialog or use this method
   // EndDialog(AppHandle, True);
 end;
 
 
 procedure TForm1.cbCheckMuteClick(Sender: TObject);
+
 begin
+
   g_MediaPlayer.SetMute(cbCheckMute.Checked);
 end;
 
 
 procedure TForm1.cbCheckPauseOnDuckClick(Sender: TObject);
+
 begin
+
   g_MediaPlayer.SyncPauseOnDuck(cbCheckPauseOnDuck.Checked);
 end;
 
 
 procedure TForm1.cbOptOutOnDuckingClick(Sender: TObject);
+
 begin
+
   g_MediaPlayer.SyncDuckingOptOut(cbOptOutOnDucking.Checked);
 end;
 
 
 procedure TForm1.FormDestroy(Sender: TObject);
+
 begin
 
   g_MediaPlayer.Shutdown();
@@ -316,6 +353,7 @@ var
   hr: HResult;
 
 begin
+
   AppHandle := Handle;
 
 
@@ -324,9 +362,9 @@ begin
   if not Assigned(g_MediaPlayer) then
     begin
       MessageBoxW(AppHandle,
-                 lpcwstr('Unable to allocate media player'),
-                 lpcwstr('Initialization Failure'),
-                 MB_OK);
+                  lpcwstr('Unable to allocate media player'),
+                  lpcwstr('Initialization Failure'),
+                  MB_OK);
       Exit;
       // or use EndDialog(AppHandle, -1);
     end
@@ -336,9 +374,9 @@ begin
       if Failed(hr) then
         begin
           MessageBoxW(AppHandle,
-                     lpcwstr('Unable to initialize media player'),
-                     lpcwstr('Initialization Failure'),
-                     MB_OK);
+                      lpcwstr('Unable to initialize media player'),
+                      lpcwstr('Initialization Failure'),
+                      MB_OK);
           Exit;
           // or use EndDialog(AppHandle, -1);
         end;
@@ -363,6 +401,7 @@ var
   sVolume: Single;
 
 begin
+
   sVolumePosition := tbVolumeSlider.Position;
   sVolume := (sVolumePosition / 100);
   g_MediaPlayer.SetVolume(sVolume);
@@ -378,6 +417,7 @@ var
   position: LongInt;
 
 begin
+
   position := g_MediaPlayer.GetPosition();
   trbPlayBackPosition.Position := position;
 end;
@@ -387,85 +427,90 @@ end;
 //
 //  PURPOSE:  Processes messages for the main window.
 //
-procedure TForm1.MediaPlayerDialogProc(var Msg: TMsg; var Handled: Boolean);
+procedure TForm1.MediaPlayerDialogProc(var Msg: TMsg;
+                                       var Handled: Boolean);
 var
   slposition: LongInt;
 
 begin
 
- if Msg.hwnd = AppHandle then
-  begin
+  if (Msg.hwnd = AppHandle) then
+    begin
 
-    if Msg.message = WM_TIMER then
-      begin
-        //
-        //  Update the progress slider to match the current playback position.
-        //
-        slposition := g_MediaPlayer.GetPosition();
-        trbPlayBackPosition.Position := slposition;
-        // or
-        //SendMessageW(GetDlgItem(AppHandle, GetDlgCtrlID(AppHandle)), TBM_SETPOS, True, position);
+      if (Msg.message = WM_TIMER) then
+        begin
+          //
+          //  Update the progress slider to match the current playback position.
+          //
+          slposition := g_MediaPlayer.GetPosition();
+          trbPlayBackPosition.Position := slposition;
+          // or
+          //SendMessageW(GetDlgItem(AppHandle, GetDlgCtrlID(AppHandle)), TBM_SETPOS, True, position);
 
-        Handled := True;
-        Exit;
-      end;
+          Handled := True;
+          Exit;
+        end;
 
-    //
-    //  Let the media player know about the DShow graph event.
-    //  If we come to the end of the track, reset the slider to the beginning of the track.
-    //
-    if Msg.message = WM_APP_GRAPHNOTIFY then
-      begin
-        if g_MediaPlayer.HandleGraphEvent() then
-          begin
-            //  Reset the slider and timer, we're at the end of the track.
-            trbPlayBackPosition.Position := 0;
-            //SendMessageW(GetDlgItem(AppHandle, GetDlgCtrlID(AppHandle)), TBM_SETPOS, True, 0);
-            tmrProgress.Enabled := False;
-            //KillTimer(AppHandle, progressTimer);
+      //
+      //  Let the media player know about the DShow graph event.
+      //  If we come to the end of the track, reset the slider to the beginning of the track.
+      //
+      if (Msg.message = WM_APP_GRAPHNOTIFY) then
+        begin
+          if g_MediaPlayer.HandleGraphEvent() then
+            begin
+              //  Reset the slider and timer, we're at the end of the track.
+              trbPlayBackPosition.Position := 0;
+              //SendMessageW(GetDlgItem(AppHandle, GetDlgCtrlID(AppHandle)), TBM_SETPOS, True, 0);
+              tmrProgress.Enabled := False;
+              //KillTimer(AppHandle, progressTimer);
 
-            ButPlay.Enabled := True;
-            //EnableWindow(GetDlgItem(AppHandle, GetDlgCtrlID(AppHandle)), TRUE);
-            butPause.Enabled := False;
-            //EnableWindow(GetDlgItem(AppHandle, GetDlgCtrlID(AppHandle)), FALSE);
-            butStop.Enabled := False;
-            //EnableWindow(GetDlgItem(AppHandle, GetDlgCtrlID(AppHandle)), FALSE);
-          end;
+              ButPlay.Enabled := True;
+              //EnableWindow(GetDlgItem(AppHandle, GetDlgCtrlID(AppHandle)), TRUE);
+              butPause.Enabled := False;
+              //EnableWindow(GetDlgItem(AppHandle, GetDlgCtrlID(AppHandle)), FALSE);
+              butStop.Enabled := False;
+              //EnableWindow(GetDlgItem(AppHandle, GetDlgCtrlID(AppHandle)), FALSE);
+            end;
 
-        Handled := True;
-        Exit;
-      end;
+          Handled := True;
+          Exit;
+        end;
 
-    //
-    //  Called when the media player receives a ducking notification.  Lets the media player know that the session has been ducked and pauses the player.
-    //
-    if Msg.message = WM_APP_SESSION_DUCKED then
-      begin
-        if g_MediaPlayer.Pause() then
-          begin
-            //butPause.Click;
-            // or
-            SetWindowTextW(GetDlgItem(AppHandle, GetDlgCtrlID(AppHandle)), 'Continue');
-            tmrProgress.Enabled := False;
-            //KillTimer(hWnd, progressTimer);
-          end;
-      end;
+      //
+      //  Called when the media player receives a ducking notification.  Lets the media player know that the session has been ducked and pauses the player.
+      //
+      if (Msg.message = WM_APP_SESSION_DUCKED) then
+        begin
+          if g_MediaPlayer.Pause() then
+            begin
+              //butPause.Click;
+              // or
+              SetWindowTextW(GetDlgItem(AppHandle,
+                                        GetDlgCtrlID(AppHandle)),
+                             'Continue');
+              tmrProgress.Enabled := False;
+              //KillTimer(hWnd, progressTimer);
+            end;
+        end;
 
-    if Msg.message = WM_APP_SESSION_UNDUCKED then
-      begin
-        if g_MediaPlayer.Continue() then
-          begin
-            // butPause.Click
-            // or
-            SetWindowTextW(GetDlgItem(AppHandle, GetDlgCtrlID(AppHandle)), 'Pause');
-            tmrProgress.Enabled := True;
-            //SetTimer(AppHandle, progressTimer, 40, Nil);
-            Handled := True;
-            Exit;
-          end;
-      end;
+      if (Msg.message = WM_APP_SESSION_UNDUCKED) then
+        begin
+          if g_MediaPlayer.Continue() then
+            begin
+              // butPause.Click
+              // or
+              SetWindowTextW(GetDlgItem(AppHandle,
+                                        GetDlgCtrlID(AppHandle)),
+                             'Pause');
+              tmrProgress.Enabled := True;
+              //SetTimer(AppHandle, progressTimer, 40, Nil);
+              Handled := True;
+              Exit;
+            end;
+        end;
 
-  end;
+    end;
   Handled := False;
 end;
 

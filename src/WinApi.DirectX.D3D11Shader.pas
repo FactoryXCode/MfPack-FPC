@@ -72,7 +72,7 @@ unit WinApi.DirectX.D3D11Shader;
 interface
 
 uses
-  
+
   {WinApi}
   Windows,
   WinApi.WinApiTypes,
@@ -86,31 +86,32 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 type
 
   PD3D11_SHADER_VERSION_TYPE = ^D3D11_SHADER_VERSION_TYPE;
-  D3D11_SHADER_VERSION_TYPE     = (
-    D3D11_SHVER_PIXEL_SHADER    = 0,
-    D3D11_SHVER_VERTEX_SHADER   = 1,
-    D3D11_SHVER_GEOMETRY_SHADER = 2,
+  D3D11_SHADER_VERSION_TYPE = (
+    D3D11_SHVER_PIXEL_SHADER = 0,
+                               D3D11_SHVER_VERTEX_SHADER = 1,
+                               D3D11_SHVER_GEOMETRY_SHADER = 2,
     // D3D11 Shaders
-    D3D11_SHVER_HULL_SHADER     = 3,
-    D3D11_SHVER_DOMAIN_SHADER   = 4,
-    D3D11_SHVER_COMPUTE_SHADER  = 5,
-    D3D11_SHVER_RESERVED0       = $FFF0
-  );
+    D3D11_SHVER_HULL_SHADER = 3,
+                               D3D11_SHVER_DOMAIN_SHADER = 4,
+                               D3D11_SHVER_COMPUTE_SHADER = 5,
+                               D3D11_SHVER_RESERVED0 = $FFF0
+    );
 
-  {VERSION MACRO'S}
-  function D3D11_SHVER_GET_TYPE(_Version: DWORD): DWORD; inline;
-  function D3D11_SHVER_GET_MAJOR(_Version: DWORD): DWORD; inline;
-  function D3D11_SHVER_GET_MINOR(_Version: DWORD): DWORD; inline;
+{VERSION MACRO'S}
+function D3D11_SHVER_GET_TYPE(_Version: DWORD): DWORD; inline;
+function D3D11_SHVER_GET_MAJOR(_Version: DWORD): DWORD; inline;
+function D3D11_SHVER_GET_MINOR(_Version: DWORD): DWORD; inline;
 
 const
   // Slot ID for library function return
-  D3D_RETURN_PARAMETER_INDEX          = (- 1);
+  D3D_RETURN_PARAMETER_INDEX = (-1);
 
 type
   PD3D11_RESOURCE_RETURN_TYPE = ^D3D11_RESOURCE_RETURN_TYPE;
@@ -121,6 +122,7 @@ type
 
 
   PD3D11_SIGNATURE_PARAMETER_DESC = ^D3D11_SIGNATURE_PARAMETER_DESC;
+
   _D3D11_SIGNATURE_PARAMETER_DESC = record
     SemanticName: LPCSTR;                         // Name of the semantic
     SemanticIndex: UINT;                          // Index of the semantic
@@ -128,11 +130,11 @@ type
     SystemValueType: D3D_NAME;                    // A predefined system value, or D3D_NAME_UNDEFINED if not applicable
     ComponentType: D3D_REGISTER_COMPONENT_TYPE;   // Scalar type (e.g. uint, float, etc.)
     Mask: Byte;                                   // Mask to indicate which components of the register
-                                                  // are used (combination of D3D10_COMPONENT_MASK values)
+    // are used (combination of D3D10_COMPONENT_MASK values)
     ReadWriteMask: Byte;                          // Mask to indicate whether a given component is
-                                                  // never written (if this is an output signature) or
-                                                  // always read (if this is an input signature).
-                                                  // (combination of D3D_MASK_* values)
+    // never written (if this is an output signature) or
+    // always read (if this is an input signature).
+    // (combination of D3D_MASK_* values)
     Stream: UINT;                                 // Stream index
     MinPrecision: D3D_MIN_PRECISION;              // Minimum desired interpolation precision
   end;
@@ -140,6 +142,7 @@ type
 
 
   PD3D11_SHADER_BUFFER_DESC = ^D3D11_SHADER_BUFFER_DESC;
+
   _D3D11_SHADER_BUFFER_DESC = record
     Name: LPCSTR;                    // Name of the constant buffer
     Type_: D3D_CBUFFER_TYPE;         // Indicates type of buffer content
@@ -151,6 +154,7 @@ type
 
 
   PD3D11_SHADER_VARIABLE_DESC = ^D3D11_SHADER_VARIABLE_DESC;
+
   _D3D11_SHADER_VARIABLE_DESC = record
     Name: LPCSTR;                    // Name of the variable
     StartOffset: UINT;               // Offset in constant buffer's backing store
@@ -166,6 +170,7 @@ type
 
 
   PD3D11_SHADER_TYPE_DESC = ^D3D11_SHADER_TYPE_DESC;
+
   _D3D11_SHADER_TYPE_DESC = record
     Class_: D3D_SHADER_VARIABLE_CLASS;  // Variable class (e.g. object, matrix, etc.)
     Type_: D3D_SHADER_VARIABLE_TYPE;    // Variable type (e.g. float, sampler, etc.)
@@ -189,6 +194,7 @@ type
   D3D11_TESSELLATOR_OUTPUT_PRIMITIVE = D3D_TESSELLATOR_OUTPUT_PRIMITIVE;
 
   PD3D11_SHADER_DESC = ^D3D11_SHADER_DESC;
+
   _D3D11_SHADER_DESC = record
     Version: UINT;                                         // Shader version
     Creator: LPCSTR;                                       // Creator string
@@ -225,7 +231,7 @@ type
     HSOutputPrimitive: D3D_TESSELLATOR_OUTPUT_PRIMITIVE;   // Primitive output by the tessellator
     HSPartitioning: D3D_TESSELLATOR_PARTITIONING;          // Partitioning mode of the tessellator
     TessellatorDomain: D3D_TESSELLATOR_DOMAIN;             // Domain of the tessellator (quad, tri, isoline)
-                                                           // instruction counts
+    // instruction counts
     cBarrierInstructions: UINT;                            // Number of barrier instructions in a compute shader
     cInterlockedInstructions: UINT;                        // Number of interlocked instructions
     cTextureStoreInstructions: UINT;                       // Number of texture writes
@@ -234,6 +240,7 @@ type
 
 
   PD3D11_SHADER_INPUT_BIND_DESC = ^D3D11_SHADER_INPUT_BIND_DESC;
+
   _D3D11_SHADER_INPUT_BIND_DESC = record
     Name: LPCSTR;                           // Name of the resource
     Type_: D3D_SHADER_INPUT_TYPE;           // Type of resource (e.g. texture, cbuffer, etc.)
@@ -247,18 +254,19 @@ type
   D3D11_SHADER_INPUT_BIND_DESC = _D3D11_SHADER_INPUT_BIND_DESC;
 
 const
-  D3D_SHADER_REQUIRES_DOUBLES                                    = $00000001;
-  D3D_SHADER_REQUIRES_EARLY_DEPTH_STENCIL                        = $00000002;
-  D3D_SHADER_REQUIRES_UAVS_AT_EVERY_STAGE                        = $00000004;
-  D3D_SHADER_REQUIRES_64_UAVS                                    = $00000008;
-  D3D_SHADER_REQUIRES_MINIMUM_PRECISION                          = $00000010;
-  D3D_SHADER_REQUIRES_11_1_DOUBLE_EXTENSIONS                     = $00000020;
-  D3D_SHADER_REQUIRES_11_1_SHADER_EXTENSIONS                     = $00000040;
-  D3D_SHADER_REQUIRES_LEVEL_9_COMPARISON_FILTERING               = $00000080;
-  D3D_SHADER_REQUIRES_TILED_RESOURCES                            = $00000100;
+  D3D_SHADER_REQUIRES_DOUBLES = $00000001;
+  D3D_SHADER_REQUIRES_EARLY_DEPTH_STENCIL = $00000002;
+  D3D_SHADER_REQUIRES_UAVS_AT_EVERY_STAGE = $00000004;
+  D3D_SHADER_REQUIRES_64_UAVS = $00000008;
+  D3D_SHADER_REQUIRES_MINIMUM_PRECISION = $00000010;
+  D3D_SHADER_REQUIRES_11_1_DOUBLE_EXTENSIONS = $00000020;
+  D3D_SHADER_REQUIRES_11_1_SHADER_EXTENSIONS = $00000040;
+  D3D_SHADER_REQUIRES_LEVEL_9_COMPARISON_FILTERING = $00000080;
+  D3D_SHADER_REQUIRES_TILED_RESOURCES = $00000100;
 
 type
   PD3D11_LIBRARY_DESC = ^D3D11_LIBRARY_DESC;
+
   _D3D11_LIBRARY_DESC = record
     Creator: LPCSTR;                 // The name of the originator of the library.
     Flags: UINT;                     // Compilation flags.
@@ -268,6 +276,7 @@ type
 
 
   PD3D11_FUNCTION_DESC = ^D3D11_FUNCTION_DESC;
+
   _D3D11_FUNCTION_DESC = record
     Version: UINT;                        // Shader version
     Creator: LPCSTR;                      // Creator string
@@ -307,6 +316,7 @@ type
 
 
   PD3D11_PARAMETER_DESC = ^D3D11_PARAMETER_DESC;
+
   _D3D11_PARAMETER_DESC = record
     Name: LPCSTR;                                // Parameter name.
     SemanticName: LPCSTR;                        // Parameter semantic name (+index).
@@ -365,8 +375,10 @@ type
   //       releasing the interface when you're done with it.
   //
   TNativeID3D11ShaderReflectionType = record
+
   private
     FVTable: Pointer;
+
   public
     function GetDesc(out pDesc: D3D11_SHADER_TYPE_DESC): HRESULT; stdcall;
     function GetMemberTypeByIndex(Index: UINT): ID3D11ShaderReflectionType; stdcall;
@@ -389,8 +401,10 @@ type
   //       releasing the interface when you're done with it.
   //
   TNativeID3D11ShaderReflectionVariable = record
+
   private
     FVTable: Pointer;
+
   public
     function GetDesc(out pDesc: D3D11_SHADER_VARIABLE_DESC): HRESULT; stdcall;
     function GetType(): ID3D11ShaderReflectionType; stdcall;
@@ -406,8 +420,10 @@ type
   //       releasing the interface when you're done with it.
   //
   TNativeID3D11ShaderReflectionConstantBuffer = record
+
   private
     FVTable: Pointer;
+
   public
     function GetDesc(out pDesc: D3D11_SHADER_BUFFER_DESC): HRESULT; stdcall;
     function GetVariableByIndex(Index: UINT): ID3D11ShaderReflectionVariable; stdcall;
@@ -426,16 +442,21 @@ type
   // NOTE: This is a COM interface!
   //
   ID3D11ShaderReflection = interface(IUnknown)
-  ['{8D536CA1-0CCA-4956-A837-786963755584}']
+    ['{8D536CA1-0CCA-4956-A837-786963755584}']
     function GetDesc(out pDesc: D3D11_SHADER_DESC): HRESULT; stdcall;
     function GetConstantBufferByIndex(Index: UINT): ID3D11ShaderReflectionConstantBuffer; stdcall;
     function GetConstantBufferByName(Name: LPCSTR): ID3D11ShaderReflectionConstantBuffer; stdcall;
-    function GetResourceBindingDesc(ResourceIndex: UINT; out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT; stdcall;
-    function GetInputParameterDesc(ParameterIndex: UINT; out pDesc: D3D11_SIGNATURE_PARAMETER_DESC): HRESULT; stdcall;
-    function GetOutputParameterDesc(ParameterIndex: UINT; out pDesc: D3D11_SIGNATURE_PARAMETER_DESC): HRESULT; stdcall;
-    function GetPatchConstantParameterDesc(ParameterIndex: UINT; out pDesc: D3D11_SIGNATURE_PARAMETER_DESC): HRESULT; stdcall;
+    function GetResourceBindingDesc(ResourceIndex: UINT;
+                                    out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT; stdcall;
+    function GetInputParameterDesc(ParameterIndex: UINT;
+                                   out pDesc: D3D11_SIGNATURE_PARAMETER_DESC): HRESULT; stdcall;
+    function GetOutputParameterDesc(ParameterIndex: UINT;
+                                    out pDesc: D3D11_SIGNATURE_PARAMETER_DESC): HRESULT; stdcall;
+    function GetPatchConstantParameterDesc(ParameterIndex: UINT;
+                                           out pDesc: D3D11_SIGNATURE_PARAMETER_DESC): HRESULT; stdcall;
     function GetVariableByName(Name: LPCSTR): ID3D11ShaderReflectionVariable; stdcall;
-    function GetResourceBindingDescByName(Name: LPCSTR; out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT; stdcall;
+    function GetResourceBindingDescByName(Name: LPCSTR;
+                                          out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT; stdcall;
     function GetMovInstructionCount(): UINT; stdcall;
     function GetMovcInstructionCount(): UINT; stdcall;
     function GetConversionInstructionCount(): UINT; stdcall;
@@ -444,9 +465,12 @@ type
     function IsSampleFrequencyShader(): BOOL; stdcall;
     function GetNumInterfaceSlots(): UINT; stdcall;
     function GetMinFeatureLevel(out pLevel: D3D_FEATURE_LEVEL): HRESULT; stdcall;
-    function GetThreadGroupSize(pSizeX: PUINT; pSizeY: PUINT; pSizeZ: PUINT): UINT; stdcall;
+    function GetThreadGroupSize(pSizeX: PUINT;
+                                pSizeY: PUINT;
+                                pSizeZ: PUINT): UINT; stdcall;
     function GetRequiresFlags(): UINT64; stdcall;
   end;
+
   IID_ID3D11ShaderReflection = ID3D11ShaderReflection;
 
 
@@ -455,10 +479,11 @@ type
   // NOTE: This is the owning COM interface. Function/parameter children are borrowed.
   //
   ID3D11LibraryReflection = interface(IUnknown)
-  ['{54384F1B-5B3E-4BB7-AE01-60BA3097CBB6}']
+    ['{54384F1B-5B3E-4BB7-AE01-60BA3097CBB6}']
     function GetDesc(out pDesc: D3D11_LIBRARY_DESC): HRESULT; stdcall;
     function GetFunctionByIndex(FunctionIndex: INT): ID3D11FunctionReflection; stdcall;
   end;
+
   IID_ID3D11LibraryReflection = ID3D11LibraryReflection;
 
 
@@ -467,15 +492,19 @@ type
   // NOTE: This isn't a COM interface.
   //
   TNativeID3D11FunctionReflection = record
+
   private
     FVTable: Pointer;
+
   public
     function GetDesc(out pDesc: D3D11_FUNCTION_DESC): HRESULT; stdcall;
     function GetConstantBufferByIndex(BufferIndex: UINT): ID3D11ShaderReflectionConstantBuffer; stdcall;
     function GetConstantBufferByName(Name: LPCSTR): ID3D11ShaderReflectionConstantBuffer; stdcall;
-    function GetResourceBindingDesc(ResourceIndex: UINT; out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT; stdcall;
+    function GetResourceBindingDesc(ResourceIndex: UINT;
+                                    out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT; stdcall;
     function GetVariableByName(Name: LPCSTR): ID3D11ShaderReflectionVariable; stdcall;
-    function GetResourceBindingDescByName(Name: LPCSTR; out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT; stdcall;
+    function GetResourceBindingDescByName(Name: LPCSTR;
+                                          out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT; stdcall;
     function GetFunctionParameter(ParameterIndex: INT): ID3D11FunctionParameterReflection; stdcall;
   end;
   // IID_ID3D11FunctionReflection is a GUID constant below.
@@ -487,8 +516,10 @@ type
   //       releasing the interface when you're done with it.
   //
   TNativeID3D11FunctionParameterReflection = record
+
   private
     FVTable: Pointer;
+
   public
     function GetDesc(out pDesc: D3D11_PARAMETER_DESC): HRESULT; stdcall;
   end;
@@ -499,19 +530,41 @@ type
   // ==============================
   //
   PID3D11ModuleInstance = ^ID3D11ModuleInstance;
+
   ID3D11ModuleInstance = interface(IUnknown)
-  ['{469E07F7-045A-48D5-AA12-68A478CDF75D}']
-    function BindConstantBuffer(uSrcSlot: UINT; uDstSlot: UINT; cbDstOffset: UINT): HRESULT; stdcall;
-    function BindConstantBufferByName(pName: LPCSTR; uDstSlot: UINT; cbDstOffset: UINT): HRESULT; stdcall;
-    function BindResource(uSrcSlot: UINT; uDstSlot: UINT; uCount: UINT): HRESULT; stdcall;
-    function BindResourceByName(pName: LPCSTR; uDstSlot: UINT; uCount: UINT): HRESULT; stdcall;
-    function BindSampler(uSrcSlot: UINT; uDstSlot: UINT; uCount: UINT): HRESULT; stdcall;
-    function BindSamplerByName(pName: LPCSTR; uDstSlot: UINT; uCount: UINT): HRESULT; stdcall;
-    function BindUnorderedAccessView(uSrcSlot: UINT; uDstSlot: UINT; uCount: UINT): HRESULT; stdcall;
-    function BindUnorderedAccessViewByName(pName: LPCSTR; uDstSlot: UINT; uCount: UINT): HRESULT; stdcall;
-    function BindResourceAsUnorderedAccessView(uSrcSrvSlot: UINT; uDstUavSlot: UINT; uCount: UINT): HRESULT; stdcall;
-    function BindResourceAsUnorderedAccessViewByName(pSrvName: LPCSTR; uDstUavSlot: UINT; uCount: UINT): HRESULT; stdcall;
+    ['{469E07F7-045A-48D5-AA12-68A478CDF75D}']
+    function BindConstantBuffer(uSrcSlot: UINT;
+                                uDstSlot: UINT;
+                                cbDstOffset: UINT): HRESULT; stdcall;
+    function BindConstantBufferByName(pName: LPCSTR;
+                                      uDstSlot: UINT;
+                                      cbDstOffset: UINT): HRESULT; stdcall;
+    function BindResource(uSrcSlot: UINT;
+                          uDstSlot: UINT;
+                          uCount: UINT): HRESULT; stdcall;
+    function BindResourceByName(pName: LPCSTR;
+                                uDstSlot: UINT;
+                                uCount: UINT): HRESULT; stdcall;
+    function BindSampler(uSrcSlot: UINT;
+                         uDstSlot: UINT;
+                         uCount: UINT): HRESULT; stdcall;
+    function BindSamplerByName(pName: LPCSTR;
+                               uDstSlot: UINT;
+                               uCount: UINT): HRESULT; stdcall;
+    function BindUnorderedAccessView(uSrcSlot: UINT;
+                                     uDstSlot: UINT;
+                                     uCount: UINT): HRESULT; stdcall;
+    function BindUnorderedAccessViewByName(pName: LPCSTR;
+                                           uDstSlot: UINT;
+                                           uCount: UINT): HRESULT; stdcall;
+    function BindResourceAsUnorderedAccessView(uSrcSrvSlot: UINT;
+                                               uDstUavSlot: UINT;
+                                               uCount: UINT): HRESULT; stdcall;
+    function BindResourceAsUnorderedAccessViewByName(pSrvName: LPCSTR;
+                                                     uDstUavSlot: UINT;
+                                                     uCount: UINT): HRESULT; stdcall;
   end;
+
   IID_ID3D11ModuleInstance = ID3D11ModuleInstance;
 
 
@@ -519,9 +572,11 @@ type
   // ======================
   //
   ID3D11Module = interface(IUnknown)
-  ['{CAC701EE-80FC-4122-8242-10B39C8CEC34}']
-    function CreateInstance(pNamespace: LPCSTR; out ppModuleInstance: ID3D11ModuleInstance): HRESULT; stdcall;
+    ['{CAC701EE-80FC-4122-8242-10B39C8CEC34}']
+    function CreateInstance(pNamespace: LPCSTR;
+                            out ppModuleInstance: ID3D11ModuleInstance): HRESULT; stdcall;
   end;
+
   IID_ID3D11Module = ID3D11Module;
 
 
@@ -529,22 +584,30 @@ type
   // ======================
   //
   ID3D11Linker = interface(IUnknown)
-  ['{59A6CD0E-E10D-4C1F-88C0-63ABA1DAF30E}']
-    function Link(pEntry: ID3D11ModuleInstance; pEntryName: LPCSTR; pTargetName: LPCSTR; uFlags: UINT; out ppShaderBlob: ID3DBlob; out ppErrorBuffer: ID3DBlob): HRESULT; stdcall;
+    ['{59A6CD0E-E10D-4C1F-88C0-63ABA1DAF30E}']
+    function Link(pEntry: ID3D11ModuleInstance;
+                  pEntryName: LPCSTR;
+                  pTargetName: LPCSTR;
+                  uFlags: UINT;
+                  out ppShaderBlob: ID3DBlob;
+                  out ppErrorBuffer: ID3DBlob): HRESULT; stdcall;
     function UseLibrary(pLibraryMI: ID3D11ModuleInstance): HRESULT; stdcall;
-    function AddClipPlaneFromCBuffer(uCBufferSlot: UINT; uCBufferEntry: UINT): HRESULT; stdcall;
+    function AddClipPlaneFromCBuffer(uCBufferSlot: UINT;
+                                     uCBufferEntry: UINT): HRESULT; stdcall;
   end;
+
   IID_ID3D11Linker = ID3D11Linker;
 
 
   // Interface ID3D11LinkingNode
   // ===========================
   //
-  PID3D11LinkingNode =^ID3D11LinkingNode;
+  PID3D11LinkingNode = ^ID3D11LinkingNode;
   ID3D11LinkingNode = interface(IUnknown)
-  ['{D80DD70C-8D2F-4751-94A1-03C79B3556DB}']
-    
+    ['{D80DD70C-8D2F-4751-94A1-03C79B3556DB}']
+
   end;
+
   IID_ID3D11LinkingNode = ID3D11LinkingNode;
 
 
@@ -552,23 +615,41 @@ type
   // ====================================
   //
   ID3D11FunctionLinkingGraph = interface(IUnknown)
-  ['{54133220-1CE8-43D3-8236-9855C5CEECFF}']
-    function CreateModuleInstance(out ppModuleInstance: ID3D11ModuleInstance; out ppErrorBuffer: ID3DBlob): HRESULT; stdcall;
-    function SetInputSignature(pInputParameters: PD3D11_PARAMETER_DESC; cInputParameters: UINT; out ppInputNode: ID3D11LinkingNode): HRESULT; stdcall;
-    function SetOutputSignature(pOutputParameters: PD3D11_PARAMETER_DESC; cOutputParameters: UINT; out ppOutputNode: ID3D11LinkingNode): HRESULT; stdcall;
-    function CallFunction(pModuleInstanceNamespace: LPCSTR; pModuleWithFunctionPrototype: ID3D11Module; pFunctionName: LPCSTR; out ppCallNode: ID3D11LinkingNode): HRESULT; stdcall;
-    function PassValue(pSrcNode: ID3D11LinkingNode; SrcParameterIndex: INT; pDstNode: ID3D11LinkingNode; DstParameterIndex: INT): HRESULT; stdcall;
-    function PassValueWithSwizzle(pSrcNode: ID3D11LinkingNode; SrcParameterIndex: INT; pSrcSwizzle: LPCSTR; pDstNode: ID3D11LinkingNode; DstParameterIndex: INT; pDstSwizzle: LPCSTR): HRESULT; stdcall;
+    ['{54133220-1CE8-43D3-8236-9855C5CEECFF}']
+    function CreateModuleInstance(out ppModuleInstance: ID3D11ModuleInstance;
+                                  out ppErrorBuffer: ID3DBlob): HRESULT; stdcall;
+    function SetInputSignature(pInputParameters: PD3D11_PARAMETER_DESC;
+                               cInputParameters: UINT;
+                               out ppInputNode: ID3D11LinkingNode): HRESULT; stdcall;
+    function SetOutputSignature(pOutputParameters: PD3D11_PARAMETER_DESC;
+                                cOutputParameters: UINT;
+                                out ppOutputNode: ID3D11LinkingNode): HRESULT; stdcall;
+    function CallFunction(pModuleInstanceNamespace: LPCSTR;
+                          pModuleWithFunctionPrototype: ID3D11Module;
+                          pFunctionName: LPCSTR;
+                          out ppCallNode: ID3D11LinkingNode): HRESULT; stdcall;
+    function PassValue(pSrcNode: ID3D11LinkingNode;
+                       SrcParameterIndex: INT;
+                       pDstNode: ID3D11LinkingNode;
+                       DstParameterIndex: INT): HRESULT; stdcall;
+    function PassValueWithSwizzle(pSrcNode: ID3D11LinkingNode;
+                                  SrcParameterIndex: INT;
+                                  pSrcSwizzle: LPCSTR;
+                                  pDstNode: ID3D11LinkingNode;
+                                  DstParameterIndex: INT;
+                                  pDstSwizzle: LPCSTR): HRESULT; stdcall;
     function GetLastError(out ppErrorBuffer: ID3DBlob): HRESULT; stdcall;
-    function GenerateHlsl(uFlags: UINT; out ppBuffer: ID3DBlob): HRESULT; stdcall;
+    function GenerateHlsl(uFlags: UINT;
+                          out ppBuffer: ID3DBlob): HRESULT; stdcall;
   end;
+
   IID_ID3D11FunctionLinkingGraph = ID3D11FunctionLinkingGraph;
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-// APIs //////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  // APIs //////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -586,177 +667,337 @@ type
   TShaderBorrowedVTable = array[0..63] of Pointer;
   PShaderBorrowedVTable = ^TShaderBorrowedVTable;
 
+
 function TNativeID3D11ShaderReflectionType.GetDesc(out pDesc: D3D11_SHADER_TYPE_DESC): HRESULT;
-type TCall = function(This: Pointer; out pDesc: D3D11_SHADER_TYPE_DESC): HRESULT; stdcall;
+type
+  TCall = function(This: Pointer;
+                   out pDesc: D3D11_SHADER_TYPE_DESC): HRESULT; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[0])(@Self, pDesc);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[0])(@Self,
+                                                      pDesc);
 end;
+
 
 function TNativeID3D11ShaderReflectionType.GetMemberTypeByIndex(Index: UINT): ID3D11ShaderReflectionType;
-type TCall = function(This: Pointer; Index: UINT): ID3D11ShaderReflectionType; stdcall;
+type
+  TCall = function(This: Pointer;
+                   Index: UINT): ID3D11ShaderReflectionType; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[1])(@Self, Index);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[1])(@Self,
+                                                      Index);
 end;
+
 
 function TNativeID3D11ShaderReflectionType.GetMemberTypeByName(Name: LPCSTR): ID3D11ShaderReflectionType;
-type TCall = function(This: Pointer; Name: LPCSTR): ID3D11ShaderReflectionType; stdcall;
+type
+  TCall = function(This: Pointer;
+                   Name: LPCSTR): ID3D11ShaderReflectionType; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[2])(@Self, Name);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[2])(@Self,
+                                                      Name);
 end;
+
 
 function TNativeID3D11ShaderReflectionType.GetMemberTypeName(Index: UINT): LPCSTR;
-type TCall = function(This: Pointer; Index: UINT): LPCSTR; stdcall;
+type
+  TCall = function(This: Pointer;
+                   Index: UINT): LPCSTR; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[3])(@Self, Index);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[3])(@Self,
+                                                      Index);
 end;
+
 
 function TNativeID3D11ShaderReflectionType.IsEqual(pType: ID3D11ShaderReflectionType): HRESULT;
-type TCall = function(This: Pointer; pType: ID3D11ShaderReflectionType): HRESULT; stdcall;
+type
+  TCall = function(This: Pointer;
+                   pType: ID3D11ShaderReflectionType): HRESULT; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[4])(@Self, pType);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[4])(@Self,
+                                                      pType);
 end;
 
+
 function TNativeID3D11ShaderReflectionType.GetSubType(): ID3D11ShaderReflectionType;
-type TCall = function(This: Pointer): ID3D11ShaderReflectionType; stdcall;
+type
+  TCall = function(This: Pointer): ID3D11ShaderReflectionType; stdcall;
+
 begin
+
   Result := TCall(PShaderBorrowedVTable(FVTable)^[5])(@Self);
 end;
 
+
 function TNativeID3D11ShaderReflectionType.GetBaseClass(): ID3D11ShaderReflectionType;
-type TCall = function(This: Pointer): ID3D11ShaderReflectionType; stdcall;
+type
+  TCall = function(This: Pointer): ID3D11ShaderReflectionType; stdcall;
+
 begin
+
   Result := TCall(PShaderBorrowedVTable(FVTable)^[6])(@Self);
 end;
 
+
 function TNativeID3D11ShaderReflectionType.GetNumInterfaces(): UINT;
-type TCall = function(This: Pointer): UINT; stdcall;
+type
+  TCall = function(This: Pointer): UINT; stdcall;
+
 begin
+
   Result := TCall(PShaderBorrowedVTable(FVTable)^[7])(@Self);
 end;
 
+
 function TNativeID3D11ShaderReflectionType.GetInterfaceByIndex(uIndex: UINT): ID3D11ShaderReflectionType;
-type TCall = function(This: Pointer; uIndex: UINT): ID3D11ShaderReflectionType; stdcall;
+type
+  TCall = function(This: Pointer;
+                   uIndex: UINT): ID3D11ShaderReflectionType; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[8])(@Self, uIndex);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[8])(@Self,
+                                                      uIndex);
 end;
+
 
 function TNativeID3D11ShaderReflectionType.IsOfType(pType: ID3D11ShaderReflectionType): HRESULT;
-type TCall = function(This: Pointer; pType: ID3D11ShaderReflectionType): HRESULT; stdcall;
+type
+  TCall = function(This: Pointer;
+                   pType: ID3D11ShaderReflectionType): HRESULT; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[9])(@Self, pType);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[9])(@Self,
+                                                      pType);
 end;
+
 
 function TNativeID3D11ShaderReflectionType.ImplementsInterface(pBase: ID3D11ShaderReflectionType): HRESULT;
-type TCall = function(This: Pointer; pBase: ID3D11ShaderReflectionType): HRESULT; stdcall;
+type
+  TCall = function(This: Pointer;
+                   pBase: ID3D11ShaderReflectionType): HRESULT; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[10])(@Self, pBase);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[10])(@Self,
+                                                       pBase);
 end;
+
 
 function TNativeID3D11ShaderReflectionVariable.GetDesc(out pDesc: D3D11_SHADER_VARIABLE_DESC): HRESULT;
-type TCall = function(This: Pointer; out pDesc: D3D11_SHADER_VARIABLE_DESC): HRESULT; stdcall;
+type
+  TCall = function(This: Pointer;
+                   out pDesc: D3D11_SHADER_VARIABLE_DESC): HRESULT; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[0])(@Self, pDesc);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[0])(@Self,
+                                                      pDesc);
 end;
 
+
 function TNativeID3D11ShaderReflectionVariable.GetType(): ID3D11ShaderReflectionType;
-type TCall = function(This: Pointer): ID3D11ShaderReflectionType; stdcall;
+type
+  TCall = function(This: Pointer): ID3D11ShaderReflectionType; stdcall;
+
 begin
+
   Result := TCall(PShaderBorrowedVTable(FVTable)^[1])(@Self);
 end;
 
+
 function TNativeID3D11ShaderReflectionVariable.GetBuffer(): ID3D11ShaderReflectionConstantBuffer;
-type TCall = function(This: Pointer): ID3D11ShaderReflectionConstantBuffer; stdcall;
+type
+  TCall = function(This: Pointer): ID3D11ShaderReflectionConstantBuffer; stdcall;
+
 begin
+
   Result := TCall(PShaderBorrowedVTable(FVTable)^[2])(@Self);
 end;
 
+
 function TNativeID3D11ShaderReflectionVariable.GetInterfaceSlot(uArrayIndex: UINT): UINT;
-type TCall = function(This: Pointer; uArrayIndex: UINT): UINT; stdcall;
+type
+  TCall = function(This: Pointer;
+                   uArrayIndex: UINT): UINT; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[3])(@Self, uArrayIndex);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[3])(@Self,
+                                                      uArrayIndex);
 end;
+
 
 function TNativeID3D11ShaderReflectionConstantBuffer.GetDesc(out pDesc: D3D11_SHADER_BUFFER_DESC): HRESULT;
-type TCall = function(This: Pointer; out pDesc: D3D11_SHADER_BUFFER_DESC): HRESULT; stdcall;
+type
+  TCall = function(This: Pointer;
+                   out pDesc: D3D11_SHADER_BUFFER_DESC): HRESULT; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[0])(@Self, pDesc);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[0])(@Self,
+                                                      pDesc);
 end;
+
 
 function TNativeID3D11ShaderReflectionConstantBuffer.GetVariableByIndex(Index: UINT): ID3D11ShaderReflectionVariable;
-type TCall = function(This: Pointer; Index: UINT): ID3D11ShaderReflectionVariable; stdcall;
+type
+  TCall = function(This: Pointer;
+                   Index: UINT): ID3D11ShaderReflectionVariable; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[1])(@Self, Index);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[1])(@Self,
+                                                      Index);
 end;
+
 
 function TNativeID3D11ShaderReflectionConstantBuffer.GetVariableByName(Name: LPCSTR): ID3D11ShaderReflectionVariable;
-type TCall = function(This: Pointer; Name: LPCSTR): ID3D11ShaderReflectionVariable; stdcall;
+type
+  TCall = function(This: Pointer;
+                   Name: LPCSTR): ID3D11ShaderReflectionVariable; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[2])(@Self, Name);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[2])(@Self,
+                                                      Name);
 end;
+
 
 function TNativeID3D11FunctionReflection.GetDesc(out pDesc: D3D11_FUNCTION_DESC): HRESULT;
-type TCall = function(This: Pointer; out pDesc: D3D11_FUNCTION_DESC): HRESULT; stdcall;
+type
+  TCall = function(This: Pointer;
+                   out pDesc: D3D11_FUNCTION_DESC): HRESULT; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[0])(@Self, pDesc);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[0])(@Self,
+                                                      pDesc);
 end;
+
 
 function TNativeID3D11FunctionReflection.GetConstantBufferByIndex(BufferIndex: UINT): ID3D11ShaderReflectionConstantBuffer;
-type TCall = function(This: Pointer; BufferIndex: UINT): ID3D11ShaderReflectionConstantBuffer; stdcall;
+type
+  TCall = function(This: Pointer;
+                   BufferIndex: UINT): ID3D11ShaderReflectionConstantBuffer; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[1])(@Self, BufferIndex);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[1])(@Self,
+                                                      BufferIndex);
 end;
+
 
 function TNativeID3D11FunctionReflection.GetConstantBufferByName(Name: LPCSTR): ID3D11ShaderReflectionConstantBuffer;
-type TCall = function(This: Pointer; Name: LPCSTR): ID3D11ShaderReflectionConstantBuffer; stdcall;
+type
+  TCall = function(This: Pointer;
+                   Name: LPCSTR): ID3D11ShaderReflectionConstantBuffer; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[2])(@Self, Name);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[2])(@Self,
+                                                      Name);
 end;
 
-function TNativeID3D11FunctionReflection.GetResourceBindingDesc(ResourceIndex: UINT; out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT;
-type TCall = function(This: Pointer; ResourceIndex: UINT; out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT; stdcall;
+
+function TNativeID3D11FunctionReflection.GetResourceBindingDesc(ResourceIndex: UINT;
+                                                                out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT;
+type
+  TCall = function(This: Pointer;
+                   ResourceIndex: UINT;
+                   out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[3])(@Self, ResourceIndex, pDesc);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[3])(@Self,
+                                                      ResourceIndex,
+                                                      pDesc);
 end;
+
 
 function TNativeID3D11FunctionReflection.GetVariableByName(Name: LPCSTR): ID3D11ShaderReflectionVariable;
-type TCall = function(This: Pointer; Name: LPCSTR): ID3D11ShaderReflectionVariable; stdcall;
+type
+  TCall = function(This: Pointer;
+                   Name: LPCSTR): ID3D11ShaderReflectionVariable; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[4])(@Self, Name);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[4])(@Self,
+                                                      Name);
 end;
 
-function TNativeID3D11FunctionReflection.GetResourceBindingDescByName(Name: LPCSTR; out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT;
-type TCall = function(This: Pointer; Name: LPCSTR; out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT; stdcall;
+
+function TNativeID3D11FunctionReflection.GetResourceBindingDescByName(Name: LPCSTR;
+                                                                      out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT;
+type
+  TCall = function(This: Pointer;
+                   Name: LPCSTR;
+                   out pDesc: D3D11_SHADER_INPUT_BIND_DESC): HRESULT; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[5])(@Self, Name, pDesc);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[5])(@Self,
+                                                      Name,
+                                                      pDesc);
 end;
+
 
 function TNativeID3D11FunctionReflection.GetFunctionParameter(ParameterIndex: INT): ID3D11FunctionParameterReflection;
-type TCall = function(This: Pointer; ParameterIndex: INT): ID3D11FunctionParameterReflection; stdcall;
+type
+  TCall = function(This: Pointer;
+                   ParameterIndex: INT): ID3D11FunctionParameterReflection; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[6])(@Self, ParameterIndex);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[6])(@Self,
+                                                      ParameterIndex);
 end;
 
+
 function TNativeID3D11FunctionParameterReflection.GetDesc(out pDesc: D3D11_PARAMETER_DESC): HRESULT;
-type TCall = function(This: Pointer; out pDesc: D3D11_PARAMETER_DESC): HRESULT; stdcall;
+type
+  TCall = function(This: Pointer;
+                   out pDesc: D3D11_PARAMETER_DESC): HRESULT; stdcall;
+
 begin
-  Result := TCall(PShaderBorrowedVTable(FVTable)^[0])(@Self, pDesc);
+
+  Result := TCall(PShaderBorrowedVTable(FVTable)^[0])(@Self,
+                                                      pDesc);
 end;
 
 
 {VERSION MACRO'S}
 
 function D3D11_SHVER_GET_TYPE(_Version: DWORD): DWORD; inline;
+
 begin
+
   Result := (_Version shr 16) and $ffff;
 end;
 
+
 function D3D11_SHVER_GET_MAJOR(_Version: DWORD): DWORD; inline;
+
 begin
+
   Result := (_Version shr 4) and $f;
 end;
 
+
 function D3D11_SHVER_GET_MINOR(_Version: DWORD): DWORD; inline;
+
 begin
+
   Result := (_Version shr 0) and $f;
 end;
 

@@ -72,62 +72,63 @@ unit WinApi.WinMM.VfwMsgs;
 
 interface
 
-  {$ALIGN ON}
-  {$PACKENUM 4}
+{$ALIGN ON}
+{$PACKENUM 4}
 
-  {$IFDEF WIN32}
+{$IFDEF WIN32}
     {$ALIGN 1}
-  {$ELSE}
-    {$ALIGN 8} // Win64
-  {$ENDIF}
+{$ELSE}
+{$ALIGN 8}
+// Win64
+{$ENDIF}
 
-   // no longer used  - but might get
-   // our own facility in the future?
-   // FacilityNames=(FACILITY_VFW=0x4)
-   // To add a message:
-   //
-   // The MessageId is the number of the message.
-   // Accepted severities are 'Success' and 'Warning'.
-   //
-   // Facility should be FACILITY_ITF (was FACILITY_VFW).
-   //
-   // The SymbolicName is the name used in the code to identify the message.
-   // The text of a message starts the line after 'Language=' and
-   // ends before a line with only a '.' in column one.
-  //
-  //  Values are 32 bit values laid out as follows:
-  //
-  //   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
-  //   1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
-  //  +---+-+-+-----------------------+-------------------------------+
-  //  |Sev|C|R|     Facility          |               Code            |
-  //  +---+-+-+-----------------------+-------------------------------+
-  //
-  //  where
-  //
-  //      Sev - is the severity code
-  //
-  //          00 - Success
-  //          01 - Informational
-  //          10 - Warning
-  //          11 - Error
-  //
-  //      C - is the Customer code flag
-  //
-  //      R - is a reserved bit
-  //
-  //      Facility - is the facility code
-  //
-  //      Code - is the facility's status code
-  //
-  //
-  // Define the facility codes
-  //
+// no longer used  - but might get
+// our own facility in the future?
+// FacilityNames=(FACILITY_VFW=0x4)
+// To add a message:
+//
+// The MessageId is the number of the message.
+// Accepted severities are 'Success' and 'Warning'.
+//
+// Facility should be FACILITY_ITF (was FACILITY_VFW).
+//
+// The SymbolicName is the name used in the code to identify the message.
+// The text of a message starts the line after 'Language=' and
+// ends before a line with only a '.' in column one.
+//
+//  Values are 32 bit values laid out as follows:
+//
+//   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
+//   1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
+//  +---+-+-+-----------------------+-------------------------------+
+//  |Sev|C|R|     Facility          |               Code            |
+//  +---+-+-+-----------------------+-------------------------------+
+//
+//  where
+//
+//      Sev - is the severity code
+//
+//          00 - Success
+//          01 - Informational
+//          10 - Warning
+//          11 - Error
+//
+//      C - is the Customer code flag
+//
+//      R - is a reserved bit
+//
+//      Facility - is the facility code
+//
+//      Code - is the facility's status code
+//
+//
+// Define the facility codes
+//
 
 
-  //
-  // Define the severity codes
-  //
+//
+// Define the severity codes
+//
 
 const
 
@@ -138,7 +139,7 @@ const
   //
   // An invalid media type was specified.%0
   //
-  VFW_E_INVALIDMEDIATYPE              = HResult($80040200);
+  VFW_E_INVALIDMEDIATYPE = HResult($80040200);
 
   //
   // MessageId: VFW_E_INVALIDSUBTYPE
@@ -147,7 +148,7 @@ const
   //
   // An invalid media subtype was specified.%0
   //
-  VFW_E_INVALIDSUBTYPE                = HResult($80040201);
+  VFW_E_INVALIDSUBTYPE = HResult($80040201);
 
   //
   // MessageId: VFW_E_NEED_OWNER
@@ -156,7 +157,7 @@ const
   //
   // This object can only be created as an aggregated object.%0
   //
-  VFW_E_NEED_OWNER                    = HResult($80040202);
+  VFW_E_NEED_OWNER = HResult($80040202);
 
   //
   // MessageId: VFW_E_ENUM_OUT_OF_SYNC
@@ -165,7 +166,7 @@ const
   //
   // The enumerator has become invalid.%0
   //
-  VFW_E_ENUM_OUT_OF_SYNC              = HResult($80040203);
+  VFW_E_ENUM_OUT_OF_SYNC = HResult($80040203);
 
   //
   // MessageId: VFW_E_ALREADY_CONNECTED
@@ -174,7 +175,7 @@ const
   //
   // At least one of the pins involved in the operation is already connected.%0
   //
-  VFW_E_ALREADY_CONNECTED             = HResult($80040204);
+  VFW_E_ALREADY_CONNECTED = HResult($80040204);
 
   //
   // MessageId: VFW_E_FILTER_ACTIVE
@@ -183,7 +184,7 @@ const
   //
   // This operation cannot be performed because the filter is active.%0
   //
-  VFW_E_FILTER_ACTIVE                 = HResult($80040205);
+  VFW_E_FILTER_ACTIVE = HResult($80040205);
 
   //
   // MessageId: VFW_E_NO_TYPES
@@ -192,7 +193,7 @@ const
   //
   // One of the specified pins supports no media types.%0
   //
-  VFW_E_NO_TYPES                      = HResult($80040206);
+  VFW_E_NO_TYPES = HResult($80040206);
 
   //
   // MessageId: VFW_E_NO_ACCEPTABLE_TYPES
@@ -201,7 +202,7 @@ const
   //
   // There is no common media type between these pins.%0
   //
-  VFW_E_NO_ACCEPTABLE_TYPES           = HResult($80040207);
+  VFW_E_NO_ACCEPTABLE_TYPES = HResult($80040207);
 
   //
   // MessageId: VFW_E_INVALID_DIRECTION
@@ -210,7 +211,7 @@ const
   //
   // Two pins of the same direction cannot be connected together.%0
   //
-  VFW_E_INVALID_DIRECTION             = HResult($80040208);
+  VFW_E_INVALID_DIRECTION = HResult($80040208);
 
   //
   // MessageId: VFW_E_NOT_CONNECTED
@@ -219,7 +220,7 @@ const
   //
   // The operation cannot be performed because the pins are not connected.%0
   //
-  VFW_E_NOT_CONNECTED                 = HResult($80040209);
+  VFW_E_NOT_CONNECTED = HResult($80040209);
 
   //
   // MessageId: VFW_E_NO_ALLOCATOR
@@ -228,7 +229,7 @@ const
   //
   // No sample buffer allocator is available.%0
   //
-  VFW_E_NO_ALLOCATOR                  = HResult($8004020A);
+  VFW_E_NO_ALLOCATOR = HResult($8004020A);
 
   //
   // MessageId: VFW_E_RUNTIME_ERROR
@@ -237,7 +238,7 @@ const
   //
   // A run-time error occurred.%0
   //
-  VFW_E_RUNTIME_ERROR                 = HResult($8004020B);
+  VFW_E_RUNTIME_ERROR = HResult($8004020B);
 
   //
   // MessageId: VFW_E_BUFFER_NOTSET
@@ -246,7 +247,7 @@ const
   //
   // No buffer space has been set.%0
   //
-  VFW_E_BUFFER_NOTSET                 = HResult($8004020C);
+  VFW_E_BUFFER_NOTSET = HResult($8004020C);
 
   //
   // MessageId: VFW_E_BUFFER_OVERFLOW
@@ -255,7 +256,7 @@ const
   //
   // The buffer is not big enough.%0
   //
-  VFW_E_BUFFER_OVERFLOW               = HResult($8004020D);
+  VFW_E_BUFFER_OVERFLOW = HResult($8004020D);
 
   //
   // MessageId: VFW_E_BADALIGN
@@ -264,7 +265,7 @@ const
   //
   // An invalid alignment was specified.%0
   //
-  VFW_E_BADALIGN                      = HResult($8004020E);
+  VFW_E_BADALIGN = HResult($8004020E);
 
   //
   // MessageId: VFW_E_ALREADY_COMMITTED
@@ -273,7 +274,7 @@ const
   //
   // Cannot change allocated memory while the filter is active.%0
   //
-  VFW_E_ALREADY_COMMITTED             = HResult($8004020F);
+  VFW_E_ALREADY_COMMITTED = HResult($8004020F);
 
   //
   // MessageId: VFW_E_BUFFERS_OUTSTANDING
@@ -282,7 +283,7 @@ const
   //
   // One or more buffers are still active.%0
   //
-  VFW_E_BUFFERS_OUTSTANDING           = HResult($80040210);
+  VFW_E_BUFFERS_OUTSTANDING = HResult($80040210);
 
   //
   // MessageId: VFW_E_NOT_COMMITTED
@@ -291,7 +292,7 @@ const
   //
   // Cannot allocate a sample when the allocator is not active.%0
   //
-  VFW_E_NOT_COMMITTED                 = HResult($80040211);
+  VFW_E_NOT_COMMITTED = HResult($80040211);
 
   //
   // MessageId: VFW_E_SIZENOTSET
@@ -300,7 +301,7 @@ const
   //
   // Cannot allocate memory because no size has been set.%0
   //
-  VFW_E_SIZENOTSET                    = HResult($80040212);
+  VFW_E_SIZENOTSET = HResult($80040212);
 
   //
   // MessageId: VFW_E_NO_CLOCK
@@ -309,7 +310,7 @@ const
   //
   // Cannot lock for synchronization because no clock has been defined.%0
   //
-  VFW_E_NO_CLOCK                      = HResult($80040213);
+  VFW_E_NO_CLOCK = HResult($80040213);
 
   //
   // MessageId: VFW_E_NO_SINK
@@ -318,7 +319,7 @@ const
   //
   // Quality messages could not be sent because no quality sink has been defined.%0
   //
-  VFW_E_NO_SINK                       = HResult($80040214);
+  VFW_E_NO_SINK = HResult($80040214);
 
   //
   // MessageId: VFW_E_NO_INTERFACE
@@ -327,7 +328,7 @@ const
   //
   // A required interface has not been implemented.%0
   //
-  VFW_E_NO_INTERFACE                  = HResult($80040215);
+  VFW_E_NO_INTERFACE = HResult($80040215);
 
   //
   // MessageId: VFW_E_NOT_FOUND
@@ -336,7 +337,7 @@ const
   //
   // An object or name was not found.%0
   //
-  VFW_E_NOT_FOUND                     = HResult($80040216);
+  VFW_E_NOT_FOUND = HResult($80040216);
 
   //
   // MessageId: VFW_E_CANNOT_CONNECT
@@ -345,7 +346,7 @@ const
   //
   // No combination of intermediate filters could be found to make the connection.%0
   //
-  VFW_E_CANNOT_CONNECT                = HResult($80040217);
+  VFW_E_CANNOT_CONNECT = HResult($80040217);
 
   //
   // MessageId: VFW_E_CANNOT_RENDER
@@ -354,7 +355,7 @@ const
   //
   // No combination of filters could be found to render the stream.%0
   //
-  VFW_E_CANNOT_RENDER                 = HResult($80040218);
+  VFW_E_CANNOT_RENDER = HResult($80040218);
 
   //
   // MessageId: VFW_E_CHANGING_FORMAT
@@ -363,7 +364,7 @@ const
   //
   // Could not change formats dynamically.%0
   //
-  VFW_E_CHANGING_FORMAT               = HResult($80040219);
+  VFW_E_CHANGING_FORMAT = HResult($80040219);
 
   //
   // MessageId: VFW_E_NO_COLOR_KEY_SET
@@ -372,7 +373,7 @@ const
   //
   // No color key has been set.%0
   //
-  VFW_E_NO_COLOR_KEY_SET              = HResult($8004021A);
+  VFW_E_NO_COLOR_KEY_SET = HResult($8004021A);
 
   //
   // MessageId: VFW_E_NOT_OVERLAY_CONNECTION
@@ -381,7 +382,7 @@ const
   //
   // Current pin connection is not using the IOverlay transport.%0
   //
-  VFW_E_NOT_OVERLAY_CONNECTION        = HResult($8004021B);
+  VFW_E_NOT_OVERLAY_CONNECTION = HResult($8004021B);
 
   //
   // MessageId: VFW_E_NOT_SAMPLE_CONNECTION
@@ -390,7 +391,7 @@ const
   //
   // Current pin connection is not using the IMemInputPin transport.%0
   //
-  VFW_E_NOT_SAMPLE_CONNECTION         = HResult($8004021C);
+  VFW_E_NOT_SAMPLE_CONNECTION = HResult($8004021C);
 
   //
   // MessageId: VFW_E_PALETTE_SET
@@ -399,7 +400,7 @@ const
   //
   // Setting a color key would conflict with the palette already set.%0
   //
-  VFW_E_PALETTE_SET                   = HResult($8004021D);
+  VFW_E_PALETTE_SET = HResult($8004021D);
 
   //
   // MessageId: VFW_E_COLOR_KEY_SET
@@ -408,7 +409,7 @@ const
   //
   // Setting a palette would conflict with the color key already set.%0
   //
-  VFW_E_COLOR_KEY_SET                 = HResult($8004021E);
+  VFW_E_COLOR_KEY_SET = HResult($8004021E);
 
   //
   // MessageId: VFW_E_NO_COLOR_KEY_FOUND
@@ -417,7 +418,7 @@ const
   //
   // No matching color key is available.%0
   //
-  VFW_E_NO_COLOR_KEY_FOUND            = HResult($8004021F);
+  VFW_E_NO_COLOR_KEY_FOUND = HResult($8004021F);
 
   //
   // MessageId: VFW_E_NO_PALETTE_AVAILABLE
@@ -426,7 +427,7 @@ const
   //
   // No palette is available.%0
   //
-  VFW_E_NO_PALETTE_AVAILABLE          = HResult($80040220);
+  VFW_E_NO_PALETTE_AVAILABLE = HResult($80040220);
 
   //
   // MessageId: VFW_E_NO_DISPLAY_PALETTE
@@ -435,7 +436,7 @@ const
   //
   // Display does not use a palette.%0
   //
-  VFW_E_NO_DISPLAY_PALETTE            = HResult($80040221);
+  VFW_E_NO_DISPLAY_PALETTE = HResult($80040221);
 
   //
   // MessageId: VFW_E_TOO_MANY_COLORS
@@ -444,7 +445,7 @@ const
   //
   // Too many colors for the current display settings.%0
   //
-  VFW_E_TOO_MANY_COLORS               = HResult($80040222);
+  VFW_E_TOO_MANY_COLORS = HResult($80040222);
 
   //
   // MessageId: VFW_E_STATE_CHANGED
@@ -453,7 +454,7 @@ const
   //
   // The state changed while waiting to process the sample.%0
   //
-  VFW_E_STATE_CHANGED                 = HResult($80040223);
+  VFW_E_STATE_CHANGED = HResult($80040223);
 
   //
   // MessageId: VFW_E_NOT_STOPPED
@@ -462,7 +463,7 @@ const
   //
   // The operation could not be performed because the filter is not stopped.%0
   //
-  VFW_E_NOT_STOPPED                   = HResult($80040224);
+  VFW_E_NOT_STOPPED = HResult($80040224);
 
   //
   // MessageId: VFW_E_NOT_PAUSED
@@ -471,7 +472,7 @@ const
   //
   // The operation could not be performed because the filter is not paused.%0
   //
-  VFW_E_NOT_PAUSED                    = HResult($80040225);
+  VFW_E_NOT_PAUSED = HResult($80040225);
 
   //
   // MessageId: VFW_E_NOT_RUNNING
@@ -480,7 +481,7 @@ const
   //
   // The operation could not be performed because the filter is not running.%0
   //
-  VFW_E_NOT_RUNNING                   = HResult($80040226);
+  VFW_E_NOT_RUNNING = HResult($80040226);
 
   //
   // MessageId: VFW_E_WRONG_STATE
@@ -489,7 +490,7 @@ const
   //
   // The operation could not be performed because the filter is in the wrong state.%0
   //
-  VFW_E_WRONG_STATE                   = HResult($80040227);
+  VFW_E_WRONG_STATE = HResult($80040227);
 
   //
   // MessageId: VFW_E_START_TIME_AFTER_END
@@ -498,7 +499,7 @@ const
   //
   // The sample start time is after the sample end time.%0
   //
-  VFW_E_START_TIME_AFTER_END          = HResult($80040228);
+  VFW_E_START_TIME_AFTER_END = HResult($80040228);
 
   //
   // MessageId: VFW_E_INVALID_RECT
@@ -507,7 +508,7 @@ const
   //
   // The supplied rectangle is invalid.%0
   //
-  VFW_E_INVALID_RECT                  = HResult($80040229);
+  VFW_E_INVALID_RECT = HResult($80040229);
 
   //
   // MessageId: VFW_E_TYPE_NOT_ACCEPTED
@@ -516,7 +517,7 @@ const
   //
   // This pin cannot use the supplied media type.%0
   //
-  VFW_E_TYPE_NOT_ACCEPTED             = HResult($8004022A);
+  VFW_E_TYPE_NOT_ACCEPTED = HResult($8004022A);
 
   //
   // MessageId: VFW_E_SAMPLE_REJECTED
@@ -525,7 +526,7 @@ const
   //
   // This sample cannot be rendered.%0
   //
-  VFW_E_SAMPLE_REJECTED               = HResult($8004022B);
+  VFW_E_SAMPLE_REJECTED = HResult($8004022B);
 
   //
   // MessageId: VFW_E_SAMPLE_REJECTED_EOS
@@ -534,7 +535,7 @@ const
   //
   // This sample cannot be rendered because the end of the stream has been reached.%0
   //
-  VFW_E_SAMPLE_REJECTED_EOS           = HResult($8004022C);
+  VFW_E_SAMPLE_REJECTED_EOS = HResult($8004022C);
 
   //
   // MessageId: VFW_E_DUPLICATE_NAME
@@ -543,7 +544,7 @@ const
   //
   // An attempt to add a filter with a duplicate name failed.%0
   //
-  VFW_E_DUPLICATE_NAME                = HResult($8004022D);
+  VFW_E_DUPLICATE_NAME = HResult($8004022D);
 
   //
   // MessageId: VFW_S_DUPLICATE_NAME
@@ -552,7 +553,7 @@ const
   //
   // An attempt to add a filter with a duplicate name succeeded with a modified name.%0
   //
-  VFW_S_DUPLICATE_NAME                = HResult($0004022D);
+  VFW_S_DUPLICATE_NAME = HResult($0004022D);
 
   //
   // MessageId: VFW_E_TIMEOUT
@@ -561,7 +562,7 @@ const
   //
   // A time-out has expired.%0
   //
-  VFW_E_TIMEOUT                       = HResult($8004022E);
+  VFW_E_TIMEOUT = HResult($8004022E);
 
   //
   // MessageId: VFW_E_INVALID_FILE_FORMAT
@@ -570,7 +571,7 @@ const
   //
   // The file format is invalid.%0
   //
-  VFW_E_INVALID_FILE_FORMAT           = HResult($8004022F);
+  VFW_E_INVALID_FILE_FORMAT = HResult($8004022F);
 
   //
   // MessageId: VFW_E_ENUM_OUT_OF_RANGE
@@ -579,7 +580,7 @@ const
   //
   // The list has already been exhausted.%0
   //
-  VFW_E_ENUM_OUT_OF_RANGE             = HResult($80040230);
+  VFW_E_ENUM_OUT_OF_RANGE = HResult($80040230);
 
   //
   // MessageId: VFW_E_CIRCULAR_GRAPH
@@ -588,7 +589,7 @@ const
   //
   // The filter graph is circular.%0
   //
-  VFW_E_CIRCULAR_GRAPH                = HResult($80040231);
+  VFW_E_CIRCULAR_GRAPH = HResult($80040231);
 
   //
   // MessageId: VFW_E_NOT_ALLOWED_TO_SAVE
@@ -597,7 +598,7 @@ const
   //
   // Updates are not allowed in this state.%0
   //
-  VFW_E_NOT_ALLOWED_TO_SAVE           = HResult($80040232);
+  VFW_E_NOT_ALLOWED_TO_SAVE = HResult($80040232);
 
   //
   // MessageId: VFW_E_TIME_ALREADY_PASSED
@@ -606,7 +607,7 @@ const
   //
   // An attempt was made to queue a command for a time in the past.%0
   //
-  VFW_E_TIME_ALREADY_PASSED           = HResult($80040233);
+  VFW_E_TIME_ALREADY_PASSED = HResult($80040233);
 
   //
   // MessageId: VFW_E_ALREADY_CANCELLED
@@ -615,7 +616,7 @@ const
   //
   // The queued command has already been canceled.%0
   //
-  VFW_E_ALREADY_CANCELLED             = HResult($80040234);
+  VFW_E_ALREADY_CANCELLED = HResult($80040234);
 
   //
   // MessageId: VFW_E_CORRUPT_GRAPH_FILE
@@ -624,7 +625,7 @@ const
   //
   // Cannot render the file because it is corrupt.%0
   //
-  VFW_E_CORRUPT_GRAPH_FILE            = HResult($80040235);
+  VFW_E_CORRUPT_GRAPH_FILE = HResult($80040235);
 
   //
   // MessageId: VFW_E_ADVISE_ALREADY_SET
@@ -633,7 +634,7 @@ const
   //
   // An overlay advise link already exists.%0
   //
-  VFW_E_ADVISE_ALREADY_SET            = HResult($80040236);
+  VFW_E_ADVISE_ALREADY_SET = HResult($80040236);
 
   //
   // MessageId: VFW_S_STATE_INTERMEDIATE
@@ -642,7 +643,7 @@ const
   //
   // The state transition has not completed.%0
   //
-  VFW_S_STATE_INTERMEDIATE            = HResult($00040237);
+  VFW_S_STATE_INTERMEDIATE = HResult($00040237);
 
   //
   // MessageId: VFW_E_NO_MODEX_AVAILABLE
@@ -651,7 +652,7 @@ const
   //
   // No full-screen modes are available.%0
   //
-  VFW_E_NO_MODEX_AVAILABLE            = HResult($80040238);
+  VFW_E_NO_MODEX_AVAILABLE = HResult($80040238);
 
   //
   // MessageId: VFW_E_NO_ADVISE_SET
@@ -660,7 +661,7 @@ const
   //
   // This Advise cannot be canceled because it was not successfully set.%0
   //
-  VFW_E_NO_ADVISE_SET                 = HResult($80040239);
+  VFW_E_NO_ADVISE_SET = HResult($80040239);
 
   //
   // MessageId: VFW_E_NO_FULLSCREEN
@@ -669,7 +670,7 @@ const
   //
   // A full-screen mode is not available.%0
   //
-  VFW_E_NO_FULLSCREEN                 = HResult($8004023A);
+  VFW_E_NO_FULLSCREEN = HResult($8004023A);
 
   //
   // MessageId: VFW_E_IN_FULLSCREEN_MODE
@@ -678,7 +679,7 @@ const
   //
   // Cannot call IVideoWindow methods while in full-screen mode.%0
   //
-  VFW_E_IN_FULLSCREEN_MODE            = HResult($8004023B);
+  VFW_E_IN_FULLSCREEN_MODE = HResult($8004023B);
 
   //
   // MessageId: VFW_E_UNKNOWN_FILE_TYPE
@@ -687,7 +688,7 @@ const
   //
   // The media type of this file is not recognized.%0
   //
-  VFW_E_UNKNOWN_FILE_TYPE             = HResult($80040240);
+  VFW_E_UNKNOWN_FILE_TYPE = HResult($80040240);
 
   //
   // MessageId: VFW_E_CANNOT_LOAD_SOURCE_FILTER
@@ -696,7 +697,7 @@ const
   //
   // The source filter for this file could not be loaded.%0
   //
-  VFW_E_CANNOT_LOAD_SOURCE_FILTER     = HResult($80040241);
+  VFW_E_CANNOT_LOAD_SOURCE_FILTER = HResult($80040241);
 
   //
   // MessageId: VFW_S_PARTIAL_RENDER
@@ -705,7 +706,7 @@ const
   //
   // Some of the streams in this movie are in an unsupported format.%0
   //
-  VFW_S_PARTIAL_RENDER                = HResult($00040242);
+  VFW_S_PARTIAL_RENDER = HResult($00040242);
 
   //
   // MessageId: VFW_E_FILE_TOO_SHORT
@@ -714,7 +715,7 @@ const
   //
   // A file appeared to be incomplete.%0
   //
-  VFW_E_FILE_TOO_SHORT                = HResult($80040243);
+  VFW_E_FILE_TOO_SHORT = HResult($80040243);
 
   //
   // MessageId: VFW_E_INVALID_FILE_VERSION
@@ -723,7 +724,7 @@ const
   //
   // The version number of the file is invalid.%0
   //
-  VFW_E_INVALID_FILE_VERSION          = HResult($80040244);
+  VFW_E_INVALID_FILE_VERSION = HResult($80040244);
 
   //
   // MessageId: VFW_S_SOME_DATA_IGNORED
@@ -732,7 +733,7 @@ const
   //
   // The file contained some property settings that were not used.%0
   //
-  VFW_S_SOME_DATA_IGNORED             = HResult($00040245);
+  VFW_S_SOME_DATA_IGNORED = HResult($00040245);
 
   //
   // MessageId: VFW_S_CONNECTIONS_DEFERRED
@@ -741,7 +742,7 @@ const
   //
   // Some connections have failed and have been deferred.%0
   //
-  VFW_S_CONNECTIONS_DEFERRED          = HResult($00040246);
+  VFW_S_CONNECTIONS_DEFERRED = HResult($00040246);
 
   //
   // MessageId: VFW_E_INVALID_CLSID
@@ -750,7 +751,7 @@ const
   //
   // This file is corrupt: it contains an invalid class identifier.%0
   //
-  VFW_E_INVALID_CLSID                 = HResult($80040247);
+  VFW_E_INVALID_CLSID = HResult($80040247);
 
   //
   // MessageId: VFW_E_INVALID_MEDIA_TYPE
@@ -759,9 +760,9 @@ const
   //
   // This file is corrupt: it contains an invalid media type.%0
   //
-  VFW_E_INVALID_MEDIA_TYPE            = HResult($80040248);
+  VFW_E_INVALID_MEDIA_TYPE = HResult($80040248);
 
-   // Message id from WINWarning.H
+  // Message id from WINWarning.H
   //
   // MessageId: VFW_E_BAD_KEY
   //
@@ -769,9 +770,9 @@ const
   //
   // A registry entry is corrupt.%0
   //
-  VFW_E_BAD_KEY                       = HResult($800403F2);
+  VFW_E_BAD_KEY = HResult($800403F2);
 
-   // Message id from WINWarning.H
+  // Message id from WINWarning.H
   //
   // MessageId: VFW_S_NO_MORE_ITEMS
   //
@@ -779,7 +780,7 @@ const
   //
   // The end of the list has been reached.%0
   //
-  VFW_S_NO_MORE_ITEMS                 = HResult($00040103);
+  VFW_S_NO_MORE_ITEMS = HResult($00040103);
 
   //
   // MessageId: VFW_E_SAMPLE_TIME_NOT_SET
@@ -788,7 +789,7 @@ const
   //
   // No time stamp has been set for this sample.%0
   //
-  VFW_E_SAMPLE_TIME_NOT_SET           = HResult($80040249);
+  VFW_E_SAMPLE_TIME_NOT_SET = HResult($80040249);
 
   //
   // MessageId: VFW_S_RESOURCE_NOT_NEEDED
@@ -797,7 +798,7 @@ const
   //
   // The resource specified is no longer needed.%0
   //
-  VFW_S_RESOURCE_NOT_NEEDED           = HResult($00040250);
+  VFW_S_RESOURCE_NOT_NEEDED = HResult($00040250);
 
   //
   // MessageId: VFW_E_MEDIA_TIME_NOT_SET
@@ -806,7 +807,7 @@ const
   //
   // No media time stamp has been set for this sample.%0
   //
-  VFW_E_MEDIA_TIME_NOT_SET            = HResult($80040251);
+  VFW_E_MEDIA_TIME_NOT_SET = HResult($80040251);
 
   //
   // MessageId: VFW_E_NO_TIME_FORMAT_SET
@@ -815,7 +816,7 @@ const
   //
   // No media time format has been selected.%0
   //
-  VFW_E_NO_TIME_FORMAT_SET            = HResult($80040252);
+  VFW_E_NO_TIME_FORMAT_SET = HResult($80040252);
 
   //
   // MessageId: VFW_E_MONO_AUDIO_HW
@@ -824,7 +825,7 @@ const
   //
   // Cannot change balance because audio device is mono only.%0
   //
-  VFW_E_MONO_AUDIO_HW                 = HResult($80040253);
+  VFW_E_MONO_AUDIO_HW = HResult($80040253);
 
   //
   // MessageId: VFW_S_MEDIA_TYPE_IGNORED
@@ -834,7 +835,7 @@ const
   // A connection could not be made with the media type in the persistent graph,%0
   // but has been made with a negotiated media type.%0
   //
-  VFW_S_MEDIA_TYPE_IGNORED            = HResult($00040254);
+  VFW_S_MEDIA_TYPE_IGNORED = HResult($00040254);
 
   //
   // MessageId: VFW_E_NO_DECOMPRESSOR
@@ -843,7 +844,7 @@ const
   //
   // Cannot play back the video stream: no suitable decompressor could be found.%0
   //
-  VFW_E_NO_DECOMPRESSOR               = HResult($80040255);
+  VFW_E_NO_DECOMPRESSOR = HResult($80040255);
 
   //
   // MessageId: VFW_E_NO_AUDIO_HARDWARE
@@ -852,7 +853,7 @@ const
   //
   // Cannot play back the audio stream: no audio hardware is available, or the hardware is not responding.%0
   //
-  VFW_E_NO_AUDIO_HARDWARE             = HResult($80040256);
+  VFW_E_NO_AUDIO_HARDWARE = HResult($80040256);
 
   //
   // MessageId: VFW_S_VIDEO_NOT_RENDERED
@@ -861,7 +862,7 @@ const
   //
   // Cannot play back the video stream: no suitable decompressor could be found.%0
   //
-  VFW_S_VIDEO_NOT_RENDERED            = HResult($00040257);
+  VFW_S_VIDEO_NOT_RENDERED = HResult($00040257);
 
   //
   // MessageId: VFW_S_AUDIO_NOT_RENDERED
@@ -870,7 +871,7 @@ const
   //
   // Cannot play back the audio stream: no audio hardware is available.%0
   //
-  VFW_S_AUDIO_NOT_RENDERED            = HResult($00040258);
+  VFW_S_AUDIO_NOT_RENDERED = HResult($00040258);
 
   //
   // MessageId: VFW_E_RPZA
@@ -879,7 +880,7 @@ const
   //
   // Cannot play back the video stream: format 'RPZA' is not supported.%0
   //
-  VFW_E_RPZA                          = HResult($80040259);
+  VFW_E_RPZA = HResult($80040259);
 
   //
   // MessageId: VFW_S_RPZA
@@ -888,7 +889,7 @@ const
   //
   // Cannot play back the video stream: format 'RPZA' is not supported.%0
   //
-  VFW_S_RPZA                          = HResult($0004025A);
+  VFW_S_RPZA = HResult($0004025A);
 
   //
   // MessageId: VFW_E_PROCESSOR_NOT_SUITABLE
@@ -897,7 +898,7 @@ const
   //
   // ActiveMovie cannot play MPEG movies on this processor.%0
   //
-  VFW_E_PROCESSOR_NOT_SUITABLE        = HResult($8004025B);
+  VFW_E_PROCESSOR_NOT_SUITABLE = HResult($8004025B);
 
   //
   // MessageId: VFW_E_UNSUPPORTED_AUDIO
@@ -906,7 +907,7 @@ const
   //
   // Cannot play back the audio stream: the audio format is not supported.%0
   //
-  VFW_E_UNSUPPORTED_AUDIO             = HResult($8004025C);
+  VFW_E_UNSUPPORTED_AUDIO = HResult($8004025C);
 
   //
   // MessageId: VFW_E_UNSUPPORTED_VIDEO
@@ -915,7 +916,7 @@ const
   //
   // Cannot play back the video stream: the video format is not supported.%0
   //
-  VFW_E_UNSUPPORTED_VIDEO             = HResult($8004025D);
+  VFW_E_UNSUPPORTED_VIDEO = HResult($8004025D);
 
   //
   // MessageId: VFW_E_MPEG_NOT_CONSTRAINED
@@ -924,7 +925,7 @@ const
   //
   // ActiveMovie cannot play this video stream because it falls outside the constrained standard.%0
   //
-  VFW_E_MPEG_NOT_CONSTRAINED          = HResult($8004025E);
+  VFW_E_MPEG_NOT_CONSTRAINED = HResult($8004025E);
 
   //
   // MessageId: VFW_E_NOT_IN_GRAPH
@@ -933,7 +934,7 @@ const
   //
   // Cannot perform the requested function on an object that is not in the filter graph.%0
   //
-  VFW_E_NOT_IN_GRAPH                  = HResult($8004025F);
+  VFW_E_NOT_IN_GRAPH = HResult($8004025F);
 
   //
   // MessageId: VFW_S_ESTIMATED
@@ -942,7 +943,7 @@ const
   //
   // The value returned had to be estimated.  It's accuracy can not be guaranteed.%0
   //
-  VFW_S_ESTIMATED                     = HResult($00040260);
+  VFW_S_ESTIMATED = HResult($00040260);
 
   //
   // MessageId: VFW_E_NO_TIME_FORMAT
@@ -951,7 +952,7 @@ const
   //
   // Cannot get or set time related information on an object that is using a time format of TIME_FORMAT_NONE.%0
   //
-  VFW_E_NO_TIME_FORMAT                = HResult($80040261);
+  VFW_E_NO_TIME_FORMAT = HResult($80040261);
 
   //
   // MessageId: VFW_E_READ_ONLY
@@ -960,7 +961,7 @@ const
   //
   // The connection cannot be made because the stream is read only and the filter alters the data.%0
   //
-  VFW_E_READ_ONLY                     = HResult($80040262);
+  VFW_E_READ_ONLY = HResult($80040262);
 
   //
   // MessageId: VFW_S_RESERVED
@@ -969,7 +970,7 @@ const
   //
   // This success code is reserved for internal purposes within ActiveMovie.%0
   //
-  VFW_S_RESERVED                      = HResult($00040263);
+  VFW_S_RESERVED = HResult($00040263);
 
   //
   // MessageId: VFW_E_BUFFER_UNDERFLOW
@@ -978,7 +979,7 @@ const
   //
   // The buffer is not full enough.%0
   //
-  VFW_E_BUFFER_UNDERFLOW              = HResult($80040264);
+  VFW_E_BUFFER_UNDERFLOW = HResult($80040264);
 
   //
   // MessageId: VFW_E_UNSUPPORTED_STREAM
@@ -987,7 +988,7 @@ const
   //
   // Cannot play back the file.  The format is not supported.%0
   //
-  VFW_E_UNSUPPORTED_STREAM            = HResult($80040265);
+  VFW_E_UNSUPPORTED_STREAM = HResult($80040265);
 
   //
   // MessageId: VFW_E_NO_TRANSPORT
@@ -996,7 +997,7 @@ const
   //
   // Pins cannot connect due to not supporting the same transport.%0
   //
-  VFW_E_NO_TRANSPORT                  = HResult($80040266);
+  VFW_E_NO_TRANSPORT = HResult($80040266);
 
   //
   // MessageId: VFW_S_STREAM_OFF
@@ -1005,7 +1006,7 @@ const
   //
   // The stream has been turned off.%0
   //
-  VFW_S_STREAM_OFF                    = HResult($00040267);
+  VFW_S_STREAM_OFF = HResult($00040267);
 
   //
   // MessageId: VFW_S_CANT_CUE
@@ -1014,7 +1015,7 @@ const
   //
   // The graph can't be cued because of lack of or corrupt data.%0
   //
-  VFW_S_CANT_CUE                      = HResult($00040268);
+  VFW_S_CANT_CUE = HResult($00040268);
 
   //
   // MessageId: VFW_E_BAD_VIDEOCD
@@ -1023,7 +1024,7 @@ const
   //
   // The Video CD can't be read correctly by the device or is the data is corrupt.%0
   //
-  VFW_E_BAD_VIDEOCD                   = HResult($80040269);
+  VFW_E_BAD_VIDEOCD = HResult($80040269);
 
   //
   // MessageId: VFW_S_NO_STOP_TIME
@@ -1032,7 +1033,7 @@ const
   //
   // The stop time for the sample was not set.%0
   //
-  VFW_S_NO_STOP_TIME                  = HResult($00040270);
+  VFW_S_NO_STOP_TIME = HResult($00040270);
 
   //
   // MessageId: VFW_E_OUT_OF_VIDEO_MEMORY
@@ -1041,7 +1042,7 @@ const
   //
   // There is not enough Video Memory at this display resolution and number of colors. Reducing resolution might help.%0
   //
-  VFW_E_OUT_OF_VIDEO_MEMORY           = HResult($80040271);
+  VFW_E_OUT_OF_VIDEO_MEMORY = HResult($80040271);
 
   //
   // MessageId: VFW_E_VP_NEGOTIATION_FAILED
@@ -1050,7 +1051,7 @@ const
   //
   // The VideoPort connection negotiation process has failed.%0
   //
-  VFW_E_VP_NEGOTIATION_FAILED         = HResult($80040272);
+  VFW_E_VP_NEGOTIATION_FAILED = HResult($80040272);
 
   //
   // MessageId: VFW_E_DDRAW_CAPS_NOT_SUITABLE
@@ -1059,7 +1060,7 @@ const
   //
   // Either DirectDraw has not been installed or the Video Card capabilities are not suitable. Make sure the display is not in 16 color mode or try changing the graphics mode.%0
   //
-  VFW_E_DDRAW_CAPS_NOT_SUITABLE       = HResult($80040273);
+  VFW_E_DDRAW_CAPS_NOT_SUITABLE = HResult($80040273);
 
   //
   // MessageId: VFW_E_NO_VP_HARDWARE
@@ -1068,7 +1069,7 @@ const
   //
   // No VideoPort hardware is available, or the hardware is not responding.%0
   //
-  VFW_E_NO_VP_HARDWARE                = HResult($80040274);
+  VFW_E_NO_VP_HARDWARE = HResult($80040274);
 
   //
   // MessageId: VFW_E_NO_CAPTURE_HARDWARE
@@ -1077,7 +1078,7 @@ const
   //
   // No Capture hardware is available, or the hardware is not responding.%0
   //
-  VFW_E_NO_CAPTURE_HARDWARE           = HResult($80040275);
+  VFW_E_NO_CAPTURE_HARDWARE = HResult($80040275);
 
   //
   // MessageId: VFW_E_DVD_OPERATION_INHIBITED
@@ -1086,7 +1087,7 @@ const
   //
   // This User Operation is inhibited by DVD Content at this time.%0
   //
-  VFW_E_DVD_OPERATION_INHIBITED       = HResult($80040276);
+  VFW_E_DVD_OPERATION_INHIBITED = HResult($80040276);
 
   //
   // MessageId: VFW_E_DVD_INVALIDDOMAIN
@@ -1095,7 +1096,7 @@ const
   //
   // This Operation is not permitted in the current domain.%0
   //
-  VFW_E_DVD_INVALIDDOMAIN             = HResult($80040277);
+  VFW_E_DVD_INVALIDDOMAIN = HResult($80040277);
 
   //
   // MessageId: VFW_E_DVD_NO_BUTTON
@@ -1104,7 +1105,7 @@ const
   //
   // The specified button is invalid or is not present at the current time, or there is no button present at the specified location.%0
   //
-  VFW_E_DVD_NO_BUTTON                 = HResult($80040278);
+  VFW_E_DVD_NO_BUTTON = HResult($80040278);
 
   //
   // MessageId: VFW_E_DVD_GRAPHNOTREADY
@@ -1113,7 +1114,7 @@ const
   //
   // DVD-Video playback graph has not been built yet.%0
   //
-  VFW_E_DVD_GRAPHNOTREADY             = HResult($80040279);
+  VFW_E_DVD_GRAPHNOTREADY = HResult($80040279);
 
   //
   // MessageId: VFW_E_DVD_RENDERFAIL
@@ -1122,7 +1123,7 @@ const
   //
   // DVD-Video playback graph building failed.%0
   //
-  VFW_E_DVD_RENDERFAIL                = HResult($8004027A);
+  VFW_E_DVD_RENDERFAIL = HResult($8004027A);
 
   //
   // MessageId: VFW_E_DVD_DECNOTENOUGH
@@ -1131,7 +1132,7 @@ const
   //
   // DVD-Video playback graph could not be built due to insufficient decoders.%0
   //
-  VFW_E_DVD_DECNOTENOUGH              = HResult($8004027B);
+  VFW_E_DVD_DECNOTENOUGH = HResult($8004027B);
 
   //
   // MessageId: VFW_E_DDRAW_VERSION_NOT_SUITABLE
@@ -1140,7 +1141,7 @@ const
   //
   // Version number of DirectDraw not suitable. Make sure to install dx5 or higher version.%0
   //
-  VFW_E_DDRAW_VERSION_NOT_SUITABLE    = HResult($8004027C);
+  VFW_E_DDRAW_VERSION_NOT_SUITABLE = HResult($8004027C);
 
   //
   // MessageId: VFW_E_COPYPROT_FAILED
@@ -1149,7 +1150,7 @@ const
   //
   // Copy protection cannot be enabled. Please make sure any other copy protected content is not being shown now.%0
   //
-  VFW_E_COPYPROT_FAILED               = HResult($8004027D);
+  VFW_E_COPYPROT_FAILED = HResult($8004027D);
 
   //
   // MessageId: VFW_S_NOPREVIEWPIN
@@ -1158,7 +1159,7 @@ const
   //
   // There was no preview pin available, so the capture pin output is being split to provide both capture and preview.%0
   //
-  VFW_S_NOPREVIEWPIN                  = HResult($0004027E);
+  VFW_S_NOPREVIEWPIN = HResult($0004027E);
 
   //
   // MessageId: VFW_E_TIME_EXPIRED
@@ -1167,7 +1168,7 @@ const
   //
   // This object cannot be used anymore as its time has expired.%0
   //
-  VFW_E_TIME_EXPIRED                  = HResult($8004027F);
+  VFW_E_TIME_EXPIRED = HResult($8004027F);
 
   //
   // MessageId: VFW_S_DVD_NON_ONE_SEQUENTIAL
@@ -1176,7 +1177,7 @@ const
   //
   // The current title was not a sequential set of chapters (PGC), and the returned timing information might not be continuous.%0
   //
-  VFW_S_DVD_NON_ONE_SEQUENTIAL        = HResult($00040280);
+  VFW_S_DVD_NON_ONE_SEQUENTIAL = HResult($00040280);
 
   //
   // MessageId: VFW_E_DVD_WRONG_SPEED
@@ -1185,7 +1186,7 @@ const
   //
   // The operation cannot be performed at the current playback speed.%0
   //
-  VFW_E_DVD_WRONG_SPEED               = HResult($80040281);
+  VFW_E_DVD_WRONG_SPEED = HResult($80040281);
 
   //
   // MessageId: VFW_E_DVD_MENU_DOES_NOT_EXIST
@@ -1194,7 +1195,7 @@ const
   //
   // The specified menu doesn't exist.%0
   //
-  VFW_E_DVD_MENU_DOES_NOT_EXIST       = HResult($80040282);
+  VFW_E_DVD_MENU_DOES_NOT_EXIST = HResult($80040282);
 
   //
   // MessageId: VFW_E_DVD_CMD_CANCELLED
@@ -1203,7 +1204,7 @@ const
   //
   // The specified command was either cancelled or no longer exists.%0
   //
-  VFW_E_DVD_CMD_CANCELLED             = HResult($80040283);
+  VFW_E_DVD_CMD_CANCELLED = HResult($80040283);
 
   //
   // MessageId: VFW_E_DVD_STATE_WRONG_VERSION
@@ -1212,7 +1213,7 @@ const
   //
   // The data did not contain a recognized version.%0
   //
-  VFW_E_DVD_STATE_WRONG_VERSION       = HResult($80040284);
+  VFW_E_DVD_STATE_WRONG_VERSION = HResult($80040284);
 
   //
   // MessageId: VFW_E_DVD_STATE_CORRUPT
@@ -1221,7 +1222,7 @@ const
   //
   // The state data was corrupt.%0
   //
-  VFW_E_DVD_STATE_CORRUPT             = HResult($80040285);
+  VFW_E_DVD_STATE_CORRUPT = HResult($80040285);
 
   //
   // MessageId: VFW_E_DVD_STATE_WRONG_DISC
@@ -1230,7 +1231,7 @@ const
   //
   // The state data is from a different disc.%0
   //
-  VFW_E_DVD_STATE_WRONG_DISC          = HResult($80040286);
+  VFW_E_DVD_STATE_WRONG_DISC = HResult($80040286);
 
   //
   // MessageId: VFW_E_DVD_INCOMPATIBLE_REGION
@@ -1239,7 +1240,7 @@ const
   //
   // The region was not compatible with the current drive.%0
   //
-  VFW_E_DVD_INCOMPATIBLE_REGION       = HResult($80040287);
+  VFW_E_DVD_INCOMPATIBLE_REGION = HResult($80040287);
 
   //
   // MessageId: VFW_E_DVD_NO_ATTRIBUTES
@@ -1248,7 +1249,7 @@ const
   //
   // The requested DVD stream attribute does not exist.%0
   //
-  VFW_E_DVD_NO_ATTRIBUTES             = HResult($80040288);
+  VFW_E_DVD_NO_ATTRIBUTES = HResult($80040288);
 
   //
   // MessageId: VFW_E_DVD_NO_GOUP_PGC
@@ -1257,7 +1258,7 @@ const
   //
   // Currently there is no GoUp (Annex J user function) program chain (PGC).%0
   //
-  VFW_E_DVD_NO_GOUP_PGC               = HResult($80040289);
+  VFW_E_DVD_NO_GOUP_PGC = HResult($80040289);
 
   //
   // MessageId: VFW_E_DVD_LOW_PARENTAL_LEVEL
@@ -1266,7 +1267,7 @@ const
   //
   // The current parental level was too low.%0
   //
-  VFW_E_DVD_LOW_PARENTAL_LEVEL        = HResult($8004028A);
+  VFW_E_DVD_LOW_PARENTAL_LEVEL = HResult($8004028A);
 
   //
   // MessageId: VFW_E_DVD_NOT_IN_KARAOKE_MODE
@@ -1275,7 +1276,7 @@ const
   //
   // The current audio is not karaoke content.%0
   //
-  VFW_E_DVD_NOT_IN_KARAOKE_MODE       = HResult($8004028B);
+  VFW_E_DVD_NOT_IN_KARAOKE_MODE = HResult($8004028B);
 
   //
   // MessageId: VFW_S_DVD_CHANNEL_CONTENTS_NOT_AVAILABLE
@@ -1284,7 +1285,7 @@ const
   //
   // The audio stream did not contain sufficient information to determine the contents of each channel.%0
   //
-  VFW_S_DVD_CHANNEL_CONTENTS_NOT_AVAILABLE= HResult($0004028C);
+  VFW_S_DVD_CHANNEL_CONTENTS_NOT_AVAILABLE = HResult($0004028C);
 
   //
   // MessageId: VFW_S_DVD_NOT_ACCURATE
@@ -1293,7 +1294,7 @@ const
   //
   // The seek into the movie was not frame accurate.%0
   //
-  VFW_S_DVD_NOT_ACCURATE              = HResult($0004028D);
+  VFW_S_DVD_NOT_ACCURATE = HResult($0004028D);
 
   //
   // MessageId: VFW_E_FRAME_STEP_UNSUPPORTED
@@ -1302,7 +1303,7 @@ const
   //
   // Frame step is not supported on this configuration.%0
   //
-  VFW_E_FRAME_STEP_UNSUPPORTED        = HResult($8004028E);
+  VFW_E_FRAME_STEP_UNSUPPORTED = HResult($8004028E);
 
   //
   // MessageId: VFW_E_DVD_STREAM_DISABLED
@@ -1311,7 +1312,7 @@ const
   //
   // The specified stream is disabled and cannot be selected.%0
   //
-  VFW_E_DVD_STREAM_DISABLED           = HResult($8004028F);
+  VFW_E_DVD_STREAM_DISABLED = HResult($8004028F);
 
   //
   // MessageId: VFW_E_DVD_TITLE_UNKNOWN
@@ -1321,7 +1322,7 @@ const
   // The operation depends on the current title number, however the navigator has not yet entered the VTSM or the title domains,
   // so the 'current' title index is unknown.%0
   //
-  VFW_E_DVD_TITLE_UNKNOWN             = HResult($80040290);
+  VFW_E_DVD_TITLE_UNKNOWN = HResult($80040290);
 
   //
   // MessageId: VFW_E_DVD_INVALID_DISC
@@ -1330,7 +1331,7 @@ const
   //
   // The specified path does not point to a valid DVD disc.%0
   //
-  VFW_E_DVD_INVALID_DISC              = HResult($80040291);
+  VFW_E_DVD_INVALID_DISC = HResult($80040291);
 
   //
   // MessageId: VFW_E_DVD_NO_RESUME_INFORMATION
@@ -1339,7 +1340,7 @@ const
   //
   // There is currently no resume information.%0
   //
-  VFW_E_DVD_NO_RESUME_INFORMATION     = HResult($80040292);
+  VFW_E_DVD_NO_RESUME_INFORMATION = HResult($80040292);
 
   //
   // MessageId: VFW_E_PIN_ALREADY_BLOCKED_ON_THIS_THREAD
@@ -1348,7 +1349,7 @@ const
   //
   // This thread has already blocked this output pin.  There is no need to call IPinFlowControl::Block() again.%0
   //
-  VFW_E_PIN_ALREADY_BLOCKED_ON_THIS_THREAD= HResult($80040293);
+  VFW_E_PIN_ALREADY_BLOCKED_ON_THIS_THREAD = HResult($80040293);
 
   //
   // MessageId: VFW_E_PIN_ALREADY_BLOCKED
@@ -1357,7 +1358,7 @@ const
   //
   // IPinFlowControl::Block() has been called on another thread.  The current thread cannot make any assumptions about this pin's block state.%0
   //
-  VFW_E_PIN_ALREADY_BLOCKED           = HResult($80040294);
+  VFW_E_PIN_ALREADY_BLOCKED = HResult($80040294);
 
   //
   // MessageId: VFW_E_CERTIFICATION_FAILURE
@@ -1366,7 +1367,7 @@ const
   //
   // An operation failed due to a certification failure.%0
   //
-  VFW_E_CERTIFICATION_FAILURE         = HResult($80040295);
+  VFW_E_CERTIFICATION_FAILURE = HResult($80040295);
 
   //
   // MessageId: VFW_E_VMR_NOT_IN_MIXER_MODE
@@ -1375,7 +1376,7 @@ const
   //
   // The VMR has not yet created a mixing component.  That is, IVMRFilterConfig::SetNumberofStreams has not yet been called.%0
   //
-  VFW_E_VMR_NOT_IN_MIXER_MODE         = HResult($80040296);
+  VFW_E_VMR_NOT_IN_MIXER_MODE = HResult($80040296);
 
   //
   // MessageId: VFW_E_VMR_NO_AP_SUPPLIED
@@ -1384,7 +1385,7 @@ const
   //
   // The application has not yet provided the VMR filter with a valid allocator-presenter object.%0
   //
-  VFW_E_VMR_NO_AP_SUPPLIED            = HResult($80040297);
+  VFW_E_VMR_NO_AP_SUPPLIED = HResult($80040297);
 
   //
   // MessageId: VFW_E_VMR_NO_DEINTERLACE_HW
@@ -1393,7 +1394,7 @@ const
   //
   // The VMR could not find any de-interlacing hardware on the current display device.%0
   //
-  VFW_E_VMR_NO_DEINTERLACE_HW         = HResult($80040298);
+  VFW_E_VMR_NO_DEINTERLACE_HW = HResult($80040298);
 
   //
   // MessageId: VFW_E_VMR_NO_PROCAMP_HW
@@ -1402,7 +1403,7 @@ const
   //
   // The VMR could not find any ProcAmp hardware on the current display device.%0
   //
-  VFW_E_VMR_NO_PROCAMP_HW             = HResult($80040299);
+  VFW_E_VMR_NO_PROCAMP_HW = HResult($80040299);
 
   //
   // MessageId: VFW_E_DVD_VMR9_INCOMPATIBLEDEC
@@ -1411,7 +1412,7 @@ const
   //
   // VMR9 does not work with VPE-based hardware decoders.%0
   //
-  VFW_E_DVD_VMR9_INCOMPATIBLEDEC      = HResult($8004029A);
+  VFW_E_DVD_VMR9_INCOMPATIBLEDEC = HResult($8004029A);
 
   //
   // MessageId: VFW_E_NO_COPP_HW
@@ -1420,7 +1421,7 @@ const
   //
   //  The current display device does not support Content Output Protection Protocol (COPP) H/W.%0
   //
-  VFW_E_NO_COPP_HW                    = HResult($8004029B);
+  VFW_E_NO_COPP_HW = HResult($8004029B);
 
   //
   // MessageId: VFW_E_DVD_NONBLOCKING
@@ -1429,7 +1430,7 @@ const
   //
   //  Nonblocking APIs are enabled and the nav cannot perform the operation at this time (IDVDControl) or partially incomplete information may be returned (DVDInfo).%0
   //
-  VFW_E_DVD_NONBLOCKING               = HResult($8004029C);
+  VFW_E_DVD_NONBLOCKING = HResult($8004029C);
 
   //
   // MessageId: VFW_E_DVD_TOO_MANY_RENDERERS_IN_FILTER_GRAPH
@@ -1438,7 +1439,7 @@ const
   //
   // The DVD Graph Builder cannot build a DVD playback filter graph if the EVR and another renderer are in the graph builder's filter graph.
   //
-  VFW_E_DVD_TOO_MANY_RENDERERS_IN_FILTER_GRAPH= HResult($8004029D);
+  VFW_E_DVD_TOO_MANY_RENDERERS_IN_FILTER_GRAPH = HResult($8004029D);
 
   //
   // MessageId: VFW_E_DVD_NON_EVR_RENDERER_IN_FILTER_GRAPH
@@ -1447,7 +1448,7 @@ const
   //
   // AM_DVD_EVR_ONLY cannot be passed to RenderDvdVideoVolume if the graph builder's filter graph contains a renderer which is not the EVR.
   //
-  VFW_E_DVD_NON_EVR_RENDERER_IN_FILTER_GRAPH= HResult($8004029E);
+  VFW_E_DVD_NON_EVR_RENDERER_IN_FILTER_GRAPH = HResult($8004029E);
 
   //
   // MessageId: VFW_E_DVD_RESOLUTION_ERROR
@@ -1456,7 +1457,7 @@ const
   //
   // DVD Video Output is not at a proper resolution.
   //
-  VFW_E_DVD_RESOLUTION_ERROR          = HResult($8004029F);
+  VFW_E_DVD_RESOLUTION_ERROR = HResult($8004029F);
 
   //
   //
@@ -1474,7 +1475,7 @@ const
   //
   // The Specified property set is not supported.%0
   //
-  E_PROP_SET_UNSUPPORTED              = HResult($80070492);
+  E_PROP_SET_UNSUPPORTED = HResult($80070492);
 
   //
   // MessageId: E_PROP_ID_UNSUPPORTED
@@ -1483,7 +1484,7 @@ const
   //
   // The specified property ID is not supported for the specified property set.%0
   //
-  E_PROP_ID_UNSUPPORTED               = HResult($80070490);
+  E_PROP_ID_UNSUPPORTED = HResult($80070490);
 
   //
   // MessageId: VFW_E_CODECAPI_LINEAR_RANGE
@@ -1492,7 +1493,7 @@ const
   //
   // Parameter has linear range.%0
   //
-  VFW_E_CODECAPI_LINEAR_RANGE         = HResult($80040310);
+  VFW_E_CODECAPI_LINEAR_RANGE = HResult($80040310);
 
   //
   // MessageId: VFW_E_CODECAPI_ENUMERATED
@@ -1501,7 +1502,7 @@ const
   //
   // Parameter is enumerated. It has no range.%0
   //
-  VFW_E_CODECAPI_ENUMERATED           = HResult($80040311);
+  VFW_E_CODECAPI_ENUMERATED = HResult($80040311);
 
   //
   // MessageId: VFW_E_CODECAPI_NO_DEFAULT
@@ -1510,7 +1511,7 @@ const
   //
   // No default value.%0
   //
-  VFW_E_CODECAPI_NO_DEFAULT           = HResult($80040313);
+  VFW_E_CODECAPI_NO_DEFAULT = HResult($80040313);
 
   //
   // MessageId: VFW_E_CODECAPI_NO_CURRENT_VALUE
@@ -1519,7 +1520,7 @@ const
   //
   // No current value.%0
   //
-  VFW_E_CODECAPI_NO_CURRENT_VALUE     = HResult($80040314);
+  VFW_E_CODECAPI_NO_CURRENT_VALUE = HResult($80040314);
 
   //
   // MessageId: VFW_E_DVD_CHAPTER_DOES_NOT_EXIST
@@ -1528,7 +1529,7 @@ const
   //
   // The operation failed since the chapter does not exist.%0
   //
-  VFW_E_DVD_CHAPTER_DOES_NOT_EXIST    = HResult($80040315);
+  VFW_E_DVD_CHAPTER_DOES_NOT_EXIST = HResult($80040315);
 
   //
   // MessageId: VFW_S_DVD_RENDER_STATUS
@@ -1537,7 +1538,7 @@ const
   //
   // The operation succeeded but some streams were not rendered.%0
   //
-  VFW_S_DVD_RENDER_STATUS             = HResult($00040320);
+  VFW_S_DVD_RENDER_STATUS = HResult($00040320);
 
 
   // Additional Prototypes for ALL interfaces
@@ -1546,6 +1547,6 @@ const
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 end.

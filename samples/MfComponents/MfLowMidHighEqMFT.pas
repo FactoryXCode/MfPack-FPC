@@ -129,7 +129,7 @@ type
   end;
 
   IMfLowMidHighEqMft = interface(IUnknown)
-  ['{7B42E6F1-1D11-4C6B-A5F1-0B6A9F3B0A31}']
+    ['{7B42E6F1-1D11-4C6B-A5F1-0B6A9F3B0A31}']
 
     procedure SetSettings(const S: TMfLowMidHighEqSettings); stdcall;
 
@@ -139,7 +139,9 @@ type
   end;
 
   // 3-band EQ MFT
-  TMfLowMidHighEqMFT = class(TMfAudioEffectMFTBase, IMfLowMidHighEqMft)
+  TMfLowMidHighEqMFT = class(TMfAudioEffectMFTBase,
+                             IMfLowMidHighEqMft)
+
   private
 
     FCS: TCriticalSection;
@@ -173,22 +175,22 @@ type
 
     // Biquad per band per channel
     // y[n] = b0*x + b1*x1 + b2*x2 - a1*y1 - a2*y2
-    type
+  type
 
-      TBiquad = record
-        b0, b1, b2: Double;
-        a1, a2: Double;
-        x1, x2: Double;
-        y1, y2: Double;
-        procedure Reset;
-      end;
+    TBiquad = record
+      b0, b1, b2: Double;
+      a1, a2: Double;
+      x1, x2: Double;
+      y1, y2: Double;
+      procedure Reset;
+    end;
 
-      PSingleArray = ^TSingleArray;
+    PSingleArray = ^TSingleArray;
 
-    var
-      FLow: array of TBiquad; // per channel
-      FMid: array of TBiquad;
-      FHigh: array of TBiquad;
+  var
+    FLow: array of TBiquad; // per channel
+    FMid: array of TBiquad;
+    FHigh: array of TBiquad;
 
     procedure ApplyPendingSettings();
     procedure EnsureChannelState();
@@ -196,12 +198,14 @@ type
     procedure SnapGainRamp();
 
     procedure CalcLowShelf(const FreqHz,
-                           GainDb, Q: Double;
+                           GainDb,
+                           Q: Double;
                            const SampleRate: Double;
                            out B: TBiquad);
 
     procedure CalcHighShelf(const FreqHz,
-                            GainDb, Q: Double;
+                            GainDb,
+                            Q: Double;
                             const SampleRate: Double;
                             out B: TBiquad);
 
@@ -214,7 +218,8 @@ type
     procedure CalcNotch(const FreqHz,
                         Q: Double;
                         const SampleRate:
-                        Double; out B: TBiquad);
+      Double;
+                        out B: TBiquad);
 
     function ClampHz(const Hz: Double;
                      const SampleRate: Integer): Double;
@@ -222,7 +227,10 @@ type
   protected
 
     // Processing (in-place interleaved float32)
-    procedure ProcessAudioFloat32(pData: PSingle; Frames, Channels, SampleRate: Integer); override;
+    procedure ProcessAudioFloat32(pData: PSingle;
+                                  Frames,
+                                  Channels,
+                                  SampleRate: Integer); override;
 
   public
 
@@ -233,9 +241,9 @@ type
     function GetSettings(out S: TMfLowMidHighEqSettings): HRESULT; stdcall;
     procedure ResetState; stdcall;
     procedure GetBiquadCoeffs(out Low,
-                                 Mid,
-                                 High: TBiquadCoeffs;
-                                 out SampleRate: Double);
+                              Mid,
+                              High: TBiquadCoeffs;
+                              out SampleRate: Double);
   end;
 
 
@@ -245,6 +253,7 @@ implementation
 { TMfLowMidHighEqSettings }
 
 class function TMfLowMidHighEqSettings.Defaults: TMfLowMidHighEqSettings;
+
 begin
 
   FillChar(Result,
@@ -273,6 +282,7 @@ end;
 { TMfLowMidHighEqMFT.TBiquad }
 
 procedure TMfLowMidHighEqMFT.TBiquad.Reset;
+
 begin
 
   x1 := 0.0;
@@ -284,6 +294,7 @@ end;
 { TMfLowMidHighEqMFT }
 
 constructor TMfLowMidHighEqMFT.Create();
+
 begin
 
   inherited Create;
@@ -303,6 +314,7 @@ end;
 
 
 destructor TMfLowMidHighEqMFT.Destroy();
+
 begin
 
   FCS.Free();
@@ -312,6 +324,7 @@ end;
 
 
 procedure TMfLowMidHighEqMFT.SetSettings(const S: TMfLowMidHighEqSettings);
+
 begin
 
   // UI thread safe: store pending copy
@@ -330,6 +343,7 @@ end;
 
 
 function TMfLowMidHighEqMFT.GetSettings(out S: TMfLowMidHighEqSettings): HRESULT;
+
 begin
 
   FCS.Enter();
@@ -346,13 +360,14 @@ end;
 
 
 procedure TMfLowMidHighEqMFT.GetBiquadCoeffs(out Low,
-                                              Mid,
-                                              High: TBiquadCoeffs;
-                                              out SampleRate: Double);
+                                             Mid,
+                                             High: TBiquadCoeffs;
+                                             out SampleRate: Double);
 var
   Settings: TMfLowMidHighEqSettings;
   B: TBiquad;
   Rate: Integer;
+
 
   procedure CopyCoeffs(out Coeffs: TBiquadCoeffs);
   begin
@@ -375,42 +390,62 @@ begin
     FCS.Leave();
   end;
 
-  if Rate <= 0 then
+  if (Rate <= 0) then
     Rate := 48000;
   SampleRate := Rate;
 
-  FillChar(Low, SizeOf(Low), 0);
+  FillChar(Low,
+           SizeOf(Low),
+           0);
   Low.b0 := 1.0;
   Mid := Low;
   High := Low;
   if not Settings.Enabled then
     Exit;
 
-  CalcLowShelf(ClampHz(Settings.LowFreqHz, Rate),
-                EnsureRange(Settings.LowGainDb, -24.0, 24.0),
-                EnsureRange(Settings.LowQ, 0.1, 4.0),
-                Rate,
-                B);
+  CalcLowShelf(ClampHz(Settings.LowFreqHz,
+                       Rate),
+               EnsureRange(Settings.LowGainDb,
+                           -24.0,
+                           24.0),
+               EnsureRange(Settings.LowQ,
+                           0.1,
+                           4.0),
+               Rate,
+               B);
   CopyCoeffs(Low);
 
-  if Settings.MidMode = emmNotch then
-    CalcNotch(ClampHz(Settings.MidFreqHz, Rate),
-               EnsureRange(Settings.MidQ, 0.1, 12.0),
-               Rate,
-               B)
+  if (Settings.MidMode = emmNotch) then
+    CalcNotch(ClampHz(Settings.MidFreqHz,
+                      Rate),
+              EnsureRange(Settings.MidQ,
+                          0.1,
+                          12.0),
+              Rate,
+              B)
   else
-    CalcPeaking(ClampHz(Settings.MidFreqHz, Rate),
-                 EnsureRange(Settings.MidGainDb, -24.0, 24.0),
-                 EnsureRange(Settings.MidQ, 0.1, 12.0),
-                 Rate,
-                 B);
+    CalcPeaking(ClampHz(Settings.MidFreqHz,
+                        Rate),
+                EnsureRange(Settings.MidGainDb,
+                            -24.0,
+                            24.0),
+                EnsureRange(Settings.MidQ,
+                            0.1,
+                            12.0),
+                Rate,
+                B);
   CopyCoeffs(Mid);
 
-  CalcHighShelf(ClampHz(Settings.HighFreqHz, Rate),
-                 EnsureRange(Settings.HighGainDb, -24.0, 24.0),
-                 EnsureRange(Settings.HighQ, 0.1, 4.0),
-                 Rate,
-                 B);
+  CalcHighShelf(ClampHz(Settings.HighFreqHz,
+                        Rate),
+                EnsureRange(Settings.HighGainDb,
+                            -24.0,
+                            24.0),
+                EnsureRange(Settings.HighQ,
+                            0.1,
+                            4.0),
+                Rate,
+                B);
   CopyCoeffs(High);
 end;
 
@@ -422,7 +457,7 @@ var
 
 begin
 
-  if InterlockedExchange(FPendingDirty, 0) = 0 then
+  if (InterlockedExchange(FPendingDirty, 0) = 0) then
     Exit;
 
   FCS.Enter();
@@ -432,15 +467,23 @@ begin
     FCS.Leave();
   end;
 
-  Settings.LowGainDb := EnsureRange(Settings.LowGainDb, -24.0, 24.0);
-  Settings.MidGainDb := EnsureRange(Settings.MidGainDb, -24.0, 24.0);
-  Settings.HighGainDb := EnsureRange(Settings.HighGainDb, -24.0, 24.0);
-  Settings.RampMs := EnsureRange(Settings.RampMs, 0, 5000);
+  Settings.LowGainDb := EnsureRange(Settings.LowGainDb,
+                                    -24.0,
+                                    24.0);
+  Settings.MidGainDb := EnsureRange(Settings.MidGainDb,
+                                    -24.0,
+                                    24.0);
+  Settings.HighGainDb := EnsureRange(Settings.HighGainDb,
+                                     -24.0,
+                                     24.0);
+  Settings.RampMs := EnsureRange(Settings.RampMs,
+                                 0,
+                                 5000);
 
   GainsChanged := (Settings.LowGainDb <> FSettings.LowGainDb) or
-                  (Settings.MidGainDb <> FSettings.MidGainDb) or
-                  (Settings.HighGainDb <> FSettings.HighGainDb) or
-                  (Settings.RampMs <> FSettings.RampMs);
+    (Settings.MidGainDb <> FSettings.MidGainDb) or
+    (Settings.HighGainDb <> FSettings.HighGainDb) or
+    (Settings.RampMs <> FSettings.RampMs);
   FCS.Enter();
   try
     FSettings := Settings;
@@ -448,12 +491,13 @@ begin
     FCS.Leave();
   end;
 
-  if FSettings.RampMs = 0 then
+  if (FSettings.RampMs = 0) then
     SnapGainRamp()
   else if GainsChanged then
     begin
       // Retarget from the current gains without resetting the filter histories.
-      FRampSamplesLeft := Max(1, Round(FSettings.RampMs * FSampleRate / 1000.0));
+      FRampSamplesLeft := Max(1,
+                              Round(FSettings.RampMs * FSampleRate / 1000.0));
       FRampUpdateFrames := 0;
     end;
 
@@ -462,6 +506,7 @@ end;
 
 
 procedure TMfLowMidHighEqMFT.SnapGainRamp();
+
 begin
 
   FCurrentLowDb := FSettings.LowGainDb;
@@ -473,21 +518,22 @@ end;
 
 
 procedure TMfLowMidHighEqMFT.StepGainRamp();
+
 begin
 
-  if FRampSamplesLeft <= 0 then
+  if (FRampSamplesLeft <= 0) then
     Exit;
 
   FCurrentLowDb := FCurrentLowDb +
-                  (FSettings.LowGainDb - FCurrentLowDb) / FRampSamplesLeft;
+    (FSettings.LowGainDb - FCurrentLowDb) / FRampSamplesLeft;
   FCurrentMidDb := FCurrentMidDb +
-                  (FSettings.MidGainDb - FCurrentMidDb) / FRampSamplesLeft;
+    (FSettings.MidGainDb - FCurrentMidDb) / FRampSamplesLeft;
   FCurrentHighDb := FCurrentHighDb +
-                   (FSettings.HighGainDb - FCurrentHighDb) / FRampSamplesLeft;
+    (FSettings.HighGainDb - FCurrentHighDb) / FRampSamplesLeft;
   Dec(FRampSamplesLeft);
   Inc(FRampUpdateFrames);
 
-  if FRampSamplesLeft = 0 then
+  if (FRampSamplesLeft = 0) then
     SnapGainRamp();
 
   // Limit filter redesign work; the cadence is independent of packet sizes.
@@ -554,7 +600,7 @@ begin
 
   newCh := FChannels;
 
-  if Length(FLow) <> newCh then
+  if (Length(FLow) <> newCh) then
     begin
 
       SetLength(FLow,
@@ -597,8 +643,8 @@ begin
                     4.0);
 
   lg := EnsureRange(FCurrentLowDb,
-                   -24.0,
-                   24.0);
+                    -24.0,
+                    24.0);
 
   mg := EnsureRange(FCurrentMidDb,
                     -24.0,
@@ -630,7 +676,7 @@ begin
                         mq,
                         sr,
                         bTmp);
-  else
+    else
       CalcPeaking(mf,
                   mg,
                   mq,
@@ -751,7 +797,11 @@ begin
 end;
 
 
-procedure TMfLowMidHighEqMFT.CalcLowShelf(const FreqHz, GainDb, Q: Double; const SampleRate: Double; out B: TBiquad);
+procedure TMfLowMidHighEqMFT.CalcLowShelf(const FreqHz,
+                                          GainDb,
+                                          Q: Double;
+                                          const SampleRate: Double;
+                                          out B: TBiquad);
 var
   A,
   w0,
@@ -783,7 +833,7 @@ begin
   alpha := sinw0 / 2.0 * Sqrt((A + 1.0 / A) * (1.0 / S - 1.0) + 2.0);
 
   b0 := A * ((A + 1.0) - (A - 1.0) * cosw0 + 2.0 * sqrtA * alpha);
-  b1 := 2*A * ((A - 1.0) - (A + 1.0) * cosw0);
+  b1 := 2 * A * ((A - 1.0) - (A + 1.0) * cosw0);
   b2 := A * ((A + 1.0) - (A - 1.0) * cosw0 - 2.0 * sqrtA * alpha);
   a0 := (A + 1.0) + (A - 1.0) * cosw0 + 2.0 * sqrtA * alpha;
   a1 := -2 * ((A - 1.0) + (A + 1.0) * cosw0);
@@ -833,7 +883,7 @@ begin
   alpha := sinw0 / 2.0 * Sqrt((A + 1.0 / A) * (1.0 / S - 1.0) + 2.0);
 
   b0 := A * ((A + 1.0) + (A - 1.0) * cosw0 + 2.0 * sqrtA * alpha);
-  b1 := -2*A * ((A - 1.0) + (A + 1.0) * cosw0);
+  b1 := -2 * A * ((A - 1.0) + (A + 1.0) * cosw0);
   b2 := A * ((A + 1.0) + (A - 1.0) * cosw0 - 2.0 * sqrtA * alpha);
   a0 := (A + 1.0) - (A - 1.0) * cosw0 + 2.0 * sqrtA * alpha;
   a1 := 2 * ((A - 1.0) - (A + 1.0) * cosw0);
@@ -861,7 +911,7 @@ var
   FormatChanged: Boolean;
   pS: PSingle;
 
-  // Helper
+// Helper
   function ProcBiquad(var B: TBiquad;
                       const InS: Double): Double;
   begin
@@ -876,9 +926,9 @@ var
 begin
 
   if (pData = nil) or
-     (Frames <= 0) or
-     (Channels <= 0) or
-     (SampleRate <= 0) then
+    (Frames <= 0) or
+    (Channels <= 0) or
+    (SampleRate <= 0) then
     Exit;
 
   FormatChanged := (SampleRate <> FSampleRate) or (Channels <> FChannels);
@@ -921,9 +971,8 @@ begin
 
           if (y > 1.0) then
             y := 1.0
-          else
-            if (y < -1.0) then
-              y := -1.0;
+          else if (y < -1.0) then
+            y := -1.0;
 
           pS^ := y;
           Inc(idx);

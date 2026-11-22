@@ -68,9 +68,9 @@ interface
 
 uses
   MfCapturePlatform,
-LMessages,
+  LMessages,
   LCLIntf,
-{Winapi}
+  {Winapi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -93,7 +93,9 @@ LMessages,
 
 type
   PWasapiChat = ^CWasapiChat;
+
   CWasapiChat = class(CChatTransport)
+
   private
 
     hwndWasApiChat: HWND;
@@ -151,7 +153,8 @@ var
 
 begin
 
-{$HINTS OFF}  // hr is only used for debugging, see comments below.
+  {$HINTS OFF}
+  // hr is only used for debugging, see comments below.
 
   // Set initial
   Result := 0;
@@ -173,46 +176,47 @@ begin
 
       waitResult := WaitForMultipleObjects(2,
                                            Pointer(waitArray),   // Do NOT forget to clear the array after using it!
-                                           False,
+        False,
                                            INFINITE);
 
       case waitResult of
-        WAIT_OBJECT_0 + 0: begin
-                             stillPlaying := False;       // We're done, exit the loop.
-                             // or use: Break;
-                           end;
+          WAIT_OBJECT_0 + 0: begin
+            stillPlaying := False;       // We're done, exit the loop.
+            // or use: Break;
+          end;
 
-        WAIT_OBJECT_0 + 1: begin
-                             //
-                             //  Either stream silence to the audio client or ignore the audio samples.
-                             //
-                             //  Note that we don't check for errors here. This is because
-                             //      (a) there's no way of reporting the failure
-                             //      (b) once the streaming engine has started there's really no way for it to fail.
-                             //
-                             if (flow = eRender) then
-                               begin
-                                 hr := pAudioClient.GetCurrentPadding(framesAvailable);
-                                 hr := pRenderClient.GetBuffer(framesAvailable,
-                                                               pData);
-                                 hr := pRenderClient.ReleaseBuffer(framesAvailable,
-                                                                   AUDCLNT_BUFFERFLAGS_SILENT);
-                               end
-                             else // eCapture
-                               begin
-                                 hr := pAudioClient.GetCurrentPadding(framesAvailable);
-                                 hr := pCaptureClient.GetBuffer(pData,
-                                                                framesAvailable,
-                                                                flags,
-                                                                nil,
-                                                                nil);
-                                 hr := pCaptureClient.ReleaseBuffer(framesAvailable);
-                               end;
-                           end;
+          WAIT_OBJECT_0 + 1: begin
+            //
+            //  Either stream silence to the audio client or ignore the audio samples.
+            //
+            //  Note that we don't check for errors here. This is because
+            //      (a) there's no way of reporting the failure
+            //      (b) once the streaming engine has started there's really no way for it to fail.
+            //
+            if (flow = eRender) then
+              begin
+                hr := pAudioClient.GetCurrentPadding(framesAvailable);
+                hr := pRenderClient.GetBuffer(framesAvailable,
+                                              pData);
+                hr := pRenderClient.ReleaseBuffer(framesAvailable,
+                                                  AUDCLNT_BUFFERFLAGS_SILENT);
+              end
+            else // eCapture
+              begin
+                hr := pAudioClient.GetCurrentPadding(framesAvailable);
+                hr := pCaptureClient.GetBuffer(pData,
+                                               framesAvailable,
+                                               flags,
+                                               nil,
+                                               nil);
+                hr := pCaptureClient.ReleaseBuffer(framesAvailable);
+              end;
+          end;
       end;
     end;
 
-  SetLength(waitArray, 0); // Clear the array.
+  SetLength(waitArray,
+            0); // Clear the array.
   EndThread(0); // Don't forget to end the thread!
 
 end;
@@ -221,12 +225,15 @@ end;
 // CWasapiChat /////////////////////////////////////////////////////////////////
 
 constructor CWasapiChat.Create(AppWindow: HWND);
+
 begin
+
   _AppWindow := AppWindow;
   _InputRoute := CWasapiInputRoute.Create(AppWindow);
   //hwndWasApiChat := LCLIntf.AllocateHWnd(MessageHandler);  // Not thread safe, you could use a unit as published here:
-                                                     // https://stackoverflow.com/questions/8820294/how-can-i-make-allocatehwnd-threadsafe
+  // https://stackoverflow.com/questions/8820294/how-can-i-make-allocatehwnd-threadsafe
 end;
+
 
 function CWasapiChat.Initialize(const UseInputDevice: Boolean): Boolean;
 var
@@ -243,9 +250,9 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(_AppWindow,
-                 'Unable to instantiate device enumerator',
-                 'WASAPI Transport Initialize Failure',
-                 MB_OK);
+                  'Unable to instantiate device enumerator',
+                  'WASAPI Transport Initialize Failure',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -262,53 +269,59 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(_AppWindow,
-                 'Unable to retrieve default endpoint',
-                 'WASAPI Transport Initialize Failure',
-                 MB_OK);
+                  'Unable to retrieve default endpoint',
+                  'WASAPI Transport Initialize Failure',
+                  MB_OK);
       Result := False;
       Exit;
     end;
 
-    //
-    //  Create our shutdown event - we want an auto reset event that starts in the not-signaled state.
-    //
-    {$IF 0=1}
-    _ShutdownEvent := CreateEventEx(Nil,
-                                    Nil,
-                                    0,
-                                    EVENT_MODIFY_STATE or SYNCHRONIZE);
-    {$ELSE}
-    _ShutdownEvent := CreateEventW(nil,False,False,nil);
-    {$ENDIF}
+  //
+  //  Create our shutdown event - we want an auto reset event that starts in the not-signaled state.
+  //
+  {$IF 0=1}
+  _ShutdownEvent := CreateEventEx(Nil,
+                                  Nil,
+                                  0,
+                                  EVENT_MODIFY_STATE or SYNCHRONIZE);
+  {$ELSE}
+    _ShutdownEvent := CreateEventW(nil,
+                                   False,
+                                   False,
+                                   nil);
+  {$ENDIF}
 
-    if _ShutdownEvent = 0 then
-      begin
-        MessageBoxW(_AppWindow,
-                   'Unable to create shutdown event.',
-                   'WASAPI Transport Initialize Failure',
-                   MB_OK);
-        Result := False;
-        Exit;
-      end;
+  if (_ShutdownEvent = 0) then
+    begin
+      MessageBoxW(_AppWindow,
+                  'Unable to create shutdown event.',
+                  'WASAPI Transport Initialize Failure',
+                  MB_OK);
+      Result := False;
+      Exit;
+    end;
 
-    {$IF 0=1}
-    _AudioSamplesReadyEvent := CreateEventEx(Nil,
-                                             Nil,
-                                             0,
-                                             EVENT_MODIFY_STATE or SYNCHRONIZE);
+  {$IF 0=1}
+  _AudioSamplesReadyEvent := CreateEventEx(Nil,
+                                           Nil,
+                                           0,
+                                           EVENT_MODIFY_STATE or SYNCHRONIZE);
 
-    {$ELSE}
-    _AudioSamplesReadyEvent := CreateEventW(nil,False,False,nil);
-    {$ENDIF}
-    if _AudioSamplesReadyEvent = 0 then
-      begin
-        MessageBoxW(_AppWindow,
-                   'Unable to create samples ready event.',
-                   'WASAPI Transport Initialize Failure',
-                   MB_OK);
-        Result := False;
-        Exit;
-      end;
+  {$ELSE}
+    _AudioSamplesReadyEvent := CreateEventW(nil,
+                                            False,
+                                            False,
+                                            nil);
+  {$ENDIF}
+  if (_AudioSamplesReadyEvent = 0) then
+    begin
+      MessageBoxW(_AppWindow,
+                  'Unable to create samples ready event.',
+                  'WASAPI Transport Initialize Failure',
+                  MB_OK);
+      Result := False;
+      Exit;
+    end;
 
   Result := True;
 end;
@@ -317,10 +330,12 @@ end;
 //  Shut down the chat code and free all the resources.
 //
 procedure CWasapiChat.Shutdown();
+
 begin
+
   if Assigned(_InputRoute) then
     _InputRoute.Stop;
-  if _ChatThread <> 0 then
+  if (_ChatThread <> 0) then
     begin
       SetEvent(_ShutdownEvent);
       WaitForSingleObject(_ChatThread,
@@ -329,13 +344,13 @@ begin
       _ChatThread := 0;
     end;
 
-  if _ShutdownEvent <> 0 then
+  if (_ShutdownEvent <> 0) then
     begin
       CloseHandle(_ShutdownEvent);
       _ShutdownEvent := 0;
     end;
 
-  if _AudioSamplesReadyEvent <> 0 then
+  if (_AudioSamplesReadyEvent <> 0) then
     begin
       CloseHandle(_AudioSamplesReadyEvent);
       _AudioSamplesReadyEvent := 0;
@@ -348,8 +363,11 @@ begin
   //LCLIntf.DeAllocateHWnd(hwndWasApiChat);
 end;
 
+
 destructor CWasapiChat.Destroy();
+
 begin
+
   _InputRoute.Free;
   inherited Destroy;
 end;
@@ -369,19 +387,20 @@ var
   hThreadId: TThreadID;
 
 begin
+
   Result := True;
   hThreadId := 0;
   pData := Nil;
 
   // Capture mode now routes the microphone to the default speaker endpoint.
-  if _Flow = eCapture then
+  if (_Flow = eCapture) then
     begin
       Result := _InputRoute.Start(HideFromVolumeMixer);
       if not Result then
         MessageBoxW(_AppWindow,
-                   'Unable to route the capture endpoint to the default audio output.',
-                   'WASAPI Transport Start Failure',
-                   MB_OK);
+                    'Unable to route the capture endpoint to the default audio output.',
+                    'WASAPI Transport Start Failure',
+                    MB_OK);
       Exit;
     end;
 
@@ -392,9 +411,9 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(_AppWindow,
-                 'Unable to activate audio client.',
-                 'WASAPI Transport Start Failure',
-                 MB_OK);
+                  'Unable to activate audio client.',
+                  'WASAPI Transport Start Failure',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -403,9 +422,9 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(_AppWindow,
-                 'Unable to get mix format on audio client.',
-                 'ASAPI Transport Start Failure',
-                 MB_OK);
+                  'Unable to get mix format on audio client.',
+                  'ASAPI Transport Start Failure',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -419,20 +438,20 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(_AppWindow,
-                 'Unable to create GUID.',
-                 'WASAPI Transport Start Failure',
-                 MB_OK);
+                  'Unable to create GUID.',
+                  'WASAPI Transport Start Failure',
+                  MB_OK);
       Result := False;
       Exit;
     end;
 
   if HideFromVolumeMixer then
     HideFromMixer := AUDCLNT_SESSIONFLAGS_DISPLAY_HIDE or
-                     AUDCLNT_STREAMFLAGS_EVENTCALLBACK or
-                     AUDCLNT_STREAMFLAGS_NOPERSIST
+      AUDCLNT_STREAMFLAGS_EVENTCALLBACK or
+      AUDCLNT_STREAMFLAGS_NOPERSIST
   else
     HideFromMixer := AUDCLNT_STREAMFLAGS_EVENTCALLBACK or
-                     AUDCLNT_STREAMFLAGS_NOPERSIST;
+      AUDCLNT_STREAMFLAGS_NOPERSIST;
 
   hr := _AudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED,
                                 HideFromMixer,
@@ -447,9 +466,9 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(_AppWindow,
-                 'Unable to initialize audio client.',
-                 'WASAPI Transport Start Failure',
-                 MB_OK);
+                  'Unable to initialize audio client.',
+                  'WASAPI Transport Start Failure',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -458,9 +477,9 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(_AppWindow,
-                 'Unable to set ready event.',
-                 'WASAPI Transport Start Failure',
-                 MB_OK);
+                  'Unable to set ready event.',
+                  'WASAPI Transport Start Failure',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -475,9 +494,9 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(_AppWindow,
-                 'Unable to get Capture/Render client.',
-                 'WASAPI Transport Start Failure',
-                 MB_OK);
+                  'Unable to get Capture/Render client.',
+                  'WASAPI Transport Start Failure',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -492,12 +511,12 @@ begin
                              0,
                              hThreadId);
 
-  if _ChatThread = 0 then
+  if (_ChatThread = 0) then
     begin
       MessageBoxW(_AppWindow,
-                 'Unable to create transport thread.',
-                 'WASAPI Transport Start Failure',
-                 MB_OK);
+                  'Unable to create transport thread.',
+                  'WASAPI Transport Start Failure',
+                  MB_OK);
       Result := False;
       Exit;
     end;
@@ -505,15 +524,15 @@ begin
   //
   //  For render, we want to pre-roll a frames worth of silence into the pipeline.  That way the audio engine won't glitch on startup.
   //
-  if _Flow = eRender then
+  if (_Flow = eRender) then
     begin
       hr := _AudioClient.GetBufferSize(framesAvailable);
       if FAILED(hr) then
         begin
           MessageBoxW(_AppWindow,
-                     'Failed to get client buffer size.',
-                     'WASAPI Transport Start Failure',
-                     MB_OK);
+                      'Failed to get client buffer size.',
+                      'WASAPI Transport Start Failure',
+                      MB_OK);
           CloseHandle(_ChatThread); // close the thread.
           Result := False;
           Exit;
@@ -524,9 +543,9 @@ begin
       if FAILED(hr) then
         begin
           MessageBoxW(_AppWindow,
-                     'Failed to get buffer.',
-                     'WASAPI Transport Start Failure',
-                     MB_OK);
+                      'Failed to get buffer.',
+                      'WASAPI Transport Start Failure',
+                      MB_OK);
           CloseHandle(_ChatThread); // close the thread.
           Result := False;
           Exit;
@@ -537,9 +556,9 @@ begin
       if FAILED(hr) then
         begin
           MessageBoxW(_AppWindow,
-                     'Failed to release buffer.',
-                     'WASAPI Transport Start Failure',
-                     MB_OK);
+                      'Failed to release buffer.',
+                      'WASAPI Transport Start Failure',
+                      MB_OK);
           CloseHandle(_ChatThread); // close the thread.
           Result := False;
           Exit;
@@ -553,9 +572,9 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(_AppWindow,
-                 'Unable to start chat client.',
-                 'WASAPI Transport Start Failure',
-                 MB_OK);
+                  'Unable to start chat client.',
+                  'WASAPI Transport Start Failure',
+                  MB_OK);
       CloseHandle(_ChatThread); // close the thread.
       Result := False;
       Exit;
@@ -567,8 +586,10 @@ end;
 //  Stop the "Chat" - Stop the capture thread and release the buffers.
 //
 procedure CWasapiChat.StopChat();
+
 begin
-  if _Flow = eCapture then
+
+  if (_Flow = eCapture) then
     begin
       _InputRoute.Stop;
       Exit;
@@ -577,10 +598,10 @@ begin
   //  Tell the chat thread to shut down, wait for the thread to complete then clean up all the stuff we
   //  allocated in StartChat().
   //
-  if _ShutdownEvent > 0 then
+  if (_ShutdownEvent > 0) then
     SetEvent(_ShutdownEvent);
 
-  if _ChatThread > 0 then
+  if (_ChatThread > 0) then
     begin
       WaitForSingleObject(_ChatThread,
                           INFINITE);
@@ -597,7 +618,9 @@ end;
 
 function CWasapiChat.HandlesMessage(_hwnd: HWND;
                                     message: UINT): Boolean;
+
 begin
+
   Result := False;
 end;
 
@@ -606,21 +629,27 @@ end;
 //
 function CWasapiChat.MessageHandler(_hWnd: HWND;
                                     message: LMessages.TLMessage): NativeInt;
+
 begin
+
   Result := NativeInt(False);
 end;
 
 
 function CWasapiChat.CanStartChat(): Boolean;
+
 begin
+
   Result := True;
 end;
 
+
 function CWasapiChat.TransportType(): ChatTransportType;
+
 begin
+
   Result := ChatTransportWasapi;
 end;
 
 
 end.
-

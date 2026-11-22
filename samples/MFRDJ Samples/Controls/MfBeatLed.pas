@@ -66,11 +66,12 @@ unit MfBeatLed;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{Winapi}
+  {Winapi}
   Windows,
   {System}
   SysUtils,
@@ -88,8 +89,10 @@ type
                      blsRoundRect);
 
   TMfBeatLed = class(TGraphicControl)
+
   published
     property BorderSpacing;
+
   private
 
     FLedShape: TMfBeatLedShape;
@@ -174,6 +177,7 @@ implementation
 
 
 procedure Register;
+
 begin
 
   RegisterComponents('RDJ Controls',
@@ -182,35 +186,35 @@ end;
 
 
 function ClampByte(const AValue: Integer): Byte; inline;
+
 begin
 
   if (AValue < 0) then
     Result := 0
+  else if (AValue > 255) then
+    Result := 255
   else
-    if (AValue > 255) then
-      Result := 255
-    else
-      Result := Byte(AValue);
+    Result := Byte(AValue);
 end;
 
 
 function ClampDouble(const AValue,
-                           AMin,
-                           AMax: Double): Double; inline;
+                     AMin,
+                     AMax: Double): Double; inline;
+
 begin
 
   if (AValue < AMin) then
     Result := AMin
+  else if (AValue > AMax) then
+    Result := AMax
   else
-    if (AValue > AMax) then
-      Result := AMax
-    else
-      Result := AValue;
+    Result := AValue;
 end;
 
 
 function BlendColor(const AColor1,
-                          AColor2: TColor;
+                    AColor2: TColor;
                     const AT: Double): TColor;
 var
   C1: TColor;
@@ -254,7 +258,9 @@ end;
 
 
 function EaseOutQuad(const T: Double): Double; inline;
+
 begin
+
   Result := 1.0 - ((1.0 - T) * (1.0 - T));
 end;
 
@@ -271,6 +277,7 @@ end;
 
 
 function EaseOutSine(const T: Double): Double; inline;
+
 begin
 
   Result := Sin((T * Pi) / 2.0);
@@ -279,6 +286,7 @@ end;
 { TMfBeatLed }
 
 constructor TMfBeatLed.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
@@ -303,6 +311,7 @@ end;
 
 
 procedure TMfBeatLed.SetLedShape(const Value: TMfBeatLedShape);
+
 begin
 
   if (FLedShape = Value) then
@@ -314,6 +323,7 @@ end;
 
 
 procedure TMfBeatLed.SetLedOffColor(const Value: TColor);
+
 begin
 
   if (FLedOffColor = Value) then
@@ -325,7 +335,9 @@ end;
 
 
 procedure TMfBeatLed.SetLedOnColor(const Value: TColor);
+
 begin
+
   if (FLedOnColor = Value) then
     Exit;
 
@@ -335,7 +347,9 @@ end;
 
 
 procedure TMfBeatLed.SetBorderColor(const Value: TColor);
+
 begin
+
   if (FBorderColor = Value) then
     Exit;
 
@@ -399,6 +413,7 @@ end;
 
 
 procedure TMfBeatLed.SetTransparent(const Value: Boolean);
+
 begin
 
   if (FTransparent = Value) then
@@ -420,8 +435,8 @@ begin
                           1.0);
 
   if SameValue(FValue,
-               NewValue,
-               0.0001) then
+    NewValue,
+    0.0001) then
     Exit;
 
   FValue := NewValue;
@@ -430,6 +445,7 @@ end;
 
 
 procedure TMfBeatLed.Reset();
+
 begin
 
   FPulseActive := False;
@@ -440,6 +456,7 @@ end;
 
 
 procedure TMfBeatLed.Pulse();
+
 begin
 
   TriggerPulse(0);
@@ -447,6 +464,7 @@ end;
 
 
 procedure TMfBeatLed.TriggerPulse(const APosition100ns: Int64);
+
 begin
 
   FPulseActive := True;
@@ -505,7 +523,9 @@ end;
 
 
 function TMfBeatLed.GetCurrentDisplayColor(): TColor;
+
 begin
+
   Result := BlendColor(FLedOffColor,
                        FLedOnColor,
                        FValue);

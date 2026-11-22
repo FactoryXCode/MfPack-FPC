@@ -68,7 +68,7 @@ interface
 
 uses
   MfCapturePlatform,
-{Winapi}
+  {Winapi}
   Windows,
   Messages;
 
@@ -82,6 +82,7 @@ type
   //
 
   CChatTransport = class
+
   protected
     _AppWindow: HWND;
 

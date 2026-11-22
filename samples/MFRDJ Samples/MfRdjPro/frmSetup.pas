@@ -64,11 +64,12 @@ unit frmSetup;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinApiTypes,
   WinApi.ComBaseApi,
@@ -106,13 +107,13 @@ LMessages,
   RDJ.Setup,
   RDJ.RdjPro.CaptureEngine,
   RDJ.RdjPro.Compositor,
-
   MPxpButton,
   MfTrackBar;
 
 type
 
   TLocalIPv4Item = class
+
   public
 
     Address: string;
@@ -124,6 +125,7 @@ type
 type
 
   TEndpointItem = class
+
   public
 
     DeviceId: string; // IMMDevice.GetId() string
@@ -133,6 +135,7 @@ type
 type
 
   TCameraDeviceItem = class
+
   public
 
     DeviceProperties: TDeviceProperties;
@@ -225,28 +228,50 @@ type
     lblLocalNetworkHint: TLabel;
     cbLocalIPv4: TComboBox;
     btnDiscoverNetwork: TMPxpButton;
-    btnUseLocalIPv4: TMPxpButton;
-    btnRemoveLocalIPv4: TMPxpButton;
-    pnlAudioRecorderSettings: TPanel;
-    Bevel3: TBevel;
-    Label2: TLabel;
-    Label3: TLabel;
-    lblAudioRecBufSize: TLabel;
-    Label6: TLabel;
-    lblSysLatency: TLabel;
-    lblAudioFormat: TLabel;
-    lblBufferDuration: TLabel;
-    tbRecCapBufferSize: TMfTrackBar;
-    tbSysLatency: TMfTrackBar;
-    chkDontOverWrite: TMPxpButton;
-    chkDisableMMCSS: TMPxpButton;
-    chkUsePCMFormat: TMPxpButton;
-    chkEnableStreamSwitchDetection: TMPxpButton;
-    cbxOutputFormat: TComboBox;
-    chkAudioRecorderSettings: TMPxpButton;
-    chkOverrideSleepMode: TMPxpButton;
-    Bevel12: TBevel;
-    Label9: TLabel;
+
+    btnUseLocalIPv4: TMPxpButton;
+
+    btnRemoveLocalIPv4: TMPxpButton;
+
+    pnlAudioRecorderSettings: TPanel;
+
+    Bevel3: TBevel;
+
+    Label2: TLabel;
+
+    Label3: TLabel;
+
+    lblAudioRecBufSize: TLabel;
+
+    Label6: TLabel;
+
+    lblSysLatency: TLabel;
+
+    lblAudioFormat: TLabel;
+
+    lblBufferDuration: TLabel;
+
+    tbRecCapBufferSize: TMfTrackBar;
+
+    tbSysLatency: TMfTrackBar;
+
+    chkDontOverWrite: TMPxpButton;
+
+    chkDisableMMCSS: TMPxpButton;
+
+    chkUsePCMFormat: TMPxpButton;
+
+    chkEnableStreamSwitchDetection: TMPxpButton;
+
+    cbxOutputFormat: TComboBox;
+
+    chkAudioRecorderSettings: TMPxpButton;
+
+    chkOverrideSleepMode: TMPxpButton;
+
+    Bevel12: TBevel;
+
+    Label9: TLabel;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -274,7 +299,8 @@ type
     procedure btnDiscoverNetworkClick(Sender: TObject);
     procedure btnUseLocalIPv4Click(Sender: TObject);
     procedure btnRemoveLocalIPv4Click(Sender: TObject);
-    procedure chkAudioRecorderSettingsClick(Sender: TObject);
+
+    procedure chkAudioRecorderSettingsClick(Sender: TObject);
 
   private
 
@@ -304,10 +330,10 @@ type
     function SelectedLocalIPv4Address(): string;
     procedure UpdateLocalNetworkUi();
     function UpdateManagedCaddyLanAddress(const AConfigFileName,
-                                                ACaddyRoot,
-                                                ALanAddress: string;
+                                          ACaddyRoot,
+                                          ALanAddress: string;
                                           out AErrorMessage,
-                                              AWarningMessage: string): Boolean;
+                                          AWarningMessage: string): Boolean;
     function PickPath(ADirOnly: Boolean;
                       AFilter: PWideChar): string;
 
@@ -341,6 +367,7 @@ const
 
 
 constructor TLocalIPv4Item.Create(const AAddress: string);
+
 begin
 
   inherited Create();
@@ -350,6 +377,7 @@ end;
 
 
 constructor TCameraDeviceItem.Create(const ADeviceProperties: TDeviceProperties);
+
 begin
 
   inherited Create();
@@ -359,6 +387,7 @@ end;
 
 
 destructor TCameraDeviceItem.Destroy();
+
 begin
 
   DeviceProperties.Reset();
@@ -368,16 +397,17 @@ end;
 
 
 function StateToTag(const S: DWORD): string;
+
 begin
 
   case S of
-    DEVICE_STATE_ACTIVE:     Result := '[Active]';
-    DEVICE_STATE_DISABLED:   Result := '[Disabled]';
+    DEVICE_STATE_ACTIVE: Result := '[Active]';
+    DEVICE_STATE_DISABLED: Result := '[Disabled]';
     DEVICE_STATE_NOTPRESENT: Result := '[Not present]';
-    DEVICE_STATE_UNPLUGGED:  Result := '[Unplugged]';
-  else
-    Result := Format('[State 0x%x]',
-                     [S]);
+    DEVICE_STATE_UNPLUGGED: Result := '[Unplugged]';
+    else
+      Result := Format('[State 0x%x]',
+                       [S]);
   end;
 end;
 
@@ -392,7 +422,9 @@ begin
 
   Result := '';
   Store := nil;
-  FillChar(pv, SizeOf(pv), 0);
+  FillChar(pv,
+           SizeOf(pv),
+           0);
 
   hr := Dev.OpenPropertyStore(STGM_READ,
                               Store);
@@ -452,18 +484,18 @@ end;
 
 
 function SnapMs(const AValueMs,
-                      AStepMs,
-                      AMinMs,
-                      AMaxMs: Integer): Integer;
+                AStepMs,
+                AMinMs,
+                AMaxMs: Integer): Integer;
+
 begin
 
   Result := ((AValueMs + (AStepMs div 2)) div AStepMs) * AStepMs;
 
   if (Result < AMinMs) then
     Result := AMinMs
-  else
-    if (Result > AMaxMs) then
-      Result := AMaxMs;
+  else if (Result > AMaxMs) then
+    Result := AMaxMs;
 end;
 
 { TfrmSetup }
@@ -527,7 +559,7 @@ begin
     frm.edtCaddyCmdLine.Text := ASetup.CaddyCommand;
     frm.FOriginalCaddyLanAddress := Trim(ASetup.CaddyLanAddress);
     frm.FSelectedCaddyLanAddress := frm.FOriginalCaddyLanAddress;
-    frm.FUseLocalIPv4 := frm.FOriginalCaddyLanAddress <> '';
+    frm.FUseLocalIPv4 := (frm.FOriginalCaddyLanAddress <> '');
 
     // MSE MP4
     frm.tbMp4SegmentSize.Position := ASetup.MsePublicSegmentTargetMs;
@@ -728,8 +760,8 @@ begin
     // Show all states (active/disabled/unplugged/notpresent)
     hr := Enum.EnumAudioEndpoints(ADataFlow,
                                   DEVICE_STATE_ACTIVE or
-                                  DEVICE_STATE_DISABLED or
-                                  DEVICE_STATE_UNPLUGGED,
+      DEVICE_STATE_DISABLED or
+      DEVICE_STATE_UNPLUGGED,
                                   Coll);
     if FAILED(hr) then
       Exit;
@@ -763,10 +795,11 @@ begin
         Item.DeviceId := IdStr;
         Item.State := St;
 
-        cb.Items.AddObject(Text, Item);
+        cb.Items.AddObject(Text,
+                           Item);
 
         if (CurrentDeviceId <> '') and SameText(CurrentDeviceId,
-                                                IdStr) then
+          IdStr) then
           selIdx := cb.Items.Count - 1;
       end;
 
@@ -828,11 +861,10 @@ begin
 
         if (Devices[I].lpDisplayName <> nil) then
           DisplayName := Devices[I].lpDisplayName
+        else if (Devices[I].lpFriendlyName <> nil) then
+          DisplayName := Devices[I].lpFriendlyName
         else
-          if (Devices[I].lpFriendlyName <> nil) then
-            DisplayName := Devices[I].lpFriendlyName
-          else
-            DisplayName := '(Unknown camera)';
+          DisplayName := '(Unknown camera)';
 
         if (Devices[I].lpSymbolicLink <> nil) then
           SymbolicLink := Devices[I].lpSymbolicLink
@@ -845,7 +877,7 @@ begin
                            Item);
 
         if (CurrentSymbolicLink <> '') and SameText(CurrentSymbolicLink,
-                                                    SymbolicLink) then
+          SymbolicLink) then
           SelIdx := cb.Items.Count - 1;
       end;
 
@@ -862,6 +894,7 @@ end;
 
 
 procedure TfrmSetup.tbAudioBufferDurationChange(Sender: TObject);
+
 begin
 
   lblBuffSize.Caption := Format('%d ms',
@@ -871,11 +904,12 @@ end;
 
 // Because this trackbar has no step property, we need to improvise.
 procedure TfrmSetup.tbMp4SegmentSizeChange(Sender: TObject);
+
 begin
 
   FMp4SegmentValueMs := SnapMs(tbMp4SegmentSize.Position,
                                100,   // snap step: 100 ms
-                               RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MIN_MS,
+    RDJ_MSE_PUBLIC_FRAGMENT_TARGET_MIN_MS,
                                9000); // max: 9 sec
 
   lblMp4SegmentSize.Caption := FormatFloat('0.00 sec',
@@ -884,6 +918,7 @@ end;
 
 
 procedure TfrmSetup.tbRecCapBufferSizeChange(Sender: TObject);
+
 begin
 
   lblAudioRecBufSize.Caption := Format('%d ms',
@@ -896,6 +931,7 @@ end;
 
 
 procedure TfrmSetup.tbSysLatencyChange(Sender: TObject);
+
 begin
 
   lblSysLatency.Caption := Format('%d ms',
@@ -995,6 +1031,7 @@ end;
 
 
 procedure TfrmSetup.btnCancelClick(Sender: TObject);
+
 begin
 
   ModalResult := mrCancel;
@@ -1002,6 +1039,7 @@ end;
 
 
 procedure TfrmSetup.UpdateCueEnableUi();
+
 begin
 
   cbCueOut.Enabled := chkPfl.Checked;
@@ -1017,9 +1055,9 @@ var
 begin
 
   if BrowseFile(Handle,
-                AFilter,
-                ADirOnly,
-                filename) then
+    AFilter,
+    ADirOnly,
+    filename) then
     Result := filename
   else
     Result := '';
@@ -1027,6 +1065,7 @@ end;
 
 
 procedure TfrmSetup.btnGetCaddyConfigPathClick(Sender: TObject);
+
 begin
 
   edtCaddyConfigPath.Text := PickPath(False,
@@ -1035,6 +1074,7 @@ end;
 
 
 procedure TfrmSetup.btnGetCaddyJsonPathClick(Sender: TObject);
+
 begin
 
   edtCaddyJsonNowPlayingPath.Text := PickPath(False,
@@ -1069,10 +1109,10 @@ end;
 
 
 function TfrmSetup.UpdateManagedCaddyLanAddress(const AConfigFileName,
-                                                      ACaddyRoot,
-                                                      ALanAddress: string;
+                                                ACaddyRoot,
+                                                ALanAddress: string;
                                                 out AErrorMessage,
-                                                    AWarningMessage: string): Boolean;
+                                                AWarningMessage: string): Boolean;
 var
   AddressHeader: string;
   AddressToken: string;
@@ -1088,6 +1128,7 @@ var
   MarkerIndex: Integer;
   SiteIndex: Integer;
   TempFileName: string;
+
 
   function RunCaddy(const AArguments: string;
                     out AExitCode: DWORD): Boolean;
@@ -1113,15 +1154,15 @@ var
     UniqueString(CommandLine);
 
     if not CreateProcessW(nil,
-                         PChar(CommandLine),
-                         nil,
-                         nil,
-                         False,
-                         CREATE_NO_WINDOW,
-                         nil,
-                         PChar(ExtractFileDir(CaddyExe)),
-                         StartupInfo,
-                         ProcessInfo) then
+      PChar(CommandLine),
+      nil,
+      nil,
+      False,
+      CREATE_NO_WINDOW,
+      nil,
+      PChar(ExtractFileDir(CaddyExe)),
+      StartupInfo,
+      ProcessInfo) then
       Exit;
 
     try
@@ -1137,7 +1178,7 @@ var
         end;
 
       if not GetExitCodeProcess(ProcessInfo.hProcess,
-                                AExitCode) then
+        AExitCode) then
         Exit;
 
       Result := True;
@@ -1159,9 +1200,9 @@ var
     Result := -1;
     for J := 0 to Lines.Count - 1 do
       if SameText(Copy(Trim(Lines[J]),
-                       1,
-                       Length(RDJ_CADDY_LAN_MARKER)),
-                  RDJ_CADDY_LAN_MARKER) then
+        1,
+        Length(RDJ_CADDY_LAN_MARKER)),
+        RDJ_CADDY_LAN_MARKER) then
         Exit(J);
   end;
 
@@ -1180,14 +1221,14 @@ var
 
         S := Trim(Lines[J]);
         if (S = '') or
-           (S[1] = '#') or
-           (S[Length(S)] <> '{') then
+          (S[1] = '#') or
+          (S[Length(S)] <> '{') then
           Continue;
 
         // A site block is top-level and is not a global option or named snippet.
         if (Lines[J] = S) and
-           (S[1] <> '{') and
-           (S[1] <> '(') then
+          (S[1] <> '{') and
+          (S[1] <> '(') then
           Exit(J);
       end;
   end;
@@ -1222,11 +1263,11 @@ begin
   DesiredAddress := Trim(ALanAddress);
 
   if (ConfigFileName = '') or
-     (not FileExists(ConfigFileName)) then
+    (not FileExists(ConfigFileName)) then
     begin
 
       AErrorMessage := 'The Caddy configuration file was not found:'#13#10 +
-                       ConfigFileName;
+        ConfigFileName;
       Exit;
     end;
 
@@ -1283,17 +1324,17 @@ begin
         AddressToken := 'http://' + ManagedAddress;
         for I := AddressTokens.Count - 1 downto 0 do
           if SameText(Trim(AddressTokens[I]),
-                      AddressToken) then
+            AddressToken) then
             AddressTokens.Delete(I);
       end;
 
-    if DesiredAddress <> '' then
+    if (DesiredAddress <> '') then
       begin
 
         AddressToken := 'http://' + DesiredAddress;
         for I := 0 to AddressTokens.Count - 1 do
           if SameText(Trim(AddressTokens[I]),
-                      AddressToken) then
+            AddressToken) then
             begin
 
               AddressToken := '';
@@ -1308,7 +1349,7 @@ begin
       begin
 
         AErrorMessage := 'Removing the LAN address would leave the Caddy site without an address. ' +
-                         'The configuration was not changed.';
+          'The configuration was not changed.';
         Exit;
       end;
 
@@ -1322,10 +1363,9 @@ begin
         else
           Lines[MarkerIndex] := RDJ_CADDY_LAN_MARKER + DesiredAddress;
       end
-    else
-      if (DesiredAddress <> '') then
-        Lines.Insert(SiteIndex,
-                     RDJ_CADDY_LAN_MARKER + DesiredAddress);
+    else if (DesiredAddress <> '') then
+      Lines.Insert(SiteIndex,
+                   RDJ_CADDY_LAN_MARKER + DesiredAddress);
 
     TempFileName := ConfigFileName + '.rdj.tmp';
     BackupFileName := ConfigFileName + '.rdj.bak';
@@ -1334,12 +1374,12 @@ begin
     try
       // Run Caddy as a service.
       if (not RunCaddy('validate --config "' + TempFileName + '" --adapter caddyfile',
-                       ExitCode)) or
-         (ExitCode <> 0) then
+        ExitCode)) or
+        (ExitCode <> 0) then
         begin
 
           AErrorMessage := Format('Caddy rejected the proposed LAN configuration (exit code %d). '#13#10 +
-                                  'The active configuration was not changed.',
+            'The active configuration was not changed.',
                                   [ExitCode]);
           Exit;
         end;
@@ -1349,19 +1389,19 @@ begin
                  True);
 
       if not MoveFileExW(PChar(TempFileName),
-                        PChar(ConfigFileName),
-                        MOVEFILE_REPLACE_EXISTING or MOVEFILE_WRITE_THROUGH) then
+        PChar(ConfigFileName),
+        MOVEFILE_REPLACE_EXISTING or MOVEFILE_WRITE_THROUGH) then
         begin
 
           AErrorMessage := 'The validated Caddy configuration could not replace the active file: ' +
-                           SysErrorMessage(GetLastError());
+            SysErrorMessage(GetLastError());
           Exit;
         end;
 
       if (not RunCaddy('reload --config "' + ConfigFileName + '" --adapter caddyfile',
-                       ExitCode)) or (ExitCode <> 0) then
+        ExitCode)) or (ExitCode <> 0) then
         AWarningMessage := 'The Caddy configuration was safely updated, but Caddy could not be reloaded. ' +
-                           'The LAN change will be used the next time Caddy starts.';
+          'The LAN change will be used the next time Caddy starts.';
 
       Result := True;
 
@@ -1405,16 +1445,16 @@ begin
     DesiredLanAddress := '';
 
   if not SameText(DesiredLanAddress,
-                  FOriginalCaddyLanAddress) then
+    FOriginalCaddyLanAddress) then
     begin
 
       try
 
         if not UpdateManagedCaddyLanAddress(edtCaddyConfigPath.Text,
-                                           edtCaddyPath.Text,
-                                           DesiredLanAddress,
-                                           ErrorMessage,
-                                           WarningMessage) then
+          edtCaddyPath.Text,
+          DesiredLanAddress,
+          ErrorMessage,
+          WarningMessage) then
           begin
 
             MessageDlg(ErrorMessage,
@@ -1431,8 +1471,8 @@ begin
           begin
 
             MessageDlg('The Caddy LAN configuration could not be updated:'#13#10 +
-                       E.Message + #13#10#13#10 +
-                       'The active configuration was not intentionally changed.',
+              E.Message + #13#10#13#10 +
+              'The active configuration was not intentionally changed.',
                        mtError,
                        [mbOK],
                        0);
@@ -1519,6 +1559,7 @@ end;
 
 
 procedure TfrmSetup.chkAudioRecorderSettingsClick(Sender: TObject);
+
 begin
 
   pnlAudioRecorderSettings.BringToFront;
@@ -1529,6 +1570,7 @@ end;
 
 
 procedure TfrmSetup.chkBroadcastSettingsClick(Sender: TObject);
+
 begin
 
   pnlBroadCastSettings.BringToFront;
@@ -1539,6 +1581,7 @@ end;
 
 
 procedure TfrmSetup.chkGeneralSettingsClick(Sender: TObject);
+
 begin
 
   pnlGeneralSettings.BringToFront;
@@ -1549,6 +1592,7 @@ end;
 
 
 procedure TfrmSetup.chkPflClick(Sender: TObject);
+
 begin
 
   UpdateCueEnableUi();
@@ -1556,6 +1600,7 @@ end;
 
 
 procedure TfrmSetup.FormCreate(Sender: TObject);
+
 begin
 
   UpdateCueEnableUi();
@@ -1563,6 +1608,7 @@ end;
 
 
 procedure TfrmSetup.FormDestroy(Sender: TObject);
+
 begin
 
   // Free objects stored in combo items.
@@ -1595,6 +1641,7 @@ end;
 
 
 procedure TfrmSetup.FormShow(Sender: TObject);
+
 begin
 
   //ApplyDarkWindowFrame(Handle);
@@ -1624,14 +1671,14 @@ begin
   BufferSize := 0;
   ErrorCode := GetAdaptersAddresses(AF_INET,
                                     GAA_FLAG_SKIP_ANYCAST or
-                                    GAA_FLAG_SKIP_MULTICAST or
-                                    GAA_FLAG_SKIP_DNS_SERVER,
+    GAA_FLAG_SKIP_MULTICAST or
+    GAA_FLAG_SKIP_DNS_SERVER,
                                     nil,
                                     nil,
                                     @BufferSize);
 
   if (ErrorCode <> ERROR_BUFFER_OVERFLOW) or
-     (BufferSize = 0) then
+    (BufferSize = 0) then
     begin
 
       lblLocalNetworkHint.Caption := 'No active local IPv4 address was found.';
@@ -1644,12 +1691,12 @@ begin
 
     ErrorCode := GetAdaptersAddresses(AF_INET,
                                       GAA_FLAG_SKIP_ANYCAST or
-                                      GAA_FLAG_SKIP_MULTICAST or
-                                      GAA_FLAG_SKIP_DNS_SERVER,
+      GAA_FLAG_SKIP_MULTICAST or
+      GAA_FLAG_SKIP_DNS_SERVER,
                                       nil,
                                       Adapters,
                                       @BufferSize);
-    if ErrorCode <> NO_ERROR then
+    if (ErrorCode <> NO_ERROR) then
       begin
 
         lblLocalNetworkHint.Caption := Format('Network discovery failed (error %d).',
@@ -1662,7 +1709,7 @@ begin
       begin
 
         if (Ord(Adapter.OperStatus) = RDJ_IF_OPER_STATUS_UP) and
-           (Adapter.IfType <> RDJ_IF_TYPE_SOFTWARE_LOOPBACK) then
+          (Adapter.IfType <> RDJ_IF_TYPE_SOFTWARE_LOOPBACK) then
           begin
 
             FriendlyName := Trim(string(Adapter.FriendlyName));
@@ -1671,20 +1718,20 @@ begin
             while Assigned(Address) do
               begin
                 if (Address.DadState = IpDadStatePreferred) and
-                   Assigned(Address.Address.lpSockaddr) and
-                   (Address.Address.lpSockaddr.sa_family = AF_INET) then
+                  Assigned(Address.Address.lpSockaddr) and
+                  (Address.Address.lpSockaddr.sa_family = AF_INET) then
                   begin
                     SockAddr := PSockAddrIn(Address.Address.lpSockaddr);
                     AddressBytes := PByte(@SockAddr.sin_addr);
 
                     IpAddress := Format('%d.%d.%d.%d',
                                         [AddressBytes[0],
-                                         AddressBytes[1],
-                                         AddressBytes[2],
-                                         AddressBytes[3]]);
+                      AddressBytes[1],
+                      AddressBytes[2],
+                      AddressBytes[3]]);
 
                     if (AddressBytes[0] <> 0) and
-                       (AddressBytes[0] <> 127) then
+                      (AddressBytes[0] <> 127) then
                       begin
                         DisplayName := IpAddress;
 
@@ -1692,11 +1739,11 @@ begin
                           DisplayName := DisplayName + ' - ' + FriendlyName;
 
                         IsPrivateAddress := (AddressBytes[0] = 10) or
-                                            ((AddressBytes[0] = 172) and
-                                             (AddressBytes[1] >= 16) and
-                                             (AddressBytes[1] <= 31)) or
-                                            ((AddressBytes[0] = 192) and
-                                             (AddressBytes[1] = 168));
+                          ((AddressBytes[0] = 172) and
+                          (AddressBytes[1] >= 16) and
+                          (AddressBytes[1] <= 31)) or
+                          ((AddressBytes[0] = 192) and
+                          (AddressBytes[1] = 168));
 
                         if IsPrivateAddress then
                           cbLocalIPv4.Items.InsertObject(0,
@@ -1726,7 +1773,7 @@ begin
 
       for ErrorCode := 0 to DWORD(cbLocalIPv4.Items.Count - 1) do
         if SameText(TLocalIPv4Item(cbLocalIPv4.Items.Objects[ErrorCode]).Address,
-                    FSelectedCaddyLanAddress) then
+          FSelectedCaddyLanAddress) then
           begin
             cbLocalIPv4.ItemIndex := Integer(ErrorCode);
             Break;
@@ -1760,6 +1807,7 @@ end;
 
 
 procedure TfrmSetup.btnDiscoverNetworkClick(Sender: TObject);
+
 begin
 
   PopulateLocalIPv4Addresses();
@@ -1772,14 +1820,14 @@ var
 
 begin
 
-  btnUseLocalIPv4.Enabled := cbLocalIPv4.Items.Count > 0;
+  btnUseLocalIPv4.Enabled := (cbLocalIPv4.Items.Count > 0);
   btnRemoveLocalIPv4.Enabled := FUseLocalIPv4 or (FOriginalCaddyLanAddress <> '');
 
   if FUseLocalIPv4 then
     begin
       IpAddress := FSelectedCaddyLanAddress;
       lblLocalNetworkHint.Caption := 'LAN access will use http://' + IpAddress +
-                                     '/. Click OK to validate and update Caddy.';
+        '/. Click OK to validate and update Caddy.';
       Exit;
     end;
 
@@ -1791,6 +1839,7 @@ end;
 
 
 procedure TfrmSetup.btnUseLocalIPv4Click(Sender: TObject);
+
 begin
 
   FSelectedCaddyLanAddress := SelectedLocalIPv4Address();
@@ -1810,6 +1859,7 @@ end;
 
 
 procedure TfrmSetup.btnRemoveLocalIPv4Click(Sender: TObject);
+
 begin
 
   FUseLocalIPv4 := False;

@@ -71,7 +71,7 @@ uses
   MfEncodeAudio.Platform,
   MfXAudioCallback,
   MfSampleWorker,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.ActiveX.ObjBase,
   WinApi.ComBaseApi,
@@ -112,19 +112,19 @@ const
 
 type
 
-  TRenderstatus =(rsStopped,
-                  rsPlaying,
-                  rsPauzed,
-                  rsEndOfStream,
-                  rsInitializing,
-                  rsProcessingPassStart,
-                  rsProcessingPassEnd,
-                  rsDestroying,
-                  rsError);
+  TRenderstatus = (rsStopped,
+                   rsPlaying,
+                   rsPauzed,
+                   rsEndOfStream,
+                   rsInitializing,
+                   rsProcessingPassStart,
+                   rsProcessingPassEnd,
+                   rsDestroying,
+                   rsError);
 
   TXaudio2Engine = class(TNativeXAudioCallback)
 
-{$region 'IXAudio2VoiceCallback implementation'}
+    {$region 'IXAudio2VoiceCallback implementation'}
 
     /// <summary>Called during each processing pass for each voice,
     /// just before XAudio2 reads data from the voice's buffer queue.</summary>
@@ -140,9 +140,10 @@ type
     /// <summary>Called when the voice reaches the end position of a loop.</summary>
     procedure OnLoopEnd(pBufferContext: Pointer); override; stdcall;
     /// <summary>Called when a critical error occurs during voice processing.</summary>
-    procedure OnVoiceError(pBufferContext: Pointer; Error: HRESULT); override; stdcall;
+    procedure OnVoiceError(pBufferContext: Pointer;
+                           Error: HRESULT); override; stdcall;
 
-{$endregion}
+    {$endregion}
 
   private
     FMonitor: TSampleWorker;
@@ -150,6 +151,7 @@ type
     procedure StartMonitor();
     procedure StopMonitor();
     procedure MonitorPlayback();
+
   private
 
     pvXAudio2: IXAudio2;
@@ -207,75 +209,103 @@ uses
 
 
 procedure TXaudio2Engine.StartMonitor();
+
 begin
+
   StopMonitor();
   FMonitorStop := False;
   FMonitor := TSampleWorker.Create(MonitorPlayback);
   FMonitor.Start();
 end;
 
+
 procedure TXaudio2Engine.StopMonitor();
 var
   Msg: TMsg;
+
 begin
+
   FMonitorStop := True;
-  if FMonitor <> nil then
+  if (FMonitor <> nil) then
     begin
       FMonitor.WaitFor();
       FreeAndNil(FMonitor);
     end;
-  if hwndCaller <> 0 then
-    while PeekMessageW(Msg,hwndCaller,WM_DATA_PROCESSED_NOTIFY,WM_DATA_ENDED_NOTIFY,PM_REMOVE) do ;
+  if (hwndCaller <> 0) then
+    while PeekMessageW(Msg, hwndCaller, WM_DATA_PROCESSED_NOTIFY, WM_DATA_ENDED_NOTIFY, PM_REMOVE) do
+  ;
 end;
+
 
 procedure TXaudio2Engine.MonitorPlayback();
 var
   State: XAUDIO2_VOICE_STATE;
   Time: Int64;
+
 begin
+
   while not FMonitorStop do
     begin
-      if pvSourceVoice = nil then Exit;
-      pvSourceVoice.GetState(@State,0);
-      if nSamplesPerSecond > 0 then Time := (Int64(State.SamplesPlayed)*10000000) div nSamplesPerSecond
-      else Time := 0;
-      PostMessage(hwndCaller,WM_DATA_PROCESSED_NOTIFY,WPARAM(Time),LPARAM(State.SamplesPlayed));
-      if State.BuffersQueued = 0 then Break;
+      if (pvSourceVoice = nil) then
+        Exit;
+      pvSourceVoice.GetState(@State,
+                             0);
+      if (nSamplesPerSecond > 0) then
+        Time := (Int64(State.SamplesPlayed) * 10000000) div nSamplesPerSecond
+      else
+        Time := 0;
+      PostMessage(hwndCaller,
+                  WM_DATA_PROCESSED_NOTIFY,
+                  WPARAM(Time),
+                  LPARAM(State.SamplesPlayed));
+      if (State.BuffersQueued = 0) then
+        Break;
       Sleep(10);
     end;
-  if not FMonitorStop then PostMessage(hwndCaller,WM_DATA_ENDED_NOTIFY,1,0);
+  if not FMonitorStop then
+    PostMessage(hwndCaller,
+                WM_DATA_ENDED_NOTIFY,
+                1,
+                0);
 end;
 
+
 constructor TXaudio2Engine.Create();
+
 begin
+
   inherited;
 
 end;
 
 
 destructor TXaudio2Engine.Destroy();
+
 begin
 
   pvMasteringVoice := nil;
   pvSourceVoice := nil;
   SafeRelease(pvXAudio2);
-  if pvWaveformatex <> nil then CoTaskMemFree(pvWaveformatex);
+  if (pvWaveformatex <> nil) then
+    CoTaskMemFree(pvWaveformatex);
   pvWaveformatex := nil;
   inherited;
 end;
 
 
 procedure TXaudio2Engine.BeforeDestruction();
+
 begin
+
   StopMonitor();
-  if pvSourceVoice <> nil then
+  if (pvSourceVoice <> nil) then
     begin
       pvSourceVoice.Stop();
       pvSourceVoice.FlushSourceBuffers();
       pvSourceVoice.DestroyVoice();
       pvSourceVoice := nil;
     end;
-  if pvMasteringVoice <> nil then
+  if (pvMasteringVoice <> nil) then
     begin
       pvMasteringVoice.DestroyVoice();
       pvMasteringVoice := nil;
@@ -307,84 +337,86 @@ var
 label
   done;
 
+
   procedure ProcessAudio1();
   var
     hres: HResult;
-    begin
-      hres := S_OK;
-      while (hres = S_OK) do
-        begin
-          flags := 0;
+  begin
+    hres := S_OK;
+    while (hres = S_OK) do
+      begin
+        flags := 0;
 
-          hres := sourceReader.ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM,
-                                          0,
-                                          nil,
-                                          @flags,
-                                          nil,
-                                          @sample);
+        hres := sourceReader.ReadSample(MF_SOURCE_READER_FIRST_AUDIO_STREAM,
+                                        0,
+                                        nil,
+                                        @flags,
+                                        nil,
+                                        @sample);
 
-          // To be on the safe side we check all flags for which
-          // further reading would not make any sense
-          // and set EndOfFile to True
-          if ((flags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0) or
-             ((flags and MF_SOURCE_READERF_ERROR) <> 0) or
-             ((flags and MF_SOURCE_READERF_NEWSTREAM) <> 0) or
-             ((flags and MF_SOURCE_READERF_NATIVEMEDIATYPECHANGED) <> 0) or
-             ((flags and MF_SOURCE_READERF_ALLEFFECTSREMOVED) <> 0) then
+        // To be on the safe side we check all flags for which
+        // further reading would not make any sense
+        // and set EndOfFile to True
+        if ((flags and MF_SOURCE_READERF_ENDOFSTREAM) <> 0) or
+          ((flags and MF_SOURCE_READERF_ERROR) <> 0) or
+          ((flags and MF_SOURCE_READERF_NEWSTREAM) <> 0) or
+          ((flags and MF_SOURCE_READERF_NATIVEMEDIATYPECHANGED) <> 0) or
+          ((flags and MF_SOURCE_READERF_ALLEFFECTSREMOVED) <> 0) then
           begin
             Break;
           end;
 
-          // If the sample is nil, there is a gap in the data stream that can't be filled: No reason to quit..
-          if (sample = nil) then
-            Continue;
+        // If the sample is nil, there is a gap in the data stream that can't be filled: No reason to quit..
+        if (sample = nil) then
+          Continue;
 
-          if (flags = MF_SOURCE_READERF_STREAMTICK) then
-            Continue;
+        if (flags = MF_SOURCE_READERF_STREAMTICK) then
+          Continue;
 
-          // Convert data to contiguous buffer.
-          hres := sample.ConvertToContiguousBuffer(@buffer);
+        // Convert data to contiguous buffer.
+        hres := sample.ConvertToContiguousBuffer(@buffer);
 
-          if SUCCEEDED(hres) then
-            // Lock Buffer and copy to local memory
-            hres := buffer.Lock(audioData,
-                                nil,
-                                @audioDataLength);
+        if SUCCEEDED(hres) then
+          // Lock Buffer and copy to local memory
+          hres := buffer.Lock(audioData,
+                              nil,
+                              @audioDataLength);
 
-          if SUCCEEDED(hres) then
-            try
-              SetLength(pvBytes,
-                        Length(pvBytes) + Integer(audioDataLength));
+        if SUCCEEDED(hres) then
+        try
+          SetLength(pvBytes,
+                    Length(pvBytes) + Integer(audioDataLength));
 
-              Move(audioData^,
-                   pvBytes[Length(pvBytes) - Integer(audioDataLength)],
-                   audioDataLength);
-            finally
-              hres := buffer.Unlock();
-            end;
-
-          sample := nil;
-          if FAILED(hres) then
-            Exit;
+          Move(audioData^,
+               pvBytes[Length(pvBytes) - Integer(audioDataLength)],
+               audioDataLength);
+        finally
+          hres := buffer.Unlock();
         end;
-    end;
+
+        sample := nil;
+        if FAILED(hres) then
+          Exit;
+      end;
+  end;
 
 begin
+
   StopMonitor();
-  if pvSourceVoice <> nil then
+  if (pvSourceVoice <> nil) then
     begin
       pvSourceVoice.Stop();
       pvSourceVoice.FlushSourceBuffers();
       pvSourceVoice.DestroyVoice();
       pvSourceVoice := nil;
     end;
-  if pvMasteringVoice <> nil then
+  if (pvMasteringVoice <> nil) then
     begin
       pvMasteringVoice.DestroyVoice();
       pvMasteringVoice := nil;
     end;
   pvXAudio2 := nil;
-  if pvWaveformatex <> nil then
+  if (pvWaveformatex <> nil) then
     begin
       CoTaskMemFree(pvWaveformatex);
       pvWaveformatex := nil;
@@ -422,24 +454,24 @@ begin
 
   // Check if we are dealing with an audio format.
   if SUCCEEDED(hr) then
-   if not IsEqualGUID(MFMediaType_Audio,
-                      majorType) then
-     begin
-       raise Exception.CreateFmt('%s is not an audio file',
-                                 [pvFileName]);
-     end;
+    if not IsEqualGUID(MFMediaType_Audio,
+      majorType) then
+      begin
+        raise Exception.CreateFmt('%s is not an audio file',
+                                  [pvFileName]);
+      end;
 
 
   // Check if media file is compressed or uncompressed.
   if SUCCEEDED(hr) then
     hr := nativeMediaType.GetGUID(MF_MT_SUBTYPE,
-                                subType);
+                                  subType);
 
   if SUCCEEDED(hr) then
     if not (IsEqualGUID(MFAudioFormat_Float,
-                        subType) or
-            IsEqualGUID(MFAudioFormat_PCM,
-                        subType)) then
+      subType) or
+      IsEqualGUID(MFAudioFormat_PCM,
+                  subType)) then
       begin
         // Audio file is compressed.
         // Inform the SourceReader we want uncompressed data
@@ -498,8 +530,8 @@ begin
   if SUCCEEDED(hr) then
     hr := InitializeXAudio2();
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -511,15 +543,16 @@ label
   done;
 
 begin
+
   StopMonitor();
-  if pvSourceVoice <> nil then
+  if (pvSourceVoice <> nil) then
     begin
       pvSourceVoice.Stop();
       pvSourceVoice.FlushSourceBuffers();
       pvSourceVoice.DestroyVoice();
       pvSourceVoice := nil;
     end;
-  if pvMasteringVoice <> nil then
+  if (pvMasteringVoice <> nil) then
     begin
       pvMasteringVoice.DestroyVoice();
       pvMasteringVoice := nil;
@@ -581,14 +614,15 @@ begin
   // NOTE: Parallel programming is introduced in Delphi XE7 and above, the latter is compatible with all versions.
 
   StartMonitor();
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
 // Control
 
 function TXaudio2Engine.Play(): HResult;
+
 begin
 
   if not Assigned(pvSourceVoice) then
@@ -606,6 +640,7 @@ end;
 
 
 function TXaudio2Engine.Stop(): HResult;
+
 begin
 
   if not Assigned(pvSourceVoice) then
@@ -633,7 +668,9 @@ end;
 
 
 function TXaudio2Engine.Pause(): HResult;
+
 begin
+
   if not Assigned(pvSourceVoice) then
     begin
       Result := E_POINTER;
@@ -660,14 +697,17 @@ begin
                                     XAUDIO2_COMMIT_NOW);
       if FAILED(hr) then
         raise Exception.CreateFmt('TXaudio2Engine.SetVolume failed with result %s.',
-                                  [IntToHex(hr, 8) + #13,
-                                  SysErrorMessage(hr)]);
+                                  [IntToHex(hr,
+                                            8) + #13,
+          SysErrorMessage(hr)]);
     end;
 end;
 
 
 function TXaudio2Engine.GetVolume(): Single;
+
 begin
+
   pvSourceVoice.GetVolume(@Result);
 end;
 
@@ -685,16 +725,18 @@ begin
   // Attenuation (dB) = 20 * log10(Level)
   // For example, a volume level of 0.50 represents 6.02 dB of attenuation.
 
-  if Length(Value) <> Integer(nChannels) then
+  if (Length(Value) <> Integer(nChannels)) then
     raise EArgumentException.Create('Channel volume count must match the source');
-  aVolumes := Copy(Value,0,Length(Value));
+  aVolumes := Copy(Value,
+                   0,
+                   Length(Value));
 
   // Set boundaries to prevent overflow or clipping
   for i := 0 to Length(aVolumes) - 1 do
     begin
-      if aVolumes[i] > XAUDIO2_MAX_VOLUME_LEVEL then
+      if (aVolumes[i] > XAUDIO2_MAX_VOLUME_LEVEL) then
         aVolumes[i] := XAUDIO2_MAX_VOLUME_LEVEL;
-      if aVolumes[i] < 0.0 then
+      if (aVolumes[i] < 0.0) then
         aVolumes[i] := 0.0;
     end;
 
@@ -702,12 +744,13 @@ begin
   if Assigned(pvSourceVoice) then
     begin
       hr := pvSourceVoice.SetChannelVolumes(nChannels, // The number of channels.
-                                            @aVolumes[0],
+        @aVolumes[0],
                                             XAUDIO2_COMMIT_NOW);
       if FAILED(hr) then
         raise Exception.CreateFmt('TXaudio2Engine.SetVolumes failed with result %s.',
-                                  [IntToHex(hr, 8) + #13,
-                                  SysErrorMessage(hr)]);
+                                  [IntToHex(hr,
+                                            8) + #13,
+          SysErrorMessage(hr)]);
     end;
   m_VolumeChannels := aVolumes;
 end;
@@ -715,10 +758,14 @@ end;
 
 // Get the volumes for the channels.
 function TXaudio2Engine.GetVolumes(): TFloatArray;
+
 begin
-  SetLength(Result,nChannels);
+
+  SetLength(Result,
+            nChannels);
   if (pvSourceVoice <> nil) and (nChannels > 0) then
-    pvSourceVoice.GetChannelVolumes(nChannels,@Result[0]);
+    pvSourceVoice.GetChannelVolumes(nChannels,
+                                    @Result[0]);
 end;
 
 
@@ -742,18 +789,23 @@ end;
 // Callback implementation =================================================
 
 procedure TXaudio2Engine.OnVoiceProcessingPassStart(BytesRequired: UINT32);
+
 begin
+
   //pvRenderStatus := rsProcessingPassStart;
 end;
 
 
 procedure TXaudio2Engine.OnVoiceProcessingPassEnd();
+
 begin
+
   //pvRenderStatus := rsProcessingPassEnd;
 end;
 
 
 procedure TXaudio2Engine.OnStreamEnd();
+
 begin
 
   pvRenderStatus := rsEndOfStream;
@@ -761,6 +813,7 @@ end;
 
 
 procedure TXaudio2Engine.OnBufferStart(pBufferContext: Pointer);
+
 begin
 
   pvRenderStatus := rsPlaying;
@@ -768,6 +821,7 @@ end;
 
 
 procedure TXaudio2Engine.OnBufferEnd(pBufferContext: Pointer);
+
 begin
 
   pvRenderStatus := rsStopped;
@@ -775,19 +829,22 @@ end;
 
 
 procedure TXaudio2Engine.OnLoopEnd(pBufferContext: Pointer);
+
 begin
+
   // Stub.
 end;
 
 
 procedure TXaudio2Engine.OnVoiceError(pBufferContext: Pointer;
                                       Error: HRESULT);
+
 begin
-   pvRenderStatus := rsError;
+
+  pvRenderStatus := rsError;
 
 end;
 
 // =========================================================================
 
 end.
-

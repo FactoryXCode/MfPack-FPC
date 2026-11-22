@@ -80,7 +80,8 @@ uses
 
 type
 
-  TMfWasApiFxComponentBase = class(TComponent, IMfWasApiFxProvider)
+  TMfWasApiFxComponentBase = class(TComponent,
+                                   IMfWasApiFxProvider)
 
     function GetMFT(): IMFTransform; stdcall;
 
@@ -110,6 +111,7 @@ implementation
 
 
 constructor TMfWasApiFxComponentBase.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
@@ -120,13 +122,16 @@ end;
 
 
 procedure TMfWasApiFxComponentBase.AfterConstruction();
+
 begin
+
   inherited;
 
 end;
 
 
 destructor TMfWasApiFxComponentBase.Destroy();
+
 begin
 
   inherited;
@@ -134,6 +139,7 @@ end;
 
 
 function TMfWasApiFxComponentBase.IsDesigning(): Boolean;
+
 begin
 
   Result := (csDesigning in ComponentState) or (csLoading in ComponentState);
@@ -141,6 +147,7 @@ end;
 
 
 function TMfWasApiFxComponentBase.GetMFT(): IMFTransform;
+
 begin
 
   if not IsDesigning() then
@@ -151,19 +158,20 @@ end;
 
 
 function TMfWasApiFxComponentBase.SupportsPcmBits(BitsPerSample: Integer): Boolean;
+
 begin
 
   Result := (BitsPerSample = 16) or
-            (BitsPerSample = 24) or
-            (BitsPerSample = 32);
+    (BitsPerSample = 24) or
+    (BitsPerSample = 32);
 end;
 
 
 function TMfWasApiFxComponentBase.SupportsFloat32(): Boolean;
+
 begin
 
   Result := True;
 end;
 
 end.
-

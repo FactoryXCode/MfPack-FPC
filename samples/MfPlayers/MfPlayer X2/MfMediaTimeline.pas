@@ -70,7 +70,7 @@ interface
 
 uses
   MfPlayerSample.Platform,
-{WinApi}
+  {WinApi}
   WinApi.WinError,
   {System}
   MfPlayerSample.Diagnostics,
@@ -87,6 +87,7 @@ type
                          stsFromTimelineClock);
 
   TMfMediaTimeline = class(TObject)
+
   private
     FLock: SyncObjs.TCriticalSection;
     FBasePositionMs: Int64;
@@ -129,6 +130,7 @@ implementation
 
 
 constructor TMfMediaTimeline.Create();
+
 begin
 
   inherited Create();
@@ -138,6 +140,7 @@ end;
 
 
 destructor TMfMediaTimeline.Destroy();
+
 begin
 
   FreeAndNil(FLock);
@@ -146,6 +149,7 @@ end;
 
 
 procedure TMfMediaTimeline.ResetResolvedTimeUnlocked();
+
 begin
 
   FHaveLastResolvedTime := False;
@@ -154,6 +158,7 @@ end;
 
 
 procedure TMfMediaTimeline.Reset();
+
 begin
 
   FLock.Acquire();
@@ -174,6 +179,7 @@ end;
 
 
 procedure TMfMediaTimeline.Start(StartPositionMs: Int64);
+
 begin
 
   if (StartPositionMs < 0) then
@@ -193,6 +199,7 @@ end;
 
 
 procedure TMfMediaTimeline.Pause();
+
 begin
 
   FLock.Acquire();
@@ -210,6 +217,7 @@ end;
 
 
 procedure TMfMediaTimeline.Resume();
+
 begin
 
   FLock.Acquire();
@@ -226,6 +234,7 @@ end;
 
 
 procedure TMfMediaTimeline.Stop();
+
 begin
 
   FLock.Acquire();
@@ -244,6 +253,7 @@ end;
 
 
 procedure TMfMediaTimeline.Seek(NewPositionMs: Int64);
+
 begin
 
   if (NewPositionMs < 0) then
@@ -264,6 +274,7 @@ end;
 
 
 procedure TMfMediaTimeline.SetRate(NewRate: Single);
+
 begin
 
   if (NewRate <= 0) then
@@ -286,6 +297,7 @@ end;
 
 procedure TMfMediaTimeline.SetFrameRate(Numerator: UINT32;
                                         Denominator: UINT32);
+
 begin
 
   FLock.Acquire();
@@ -300,25 +312,28 @@ end;
 
 
 function TMfMediaTimeline.HasFrameRateUnlocked(): Boolean;
+
 begin
 
   Result := (FFrameRateNumerator > 0) and
-            (FFrameRateDenominator > 0);
+    (FFrameRateDenominator > 0);
 end;
 
 
 function TMfMediaTimeline.GetClockPositionMsUnlocked(): Int64;
+
 begin
 
   Result := FBasePositionMs;
 
   if FRunning and not FPaused then
     Result := FBasePositionMs +
-              Round(FStopwatch.ElapsedMilliseconds * FRate);
+      Round(FStopwatch.ElapsedMilliseconds * FRate);
 end;
 
 
 function TMfMediaTimeline.GetPositionMs(): Int64;
+
 begin
 
   FLock.Acquire();
@@ -348,8 +363,8 @@ begin
     sampleTimeHns := 0;
     sampleTimeMs := 0;
     useSampleTime := Assigned(Sample) and
-                     SUCCEEDED(Sample.GetSampleTime(@sampleTimeHns)) and
-                     (sampleTimeHns >= 0);
+      SUCCEEDED(Sample.GetSampleTime(@sampleTimeHns)) and
+      (sampleTimeHns >= 0);
 
     if useSampleTime then
       begin
@@ -359,7 +374,7 @@ begin
         // value) on every decoded frame. Accept the first timestamp, but do
         // not let a repeated non-advancing timestamp pin all subtitles to it.
         useSampleTime := (not FHaveLastResolvedTime) or
-                         (sampleTimeMs > FLastResolvedTimeMs);
+          (sampleTimeMs > FLastResolvedTimeMs);
       end;
 
     if useSampleTime then
@@ -367,27 +382,26 @@ begin
         candidateMs := sampleTimeMs;
         TimeStatus := stsFromSample;
       end
+    else if HasFrameRateUnlocked() then
+      begin
+        candidateMs := FBasePositionMs +
+          Int64((FrameIndex *
+          UInt64(FFrameRateDenominator) *
+          UInt64(1000)) div
+          UInt64(FFrameRateNumerator));
+        TimeStatus := stsFromFrameRate;
+      end
     else
-      if HasFrameRateUnlocked() then
-        begin
-          candidateMs := FBasePositionMs +
-                         Int64((FrameIndex *
-                                UInt64(FFrameRateDenominator) *
-                                UInt64(1000)) div
-                               UInt64(FFrameRateNumerator));
-          TimeStatus := stsFromFrameRate;
-        end
-      else
-        begin
-          candidateMs := GetClockPositionMsUnlocked();
-          TimeStatus := stsFromTimelineClock;
-        end;
+      begin
+        candidateMs := GetClockPositionMsUnlocked();
+        TimeStatus := stsFromTimelineClock;
+      end;
 
     if (candidateMs < 0) then
       candidateMs := 0;
 
     if FHaveLastResolvedTime and
-       (candidateMs < FLastResolvedTimeMs) then
+      (candidateMs < FLastResolvedTimeMs) then
       candidateMs := FLastResolvedTimeMs;
 
     FLastResolvedTimeMs := candidateMs;

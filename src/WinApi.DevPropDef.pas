@@ -82,7 +82,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
@@ -94,11 +95,11 @@ uses
 
 type
 
-{$IFNDEF _DEVPROPTYPE_DEFINED}
+  {$IFNDEF _DEVPROPTYPE_DEFINED}
   PDEVPROPTYPE = ^ULONG;
   DEVPROPTYPE = ULONG;
-{$DEFINE _DEVPROPTYPE_DEFINED}
-{$ENDIF}
+  {$DEFINE _DEVPROPTYPE_DEFINED}
+  {$ENDIF}
 
   //
   // Property type modifiers.  Used to modify base DEVPROP_TYPE_ values, as
@@ -107,54 +108,54 @@ type
 
 const
 
-    DEVPROP_TYPEMOD_ARRAY               = $00001000;  // array of fixed-sized data elements
-    DEVPROP_TYPEMOD_LIST                = $00002000;  // list of variable-sized data elements
+  DEVPROP_TYPEMOD_ARRAY = $00001000;  // array of fixed-sized data elements
+  DEVPROP_TYPEMOD_LIST = $00002000;  // list of variable-sized data elements
 
   //
   // Property data types.
   //
-    DEVPROP_TYPE_EMPTY                  = $00000000;  // nothing, no property data
-    DEVPROP_TYPE_NULL                   = $00000001;  // null property data
-    DEVPROP_TYPE_SBYTE                  = $00000002;  // 8-bit signed int (SBYTE)
-    DEVPROP_TYPE_BYTE                   = $00000003;  // 8-bit unsigned int (BYTE)
-    DEVPROP_TYPE_INT16                  = $00000004;  // 16-bit signed int (SHORT)
-    DEVPROP_TYPE_UINT16                 = $00000005;  // 16-bit unsigned int (USHORT)
-    DEVPROP_TYPE_INT32                  = $00000006;  // 32-bit signed int (LONG)
-    DEVPROP_TYPE_UINT32                 = $00000007;  // 32-bit unsigned int (ULONG)
-    DEVPROP_TYPE_INT64                  = $00000008;  // 64-bit signed int (LONG64)
-    DEVPROP_TYPE_UINT64                 = $00000009;  // 64-bit unsigned int (ULONG64)
-    DEVPROP_TYPE_FLOAT                  = $0000000A;  // 32-bit floating-point (FLOAT)
-    DEVPROP_TYPE_DOUBLE                 = $0000000B;  // 64-bit floating-point (DOUBLE)
-    DEVPROP_TYPE_DECIMAL                = $0000000C;  // 128-bit data (DECIMAL)
-    DEVPROP_TYPE_GUID                   = $0000000D;  // 128-bit unique identifier (GUID)
-    DEVPROP_TYPE_CURRENCY               = $0000000E;  // 64 bit signed int currency value (CURRENCY)
-    DEVPROP_TYPE_DATE                   = $0000000F;  // date (DATE)
-    DEVPROP_TYPE_FILETIME               = $00000010;  // file time (FILETIME)
-    DEVPROP_TYPE_BOOLEAN                = $00000011;  // 8-bit boolean (DEVPROP_BOOLEAN)
-    DEVPROP_TYPE_STRING                 = $00000012;  // null-terminated string
-    DEVPROP_TYPE_STRING_LIST            = (DEVPROP_TYPE_STRING or DEVPROP_TYPEMOD_LIST);  // multi-sz string list
-    DEVPROP_TYPE_SECURITY_DESCRIPTOR    = $00000013;  // self-relative binary SECURITY_DESCRIPTOR
-    DEVPROP_TYPE_SECURITY_DESCRIPTOR_STRING= $00000014;  // security descriptor string (SDDL format)
-    DEVPROP_TYPE_DEVPROPKEY             = $00000015;  // device property key (DEVPROPKEY)
-    DEVPROP_TYPE_DEVPROPTYPE            = $00000016;  // device property type (DEVPROPTYPE)
-    DEVPROP_TYPE_BINARY                 = (DEVPROP_TYPE_BYTE or DEVPROP_TYPEMOD_ARRAY);  // custom binary data
-    DEVPROP_TYPE_ERROR                  = $00000017;  // 32-bit Win32 system error code
-    DEVPROP_TYPE_NTSTATUS               = $00000018;  // 32-bit NTSTATUS code
-    DEVPROP_TYPE_STRING_INDIRECT        = $00000019;  // string resource (@[path\]<dllname>,-<strId>)
+  DEVPROP_TYPE_EMPTY = $00000000;  // nothing, no property data
+  DEVPROP_TYPE_NULL = $00000001;  // null property data
+  DEVPROP_TYPE_SBYTE = $00000002;  // 8-bit signed int (SBYTE)
+  DEVPROP_TYPE_BYTE = $00000003;  // 8-bit unsigned int (BYTE)
+  DEVPROP_TYPE_INT16 = $00000004;  // 16-bit signed int (SHORT)
+  DEVPROP_TYPE_UINT16 = $00000005;  // 16-bit unsigned int (USHORT)
+  DEVPROP_TYPE_INT32 = $00000006;  // 32-bit signed int (LONG)
+  DEVPROP_TYPE_UINT32 = $00000007;  // 32-bit unsigned int (ULONG)
+  DEVPROP_TYPE_INT64 = $00000008;  // 64-bit signed int (LONG64)
+  DEVPROP_TYPE_UINT64 = $00000009;  // 64-bit unsigned int (ULONG64)
+  DEVPROP_TYPE_FLOAT = $0000000A;  // 32-bit floating-point (FLOAT)
+  DEVPROP_TYPE_DOUBLE = $0000000B;  // 64-bit floating-point (DOUBLE)
+  DEVPROP_TYPE_DECIMAL = $0000000C;  // 128-bit data (DECIMAL)
+  DEVPROP_TYPE_GUID = $0000000D;  // 128-bit unique identifier (GUID)
+  DEVPROP_TYPE_CURRENCY = $0000000E;  // 64 bit signed int currency value (CURRENCY)
+  DEVPROP_TYPE_DATE = $0000000F;  // date (DATE)
+  DEVPROP_TYPE_FILETIME = $00000010;  // file time (FILETIME)
+  DEVPROP_TYPE_BOOLEAN = $00000011;  // 8-bit boolean (DEVPROP_BOOLEAN)
+  DEVPROP_TYPE_STRING = $00000012;  // null-terminated string
+  DEVPROP_TYPE_STRING_LIST = (DEVPROP_TYPE_STRING or DEVPROP_TYPEMOD_LIST);  // multi-sz string list
+  DEVPROP_TYPE_SECURITY_DESCRIPTOR = $00000013;  // self-relative binary SECURITY_DESCRIPTOR
+  DEVPROP_TYPE_SECURITY_DESCRIPTOR_STRING = $00000014;  // security descriptor string (SDDL format)
+  DEVPROP_TYPE_DEVPROPKEY = $00000015;  // device property key (DEVPROPKEY)
+  DEVPROP_TYPE_DEVPROPTYPE = $00000016;  // device property type (DEVPROPTYPE)
+  DEVPROP_TYPE_BINARY = (DEVPROP_TYPE_BYTE or DEVPROP_TYPEMOD_ARRAY);  // custom binary data
+  DEVPROP_TYPE_ERROR = $00000017;  // 32-bit Win32 system error code
+  DEVPROP_TYPE_NTSTATUS = $00000018;  // 32-bit NTSTATUS code
+  DEVPROP_TYPE_STRING_INDIRECT = $00000019;  // string resource (@[path\]<dllname>,-<strId>)
 
   //
   // Max base DEVPROP_TYPE_ and DEVPROP_TYPEMOD_ values.
   //
 
-    MAX_DEVPROP_TYPE                    = $00000019;  // max valid DEVPROP_TYPE_ value
-    MAX_DEVPROP_TYPEMOD                 = $00002000;  // max valid DEVPROP_TYPEMOD_ value
+  MAX_DEVPROP_TYPE = $00000019;  // max valid DEVPROP_TYPE_ value
+  MAX_DEVPROP_TYPEMOD = $00002000;  // max valid DEVPROP_TYPEMOD_ value
 
   //
   // Bitmasks for extracting DEVPROP_TYPE_ and DEVPROP_TYPEMOD_ values.
   //
 
-    DEVPROP_MASK_TYPE                   = $00000FFF;  // range for base DEVPROP_TYPE_ values
-    DEVPROP_MASK_TYPEMOD                = $0000F000;  // mask for DEVPROP_TYPEMOD_ type modifiers
+  DEVPROP_MASK_TYPE = $00000FFF;  // range for base DEVPROP_TYPE_ values
+  DEVPROP_MASK_TYPEMOD = $0000F000;  // mask for DEVPROP_TYPEMOD_ type modifiers
 
 
   //
@@ -182,22 +183,24 @@ type
   // In Windows Vista and later versions of Windows, the DEVPROPKEY structure
   // represents a device property key for a device property in the unified device property model.
   //
-{$IFNDEF _DEVPROPKEY_DEFINED}
+  {$IFNDEF _DEVPROPKEY_DEFINED}
 
-    PDEVPROPGUID = ^TGUID;
-    DEVPROPGUID = TGUID;
+  PDEVPROPGUID = ^TGUID;
+  DEVPROPGUID = TGUID;
 
-    PDEVPROPID = ^ULONG;
-    DEVPROPID = ULONG;
+  PDEVPROPID = ^ULONG;
+  DEVPROPID = ULONG;
 
   PDEVPROPKEY = ^DEVPROPKEY;
+
   _DEVPROPKEY = record
     fmtid: DEVPROPGUID;
     pid: DEVPROPID;
   end;
   DEVPROPKEY = _DEVPROPKEY;
-{$DEFINE _DEVPROPKEY_DEFINED}
-{$ENDIF} // DEVPROPKEY_DEFINED
+  {$DEFINE _DEVPROPKEY_DEFINED}
+  {$ENDIF}
+  // DEVPROPKEY_DEFINED
 
 
   // IsEqualDevPropKey
@@ -211,8 +214,8 @@ type
   PDEVPROPSTORE = ^_DEVPROPSTORE;
   _DEVPROPSTORE = (
     DEVPROP_STORE_SYSTEM = 0,
-    DEVPROP_STORE_USER   = 1
-  );
+                   DEVPROP_STORE_USER = 1
+    );
   DEVPROPSTORE = _DEVPROPSTORE;
 
 
@@ -222,6 +225,7 @@ type
   // This structure represents a compound key for a property.
   //
   PDEVPROPCOMPKEY = ^DEVPROPCOMPKEY;
+
   _DEVPROPCOMPKEY = record
     Key: DEVPROPKEY;
     Store: DEVPROPSTORE;
@@ -234,6 +238,7 @@ type
   // DEVPROPERTY structure
   //
   PDEVPROPERTY = ^_DEVPROPERTY;
+
   _DEVPROPERTY = record
     CompKey: DEVPROPCOMPKEY;
     dvType: DEVPROPTYPE;
@@ -250,7 +255,7 @@ type
 
 const
 
-  DEVPROPID_FIRST_USABLE              = 2;
+  DEVPROPID_FIRST_USABLE = 2;
 
 
   // Additional Prototypes for ALL interfaces
@@ -259,7 +264,7 @@ const
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
 
 end.

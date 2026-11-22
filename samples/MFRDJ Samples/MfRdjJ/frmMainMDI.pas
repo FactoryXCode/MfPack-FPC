@@ -64,11 +64,12 @@ unit frmMainMDI;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinApiTypes,
   Messages,
@@ -135,7 +136,9 @@ const
 
 type
 
-  TAudioEndpointNotificationClient = class(TInterfacedObject, IMMNotificationClient)
+  TAudioEndpointNotificationClient = class(TInterfacedObject,
+                                           IMMNotificationClient)
+
   private
 
     FWnd: HWND;
@@ -182,7 +185,8 @@ type
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure tmrClockTimer(Sender: TObject);
@@ -191,8 +195,11 @@ type
     procedure btnSetupClick(Sender: TObject);
     procedure btnPlaylistClick(Sender: TObject);
     procedure btnMinimizeClick(Sender: TObject);
-    procedure pnlCaptionMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure pnlCaptionMouseDown(Sender: TObject;
+                                  Button: TMouseButton;
+                                  Shift: TShiftState;
+                                  X,
+                                  Y: Integer);
     procedure btnEffectsClick(Sender: TObject);
     procedure btnClearMemoClick(Sender: TObject);
     procedure btnFooterPnlClick(Sender: TObject);
@@ -217,8 +224,8 @@ type
     FCueOut: TMfWasApiRenderOutputEngine;
 
     FCueBufferLock: TRTLCriticalSection;
-    FCueMixQueue: TArray<Single>;
-    FCueWorkBuf: TArray<Single>;
+    FCueMixQueue: TArray < Single > ;
+    FCueWorkBuf: TArray < Single > ;
     FCueQueueFramesCapacity: Integer;
     FCueQueueReadFrame: Integer;
     FCueQueueWriteFrame: Integer;
@@ -293,8 +300,10 @@ type
 
     procedure EnsureCueWorkBuf(const AFrames: Integer);
     procedure InitCueQueue(const AFramesCapacity: Integer);
-    procedure PushCueFrames(const Src: PSingle; const Frames: Integer);
-    function PopCueFrames(const Dst: PSingle; const Frames: Integer): Integer;
+    procedure PushCueFrames(const Src: PSingle;
+                            const Frames: Integer);
+    function PopCueFrames(const Dst: PSingle;
+                          const Frames: Integer): Integer;
     procedure ConfigureOutputEndpoints();
     function BuildRenderWaveFormat(out AWfx: TWAVEFORMATEX): HRESULT;
 
@@ -378,26 +387,17 @@ type
     procedure RemoveBroadcastEngine();
     // Json
     function CanGoOnAir(): Boolean;
-        property Caption;
+    property Caption;
 
-    property Setup: TRDJSetup
-      read FSetup;
-    property InternalMixer: TRDJInternalMixer
-      read FInternalMixer;
-    property RecorderTapPoint: string
-      read GetRecorderTapPoint;
-    property Master: TMasterDeckFrm
-      read FMasterDeck;
-    property IceCastEngine: TMfIcecastBroadcastEngine
-      read FBroadCastEngine;
-    property jsonUpdate: TRDJRadioStatusJson
-      read FRDJRadioStatusJson;
-    property DjName: string
-      read FDjName;
-    property ShowName: string
-      read FShowName;
-    property CoverJpg: string
-      read FCoverFileName;
+    property Setup: TRDJSetup read FSetup;
+    property InternalMixer: TRDJInternalMixer read FInternalMixer;
+    property RecorderTapPoint: string read GetRecorderTapPoint;
+    property Master: TMasterDeckFrm read FMasterDeck;
+    property IceCastEngine: TMfIcecastBroadcastEngine read FBroadCastEngine;
+    property jsonUpdate: TRDJRadioStatusJson read FRDJRadioStatusJson;
+    property DjName: string read FDjName;
+    property ShowName: string read FShowName;
+    property CoverJpg: string read FCoverFileName;
   end;
 
 var
@@ -411,16 +411,15 @@ implementation
 uses
   LWFileBrowserExDlg;
 
-
-
 const
   // Baseline target "minimum today" resolution.
   BASE_MIN_W = 1920;
   BASE_MIN_H = 1080;
 
-// TAudioEndpointNotificationClient --------------------------------------------
+  // TAudioEndpointNotificationClient --------------------------------------------
 
 constructor TAudioEndpointNotificationClient.Create(const AWnd: HWND);
+
 begin
 
   inherited Create;
@@ -432,69 +431,75 @@ end;
 function TAudioEndpointNotificationClient.OnDefaultDeviceChanged(flow: EDataFlow;
                                                                  role: ERole;
                                                                  pwstrDefaultDeviceId: LPCWSTR): HResult;
+
 begin
 
   if (FWnd <> 0) then
     PostMessageW(FWnd,
-                WM_RDJ_ENDPOINTS_CHANGED,
-                0,
-                0);
+                 WM_RDJ_ENDPOINTS_CHANGED,
+                 0,
+                 0);
   Result := S_OK;
 end;
 
 
 function TAudioEndpointNotificationClient.OnDeviceAdded(pwstrDeviceId: LPCWSTR): HResult;
+
 begin
 
   if (FWnd <> 0) then
     PostMessageW(FWnd,
-                WM_RDJ_ENDPOINTS_CHANGED,
-                0,
-                0);
+                 WM_RDJ_ENDPOINTS_CHANGED,
+                 0,
+                 0);
   Result := S_OK;
 end;
 
 
 function TAudioEndpointNotificationClient.OnDeviceRemoved(pwstrDeviceId: LPCWSTR): HResult;
+
 begin
 
   if (FWnd <> 0) then
     PostMessageW(FWnd,
-                WM_RDJ_ENDPOINTS_CHANGED,
-                0,
-                0);
+                 WM_RDJ_ENDPOINTS_CHANGED,
+                 0,
+                 0);
   Result := S_OK;
 end;
 
 
 function TAudioEndpointNotificationClient.OnDeviceStateChanged(pwstrDeviceId: LPCWSTR;
                                                                dwNewState: DWORD): HResult;
+
 begin
 
   if (FWnd <> 0) then
     PostMessageW(FWnd,
-                WM_RDJ_ENDPOINTS_CHANGED,
-                0,
-                0);
+                 WM_RDJ_ENDPOINTS_CHANGED,
+                 0,
+                 0);
   Result := S_OK;
 end;
 
 
 function TAudioEndpointNotificationClient.OnPropertyValueChanged(pwstrDeviceId: LPCWSTR;
                                                                  const key: PROPERTYKEY): HResult;
+
 begin
 
   if (FWnd <> 0) then
     PostMessageW(FWnd,
-                WM_RDJ_ENDPOINTS_CHANGED,
-                0,
-                0);
+                 WM_RDJ_ENDPOINTS_CHANGED,
+                 0,
+                 0);
   Result := S_OK;
 end;
 
 // Endpoint & Deviceloss -------------------------------------------------------
 
 procedure TMainMDIFrm.SetupEndpointNotifications();
+
 begin
 
   if Assigned(FEndpointEnumerator) then
@@ -507,6 +512,7 @@ end;
 
 
 procedure TMainMDIFrm.TeardownEndpointNotifications();
+
 begin
 
   if Assigned(FEndpointEnumerator) and Assigned(FEndpointNotifyClient) then
@@ -554,12 +560,13 @@ begin
   RefreshEndpointAvailability();
 
   if (OldMasterAvailable <> FMasterEndpointAvailable) or
-     (OldPFLAvailable <> FPFLEndpointAvailable) then
+    (OldPFLAvailable <> FPFLEndpointAvailable) then
     HardRestartAudioGraph();
 end;
 
 
 function TMainMDIFrm.IsEndpointUsable(const ADeviceId: string): Boolean;
+
 begin
 
   Result := EndpointIdExists(ADeviceId);
@@ -567,6 +574,7 @@ end;
 
 
 function TMainMDIFrm.ResolveMasterEndpointAvailable(): Boolean;
+
 begin
 
   if (Trim(FSetup.MasterDeviceId) = '') then
@@ -577,6 +585,7 @@ end;
 
 
 function TMainMDIFrm.ResolvePFLEndpointAvailable(): Boolean;
+
 begin
 
   if not FSetup.PFLEnabled then
@@ -590,6 +599,7 @@ end;
 
 
 procedure TMainMDIFrm.RefreshEndpointAvailability();
+
 begin
 
   FMasterEndpointAvailable := ResolveMasterEndpointAvailable();
@@ -599,12 +609,14 @@ end;
 // Main lifecycle ==============================================================
 
 procedure TMainMDIFrm.FormCreate(Sender: TObject);
+
 begin
+
   InitializeCriticalSection(FCueBufferLock);
 
   // Keep audio, video and network broadcasting active while RDJ is running.
   // The display may still switch off according to the Windows power settings.
-  if SetThreadExecutionState(ES_CONTINUOUS or ES_SYSTEM_REQUIRED) = 0 then
+  if (SetThreadExecutionState(ES_CONTINUOUS or ES_SYSTEM_REQUIRED) = 0) then
     OutputDebugStringW(PChar('RDJ could not prevent Windows system sleep.'));
 
   // Do not create any childforms here!
@@ -619,7 +631,7 @@ begin
 
   SetThreadExecutionState(ES_CONTINUOUS);
 
-  tmrClock.Enabled:= False;
+  tmrClock.Enabled := False;
 
   // Icecast will be destroyed in OnCloseQuery.
 
@@ -657,6 +669,7 @@ end;
 // - Optional fullscreen toggle (F11)
 // - Horizontal scrollbar to scroll a virtual strip of MDI child decks.
 procedure TMainMDIFrm.ConstructEngine();
+
 begin
 
   KeyPreview := True;
@@ -702,14 +715,15 @@ end;
 
 
 procedure TMainMDIFrm.FormResize(Sender: TObject);
+
 begin
 
   TileDecks();
   //lblLocalTime.Left := (ClientWidth div 2) - (lblLocalTime.Width div 2);
 
   if Assigned(FMasterDeck) and
-     (WindowState = wsMaximized) and
-     (FfrmMasterFxRack.WindowState = wsMinimized) then
+    (WindowState = wsMaximized) and
+    (FfrmMasterFxRack.WindowState = wsMinimized) then
     FMasterDeck.Left := FfrmMasterFxRack.Left;
 
   Invalidate;
@@ -762,7 +776,7 @@ begin
       ClearAudioEndpointSetup();
 
       MessageDlg('The stored master audio endpoint is no longer valid or cannot be opened.' + sLineBreak +
-                 'The audio endpoint settings have been reset. Please select valid devices in Setup.',
+        'The audio endpoint settings have been reset. Please select valid devices in Setup.',
                  mtWarning,
                  [mbOK],
                  0);
@@ -790,7 +804,7 @@ begin
 
           if FSetup.PFLEnabled and (Trim(FSetup.PFLDeviceId) <> '') then
             MessageDlg('The stored cue/PFL audio endpoint is currently unavailable or cannot be opened.' + sLineBreak +
-                       'Cue stays disabled for this run, but the stored cue device setting is preserved.',
+              'Cue stays disabled for this run, but the stored cue device setting is preserved.',
                        mtWarning,
                        [mbOK],
                        0);
@@ -798,8 +812,8 @@ begin
     end;
 
   if Assigned(FCueOut) and
-     (FMasterOut.BufferFrameCount > 0) and
-     (FCueOut.BufferFrameCount > 0) then
+    (FMasterOut.BufferFrameCount > 0) and
+    (FCueOut.BufferFrameCount > 0) then
     InitCueQueue(Max(Integer(FMasterOut.BufferFrameCount),
                      Integer(FCueOut.BufferFrameCount)))
   else
@@ -836,6 +850,7 @@ end;
 
 procedure TMainMDIFrm.FormCloseQuery(Sender: TObject;
                                      var CanClose: Boolean);
+
 begin
 
   CanClose := False;
@@ -860,6 +875,7 @@ end;
 // Setup / deck creation ======================================================
 
 procedure TMainMDIFrm.OpenSetupGUI();
+
 begin
 
   if TfrmSetup.Execute(FSetup) then
@@ -878,6 +894,7 @@ end;
 
 // IceCast/Caddy
 procedure TMainMDIFrm.OpenMediaServerGUI();
+
 begin
 
   if not assigned(FMediaServer) then
@@ -889,8 +906,11 @@ end;
 
 
 // Drag form
-procedure TMainMDIFrm.pnlCaptionMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TMainMDIFrm.pnlCaptionMouseDown(Sender: TObject;
+                                          Button: TMouseButton;
+                                          Shift: TShiftState;
+                                          X,
+                                          Y: Integer);
 const
   SC_DRAGMOVE = $F012;
 
@@ -927,6 +947,7 @@ end;
 
 // FX factory.
 function TMainMDIFrm.CreateFxByKind(const AFxKind: TRDJFxKind): TMfWasApiFxComponentBase;
+
 begin
 
   case AFxKind of
@@ -935,8 +956,8 @@ begin
 
     fxkCompressorLimiter:
       Result := TMfCompressorLimiterEffect.Create(nil);
-  else
-    Result := nil;
+    else
+      Result := nil;
   end;
 end;
 
@@ -949,8 +970,7 @@ var
 
 begin
 
-  if (AEffect = nil) or
-     not Assigned(FMasterFXRack) then
+  if (AEffect = nil) or not Assigned(FMasterFXRack) then
     Exit;
 
   i := Length(FMasterFxObjects);
@@ -1028,11 +1048,12 @@ end;
 procedure TMainMDIFrm.ProcessMasterFx(const pData: PSingle;
                                       const Frames: Integer;
                                       const ASampleRate: Integer);
+
 begin
 
   if (pData = nil) or
-     (Frames <= 0) or
-     (ASampleRate <= 0) then
+    (Frames <= 0) or
+    (ASampleRate <= 0) then
     Exit;
 
   if Assigned(FMasterFXRack) then
@@ -1055,13 +1076,13 @@ begin
     Exit;
 
   if not (FBroadcastEngine.State in [bsConnecting,
-                                     bsLive,
-                                     bsReconnecting]) then
+    bsLive,
+    bsReconnecting]) then
     Exit;
 
   if (pData = nil) or
-     (pwfx = nil) or
-     (Frames <= 0) then
+    (pwfx = nil) or
+    (Frames <= 0) then
     Exit;
 
   if (FSetup.Broadcast.TapPoint <> btpPostMasterFx) then
@@ -1090,13 +1111,13 @@ begin
     Exit;
 
   if not (FBroadcastEngine.State in [bsConnecting,
-                                     bsLive,
-                                     bsReconnecting]) then
+    bsLive,
+    bsReconnecting]) then
     Exit;
 
   if (pData = nil) or
-     (pwfx = nil) or
-     (Frames <= 0) then
+    (pwfx = nil) or
+    (Frames <= 0) then
     Exit;
 
   if (FSetup.Broadcast.TapPoint <> btpPreMasterFx) then
@@ -1115,6 +1136,7 @@ end;
 
 // Icecast ---------------------------------------------------------------------
 procedure TMainMDIFrm.CreateBroadcastEngine();
+
 begin
 
   if Assigned(FBroadcastEngine) then
@@ -1126,6 +1148,7 @@ end;
 
 
 procedure TMainMDIFrm.DestroyBroadcastEngine();
+
 begin
 
   if Assigned(FBroadcastEngine) then
@@ -1150,9 +1173,10 @@ begin
 
   for I := 0 to High(FLoopbackDecks) do
     if Assigned(FLoopbackDecks[I]) and
-       FLoopbackDecks[I].IsCapturing() then
+      FLoopbackDecks[I].IsCapturing() then
       Exit(True);
 end;
+
 
 procedure TMainMDIFrm.StartBroadcast();
 var
@@ -1163,7 +1187,7 @@ var
 begin
 
   if not ValidateBroadcastSetup(FSetup.Broadcast,
-                                ErrMsg) then
+    ErrMsg) then
     raise Exception.Create(ErrMsg);
 
   CreateBroadcastEngine();
@@ -1179,9 +1203,11 @@ begin
   // makes the public player connect/reconnect because Icecast receives no audio.
   // If the Icecast server manager host is remote, use it as the audio target.
   if (SameText(S.Host, '127.0.0.1') or SameText(S.Host, 'localhost')) and
-     (Trim(FSetup.IcecastHost) <> '') and
-     (not SameText(Trim(FSetup.IcecastHost), '127.0.0.1')) and
-     (not SameText(Trim(FSetup.IcecastHost), 'localhost')) then
+    (Trim(FSetup.IcecastHost) <> '') and
+    (not SameText(Trim(FSetup.IcecastHost),
+                  '127.0.0.1')) and
+    (not SameText(Trim(FSetup.IcecastHost),
+                  'localhost')) then
     S.Host := Trim(FSetup.IcecastHost);
 
   S.Port := FSetup.Broadcast.Port;
@@ -1197,8 +1223,8 @@ begin
 
   case FSetup.Broadcast.Codec of
     bcMp3: S.Codec := bcMp3;
-  else
-    S.Codec := bcAac;
+    else
+      S.Codec := bcAac;
   end;
 
   S.BitrateKbps := FSetup.Broadcast.BitrateKbps;
@@ -1207,8 +1233,8 @@ begin
 
   case FSetup.Broadcast.TapPoint of
     btpPreMasterFx: S.TapPoint := btpPreMasterFx;
-  else
-    S.TapPoint := btpPostMasterFx;
+    else
+      S.TapPoint := btpPostMasterFx;
   end;
 
   S.AutoReconnect := FSetup.Broadcast.AutoReconnect;
@@ -1226,6 +1252,7 @@ end;
 
 
 procedure TMainMDIFrm.StopBroadcast();
+
 begin
 
   if Assigned(FBroadcastEngine) then
@@ -1234,6 +1261,7 @@ end;
 
 
 procedure TMainMDIFrm.SetBroadcastEnabled(const AValue: Boolean);
+
 begin
 
   FSetup.Broadcast.Enabled := AValue;
@@ -1242,15 +1270,15 @@ begin
     begin
 
       if Assigned(FBroadcastEngine) and
-         (FBroadcastEngine.State in [bsConnecting,
-                                     bsLive,
-                                     bsReconnecting]) then
+        (FBroadcastEngine.State in [bsConnecting,
+        bsLive,
+        bsReconnecting]) then
         Exit;
     end
   else
     begin
       if Assigned(FBroadcastEngine) and
-         (FBroadcastEngine.State = bsStopped) then
+        (FBroadcastEngine.State = bsStopped) then
         Exit;
     end;
 
@@ -1267,6 +1295,7 @@ end;
 
 
 procedure TMainMDIFrm.RemoveBroadcastEngine();
+
 begin
 
   DestroyBroadcastEngine();
@@ -1275,6 +1304,7 @@ end;
 
 function TMainMDIFrm.ValidateBroadcastSetup(const S: TRDJBroadcastSetup;
                                             out ErrMsg: string): Boolean;
+
 begin
 
   Result := False;
@@ -1282,26 +1312,20 @@ begin
 
   if (Trim(S.Host) = '') then
     ErrMsg := 'Broadcast host is empty.'
+  else if (S.Port <= 0) then
+    ErrMsg := 'Broadcast port is invalid.'
+  else if (Trim(S.Mount) = '') then
+    ErrMsg := 'Broadcast mount is empty.'
+  else if (S.Mount[1] <> '/') then
+    ErrMsg := 'Broadcast mount must start with "/".'
+  else if (Trim(S.Username) = '') then
+    ErrMsg := 'Broadcast username is empty.'
+  else if (Trim(S.Password) = '') then
+    ErrMsg := 'Broadcast password is empty.'
+  else if (S.Channels <> 2) then
+    ErrMsg := 'Only stereo broadcast is supported.'
   else
-    if (S.Port <= 0) then
-      ErrMsg := 'Broadcast port is invalid.'
-    else
-      if (Trim(S.Mount) = '') then
-        ErrMsg := 'Broadcast mount is empty.'
-      else
-        if (S.Mount[1] <> '/') then
-          ErrMsg := 'Broadcast mount must start with "/".'
-        else
-          if (Trim(S.Username) = '') then
-            ErrMsg := 'Broadcast username is empty.'
-          else
-            if (Trim(S.Password) = '') then
-              ErrMsg := 'Broadcast password is empty.'
-            else
-              if (S.Channels <> 2) then
-                ErrMsg := 'Only stereo broadcast is supported.'
-              else
-                Result := True;
+    Result := True;
 end;
 
 // Icecast end -----------------------------------------------------------------
@@ -1321,7 +1345,7 @@ begin
   if (BaseUrl = '') then
     begin
       if APreferCurrent and
-         FileExists(IncludeTrailingPathDelimiter(Setup.IcecastCaddyDir) + COVER_IMAGE_FILE_NAME) then
+        FileExists(IncludeTrailingPathDelimiter(Setup.IcecastCaddyDir) + COVER_IMAGE_FILE_NAME) then
         BaseUrl := COVER_IMAGE_FILE_NAME
       else
         BaseUrl := COVER_DEFAULT_IMAGE_FILE_NAME;
@@ -1334,20 +1358,22 @@ begin
                            [rfReplaceAll]);
 
   if SameText(ExtractFileName(BaseUrl), COVER_IMAGE_FILE_NAME) or
-     (Pos(COVER_IMAGE_FILE_NAME + '?', LowerCase(BaseUrl)) > 0) then
+    (Pos(COVER_IMAGE_FILE_NAME + '?',
+         LowerCase(BaseUrl)) > 0) then
     BaseUrl := COVER_IMAGE_FILE_NAME
+  else if SameText(ExtractFileName(BaseUrl), COVER_DEFAULT_IMAGE_FILE_NAME) or
+    (Pos(COVER_DEFAULT_IMAGE_FILE_NAME + '?',
+         LowerCase(BaseUrl)) > 0) then
+    BaseUrl := COVER_DEFAULT_IMAGE_FILE_NAME
   else
-    if SameText(ExtractFileName(BaseUrl), COVER_DEFAULT_IMAGE_FILE_NAME) or
-       (Pos(COVER_DEFAULT_IMAGE_FILE_NAME + '?', LowerCase(BaseUrl)) > 0) then
-      BaseUrl := COVER_DEFAULT_IMAGE_FILE_NAME
-    else
-      begin
-        QPos := Pos('?', BaseUrl);
-        if (QPos > 0) then
-          BaseUrl := Copy(BaseUrl,
-                          1,
-                          QPos - 1);
-      end;
+    begin
+      QPos := Pos('?',
+                  BaseUrl);
+      if (QPos > 0) then
+        BaseUrl := Copy(BaseUrl,
+                        1,
+                        QPos - 1);
+    end;
 
   Result := BaseUrl {+ '?ts=' + IntToStr(GetTickCount)};  // Do not add tickcount, that will be done in TRDJRadioStatusJson.WriteRadioStatusJson
 end;
@@ -1378,6 +1404,7 @@ begin
                                            ACoverUrl);
 end;
 
+
 function TMainMDIFrm.CanGoOnAir(): Boolean;
 var
   Json: TJSONObject;
@@ -1388,31 +1415,31 @@ begin
   Result := True;
 
   try
-  Json := FRDJRadioStatusJson.LoadNowPlayingJson(FSetup.IcecastNowPlayingJsonFile);
+    Json := FRDJRadioStatusJson.LoadNowPlayingJson(FSetup.IcecastNowPlayingJsonFile);
 
-  try
+    try
 
-    if Assigned(Json) then
-      begin
+      if Assigned(Json) then
+        begin
 
-        CurrentDj := '';
+          CurrentDj := '';
 
-        if (Json.GetValue('onAirLock') <> nil) then
-          CurrentDj := Json.GetValue('onAirLock').Value;
+          if (Json.GetValue('onAirLock') <> nil) then
+            CurrentDj := Json.GetValue('onAirLock').Value;
 
-        if (CurrentDj <> '') and
-           (not SameText(CurrentDj,
-                         Trim(mmoDjName.Text))) then
-          begin
+          if (CurrentDj <> '') and
+            (not SameText(CurrentDj,
+                          Trim(mmoDjName.Text))) then
+            begin
 
-            Result := False;
-            ShowMessage('On Air is currently locked by ' + CurrentDj);
-          end;
-      end;
-  finally
+              Result := False;
+              ShowMessage('On Air is currently locked by ' + CurrentDj);
+            end;
+        end;
+    finally
 
-    Json.Free;
-  end;
+      Json.Free;
+    end;
 
   except
 
@@ -1422,6 +1449,7 @@ end;
 
 
 procedure TMainMDIFrm.chkMediaServerClick(Sender: TObject);
+
 begin
 
   OpenMediaServerGUI();
@@ -1463,7 +1491,7 @@ begin
   else
     Exit;
 
-  if not Assigned(DlgLWFileBrowserEx)  then
+  if not Assigned(DlgLWFileBrowserEx) then
     DlgLWFileBrowserEx := TLWFileBrowserExDlg.Create(Self);
 
   DlgLWFileBrowserEx.FileFilter := fbxGraphics;
@@ -1481,8 +1509,8 @@ begin
       // Server mode: ActiveCover may be \\Server\Caddy\cover.jpg.
       // This is a user action, not an audio/render-thread operation.
       if not CopyFileW(PChar(FileName),
-                      PChar(ActiveCover),
-                      False) then
+        PChar(ActiveCover),
+        False) then
         RaiseLastOSError;
 
       imgDjShowLogo.Picture.LoadFromFile(ActiveCover);
@@ -1520,7 +1548,7 @@ begin
     FCueQueueWriteFrame := 0;
     FCueQueueValidFrames := 0;
 
-    if Length(FCueMixQueue) > 0 then
+    if (Length(FCueMixQueue) > 0) then
       FillChar(FCueMixQueue[0],
                Length(FCueMixQueue) * SizeOf(Single),
                0);
@@ -1531,7 +1559,8 @@ begin
 end;
 
 
-procedure TMainMDIFrm.PushCueFrames(const Src: PSingle; const Frames: Integer);
+procedure TMainMDIFrm.PushCueFrames(const Src: PSingle;
+                                    const Frames: Integer);
 var
   i: Integer;
   WriteFrame: Integer;
@@ -1541,8 +1570,8 @@ var
 begin
 
   if (Src = nil) or
-     (Frames <= 0) or
-     (FCueQueueFramesCapacity <= 0) then
+    (Frames <= 0) or
+    (FCueQueueFramesCapacity <= 0) then
     Exit;
 
   EnterCriticalSection(FCueBufferLock);
@@ -1558,7 +1587,7 @@ begin
           begin
 
             Inc(FCueQueueReadFrame);
-            if FCueQueueReadFrame >= FCueQueueFramesCapacity then
+            if (FCueQueueReadFrame >= FCueQueueFramesCapacity) then
               FCueQueueReadFrame := 0;
             Dec(FCueQueueValidFrames);
           end;
@@ -1570,7 +1599,7 @@ begin
         FCueMixQueue[DstIndex + 1] := PSingle(NativeUInt(Src) + NativeUInt((SrcIndex + 1) * SizeOf(Single)))^;
 
         Inc(WriteFrame);
-        if WriteFrame >= FCueQueueFramesCapacity then
+        if (WriteFrame >= FCueQueueFramesCapacity) then
           WriteFrame := 0;
 
         Inc(FCueQueueValidFrames);
@@ -1583,7 +1612,8 @@ begin
 end;
 
 
-function TMainMDIFrm.PopCueFrames(const Dst: PSingle; const Frames: Integer): Integer;
+function TMainMDIFrm.PopCueFrames(const Dst: PSingle;
+                                  const Frames: Integer): Integer;
 var
   i: Integer;
   ReadFrame: Integer;
@@ -1602,7 +1632,8 @@ begin
   try
     ReadFrame := FCueQueueReadFrame;
 
-    Result := Min(Frames, FCueQueueValidFrames);
+    Result := Min(Frames,
+                  FCueQueueValidFrames);
     for i := 0 to Result - 1 do
       begin
 
@@ -1613,12 +1644,13 @@ begin
         PSingle(NativeUInt(Dst) + NativeUInt((DstIndex + 1) * SizeOf(Single)))^ := FCueMixQueue[SrcIndex + 1];
 
         Inc(ReadFrame);
-        if ReadFrame >= FCueQueueFramesCapacity then
+        if (ReadFrame >= FCueQueueFramesCapacity) then
           ReadFrame := 0;
       end;
 
     FCueQueueReadFrame := ReadFrame;
-    Dec(FCueQueueValidFrames, Result);
+    Dec(FCueQueueValidFrames,
+        Result);
   finally
 
     LeaveCriticalSection(FCueBufferLock);
@@ -1627,6 +1659,7 @@ end;
 
 
 function TMainMDIFrm.BuildRenderWaveFormat(out AWfx: TWAVEFORMATEX): HRESULT;
+
 begin
 
   ZeroMemory(@AWfx,
@@ -1672,13 +1705,14 @@ end;
 
 
 function TMainMDIFrm.ResetInvalidEndpointAssignments(): Boolean;
+
 begin
 
   Result := False;
 
   // Master can safely fall back to default endpoint.
   if (Trim(FSetup.MasterDeviceId) <> '') and
-     (not EndpointIdExists(FSetup.MasterDeviceId)) then
+    (not EndpointIdExists(FSetup.MasterDeviceId)) then
     begin
 
       FSetup.MasterDeviceId := '';
@@ -1687,7 +1721,7 @@ begin
 
   // Microphone input can safely fall back to default capture endpoint.
   if (Trim(FSetup.MicDeviceId) <> '') and
-     (not EndpointIdExists(FSetup.MicDeviceId)) then
+    (not EndpointIdExists(FSetup.MicDeviceId)) then
     begin
 
       FSetup.MicDeviceId := '';
@@ -1706,6 +1740,7 @@ end;
 
 
 procedure TMainMDIFrm.ClearAudioEndpointSetup();
+
 begin
 
   FSetup.MasterDeviceId := '';
@@ -1752,7 +1787,7 @@ begin
 
           FCueUnavailableWarned := True;
           MessageDlg('The stored cue/PFL audio endpoint is currently unavailable.' + sLineBreak +
-                     'Cue will stay disabled for this run until the endpoint becomes available again.',
+            'Cue will stay disabled for this run until the endpoint becomes available again.',
                      mtWarning,
                      [mbOK],
                      0);
@@ -1762,6 +1797,7 @@ end;
 
 
 procedure TMainMDIFrm.ApplySetupOnce();
+
 begin
 
   // Freeze setup globally so decks can read it and it cannot change at runtime.
@@ -1799,18 +1835,19 @@ end;
 
 
 procedure TMainMDIFrm.btnMaxNormalClick(Sender: TObject);
+
 begin
 
   if (WindowState = wsMaximized) then
     WindowState := wsNormal
-  else
-    if (WindowState = wsNormal) then
-      WindowState := wsMaximized;
+  else if (WindowState = wsNormal) then
+    WindowState := wsMaximized;
   Invalidate;
 end;
 
 
 procedure TMainMDIFrm.btnMinimizeClick(Sender: TObject);
+
 begin
 
   WindowState := wsMinimized;
@@ -1818,6 +1855,7 @@ end;
 
 
 procedure TMainMDIFrm.btnPlaylistClick(Sender: TObject);
+
 begin
 
   if (FPlayListEditor = nil) then
@@ -1831,9 +1869,10 @@ end;
 
 
 procedure TMainMDIFrm.btnSetDjNameAndShowTitleClick(Sender: TObject);
+
 begin
 
-  if not Assigned (FRDJRadioStatusJson) then
+  if not Assigned(FRDJRadioStatusJson) then
     Exit;
 
   WriteNowPlayingStatus(Trim(mmoDjName.Text),
@@ -1845,6 +1884,7 @@ end;
 
 
 procedure TMainMDIFrm.btnSetupClick(Sender: TObject);
+
 begin
 
   OpenSetupGUI();
@@ -1852,6 +1892,7 @@ end;
 
 
 procedure TMainMDIFrm.btnEffectsClick(Sender: TObject);
+
 begin
 
   if not Assigned(FfrmMasterFxRack) then
@@ -1873,6 +1914,7 @@ end;
 
 
 procedure TMainMDIFrm.btnExitClick(Sender: TObject);
+
 begin
 
   Close();
@@ -1880,6 +1922,7 @@ end;
 
 
 procedure TMainMDIFrm.btnFooterPnlClick(Sender: TObject);
+
 begin
 
   pnlFooter.Visible := btnFooterPnl.Checked;
@@ -1887,6 +1930,7 @@ end;
 
 
 procedure TMainMDIFrm.RecreateAudioOutputs();
+
 begin
 
   FreeAndNil(FCueOut);
@@ -1898,9 +1942,11 @@ end;
 
 
 procedure TMainMDIFrm.ResetAudioRuntimeState();
+
 begin
 
-  SetLength(FCueWorkBuf, 0);
+  SetLength(FCueWorkBuf,
+            0);
 
   if Assigned(FInternalMixer) then
     FInternalMixer.PrepareWorkBuffers(0);
@@ -2030,7 +2076,7 @@ begin
   SetLength(FChannelDecks,
             0);
 
-   // Loopback decks
+  // Loopback decks
   for i := 0 to Length(FLoopbackDecks) - 1 do
     begin
       if (FLoopbackDecks[i] <> nil) then
@@ -2095,7 +2141,8 @@ begin
       FMicrophoneDeck.Top := y;
       FMicrophoneDeck.Left := x;
 
-      Inc(x, deckW);
+      Inc(x,
+          deckW);
     end;
 
   // Normal channel decks
@@ -2110,7 +2157,8 @@ begin
       FChannelDecks[i].Top := y;
       FChannelDecks[i].Left := x;
 
-      Inc(x, deckW);
+      Inc(x,
+          deckW);
     end;
 
   // Loopback decks
@@ -2125,7 +2173,8 @@ begin
       FLoopbackDecks[i].Top := y;
       FLoopbackDecks[i].Left := x;
 
-      Inc(x, deckW);
+      Inc(x,
+          deckW);
     end;
 
   // FX rack
@@ -2137,7 +2186,8 @@ begin
       FfrmMasterFxRack.Top := y;
       FfrmMasterFxRack.Left := x;
 
-      Inc(x, deckW);
+      Inc(x,
+          deckW);
     end;
 
   // Master deck
@@ -2167,6 +2217,7 @@ end;
 
 
 procedure TMainMDIFrm.tmrClockTimer(Sender: TObject);
+
 begin
 
   lblLocalTime.Caption := TimeToStr(Time);
@@ -2174,6 +2225,7 @@ end;
 
 
 procedure TMainMDIFrm.CreateMasterForm();
+
 begin
 
   if (FMasterDeck <> nil) then
@@ -2185,6 +2237,7 @@ end;
 
 
 procedure TMainMDIFrm.CreateMicrophoneForm();
+
 begin
 
   if (FMicrophoneDeck <> nil) then
@@ -2249,35 +2302,36 @@ end;
 
 
 function TMainMDIFrm.GetRecorderTapPoint(): string;
+
 begin
 
   if (FSetup.AudioRecorderRecordPreFx) then
     Result := Format('Mixer audio Pre-FX, ID = %d',
                      [0])
-  else
-    if (FSetup.AudioRecorderRecordPostFx) then
-      Result := Format('Mixer audio Post-FX, ID = %d',
-                       [1])
-    else
-      if (FSetup.AudioRecorderRecordPostFx) and (FSetup.AudioRecorderRecordPreFx) then
-        Result := Format('Mixer audio Pre-FX (id = ) and Post-FX (ID = %d)',
-                         [0, 1])
+  else if (FSetup.AudioRecorderRecordPostFx) then
+    Result := Format('Mixer audio Post-FX, ID = %d',
+                     [1])
+  else if (FSetup.AudioRecorderRecordPostFx) and (FSetup.AudioRecorderRecordPreFx) then
+    Result := Format('Mixer audio Pre-FX (id = ) and Post-FX (ID = %d)',
+                     [0, 1])
 end;
 
 
 function TMainMDIFrm.IsRecordingPreFx(): Boolean;
+
 begin
 
   Result := Assigned(FInternalMixRecorderPreFx) and
-            FInternalMixRecorderPreFx.Recording;
+    FInternalMixRecorderPreFx.Recording;
 end;
 
 
 function TMainMDIFrm.IsRecordingPostFx(): Boolean;
+
 begin
 
   Result := Assigned(FInternalMixRecorderPostFx) and
-            FInternalMixRecorderPostFx.Recording;
+    FInternalMixRecorderPostFx.Recording;
 end;
 
 
@@ -2291,7 +2345,8 @@ var
 begin
 
   DirName := ExtractFilePath(ABaseFileName);
-  BaseNoExt := ChangeFileExt(ExtractFileName(ABaseFileName), '');
+  BaseNoExt := ChangeFileExt(ExtractFileName(ABaseFileName),
+                             '');
   Ext := ExtractFileExt(ABaseFileName);
   Result := DirName + BaseNoExt + ASuffix + Ext;
 end;
@@ -2323,8 +2378,8 @@ begin
   Flags := 0;
 
   if (pData = nil) or
-     (ByteCount = 0) or
-     (pwfx = nil) then
+    (ByteCount = 0) or
+    (pwfx = nil) then
     Exit(E_INVALIDARG);
 
   if (pwfx.nBlockAlign = 0) then
@@ -2338,7 +2393,7 @@ begin
 
   EnsureCueWorkBuf(Frames);
 
-  if Length(FCueWorkBuf) < (Frames * 2) then
+  if (Length(FCueWorkBuf) < (Frames * 2)) then
     Exit(E_OUTOFMEMORY);
 
   Result := FInternalMixer.MixBlock(Frames,
@@ -2388,6 +2443,7 @@ end;
 
 
 procedure TMainMDIFrm.btnClearMemoClick(Sender: TObject);
+
 begin
 
   mmoTextNotes.Clear;
@@ -2441,46 +2497,47 @@ end;
 procedure TMainMDIFrm.BroadcastStateChanged(Sender: TObject;
                                             NewState: TMfBroadcastState;
                                             const Msg: string);
+
 begin
 
   if Assigned(FMediaServer) then
     begin
       case NewState of
 
-        bsStopped: begin
+          bsStopped: begin
 
-                      FMediaServer.SetBroadcastUiState(False,
-                                                       False);
-                      MainMdifrm.chkMediaServer.Checked := False;
-                   end;
+            FMediaServer.SetBroadcastUiState(False,
+                                             False);
+            MainMdifrm.chkMediaServer.Checked := False;
+          end;
 
-        bsConnecting: begin
+          bsConnecting: begin
 
-                        FMediaServer.SetBroadcastUiState(True,
-                                                         False);
-                        MainMdifrm.chkMediaServer.Checked := False;
-                      end;
+            FMediaServer.SetBroadcastUiState(True,
+                                             False);
+            MainMdifrm.chkMediaServer.Checked := False;
+          end;
 
-        bsLive: begin
+          bsLive: begin
 
-                  FMediaServer.SetBroadcastUiState(True,
-                                                   True);
-                  MainMdifrm.chkMediaServer.Checked := True;
-                end;
+            FMediaServer.SetBroadcastUiState(True,
+                                             True);
+            MainMdifrm.chkMediaServer.Checked := True;
+          end;
 
-        bsReconnecting: begin
+          bsReconnecting: begin
 
-                          FMediaServer.SetBroadcastUiState(True,
-                                                           False);
-                          MainMdifrm.chkMediaServer.Checked := False;
-                        end;
+            FMediaServer.SetBroadcastUiState(True,
+                                             False);
+            MainMdifrm.chkMediaServer.Checked := False;
+          end;
 
-        bsError: begin
+          bsError: begin
 
-                   FMediaServer.SetBroadcastUiState(False,
-                                                    False);
-                   MainMdifrm.chkMediaServer.Checked := False;
-                 end;
+            FMediaServer.SetBroadcastUiState(False,
+                                             False);
+            MainMdifrm.chkMediaServer.Checked := False;
+          end;
       end;
     end;
 end;
@@ -2529,7 +2586,7 @@ begin
                                              '_pre');
 
       if FInternalMixRecorderPreFx.Start(FileNamePre,
-                                         Wfx) then
+        Wfx) then
         Started := True;
     end;
 
@@ -2543,7 +2600,7 @@ begin
                                               '_post');
 
       if FInternalMixRecorderPostFx.Start(FileNamePost,
-                                          Wfx) then
+        Wfx) then
         Started := True;
     end;
 
@@ -2555,6 +2612,7 @@ end;
 
 
 procedure TMainMDIFrm.StopInternalMixerRecording();
+
 begin
 
   if Assigned(FInternalMixRecorderPreFx) then
@@ -2566,14 +2624,16 @@ end;
 
 
 function TMainMDIFrm.IsInternalMixerRecording(): Boolean;
+
 begin
 
   Result := IsRecordingPreFx() or
-            IsRecordingPostFx();
+    IsRecordingPostFx();
 end;
 
 
 procedure TMainMDIFrm.SetAudioRecorderRecordPreFx(const AValue: Boolean);
+
 begin
 
   FSetup.AudioRecorderRecordPreFx := AValue;
@@ -2583,6 +2643,7 @@ end;
 
 
 procedure TMainMDIFrm.SetAudioRecorderRecordPostFx(const AValue: Boolean);
+
 begin
 
   FSetup.AudioRecorderRecordPostFx := AValue;
@@ -2592,6 +2653,7 @@ end;
 
 
 function TMainMDIFrm.GetChannelDeck(const AIndex: Integer): TfrmChannelDeck;
+
 begin
 
   Result := nil;
@@ -2604,6 +2666,7 @@ end;
 
 
 function TMainMDIFrm.GetChannelDeckCount(): Integer;
+
 begin
 
   Result := Length(FChannelDecks);
@@ -2611,15 +2674,15 @@ end;
 
 
 procedure TMainMDIFrm.SetAudioRecorderTapPoint(const AValue: Integer);
+
 begin
 
   if (AValue < 0) then
     FSetup.AudioRecorderTapPoint := 0
+  else if (AValue > 1) then
+    FSetup.AudioRecorderTapPoint := 1
   else
-    if (AValue > 1) then
-      FSetup.AudioRecorderTapPoint := 1
-    else
-      FSetup.AudioRecorderTapPoint := AValue;
+    FSetup.AudioRecorderTapPoint := AValue;
 
   SaveSetupToIni(FSetupFileName,
                  FSetup);
@@ -2633,14 +2696,14 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_LITE)) then
-      begin
-        MessageBoxW(0,
-                   lpcwstr('Your computer does not support this Media Foundation API version.' +
-                           IntToStr(MF_VERSION) + '.'),
-                   lpcwstr('MFStartup Failure!'),
-                           MB_ICONSTOP);
-      end;
+    MFSTARTUP_LITE)) then
+    begin
+      MessageBoxW(0,
+                  lpcwstr('Your computer does not support this Media Foundation API version.' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
+    end;
 
 finalization
 

@@ -87,6 +87,7 @@ type
   PSecHandle = ^TSecHandle;
 
   PSecBuffer = ^TSecBuffer;
+
   TSecBuffer = record
     cbBuffer: Cardinal;
     BufferType: Cardinal;
@@ -94,6 +95,7 @@ type
   end;
 
   PSecBufferDesc = ^TSecBufferDesc;
+
   TSecBufferDesc = record
     ulVersion: Cardinal;
     cBuffers: Cardinal;
@@ -101,6 +103,7 @@ type
   end;
 
   PSChannelCred = ^TSChannelCred;
+
   TSChannelCred = record
     dwVersion: DWORD;
     cCreds: DWORD;
@@ -119,6 +122,7 @@ type
   end;
 
   PSecPkgContextStreamSizes = ^TSecPkgContextStreamSizes;
+
   TSecPkgContextStreamSizes = record
     cbHeader: Cardinal;
     cbTrailer: Cardinal;
@@ -135,7 +139,9 @@ type
     cbBlockSize: Cardinal;
   end;
 
-  TMfCastTcpTransport = class(TInterfacedObject, IMfCastTransport)
+  TMfCastTcpTransport = class(TInterfacedObject,
+                              IMfCastTransport)
+
   private
     FSettings: TMfCastProtocolSettings;
     FLogger: IMfCastLogger;
@@ -200,47 +206,47 @@ type
   end;
 
 
-  // Security
-  function AcquireCredentialsHandleA(pszPrincipal: PAnsiChar;
-                                     pszPackage: PAnsiChar;
-                                     fCredentialUse: Cardinal;
-                                     pvLogonID: Pointer;
-                                     pAuthData: Pointer;
-                                     pGetKeyFn: Pointer;
-                                     pvGetKeyArgument: Pointer;
-                                     var phCredential: TSecHandle;
-                                     var ptsExpiry: TTimeStamp): TSecurityStatus; stdcall;
+// Security
+function AcquireCredentialsHandleA(pszPrincipal: PAnsiChar;
+                                   pszPackage: PAnsiChar;
+                                   fCredentialUse: Cardinal;
+                                   pvLogonID: Pointer;
+                                   pAuthData: Pointer;
+                                   pGetKeyFn: Pointer;
+                                   pvGetKeyArgument: Pointer;
+                                   var phCredential: TSecHandle;
+                                   var ptsExpiry: TTimeStamp): TSecurityStatus; stdcall;
 
-  function InitializeSecurityContextA(phCredential: PSecHandle;
-                                      phContext: PSecHandle;
-                                      pszTargetName: PAnsiChar;
-                                      fContextReq: Cardinal;
-                                      Reserved1: Cardinal;
-                                      TargetDataRep: Cardinal;
-                                      pInput: PSecBufferDesc;
-                                      Reserved2: Cardinal;
-                                      var phNewContext: TSecHandle;
-                                      pOutput: PSecBufferDesc;
-                                      var pfContextAttr: Cardinal;
-                                      var ptsExpiry: TTimeStamp): TSecurityStatus; stdcall;
+function InitializeSecurityContextA(phCredential: PSecHandle;
+                                    phContext: PSecHandle;
+                                    pszTargetName: PAnsiChar;
+                                    fContextReq: Cardinal;
+                                    Reserved1: Cardinal;
+                                    TargetDataRep: Cardinal;
+                                    pInput: PSecBufferDesc;
+                                    Reserved2: Cardinal;
+                                    var phNewContext: TSecHandle;
+                                    pOutput: PSecBufferDesc;
+                                    var pfContextAttr: Cardinal;
+                                    var ptsExpiry: TTimeStamp): TSecurityStatus; stdcall;
 
-  function FreeCredentialsHandle(var phCredential: TSecHandle): TSecurityStatus; stdcall;
-  function DeleteSecurityContext(var phContext: TSecHandle): TSecurityStatus; stdcall;
-  function FreeContextBuffer(pvContextBuffer: Pointer): TSecurityStatus; stdcall;
+function FreeCredentialsHandle(var phCredential: TSecHandle): TSecurityStatus; stdcall;
+function DeleteSecurityContext(var phContext: TSecHandle): TSecurityStatus; stdcall;
+function FreeContextBuffer(pvContextBuffer: Pointer): TSecurityStatus; stdcall;
 
-  function QueryContextAttributesA(var phContext: TSecHandle;
-                                   ulAttribute: Cardinal;
-                                   pBuffer: Pointer): TSecurityStatus; stdcall;
+function QueryContextAttributesA(var phContext: TSecHandle;
+                                 ulAttribute: Cardinal;
+                                 pBuffer: Pointer): TSecurityStatus; stdcall;
 
-  function EncryptMessage(var phContext: TSecHandle;
-                          fQOP: Cardinal;
-                          pMessage: PSecBufferDesc;
-                          MessageSeqNo: Cardinal): TSecurityStatus; stdcall;
+function EncryptMessage(var phContext: TSecHandle;
+                        fQOP: Cardinal;
+                        pMessage: PSecBufferDesc;
+                        MessageSeqNo: Cardinal): TSecurityStatus; stdcall;
 
-  function DecryptMessage(var phContext: TSecHandle;
-                          pMessage: PSecBufferDesc;
-                          MessageSeqNo: Cardinal;
-                          var pfQOP: Cardinal): TSecurityStatus; stdcall;
+function DecryptMessage(var phContext: TSecHandle;
+                        pMessage: PSecBufferDesc;
+                        MessageSeqNo: Cardinal;
+                        var pfQOP: Cardinal): TSecurityStatus; stdcall;
 
 
 implementation
@@ -283,6 +289,7 @@ const
 
 
 constructor TMfCastTcpTransport.Create();
+
 begin
 
   inherited Create();
@@ -296,6 +303,7 @@ end;
 
 
 destructor TMfCastTcpTransport.Destroy();
+
 begin
 
   Disconnect();
@@ -308,6 +316,7 @@ end;
 
 function TMfCastTcpTransport.Configure(
   const ASettings: TMfCastProtocolSettings): HRESULT;
+
 begin
 
   FSettings := ASettings;
@@ -316,6 +325,7 @@ end;
 
 
 procedure TMfCastTcpTransport.SetLogger(const ALogger: IMfCastLogger);
+
 begin
 
   FLogger := ALogger;
@@ -323,7 +333,9 @@ end;
 
 
 function TMfCastTcpTransport.SetClientCertificate(const ACertificate: Pointer): HRESULT;
+
 begin
+
   if IsConnected() then
     Exit(E_UNEXPECTED);
   FClientCertificate := ACertificate;
@@ -343,8 +355,11 @@ begin
     Exit;
 
   OldLength := Length(ATarget);
-  SetLength(ATarget, OldLength + Integer(ASize));
-  Move(ASource^, ATarget[OldLength], ASize);
+  SetLength(ATarget,
+            OldLength + Integer(ASize));
+  Move(ASource^,
+       ATarget[OldLength],
+       ASize);
 end;
 
 
@@ -360,7 +375,8 @@ begin
 
   if (ACount >= Cardinal(Length(ATarget))) then
     begin
-      SetLength(ATarget, 0);
+      SetLength(ATarget,
+                0);
       Exit;
     end;
 
@@ -375,6 +391,7 @@ end;
 
 
 procedure TMfCastTcpTransport.ClearTls();
+
 begin
 
   if FHaveCtxtHandle then
@@ -487,8 +504,8 @@ begin
   // control channel works with TLS 1.2 on those receivers.
   Cred.grbitEnabledProtocols := SP_PROT_TLS1_2_CLIENT;
   Cred.dwFlags := SCH_CRED_NO_DEFAULT_CREDS or
-                  SCH_CRED_IGNORE_NO_REVOCATION_CHECK or
-                  SCH_CRED_IGNORE_REVOCATION_OFFLINE;
+    SCH_CRED_IGNORE_NO_REVOCATION_CHECK or
+    SCH_CRED_IGNORE_REVOCATION_OFFLINE;
 
   if not FSettings.VerifyTlsPeer then
     Cred.dwFlags := Cred.dwFlags or SCH_CRED_MANUAL_CRED_VALIDATION;
@@ -502,7 +519,7 @@ begin
                                       nil,
                                       FCredHandle,
                                       Expiry);
-  FHaveCredHandle := Result = SEC_E_OK;
+  FHaveCredHandle := (Result = SEC_E_OK);
 end;
 
 
@@ -578,8 +595,11 @@ begin
       Exit;
     end;
 
-  ReadCount := recv(FSocket, ABuffer^, ABufferSize, 0);
-  if ReadCount = SOCKET_ERROR then
+  ReadCount := recv(FSocket,
+                    ABuffer^,
+                    ABufferSize,
+                    0);
+  if (ReadCount = SOCKET_ERROR) then
     begin
       Result := LastSocketError();
       Exit;
@@ -614,11 +634,11 @@ begin
     Exit;
 
   ContextReq := ISC_REQ_SEQUENCE_DETECT or
-                ISC_REQ_REPLAY_DETECT or
-                ISC_REQ_CONFIDENTIALITY or
-                ISC_REQ_EXTENDED_ERROR or
-                ISC_REQ_ALLOCATE_MEMORY or
-                ISC_REQ_STREAM;
+    ISC_REQ_REPLAY_DETECT or
+    ISC_REQ_CONFIDENTIALITY or
+    ISC_REQ_EXTENDED_ERROR or
+    ISC_REQ_ALLOCATE_MEMORY or
+    ISC_REQ_STREAM;
 
   TargetName := AnsiString(AHost);
   HaveContext := False;
@@ -639,7 +659,7 @@ begin
 
       if HaveContext then
         begin
-          if Length(FEncryptedBuffer) = 0 then
+          if (Length(FEncryptedBuffer) = 0) then
             begin
               Result := RawReceiveBuffer(@Temp[0],
                                          SizeOf(Temp),
@@ -711,7 +731,7 @@ begin
           SetLength(FEncryptedBuffer,
                     0);
 
-          if InBuffers[1].BufferType = SECBUFFER_EXTRA then
+          if (InBuffers[1].BufferType = SECBUFFER_EXTRA) then
             begin
               ExtraSize := InBuffers[1].cbBuffer;
 
@@ -804,7 +824,7 @@ begin
   if not FWSAStarted then
     begin
       if (WSAStartup($0202,
-                    WsaData) <> 0) then
+        WsaData) <> 0) then
         begin
           Result := LastSocketError();
           Exit;
@@ -812,7 +832,8 @@ begin
       FWSAStarted := True;
     end;
 
-  Result := ResolveHost(AHost, ResolvedAddress);
+  Result := ResolveHost(AHost,
+                        ResolvedAddress);
   if FAILED(Result) then
     Exit;
 
@@ -861,8 +882,8 @@ begin
       NonBlocking := 1;
 
       if (ioctlsocket(FSocket,
-                     LongInt(FIONBIO),
-                     NonBlocking) = SOCKET_ERROR) then
+        LongInt(FIONBIO),
+        NonBlocking) = SOCKET_ERROR) then
         begin
           Result := LastSocketError();
           Disconnect();
@@ -870,15 +891,15 @@ begin
         end;
 
       ConnectResult := WinSock.connect(FSocket,
-                                              TSockAddr(Addr),
-                                              SizeOf(Addr));
+                                       TSockAddr(Addr),
+                                       SizeOf(Addr));
       if (ConnectResult = SOCKET_ERROR) then
         begin
           SocketError := WSAGetLastError();
 
           if (SocketError <> WSAEWOULDBLOCK) and
-             (SocketError <> WSAEINPROGRESS) and
-             (SocketError <> WSAEALREADY) then
+            (SocketError <> WSAEINPROGRESS) and
+            (SocketError <> WSAEALREADY) then
             begin
               NonBlocking := 0;
 
@@ -916,27 +937,26 @@ begin
 
           if (SelectResult = 0) then
             SocketError := WSAETIMEDOUT
+          else if (SelectResult = SOCKET_ERROR) then
+            SocketError := WSAGetLastError()
           else
-            if (SelectResult = SOCKET_ERROR) then
-              SocketError := WSAGetLastError()
-            else
-              begin
-                SocketError := 0;
-                SocketErrorLength := SizeOf(SocketError);
+            begin
+              SocketError := 0;
+              SocketErrorLength := SizeOf(SocketError);
 
-                if (getsockopt(FSocket,
-                              SOL_SOCKET,
-                              SO_ERROR,
-                              PAnsiChar(@SocketError),
-                              SocketErrorLength) = SOCKET_ERROR) then
-                  SocketError := WSAGetLastError();
+              if (getsockopt(FSocket,
+                SOL_SOCKET,
+                SO_ERROR,
+                PAnsiChar(@SocketError),
+                SocketErrorLength) = SOCKET_ERROR) then
+                SocketError := WSAGetLastError();
             end;
 
           NonBlocking := 0;
 
           if (ioctlsocket(FSocket,
-                         LongInt(FIONBIO),
-                         NonBlocking) = SOCKET_ERROR) then
+            LongInt(FIONBIO),
+            NonBlocking) = SOCKET_ERROR) then
             begin
               Result := LastSocketError();
               Disconnect();
@@ -955,8 +975,8 @@ begin
           NonBlocking := 0;
 
           if (ioctlsocket(FSocket,
-                         LongInt(FIONBIO),
-                         NonBlocking) = SOCKET_ERROR) then
+            LongInt(FIONBIO),
+            NonBlocking) = SOCKET_ERROR) then
             begin
               Result := LastSocketError();
               Disconnect();
@@ -964,15 +984,14 @@ begin
             end;
         end;
     end
-  else
-    if (WinSock.connect(FSocket,
-                               TSockAddr(Addr),
-                               SizeOf(Addr)) = SOCKET_ERROR) then
-      begin
-        Result := LastSocketError();
-        Disconnect();
-        Exit;
-      end;
+  else if (WinSock.connect(FSocket,
+    TSockAddr(Addr),
+    SizeOf(Addr)) = SOCKET_ERROR) then
+    begin
+      Result := LastSocketError();
+      Disconnect();
+      Exit;
+    end;
 
   Result := DoTlsHandshake(AHost);
   if FAILED(Result) then
@@ -981,6 +1000,7 @@ end;
 
 
 function TMfCastTcpTransport.Disconnect(): HRESULT;
+
 begin
 
   ClearTls();
@@ -1031,7 +1051,7 @@ begin
       ChunkSize := ASize - Offset;
 
       if (FStreamSizes.cbMaximumMessage > 0) and
-         (ChunkSize > FStreamSizes.cbMaximumMessage) then
+        (ChunkSize > FStreamSizes.cbMaximumMessage) then
         ChunkSize := FStreamSizes.cbMaximumMessage;
 
       SetLength(Packet,
@@ -1146,7 +1166,9 @@ begin
 
       if (Result = SEC_E_INCOMPLETE_MESSAGE) then
         begin
-          Result := RawReceiveBuffer(@Temp[0], SizeOf(Temp), BytesRead);
+          Result := RawReceiveBuffer(@Temp[0],
+                                     SizeOf(Temp),
+                                     BytesRead);
 
           if FAILED(Result) then
             Exit;
@@ -1186,8 +1208,8 @@ begin
       for I := 0 to 3 do
         begin
           if (Buffers[I].BufferType = SECBUFFER_DATA) and
-             Assigned(Buffers[I].pvBuffer) and
-             (Buffers[I].cbBuffer > 0) then
+            Assigned(Buffers[I].pvBuffer) and
+            (Buffers[I].cbBuffer > 0) then
             begin
               AppendBytes(FPlainBuffer,
                           Buffers[I].pvBuffer,
@@ -1197,8 +1219,8 @@ begin
             end;
 
           if (Buffers[I].BufferType = SECBUFFER_EXTRA) and
-             Assigned(Buffers[I].pvBuffer) and
-             (Buffers[I].cbBuffer > 0) then
+            Assigned(Buffers[I].pvBuffer) and
+            (Buffers[I].cbBuffer > 0) then
             AppendBytes(FEncryptedBuffer,
                         Buffers[I].pvBuffer,
                         Buffers[I].cbBuffer);
@@ -1208,7 +1230,8 @@ end;
 
 
 function TMfCastTcpTransport.ReceiveBuffer(ABuffer: Pointer;
-                                           const ABufferSize: Cardinal; out ABytesRead: Cardinal): HRESULT;
+                                           const ABufferSize: Cardinal;
+                                           out ABytesRead: Cardinal): HRESULT;
 var
   ToCopy: Cardinal;
 
@@ -1258,6 +1281,7 @@ end;
 
 
 function TMfCastTcpTransport.IsConnected(): Boolean;
+
 begin
 
   Result := (FSocket <> INVALID_SOCKET);
@@ -1268,15 +1292,15 @@ end;
 //=================
 {$WARN SYMBOL_PLATFORM OFF}
 
-function AcquireCredentialsHandleA; external Secur32Lib name 'AcquireCredentialsHandleA' ;
-function InitializeSecurityContextA; external Secur32Lib name 'InitializeSecurityContextA' ;
-function FreeCredentialsHandle; external Secur32Lib name 'FreeCredentialsHandle' ;
-function DeleteSecurityContext; external Secur32Lib name 'DeleteSecurityContext' ;
-function FreeContextBuffer; external Secur32Lib name 'FreeContextBuffer' ;
-function QueryContextAttributesA; external Secur32Lib name 'QueryContextAttributesA' ;
+function AcquireCredentialsHandleA; external Secur32Lib name 'AcquireCredentialsHandleA';
+function InitializeSecurityContextA; external Secur32Lib name 'InitializeSecurityContextA';
+function FreeCredentialsHandle; external Secur32Lib name 'FreeCredentialsHandle';
+function DeleteSecurityContext; external Secur32Lib name 'DeleteSecurityContext';
+function FreeContextBuffer; external Secur32Lib name 'FreeContextBuffer';
+function QueryContextAttributesA; external Secur32Lib name 'QueryContextAttributesA';
 
-function EncryptMessage; external Secur32Lib name 'EncryptMessage' ;
-function DecryptMessage; external Secur32Lib name 'DecryptMessage' ;
+function EncryptMessage; external Secur32Lib name 'EncryptMessage';
+function DecryptMessage; external Secur32Lib name 'DecryptMessage';
 
 {$WARN SYMBOL_PLATFORM ON}
 

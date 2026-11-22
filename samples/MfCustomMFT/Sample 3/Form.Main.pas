@@ -68,7 +68,7 @@ interface
 uses
   LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -155,6 +155,7 @@ const
 
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+
 begin
 
   // TImage is a graphic control, so its parent paints it. Without buffering,
@@ -183,6 +184,7 @@ end;
 
 
 procedure TfrmMain.FormResize(Sender: TObject);
+
 begin
 
   //pnlOutput is alClient; keeping pnlSource at half the client width gives
@@ -208,7 +210,7 @@ begin
   // Close(True) detaches the callback. Remove packets already posted before
   // the detach so their ownership cannot be lost while the form is destroyed.
   while PeekMessageW(Msg, Handle, WM_ASYNC_FRAME_READY,
-                    WM_ASYNC_PLAYBACK_ERROR, PM_REMOVE) do
+      WM_ASYNC_PLAYBACK_ERROR, PM_REMOVE) do
     case Msg.message of
       WM_ASYNC_FRAME_READY:
         TVideoFramePacket(Pointer(Msg.lParam)).Free;
@@ -222,6 +224,7 @@ end;
 
 
 procedure TfrmMain.FreePendingFrame;
+
 begin
 
   FreeAndNil(FPendingPacket);
@@ -254,11 +257,13 @@ end;
 
 
 procedure TfrmMain.OpenVideo(const AFileName: string);
+
 begin
 
   StopVideo();
 
-  FEngine := CreateAsyncVideoEngine(Handle, FSession);
+  FEngine := CreateAsyncVideoEngine(Handle,
+                                    FSession);
   FDuration := FEngine.Open(AFileName);
 
   if (FDuration <= 0) then
@@ -283,6 +288,7 @@ end;
 
 
 procedure TfrmMain.StopVideo();
+
 begin
 
   tmrFrame.Enabled := False;
@@ -304,6 +310,7 @@ end;
 
 
 procedure TfrmMain.SetPlaying(const AValue: Boolean);
+
 begin
 
   if not Assigned(FEngine) then
@@ -324,14 +331,13 @@ begin
 
       if Assigned(FPendingPacket) then
         DisplayPendingFrame
+      else if not FStarted then
+        begin
+          FStarted := True;
+          FEngine.Start;
+        end
       else
-        if not FStarted then
-          begin
-            FStarted := True;
-            FEngine.Start;
-          end
-        else
-          FEngine.RequestNext;
+        FEngine.RequestNext;
     end
   else
     begin
@@ -427,7 +433,7 @@ begin
 
   Packet := TVideoFramePacket(Pointer(message.LParam));
 
-  if Cardinal(Message.WParam) <> FSession then
+  if (Cardinal(Message.WParam) <> FSession) then
     begin
       Packet.Free;
       Exit;
@@ -447,6 +453,7 @@ end;
 
 
 procedure TfrmMain.WMEndOfStream(var Message: TLMessage);
+
 begin
 
   if (Cardinal(Message.WParam) <> FSession) then
@@ -480,6 +487,7 @@ end;
 
 
 procedure TfrmMain.btnOpenClick(Sender: TObject);
+
 begin
 
   if not dlgOpenVideo.Execute then
@@ -498,6 +506,7 @@ end;
 
 
 procedure TfrmMain.btnPlayPauseClick(Sender: TObject);
+
 begin
 
   SetPlaying(not FPlaying);
@@ -505,13 +514,16 @@ end;
 
 
 procedure TfrmMain.btnStopClick(Sender: TObject);
+
 begin
 
   StopVideo();
   memLog.Lines.Add('Stopped. Open a video to start again.');
 end;
 
+
 procedure TfrmMain.tmrFrameTimer(Sender: TObject);
+
 begin
 
   DisplayPendingFrame();

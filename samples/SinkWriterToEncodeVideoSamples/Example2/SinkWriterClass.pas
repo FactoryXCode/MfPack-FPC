@@ -69,7 +69,7 @@ interface
 
 uses
   MfEncodeAudio.Platform,
-{Winapi}
+  {Winapi}
   Windows,
   Winapi.ComBaseApi,
   Winapi.WinApiTypes,
@@ -123,6 +123,7 @@ type
   end;
 
   TSinkWriter = class(TObject)
+
   private
     hwndCaller: HWND; // Usually the UI.
     // Bitmap specs
@@ -135,7 +136,7 @@ type
 
     function WriteFrame(pWriter: IMFSinkWriter;
                         streamIndex: DWORD;
-                        const rtStart: HNSTIME { Time stamp } ): HResult;
+                        const rtStart: HNSTIME { Time stamp }): HResult;
 
     function SetBitmapToVideoFormat(const aBmpFile: string): HResult;
 
@@ -149,8 +150,7 @@ type
 
     function RunSinkWriter(aBmpFileList: TStringList): HResult;
 
-    property SaveResizedBitmap: Boolean read FSaveResizedBitmap
-                                        write FSaveResizedBitmap;
+    property SaveResizedBitmap: Boolean read FSaveResizedBitmap write FSaveResizedBitmap;
     property BitmapPixelFormat: Graphics.TPixelFormat read FBitmapPixelFormat;
     property Items: Integer read FArraySize;
 
@@ -164,7 +164,9 @@ implementation
 
 
 constructor TSinkWriter.Create(hCaller: HWND);
+
 begin
+
   inherited Create();
   hwndCaller := hCaller;
   // Set default values
@@ -174,7 +176,9 @@ end;
 
 
 destructor TSinkWriter.Destroy();
+
 begin
+
   //
   inherited Destroy();
 end;
@@ -184,24 +188,32 @@ end;
 function TSinkWriter.SetBitmapToVideoFormat(const aBmpFile: string): HResult;
 var
   Bitmap: TBitmap;
-  Row,Width,Height: Integer;
+  Row, Width, Height: Integer;
+
 begin
-  if not FileExists(aBmpFile) then Exit(HRESULT($80070002));
+
+  if not FileExists(aBmpFile) then
+    Exit(HRESULT($80070002));
   Width := SinkWriterParams.dwWidth;
   Height := SinkWriterParams.dwHeigth;
   Bitmap := TBitmap.Create();
   try
     Bitmap.LoadFromFile(aBmpFile);
-    ResizeBitmap(Bitmap,Width,Height);
+    ResizeBitmap(Bitmap,
+                 Width,
+                 Height);
     if FSaveResizedBitmap then
-      Bitmap.SaveToFile(Format('%dx%d_%s',[Width,Height,ExtractFileName(aBmpFile)]));
+      Bitmap.SaveToFile(Format('%dx%d_%s',
+                               [Width, Height, ExtractFileName(aBmpFile)]));
     FBitmapPixelFormat := Bitmap.PixelFormat;
     SinkWriterParams.uiSizeInPixels := Width * Height * 4;
-    SetLength(SinkWriterParams.FrameBufferArray,Width * Height);
+    SetLength(SinkWriterParams.FrameBufferArray,
+              Width * Height);
     // RGB32 input is stored in bottom-up BGRA order; COLORREF conversion swaps R/B.
     for Row := 0 to Height - 1 do
       Move(Bitmap.ScanLine[Height - 1 - Row]^,
-           SinkWriterParams.FrameBufferArray[Row * Width],Width * 4);
+           SinkWriterParams.FrameBufferArray[Row * Width],
+           Width * 4);
     Result := S_OK;
   finally
     Bitmap.Free;
@@ -237,9 +249,10 @@ label
   done;
 
 begin
+
   if (aBmpFileList = nil) or (aBmpFileList.Count = 0) or
-     (SinkWriterParams.dwWidth = 0) or (SinkWriterParams.dwHeigth = 0) or
-     (SinkWriterParams.dbFrameRate <= 0) or (SinkWriterParams.dwFrameTimeUnits < FRAME_TIME_UNITS) then
+    (SinkWriterParams.dwWidth = 0) or (SinkWriterParams.dwHeigth = 0) or
+    (SinkWriterParams.dbFrameRate <= 0) or (SinkWriterParams.dwFrameTimeUnits < FRAME_TIME_UNITS) then
     Exit(E_INVALIDARG);
   rtStart := 0;
   Started := False;
@@ -262,52 +275,55 @@ begin
           SinkWriterParams.gdInputFormat := MFVideoFormat_RGB32;
           // VideoLenght is the given duration of the video in seconds.
           SinkWriterParams.uiFrameCount := Round(SinkWriterParams.dwFrameTimeUnits * SinkWriterParams.dbFrameRate / 10000000);
-          if SinkWriterParams.uiFrameCount < 1 then SinkWriterParams.uiFrameCount := 1;
+          if (SinkWriterParams.uiFrameCount < 1) then
+            SinkWriterParams.uiFrameCount := 1;
 
-           // Handle the number of bitmaps in the list.
-            for i := 0 to aBmpFileList.Count - 1 do
-              begin
-                // Resize and store to FrameBufferArray
-                hr := SetBitmapToVideoFormat(aBmpFileList.Strings[i]);
-                if FAILED(hr) then
-                  goto done;
+          // Handle the number of bitmaps in the list.
+          for i := 0 to aBmpFileList.Count - 1 do
+            begin
+              // Resize and store to FrameBufferArray
+              hr := SetBitmapToVideoFormat(aBmpFileList.Strings[i]);
+              if FAILED(hr) then
+                goto done;
 
-                // Send message to UI.
-                SendMessage(hwndCaller,
-                            WM_SINKWRITER_WRITES_BITMAP,
-                            WParam(0),
-                            LParam(i + 1));
+              // Send message to UI.
+              SendMessage(hwndCaller,
+                          WM_SINKWRITER_WRITES_BITMAP,
+                          WParam(0),
+                          LParam(i + 1));
 
-                // Send frames to the sink writer.
-                for j := 0 to SinkWriterParams.uiFrameCount - 1 do
-                  begin
-                    hr := WriteFrame(pSinkWriter,
-                                     stream,
-                                     rtStart);
-                    if FAILED(hr) then
-                      Break;
+              // Send frames to the sink writer.
+              for j := 0 to SinkWriterParams.uiFrameCount - 1 do
+                begin
+                  hr := WriteFrame(pSinkWriter,
+                                   stream,
+                                   rtStart);
+                  if FAILED(hr) then
+                    Break;
 
-                    inc(rtStart, SinkWriterParams.rtAverageTimePerFrame);
+                  inc(rtStart,
+                      SinkWriterParams.rtAverageTimePerFrame);
 
-                    MsgWaitForMultipleObjects(0,
-                                              nil^,
-                                              False, // do NOT set this to true!
-                                              0,
-                                              QS_ALLINPUT);
-                 end;
-              end;
-           // You must call IMFSinkWriter.BeginWriting before calling this method.
-           // Otherwise, the method returns MF_E_INVALIDREQUEST.
-           if SUCCEEDED(hr) then
-             begin
-               hr := pSinkWriter.Finalize();
-             end;
+                  MsgWaitForMultipleObjects(0,
+                                            nil^,
+                                            False, // do NOT set this to true!
+                    0,
+                                            QS_ALLINPUT);
+                end;
+            end;
+          // You must call IMFSinkWriter.BeginWriting before calling this method.
+          // Otherwise, the method returns MF_E_INVALIDREQUEST.
+          if SUCCEEDED(hr) then
+            begin
+              hr := pSinkWriter.Finalize();
+            end;
         end;
     end;
 
-done:
-  pSinkWriter := nil;
-  if Started then MFShutdown();
+  done:
+    pSinkWriter := nil;
+  if Started then
+    MFShutdown();
   Result := hr;
 end;
 
@@ -334,8 +350,10 @@ var
   streamIndex: DWORD;
 
 begin
-  SinkWriterParams.pwcVideoFileName := Format('output_%s.%s', [SinkWriterParams.sEncodingFormat,
-                                                               SinkWriterParams.pwcVideoFileExtension]);
+
+  SinkWriterParams.pwcVideoFileName := Format('output_%s.%s',
+                                              [SinkWriterParams.sEncodingFormat,
+    SinkWriterParams.pwcVideoFileExtension]);
 
   hr := MFCreateSinkWriterFromURL(PWideChar(SinkWriterParams.pwcVideoFileName),
                                   nil,
@@ -398,7 +416,7 @@ begin
 
   if SUCCEEDED(hr) then
     pMediaTypeOut.SetUINT32(MF_MT_SAMPLE_SIZE, {4 is the size of DWord or rgbquad in bytes}
-                            SinkWriterParams.dwWidth * SinkWriterParams.dwHeigth * 4);
+      SinkWriterParams.dwWidth * SinkWriterParams.dwHeigth * 4);
 
   // end make some faster
 
@@ -451,10 +469,10 @@ begin
 
   // Return the pointer to the caller.
   if SUCCEEDED(hr) then
-  begin
-    ppWriter := pSinkWriter;
-    pStreamIndex := streamIndex;
-  end;
+    begin
+      ppWriter := pSinkWriter;
+      pStreamIndex := streamIndex;
+    end;
 
   Result := hr;
 end;
@@ -524,12 +542,12 @@ begin
 
   if SUCCEEDED(hr) then
     begin
-      hr := MFCopyImage(pData { Destination buffer. } ,
-                        lLineWidth { Destination stride. } ,
+      hr := MFCopyImage(pData { Destination buffer. },
+                        lLineWidth { Destination stride. },
                         PByte(SinkWriterParams.FrameBufferArray), { First row in source image. }
-                        lLineWidth { Source stride. },
-                        lLineWidth { Image width in bytes. } ,
-                        SinkWriterParams.dwHeigth { Image height in pixels. } );
+        lLineWidth { Source stride. },
+                        lLineWidth { Image width in bytes. },
+                        SinkWriterParams.dwHeigth { Image height in pixels. });
 
     end;
 
@@ -559,12 +577,13 @@ begin
     hr := pWriter.WriteSample(streamIndex,
                               pSample);
 
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
 procedure TSinkWriterParams.Init();
+
 begin
 
   pwcVideoFileName := '';
@@ -584,7 +603,8 @@ begin
   sResolutionDescription := 'SD    480p  (640 x 480)';
   dwBitRate := 800000;
 
-  SetLength(FrameBufferArray, 0);
+  SetLength(FrameBufferArray,
+            0);
 end;
 
 end.

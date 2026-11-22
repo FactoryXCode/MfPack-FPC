@@ -64,11 +64,12 @@ unit RDJ_Common;
 
 interface
 
-uses Rdj.Platform,
-LMessages,
+uses
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   DwmApi,
@@ -90,60 +91,61 @@ const
   WM_USERINFO = WM_USER + 1;
 
   DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
-  DWMWA_BORDER_COLOR            = 34;
-  DWMWA_CAPTION_COLOR           = 35;
-  DWMWA_TEXT_COLOR              = 36;
+  DWMWA_BORDER_COLOR = 34;
+  DWMWA_CAPTION_COLOR = 35;
+  DWMWA_TEXT_COLOR = 36;
 
 
 type
 
-  TMsgOptions  = (optIDE,        // Show info in the IDE Messages
-                  optShowMsg);   // Return info in a messagebox
+  TMsgOptions = (optIDE,        // Show info in the IDE Messages
+    optShowMsg);   // Return info in a messagebox
 
   TLockedMdiChildForm = class(TForm)
+
   private
 
     procedure WMSysCommand(var Msg: TLMSysCommand); message WM_SYSCOMMAND;
     procedure WMNCLButtonDown(var Msg: TLMessage); message WM_NCLBUTTONDOWN;
   end;
 
-  // Simple error handler that reports by default in the IDE Messages screen or
-  // shows a messagedialog at runtime.
-  procedure InfoMsg(Options: TMsgOptions;
-                    pErrMsg: string;
-                    pHr: HResult;
-                    hwObj: HWND = 0);
+// Simple error handler that reports by default in the IDE Messages screen or
+// shows a messagedialog at runtime.
+procedure InfoMsg(Options: TMsgOptions;
+                  pErrMsg: string;
+                  pHr: HResult;
+                  hwObj: HWND = 0);
 
-  procedure HandleThreadMessages(AThread: THandle;
-                                 AWait: Cardinal = INFINITE);
+procedure HandleThreadMessages(AThread: THandle;
+                               AWait: Cardinal = INFINITE);
 
-  function EventWait(EventObj: TEvent;
-                     Period: Integer = 100): HResult;
+function EventWait(EventObj: TEvent;
+                   Period: Integer = 100): HResult;
 
-  // Delphi MulDiv replacement for Int64 types.
-  function _MulDiv64(const aNumber,
-                           aNumerator,
-                           aDenominator: Int64): Int64; inline;
+// Delphi MulDiv replacement for Int64 types.
+function _MulDiv64(const aNumber,
+                   aNumerator,
+                   aDenominator: Int64): Int64; inline;
 
-  function ClampInt(const AValue,
+function ClampInt(const AValue,
                   AMin,
                   AMax: Integer): Integer; inline;
 
-  function ClampDouble(const AValue,
+function ClampDouble(const AValue,
                      AMin,
                      AMax: Double): Double; inline;
 
-  // (DWM) Dark Windows Mode API utils.
-  procedure ApplyDarkWindowFrame(const AWnd: HWND);
-  procedure RefreshDarkWindowFrame(const AWnd: HWND);
+// (DWM) Dark Windows Mode API utils.
+procedure ApplyDarkWindowFrame(const AWnd: HWND);
+procedure RefreshDarkWindowFrame(const AWnd: HWND);
 
-  // Lightweight OpenFile dialog.
-  function BrowseFile(const AOwner: HWND;
-                      const AFilter: PWideChar;
-                      const AReturnDirOnly: Boolean;
-                      out APath: UnicodeString): Boolean;
+// Lightweight OpenFile dialog.
+function BrowseFile(const AOwner: HWND;
+                    const AFilter: PWideChar;
+                    const AReturnDirOnly: Boolean;
+                    out APath: UnicodeString): Boolean;
 
-  procedure FreeComboObjects(ACombo: TComboBox);
+procedure FreeComboObjects(ACombo: TComboBox);
 
 
 implementation
@@ -152,6 +154,7 @@ implementation
 // Childform locking -----------------------------------------------------------
 
 procedure TLockedMdiChildForm.WMSysCommand(var Msg: TLMSysCommand);
+
 begin
 
   if ((Msg.CmdType and $FFF0) = SC_MOVE) then
@@ -162,6 +165,7 @@ end;
 
 
 procedure TLockedMdiChildForm.WMNCLButtonDown(var Msg: TLMessage);
+
 begin
 
   if (Msg.WParam = HTCAPTION) then
@@ -175,11 +179,12 @@ procedure InfoMsg(Options: TMsgOptions;
                   pErrMsg: string;
                   pHr: HResult;
                   hwObj: HWND = 0);
+
 begin
 
   if (Options = optIDE) then
     OutputDebugStringW(StrToPWideChar(Format('%s (hr = %d)',
-                                            [pErrMsg, pHr])));
+                                             [pErrMsg, pHr])));
 
   if (Options = optShowMsg) then
     ShowMessage(format('%s (hr = %d)',
@@ -187,10 +192,10 @@ begin
 
   if (hwObj > 0) then
     SendMessageW(hwObj,
-                WM_USERINFO,
-                WPARAM(Pointer(format('%s (hr = %d)',
-                                      [pErrMsg, pHr]))),
-                LPARAM(0));
+                 WM_USERINFO,
+                 WPARAM(Pointer(format('%s (hr = %d)',
+                                       [pErrMsg, pHr]))),
+                 LPARAM(0));
 end;
 
 
@@ -202,18 +207,18 @@ var
 begin
 
   while (MsgWaitForMultipleObjects(1,
-                                   AThread,
-                                   False,
-                                   AWait,
-                                   QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
+      AThread,
+      False,
+      AWait,
+      QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
     begin
       PeekMessageW(oMsg,
-                  0,
-                  0,
-                  0,
-                  PM_REMOVE);
+                   0,
+                   0,
+                   0,
+                   PM_REMOVE);
 
-      if oMsg.Message = WM_QUIT then
+      if (oMsg.Message = WM_QUIT) then
         Exit;
 
       TranslateMessage(oMsg);
@@ -250,8 +255,9 @@ end;
 // If working with Int64, use this method, instead of MulDiv.
 // Note: In later MfPack versions (> version 3.18), this method will be declared in WinApi.MediaFoundationApi.MfUtils.
 function _MulDiv64(const aNumber,
-                         aNumerator,
-                         aDenominator: Int64): Int64; inline;
+                   aNumerator,
+                   aDenominator: Int64): Int64; inline;
+
 begin
 
   if (aDenominator <= 0) then
@@ -259,13 +265,14 @@ begin
 
   // Avoid Int64 overflow: (QpcDelta * 10_000_000) div PerfFreq
   Result := (aNumber div aDenominator) * aNumerator +
-            (aNumber mod aDenominator) * aNumerator div aDenominator;
+    (aNumber mod aDenominator) * aNumerator div aDenominator;
 end;
 
 
 function ClampInt(const AValue,
                   AMin,
                   AMax: Integer): Integer; inline;
+
 begin
 
   if (AValue < AMin) then
@@ -280,15 +287,15 @@ end;
 function ClampDouble(const AValue,
                      AMin,
                      AMax: Double): Double; inline;
+
 begin
 
   if (AValue < AMin) then
     Result := AMin
+  else if (AValue > AMax) then
+    Result := AMax
   else
-    if (AValue > AMax) then
-      Result := AMax
-    else
-      Result := AValue;
+    Result := AValue;
 end;
 
 
@@ -304,12 +311,15 @@ begin
   Info.dwOSVersionInfoSize := SizeOf(Info);
 
   Result := GetVersionExW(Info) and
-            ((Info.dwMajorVersion > 10) or
-             ((Info.dwMajorVersion = 10) and (Info.dwBuildNumber >= 22000)));
+    ((Info.dwMajorVersion > 10) or
+    ((Info.dwMajorVersion = 10) and (Info.dwBuildNumber >= 22000)));
 end;
 
 
-procedure ApplyBoolDwmAttr(const AWnd: HWND; const AAttr: DWORD; const AValue: BOOL);
+procedure ApplyBoolDwmAttr(const AWnd: HWND;
+                           const AAttr: DWORD;
+                           const AValue: BOOL);
+
 begin
 
   if (AWnd = 0) then
@@ -325,6 +335,7 @@ end;
 procedure ApplyColorDwmAttr(const AWnd: HWND;
                             const AAttr: DWORD;
                             const AColorRef: COLORREF);
+
 begin
 
   if (AWnd = 0) then
@@ -338,6 +349,7 @@ end;
 
 
 procedure RefreshDarkWindowFrame(const AWnd: HWND);
+
 begin
 
   if (AWnd = 0) then
@@ -350,17 +362,17 @@ begin
                0,
                0,
                SWP_NOMOVE or
-               SWP_NOSIZE or
-               SWP_NOZORDER or
-               SWP_NOACTIVATE or
-               SWP_FRAMECHANGED);
+    SWP_NOSIZE or
+    SWP_NOZORDER or
+    SWP_NOACTIVATE or
+    SWP_FRAMECHANGED);
 
   RedrawWindow(AWnd,
                nil,
                0,
                RDW_INVALIDATE or
-               RDW_FRAME or
-               RDW_UPDATENOW);
+    RDW_FRAME or
+    RDW_UPDATENOW);
 end;
 
 
@@ -425,10 +437,13 @@ const
   ALL_FILTER: PWideChar = 'All Files'#0'*.*'#0#0;
 
 begin
+
   APath := '';
 
-  ZeroMemory(@Ofn, SizeOf(Ofn));
-  ZeroMemory(@FileBuf, SizeOf(FileBuf));
+  ZeroMemory(@Ofn,
+             SizeOf(Ofn));
+  ZeroMemory(@FileBuf,
+             SizeOf(FileBuf));
 
   Ofn.lStructSize := SizeOf(Ofn);
   Ofn.hwndOwner := AOwner;
@@ -442,8 +457,8 @@ begin
   Ofn.nMaxFile := Length(FileBuf);
   Ofn.lpstrTitle := 'Open file';
   Ofn.Flags := OFN_FILEMUSTEXIST or
-               OFN_PATHMUSTEXIST or
-               OFN_HIDEREADONLY;
+    OFN_PATHMUSTEXIST or
+    OFN_HIDEREADONLY;
 
   Result := GetOpenFileNameW(Pointer(@Ofn));
 

@@ -64,22 +64,24 @@ unit RDJ.TrackLibrary;
 
 interface
 
-uses Rdj.Platform,
-Rdj.SQLite,
-LMessages,
+uses
+  Rdj.Platform,
+  Rdj.SQLite,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{System}
+  {System}
   SysUtils,
   Classes,
   Generics.Collections,
-  {FireDAC}  {Application}
+  {FireDAC}{Application}
   RDJ.PlaylistTypes,
   RDJ.PlaylistDb;
 
 type
 
   TRDJTrackLibrary = class
+
   private
 
     FDb: TRDJPlaylistDb;
@@ -96,9 +98,9 @@ type
     function FindTrackByPath(const AFullPath: string;
                              out ATrack: TRDJTrack): Boolean;
 
-    function SearchTracks(const ASearchText: string): TList<TRDJTrack>;
-    function SearchTrackSummaries(const ASearchText: string): TList<TRDJTrack>;
-    function GetAllTracks: TList<TRDJTrack>;
+    function SearchTracks(const ASearchText: string): TList < TRDJTrack > ;
+    function SearchTrackSummaries(const ASearchText: string): TList < TRDJTrack > ;
+    function GetAllTracks: TList < TRDJTrack > ;
 
     procedure MarkMissingTracks();
     procedure ClearMissingFlags();
@@ -114,6 +116,7 @@ implementation
 
 
 constructor TRDJTrackLibrary.Create(ADb: TRDJPlaylistDb);
+
 begin
 
   inherited Create;
@@ -123,6 +126,7 @@ end;
 
 // Becarefull with this, when you have a huge music library, this can lead to memory issues.
 function TRDJTrackLibrary.QueryTrack(const Q: TFDQuery): TRDJTrack;
+
 begin
 
   Result := RDJEmptyTrack;
@@ -161,13 +165,16 @@ begin
   Result.FileSize := Q.FieldByName('FileSize').AsLargeInt;
 
   if (Trim(Q.FieldByName('FileModifiedUtc').AsWideString) <> '') then
-    Result.FileModifiedUtc := StrToDateTimeDef(Q.FieldByName('FileModifiedUtc').AsWideString, 0);
+    Result.FileModifiedUtc := StrToDateTimeDef(Q.FieldByName('FileModifiedUtc').AsWideString,
+                                               0);
 
   if (Trim(Q.FieldByName('DateAddedUtc').AsWideString) <> '') then
-    Result.DateAddedUtc := StrToDateTimeDef(Q.FieldByName('DateAddedUtc').AsWideString, 0);
+    Result.DateAddedUtc := StrToDateTimeDef(Q.FieldByName('DateAddedUtc').AsWideString,
+                                            0);
 
   if (Trim(Q.FieldByName('LastScanUtc').AsWideString) <> '') then
-    Result.LastScanUtc := StrToDateTimeDef(Q.FieldByName('LastScanUtc').AsWideString, 0);
+    Result.LastScanUtc := StrToDateTimeDef(Q.FieldByName('LastScanUtc').AsWideString,
+                                           0);
 
   Result.Rating := Q.FieldByName('Rating').AsInteger;
   Result.ColorTag := Q.FieldByName('ColorTag').AsInteger;
@@ -180,6 +187,7 @@ end;
 
 
 function TRDJTrackLibrary.QueryTrackSummary(const Q: TFDQuery): TRDJTrack;
+
 begin
 
   Result := RDJEmptyTrack();
@@ -206,6 +214,7 @@ end;
 
 
 function TRDJTrackLibrary.AddOrUpdateTrack(const ATrack: TRDJTrack): Integer;
+
 begin
 
   Result := FDb.AddOrUpdateTrack(ATrack);
@@ -279,13 +288,13 @@ begin
 end;
 
 
-function TRDJTrackLibrary.GetAllTracks(): TList<TRDJTrack>;
+function TRDJTrackLibrary.GetAllTracks(): TList < TRDJTrack > ;
 var
   Q: TFDQuery;
 
 begin
 
-  Result := TList<TRDJTrack>.Create;
+  Result := (TList < TRDJTrack > .Create);
 
   Q := TFDQuery.Create(nil);
 
@@ -312,14 +321,14 @@ begin
 end;
 
 
-function TRDJTrackLibrary.SearchTrackSummaries(const ASearchText: string): TList<TRDJTrack>;
+function TRDJTrackLibrary.SearchTrackSummaries(const ASearchText: string): TList < TRDJTrack > ;
 var
   Q: TFDQuery;
   S: string;
 
 begin
 
-  Result := TList<TRDJTrack>.Create;
+  Result := (TList < TRDJTrack > .Create);
 
   if (Trim(ASearchText) = '') then
     Exit;
@@ -328,7 +337,7 @@ begin
   try
     try
 
-     Q.Connection := FDb.Connection;
+      Q.Connection := FDb.Connection;
 
       Q.SQL.Text :=
         'SELECT ' +
@@ -370,14 +379,14 @@ begin
 end;
 
 
-function TRDJTrackLibrary.SearchTracks(const ASearchText: string): TList<TRDJTrack>;
+function TRDJTrackLibrary.SearchTracks(const ASearchText: string): TList < TRDJTrack > ;
 var
   Q: TFDQuery;
   S: string;
 
 begin
 
-  Result := TList<TRDJTrack>.Create;
+  Result := (TList < TRDJTrack > .Create);
 
   Q := TFDQuery.Create(nil);
   try
@@ -435,10 +444,10 @@ begin
           Result.Add(QueryTrackSummary(Q));
           Q.Next;
         end;
-      except
+    except
 
-        Result.Free;
-        raise;
+      Result.Free;
+      raise;
     end;
   finally
     Q.Free;
@@ -463,11 +472,11 @@ begin
     QUpd.Connection := FDb.Connection;
 
     QSel.SQL.Text := 'SELECT TrackID, FullPath ' +
-                     'FROM Tracks';
+      'FROM Tracks';
 
     QUpd.SQL.Text := 'UPDATE Tracks ' +
-                     'SET IsMissing = :IsMissing, LastScanUtc = :LastScanUtc ' +
-                     'WHERE TrackID = :TrackID';
+      'SET IsMissing = :IsMissing, LastScanUtc = :LastScanUtc ' +
+      'WHERE TrackID = :TrackID';
 
     QSel.Open;
 
@@ -505,7 +514,7 @@ begin
   try
     Q.Connection := FDb.Connection;
     Q.SQL.Text := 'UPDATE Tracks ' +
-                  'SET IsMissing = 0';
+      'SET IsMissing = 0';
     Q.ExecSQL;
   finally
 
@@ -576,13 +585,13 @@ begin
     QDelTracks.Connection := FDb.Connection;
 
     QSel.SQL.Text := 'SELECT TrackID, FullPath ' +
-                     'FROM Tracks';
+      'FROM Tracks';
 
     QDelItems.SQL.Text := 'DELETE FROM PlaylistItems ' +
-                          'WHERE TrackID = :TrackID';
+      'WHERE TrackID = :TrackID';
 
     QDelTracks.SQL.Text := 'DELETE FROM Tracks ' +
-                           'WHERE TrackID = :TrackID';
+      'WHERE TrackID = :TrackID';
 
     FDb.BeginTx();
 
@@ -643,12 +652,12 @@ begin
     try
 
       Q.SQL.Text := 'DELETE FROM PlaylistItems ' +
-                    'WHERE TrackID = :TrackID';
+        'WHERE TrackID = :TrackID';
       Q.ParamByName('TrackID').AsInteger := ATrackID;
       Q.ExecSQL;
 
       Q.SQL.Text := 'DELETE FROM Tracks ' +
-                    'WHERE TrackID = :TrackID';
+        'WHERE TrackID = :TrackID';
       Q.ParamByName('TrackID').AsInteger := ATrackID;
       Q.ExecSQL;
 

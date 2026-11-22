@@ -71,9 +71,9 @@ interface
 
 uses
   MfSmallSamplesPlatform,
-LMessages,
+  LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -140,7 +140,8 @@ type
     procedure rbWmfClick(Sender: TObject);
     procedure butStartCaptureClick(Sender: TObject);
     procedure butStopCaptureClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
 
   private
     { Private declarations }
@@ -166,6 +167,7 @@ type
 
   public
     destructor Destroy; override;
+
   public
     { Public declarations }
 
@@ -184,15 +186,26 @@ implementation
 // CleanUp: Frees resources before the application exits
 //-------------------------------------------------------------------
 destructor TFrm_SimpleCapture.Destroy;
+
 begin
- QuitSession;
- if NativeUInt(m_hdevnotify)<>0 then begin UnRegisterForDeviceNotification(m_hdevnotify);FillChar(m_hdevnotify,SizeOf(m_hdevnotify),0);end;
- FreeAndNil(MfDeviceList);
- inherited;
+
+  QuitSession;
+  if (NativeUInt(m_hdevnotify) <> 0) then
+    begin
+      UnRegisterForDeviceNotification(m_hdevnotify);
+      FillChar(m_hdevnotify,
+               SizeOf(m_hdevnotify),
+               0);
+    end;
+  FreeAndNil(MfDeviceList);
+  inherited;
 end;
 
+
 procedure TFrm_SimpleCapture.QuitSession();
+
 begin
+
   StopCapture();
   MfCaptureToFileEngine.Free;
   MfCaptureToFileEngine := nil;
@@ -202,44 +215,64 @@ end;
 
 
 procedure TFrm_SimpleCapture.rbMp4Click(Sender: TObject);
+
 begin
+
   if rbMp4.Checked then
-    edOutputFile.Text:= ChangeFileExt(UnicodeString(edOutputFile.Text), '.mp4');
+    edOutputFile.Text := ChangeFileExt(UnicodeString(edOutputFile.Text),
+                                       '.mp4');
 end;
 
 
 procedure TFrm_SimpleCapture.rbWmfClick(Sender: TObject);
+
 begin
+
   if rbWmf.Checked then
-    edOutputFile.Text:= ChangeFileExt(UnicodeString(edOutputFile.Text), '.wmf');
+    edOutputFile.Text := ChangeFileExt(UnicodeString(edOutputFile.Text),
+                                       '.wmf');
 end;
 
 // Start capturing
 procedure TFrm_SimpleCapture.butStartCaptureClick(Sender: TObject);
+
 begin
+
   StartCapture();
 end;
 
 // Stop capturing
 procedure TFrm_SimpleCapture.butStopCaptureClick(Sender: TObject);
+
 begin
+
   StopCapture();
 end;
 
 
 procedure TFrm_SimpleCapture.Exit1Click(Sender: TObject);
+
 begin
+
   Close();
 end;
 
 
 procedure TFrm_SimpleCapture.FormCloseQuery(Sender: TObject;
                                             var CanClose: Boolean);
+
 begin
+
   CanClose := False;
   // Before closing the app, clean up.
   QuitSession();
-  if NativeUInt(m_hdevnotify)<>0 then begin UnRegisterForDeviceNotification(m_hdevnotify);FillChar(m_hdevnotify,SizeOf(m_hdevnotify),0);end;
+  if (NativeUInt(m_hdevnotify) <> 0) then
+    begin
+      UnRegisterForDeviceNotification(m_hdevnotify);
+      FillChar(m_hdevnotify,
+               SizeOf(m_hdevnotify),
+               0);
+    end;
   CanClose := True;
 end;
 
@@ -247,7 +280,9 @@ end;
 procedure TFrm_SimpleCapture.FormCreate(Sender: TObject);
 var
   hr: HRESULT;  // For debugging issues only
+
 begin
+
   bAppIsClosing := False;
   // Get the capture engine
   hr := GetFmCapture();
@@ -256,11 +291,11 @@ begin
     hr := UpdateDeviceList();
 
   if (RegisterForDeviceNotification(Handle,
-                                    m_hdevnotify) = False) then
-        MessageBoxW(0,
-                   PWideChar('RegisterForDeviceNotification failed!'),
-                   nil,
-                   MB_OK);
+    m_hdevnotify) = False) then
+    MessageBoxW(0,
+                PWideChar('RegisterForDeviceNotification failed!'),
+                nil,
+                MB_OK);
   if FAILED(hr) then
     ShowMessage('Function UpdateDeviceList() Failed!');
 end;
@@ -315,10 +350,10 @@ begin
       cbxSelectDevice.ItemIndex := 0;
     end
   else
-    hr:= E_FAIL;
+    hr := E_FAIL;
 
-Done:
-    Result:= hr;
+  Done:
+    Result := hr;
 
 end;
 
@@ -334,6 +369,7 @@ var
   iListIndex: UINT32;
 
 begin
+
   // First get the index of the selected item in the combo box.
   iListIndex := cbxSelectDevice.ItemIndex;
 
@@ -386,7 +422,8 @@ begin
   // Start capturing.
 
   if SUCCEEDED(hr) then
-    if MfCaptureToFileEngine=nil then MfCaptureToFileEngine:=TCaptureToFile.Create(Handle);
+    if (MfCaptureToFileEngine = nil) then
+      MfCaptureToFileEngine := TCaptureToFile.Create(Handle);
 
   if SUCCEEDED(hr) then
     begin
@@ -417,6 +454,7 @@ var
   hr: HRESULT; // For debugging issues only, discard compiler messages.
 
 begin
+
   hr := S_OK;
   if not Assigned(MfCaptureToFileEngine) then
     Exit;
@@ -448,7 +486,9 @@ end;
 
 
 function TFrm_SimpleCapture.GetFmCapture(): HRESULT;
+
 begin
+
   Result := E_FAIL;
 
   // Create the devicelist object
@@ -486,7 +526,8 @@ begin
 
   if (AMessage.WParam = DBT_DEVICEREMOVECOMPLETE) then
     begin
-      if AMessage.LParam=0 then Exit;
+      if (AMessage.LParam = 0) then
+        Exit;
       // Check for added/removed devices, regardless of whether
       // the application is capturing video at this time.
       UpdateDeviceList();
@@ -510,19 +551,21 @@ begin
         if MfCaptureToFileEngine.IsCapturing() then
           begin
             if (StrIComp(PWideChar(MfCaptureToFileEngine.DeviceSymbolicLink),
-                         PWideChar(pwDevSymbolicLink)) = 0) then
+              PWideChar(pwDevSymbolicLink)) = 0) then
               bDeviceLost := True;
 
             if (FAILED(hr) or bDeviceLost) then
               begin
                 // Show dialog with info about which device is disconnected.
-                MessageDlg(Format('Lost capture device %s.', [MfCaptureToFileEngine.DeviceName]),
-                mtError,
-                mbOKCancel,
-                0);
+                MessageDlg(Format('Lost capture device %s.',
+                                  [MfCaptureToFileEngine.DeviceName]),
+                           mtError,
+                           mbOKCancel,
+                           0);
                 StopCapture();
               end;
           end;
     end;
 end;
+
 end.

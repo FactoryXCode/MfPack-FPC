@@ -94,7 +94,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+    {$ALIGN 8}
+    // Win64
   {$ENDIF}
 
 type
@@ -158,40 +159,28 @@ const
                         (
                          (audioProfileLevelIndication: $28;
                           ProfileDescription: 'AAC Profile L2'),
-
                          (audioProfileLevelIndication: $29;
                           ProfileDescription: 'AAC Profile L2'),
-
                          (audioProfileLevelIndication: $2A;
                           ProfileDescription: 'AAC Profile L4'),
-
                          (audioProfileLevelIndication: $2B;
                           ProfileDescription: 'AAC Profile L5'),
-
                          (audioProfileLevelIndication: $2C;
                           ProfileDescription: 'High Efficiency v1 AAC Profile L2'),
-
                          (audioProfileLevelIndication: $2E;
                           ProfileDescription: 'High Efficiency v1 AAC Profile L4'),
-
                          (audioProfileLevelIndication: $2F;
                           ProfileDescription: 'High Efficiency v1 AAC Profile L5'),
-
                          (audioProfileLevelIndication: $30;
                           ProfileDescription: 'High Efficiency v2 AAC Profile L2'),
-
                          (audioProfileLevelIndication: $31;
                           ProfileDescription: 'High Efficiency v2 AAC Profile L3'),
-
                          (audioProfileLevelIndication: $32;
                           ProfileDescription: 'High Efficiency v2 AAC Profile L4'),
-
                          (audioProfileLevelIndication: $33;
                           ProfileDescription: 'High Efficiency v2 AAC Profile L5'),
-
                          (audioProfileLevelIndication: $50;
                           ProfileDescription: 'High Efficiency v2 AAC Profile for 8 channels (7.1)'),
-
                          (audioProfileLevelIndication: $52;
                           ProfileDescription: 'High Efficiency v2 AAC Profile for 8 channels (7.1)')
                         );
@@ -212,8 +201,7 @@ const
                   (
                     (payload: 0;
                      payloadDescription: 'Stream contains raw_data_block elements only (Raw AAC).'),
-
-                    (payload: 1;
+                   (payload: 1;
                      payloadDescription: 'Audio Data Transport Stream (ADTS). The stream contains an adts_sequence, as defined by MPEG-2.')
 
                     // Not supported!
@@ -405,14 +393,18 @@ implementation
 
 
 constructor TAudioMft.Create();
+
 begin
+
   inherited Create();
   InitialisePreDefAACProfiles();
 end;
 
 
 destructor TAudioMft.Destroy();
+
 begin
+
   ResetAudioFormatArray();
   ResetAACProfileInfoArray();
   ResetAC3ProfileInfoArray();
@@ -422,7 +414,9 @@ end;
 
 
 procedure TAudioMft.InitialisePreDefAACProfiles();
+
 begin
+
   SetLength(predef_aac_profiles,
             4);
 
@@ -459,6 +453,7 @@ var
   hr: HResult;
 
 begin
+
   ResetAudioFormatArray();
   // Get the supported encoder formats from the selected audioformat.
   hr := GetWinAudioEncoderFormats(AudioFormat,
@@ -472,14 +467,18 @@ function TAudioMft.AddAACProfile(AACProfile: TAACProfileInfo;
                                  IncludePredefinedProfiles: Boolean = True): Integer;
 var
   i: Integer;
+
 begin
+
   if IncludePredefinedProfiles then
-    begin
-      SetLength(pa_AAC_profiles,Length(predef_aac_profiles));
-      for i := 0 to High(predef_aac_profiles) do
-        pa_AAC_profiles[i] := predef_aac_profiles[i];
-    end;
-  SetLength(pa_AAC_profiles,Length(pa_AAC_profiles) + 1);
+      begin
+        SetLength(pa_AAC_profiles,
+                  Length(predef_aac_profiles));
+        for i := 0 to High(predef_aac_profiles) do
+          pa_AAC_profiles[i] := predef_aac_profiles[i];
+      end;
+  SetLength(pa_AAC_profiles,
+            Length(pa_AAC_profiles) + 1);
   pa_AAC_profiles[High(pa_AAC_profiles)] := AACProfile;
   Result := Length(pa_AAC_profiles);
 end;
@@ -786,62 +785,72 @@ function TAudioMft.CreateMP3AudioType(mp3ProfileInfo: TMP3ProfileInfo;
                                       out mp3Type: IMFMediaType): HRESULT;
 var
   aType: IMFMediaType;
-  channelsChecked,sampleRateChecked,bytesPerSecondChecked: UINT32;
+  channelsChecked, sampleRateChecked, bytesPerSecondChecked: UINT32;
+
 begin
+
   mp3Type := nil;
   if (mp3ProfileInfo.mpegVersion <> 1) and (mp3ProfileInfo.mpegVersion <> 2) then
-    begin
-      Result := E_INVALIDARG;
-      Exit;
-    end;
+      begin
+        Result := E_INVALIDARG;
+        Exit;
+      end;
   channelsChecked := mp3ProfileInfo.channels;
   if (channelsChecked <> 1) and (channelsChecked <> 2) then
     channelsChecked := 2;
   sampleRateChecked := mp3ProfileInfo.sampleRate;
   bytesPerSecondChecked := mp3ProfileInfo.bytesPerSecond;
-  if mp3ProfileInfo.mpegVersion = 1 then
-    begin
-      case sampleRateChecked of
-        32000,44100,48000: ;
-        else sampleRateChecked := 44100;
-      end;
-      case bytesPerSecondChecked of
-        4000,5000,6000,7000,8000,10000,12000,14000,16000,20000,24000,28000,32000,40000: ;
-        else
-          if channelsChecked = 1 then
-            bytesPerSecondChecked := 16000
+  if (mp3ProfileInfo.mpegVersion = 1) then
+      begin
+        case sampleRateChecked of
+          32000, 44100, 48000: ;
           else
-            bytesPerSecondChecked := 40000;
-      end;
-    end
-  else
-    begin
-      case sampleRateChecked of
-        8000,11025,12000,16000,22050,24000: ;
-        else sampleRateChecked := 22050;
-      end;
-      case bytesPerSecondChecked of
-        1000,2000,3000,4000,5000,6000,7000,8000,10000,12000,14000,18000,20000: ;
-        else bytesPerSecondChecked := 8000;
-      end;
-      if ((sampleRateChecked <= 12000) and (bytesPerSecondChecked >= 10000)) or
-         ((sampleRateChecked = 8000) and (channelsChecked = 2) and (bytesPerSecondChecked <= 3000)) then
-        begin
-          Result := E_INVALIDARG;
-          Exit;
+    sampleRateChecked := 44100;
         end;
-    end;
+        case bytesPerSecondChecked of
+          4000, 5000, 6000, 7000, 8000, 10000, 12000, 14000, 16000, 20000, 24000, 28000, 32000, 40000: ;
+          else
+            if (channelsChecked = 1) then
+              bytesPerSecondChecked := 16000
+            else
+              bytesPerSecondChecked := 40000;
+        end;
+      end
+  else
+      begin
+        case sampleRateChecked of
+          8000, 11025, 12000, 16000, 22050, 24000: ;
+          else
+    sampleRateChecked := 22050;
+        end;
+        case bytesPerSecondChecked of
+          1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 10000, 12000, 14000, 18000, 20000: ;
+          else
+    bytesPerSecondChecked := 8000;
+        end;
+        if ((sampleRateChecked <= 12000) and (bytesPerSecondChecked >= 10000)) or
+           ((sampleRateChecked = 8000) and (channelsChecked = 2) and (bytesPerSecondChecked <= 3000)) then
+            begin
+              Result := E_INVALIDARG;
+              Exit;
+            end;
+      end;
   Result := MFCreateMediaType(aType);
   if SUCCEEDED(Result) then
-    Result := aType.SetGUID(MF_MT_MAJOR_TYPE,MFMediaType_Audio);
+    Result := aType.SetGUID(MF_MT_MAJOR_TYPE,
+                            MFMediaType_Audio);
   if SUCCEEDED(Result) then
-    Result := aType.SetGUID(MF_MT_SUBTYPE,MFAudioFormat_MP3);
+    Result := aType.SetGUID(MF_MT_SUBTYPE,
+                            MFAudioFormat_MP3);
   if SUCCEEDED(Result) then
-    Result := aType.SetUINT32(MF_MT_AUDIO_NUM_CHANNELS,channelsChecked);
+    Result := aType.SetUINT32(MF_MT_AUDIO_NUM_CHANNELS,
+                              channelsChecked);
   if SUCCEEDED(Result) then
-    Result := aType.SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,sampleRateChecked);
+    Result := aType.SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND,
+                              sampleRateChecked);
   if SUCCEEDED(Result) then
-    Result := aType.SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,bytesPerSecondChecked);
+    Result := aType.SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
+                              bytesPerSecondChecked);
   if SUCCEEDED(Result) then
     mp3Type := aType;
 end;
@@ -875,10 +884,10 @@ begin
   // Check majortype
   if not IsEqualGuid(majortype,
                      MFMediaType_Audio) then
-    begin
-      hr := MF_E_INVALIDMEDIATYPE;
-      goto done;
-    end;
+      begin
+        hr := MF_E_INVALIDMEDIATYPE;
+        goto done;
+      end;
 
   // Get the audio subtype.
   hr := srcType.GetGUID(MF_MT_SUBTYPE,
@@ -888,12 +897,12 @@ begin
 
   if IsEqualGuid(subtype,
                  MFAudioFormat_PCM) then
-    begin
-      // This is already a PCM audio type. Return the same pointer.
-      pcmType := srcType;
-      Hr := S_OK;
-      goto done;
-    end;
+      begin
+        // This is already a PCM audio type. Return the same pointer.
+        pcmType := srcType;
+        Hr := S_OK;
+        goto done;
+      end;
 
   // Get the information from the audio format.
 
@@ -912,10 +921,10 @@ begin
                                                    16);
 
   if (pcmProfile.channels = 0) or (pcmProfile.bitsPerSample = 0) then
-    begin
-      pcmProfile.channels := 2;
-      pcmProfile.bitsPerSample := 16
-    end;
+      begin
+        pcmProfile.channels := 2;
+        pcmProfile.bitsPerSample := 16
+      end;
 
   // Create the corresponding PCM audio type.
   hr := CreatePCMAudioType(pcmProfile,
@@ -946,12 +955,15 @@ label
   done;
 
 begin
-  FillChar(aProfile,SizeOf(aProfile),0);
-  if srcType = nil then
-    begin
-      Result := E_POINTER;
-      Exit;
-    end;
+
+  FillChar(aProfile,
+           SizeOf(aProfile),
+           0);
+  if (srcType = nil) then
+      begin
+        Result := E_POINTER;
+        Exit;
+      end;
 
   hr := srcType.GetMajorType(majortype);
   if FAILED(hr) then
@@ -960,10 +972,10 @@ begin
   // Check majortype
   if not IsEqualGuid(majortype,
                      MFMediaType_Audio) then
-    begin
-      hr := MF_E_INVALIDMEDIATYPE;
-      goto done;
-    end;
+      begin
+        hr := MF_E_INVALIDMEDIATYPE;
+        goto done;
+      end;
 
   // Get the audio subtype.
   hr := srcType.GetGUID(MF_MT_SUBTYPE,
@@ -973,12 +985,12 @@ begin
 
   if IsEqualGuid(subtype,
                  MFAudioFormat_AAC) then
-    begin
-      // This is already an AAC audio type. Return the same pointer.
-      aacType := srcType;
-      Hr := S_OK;
-      goto done;
-    end;
+      begin
+        // This is already an AAC audio type. Return the same pointer.
+        aacType := srcType;
+        Hr := S_OK;
+        goto done;
+      end;
 
   // Get the sample rate and other information from the audio format needed for AAC.
 
@@ -997,7 +1009,9 @@ begin
                                                  MF_MT_AUDIO_BITS_PER_SAMPLE,
                                                  16);
 
-  aProfile.bytesPerSec := MFGetAttributeUINT32(srcType,MF_MT_AUDIO_AVG_BYTES_PER_SECOND,12000);
+  aProfile.bytesPerSec := MFGetAttributeUINT32(srcType,
+                                               MF_MT_AUDIO_AVG_BYTES_PER_SECOND,
+                                               12000);
 
   aProfile.aacProfile := $29;
 
@@ -1022,28 +1036,36 @@ end;
 // Helpers /////////////////////////////////////////////////////////////////////
 
 procedure TAudioMft.ResetAudioFormatArray();
+
 begin
+
   SetLength(predef_aac_profiles,
             0);
 end;
 
 
 procedure TAudioMft.ResetAACProfileInfoArray();
+
 begin
+
   SetLength(pa_AAC_profiles,
             0);
 end;
 
 
 procedure TAudioMft.ResetAC3ProfileInfoArray();
+
 begin
+
   SetLength(pa_AC3_profiles,
             0);
 end;
 
 
 procedure TAudioMft.ResetMP3ProfileInfoArray();
+
 begin
+
   SetLength(pa_MP3_profiles,
             0);
 end;

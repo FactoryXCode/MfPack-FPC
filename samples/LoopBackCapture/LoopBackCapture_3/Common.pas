@@ -68,12 +68,12 @@ interface
 uses
   MfLoopbackSamples.Platform,
   MfLoopbackSamples.Events,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
   Sysutils,
-    SyncObjs,
+  SyncObjs,
   {Vcl}
   ComCtrls,
   Dialogs,
@@ -85,26 +85,26 @@ const
 
 type
 
-  TMsgOptions  = (optIDE,        // Show info in the IDE Messages
-                  optShowMsg);   // Return info in a messagebox
+  TMsgOptions = (optIDE,        // Show info in the IDE Messages
+    optShowMsg);   // Return info in a messagebox
 
-  // Simple error handler that reports by default in the IDE Messages screen or
-  // shows a messagedialog at runtime.
-  procedure InfoMsg(Options: TMsgOptions;
-                    pErrMsg: string;
-                    pHr: HResult;
-                    hwObj: HWND = 0);
+// Simple error handler that reports by default in the IDE Messages screen or
+// shows a messagedialog at runtime.
+procedure InfoMsg(Options: TMsgOptions;
+                  pErrMsg: string;
+                  pHr: HResult;
+                  hwObj: HWND = 0);
 
-  procedure HandleThreadMessages(AThread: THandle;
-                                 AWait: Cardinal = 0);
+procedure HandleThreadMessages(AThread: THandle;
+                               AWait: Cardinal = 0);
 
-  function EventWait(EventObj: TMfLoopbackEvent;
-                     Period: Integer = 100): HResult;
+function EventWait(EventObj: TMfLoopbackEvent;
+                   Period: Integer = 100): HResult;
 
-  // Delphi MulDiv replacement for Int64 types.
-  function _MulDiv64(const aNumber,
-                           aNumerator,
-                           aDenominator: Int64): Int64;
+// Delphi MulDiv replacement for Int64 types.
+function _MulDiv64(const aNumber,
+                   aNumerator,
+                   aDenominator: Int64): Int64;
 
 
 implementation
@@ -115,11 +115,12 @@ procedure InfoMsg(Options: TMsgOptions;
                   pErrMsg: string;
                   pHr: HResult;
                   hwObj: HWND = 0);
+
 begin
 
   if (Options = optIDE) then
     OutputDebugStringW(StrToPWideChar(Format('%s (hr = %d)',
-                                            [pErrMsg, pHr])));
+                                             [pErrMsg, pHr])));
 
   if (Options = optShowMsg) then
     ShowMessage(format('%s (hr = %d)',
@@ -142,18 +143,18 @@ var
 begin
 
   while (MsgWaitForMultipleObjects(1,
-                                   AThread,
-                                   False,
-                                   AWait,
-                                   QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
+      AThread,
+      False,
+      AWait,
+      QS_ALLINPUT) = WAIT_OBJECT_0 + 1) do
     begin
       PeekMessageW(oMsg,
-                  0,
-                  0,
-                  0,
-                  PM_REMOVE);
+                   0,
+                   0,
+                   0,
+                   PM_REMOVE);
 
-      if oMsg.Message = WM_QUIT then
+      if (oMsg.Message = WM_QUIT) then
         Exit;
 
       TranslateMessage(oMsg);
@@ -190,8 +191,9 @@ end;
 // If working with Int64, use this method, instead of MulDiv.
 // Note: In later MfPack versions (> version 3.18), this method will be declared in WinApi.MediaFoundationApi.MfUtils.
 function _MulDiv64(const aNumber,
-                         aNumerator,
-                         aDenominator: Int64): Int64;
+                   aNumerator,
+                   aDenominator: Int64): Int64;
+
 begin
 
   if (aDenominator <= 0) then
@@ -199,7 +201,7 @@ begin
 
   // Avoid Int64 overflow: (QpcDelta * 10_000_000) div PerfFreq
   Result := (aNumber div aDenominator) * aNumerator +
-            (aNumber mod aDenominator) * aNumerator div aDenominator;
+    (aNumber mod aDenominator) * aNumerator div aDenominator;
 end;
 
 end.

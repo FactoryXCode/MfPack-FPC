@@ -64,12 +64,13 @@ unit MfWasApiRenderOutputEngine;
 
 interface
 
-uses Rdj.Dispatch,
-Rdj.Platform,
-LMessages,
+uses
+  Rdj.Dispatch,
+  Rdj.Platform,
+  LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.WinApiTypes,
@@ -129,6 +130,7 @@ type
   private
     FDispatch: TRdjDispatcher;
     procedure DispatchEvent(Event: TRdjEvent);
+
   private
 
     FStopping: LongBool;
@@ -172,7 +174,7 @@ type
     FAvrtIndex: DWORD;
 
     // FX Rack.
-    FAudioRack : TMfWasApiEffectsRack;
+    FAudioRack: TMfWasApiEffectsRack;
 
     function WaitForRenderThreadToExit(const ATimeoutMs: DWORD = 3000): HRESULT;
     procedure SetDeviceState(const AState: TDeviceState);
@@ -233,18 +235,26 @@ uses
   frmMainMDI,
   RDJ.Setup;
 
+
 procedure TMfWasApiRenderOutputEngine.DispatchEvent(Event: TRdjEvent);
+
 begin
- if FStopping or FDestroying then Exit;
- case Event.Kind of
- 4: if Assigned(FOnProcessed) then FOnProcessed(Self,Event.I0,Event.U0);
- end;
+
+  if FStopping or FDestroying then
+    Exit;
+  case Event.Kind of
+    4: if Assigned(FOnProcessed) then
+        FOnProcessed(Self,
+                     Event.I0,
+                     Event.U0);
+  end;
 end;
 
 
 
 
 function WideStringToLPWSTR(const S: string): LPWSTR;
+
 begin
 
   Result := LPWSTR(WideString(S));
@@ -254,19 +264,20 @@ end;
 { TMfWasApiRenderOutputEngine }
 
 constructor TMfWasApiRenderOutputEngine.Create();
+
 begin
 
   inherited Create;
-  FDispatch:=TRdjDispatcher.Create;
+  FDispatch := TRdjDispatcher.Create;
 
   pvAudioSamplesReadyEvent := CreateEventW(nil,
-                                          False,
-                                          False,
-                                          nil);
+                                           False,
+                                           False,
+                                           nil);
   pvShutdownEvent := CreateEventW(nil,
-                                 True,
-                                 False,
-                                 nil);
+                                  True,
+                                  False,
+                                  nil);
 
   pvRenderThread := 0;
   pvRenderThreadId := 0;
@@ -289,6 +300,7 @@ end;
 
 
 destructor TMfWasApiRenderOutputEngine.Destroy();
+
 begin
 
   FDestroying := True;
@@ -326,6 +338,7 @@ end;
 
 procedure TMfWasApiRenderOutputEngine.DoError(const Hr: HRESULT;
                                               const Msg: string);
+
 begin
 
   if FDestroying then
@@ -361,14 +374,17 @@ begin
     Exit;
 
   if (Position100ns <> 0) and
-     (FLastQueuedPosition100ns >= 0) and
-     ((Position100ns - FLastQueuedPosition100ns) < MIN_PROCESS_NOTIFY_100NS) then
+    (FLastQueuedPosition100ns >= 0) and
+    ((Position100ns - FLastQueuedPosition100ns) < MIN_PROCESS_NOTIFY_100NS) then
     Exit;
 
   FLastQueuedPosition100ns := Position100ns;
   QueuedPosition100ns := Position100ns;
 
-  FDispatch.Post(DispatchEvent,4,QueuedPosition100ns,RawPosition);
+  FDispatch.Post(DispatchEvent,
+                 4,
+                 QueuedPosition100ns,
+                 RawPosition);
 end;
 
 
@@ -398,13 +414,14 @@ begin
 
     WAIT_TIMEOUT:
       Result := HRESULT_FROM_WIN32(WAIT_TIMEOUT);
-  else
-    Result := HRESULT_FROM_WIN32(GetLastError);
+    else
+      Result := HRESULT_FROM_WIN32(GetLastError);
   end;
 end;
 
 
 procedure TMfWasApiRenderOutputEngine.SetDeviceState(const AState: TDeviceState);
+
 begin
 
   if FDestroying then
@@ -422,6 +439,7 @@ end;
 
 
 procedure TMfWasApiRenderOutputEngine.ReleaseAudioInterfaces();
+
 begin
 
   pvSimpleVol := nil;
@@ -440,6 +458,7 @@ end;
 
 
 procedure TMfWasApiRenderOutputEngine.SetUseDefaultOutputDevice(const ARole: ERole);
+
 begin
 
   FUseDefaultDevice := True;
@@ -449,6 +468,7 @@ end;
 
 
 procedure TMfWasApiRenderOutputEngine.SetOutputDeviceId(const ADeviceId: string);
+
 begin
 
   FUseDefaultDevice := False;
@@ -481,6 +501,7 @@ end;
 
 
 function TMfWasApiRenderOutputEngine.InitializeAudioEngine(): HRESULT;
+
 begin
 
   ReleaseAudioInterfaces();
@@ -519,13 +540,13 @@ begin
   hnsRequestedDuration := Int64(RequestedBufferMs) * 10000; // 60 ms buffer = default.
 
   ConfigureRawAudioStream(pvAudioClient,
-                                AudioCategory_Media,
-                                'RDJ WASAPI render output');
+                          AudioCategory_Media,
+                          'RDJ WASAPI render output');
 
   hr := pvAudioClient.Initialize(AUDCLNT_SHAREMODE_SHARED,
                                  AUDCLNT_STREAMFLAGS_EVENTCALLBACK or
-                                 AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY or
-                                 AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM,
+    AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY or
+    AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM,
                                  hnsRequestedDuration,
                                  0,
                                  pwfx,
@@ -592,8 +613,8 @@ begin
     16: FBytesPerSample := 2;
     24: FBytesPerSample := 3;
     32: FBytesPerSample := 4;
-  else
-    FBytesPerSample := 2;
+    else
+      FBytesPerSample := 2;
   end;
 
   Move(pwfx^,
@@ -606,6 +627,7 @@ end;
 
 
 function TMfWasApiRenderOutputEngine.Prepare(pwfx: PWAVEFORMATEX): HRESULT;
+
 begin
 
   if (pwfx = nil) then
@@ -636,11 +658,12 @@ end;
 
 
 function TMfWasApiRenderOutputEngine.PlayAudioStreamInternal(): HRESULT;
+
 begin
 
   if (pvAudioClient = nil) or
-     (pvRenderClient = nil) or
-     (pvAudioClock = nil) then
+    (pvRenderClient = nil) or
+    (pvAudioClock = nil) then
     Exit(E_POINTER);
 
   Result := pvAudioClient.Start();
@@ -651,6 +674,7 @@ end;
 
 
 function TMfWasApiRenderOutputEngine.StopAudioStreamInternal(): HRESULT;
+
 begin
 
   if (pvAudioClient = nil) then
@@ -660,13 +684,15 @@ begin
   if SUCCEEDED(Result) then
     begin
       FLastQueuedPosition100ns := -1;
-      RaiseProcessed(0, 0);
+      RaiseProcessed(0,
+                     0);
       SetDeviceState(dsStopped);
     end;
 end;
 
 
 function TMfWasApiRenderOutputEngine.PauseAudioStreamInternal(): HRESULT;
+
 begin
 
   if (pvAudioClient = nil) then
@@ -679,6 +705,7 @@ end;
 
 
 function TMfWasApiRenderOutputEngine.Start(): HRESULT;
+
 begin
 
   if FDestroying then
@@ -736,28 +763,32 @@ end;
 
 
 function TMfWasApiRenderOutputEngine.Pause(): HRESULT;
+
 begin
+
   Result := PauseAudioStreamInternal();
 end;
 
 
 function TMfWasApiRenderOutputEngine.Mute(pActive: Boolean): Boolean;
+
 begin
 
   Result := Assigned(pvSimpleVol) and
-            SUCCEEDED(pvSimpleVol.SetMute(pActive,
-                                          nil));
+    SUCCEEDED(pvSimpleVol.SetMute(pActive,
+                                  nil));
 end;
 
 
 function TMfWasApiRenderOutputEngine.SetVolumes(pVolLeft,
                                                 pVolRight: Single): HRESULT;
+
 begin
 
   if not Assigned(pvAudioStreamVolume) then
     Exit(E_POINTER);
 
-  if pvSoundChannels = 0 then
+  if (pvSoundChannels = 0) then
     Exit(E_FAIL);
 
   Result := pvAudioStreamVolume.SetChannelVolume(0,
@@ -767,7 +798,7 @@ begin
   if FAILED(Result) then
     Exit;
 
-  if pvSoundChannels > 1 then
+  if (pvSoundChannels > 1) then
     Result := pvAudioStreamVolume.SetChannelVolume(1,
                                                    EnsureRange(pVolRight,
                                                                0.0,
@@ -818,7 +849,7 @@ begin
               Continue;
 
             if (pvAudioClient = nil) or
-               (pvRenderClient = nil) then
+              (pvRenderClient = nil) then
               Exit(S_OK);
 
             hr := pvAudioClient.GetCurrentPadding(padding);
@@ -887,16 +918,14 @@ begin
             end;
 
             if FAILED(hr) then
-                Exit(hr);
+              Exit(hr);
 
             if FStopping or FDestroying then
               Exit(S_OK);
 
             if Assigned(FOnProcessed) and
-               Assigned(pvAudioClock) and
-               (pvAudioClockFrequency <> 0) and
-               not FStopping and
-               not FDestroying then
+              Assigned(pvAudioClock) and
+              (pvAudioClockFrequency <> 0) and not FStopping and not FDestroying then
               begin
 
                 hr := pvAudioClock.GetPosition(@u64Position,
@@ -906,8 +935,8 @@ begin
                                  u64Position);
               end;
           end;
-      else
-        Exit(HRESULT_FROM_WIN32(GetLastError));
+        else
+          Exit(HRESULT_FROM_WIN32(GetLastError));
       end;
     end;
 end;
@@ -934,14 +963,13 @@ begin
 
   if SUCCEEDED(hr) then
     ComInitialized := True
-  else
-    if (hr <> RPC_E_CHANGED_MODE) then
-      begin
+  else if (hr <> RPC_E_CHANGED_MODE) then
+    begin
 
-        Engine.DoError(hr,
-                       'CoInitializeEx failed in render thread');
-        Exit;
-      end;
+      Engine.DoError(hr,
+                     'CoInitializeEx failed in render thread');
+      Exit;
+    end;
 
   // Enable Mmcss.
   Engine.EnableMmcss;
@@ -964,6 +992,7 @@ end;
 
 
 procedure TMfWasApiRenderOutputEngine.EnableMmcss();
+
 begin
 
   FAvrtIndex := 0;
@@ -980,6 +1009,7 @@ end;
 
 
 procedure TMfWasApiRenderOutputEngine.DisableMmcss();
+
 begin
 
   if (FAvrtHandle <> 0) then
@@ -992,4 +1022,3 @@ begin
 end;
 
 end.
-

@@ -99,6 +99,7 @@ function ChangeTimerQueueTimer(TimerQueue: THandle;
 
 type
   TQTimer = class(TComponent)
+
   private
     bTimerEnabled: Boolean;
     hTimerHandle: THandle;
@@ -109,16 +110,19 @@ type
     procedure EnableQTimer(Value: Boolean);
     procedure SetDueTime(const Value: UINT);
     procedure SetPeriod(const Value: UINT);
+
   protected
     MsgId: Cardinal;
     gTimerID: TGUID;
     procedure Loaded; override;
     procedure QueueTimerHandler; virtual;
+
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function ChangeTimerQueue(lwDueTime: LongWord;
                               lwPeriod: LongWord): BOOL;
+
   published
     property Enabled: Boolean read bTimerEnabled write EnableQTimer default False;
     property DueTime: UINT read uiDueTime write SetDueTime default 0;
@@ -138,14 +142,17 @@ threadvar
   CurrentQueueTimer: TQTimer;
 
 
-procedure TimerCallback(Parameter: Pointer;CallbackFired: Boolean); stdcall;
+procedure TimerCallback(Parameter: Pointer;
+                        CallbackFired: Boolean); stdcall;
 var
   Previous: TQTimer;
+
 begin
+
   Previous := CurrentQueueTimer;
   CurrentQueueTimer := TQTimer(Parameter);
   try
-    if Parameter <> nil then
+    if (Parameter <> nil) then
       TQTimer(Parameter).QueueTimerHandler;
   finally
     CurrentQueueTimer := Previous;
@@ -154,18 +161,23 @@ end;
 
 
 procedure Register;
+
 begin
-  RegisterComponents('MfPack Timer Samples',[TQTimer]);
+
+  RegisterComponents('MfPack Timer Samples',
+                     [TQTimer]);
 end;
 
 
 constructor TQTimer.Create(AOwner: TComponent);
 var
   Name: UnicodeString;
+
 begin
+
   inherited Create(AOwner);
   uiPeriod := 100;
-  if CreateGUID(gTimerID) < 0 then
+  if (CreateGUID(gTimerID) < 0) then
     gTimerID := StringToGUID('{4C68E633-53BF-4609-B7DC-0E4FDBCC585E}');
   Name := UnicodeString(GUIDToString(gTimerID));
   MsgId := RegisterWindowMessageW(PWideChar(Name));
@@ -175,7 +187,9 @@ end;
 procedure TQTimer.Loaded;
 var
   StartEnabled: Boolean;
+
 begin
+
   inherited Loaded;
   StartEnabled := bTimerEnabled;
   bTimerEnabled := False;
@@ -185,7 +199,9 @@ end;
 
 
 destructor TQTimer.Destroy;
+
 begin
+
   EnableQTimer(False);
   inherited Destroy;
 end;
@@ -195,20 +211,22 @@ procedure TQTimer.EnableQTimer(Value: Boolean);
 var
   Completion: THandle;
   Timer: THandle;
+
 begin
+
   if (csDesigning in ComponentState) or (csLoading in ComponentState) then
     begin
       bTimerEnabled := Value;
       Exit;
     end;
-  if Value = bTimerEnabled then
+  if (Value = bTimerEnabled) then
     Exit;
   bTimerEnabled := Value;
   if Value then
     begin
       // Publish Enabled before a zero-due-time callback can run.
-      if not CreateTimerQueueTimer(hTimerHandle,0,@TimerCallback,Self,
-                                    uiDueTime,uiPeriod,0) then
+      if not CreateTimerQueueTimer(hTimerHandle, 0, @TimerCallback, Self,
+        uiDueTime, uiPeriod, 0) then
         begin
           bTimerEnabled := False;
           hTimerHandle := 0;
@@ -219,39 +237,50 @@ begin
     begin
       Timer := hTimerHandle;
       hTimerHandle := 0;
-      if Timer <> 0 then
+      if (Timer <> 0) then
         begin
           Completion := INVALID_HANDLE_VALUE;
           // A callback can disable itself, but cannot wait for its own return.
-          if CurrentQueueTimer = Self then
+          if (CurrentQueueTimer = Self) then
             Completion := 0;
-          DeleteTimerQueueTimer(0,Timer,Completion);
+          DeleteTimerQueueTimer(0,
+                                Timer,
+                                Completion);
         end;
     end;
 end;
 
 
 procedure TQTimer.SetDueTime(const Value: UINT);
+
 begin
+
   if not bTimerEnabled then
     uiDueTime := Value;
 end;
 
 
 procedure TQTimer.SetPeriod(const Value: UINT);
+
 begin
+
   if not bTimerEnabled then
     uiPeriod := Value;
 end;
 
 
 function TQTimer.ChangeTimerQueue(lwDueTime: LongWord;
-                                 lwPeriod: LongWord): BOOL;
+                                  lwPeriod: LongWord): BOOL;
+
 begin
+
   Result := False;
   if not bTimerEnabled or (hTimerHandle = 0) then
     Exit;
-  Result := ChangeTimerQueueTimer(0,hTimerHandle,lwDueTime,lwPeriod);
+  Result := ChangeTimerQueueTimer(0,
+                                  hTimerHandle,
+                                  lwDueTime,
+                                  lwPeriod);
   if Result then
     begin
       uiDueTime := lwDueTime;
@@ -261,7 +290,9 @@ end;
 
 
 procedure TQTimer.QueueTimerHandler;
+
 begin
+
   try
     if bTimerEnabled and Assigned(neOnTimer) then
       neOnTimer(Self);

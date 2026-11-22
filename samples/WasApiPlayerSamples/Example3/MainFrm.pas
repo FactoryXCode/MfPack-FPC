@@ -70,7 +70,7 @@ interface
 
 uses
   WasApiSample.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   LMessages,
@@ -99,19 +99,18 @@ uses
   EqSettingsFrm,
   EqPlotUtils;
 
-
 const
 
   // Global hotkey's.
-  HK_TOGGLE_PLAY   = 1;
-  HK_TOGGLE_PAUSE  = 2;
-  HK_TOGGLE_STOP   = 3;
+  HK_TOGGLE_PLAY = 1;
+  HK_TOGGLE_PAUSE = 2;
+  HK_TOGGLE_STOP = 3;
 
-  HK_VOLUME_UP     = 4;
-  HK_VOLUME_DOWN   = 5;
+  HK_VOLUME_UP = 4;
+  HK_VOLUME_DOWN = 5;
 
-  HK_GUI_SHOW      = 6;
-  HK_GUI_HIDE      = 7;
+  HK_GUI_SHOW = 6;
+  HK_GUI_HIDE = 7;
 
 type
 
@@ -175,14 +174,21 @@ type
     procedure edtRampMsChange(Sender: TObject);
     procedure trbVolumeRChange(Sender: TObject);
     procedure trbVolumeLChange(Sender: TObject);
-    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure pbProgressMouseMove(Sender: TObject; Shift: TShiftState; X,
-      Y: Integer);
-    procedure pbProgressMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure FormKeyUp(Sender: TObject;
+                        var Key: Word;
+                        Shift: TShiftState);
+    procedure pbProgressMouseMove(Sender: TObject;
+                                  Shift: TShiftState;
+                                  X,
+                                  Y: Integer);
+    procedure pbProgressMouseUp(Sender: TObject;
+                                Button: TMouseButton;
+                                Shift: TShiftState;
+                                X,
+                                Y: Integer);
     procedure Settings1Click(Sender: TObject);
 
-    private
+  private
 
     FUpdatingUi: Boolean;
     FEqTuning: TEqTuning;
@@ -242,6 +248,7 @@ implementation
 
 // Slider helper to invert slider values.
 function InvertDb(const V: Integer): Integer;
+
 begin
 
   Result := -V;
@@ -249,6 +256,7 @@ end;
 
 
 function TfrmMain.IniFileName: string;
+
 begin
 
   // Keep it simple: same folder, same base name as exe.
@@ -263,6 +271,7 @@ procedure TfrmMain.ApplyEqLiveControls(const Enabled: Boolean;
                                        HighDb: Integer;
                                        const RampModeIndex: Integer;
                                        const RampMs: Integer);
+
 begin
 
   // Update UI without re-triggering events
@@ -444,6 +453,7 @@ end;
 
 
 function TfrmMain.RampModeFromCombo(): TMfRampMode;
+
 begin
 
   case cbxRamp.ItemIndex of
@@ -451,13 +461,14 @@ begin
     1: Result := rmFast;
     2: Result := rmSmooth;
     3: Result := rmCustom;
-  else
-    Result := rmSmooth;
+    else
+      Result := rmSmooth;
   end;
 end;
 
 
 procedure TfrmMain.FormCreate(Sender: TObject);
+
 begin
 
   FWasApiEngine := TWasApiEngine.Create();
@@ -541,6 +552,7 @@ end;
 
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
+
 begin
 
   // Unregister the global hotkey's
@@ -563,8 +575,9 @@ begin
 end;
 
 
-procedure TfrmMain.FormKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TfrmMain.FormKeyUp(Sender: TObject;
+                             var Key: Word;
+                             Shift: TShiftState);
 var
   iPos: Integer;
 
@@ -583,16 +596,16 @@ begin
     end;
 
   case Key of
-    VK_F12:     begin
-                  btnLoadClick(nil);
-                end;
+      VK_F12: begin
+        btnLoadClick(nil);
+      end;
 
-    VK_F11:     begin
+      VK_F11: begin
 
-                  iPos := trbVolumeL.Position + trbVolumeR.Position div 2;
-                  trbVolumeL.Position := iPos;
-                  trbVolumeR.Position := iPos;
-                end;
+        iPos := trbVolumeL.Position + trbVolumeR.Position div 2;
+        trbVolumeL.Position := iPos;
+        trbVolumeR.Position := iPos;
+      end;
 
   end;
 end;
@@ -608,7 +621,8 @@ begin
     begin
 
       FFileName := OpenDialog1.FileName;
-      stxtStatus.Caption := Format('Loaded file: %s', [ExtractFileName(FFileName)]);
+      stxtStatus.Caption := Format('Loaded file: %s',
+                                   [ExtractFileName(FFileName)]);
 
       // Get the length of the audiofile.
       hr := GetFileDuration(StrToPWideChar(FFileName),
@@ -621,7 +635,8 @@ begin
         end;
 
       lblDuration.Caption := Format('Duration: %s',
-                                    [HnsTimeToStr(llAudioDuration, False)]);
+                                    [HnsTimeToStr(llAudioDuration,
+                                                  False)]);
 
       // Set progressbar max
       pbProgress.Max := Integer(llAudioDuration div MS100_PER_SEC);
@@ -672,8 +687,8 @@ begin
         hr := fWasApiEngine.Start();
       end
 
-  else
-    Exit;
+    else
+      Exit;
   end;
 
   if FAILED(hr) then
@@ -683,6 +698,7 @@ end;
 
 
 procedure TfrmMain.butStopClick(Sender: TObject);
+
 begin
 
   FWasApiEngine.Stop();
@@ -690,6 +706,7 @@ end;
 
 
 procedure TfrmMain.chkEQClick(Sender: TObject);
+
 begin
 
   if FUpdatingUi then
@@ -703,6 +720,7 @@ end;
 
 
 procedure TfrmMain.tbLowChange(Sender: TObject);
+
 begin
 
   if FUpdatingUi then
@@ -723,6 +741,7 @@ end;
 
 
 procedure TfrmMain.tbMidChange(Sender: TObject);
+
 begin
 
   if FUpdatingUi then
@@ -741,6 +760,7 @@ end;
 
 
 procedure TfrmMain.tbHighChange(Sender: TObject);
+
 begin
 
   if FUpdatingUi then
@@ -751,7 +771,7 @@ begin
 
       FWasApiEngine.SetHighDb(InvertDb(tbHigh.Position));
       stxtHighIndex.Caption := Format('%d dB',
-                                     [InvertDb(tbHigh.Position)]);
+                                      [InvertDb(tbHigh.Position)]);
       UpdateSpectrumPlot();
       SaveEqLiveToIni();
     end;
@@ -759,6 +779,7 @@ end;
 
 
 procedure TfrmMain.Settings1Click(Sender: TObject);
+
 begin
 
   if not assigned(FfrmEqSettings) then
@@ -816,10 +837,10 @@ begin
   SetVolumeChannels();
 
   vol := (MapRange((trbVolumeL.Position),
-                    trbVolumeL.Max,
-                    trbVolumeL.Min,
-                    MIN_VOLUME,
-                    MAX_VOLUME) / (MAX_VOLUME / 100));
+                   trbVolumeL.Max,
+                   trbVolumeL.Min,
+                   MIN_VOLUME,
+                   MAX_VOLUME) / (MAX_VOLUME / 100));
 
   lblLeftVolume.Caption := Format('%d',
                                   [Trunc(vol)]) + '%';
@@ -838,10 +859,10 @@ begin
   SetVolumeChannels();
 
   vol := (MapRange((trbVolumeR.Position),
-                    trbVolumeR.Max,
-                    trbVolumeR.Min,
-                    MIN_VOLUME,
-                    MAX_VOLUME) / (MAX_VOLUME / 100));
+                   trbVolumeR.Max,
+                   trbVolumeR.Min,
+                   MIN_VOLUME,
+                   MAX_VOLUME) / (MAX_VOLUME / 100));
 
   lblRightVolume.Caption := Format('%d',
                                    [Trunc(vol)]) + '%';
@@ -849,6 +870,7 @@ end;
 
 
 procedure TfrmMain.cbxRampChange(Sender: TObject);
+
 begin
 
   if FUpdatingUi then
@@ -863,6 +885,7 @@ end;
 
 
 procedure TfrmMain.edtRampMsChange(Sender: TObject);
+
 begin
 
   if FUpdatingUi then
@@ -903,21 +926,21 @@ begin
   if Assigned(FWasApiEngine) then
     begin
 
-       FWasApiEngine.GetEqBiquadCoeffs(Low,
-                                       Mid,
-                                       High,
-                                       Fs);
+      FWasApiEngine.GetEqBiquadCoeffs(Low,
+                                      Mid,
+                                      High,
+                                      Fs);
 
-       PlotEqResponse(imgSpectrumAnalizer.Picture.Bitmap.Canvas,
-                      R,
-                      Fs,
-                      Low,
-                      Mid,
-                      High);
+      PlotEqResponse(imgSpectrumAnalizer.Picture.Bitmap.Canvas,
+                     R,
+                     Fs,
+                     Low,
+                     Mid,
+                     High);
 
-       //OutputDebugStringW(PWideChar(Format('Fs = %d  Low = %', [Fs])));
+      //OutputDebugStringW(PWideChar(Format('Fs = %d  Low = %', [Fs])));
 
-       // imgSpectrumAnalizer.Invalidate;
+      // imgSpectrumAnalizer.Invalidate;
     end;
 end;
 
@@ -1027,10 +1050,11 @@ end;
 
 
 procedure TfrmMain.OnAudioEnded(Sender: TObject);
+
 begin
 
   stxtStatus.Caption := Format('Stopped: %s',
-                              [fFileName]);
+                               [fFileName]);
 
   butPlayPause.Enabled := True;
   butPlayPause.Caption := 'Play';
@@ -1043,16 +1067,20 @@ begin
 end;
 
 
-procedure TfrmMain.OnEngineError(Sender: TObject; const Msg: string; const Hr: HRESULT);
+procedure TfrmMain.OnEngineError(Sender: TObject;
+                                 const Msg: string;
+                                 const Hr: HRESULT);
+
 begin
 
   stxtStatus.Caption := Format('%s (error 0x%.8x)',
-                              [Msg, Cardinal(Hr)]);
+                               [Msg, Cardinal(Hr)]);
 end;
 
 
 procedure TfrmMain.OnEngineState(Sender: TObject;
                                  const NewState: TDeviceState);
+
 begin
 
   case NewState of
@@ -1129,11 +1157,13 @@ begin
   end;
 end;
 
-  // ===========================================================================
+// ===========================================================================
 
 
-procedure TfrmMain.pbProgressMouseMove(Sender: TObject; Shift: TShiftState; X,
-  Y: Integer);
+procedure TfrmMain.pbProgressMouseMove(Sender: TObject;
+                                       Shift: TShiftState;
+                                       X,
+                                       Y: Integer);
 var
   secPos: Integer;
   hnsPos: Int64;
@@ -1151,9 +1181,8 @@ begin
 
       if (secPos < 0) then
         secPos := 0
-      else
-        if (secPos > pbProgress.Max) then
-          secPos := pbProgress.Max;
+      else if (secPos > pbProgress.Max) then
+        secPos := pbProgress.Max;
 
       pbProgress.ShowHint := True;
       pbProgress.Hint := Format('Position: %d s',
@@ -1171,8 +1200,11 @@ begin
 end;
 
 
-procedure TfrmMain.pbProgressMouseUp(Sender: TObject; Button: TMouseButton;
-                                     Shift: TShiftState; X, Y: Integer);
+procedure TfrmMain.pbProgressMouseUp(Sender: TObject;
+                                     Button: TMouseButton;
+                                     Shift: TShiftState;
+                                     X,
+                                     Y: Integer);
 var
   hr: HResult;
   posHns: Int64;  // 100ns units
@@ -1191,16 +1223,15 @@ begin
 
   if (X <= 0) then
     tickPos := 0
-  else
-    if (X >= pbProgress.Width) then
-      begin
+  else if (X >= pbProgress.Width) then
+    begin
 
-        // Avoid exact end tick (can map to EOF); use last playable tick
-        if (pbProgress.Max > 0) then
-          tickPos := pbProgress.Max - 1
-        else
-          tickPos := 0;
-      end
+      // Avoid exact end tick (can map to EOF); use last playable tick
+      if (pbProgress.Max > 0) then
+        tickPos := pbProgress.Max - 1
+      else
+        tickPos := 0;
+    end
   else
     begin
 
@@ -1241,6 +1272,7 @@ end;
 
 
 procedure TfrmMain.WMHotKey(var Msg: TLMessage);
+
 begin
 
   inherited;
@@ -1272,7 +1304,7 @@ begin
     HK_VOLUME_UP:
       begin
 
-        trbVolumeL.Position :=  trbVolumeL.Position - 1;
+        trbVolumeL.Position := trbVolumeL.Position - 1;
 
         trbVolumeRChange(trbVolumeL);
 
@@ -1313,14 +1345,14 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_FULL)) then
-      begin
-        MessageBoxW(0,
-                   lpcwstr('Your computer does not support this Media Foundation API version.' +
-                           IntToStr(MF_VERSION) + '.'),
-                   lpcwstr('MFStartup Failure!'),
-                           MB_ICONSTOP);
-      end;
+    MFSTARTUP_FULL)) then
+    begin
+      MessageBoxW(0,
+                  lpcwstr('Your computer does not support this Media Foundation API version.' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
+    end;
 
 finalization
 

@@ -70,7 +70,7 @@ uses
   LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   {Syatem}
   Classes,
@@ -95,7 +95,7 @@ type
 
   end;
 
-// DisplayConfig declarations for Delphi versions whose Windows units predate them.
+  // DisplayConfig declarations for Delphi versions whose Windows units predate them.
 
   TCaptureDisplayHeader = packed record
     InfoType, Size: DWORD;
@@ -133,20 +133,20 @@ type
   end;
 
 
-  function CaptureMonitorName(const AMonitor: TMonitor): string;
+function CaptureMonitorName(const AMonitor: TMonitor): string;
 
-  function GetDisplayConfigBufferSizes(Flags: DWORD;
-                                       out PathCount: DWORD;
-                                       out ModeCount: DWORD): Longint; stdcall;
+function GetDisplayConfigBufferSizes(Flags: DWORD;
+                                     out PathCount: DWORD;
+                                     out ModeCount: DWORD): Longint; stdcall;
 
-  function QueryDisplayConfig(Flags: DWORD;
-                              var PathCount: DWORD;
-                              Paths: Pointer;
-                              var ModeCount: DWORD;
-                              Modes: Pointer;
-                              TopologyId: Pointer): Longint; stdcall;
+function QueryDisplayConfig(Flags: DWORD;
+                            var PathCount: DWORD;
+                            Paths: Pointer;
+                            var ModeCount: DWORD;
+                            Modes: Pointer;
+                            TopologyId: Pointer): Longint; stdcall;
 
-  function DisplayConfigGetDeviceInfo(var Header: TCaptureDisplayHeader): Longint; stdcall;
+function DisplayConfigGetDeviceInfo(var Header: TCaptureDisplayHeader): Longint; stdcall;
 
 
 implementation
@@ -160,10 +160,10 @@ uses
 
 
 
-{$R *.lfm}
+  {$R *.lfm}
 
 const
-  User32Lib    = 'user32.dll';
+  User32Lib = 'user32.dll';
 
 
 
@@ -190,28 +190,30 @@ begin
   for Attempt := 1 to 3 do
     begin
       if (GetDisplayConfigBufferSizes(OnlyActivePaths,
-                                      PathCount,
-                                      ModeCount) <> 0) then
+        PathCount,
+        ModeCount) <> 0) then
         Exit;
 
-    if (PathCount = 0) or (ModeCount = 0) then
-      Exit;
+      if (PathCount = 0) or (ModeCount = 0) then
+        Exit;
 
-    SetLength(Paths, PathCount);
-    SetLength(Modes, ModeCount);
+      SetLength(Paths,
+                PathCount);
+      SetLength(Modes,
+                ModeCount);
 
-    Status := QueryDisplayConfig(OnlyActivePaths,
-                                 PathCount,
-                                 @Paths[0],
-                                 ModeCount,
-                                 @Modes[0],
-                                 nil);
+      Status := QueryDisplayConfig(OnlyActivePaths,
+                                   PathCount,
+                                   @Paths[0],
+                                   ModeCount,
+                                   @Modes[0],
+                                   nil);
 
-    if (Status <> ERROR_INSUFFICIENT_BUFFER) then
-      Break;
+      if (Status <> ERROR_INSUFFICIENT_BUFFER) then
+        Break;
     end;
 
-  if Status <> 0 then
+  if (Status <> 0) then
     Exit;
 
   for I := 0 to Integer(PathCount) - 1 do
@@ -229,7 +231,7 @@ begin
         Continue;
 
       if not SameText(string(Source.DeviceName),
-                      ADeviceName) then
+        ADeviceName) then
         Continue;
 
       FillChar(Target,
@@ -269,7 +271,7 @@ begin
   Info.cbSize := SizeOf(Info);
 
   if not GetMonitorInfoW(AMonitor.Handle,
-                        PMonitorInfo(@Info)) then
+    PMonitorInfo(@Info)) then
     Exit;
 
   FriendlyName := DisplayFriendlyName(string(Info.szDevice));
@@ -291,9 +293,9 @@ begin
     Device.cb := SizeOf(Device);
 
     if not EnumDisplayDevicesW(@Info.szDevice[0],
-                              DeviceIndex,
-                              Device,
-                              0) then
+      DeviceIndex,
+      Device,
+      0) then
       Exit;
 
     if ((Device.StateFlags and DISPLAY_DEVICE_ATTACHED_TO_DESKTOP) <> 0) and (Trim(string(Device.DeviceString)) <> '') then
@@ -310,6 +312,7 @@ end;
 
 
 procedure TCaptureMonitorDlg.btnCastClick(Sender: TObject);
+
 begin
 
   ModalResult := mrOk;
@@ -317,6 +320,7 @@ end;
 
 
 procedure TCaptureMonitorDlg.btnCancelClick(Sender: TObject);
+
 begin
 
   ModalResult := mrCancel;
@@ -324,11 +328,12 @@ end;
 
 
 procedure TCaptureMonitorDlg.CMDialogKey(var Message: TCMDialogKey);
+
 begin
 
   if (GetKeyState(VK_SHIFT) >= 0) and
-     (GetKeyState(VK_CONTROL) >= 0) and
-     (GetKeyState(VK_MENU) >= 0) then
+    (GetKeyState(VK_CONTROL) >= 0) and
+    (GetKeyState(VK_MENU) >= 0) then
     begin
       if (Message.CharCode = VK_RETURN) and btnCast.Enabled and btnCast.Visible then
         begin
@@ -353,9 +358,9 @@ end;
 
 {$WARN SYMBOL_PLATFORM OFF}
 
-function GetDisplayConfigBufferSizes; external User32Lib name 'GetDisplayConfigBufferSizes' ;
-function QueryDisplayConfig; external User32Lib name 'QueryDisplayConfig' ;
-function DisplayConfigGetDeviceInfo; external User32Lib name 'DisplayConfigGetDeviceInfo' ;
+function GetDisplayConfigBufferSizes; external User32Lib name 'GetDisplayConfigBufferSizes';
+function QueryDisplayConfig; external User32Lib name 'QueryDisplayConfig';
+function DisplayConfigGetDeviceInfo; external User32Lib name 'DisplayConfigGetDeviceInfo';
 
 {$WARN SYMBOL_PLATFORM ON}
 end.

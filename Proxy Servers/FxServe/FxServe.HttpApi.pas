@@ -72,44 +72,44 @@ uses
   FxProxy.Platform,
   WinSock;
 
-{$Z4}
+  {$Z4}
 
 const
 
-// API constants ===============================================================
+  // API constants ===============================================================
 
-  HTTP_INITIALIZE_SERVER                     = $00000001;
-  HTTP_SEND_RESPONSE_FLAG_DISCONNECT         = $00000001;
-  HTTP_SEND_RESPONSE_FLAG_MORE_DATA          = $00000002;
+  HTTP_INITIALIZE_SERVER = $00000001;
+  HTTP_SEND_RESPONSE_FLAG_DISCONNECT = $00000001;
+  HTTP_SEND_RESPONSE_FLAG_MORE_DATA = $00000002;
   HTTP_SEND_RESPONSE_FLAG_AUTOMATIC_CHUNKING = $00000200;
-  HTTP_NULL_ID                               = UInt64(0);
+  HTTP_NULL_ID = UInt64(0);
 
   HttpDataChunkFromMemory = 0;
 
-  HttpVerbUnknown         = 1;
-  HttpVerbOPTIONS         = 3;
-  HttpVerbGET             = 4;
-  HttpVerbHEAD            = 5;
+  HttpVerbUnknown = 1;
+  HttpVerbOPTIONS = 3;
+  HttpVerbGET = 4;
+  HttpVerbHEAD = 5;
 
-  HttpHeaderCacheControl    = 0;
-  HttpHeaderConnection      = 1;
-  HttpHeaderContentLength   = 11;
-  HttpHeaderContentType     = 12;
-  HttpHeaderContentRange    = 17;
-  HttpHeaderLastModified    = 19;
-  HttpHeaderAcceptRanges    = 20;
-  HttpHeaderEtag            = 22;
-  HttpHeaderLocation        = 23;
-  HttpHeaderServer          = 26;
-  HttpHeaderRequestHost     = 28;
-  HttpHeaderRequestRange    = 37;
-  HttpHeaderRequestMaximum  = 41;
+  HttpHeaderCacheControl = 0;
+  HttpHeaderConnection = 1;
+  HttpHeaderContentLength = 11;
+  HttpHeaderContentType = 12;
+  HttpHeaderContentRange = 17;
+  HttpHeaderLastModified = 19;
+  HttpHeaderAcceptRanges = 20;
+  HttpHeaderEtag = 22;
+  HttpHeaderLocation = 23;
+  HttpHeaderServer = 26;
+  HttpHeaderRequestHost = 28;
+  HttpHeaderRequestRange = 37;
+  HttpHeaderRequestMaximum = 41;
   HttpHeaderResponseMaximum = 30;
 
 
 type
 
-// API records =================================================================
+  // API records =================================================================
 
   THttpApiVersion = record
     HttpApiMajorVersion: Word;
@@ -123,6 +123,7 @@ type
 
 
   PHttpKnownHeader = ^THttpKnownHeader;
+
   THttpKnownHeader = record
     RawValueLength: Word;
     pRawValue: PAnsiChar;
@@ -130,6 +131,7 @@ type
 
 
   PHttpUnknownHeader = ^THttpUnknownHeader;
+
   THttpUnknownHeader = record
     NameLength: Word;
     RawValueLength: Word;
@@ -173,6 +175,7 @@ type
   end;
 
   PHttpDataChunk = ^THttpDataChunk;
+
   THttpDataChunk = record
     DataChunkType: Cardinal;
     case Integer of
@@ -187,6 +190,7 @@ type
 
 
   PHttpRequest = ^THttpRequest;
+
   THttpRequest = record
     Flags: Cardinal;
     ConnectionId: UInt64;
@@ -206,15 +210,16 @@ type
     pEntityChunks: PHttpDataChunk;
     RawConnectionId: UInt64;
     pSslInfo: Pointer;
-{$IFDEF WIN32}
+    {$IFDEF WIN32}
     V1AlignmentPadding: Cardinal;
-{$ENDIF}
+    {$ENDIF}
     RequestInfoCount: Word;
     pRequestInfo: Pointer;
   end;
 
 
   PHttpResponse = ^THttpResponse;
+
   THttpResponse = record
     Flags: Cardinal;
     Version: THttpVersion;
@@ -229,77 +234,78 @@ type
   end;
 
 
-// API methods =================================================================
+  // API methods =================================================================
 
-  function HttpInitialize(Version: THttpApiVersion;
-                          Flags: Cardinal;
+function HttpInitialize(Version: THttpApiVersion;
+                        Flags: Cardinal;
                         Reserved: Pointer): Cardinal; stdcall;
 
-  function HttpTerminate(Flags: Cardinal;
+function HttpTerminate(Flags: Cardinal;
                        Reserved: Pointer): Cardinal; stdcall;
 
-  function HttpCreateHttpHandle(out RequestQueueHandle: THandle;
+function HttpCreateHttpHandle(out RequestQueueHandle: THandle;
                               Reserved: Cardinal): Cardinal; stdcall;
 
-  function HttpAddUrl(RequestQueueHandle:
-                      THandle; FullyQualifiedUrl: PWideChar;
-                      Reserved: Pointer): Cardinal; stdcall;
+function HttpAddUrl(RequestQueueHandle:
+  THandle;
+                    FullyQualifiedUrl: PWideChar;
+                    Reserved: Pointer): Cardinal; stdcall;
 
-  function HttpRemoveUrl(RequestQueueHandle: THandle;
-                         FullyQualifiedUrl: PWideChar): Cardinal; stdcall;
+function HttpRemoveUrl(RequestQueueHandle: THandle;
+                       FullyQualifiedUrl: PWideChar): Cardinal; stdcall;
 
-  function HttpReceiveHttpRequest(RequestQueueHandle: THandle;
-                                  RequestId: UInt64;
-                                  Flags: Cardinal;
-                                  RequestBuffer: PHttpRequest;
-                                  RequestBufferLength: Cardinal;
-                                  BytesReturned: PCardinal;
-                                  Overlapped: POverlapped): Cardinal; stdcall;
-
-  function HttpSendHttpResponse(RequestQueueHandle: THandle;
+function HttpReceiveHttpRequest(RequestQueueHandle: THandle;
                                 RequestId: UInt64;
                                 Flags: Cardinal;
-                                HttpResponse: PHttpResponse;
-                                CachePolicy: Pointer;
-                                BytesSent: PCardinal;
-                                Reserved1: Pointer;
-                                Reserved2: Cardinal;
-                                Overlapped: POverlapped;
-                                LogData: Pointer): Cardinal; stdcall;
+                                RequestBuffer: PHttpRequest;
+                                RequestBufferLength: Cardinal;
+                                BytesReturned: PCardinal;
+                                Overlapped: POverlapped): Cardinal; stdcall;
 
-  function HttpSendResponseEntityBody(RequestQueueHandle: THandle;
-                                      RequestId: UInt64;
-                                      Flags: Cardinal;
-                                      EntityChunkCount: Word;
-                                      EntityChunks: PHttpDataChunk;
-                                      BytesSent: PCardinal;
-                                      Reserved1: Pointer;
-                                      Reserved2: Cardinal;
-                                      Overlapped: POverlapped;
-                                      LogData: Pointer): Cardinal; stdcall;
+function HttpSendHttpResponse(RequestQueueHandle: THandle;
+                              RequestId: UInt64;
+                              Flags: Cardinal;
+                              HttpResponse: PHttpResponse;
+                              CachePolicy: Pointer;
+                              BytesSent: PCardinal;
+                              Reserved1: Pointer;
+                              Reserved2: Cardinal;
+                              Overlapped: POverlapped;
+                              LogData: Pointer): Cardinal; stdcall;
+
+function HttpSendResponseEntityBody(RequestQueueHandle: THandle;
+                                    RequestId: UInt64;
+                                    Flags: Cardinal;
+                                    EntityChunkCount: Word;
+                                    EntityChunks: PHttpDataChunk;
+                                    BytesSent: PCardinal;
+                                    Reserved1: Pointer;
+                                    Reserved2: Cardinal;
+                                    Overlapped: POverlapped;
+                                    LogData: Pointer): Cardinal; stdcall;
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
 
 const
   HttpApiLib = 'httpapi.dll';
 
-{$WARN SYMBOL_PLATFORM OFF}
+  {$WARN SYMBOL_PLATFORM OFF}
 
- function HttpInitialize; external HttpApiLib name 'HttpInitialize' ;
- function HttpTerminate;  external HttpApiLib name 'HttpTerminate' ;
- function HttpCreateHttpHandle; external HttpApiLib name 'HttpCreateHttpHandle' ;
+function HttpInitialize; external HttpApiLib name 'HttpInitialize';
+function HttpTerminate; external HttpApiLib name 'HttpTerminate';
+function HttpCreateHttpHandle; external HttpApiLib name 'HttpCreateHttpHandle';
 
- function HttpAddUrl; external HttpApiLib name 'HttpAddUrl' ;
- function HttpRemoveUrl; external HttpApiLib name 'HttpRemoveUrl' ;
+function HttpAddUrl; external HttpApiLib name 'HttpAddUrl';
+function HttpRemoveUrl; external HttpApiLib name 'HttpRemoveUrl';
 
- function HttpReceiveHttpRequest; external HttpApiLib name 'HttpReceiveHttpRequest' ;
- function HttpSendHttpResponse; external HttpApiLib name 'HttpSendHttpResponse' ;
- function HttpSendResponseEntityBody; external HttpApiLib name 'HttpSendResponseEntityBody' ;
+function HttpReceiveHttpRequest; external HttpApiLib name 'HttpReceiveHttpRequest';
+function HttpSendHttpResponse; external HttpApiLib name 'HttpSendHttpResponse';
+function HttpSendResponseEntityBody; external HttpApiLib name 'HttpSendResponseEntityBody';
 
 {$WARN SYMBOL_PLATFORM ON}
 

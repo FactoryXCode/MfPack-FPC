@@ -90,7 +90,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
@@ -101,19 +102,20 @@ const
   // subtype match = format types match = iscompressed for both matches
   // format_data match = format blocks match exactly
 
-  AUDIOMEDIATYPE_EQUAL_FORMAT_TYPES               = $00000002;
-  AUDIOMEDIATYPE_EQUAL_FORMAT_DATA                = $00000004;
-  AUDIOMEDIATYPE_EQUAL_FORMAT_USER_DATA           = $00000008;
+  AUDIOMEDIATYPE_EQUAL_FORMAT_TYPES = $00000002;
+  AUDIOMEDIATYPE_EQUAL_FORMAT_DATA = $00000004;
+  AUDIOMEDIATYPE_EQUAL_FORMAT_USER_DATA = $00000008;
 
 
-//
-// UNCOMPRESSEDAUDIOFORMAT
-//
+  //
+  // UNCOMPRESSEDAUDIOFORMAT
+  //
 
 type
 
   PUNCOMPRESSEDAUDIOFORMAT = ^UNCOMPRESSEDAUDIOFORMAT;
-   _UNCOMPRESSEDAUDIOFORMAT = record
+
+  _UNCOMPRESSEDAUDIOFORMAT = record
     guidFormatType: TGUID;
     dwSamplesPerFrame: DWORD;
     dwBytesPerSampleContainer: DWORD;
@@ -130,8 +132,9 @@ type
   // =========================
   //
   PIAudioMediaType = ^IAudioMediaType;
+
   IAudioMediaType = interface(IUnknown)
-  ['{4E997F73-B71F-4798-873B-ED7DFCF15B4D}']
+    ['{4E997F73-B71F-4798-873B-ED7DFCF15B4D}']
     function IsCompressedFormat(out pfCompressed: BOOL): HResult; stdcall;
 
     function IsEqual(pIAudioType: IAudioMediaType;
@@ -142,6 +145,7 @@ type
     function GetUncompressedAudioFormat(out pUncompressedAudioFormat: UNCOMPRESSEDAUDIOFORMAT): HResult; stdcall;
 
   end;
+
   IID_IAudioMediaType = IAudioMediaType;
 
 
@@ -176,18 +180,18 @@ type
 
 
 
-
   // Additional Prototypes for ALL interfaces
 
   // End of Additional Prototypes
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 // SDK static AudioBaseProcessingObject helpers; not mf.dll exports.
-  {$IFDEF MFPACK_LINK_SDK_APO_HELPERS}
+{$IFDEF MFPACK_LINK_SDK_APO_HELPERS}
   function CreateAudioMediaType; external;
   function CreateAudioMediaTypeFromUncompressedAudioFormat; external;
-  {$ENDIF}
+{$ENDIF}
+
 end.

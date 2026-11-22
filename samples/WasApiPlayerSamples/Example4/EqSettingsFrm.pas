@@ -195,7 +195,8 @@ type
     procedure ApplyDynamicsNow(const SaveToIni: Boolean);
     procedure DynUiChanged(Sender: TObject);
     procedure ApplyDynTimerTick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormClose(Sender: TObject;
+                        var Action: TCloseAction);
 
     function ReadTuningFromUi(): TEqTuning;
     procedure WriteTuningToUi(const T: TEqTuning);
@@ -252,9 +253,10 @@ uses
   Math;
 
 
-// Helpers ---------------------------------------------------------------------
+  // Helpers ---------------------------------------------------------------------
 
-function TryReadSingle(const S: string; out V: Single): Boolean;
+function TryReadSingle(const S: string;
+                       out V: Single): Boolean;
 var
   fs: TFormatSettings;
   tmp: string;
@@ -293,8 +295,8 @@ begin
                                         ',',
                                         '.',
                                         [rfReplaceAll]),
-                                        Def,
-                                        fs);
+                          Def,
+                          fs);
 end;
 
 
@@ -306,24 +308,29 @@ begin
 
   fs := DefaultFormatSettings;
   fs.DecimalSeparator := '.';
-  Result := FloatToStr(V, fs);
+  Result := FloatToStr(V,
+                       fs);
 end;
 
 
-function ClampInt(const V, VMin, VMax: Integer): Integer;
+function ClampInt(const V,
+                  VMin,
+                  VMax: Integer): Integer;
+
 begin
+
   Result := V;
-  if Result < VMin then
+  if (Result < VMin) then
     Result := VMin
-  else
-    if Result > VMax then
-      Result := VMax;
+  else if (Result > VMax) then
+    Result := VMax;
 end;
 
 // -----------------------------------------------------------------------------
 
 
 procedure TfrmEqSettings.FormCreate(Sender: TObject);
+
 begin
 
   // UpDowns are integer-only; we store scaled ints for slope/Q (x100).
@@ -389,7 +396,9 @@ begin
   cbLimOversample.ItemIndex := 0;
 
   // Reasonable built-in defaults (can be overridden by ConfigureStorage)
-  FillChar(FDefaults, SizeOf(FDefaults), 0);
+  FillChar(FDefaults,
+           SizeOf(FDefaults),
+           0);
   FDefaults.LowFreqHz := 100.0;
   FDefaults.MidFreqHz := 1000.0;
   FDefaults.HighFreqHz := 10000.0;
@@ -442,6 +451,7 @@ end;
 
 
 procedure TfrmEqSettings.SetInitialTuning(const T: TEqTuning);
+
 begin
 
   FTuning := T;
@@ -450,6 +460,7 @@ end;
 
 
 procedure TfrmEqSettings.SetInitialDynamics(const S: TDynamicsSettings);
+
 begin
 
   FDynSettings := S;
@@ -458,6 +469,7 @@ end;
 
 
 function TfrmEqSettings.GetCurrentDynamics: TDynamicsSettings;
+
 begin
 
   Result := FDynSettings;
@@ -504,6 +516,7 @@ end;
 
 
 procedure TfrmEqSettings.btnCancelClick(Sender: TObject);
+
 begin
 
   Hide();
@@ -511,6 +524,7 @@ end;
 
 
 procedure TfrmEqSettings.btnDefaultsClick(Sender: TObject);
+
 begin
 
   FTuning := FDefaults;
@@ -542,6 +556,7 @@ end;
 
 
 procedure TfrmEqSettings.btnOKClick(Sender: TObject);
+
 begin
 
   // Apply once on OK for convenience
@@ -563,27 +578,27 @@ begin
   Result := FTuning;
 
   if TryReadSingle(Trim(edtLowFreqHz.Text),
-                        v) then
+    v) then
     Result.LowFreqHz := v;
 
   if TryReadSingle(Trim(edtMidFreqHz.Text),
-                        v) then
+    v) then
     Result.MidFreqHz := v;
 
   if TryReadSingle(Trim(edtHighFreqHz.Text),
-                        v) then
+    v) then
     Result.HighFreqHz := v;
 
   if TryReadSingle(Trim(edtMidQ.Text),
-                        v) then
+    v) then
     Result.MidQ := v;
 
   if TryReadSingle(Trim(edtLowSlope.Text),
-                        v) then
+    v) then
     Result.LowShelfSlope := v;
 
   if TryReadSingle(Trim(edtHighSlope.Text),
-                        v) then
+    v) then
     Result.HighShelfSlope := v;
 
   // Notch or Bell
@@ -594,14 +609,14 @@ begin
 
   // Clamp UI values (engine also clamps, but keep UI sane)
   Result.LowFreqHz := EnsureRange(Result.LowFreqHz,
-                              10.0,
-                              400.0);
+                                  10.0,
+                                  400.0);
   Result.MidFreqHz := EnsureRange(Result.MidFreqHz,
-                              200.0,
-                              6000.0);
+                                  200.0,
+                                  6000.0);
   Result.HighFreqHz := EnsureRange(Result.HighFreqHz,
-                               2000.0,
-                               22000.0);
+                                   2000.0,
+                                   22000.0);
 
   Result.MidQ := EnsureRange(Result.MidQ,
                              0.30,
@@ -618,6 +633,7 @@ end;
 
 
 procedure TfrmEqSettings.WriteTuningToUi(const T: TEqTuning);
+
 begin
 
   edtLowFreqHz.Text := IntToStr(Round(EnsureRange(T.LowFreqHz,
@@ -674,37 +690,38 @@ var
   v: Integer;
 
 begin
+
   Result := FDynSettings;
 
   Result.CompEnabled := chkCompEnabled.Checked;
   Result.CompAutoMakeup := chkCompAutoMakeup.Checked;
 
   v := StrToIntDef(Trim(edtCompThreshold.Text),
-                        Result.CompThresholdDb);
+                   Result.CompThresholdDb);
   Result.CompThresholdDb := ClampInt(v,
                                      -60,
                                      0);
 
   v := StrToIntDef(Trim(edtCompRatio.Text),
-                        Result.CompRatioX10);
+                   Result.CompRatioX10);
   Result.CompRatioX10 := ClampInt(v,
                                   10,
                                   200);
 
   v := StrToIntDef(Trim(edtCompAttack.Text),
-                        Result.CompAttackMs);
+                   Result.CompAttackMs);
   Result.CompAttackMs := ClampInt(v,
                                   1,
                                   200);
 
   v := StrToIntDef(Trim(edtCompRelease.Text),
-                        Result.CompReleaseMs);
+                   Result.CompReleaseMs);
   Result.CompReleaseMs := ClampInt(v,
                                    10,
                                    2000);
 
   v := StrToIntDef(Trim(edtCompMakeup.Text),
-                        Result.CompMakeupDb);
+                   Result.CompMakeupDb);
   Result.CompMakeupDb := ClampInt(v,
                                   -24,
                                   24);
@@ -713,25 +730,25 @@ begin
   Result.LimTruePeak := chkLimTruePeak.Checked;
 
   v := StrToIntDef(Trim(edtLimCeiling.Text),
-                        Result.LimCeilingDb);
+                   Result.LimCeilingDb);
   Result.LimCeilingDb := ClampInt(v,
                                   -24,
                                   0);
 
   v := StrToIntDef(Trim(edtLimRelease.Text),
-                        Result.LimReleaseMs);
+                   Result.LimReleaseMs);
   Result.LimReleaseMs := ClampInt(v,
                                   10,
                                   2000);
 
   v := StrToIntDef(Trim(edtLimLookahead.Text),
-                        Result.LimLookaheadMs);
+                   Result.LimLookaheadMs);
   Result.LimLookaheadMs := ClampInt(v,
                                     0,
                                     50);
 
   v := StrToIntDef(Trim(edtLimKnee.Text),
-                        Result.LimKneeDb);
+                   Result.LimKneeDb);
   Result.LimKneeDb := ClampInt(v,
                                0,
                                24);
@@ -742,16 +759,16 @@ begin
     Result.LimDetector := ldPeak;
 
   v := StrToIntDef(Trim(edtLimRmsWindow.Text),
-                        Result.LimRmsWindowMs);
+                   Result.LimRmsWindowMs);
   Result.LimRmsWindowMs := ClampInt(v,
                                     1,
-                                     200);
+                                    200);
 
   case cbLimOversample.ItemIndex of
     1: Result.LimOversample := 2;
     2: Result.LimOversample := 4;
-  else
-    Result.LimOversample := 1;
+    else
+      Result.LimOversample := 1;
   end;
 
   // Sanity: TP only meaningful with limiter
@@ -761,6 +778,7 @@ end;
 
 
 procedure TfrmEqSettings.WriteDynamicsToUi(const S: TDynamicsSettings);
+
 begin
 
   chkCompEnabled.Checked := S.CompEnabled;
@@ -823,7 +841,7 @@ begin
   udLimKnee.Position := StrToIntDef(edtLimKnee.Text,
                                     0);
 
-  if S.LimDetector = ldRms then
+  if (S.LimDetector = ldRms) then
     cbLimDetector.ItemIndex := 1
   else
     cbLimDetector.ItemIndex := 0;
@@ -837,8 +855,8 @@ begin
   case S.LimOversample of
     2: cbLimOversample.ItemIndex := 1;
     4: cbLimOversample.ItemIndex := 2;
-  else
-    cbLimOversample.ItemIndex := 0;
+    else
+      cbLimOversample.ItemIndex := 0;
   end;
 end;
 
@@ -846,6 +864,7 @@ end;
 procedure TfrmEqSettings.ConfigureStorage(const IniFileName: string;
                                           const Section: string;
                                           const Defaults: TEqTuning);
+
 begin
 
   FIniFileName := IniFileName;
@@ -853,8 +872,8 @@ begin
   FDefaults := Defaults;
   // Keep a sane base.
   if (FTuning.LowFreqHz = 0) and
-     (FTuning.MidFreqHz = 0) and
-     (FTuning.HighFreqHz = 0) then
+    (FTuning.MidFreqHz = 0) and
+    (FTuning.HighFreqHz = 0) then
     FTuning := FDefaults;
 end;
 
@@ -862,6 +881,7 @@ end;
 procedure TfrmEqSettings.ConfigureDynamicsStorage(const IniFileName: string;
                                                   const Section: string;
                                                   const Defaults: TDynamicsSettings);
+
 begin
 
   FIniFileName := IniFileName;
@@ -1092,8 +1112,8 @@ end;
 
 
 procedure TfrmEqSettings.SaveDynamicsToIni(const IniFileName: string;
-                                          const Section: string;
-                                          const S: TDynamicsSettings);
+                                           const Section: string;
+                                           const S: TDynamicsSettings);
 var
   ini: TIniFile;
 
@@ -1174,6 +1194,7 @@ end;
 
 
 procedure TfrmEqSettings.ScheduleApplyDynamics();
+
 begin
 
   // Throttle rapid UI changes (dragging/updown typing) to avoid spamming the engine
@@ -1206,8 +1227,8 @@ begin
   //OutputDebugStringW(PChar(Format('UI Apply: LimOversample=%d', [S.LimOversample])));
 
   if SaveToIni and
-     (FIniFileName <> '') and
-     (FIniSection <> '') then
+    (FIniFileName <> '') and
+    (FIniSection <> '') then
     SaveDynamicsToIni(FIniFileName,
                       FIniSection,
                       FDynSettings);
@@ -1215,6 +1236,7 @@ end;
 
 
 procedure TfrmEqSettings.DynUiChanged(Sender: TObject);
+
 begin
 
   // Only live-apply when the Dynamics tab is visible (prevents EQ edits from spamming dynamics)
@@ -1234,14 +1256,14 @@ begin
                    100);
   if (V < 10) then
     V := 10
-  else
-    if (V > 150) then
-      V := 150;
+  else if (V > 150) then
+    V := 150;
   edPeakMeterFreq.Text := IntToStr(V);
 end;
 
 
 procedure TfrmEqSettings.ApplyDynTimerTick(Sender: TObject);
+
 begin
 
   if Assigned(FApplyDynTimer) then
@@ -1256,8 +1278,10 @@ begin
   ApplyDynamicsNow(False);
 end;
 
+
 procedure TfrmEqSettings.FormClose(Sender: TObject;
                                    var Action: TCloseAction);
+
 begin
 
   // Modeless: Hide instead of free, so sliders stay where the user left them

@@ -69,7 +69,7 @@ interface
 uses
   LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   {System}
@@ -108,6 +108,7 @@ type
     procedure btnStartClick(Sender: TObject);
     procedure btnStopClick(Sender: TObject);
     procedure tbEffectChange(Sender: TObject);
+
   private
     FCameras: TCaptureDeviceList;
     FMicrophones: TCaptureDeviceList;
@@ -134,20 +135,26 @@ uses
   {MediaFoundationApi}
   WinApi.MediaFoundationApi.MfIdl;
 
+
 procedure TfrmCapture.FormCreate(Sender: TObject);
+
 begin
+
   FCameras := TCaptureDeviceList.Create(
-                MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
+    MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID);
   FMicrophones := TCaptureDeviceList.Create(
-                    MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_GUID);
+    MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_AUDCAP_GUID);
   tbDelay.Position := 500;
   tbWet.Position := 35;
   tbEffectChange(nil);
   RefreshDevices();
 end;
 
+
 procedure TfrmCapture.FormDestroy(Sender: TObject);
+
 begin
+
   if Assigned(FSession) then
     begin
       FSession.Close(True);
@@ -157,36 +164,39 @@ begin
   FCameras.Free();
 end;
 
+
 procedure TfrmCapture.RefreshDevices();
 var
   I: Integer;
   Hr: HResult;
+
 begin
+
   cbCamera.Items.Clear();
   cbMicrophone.Items.Clear();
   Hr := FCameras.Refresh();
   if FAILED(Hr) then
     begin
       lblStatus.Caption := 'Camera enumeration: ' +
-                           Format('$%.8x: %s',
-                                  [Cardinal(Hr), SysErrorMessage(Cardinal(Hr))]);
+        Format('$%.8x: %s',
+               [Cardinal(Hr), SysErrorMessage(Cardinal(Hr))]);
       Exit;
     end;
   Hr := FMicrophones.Refresh();
   if FAILED(Hr) then
     begin
       lblStatus.Caption := 'Microphone enumeration: ' +
-                           Format('$%.8x: %s',
-                                  [Cardinal(Hr), SysErrorMessage(Cardinal(Hr))]);
+        Format('$%.8x: %s',
+               [Cardinal(Hr), SysErrorMessage(Cardinal(Hr))]);
       Exit;
     end;
   for I := 0 to FCameras.Count() - 1 do
     cbCamera.Items.Add(FCameras.Name(I));
   for I := 0 to FMicrophones.Count() - 1 do
     cbMicrophone.Items.Add(FMicrophones.Name(I));
-  if cbCamera.Items.Count > 0 then
+  if (cbCamera.Items.Count > 0) then
     cbCamera.ItemIndex := 0;
-  if cbMicrophone.Items.Count > 0 then
+  if (cbMicrophone.Items.Count > 0) then
     cbMicrophone.ItemIndex := 0;
   if (cbCamera.Items.Count = 0) or (cbMicrophone.Items.Count = 0) then
     lblStatus.Caption := 'Connect a camera and microphone, then click Refresh.'
@@ -195,24 +205,33 @@ begin
   UpdateControls();
 end;
 
+
 procedure TfrmCapture.UpdateControls();
+
 begin
+
   btnStart.Enabled := not FStarting and not FRunning and
-                      (cbCamera.ItemIndex >= 0) and
-                      (cbMicrophone.ItemIndex >= 0);
+    (cbCamera.ItemIndex >= 0) and
+    (cbMicrophone.ItemIndex >= 0);
   btnStop.Enabled := FStarting or FRunning;
   btnRefresh.Enabled := not FStarting and not FRunning;
   cbCamera.Enabled := btnRefresh.Enabled;
   cbMicrophone.Enabled := btnRefresh.Enabled;
 end;
 
+
 procedure TfrmCapture.btnRefreshClick(Sender: TObject);
+
 begin
+
   RefreshDevices();
 end;
 
+
 procedure TfrmCapture.btnStartClick(Sender: TObject);
+
 begin
+
   Inc(FSessionNumber);
   FSession := CreateCaptureSession(Handle,
                                    FSessionNumber);
@@ -237,8 +256,11 @@ begin
   end;
 end;
 
+
 procedure TfrmCapture.StopLive();
+
 begin
+
   // Invalidate notices already queued by this session before closing it.
   Inc(FSessionNumber);
   try
@@ -259,8 +281,11 @@ begin
   end;
 end;
 
+
 procedure TfrmCapture.btnStopClick(Sender: TObject);
+
 begin
+
   try
     StopLive();
     lblStatus.Caption := 'Live preview stopped.';
@@ -270,42 +295,50 @@ begin
   end;
 end;
 
+
 procedure TfrmCapture.tbEffectChange(Sender: TObject);
+
 begin
-  lblDelay.Caption := Format('Delay: %d ms', [tbDelay.Position]);
-  lblWet.Caption := Format('Wet mix: %d%%', [tbWet.Position]);
+
+  lblDelay.Caption := Format('Delay: %d ms',
+                             [tbDelay.Position]);
+  lblWet.Caption := Format('Wet mix: %d%%',
+                           [tbWet.Position]);
   // This changes the MFT in the running topology without stopping capture.
   if Assigned(FSession) then
-    try
-      FSession.UpdateEffect(tbDelay.Position,
-                            tbWet.Position);
-    except
-      on E: Exception do
-        lblStatus.Caption := E.Message;
-    end;
+  try
+    FSession.UpdateEffect(tbDelay.Position,
+                          tbWet.Position);
+  except
+    on E: Exception do
+      lblStatus.Caption := E.Message;
+  end;
 end;
+
 
 procedure TfrmCapture.CaptureEvent(var AMessage: TLMessage);
 var
   Notice: TCaptureNotice;
+
 begin
+
   Notice := TCaptureNotice(AMessage.LParam);
   try
-    if Notice.SessionNumber <> FSessionNumber then
+    if (Notice.SessionNumber <> FSessionNumber) then
       Exit;
     case Notice.Kind of
       cekReady:
         begin
           if Assigned(FSession) then
-            try
-              FSession.Start();
-            except
-              on E: Exception do
-                begin
-                  StopLive();
-                  lblStatus.Caption := E.Message;
-                end;
-            end;
+          try
+            FSession.Start();
+          except
+            on E: Exception do
+              begin
+                StopLive();
+                lblStatus.Caption := E.Message;
+              end;
+          end;
         end;
       cekStarted:
         begin

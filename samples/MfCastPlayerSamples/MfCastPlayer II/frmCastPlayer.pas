@@ -70,7 +70,7 @@ uses
   LMessages,
   LCLType,
   MfCastPlayerPlatform,
-{WinApi}
+  {WinApi}
   Windows,
   WinApi.WinError,
   WinApi.ActiveX.ObjBase,
@@ -103,6 +103,7 @@ uses
 type
 
   TMfCastDesktopWorker = class(TThread)
+
   private
     FCast: TMfCast;
     FDevice: TMfCastDevice;
@@ -211,7 +212,7 @@ type
     FActiveDesktopMode: Integer;
 
     function SelectLocalFile(const AArtwork: Boolean;
-                              out AFileName: string): Boolean;
+                             out AFileName: string): Boolean;
 
     procedure DeviceChanged(const ADevice: TMfCastDevice);
     procedure DeviceRemoved(const ADeviceId: string);
@@ -245,7 +246,8 @@ type
     procedure RegisterGlobalHotKeys();
     procedure UnregisterGlobalHotKeys();
 
-    procedure AddLog(const AText: string; const ATimestamp: TDateTime = 0);
+    procedure AddLog(const AText: string;
+                     const ATimestamp: TDateTime = 0);
     procedure LogResult(const AOperation: string;
                         const AHResult: HRESULT);
 
@@ -279,7 +281,7 @@ uses
   LWFileBrowserExDlg,
   dlgCaptureMonitor;
 
-{$R *.lfm}
+  {$R *.lfm}
 
 const
   MFCAST_MOD_NOREPEAT = $4000;
@@ -292,7 +294,9 @@ const
   MFCAST_HOTKEY_VOLUME_DOWN = 7;
   MFCAST_HOTKEY_MUTE = 8;
 
+
 procedure TCastPlayerForm.WmDisconnectFinished(var message: TLMessage);
+
 begin
 
   if Assigned(FWorker) then
@@ -337,7 +341,7 @@ begin
   AOutputIndex := 0;
   ADescription := '';
 
-  if Screen.MonitorCount = 0 then
+  if (Screen.MonitorCount = 0) then
     Exit;
 
   Dialog := TCaptureMonitorDlg.Create(Self);
@@ -382,9 +386,9 @@ begin
   LogMessage := TMfCastUiLogMessage.Create(AText);
 
   if not PostMessageW(FNotifyWindow,
-                     WM_MFCAST_LOG,
-                     WPARAM(LogMessage),
-                     0) then
+    WM_MFCAST_LOG,
+    WPARAM(LogMessage),
+    0) then
     LogMessage.Free();
 end;
 
@@ -396,15 +400,16 @@ var
   Capabilities: TMfCastCaptureCapabilities;
   CodecName: string;
 
+
   function StartCapture(): HRESULT;
   var
     CapabilityTick: UInt64;
   begin
-      PostLog('Checking capture capabilities in the worker thread...');
-      CapabilityTick := GetTickCount64();
-      Result := FCast.GetCaptureCapabilities(FDevice,
-                                             FSettings,
-                                             Capabilities);
+    PostLog('Checking capture capabilities in the worker thread...');
+    CapabilityTick := GetTickCount64();
+    Result := FCast.GetCaptureCapabilities(FDevice,
+                                           FSettings,
+                                           Capabilities);
     PostLog(Format('Startup timing: capture capability check took %d ms (HRESULT $%.8x).',
                    [Int64(GetTickCount64() - CapabilityTick), DWORD(Result)]));
     if FAILED(Result) then
@@ -417,16 +422,21 @@ var
     case Capabilities.SelectedCodec of
       cvcH264: CodecName := 'H.264';
       cvcHEVC: CodecName := 'HEVC';
-    else
-      CodecName := 'none';
+      else
+        CodecName := 'none';
     end;
 
     PostLog(Format('Capture mode: audioOnly=%s, codec=%s, hardware H.264=%s, hardware HEVC=%s, receiver HEVC=%s, audio=%s.',
-                   [BoolToStr(FSettings.AudioOnly, True), CodecName,
-                    BoolToStr(Capabilities.HardwareH264EncoderAvailable, True),
-                    BoolToStr(Capabilities.HardwareHEVCEncoderAvailable, True),
-                    BoolToStr(Capabilities.ReceiverSupportsHEVC, True),
-                    BoolToStr(FSettings.CaptureSystemAudio, True)]));
+                   [BoolToStr(FSettings.AudioOnly,
+                              True), CodecName,
+      BoolToStr(Capabilities.HardwareH264EncoderAvailable,
+                True),
+      BoolToStr(Capabilities.HardwareHEVCEncoderAvailable,
+                True),
+      BoolToStr(Capabilities.ReceiverSupportsHEVC,
+                True),
+      BoolToStr(FSettings.CaptureSystemAudio,
+                True)]));
 
     PostLog(Capabilities.SelectionReason);
 
@@ -456,8 +466,10 @@ begin
   try
     try
       if SUCCEEDED(HrCom) then
-        if FCast = nil then Hr := E_POINTER
-        else Hr := StartCapture()
+        if (FCast = nil) then
+          Hr := E_POINTER
+        else
+          Hr := StartCapture()
       else
         begin
           Hr := HrCom;
@@ -479,14 +491,15 @@ begin
 
     // Release the UI's busy state even when preparation raises an exception.
     PostMessageW(FNotifyWindow,
-                WM_MFCAST_FINISHED,
-                WPARAM(DWORD(Hr)),
-                0);
+                 WM_MFCAST_FINISHED,
+                 WPARAM(DWORD(Hr)),
+                 0);
   end;
 end;
 
 
 procedure TCastPlayerForm.FormCreate(Sender: TObject);
+
 begin
 
   FClosing := False;
@@ -512,7 +525,7 @@ begin
   cbxCaptureMode.ItemIndex := 0;
   pnlPreview.HandleNeeded();
   LogResult('Attach preview window',
-             FCast.SetPreviewWindow(pnlPreview.Handle));
+            FCast.SetPreviewWindow(pnlPreview.Handle));
 
   FCast.OnDeviceAdded := DeviceChanged;
   FCast.OnDeviceUpdated := DeviceChanged;
@@ -532,6 +545,7 @@ end;
 
 
 procedure TCastPlayerForm.PreviewSubtitleTimer(Sender: TObject);
+
 begin
 
   if not FClosing and Assigned(FCast) then
@@ -580,17 +594,17 @@ begin
     end;
 
   while PeekmessageW(message,
-                    Handle,
-                    WM_MFCAST_ERROR,
-                    WM_MFCAST_ERROR,
-                    PM_REMOVE) do
+      Handle,
+      WM_MFCAST_ERROR,
+      WM_MFCAST_ERROR,
+      PM_REMOVE) do
     TObject(message.wParam).Free();
 
   while PeekmessageW(message,
-                    Handle,
-                    WM_MFCAST_LOG,
-                    WM_MFCAST_LOG,
-                    PM_REMOVE) do
+      Handle,
+      WM_MFCAST_LOG,
+      WM_MFCAST_LOG,
+      PM_REMOVE) do
     TObject(message.wParam).Free();
 
   FreeAndNil(FCast);
@@ -602,6 +616,7 @@ const
   NoRepeatModifiers = MOD_CONTROL or MOD_ALT or MFCAST_MOD_NOREPEAT;
   RepeatModifiers = MOD_CONTROL or MOD_ALT;
 
+
   procedure RegisterOne(const AId: Integer;
                         const AModifiers: Cardinal;
                         const AKey: Cardinal;
@@ -609,7 +624,7 @@ const
   begin
     if not RegisterHotKey(Handle, AId, AModifiers, AKey) then
       AddLog(Format('Global shortcut unavailable: %s (Windows error %d).',
-                              [ADescription, GetLastError()]));
+                    [ADescription, GetLastError()]));
   end;
 
 begin
@@ -665,7 +680,8 @@ var
 begin
 
   for HotKeyId := MFCAST_HOTKEY_CAST to MFCAST_HOTKEY_MUTE do
-    UnregisterHotKey(Handle, HotKeyId);
+    UnregisterHotKey(Handle,
+                     HotKeyId);
 end;
 
 
@@ -680,90 +696,94 @@ begin
 
   case message.WParam of
     MFCAST_HOTKEY_CAST: if btnCast.Enabled then
-                          btnCast.Click();
+        btnCast.Click();
 
     MFCAST_HOTKEY_CAST_DESKTOP: if btnCastDesktop.Enabled then
-                                  btnCastDesktop.Click();
+        btnCastDesktop.Click();
 
     MFCAST_HOTKEY_PLAY: if btnPlay.Enabled then
-                          btnPlay.Click();
+        btnPlay.Click();
 
     MFCAST_HOTKEY_PAUSE: if btnPause.Enabled then
-                           btnPause.Click();
+        btnPause.Click();
 
     MFCAST_HOTKEY_STOP: if btnStop.Enabled then
-                          btnStop.Click();
+        btnStop.Click();
 
     MFCAST_HOTKEY_VOLUME_UP: if trkVolume.Enabled then
-                               begin
-                                 NewPosition := trkVolume.Position + VolumeStep;
+        begin
+          NewPosition := trkVolume.Position + VolumeStep;
 
-                                 if (NewPosition > trkVolume.Max) then
-                                   NewPosition := trkVolume.Max;
+          if (NewPosition > trkVolume.Max) then
+            NewPosition := trkVolume.Max;
 
-                                 trkVolume.Position := NewPosition;
-                               end;
+          trkVolume.Position := NewPosition;
+        end;
 
     MFCAST_HOTKEY_VOLUME_DOWN: if trkVolume.Enabled then
-                                 begin
-                                   NewPosition := trkVolume.Position - VolumeStep;
+        begin
+          NewPosition := trkVolume.Position - VolumeStep;
 
-                                   if (NewPosition < trkVolume.Min) then
-                                     NewPosition := trkVolume.Min;
+          if (NewPosition < trkVolume.Min) then
+            NewPosition := trkVolume.Min;
 
-                                   trkVolume.Position := NewPosition;
-                                 end;
+          trkVolume.Position := NewPosition;
+        end;
 
     MFCAST_HOTKEY_MUTE: if chkMuted.Enabled then
-                          begin
-                            chkMuted.Checked := not chkMuted.Checked;
-                          end;
+        begin
+          chkMuted.Checked := not chkMuted.Checked;
+        end;
   end;
 end;
 
 
 procedure TCastPlayerForm.DeviceChanged(const ADevice: TMfCastDevice);
+
 begin
 
   if not FClosing then
     PostmessageW(Handle,
-                WM_MFCAST_DEVICES,
-                0,
-                0);
+                 WM_MFCAST_DEVICES,
+                 0,
+                 0);
 end;
 
 
 procedure TCastPlayerForm.DeviceRemoved(const ADeviceId: string);
+
 begin
 
   if not FClosing then
     PostmessageW(Handle,
-                WM_MFCAST_DEVICES,
-                0,
-                0);
+                 WM_MFCAST_DEVICES,
+                 0,
+                 0);
 end;
 
 
 procedure TCastPlayerForm.CastStateChanged(const AOldState: TMfCastState;
                                            const ANewState: TMfCastState);
+
 begin
 
   if not FClosing then
     PostmessageW(Handle,
-                WM_MFCAST_STATE,
-                Ord(ANewState),
-                0);
+                 WM_MFCAST_STATE,
+                 Ord(ANewState),
+                 0);
 end;
 
 
 procedure TCastPlayerForm.CastMediaStatus(const AStatus: TMfCastMediaStatus);
+
 begin
 
   if not FClosing then
     PostmessageW(Handle,
-                WM_MFCAST_STATUS,
-                WPARAM(AStatus.CurrentTime100ns div 10000000),
-                LPARAM(AStatus.Duration100ns div 10000000));
+                 WM_MFCAST_STATUS,
+                 WPARAM(AStatus.CurrentTime100ns div 10000000),
+                 LPARAM(AStatus.Duration100ns div 10000000));
 end;
 
 
@@ -785,9 +805,10 @@ end;
 
 
 procedure TCastPlayerForm.CastLog(Sender: TObject;
-                                        const ALevel: TMfCastLogLevel;
-                                        const ASource: string;
-                                        const Amessage: string);
+                                  const ALevel: TMfCastLogLevel;
+                                  const ASource: string;
+                                  const Amessage: string);
+
 begin
 
   // Capture workers can report a failure only through the logger. Dropping
@@ -800,7 +821,7 @@ end;
 
 
 procedure TCastPlayerForm.PostLogmessage(const AWindowsmessage: Cardinal;
-                                               const AText: string);
+                                         const AText: string);
 var
   Logmessage: TMfCastUiLogMessage;
 
@@ -811,9 +832,9 @@ begin
 
   Logmessage := TMfCastUiLogMessage.Create(AText);
   if not PostmessageW(Handle,
-                     AWindowsmessage,
-                     WPARAM(Logmessage),
-                     0) then
+    AWindowsmessage,
+    WPARAM(Logmessage),
+    0) then
     Logmessage.Free();
 end;
 
@@ -856,27 +877,27 @@ begin
       begin
         cbxDevices.Items.Add(Format('%s [%s]  (%s:%d)',
                                     [FDevices[I].FriendlyName,
-                                     FDevices[I].ModelName,
-                                     FDevices[I].Address,
-                                     FDevices[I].Port]));
+          FDevices[I].ModelName,
+          FDevices[I].Address,
+          FDevices[I].Port]));
 
         // Discovery response order is nondeterministic. Preserve the actual
         // selected device, never merely its old list position.
         if (SelectedIndex < 0) and
-           (((SelectedId <> '') and
-             SameText(FDevices[I].Id, SelectedId)) or
-            ((SelectedId = '') and
-             (SelectedAddress <> '') and
-             SameText(FDevices[I].Address,
-                      SelectedAddress))) then
+          (((SelectedId <> '') and
+          SameText(FDevices[I].Id,
+                   SelectedId)) or
+          ((SelectedId = '') and
+          (SelectedAddress <> '') and
+          SameText(FDevices[I].Address,
+                   SelectedAddress))) then
           SelectedIndex := I;
       end;
 
     if (SelectedIndex >= 0) then
       cbxDevices.ItemIndex := SelectedIndex
-    else
-      if (cbxDevices.Items.Count > 0) then
-        cbxDevices.ItemIndex := 0;
+    else if (cbxDevices.Items.Count > 0) then
+      cbxDevices.ItemIndex := 0;
 
   finally
     cbxDevices.Items.EndUpdate();
@@ -887,9 +908,11 @@ end;
 
 
 procedure TCastPlayerForm.ClearSubtitleChoices();
+
 begin
 
-  SetLength(FSubtitleChoices, 0);
+  SetLength(FSubtitleChoices,
+            0);
   FSubtitleSourceName := '';
   cbxSubtitleLanguage.Items.Clear();
   cbxSubtitleLanguage.ItemIndex := -1;
@@ -909,7 +932,7 @@ begin
   if (ChoiceLanguage <> '') then
     for I := Low(FSubtitleChoices) to High(FSubtitleChoices) do
       if SameText(TLanguageTags.NormalizeLanguageTag(FSubtitleChoices[I].Language),
-                  ChoiceLanguage) then
+        ChoiceLanguage) then
         Exit;
 
   NewIndex := Length(FSubtitleChoices);
@@ -925,9 +948,9 @@ end;
 procedure TCastPlayerForm.RefreshSubtitleChoices(const ASourceName: string);
 const
   SUBTITLE_EXTENSIONS: array[0..3] of string = ('.srt',
-                                                 '.vtt',
-                                                 '.sub',
-                                                 '.idx');
+                                                '.vtt',
+                                                '.sub',
+                                                '.idx');
 var
   Choice: TMfCastSubtitleChoice;
   EmbeddedTracks: TMfEmbeddedSubtitleTrackInfoArray;
@@ -952,7 +975,7 @@ begin
       Exit;
 
     AddLog(Format('[DEBUG][Subtitles] Scanning source="%s".',
-                            [SourceName]));
+                  [SourceName]));
 
     // Sidecars are deliberately inserted first. AddSubtitleChoice suppresses
     // later duplicates by language, so an embedded track cannot replace one.
@@ -966,7 +989,7 @@ begin
                                                 SUBTITLE_EXTENSIONS[ExtensionIndex]);
 
           for I := Low(Sidecars) to High(Sidecars) do
-            if Sidecars[I].sTTxtType <> UNKNOWN then
+            if (Sidecars[I].sTTxtType <> UNKNOWN) then
               begin
                 Choice.Source := cscsSidecar;
                 Choice.Language := Sidecars[I].sLanguageTag;
@@ -981,10 +1004,10 @@ begin
 
                 FriendlyName := Trim(Sidecars[I].sFriendlyLanguageName);
 
-                if FriendlyName = '' then
+                if (FriendlyName = '') then
                   FriendlyName := Trim(Choice.Language);
 
-                if FriendlyName = '' then
+                if (FriendlyName = '') then
                   FriendlyName := ExtractFileName(Choice.SourceName);
 
                 Choice.DisplayName := FriendlyName + ' (sidecar)';
@@ -992,24 +1015,27 @@ begin
               end
             else
               AddLog(Format('[INFO][Subtitles] Unsupported bitmap or unknown subtitle sidecar: "%s".',
-                                      [ExtractFileName(Sidecars[I].sFile)]));
+                            [ExtractFileName(Sidecars[I].sFile)]));
 
-          SetLength(Sidecars, 0);
+          SetLength(Sidecars,
+                    0);
         end;
 
-      SetLength(EmbeddedTracks, 0);
+      SetLength(EmbeddedTracks,
+                0);
       EmbeddedTrackNumber := 0;
 
       if SUCCEEDED(TMfEmbeddedSubtitleReader.EnumerateTracks(SourceName,
-                                                             EmbeddedTracks)) then
+        EmbeddedTracks)) then
         for I := Low(EmbeddedTracks) to High(EmbeddedTracks) do
           begin
             AddLog(Format('[DEBUG][Subtitles] Candidate stream=%d language="%s" name="%s" codec="%s" supported=%s.',
-                                    [EmbeddedTracks[I].StreamIndex,
-                                     EmbeddedTracks[I].Language,
-                                     EmbeddedTracks[I].Name,
-                                     EmbeddedTracks[I].CodecId,
-                                     BoolToStr(EmbeddedTracks[I].Supported, True)]));
+                          [EmbeddedTracks[I].StreamIndex,
+              EmbeddedTracks[I].Language,
+              EmbeddedTracks[I].Name,
+              EmbeddedTracks[I].CodecId,
+              BoolToStr(EmbeddedTracks[I].Supported,
+                        True)]));
 
             if EmbeddedTracks[I].Supported then
               begin
@@ -1020,10 +1046,10 @@ begin
                 Choice.StreamIndex := EmbeddedTracks[I].StreamIndex;
                 Choice.HasStreamIndex := True;
 
-                if EmbeddedTracks[I].Source = essMatroska then
+                if (EmbeddedTracks[I].Source = essMatroska) then
                   Choice.TrackId := MfCastMakeTrackId(ctkSubtitle,
-                                                       ctsMatroska,
-                                                       Choice.StreamIndex)
+                                                      ctsMatroska,
+                                                      Choice.StreamIndex)
                 else
                   Choice.TrackId := MfCastMakeTrackId(ctkSubtitle,
                                                       ctsMediaFoundation,
@@ -1032,10 +1058,10 @@ begin
                 Choice.Language := TLanguageTags.NormalizeLanguageTag(Choice.Language);
 
                 AddLog(Format('[DEBUG][Subtitles] Embedded track %d: stream=%d language="%s" name="%s".',
-                                        [EmbeddedTrackNumber,
-                                         EmbeddedTracks[I].StreamIndex,
-                                         Choice.Language,
-                                         EmbeddedTracks[I].Name]));
+                              [EmbeddedTrackNumber,
+                  EmbeddedTracks[I].StreamIndex,
+                  Choice.Language,
+                  EmbeddedTracks[I].Name]));
 
                 FriendlyName := '';
 
@@ -1059,8 +1085,10 @@ begin
 
     finally
       LanguageTags.Free();
-      SetLength(Sidecars, 0);
-      SetLength(EmbeddedTracks, 0);
+      SetLength(Sidecars,
+                0);
+      SetLength(EmbeddedTracks,
+                0);
     end;
 
     if (cbxSubtitleLanguage.Items.Count > 0) then
@@ -1071,7 +1099,7 @@ begin
   end;
 
   AddLog(Format('Subtitle languages found: %d.',
-                          [cbxSubtitleLanguage.Items.Count]));
+                [cbxSubtitleLanguage.Items.Count]));
   UpdateControls();
 end;
 
@@ -1088,7 +1116,7 @@ begin
     begin
       Choice := FSubtitleChoices[cbxSubtitleLanguage.ItemIndex];
       ASubtitle.Enabled := True;
-      ASubtitle.Embedded := Choice.Source = cscsEmbedded;
+      ASubtitle.Embedded := (Choice.Source = cscsEmbedded);
       ASubtitle.Name := Choice.DisplayName;
       ASubtitle.Language := Choice.Language;
       ASubtitle.SourceName := Choice.SourceName;
@@ -1100,9 +1128,11 @@ end;
 
 
 procedure TCastPlayerForm.ClearAudioTracks();
+
 begin
 
-  SetLength(FAudioTracks, 0);
+  SetLength(FAudioTracks,
+            0);
   FAudioSourceName := '';
   cbxAudioStream.Items.Clear();
   cbxAudioStream.ItemIndex := -1;
@@ -1134,23 +1164,25 @@ begin
     if FAILED(Hr) then
       begin
         AddLog(Format('Audio track scan failed: HRESULT $%.8x',
-                                [DWORD(Hr)]));
+                      [DWORD(Hr)]));
         Exit;
       end;
 
     SelectedIndex := -1;
     for I := Low(AllTracks) to High(AllTracks) do
-      if AllTracks[I].Kind = ctkAudio then
+      if (AllTracks[I].Kind = ctkAudio) then
         begin
           NewIndex := Length(FAudioTracks);
-          SetLength(FAudioTracks, NewIndex + 1);
+          SetLength(FAudioTracks,
+                    NewIndex + 1);
           FAudioTracks[NewIndex] := AllTracks[I];
 
           DisplayName := Trim(AllTracks[I].Name);
-          if DisplayName = '' then
-            DisplayName := Format('Audio track %d', [NewIndex + 1]);
+          if (DisplayName = '') then
+            DisplayName := Format('Audio track %d',
+                                  [NewIndex + 1]);
 
-          if Trim(AllTracks[I].Language) <> '' then
+          if (Trim(AllTracks[I].Language) <> '') then
             DisplayName := DisplayName + ' [' + AllTracks[I].Language + ']';
 
           if not AllTracks[I].Supported then
@@ -1169,33 +1201,35 @@ begin
 
   finally
     cbxAudioStream.Items.EndUpdate();
-    SetLength(AllTracks, 0);
+    SetLength(AllTracks,
+              0);
   end;
 
   AddLog(Format('Audio tracks found: %d.',
-                          [cbxAudioStream.Items.Count]));
+                [cbxAudioStream.Items.Count]));
 end;
 
 
 function TCastPlayerForm.IsDtsAudioTrack(const ATrack: TMfCastTrackInfo): Boolean;
+
 begin
 
   Result := (Pos('DTS',
                  UpperCase(ATrack.Name)) > 0) or
-            SameText(ATrack.SubType,
-                     GUIDToString(MFAudioFormat_DTS)) or
-            SameText(ATrack.SubType,
-                     GUIDToString(MFAudioFormat_DTS_RAW)) or
-            SameText(ATrack.SubType,
-                     GUIDToString(MFAudioFormat_DTS_HD)) or
-            SameText(ATrack.SubType,
-                     GUIDToString(MFAudioFormat_DTS_XLL)) or
-            SameText(ATrack.SubType,
-                     GUIDToString(MFAudioFormat_DTS_LBR)) or
-            SameText(ATrack.SubType,
-                     GUIDToString(MFAudioFormat_DTS_UHD)) or
-            SameText(ATrack.SubType,
-                     GUIDToString(MFAudioFormat_DTS_UHDY));
+    SameText(ATrack.SubType,
+             GUIDToString(MFAudioFormat_DTS)) or
+    SameText(ATrack.SubType,
+             GUIDToString(MFAudioFormat_DTS_RAW)) or
+    SameText(ATrack.SubType,
+             GUIDToString(MFAudioFormat_DTS_HD)) or
+    SameText(ATrack.SubType,
+             GUIDToString(MFAudioFormat_DTS_XLL)) or
+    SameText(ATrack.SubType,
+             GUIDToString(MFAudioFormat_DTS_LBR)) or
+    SameText(ATrack.SubType,
+             GUIDToString(MFAudioFormat_DTS_UHD)) or
+    SameText(ATrack.SubType,
+             GUIDToString(MFAudioFormat_DTS_UHDY));
 end;
 
 
@@ -1209,7 +1243,7 @@ begin
   Result := True;
 
   if (cbxAudioStream.ItemIndex < 0) or
-     (cbxAudioStream.ItemIndex >= Length(FAudioTracks)) then
+    (cbxAudioStream.ItemIndex >= Length(FAudioTracks)) then
     Exit;
 
   Track := FAudioTracks[cbxAudioStream.ItemIndex];
@@ -1220,17 +1254,17 @@ begin
 
   if IsDtsAudioTrack(Track) then
     MessageDlg('The selected DTS audio stream cannot be decoded.' + sLineBreak +
-               sLineBreak +
-               'Windows does not include a native DTS decoder. Install a ' +
-               'compatible third-party Media Foundation decoder and reload ' +
-               'the file, or select another supported audio stream.',
+      sLineBreak +
+      'Windows does not include a native DTS decoder. Install a ' +
+      'compatible third-party Media Foundation decoder and reload ' +
+      'the file, or select another supported audio stream.',
                mtWarning,
                [mbOK],
                0)
   else
     MessageDlg('The selected audio stream cannot be decoded by Media ' +
-               'Foundation. Install a compatible third-party decoder and ' +
-               'reload the file, or select another supported audio stream.',
+      'Foundation. Install a compatible third-party decoder and ' +
+      'reload the file, or select another supported audio stream.',
                mtWarning,
                [mbOK],
                0);
@@ -1257,13 +1291,14 @@ end;
 
 
 procedure TCastPlayerForm.ApplyAudioSelection();
+
 begin
 
   if not Assigned(FCast) or Assigned(FWorker) or
-     Assigned(FSubtitleWorker) or Assigned(FAudioTrackWorker) or
-     (cbxAudioStream.ItemIndex < 0) or
-     (cbxAudioStream.ItemIndex >= Length(FAudioTracks)) or
-     (not (FCast.State in [csBuffering, csPlaying, csPaused])) then
+    Assigned(FSubtitleWorker) or Assigned(FAudioTrackWorker) or
+    (cbxAudioStream.ItemIndex < 0) or
+    (cbxAudioStream.ItemIndex >= Length(FAudioTracks)) or
+    (not (FCast.State in [csBuffering, csPlaying, csPaused])) then
     Exit;
 
   if not EnsureSelectedAudioTrackSupported() then
@@ -1286,8 +1321,8 @@ var
 begin
 
   if (not Assigned(FCast)) or Assigned(FWorker) or
-     Assigned(FSubtitleWorker) or
-     (not (FCast.State in [csBuffering, csPlaying, csPaused])) then
+    Assigned(FSubtitleWorker) or
+    (not (FCast.State in [csBuffering, csPlaying, csPaused])) then
     Exit;
 
   BuildSelectedSubtitle(Subtitle);
@@ -1305,23 +1340,29 @@ begin
 end;
 
 
-procedure TCastPlayerForm.AddLog(const AText: string; const ATimestamp: TDateTime);
+procedure TCastPlayerForm.AddLog(const AText: string;
+                                 const ATimestamp: TDateTime);
 var
   Stamp: TDateTime;
+
 begin
+
   Stamp := ATimestamp;
-  if Stamp = 0 then Stamp := Now;
-  memLog.Lines.Add(MfCastFormatLogLine(AText, Stamp));
+  if (Stamp = 0) then
+    Stamp := Now;
+  memLog.Lines.Add(MfCastFormatLogLine(AText,
+                                       Stamp));
 end;
 
 
 procedure TCastPlayerForm.LogResult(const AOperation: string;
                                     const AHResult: HRESULT);
+
 begin
 
   if FAILED(AHResult) then
     AddLog(Format('%s failed: HRESULT $%.8x',
-                            [AOperation, DWORD(AHResult)]))
+                  [AOperation, DWORD(AHResult)]))
   else
     AddLog(AOperation + ' requested.');
 end;
@@ -1345,7 +1386,7 @@ begin
   if AExcluded then
     begin
       if not GetWindowDisplayAffinity(Handle,
-                                      FPreviousDisplayAffinity) then
+        FPreviousDisplayAffinity) then
         begin
           Result := WinApi.WinError.HRESULT_FROM_WIN32(GetLastError());
 
@@ -1362,7 +1403,7 @@ begin
   // Keep the preview attached to its panel. Exclude the top-level player
   // window from desktop capture so its live preview cannot capture itself.
   if not SetWindowDisplayAffinity(Handle,
-                                  Affinity) then
+    Affinity) then
     begin
       Result := WinApi.WinError.HRESULT_FROM_WIN32(GetLastError());
 
@@ -1384,7 +1425,7 @@ var
 begin
 
   Busy := Assigned(FWorker) or Assigned(FSubtitleWorker) or
-          Assigned(FAudioTrackWorker);
+    Assigned(FAudioTrackWorker);
 
   if Assigned(FCast) then
     State := FCast.State
@@ -1392,18 +1433,19 @@ begin
     State := csIdle;
 
   if FDesktopCaptureExcluded and Assigned(FCast) and (not Busy) and (State in [csIdle, csStopped, csError]) then
-    LogResult('Restore player capture visibility', SetDesktopCaptureExcluded(False));
+    LogResult('Restore player capture visibility',
+              SetDesktopCaptureExcluded(False));
 
   CanControlReceiver := Assigned(FCast) and (not Busy) and (State in [csConnected, csLaunchingReceiver, csBuffering, csPlaying, csPaused, csStopped]);
 
   btnCast.Enabled := (cbxDevices.ItemIndex >= 0) and
-                     (Trim(edtSource.Text) <> '') and
-                     (not Busy) and
-                      Assigned(FCast) and (State in [csIdle, csDiscovering, csStopped, csError]);
+    (Trim(edtSource.Text) <> '') and
+    (not Busy) and
+    Assigned(FCast) and (State in [csIdle, csDiscovering, csStopped, csError]);
 
   btnCastDesktop.Enabled := (cbxDevices.ItemIndex >= 0) and
-                             (not Busy) and Assigned(FCast) and
-                             (State in [csIdle, csDiscovering, csStopped, csError]);
+    (not Busy) and Assigned(FCast) and
+    (State in [csIdle, csDiscovering, csStopped, csError]);
 
   // STOP ends the receiver's media session, so PLAY cannot restart it.  A
   // stopped source must be cast again.  PLAY is only a resume operation for
@@ -1421,9 +1463,9 @@ begin
   chkEmbeddedSubtitles.Enabled := not Busy;
 
   cbxSubtitleLanguage.Enabled := chkEmbeddedSubtitles.Checked and
-                                 (cbxSubtitleLanguage.Items.Count > 0) and
-                                 (not Assigned(FWorker)) and
-                                 (not Assigned(FSubtitleWorker));
+    (cbxSubtitleLanguage.Items.Count > 0) and
+    (not Assigned(FWorker)) and
+    (not Assigned(FSubtitleWorker));
 
   cbxAudioStream.Enabled := (cbxAudioStream.Items.Count > 0) and (not Busy);
 
@@ -1433,6 +1475,7 @@ end;
 
 
 procedure TCastPlayerForm.WmCastDevices(var message: TLMessage);
+
 begin
 
   ReloadDevices();
@@ -1481,22 +1524,21 @@ begin
   if FSeekPositionPending then
     begin
       if (FSeekTargetSeconds >= 0) and
-         (Abs(PositionSeconds - FSeekTargetSeconds) <= 2) then
+        (Abs(PositionSeconds - FSeekTargetSeconds) <= 2) then
         begin
           FSeekPositionPending := False;
           FSeekTargetSeconds := -1;
           FSeekRequestTick := 0;
         end
+      else if (FSeekRequestTick = 0) or
+        ((GetTickCount() - FSeekRequestTick) < 20000) then
+        Exit
       else
-        if (FSeekRequestTick = 0) or
-           ((GetTickCount() - FSeekRequestTick) < 20000) then
-          Exit
-        else
-          begin
-            FSeekPositionPending := False;
-            FSeekTargetSeconds := -1;
-            FSeekRequestTick := 0;
-          end;
+        begin
+          FSeekPositionPending := False;
+          FSeekTargetSeconds := -1;
+          FSeekRequestTick := 0;
+        end;
     end;
 
   if (PositionSeconds > trkSeek.Max) then
@@ -1525,7 +1567,8 @@ begin
   Logmessage := TMfCastUiLogMessage(message.WParam);
 
   try
-    AddLog(Logmessage.Text, Logmessage.CreatedAt);
+    AddLog(Logmessage.Text,
+           Logmessage.CreatedAt);
     UpdateControls();
 
   finally
@@ -1584,7 +1627,8 @@ begin
   Logmessage := TMfCastUiLogMessage(message.WParam);
 
   try
-    AddLog(Logmessage.Text, Logmessage.CreatedAt);
+    AddLog(Logmessage.Text,
+           Logmessage.CreatedAt);
 
   finally
     Logmessage.Free();
@@ -1593,6 +1637,7 @@ end;
 
 
 procedure TCastPlayerForm.WmCastSubtitleFinished(var message: TLMessage);
+
 begin
 
   if Assigned(FSubtitleWorker) then
@@ -1628,13 +1673,14 @@ begin
 
   if SUCCEEDED(HRESULT(DWORD(message.WParam))) then
     for I := Low(FAudioTracks) to High(FAudioTracks) do
-      FAudioTracks[I].Selected := I = cbxAudioStream.ItemIndex;
+      FAudioTracks[I].Selected := (I = cbxAudioStream.ItemIndex);
 
   UpdateControls();
 end;
 
 
 procedure TCastPlayerForm.btnDiscoverClick(Sender: TObject);
+
 begin
 
   LogResult('Discovery',
@@ -1643,6 +1689,7 @@ end;
 
 
 procedure TCastPlayerForm.btnRefreshClick(Sender: TObject);
+
 begin
 
   LogResult('Discovery refresh',
@@ -1698,7 +1745,7 @@ begin
       end;
 
     Browser.SetInitialDirectory(InitialDirectory);
-    Result := Browser.ShowModal() = mrOk;
+    Result := (Browser.ShowModal() = mrOk);
 
     if Result then
       AFileName := Browser.FileURI;
@@ -1721,7 +1768,7 @@ var
 begin
 
   if SelectLocalFile(False,
-                     FileName) then
+    FileName) then
     begin
       edtSource.Text := FileName;
       RefreshSubtitleChoices(edtSource.Text);
@@ -1739,7 +1786,7 @@ var
 begin
 
   if SelectLocalFile(True,
-                     FileName) then
+    FileName) then
     edtArtwork.Text := FileName;
 end;
 
@@ -1752,16 +1799,16 @@ var
 begin
 
   if (cbxDevices.ItemIndex < 0) or
-     (cbxDevices.ItemIndex >= Length(FDevices)) or
-     (Trim(edtSource.Text) = '') then
+    (cbxDevices.ItemIndex >= Length(FDevices)) or
+    (Trim(edtSource.Text) = '') then
     Exit;
 
   if not SameText(FSubtitleSourceName,
-                  Trim(edtSource.Text)) then
+    Trim(edtSource.Text)) then
     RefreshSubtitleChoices(edtSource.Text);
 
   if not SameText(FAudioSourceName,
-                  Trim(edtSource.Text)) then
+    Trim(edtSource.Text)) then
     RefreshAudioTracks(edtSource.Text);
 
   BuildSelectedSubtitle(Subtitle);
@@ -1774,7 +1821,8 @@ begin
       Hr := FCast.SelectAudioTrack(FAudioTracks[cbxAudioStream.ItemIndex].TrackId);
       if FAILED(Hr) then
         begin
-          LogResult('Queue audio track', Hr);
+          LogResult('Queue audio track',
+                    Hr);
           Exit;
         end;
     end;
@@ -1806,11 +1854,11 @@ var
 begin
 
   if Assigned(FCast) and (not Assigned(FWorker)) and
-     (not Assigned(FSubtitleWorker)) and
-     (not Assigned(FAudioTrackWorker)) and
-     (FActiveDesktopMode >= 0) and
-     (cbxCaptureMode.ItemIndex <> FActiveDesktopMode) and
-     (FCast.State in [csBuffering, csPlaying, csPaused]) then
+    (not Assigned(FSubtitleWorker)) and
+    (not Assigned(FAudioTrackWorker)) and
+    (FActiveDesktopMode >= 0) and
+    (cbxCaptureMode.ItemIndex <> FActiveDesktopMode) and
+    (FCast.State in [csBuffering, csPlaying, csPaused]) then
     begin
       PreviousMode := FActiveDesktopMode;
       // Reuse the normal screen/artwork selection and capability checks.
@@ -1833,11 +1881,12 @@ var
   Hr: HRESULT;
 
 begin
+
   if (cbxDevices.ItemIndex < 0) or (cbxDevices.ItemIndex >= Length(FDevices)) or Assigned(FWorker) then
     Exit;
 
   Settings.Reset();
-  Settings.AudioOnly := cbxCaptureMode.ItemIndex = 1;
+  Settings.AudioOnly := (cbxCaptureMode.ItemIndex = 1);
   Settings.CaptureSystemAudio := (cbxCaptureMode.ItemIndex <> 2);
 
   if (cbxCaptureMode.ItemIndex = 3) then
@@ -1845,7 +1894,7 @@ begin
       if (Trim(edtArtwork.Text) = '') then
         begin
           if not SelectLocalFile(True,
-                                 ArtworkFileName) then
+            ArtworkFileName) then
             Exit;
           edtArtwork.Text := ArtworkFileName;
         end;
@@ -1876,24 +1925,24 @@ begin
     end;
 
   AddLog(Format('Desktop target: name="%s", model="%s", address=%s:%d, capabilities=%d.',
-                          [FDevices[cbxDevices.ItemIndex].FriendlyName,
-                           FDevices[cbxDevices.ItemIndex].ModelName,
-                           FDevices[cbxDevices.ItemIndex].Address,
-                           FDevices[cbxDevices.ItemIndex].Port,
-                           FDevices[cbxDevices.ItemIndex].RawCapabilities]));
+                [FDevices[cbxDevices.ItemIndex].FriendlyName,
+    FDevices[cbxDevices.ItemIndex].ModelName,
+    FDevices[cbxDevices.ItemIndex].Address,
+    FDevices[cbxDevices.ItemIndex].Port,
+    FDevices[cbxDevices.ItemIndex].RawCapabilities]));
 
   case cbxCaptureCodec.ItemIndex of
     1: Settings.CodecPreference := cvcpH264;
     2: Settings.CodecPreference := cvcpHEVC;
-  else
-    Settings.CodecPreference := cvcpAutomatic;
+    else
+      Settings.CodecPreference := cvcpAutomatic;
   end;
 
   // Ask for the desktop source before probing encoders or starting capture.
   if (not Settings.AudioOnly) and (Settings.ArtworkSourceName = '') and (not MfCastDeviceIsAudioOnly(FDevices[cbxDevices.ItemIndex])) then
     begin
       if not SelectCaptureMonitor(Settings.OutputIndex,
-                                  MonitorDescription) then
+        MonitorDescription) then
         begin
           AddLog('Desktop casting cancelled: no screen was selected.');
           Exit;
@@ -1902,12 +1951,11 @@ begin
 
   if Settings.AudioOnly then
     AddLog('Audio source: default Windows playback device (WASAPI loopback); DXGI is not used.')
+  else if (Settings.ArtworkSourceName <> '') then
+    AddLog('Artwork source: ' + Settings.ArtworkSourceName + '; system audio uses WASAPI loopback.')
   else
-    if (Settings.ArtworkSourceName <> '') then
-      AddLog('Artwork source: ' + Settings.ArtworkSourceName + '; system audio uses WASAPI loopback.')
-    else
-      AddLog(Format('Desktop source: %s (DXGI output %d).',
-                              [MonitorDescription, Settings.OutputIndex]));
+    AddLog(Format('Desktop source: %s (DXGI output %d).',
+                  [MonitorDescription, Settings.OutputIndex]));
 
   Hr := SetDesktopCaptureExcluded((not Settings.AudioOnly) and (Settings.ArtworkSourceName = ''));
   if FAILED(Hr) then
@@ -1933,14 +1981,12 @@ begin
 
   if Settings.AudioOnly then
     AddLog('Starting WASAPI audio-only casting in a worker thread...')
+  else if (Settings.ArtworkSourceName <> '') then
+    AddLog('Starting system audio with artwork in a worker thread...')
+  else if not Settings.CaptureSystemAudio then
+    AddLog('Starting DXGI video-only desktop casting in a worker thread...')
   else
-    if Settings.ArtworkSourceName <> '' then
-      AddLog('Starting system audio with artwork in a worker thread...')
-    else
-      if not Settings.CaptureSystemAudio then
-        AddLog('Starting DXGI video-only desktop casting in a worker thread...')
-      else
-        AddLog('Starting DXGI/WASAPI desktop casting in a worker thread...');
+    AddLog('Starting DXGI/WASAPI desktop casting in a worker thread...');
 
   UpdateControls();
 end;
@@ -1959,6 +2005,7 @@ end;
 
 
 procedure TCastPlayerForm.btnPauseClick(Sender: TObject);
+
 begin
 
   LogResult('Pause',
@@ -1967,6 +2014,7 @@ end;
 
 
 procedure TCastPlayerForm.btnStopClick(Sender: TObject);
+
 begin
 
   LogResult('Stop',
@@ -1975,6 +2023,7 @@ end;
 
 
 procedure TCastPlayerForm.btnDisconnectClick(Sender: TObject);
+
 begin
 
   if not Assigned(FCast) or Assigned(FWorker) or Assigned(FSubtitleWorker) or Assigned(FAudioTrackWorker) then
@@ -2013,6 +2062,7 @@ end;
 
 
 procedure TCastPlayerForm.trkSeekChange(Sender: TObject);
+
 begin
 
   if FUpdatingSeekPosition then
@@ -2025,6 +2075,7 @@ end;
 
 
 procedure TCastPlayerForm.trkVolumeChange(Sender: TObject);
+
 begin
 
   if trkVolume.Enabled then
@@ -2037,6 +2088,7 @@ end;
 
 
 procedure TCastPlayerForm.cbxKeepOnTopClick(Sender: TObject);
+
 begin
 
   // Keep on top.
@@ -2061,6 +2113,7 @@ end;
 
 
 procedure TCastPlayerForm.chkMutedClick(Sender: TObject);
+
 begin
 
   if chkMuted.Enabled then
@@ -2069,6 +2122,7 @@ end;
 
 
 procedure TCastPlayerForm.PreviewResize(Sender: TObject);
+
 begin
 
   if Assigned(FCast) then
@@ -2091,8 +2145,8 @@ begin
     end;
 
   if (Sender = edtSource) and
-     (not SameText(FSubtitleSourceName,
-                   Trim(edtSource.Text))) then
+    (not SameText(FSubtitleSourceName,
+                  Trim(edtSource.Text))) then
     begin
       ClearSubtitleChoices();
       ClearAudioTracks();
@@ -2103,6 +2157,7 @@ end;
 
 
 procedure TCastPlayerForm.SubtitleSelectionChanged(Sender: TObject);
+
 begin
 
   UpdateControls();
@@ -2111,6 +2166,7 @@ end;
 
 
 procedure TCastPlayerForm.AudioSelectionChanged(Sender: TObject);
+
 begin
 
   if FUpdatingAudioSelection then

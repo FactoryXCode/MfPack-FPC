@@ -80,7 +80,9 @@ uses
   WinApi.MediaFoundationApi.MfTransform;
 
 type
-  TMfGrayscaleMFT = class(TInterfacedObject, IMFTransform)
+  TMfGrayscaleMFT = class(TInterfacedObject,
+                          IMFTransform)
+
   private
 
     FInputType: IMFMediaType;
@@ -101,7 +103,8 @@ type
                             out AHeight: UINT32;
                             out AStride: Integer): HResult;
 
-    function TypesMatch(const AFirst, ASecond: IMFMediaType): Boolean;
+    function TypesMatch(const AFirst,
+                        ASecond: IMFMediaType): Boolean;
     function ConvertSampleToGrayscale(const ASample: IMFSample): HResult;
 
   public
@@ -180,7 +183,8 @@ type
                           const pSample: IMFSample;
                           dwFlags: DWORD = 0): HResult; stdcall;
 
-    function ProcessOutput(dwFlags: DWORD; cOutputBufferCount: DWORD;
+    function ProcessOutput(dwFlags: DWORD;
+                           cOutputBufferCount: DWORD;
                            pOutputSamples: PMFT_OUTPUT_DATA_BUFFER;
                            out pdwStatus: DWORD): HResult; stdcall;
   end;
@@ -188,8 +192,11 @@ type
 
 implementation
 
+
 destructor TMfGrayscaleMFT.Destroy;
+
 begin
+
   ClearInput();
   FInputType := nil;
   FOutputType := nil;
@@ -199,6 +206,7 @@ end;
 
 
 procedure TMfGrayscaleMFT.ClearInput;
+
 begin
 
   FInputSample := nil;
@@ -207,6 +215,7 @@ end;
 
 function TMfGrayscaleMFT.CloneMediaType(const ASource: IMFMediaType;
                                         out ADestination: IMFMediaType): HResult;
+
 begin
 
   ADestination := nil;
@@ -222,6 +231,7 @@ end;
 
 
 function TMfGrayscaleMFT.CreateRgb32Type(out AMediaType: IMFMediaType): HResult;
+
 begin
 
   AMediaType := nil;
@@ -256,17 +266,18 @@ begin
     Exit(E_POINTER);
 
   if FAILED(AMediaType.GetGUID(MF_MT_MAJOR_TYPE,
-                               MajorType)) or not
-     IsEqualGUID(MajorType,
-                     MFMediaType_Video) or
-     FAILED(AMediaType.GetGUID(MF_MT_SUBTYPE,
-                               Subtype)) or
-     not IsEqualGUID(Subtype,
-                     MFVideoFormat_RGB32) then
+    MajorType)) or not
+    IsEqualGUID(MajorType,
+                MFMediaType_Video) or
+    FAILED(AMediaType.GetGUID(MF_MT_SUBTYPE,
+                              Subtype)) or not IsEqualGUID(Subtype,
+                                                           MFVideoFormat_RGB32) then
     Exit(MF_E_INVALIDMEDIATYPE);
 
-  Result := MFGetAttributeSize(AMediaType, MF_MT_FRAME_SIZE,
-                               AWidth, AHeight);
+  Result := MFGetAttributeSize(AMediaType,
+                               MF_MT_FRAME_SIZE,
+                               AWidth,
+                               AHeight);
   if FAILED(Result) then
     Exit;
 
@@ -276,17 +287,18 @@ begin
   AStride := Integer(AWidth) * 4;
 
   if SUCCEEDED(AMediaType.GetUINT32(MF_MT_DEFAULT_STRIDE,
-                                    StrideValue)) then
+    StrideValue)) then
     begin
       AStride := Integer(StrideValue);
 
-      if AStride = Low(Integer) then Exit(MF_E_INVALIDMEDIATYPE);
+      if (AStride = Low(Integer)) then
+        Exit(MF_E_INVALIDMEDIATYPE);
       if (AStride < 0) then
         AStride := -AStride;
     end;
 
   if (AStride < Integer(AWidth) * 4) or
-     (UInt64(AStride) * UInt64(AHeight) > UInt64(High(DWORD))) then
+    (UInt64(AStride) * UInt64(AHeight) > UInt64(High(DWORD))) then
     Exit(MF_E_INVALIDMEDIATYPE);
 
   Result := S_OK;
@@ -309,13 +321,13 @@ begin
                                      Width1,
                                      Height1,
                                      Stride1)) and
-            SUCCEEDED(GetVideoLayout(ASecond,
-                                     Width2,
-                                     Height2,
-                                     Stride2)) and
-            (Width1 = Width2) and
-            (Height1 = Height2) and
-            (Stride1 = Stride2);
+    SUCCEEDED(GetVideoLayout(ASecond,
+                             Width2,
+                             Height2,
+                             Stride2)) and
+    (Width1 = Width2) and
+    (Height1 = Height2) and
+    (Stride1 = Stride2);
 end;
 
 
@@ -363,8 +375,8 @@ begin
 
             // RGB32 is stored in memory as B, G, R, unused/alpha.
             Gray := Byte((29 * Cardinal(Pixel[0]) +
-                          150 * Cardinal(Pixel[1]) +
-                          77 * Cardinal(Pixel[2]) + 128) shr 8);
+              150 * Cardinal(Pixel[1]) +
+              77 * Cardinal(Pixel[2]) + 128) shr 8);
 
             Pixel[0] := Gray;
             Pixel[1] := Gray;
@@ -384,6 +396,7 @@ function TMfGrayscaleMFT.GetStreamLimits(out pdwInputMinimum: DWORD;
                                          out pdwInputMaximum: DWORD;
                                          out pdwOutputMinimum: DWORD;
                                          out pdwOutputMaximum: DWORD): HResult;
+
 begin
 
   pdwInputMinimum := 1;
@@ -397,6 +410,7 @@ end;
 
 function TMfGrayscaleMFT.GetStreamCount(out pcInputStreams,
                                         pcOutputStreams: DWORD): HResult;
+
 begin
 
   pcInputStreams := 1;
@@ -409,6 +423,7 @@ function TMfGrayscaleMFT.GetStreamIDs(dwInputIDArraySize: DWORD;
                                       pdwInputIDs: {WinApi.WinApiTypes.}PDWORD;
                                       dwOutputIDArraySize: DWORD;
                                       pdwOutputIDs: {WinApi.WinApiTypes.}PDWORD): HResult;
+
 begin
 
   // E_NOTIMPL means that both streams use the default identifier zero.
@@ -418,6 +433,7 @@ end;
 
 function TMfGrayscaleMFT.GetInputStreamInfo(const dwInputStreamID: DWORD;
                                             out pStreamInfo: MFT_INPUT_STREAM_INFO): HResult;
+
 begin
 
   if (dwInputStreamID <> 0) then
@@ -427,8 +443,8 @@ begin
              SizeOf(pStreamInfo));
 
   pStreamInfo.dwFlags := MFT_INPUT_STREAM_WHOLE_SAMPLES or
-                         MFT_INPUT_STREAM_SINGLE_SAMPLE_PER_BUFFER or
-                         MFT_INPUT_STREAM_PROCESSES_IN_PLACE;
+    MFT_INPUT_STREAM_SINGLE_SAMPLE_PER_BUFFER or
+    MFT_INPUT_STREAM_PROCESSES_IN_PLACE;
 
   if (FStride > 0) and (FHeight > 0) then
     pStreamInfo.cbSize := DWORD(UInt64(FStride) * UInt64(FHeight));
@@ -439,6 +455,7 @@ end;
 
 function TMfGrayscaleMFT.GetOutputStreamInfo(const dwOutputStreamID: DWORD;
                                              out pStreamInfo: MFT_OUTPUT_STREAM_INFO): HResult;
+
 begin
 
   if (dwOutputStreamID <> 0) then
@@ -448,8 +465,8 @@ begin
              SizeOf(pStreamInfo));
 
   pStreamInfo.dwFlags := MFT_OUTPUT_STREAM_WHOLE_SAMPLES or
-                         MFT_OUTPUT_STREAM_SINGLE_SAMPLE_PER_BUFFER or
-                         MFT_OUTPUT_STREAM_PROVIDES_SAMPLES;
+    MFT_OUTPUT_STREAM_SINGLE_SAMPLE_PER_BUFFER or
+    MFT_OUTPUT_STREAM_PROVIDES_SAMPLES;
 
   if (FStride > 0) and (FHeight > 0) then
     pStreamInfo.cbSize := DWORD(UInt64(FStride) * UInt64(FHeight));
@@ -459,6 +476,7 @@ end;
 
 
 function TMfGrayscaleMFT.GetAttributes(out pAttributes: IMFAttributes): HResult;
+
 begin
 
   pAttributes := nil;
@@ -468,6 +486,7 @@ end;
 
 function TMfGrayscaleMFT.GetInputStreamAttributes(const dwInputStreamID: DWORD;
                                                   out pAttributes: IMFAttributes): HResult;
+
 begin
 
   pAttributes := nil;
@@ -480,6 +499,7 @@ end;
 
 function TMfGrayscaleMFT.GetOutputStreamAttributes(const dwOutputStreamID: DWORD;
                                                    out pAttributes: IMFAttributes): HResult;
+
 begin
 
   pAttributes := nil;
@@ -491,6 +511,7 @@ end;
 
 
 function TMfGrayscaleMFT.DeleteInputStream(dwStreamID: DWORD): HResult;
+
 begin
 
   Result := E_NOTIMPL;
@@ -499,6 +520,7 @@ end;
 
 function TMfGrayscaleMFT.AddInputStreams(cStreams: DWORD;
                                          adwStreamIDs: {WinApi.WinApiTypes.}PDWORD): HResult;
+
 begin
 
   Result := E_NOTIMPL;
@@ -508,6 +530,7 @@ end;
 function TMfGrayscaleMFT.GetInputAvailableType(const dwInputStreamID: DWORD;
                                                dwTypeIndex: DWORD;
                                                out pType: IMFMediaType): HResult;
+
 begin
 
   pType := nil;
@@ -519,7 +542,8 @@ begin
     Exit(MF_E_NO_MORE_TYPES);
 
   if Assigned(FOutputType) then
-    Result := CloneMediaType(FOutputType, pType)
+    Result := CloneMediaType(FOutputType,
+                             pType)
   else
     Result := CreateRgb32Type(pType);
 end;
@@ -528,6 +552,7 @@ end;
 function TMfGrayscaleMFT.GetOutputAvailableType(const dwOutputStreamID: DWORD;
                                                 dwTypeIndex: DWORD;
                                                 out pType: IMFMediaType): HResult;
+
 begin
 
   pType := nil;
@@ -539,7 +564,8 @@ begin
     Exit(MF_E_NO_MORE_TYPES);
 
   if Assigned(FInputType) then
-    Result := CloneMediaType(FInputType, pType)
+    Result := CloneMediaType(FInputType,
+                             pType)
   else
     Result := CreateRgb32Type(pType);
 end;
@@ -559,7 +585,7 @@ begin
   if (dwInputStreamID <> 0) then
     Exit(MF_E_INVALIDSTREAMNUMBER);
 
-  if ((dwFlags and not MFT_SET_TYPE_TEST_ONLY) <> 0)then
+  if ((dwFlags and not MFT_SET_TYPE_TEST_ONLY) <> 0) then
     Exit(E_INVALIDARG);
 
   if not Assigned(pType) then
@@ -572,13 +598,16 @@ begin
       Exit(S_OK);
     end;
 
-  Result := GetVideoLayout(pType, Width, Height, Stride);
+  Result := GetVideoLayout(pType,
+                           Width,
+                           Height,
+                           Stride);
 
   if FAILED(Result) then
     Exit;
 
   if Assigned(FOutputType) and not TypesMatch(pType,
-                                              FOutputType) then
+    FOutputType) then
     Exit(MF_E_INVALIDMEDIATYPE);
 
   if ((dwFlags and MFT_SET_TYPE_TEST_ONLY) <> 0) then
@@ -634,7 +663,7 @@ begin
     Exit;
 
   if Assigned(FInputType) and not TypesMatch(FInputType,
-                                             pType) then
+    pType) then
     Exit(MF_E_INVALIDMEDIATYPE);
 
   if ((dwFlags and MFT_SET_TYPE_TEST_ONLY) <> 0) then
@@ -656,6 +685,7 @@ end;
 
 function TMfGrayscaleMFT.GetInputCurrentType(const dwInputStreamID: DWORD;
                                              out pType: IMFMediaType): HResult;
+
 begin
 
   pType := nil;
@@ -666,12 +696,14 @@ begin
   if not Assigned(FInputType) then
     Exit(MF_E_TRANSFORM_TYPE_NOT_SET);
 
-  Result := CloneMediaType(FInputType, pType);
+  Result := CloneMediaType(FInputType,
+                           pType);
 end;
 
 
 function TMfGrayscaleMFT.GetOutputCurrentType(const dwOutputStreamID: DWORD;
                                               out pType: IMFMediaType): HResult;
+
 begin
 
   pType := nil;
@@ -682,12 +714,14 @@ begin
   if not Assigned(FOutputType) then
     Exit(MF_E_TRANSFORM_TYPE_NOT_SET);
 
-  Result := CloneMediaType(FOutputType, pType);
+  Result := CloneMediaType(FOutputType,
+                           pType);
 end;
 
 
 function TMfGrayscaleMFT.GetInputStatus(const dwInputStreamID: DWORD;
                                         out pdwFlags: DWORD): HResult;
+
 begin
 
   pdwFlags := 0;
@@ -706,6 +740,7 @@ end;
 
 
 function TMfGrayscaleMFT.GetOutputStatus(out pdwFlags: DWORD): HResult;
+
 begin
 
   pdwFlags := 0;
@@ -722,6 +757,7 @@ end;
 
 function TMfGrayscaleMFT.SetOutputBounds(hnsLowerBound: LONGLONG;
                                          hnsUpperBound: LONGLONG): HResult;
+
 begin
 
   Result := E_NOTIMPL;
@@ -730,6 +766,7 @@ end;
 
 function TMfGrayscaleMFT.ProcessEvent(const dwInputStreamID: DWORD;
                                       pEvent: IMFMediaEvent): HResult;
+
 begin
 
   if (dwInputStreamID <> 0) then
@@ -741,6 +778,7 @@ end;
 
 function TMfGrayscaleMFT.ProcessMessage(eMessage: MFT_MESSAGE_TYPE;
                                         ulParam: ULONG_PTR): HResult;
+
 begin
 
   case eMessage of
@@ -757,6 +795,7 @@ end;
 function TMfGrayscaleMFT.ProcessInput(const dwInputStreamID: DWORD;
                                       const pSample: IMFSample;
                                       dwFlags: DWORD): HResult;
+
 begin
 
   if (dwInputStreamID <> 0) then
@@ -779,7 +818,8 @@ begin
 end;
 
 
-function TMfGrayscaleMFT.ProcessOutput(dwFlags, cOutputBufferCount: DWORD;
+function TMfGrayscaleMFT.ProcessOutput(dwFlags,
+                                       cOutputBufferCount: DWORD;
                                        pOutputSamples: PMFT_OUTPUT_DATA_BUFFER;
                                        out pdwStatus: DWORD): HResult;
 var

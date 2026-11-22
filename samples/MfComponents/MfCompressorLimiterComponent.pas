@@ -82,6 +82,7 @@ type
 
   // Component wrapper for TMfCompressorLimiterMFT.
   TMfCompressorLimiterEffect = class(TMfWasApiFxComponentBase)
+
   private
 
     FMft: IMFTransform;
@@ -151,8 +152,10 @@ type
     property Enabled: Boolean read FEnabled write SetEnabled default True;
 
     // Keep the record property (handy for bulk save/load)
+
   public
     property Settings: TDynamicsSettings read FSettings write SetSettings;
+
   published
 
     // ---------------- Compressor ----------------
@@ -187,6 +190,7 @@ implementation
 
 
 procedure Register;
+
 begin
 
   RegisterComponents('MfPack Core Audio Samples',
@@ -196,6 +200,7 @@ end;
 { TMfCompressorLimiterEffect }
 
 constructor TMfCompressorLimiterEffect.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
@@ -231,7 +236,9 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.AfterConstruction();
+
 begin
+
   inherited;
 
   CheckForMft();
@@ -239,6 +246,7 @@ end;
 
 
 destructor TMfCompressorLimiterEffect.Destroy();
+
 begin
 
   // Release interface views first.
@@ -254,6 +262,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.CheckForMft();
+
 begin
 
   if (FMftObj <> nil) then
@@ -269,6 +278,7 @@ end;
 
 
 function TMfCompressorLimiterEffect.GetMftInstance(): IMFTransform;
+
 begin
 
   Result := FMft;
@@ -276,6 +286,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.EnsureCtl();
+
 begin
 
   if IsDesigning() then
@@ -286,6 +297,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.PushAll();
+
 begin
 
   if (FCtl = nil) then
@@ -304,6 +316,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.ApplySettingsToMft();
+
 begin
 
   if IsDesigning() then
@@ -317,6 +330,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetEnabled(Value: Boolean);
+
 begin
 
   FEnabled := Value;
@@ -332,6 +346,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetSettings(const S: TDynamicsSettings);
+
 begin
 
   FSettings := S;
@@ -341,6 +356,7 @@ end;
 // ---------------- Compressor setters ----------------
 
 procedure TMfCompressorLimiterEffect.SetCompEnabled(Value: Boolean);
+
 begin
 
   FSettings.CompEnabled := Value;
@@ -349,6 +365,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetCompThresholdDb(Value: Single);
+
 begin
 
   FSettings.CompThresholdDb := EnsureRange(Value,
@@ -359,6 +376,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetCompRatio(Value: Single);
+
 begin
 
   FSettings.CompRatio := EnsureRange(Value,
@@ -369,6 +387,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetCompAttackMs(Value: Single);
+
 begin
 
   FSettings.CompAttackMs := EnsureRange(Value,
@@ -379,6 +398,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetCompReleaseMs(Value: Single);
+
 begin
 
   FSettings.CompReleaseMs := EnsureRange(Value,
@@ -389,6 +409,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetCompKneeDb(Value: Single);
+
 begin
 
   FSettings.CompKneeDb := EnsureRange(Value,
@@ -399,6 +420,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetCompMakeupDb(Value: Single);
+
 begin
 
   FSettings.CompMakeupDb := EnsureRange(Value,
@@ -409,6 +431,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetCompAutoMakeup(Value: Boolean);
+
 begin
 
   FSettings.CompAutoMakeup := Value;
@@ -419,6 +442,7 @@ end;
 // ---------------- Limiter setters ----------------
 
 procedure TMfCompressorLimiterEffect.SetLimEnabled(Value: Boolean);
+
 begin
 
   FSettings.LimEnabled := Value;
@@ -427,6 +451,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetLimCeilingDb(Value: Single);
+
 begin
 
   FSettings.LimCeilingDb := EnsureRange(Value,
@@ -437,7 +462,9 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetLimReleaseMs(Value: Single);
+
 begin
+
   FSettings.LimReleaseMs := EnsureRange(Value,
                                         1.0,
                                         5000.0);
@@ -446,6 +473,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetLimLookaheadMs(Value: Single);
+
 begin
 
   FSettings.LimLookaheadMs := EnsureRange(Value,
@@ -458,6 +486,7 @@ end;
 // ---------------- Detector setter ----------------
 
 procedure TMfCompressorLimiterEffect.SetRmsDetector(Value: Boolean);
+
 begin
 
   FSettings.RmsDetector := Value;
@@ -468,6 +497,7 @@ end;
 // ---------------- True-peak setters ----------------
 
 procedure TMfCompressorLimiterEffect.SetTruePeakGuard(Value: Boolean);
+
 begin
 
   FTruePeakGuard := Value;
@@ -486,6 +516,7 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetTruePeakCeilingDbTP(Value: Single);
+
 begin
 
   FTruePeakCeilingDbTP := EnsureRange(Value,
@@ -503,15 +534,16 @@ end;
 
 
 procedure TMfCompressorLimiterEffect.SetTruePeakOversample(Value: Integer);
+
 begin
 
   case Value of
     2,
     4,
     8: FTruePeakOversample := Value;
-  else
+    else
 
-    FTruePeakOversample := 4;
+      FTruePeakOversample := 4;
   end;
 
   if (csDesigning in ComponentState) then
@@ -527,6 +559,7 @@ end;
 // ---------------- Meters ----------------
 
 function TMfCompressorLimiterEffect.CompressorGRdB(): Single;
+
 begin
 
   if IsDesigning() or (FIns = nil) then
@@ -537,6 +570,7 @@ end;
 
 
 function TMfCompressorLimiterEffect.LimiterGRdB(): Single;
+
 begin
 
   if IsDesigning() or (FIns = nil) then

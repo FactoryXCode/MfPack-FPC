@@ -98,6 +98,7 @@ const
 
 type
   TMfCastDisconnectWorker = class(TThread)
+
   private
     FCast: TMfCast;
     FTargetWindow: HWND;
@@ -112,6 +113,7 @@ type
   end;
 
   TMfCastFileWorker = class(TThread)
+
   private
     FCast: TMfCast;
     FDevice: TMfCastDevice;
@@ -131,6 +133,7 @@ type
   end;
 
   TMfCastLiveFmp4Worker = class(TThread)
+
   private
     FCast: TMfCast;
     FDevice: TMfCastDevice;
@@ -152,6 +155,7 @@ type
   end;
 
   TMfCastSubtitleWorker = class(TThread)
+
   private
     FCast: TMfCast;
     FSubtitle: TMfCastSubtitleAsset;
@@ -169,6 +173,7 @@ type
   end;
 
   TMfCastAudioTrackWorker = class(TThread)
+
   private
     FCast: TMfCast;
     FTrackId: Int64;
@@ -184,6 +189,7 @@ type
   end;
 
   TMfCastUiLogMessage = class
+
   public
     Text: string;
     CreatedAt: TDateTime;
@@ -194,8 +200,10 @@ type
 
 implementation
 
+
 constructor TMfCastDisconnectWorker.Create(const ACast: TMfCast;
                                            const ATargetWindow: HWND);
+
 begin
 
   inherited Create(True);
@@ -225,9 +233,8 @@ begin
 
       if Failed(HrCom) and (HrCom <> RPC_E_CHANGED_MODE) then
         Hr := HrCom
-      else
-        if Assigned(FCast) then
-          Hr := FCast.Disconnect();
+      else if Assigned(FCast) then
+        Hr := FCast.Disconnect();
 
     except
       on E: Exception do
@@ -236,9 +243,9 @@ begin
           LogMessage := TMfCastUiLogMessage.Create('Disconnect worker exception: ' + E.Message);
 
           if not PostMessage(FTargetWindow,
-                             WM_MFCAST_LOG,
-                             WPARAM(LogMessage),
-                             0) then
+            WM_MFCAST_LOG,
+            WPARAM(LogMessage),
+            0) then
             LogMessage.Free;
         end;
     end;
@@ -260,6 +267,7 @@ constructor TMfCastFileWorker.Create(const ACast: TMfCast;
                                      const ASource: string;
                                      const ASubtitle: TMfCastSubtitleAsset;
                                      const ATargetWindow: HWND);
+
 begin
 
   inherited Create(True);
@@ -292,11 +300,10 @@ begin
 
       if SUCCEEDED(HrCom) then
         ComInitialized := True
+      else if (HrCom <> RPC_E_CHANGED_MODE) then
+        hr := HrCom
       else
-        if (HrCom <> RPC_E_CHANGED_MODE) then
-          hr := HrCom
-        else
-          HrCom := S_OK;
+        HrCom := S_OK;
 
       if SUCCEEDED(HrCom) then
         hr := FCast.Cast(FDevice,
@@ -311,11 +318,11 @@ begin
           OutputDebugStringW(PChar('MfCast file worker exception: ' + E.Message));
 
           LogMessage := TMfCastUiLogMessage.Create('Cast worker exception: ' +
-                                                   E.Message);
+            E.Message);
           if not PostMessage(FTargetWindow,
-                             WM_MFCAST_LOG,
-                             WPARAM(LogMessage),
-                             0) then
+            WM_MFCAST_LOG,
+            WPARAM(LogMessage),
+            0) then
             LogMessage.Free();
 
           hr := E_FAIL;
@@ -340,6 +347,7 @@ constructor TMfCastLiveFmp4Worker.Create(const ACast: TMfCast;
                                          const ADevice: TMfCastDevice;
                                          const AInitSegment: TBytes;
                                          const ATargetWindow: HWND);
+
 begin
 
   inherited Create(True);
@@ -378,6 +386,7 @@ constructor TMfCastSubtitleWorker.Create(const ACast: TMfCast;
                                          const ASubtitle: TMfCastSubtitleAsset;
                                          const AEnabled: Boolean;
                                          const ATargetWindow: HWND);
+
 begin
 
   inherited Create(True);
@@ -411,6 +420,7 @@ end;
 constructor TMfCastAudioTrackWorker.Create(const ACast: TMfCast;
                                            const ATrackId: Int64;
                                            const ATargetWindow: HWND);
+
 begin
 
   inherited Create(True);
@@ -436,6 +446,7 @@ end;
 
 
 constructor TMfCastUiLogMessage.Create(const AText: string);
+
 begin
 
   inherited Create();

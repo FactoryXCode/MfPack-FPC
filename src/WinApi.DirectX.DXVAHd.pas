@@ -86,26 +86,27 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
 
-// ver WIN32
+  // ver WIN32
 
 const
   DxVaHdLib = 'Dxva2.dll';
 
   //
-  DXVAHD_STREAM_STATE_PRIVATE_IVTC       : TGUID = '{9c601e3c-0f33-414c-a739-99540ee42da5}';
+  DXVAHD_STREAM_STATE_PRIVATE_IVTC: TGUID = '{9c601e3c-0f33-414c-a739-99540ee42da5}';
 
   //
-  DXVAHDControlGuid                      : TGUID = '{a0386e75-f70c-464c-a9ce-33c44e091623}';
-  DXVAHDETWGUID_CREATEVIDEOPROCESSOR     : TGUID = '{681e3d1e-5674-4fb3-a503-2f2055e91f60}';
-  DXVAHDETWGUID_VIDEOPROCESSBLTSTATE     : TGUID = '{76c94b5a-193f-4692-9484-a4d999da81a8}';
-  DXVAHDETWGUID_VIDEOPROCESSSTREAMSTATE  : TGUID = '{262c0b02-209d-47ed-94d8-82ae02b84aa7}';
-  DXVAHDETWGUID_VIDEOPROCESSBLTHD        : TGUID = '{bef3d435-78c7-4de3-9707-cd1b083b160a}';
-  DXVAHDETWGUID_VIDEOPROCESSBLTHD_STREAM : TGUID = '{27ae473e-a5fc-4be5-b4e3-f24994d3c495}';
-  DXVAHDETWGUID_DESTROYVIDEOPROCESSOR    : TGUID = '{f943f0a0-3f16-43e0-8093-105a986aa5f1}';
+  DXVAHDControlGuid: TGUID = '{a0386e75-f70c-464c-a9ce-33c44e091623}';
+  DXVAHDETWGUID_CREATEVIDEOPROCESSOR: TGUID = '{681e3d1e-5674-4fb3-a503-2f2055e91f60}';
+  DXVAHDETWGUID_VIDEOPROCESSBLTSTATE: TGUID = '{76c94b5a-193f-4692-9484-a4d999da81a8}';
+  DXVAHDETWGUID_VIDEOPROCESSSTREAMSTATE: TGUID = '{262c0b02-209d-47ed-94d8-82ae02b84aa7}';
+  DXVAHDETWGUID_VIDEOPROCESSBLTHD: TGUID = '{bef3d435-78c7-4de3-9707-cd1b083b160a}';
+  DXVAHDETWGUID_VIDEOPROCESSBLTHD_STREAM: TGUID = '{27ae473e-a5fc-4be5-b4e3-f24994d3c495}';
+  DXVAHDETWGUID_DESTROYVIDEOPROCESSOR: TGUID = '{f943f0a0-3f16-43e0-8093-105a986aa5f1}';
 
 type
 
@@ -128,46 +129,47 @@ type
 
 
   PDXVAHD_FRAME_FORMAT = ^_DXVAHD_FRAME_FORMAT;
-  _DXVAHD_FRAME_FORMAT                                = (
-    DXVAHD_FRAME_FORMAT_PROGRESSIVE                   = 0,
-    DXVAHD_FRAME_FORMAT_INTERLACED_TOP_FIELD_FIRST    = 1,
-    DXVAHD_FRAME_FORMAT_INTERLACED_BOTTOM_FIELD_FIRST = 2
-  );
+  _DXVAHD_FRAME_FORMAT = (
+    DXVAHD_FRAME_FORMAT_PROGRESSIVE = 0,
+                          DXVAHD_FRAME_FORMAT_INTERLACED_TOP_FIELD_FIRST = 1,
+                          DXVAHD_FRAME_FORMAT_INTERLACED_BOTTOM_FIELD_FIRST = 2
+    );
   DXVAHD_FRAME_FORMAT = _DXVAHD_FRAME_FORMAT;
 
   PDXVAHD_DEVICE_USAGE = ^_DXVAHD_DEVICE_USAGE;
-  _DXVAHD_DEVICE_USAGE                  = (
+  _DXVAHD_DEVICE_USAGE = (
     DXVAHD_DEVICE_USAGE_PLAYBACK_NORMAL = 0,
-    DXVAHD_DEVICE_USAGE_OPTIMAL_SPEED   = 1,
-    DXVAHD_DEVICE_USAGE_OPTIMAL_QUALITY = 2
-  );
+                          DXVAHD_DEVICE_USAGE_OPTIMAL_SPEED = 1,
+                          DXVAHD_DEVICE_USAGE_OPTIMAL_QUALITY = 2
+    );
   DXVAHD_DEVICE_USAGE = _DXVAHD_DEVICE_USAGE;
 
   PDXVAHD_SURFACE_TYPE = ^_DXVAHD_SURFACE_TYPE;
-  _DXVAHD_SURFACE_TYPE                      = (
-    DXVAHD_SURFACE_TYPE_VIDEO_INPUT         = 0,
-    DXVAHD_SURFACE_TYPE_VIDEO_INPUT_PRIVATE = 1,
-    DXVAHD_SURFACE_TYPE_VIDEO_OUTPUT        = 2
-  );
+  _DXVAHD_SURFACE_TYPE = (
+    DXVAHD_SURFACE_TYPE_VIDEO_INPUT = 0,
+                          DXVAHD_SURFACE_TYPE_VIDEO_INPUT_PRIVATE = 1,
+                          DXVAHD_SURFACE_TYPE_VIDEO_OUTPUT = 2
+    );
   DXVAHD_SURFACE_TYPE = _DXVAHD_SURFACE_TYPE;
 
   PDXVAHD_DEVICE_TYPE = ^_DXVAHD_DEVICE_TYPE;
-  _DXVAHD_DEVICE_TYPE            = (
-    DXVAHD_DEVICE_TYPE_HARDWARE  = 0,
-    DXVAHD_DEVICE_TYPE_SOFTWARE  = 1,
-    DXVAHD_DEVICE_TYPE_REFERENCE = 2,
-    DXVAHD_DEVICE_TYPE_OTHER     = 3
-  );
+  _DXVAHD_DEVICE_TYPE = (
+    DXVAHD_DEVICE_TYPE_HARDWARE = 0,
+                         DXVAHD_DEVICE_TYPE_SOFTWARE = 1,
+                         DXVAHD_DEVICE_TYPE_REFERENCE = 2,
+                         DXVAHD_DEVICE_TYPE_OTHER = 3
+    );
   DXVAHD_DEVICE_TYPE = _DXVAHD_DEVICE_TYPE;
 
 type
   PDXVAHD_DEVICE_CAPS = ^_DXVAHD_DEVICE_CAPS;
   _DXVAHD_DEVICE_CAPS = DWord;
   DXVAHD_DEVICE_CAPS = _DXVAHD_DEVICE_CAPS;
+
 const
-  DXVAHD_DEVICE_CAPS_LINEAR_SPACE            = DXVAHD_DEVICE_CAPS($1);
-  DXVAHD_DEVICE_CAPS_xvYCC                   = DXVAHD_DEVICE_CAPS($2);
-  DXVAHD_DEVICE_CAPS_RGB_RANGE_CONVERSION    = DXVAHD_DEVICE_CAPS($4);
+  DXVAHD_DEVICE_CAPS_LINEAR_SPACE = DXVAHD_DEVICE_CAPS($1);
+  DXVAHD_DEVICE_CAPS_xvYCC = DXVAHD_DEVICE_CAPS($2);
+  DXVAHD_DEVICE_CAPS_RGB_RANGE_CONVERSION = DXVAHD_DEVICE_CAPS($4);
   DXVAHD_DEVICE_CAPS_YCbCr_MATRIX_CONVERSION = DXVAHD_DEVICE_CAPS($8);
 
 
@@ -175,10 +177,11 @@ type
   PDXVAHD_FEATURE_CAPS = ^_DXVAHD_FEATURE_CAPS;
   _DXVAHD_FEATURE_CAPS = DWord;
   DXVAHD_FEATURE_CAPS = _DXVAHD_FEATURE_CAPS;
+
 const
-  DXVAHD_FEATURE_CAPS_ALPHA_FILL    = DXVAHD_FEATURE_CAPS($1);
-  DXVAHD_FEATURE_CAPS_CONSTRICTION  = DXVAHD_FEATURE_CAPS($2);
-  DXVAHD_FEATURE_CAPS_LUMA_KEY      = DXVAHD_FEATURE_CAPS($4);
+  DXVAHD_FEATURE_CAPS_ALPHA_FILL = DXVAHD_FEATURE_CAPS($1);
+  DXVAHD_FEATURE_CAPS_CONSTRICTION = DXVAHD_FEATURE_CAPS($2);
+  DXVAHD_FEATURE_CAPS_LUMA_KEY = DXVAHD_FEATURE_CAPS($4);
   DXVAHD_FEATURE_CAPS_ALPHA_PALETTE = DXVAHD_FEATURE_CAPS($8);
 
 
@@ -186,112 +189,116 @@ type
   PDXVAHD_FILTER_CAPS = ^_DXVAHD_FILTER_CAPS;
   _DXVAHD_FILTER_CAPS = DWord;
   DXVAHD_FILTER_CAPS = _DXVAHD_FILTER_CAPS;
+
 const
-  DXVAHD_FILTER_CAPS_BRIGHTNESS         = DXVAHD_FILTER_CAPS($1);
-  DXVAHD_FILTER_CAPS_CONTRAST           = DXVAHD_FILTER_CAPS($2);
-  DXVAHD_FILTER_CAPS_HUE                = DXVAHD_FILTER_CAPS($4);
-  DXVAHD_FILTER_CAPS_SATURATION         = DXVAHD_FILTER_CAPS($8);
-  DXVAHD_FILTER_CAPS_NOISE_REDUCTION    = DXVAHD_FILTER_CAPS($10);
-  DXVAHD_FILTER_CAPS_EDGE_ENHANCEMENT   = DXVAHD_FILTER_CAPS($20);
+  DXVAHD_FILTER_CAPS_BRIGHTNESS = DXVAHD_FILTER_CAPS($1);
+  DXVAHD_FILTER_CAPS_CONTRAST = DXVAHD_FILTER_CAPS($2);
+  DXVAHD_FILTER_CAPS_HUE = DXVAHD_FILTER_CAPS($4);
+  DXVAHD_FILTER_CAPS_SATURATION = DXVAHD_FILTER_CAPS($8);
+  DXVAHD_FILTER_CAPS_NOISE_REDUCTION = DXVAHD_FILTER_CAPS($10);
+  DXVAHD_FILTER_CAPS_EDGE_ENHANCEMENT = DXVAHD_FILTER_CAPS($20);
   DXVAHD_FILTER_CAPS_ANAMORPHIC_SCALING = DXVAHD_FILTER_CAPS($40);
 
 type
   PDXVAHD_INPUT_FORMAT_CAPS = ^_DXVAHD_INPUT_FORMAT_CAPS;
   _DXVAHD_INPUT_FORMAT_CAPS = DWord;
   DXVAHD_INPUT_FORMAT_CAPS = _DXVAHD_INPUT_FORMAT_CAPS;
+
 const
-  DXVAHD_INPUT_FORMAT_CAPS_RGB_INTERLACED     = DXVAHD_INPUT_FORMAT_CAPS($1);
-  DXVAHD_INPUT_FORMAT_CAPS_RGB_PROCAMP        = DXVAHD_INPUT_FORMAT_CAPS($2);
-  DXVAHD_INPUT_FORMAT_CAPS_RGB_LUMA_KEY       = DXVAHD_INPUT_FORMAT_CAPS($4);
+  DXVAHD_INPUT_FORMAT_CAPS_RGB_INTERLACED = DXVAHD_INPUT_FORMAT_CAPS($1);
+  DXVAHD_INPUT_FORMAT_CAPS_RGB_PROCAMP = DXVAHD_INPUT_FORMAT_CAPS($2);
+  DXVAHD_INPUT_FORMAT_CAPS_RGB_LUMA_KEY = DXVAHD_INPUT_FORMAT_CAPS($4);
   DXVAHD_INPUT_FORMAT_CAPS_PALETTE_INTERLACED = DXVAHD_INPUT_FORMAT_CAPS($8);
 
 type
   PDXVAHD_PROCESSOR_CAPS = ^_DXVAHD_PROCESSOR_CAPS;
   _DXVAHD_PROCESSOR_CAPS = DWord;
   DXVAHD_PROCESSOR_CAPS = _DXVAHD_PROCESSOR_CAPS;
+
 const
-  DXVAHD_PROCESSOR_CAPS_DEINTERLACE_BLEND               = DXVAHD_PROCESSOR_CAPS($1);
-  DXVAHD_PROCESSOR_CAPS_DEINTERLACE_BOB                 = DXVAHD_PROCESSOR_CAPS($2);
-  DXVAHD_PROCESSOR_CAPS_DEINTERLACE_ADAPTIVE            = DXVAHD_PROCESSOR_CAPS($4);
+  DXVAHD_PROCESSOR_CAPS_DEINTERLACE_BLEND = DXVAHD_PROCESSOR_CAPS($1);
+  DXVAHD_PROCESSOR_CAPS_DEINTERLACE_BOB = DXVAHD_PROCESSOR_CAPS($2);
+  DXVAHD_PROCESSOR_CAPS_DEINTERLACE_ADAPTIVE = DXVAHD_PROCESSOR_CAPS($4);
   DXVAHD_PROCESSOR_CAPS_DEINTERLACE_MOTION_COMPENSATION = DXVAHD_PROCESSOR_CAPS($8);
-  DXVAHD_PROCESSOR_CAPS_INVERSE_TELECINE                = DXVAHD_PROCESSOR_CAPS($10);
-  DXVAHD_PROCESSOR_CAPS_FRAME_RATE_CONVERSION           = DXVAHD_PROCESSOR_CAPS($20);
+  DXVAHD_PROCESSOR_CAPS_INVERSE_TELECINE = DXVAHD_PROCESSOR_CAPS($10);
+  DXVAHD_PROCESSOR_CAPS_FRAME_RATE_CONVERSION = DXVAHD_PROCESSOR_CAPS($20);
 
 type
 
   PDXVAHD_ITELECINE_CAPS = ^_DXVAHD_ITELECINE_CAPS;
-  _DXVAHD_ITELECINE_CAPS               = (
-    DXVAHD_ITELECINE_CAPS_32           = $1,
-    DXVAHD_ITELECINE_CAPS_22           = $2,
-    DXVAHD_ITELECINE_CAPS_2224         = $4,
-    DXVAHD_ITELECINE_CAPS_2332         = $8,
-    DXVAHD_ITELECINE_CAPS_32322        = $10,
-    DXVAHD_ITELECINE_CAPS_55           = $20,
-    DXVAHD_ITELECINE_CAPS_64           = $40,
-    DXVAHD_ITELECINE_CAPS_87           = $80,
-    DXVAHD_ITELECINE_CAPS_222222222223 = $100,
-    DXVAHD_ITELECINE_CAPS_OTHER        = $80000000 -1);
+  _DXVAHD_ITELECINE_CAPS = (
+    DXVAHD_ITELECINE_CAPS_32 = $1,
+                            DXVAHD_ITELECINE_CAPS_22 = $2,
+                            DXVAHD_ITELECINE_CAPS_2224 = $4,
+                            DXVAHD_ITELECINE_CAPS_2332 = $8,
+                            DXVAHD_ITELECINE_CAPS_32322 = $10,
+                            DXVAHD_ITELECINE_CAPS_55 = $20,
+                            DXVAHD_ITELECINE_CAPS_64 = $40,
+                            DXVAHD_ITELECINE_CAPS_87 = $80,
+                            DXVAHD_ITELECINE_CAPS_222222222223 = $100,
+                            DXVAHD_ITELECINE_CAPS_OTHER = $80000000 - 1);
   DXVAHD_ITELECINE_CAPS = _DXVAHD_ITELECINE_CAPS;
 
   PDXVAHD_FILTER = ^_DXVAHD_FILTER;
-  _DXVAHD_FILTER                     = (
-    DXVAHD_FILTER_BRIGHTNESS         = 0,
-    DXVAHD_FILTER_CONTRAST           = 1,
-    DXVAHD_FILTER_HUE                = 2,
-    DXVAHD_FILTER_SATURATION         = 3,
-    DXVAHD_FILTER_NOISE_REDUCTION    = 4,
-    DXVAHD_FILTER_EDGE_ENHANCEMENT   = 5,
-    DXVAHD_FILTER_ANAMORPHIC_SCALING = 6);
+  _DXVAHD_FILTER = (
+    DXVAHD_FILTER_BRIGHTNESS = 0,
+                    DXVAHD_FILTER_CONTRAST = 1,
+                    DXVAHD_FILTER_HUE = 2,
+                    DXVAHD_FILTER_SATURATION = 3,
+                    DXVAHD_FILTER_NOISE_REDUCTION = 4,
+                    DXVAHD_FILTER_EDGE_ENHANCEMENT = 5,
+                    DXVAHD_FILTER_ANAMORPHIC_SCALING = 6);
   DXVAHD_FILTER = _DXVAHD_FILTER;
 
   PDXVAHD_BLT_STATE = ^_DXVAHD_BLT_STATE;
-  _DXVAHD_BLT_STATE                     = (
-    DXVAHD_BLT_STATE_TARGET_RECT        = 0,
-    DXVAHD_BLT_STATE_BACKGROUND_COLOR   = 1,
-    DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE = 2,
-    DXVAHD_BLT_STATE_ALPHA_FILL         = 3,
-    DXVAHD_BLT_STATE_CONSTRICTION       = 4,
-    DXVAHD_BLT_STATE_PRIVATE            = 1000);
+  _DXVAHD_BLT_STATE = (
+    DXVAHD_BLT_STATE_TARGET_RECT = 0,
+                       DXVAHD_BLT_STATE_BACKGROUND_COLOR = 1,
+                       DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE = 2,
+                       DXVAHD_BLT_STATE_ALPHA_FILL = 3,
+                       DXVAHD_BLT_STATE_CONSTRICTION = 4,
+                       DXVAHD_BLT_STATE_PRIVATE = 1000);
   DXVAHD_BLT_STATE = _DXVAHD_BLT_STATE;
 
   PDXVAHD_ALPHA_FILL_MODE = ^_DXVAHD_ALPHA_FILL_MODE;
-  _DXVAHD_ALPHA_FILL_MODE                = (
-    DXVAHD_ALPHA_FILL_MODE_OPAQUE        = 0,
-    DXVAHD_ALPHA_FILL_MODE_BACKGROUND    = 1,
-    DXVAHD_ALPHA_FILL_MODE_DESTINATION   = 2,
-    DXVAHD_ALPHA_FILL_MODE_SOURCE_STREAM = 3);
+  _DXVAHD_ALPHA_FILL_MODE = (
+    DXVAHD_ALPHA_FILL_MODE_OPAQUE = 0,
+                             DXVAHD_ALPHA_FILL_MODE_BACKGROUND = 1,
+                             DXVAHD_ALPHA_FILL_MODE_DESTINATION = 2,
+                             DXVAHD_ALPHA_FILL_MODE_SOURCE_STREAM = 3);
   DXVAHD_ALPHA_FILL_MODE = _DXVAHD_ALPHA_FILL_MODE;
 
   PDXVAHD_STREAM_STATE = ^_DXVAHD_STREAM_STATE;
-  _DXVAHD_STREAM_STATE                            = (
-    DXVAHD_STREAM_STATE_D3DFORMAT                 = 0,
-    DXVAHD_STREAM_STATE_FRAME_FORMAT              = 1,
-    DXVAHD_STREAM_STATE_INPUT_COLOR_SPACE         = 2,
-    DXVAHD_STREAM_STATE_OUTPUT_RATE               = 3,
-    DXVAHD_STREAM_STATE_SOURCE_RECT               = 4,
-    DXVAHD_STREAM_STATE_DESTINATION_RECT          = 5,
-    DXVAHD_STREAM_STATE_ALPHA                     = 6,
-    DXVAHD_STREAM_STATE_PALETTE                   = 7,
-    DXVAHD_STREAM_STATE_LUMA_KEY                  = 8,
-    DXVAHD_STREAM_STATE_ASPECT_RATIO              = 9,
-    DXVAHD_STREAM_STATE_FILTER_BRIGHTNESS         = 100,
-    DXVAHD_STREAM_STATE_FILTER_CONTRAST           = 101,
-    DXVAHD_STREAM_STATE_FILTER_HUE                = 102,
-    DXVAHD_STREAM_STATE_FILTER_SATURATION         = 103,
-    DXVAHD_STREAM_STATE_FILTER_NOISE_REDUCTION    = 104,
-    DXVAHD_STREAM_STATE_FILTER_EDGE_ENHANCEMENT   = 105,
-    DXVAHD_STREAM_STATE_FILTER_ANAMORPHIC_SCALING = 106,
-    DXVAHD_STREAM_STATE_PRIVATE                   = 1000);
+  _DXVAHD_STREAM_STATE = (
+    DXVAHD_STREAM_STATE_D3DFORMAT = 0,
+                          DXVAHD_STREAM_STATE_FRAME_FORMAT = 1,
+                          DXVAHD_STREAM_STATE_INPUT_COLOR_SPACE = 2,
+                          DXVAHD_STREAM_STATE_OUTPUT_RATE = 3,
+                          DXVAHD_STREAM_STATE_SOURCE_RECT = 4,
+                          DXVAHD_STREAM_STATE_DESTINATION_RECT = 5,
+                          DXVAHD_STREAM_STATE_ALPHA = 6,
+                          DXVAHD_STREAM_STATE_PALETTE = 7,
+                          DXVAHD_STREAM_STATE_LUMA_KEY = 8,
+                          DXVAHD_STREAM_STATE_ASPECT_RATIO = 9,
+                          DXVAHD_STREAM_STATE_FILTER_BRIGHTNESS = 100,
+                          DXVAHD_STREAM_STATE_FILTER_CONTRAST = 101,
+                          DXVAHD_STREAM_STATE_FILTER_HUE = 102,
+                          DXVAHD_STREAM_STATE_FILTER_SATURATION = 103,
+                          DXVAHD_STREAM_STATE_FILTER_NOISE_REDUCTION = 104,
+                          DXVAHD_STREAM_STATE_FILTER_EDGE_ENHANCEMENT = 105,
+                          DXVAHD_STREAM_STATE_FILTER_ANAMORPHIC_SCALING = 106,
+                          DXVAHD_STREAM_STATE_PRIVATE = 1000);
   DXVAHD_STREAM_STATE = _DXVAHD_STREAM_STATE;
 
   PDXVAHD_OUTPUT_RATE = ^_DXVAHD_OUTPUT_RATE;
-  _DXVAHD_OUTPUT_RATE         = (
+  _DXVAHD_OUTPUT_RATE = (
     DXVAHD_OUTPUT_RATE_NORMAL = 0,
-    DXVAHD_OUTPUT_RATE_HALF   = 1,
-    DXVAHD_OUTPUT_RATE_CUSTOM = 2);
+                         DXVAHD_OUTPUT_RATE_HALF = 1,
+                         DXVAHD_OUTPUT_RATE_CUSTOM = 2);
   DXVAHD_OUTPUT_RATE = _DXVAHD_OUTPUT_RATE;
 
   PDXVAHD_RATIONAL = ^_DXVAHD_RATIONAL;
+
   _DXVAHD_RATIONAL = record
     Numerator: UINT;
     Denominator: UINT;
@@ -299,6 +306,7 @@ type
   DXVAHD_RATIONAL = _DXVAHD_RATIONAL;
 
   PDXVAHD_COLOR_RGBA = ^_DXVAHD_COLOR_RGBA;
+
   _DXVAHD_COLOR_RGBA = record
     R: Single;
     G: Single;
@@ -308,6 +316,7 @@ type
   DXVAHD_COLOR_RGBA = _DXVAHD_COLOR_RGBA;
 
   PDXVAHD_COLOR_YCbCrA = ^_DXVAHD_COLOR_YCbCrA;
+
   _DXVAHD_COLOR_YCbCrA = record
     Y: Single;
     Cb: Single;
@@ -317,6 +326,7 @@ type
   DXVAHD_COLOR_YCbCrA = _DXVAHD_COLOR_YCbCrA;
 
   PDXVAHD_COLOR = ^_DXVAHD_COLOR;
+
   _DXVAHD_COLOR = record
     RGB: DXVAHD_COLOR_RGBA;
     YCbCr: DXVAHD_COLOR_YCbCrA;
@@ -324,6 +334,7 @@ type
   DXVAHD_COLOR = _DXVAHD_COLOR;
 
   PDXVAHD_CONTENT_DESC = ^_DXVAHD_CONTENT_DESC;
+
   _DXVAHD_CONTENT_DESC = record
     InputFrameFormat: DXVAHD_FRAME_FORMAT;
     InputFrameRate: DXVAHD_RATIONAL;
@@ -336,6 +347,7 @@ type
   DXVAHD_CONTENT_DESC = _DXVAHD_CONTENT_DESC;
 
   PDXVAHD_VPDEVCAPS = ^_DXVAHD_VPDEVCAPS;
+
   _DXVAHD_VPDEVCAPS = record
     DeviceType: DXVAHD_DEVICE_TYPE;
     DeviceCaps: UINT;
@@ -352,6 +364,7 @@ type
   DXVAHD_VPDEVCAPS = _DXVAHD_VPDEVCAPS;
 
   PDXVAHD_VPCAPS = ^_DXVAHD_VPCAPS;
+
   _DXVAHD_VPCAPS = record
     VPGuid: TGUID;
     PastFrames: UINT;
@@ -363,6 +376,7 @@ type
   DXVAHD_VPCAPS = _DXVAHD_VPCAPS;
 
   PDXVAHD_CUSTOM_RATE_DATA = ^_DXVAHD_CUSTOM_RATE_DATA;
+
   _DXVAHD_CUSTOM_RATE_DATA = record
     CustomRate: DXVAHD_RATIONAL;
     OutputFrames: UINT;
@@ -372,6 +386,7 @@ type
   DXVAHD_CUSTOM_RATE_DATA = _DXVAHD_CUSTOM_RATE_DATA;
 
   PDXVAHD_FILTER_RANGE_DATA = ^_DXVAHD_FILTER_RANGE_DATA;
+
   _DXVAHD_FILTER_RANGE_DATA = record
     Minimum: Integer;
     Maximum: Integer;
@@ -381,6 +396,7 @@ type
   DXVAHD_FILTER_RANGE_DATA = _DXVAHD_FILTER_RANGE_DATA;
 
   PDXVAHD_BLT_STATE_TARGET_RECT_DATA = ^_DXVAHD_BLT_STATE_TARGET_RECT_DATA;
+
   _DXVAHD_BLT_STATE_TARGET_RECT_DATA = record
     Enable: BOOL;
     TargetRect: TRect;
@@ -388,6 +404,7 @@ type
   DXVAHD_BLT_STATE_TARGET_RECT_DATA = _DXVAHD_BLT_STATE_TARGET_RECT_DATA;
 
   PDXVAHD_BLT_STATE_BACKGROUND_COLOR_DATA = ^_DXVAHD_BLT_STATE_BACKGROUND_COLOR_DATA;
+
   _DXVAHD_BLT_STATE_BACKGROUND_COLOR_DATA = record
     YCbCr: BOOL;
     BackgroundColor: DXVAHD_COLOR;
@@ -395,29 +412,33 @@ type
   DXVAHD_BLT_STATE_BACKGROUND_COLOR_DATA = _DXVAHD_BLT_STATE_BACKGROUND_COLOR_DATA;
 
 
-//  _DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA = record
-//    {
-//    union
-//        struct
-//            {
-//            Usage: UINT 1;
-//            RGB_Range: UINT 1;
-//            YCbCr_Matrix: UINT 1;
-//            YCbCr_xvYCC: UINT 1;
-//            Reserved: UINT 28;
-//            }
-//        Value: UINT;
-//   end;
-//   DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA = _DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA;
+  //  _DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA = record
+  //    {
+  //    union
+  //        struct
+  //            {
+  //            Usage: UINT 1;
+  //            RGB_Range: UINT 1;
+  //            YCbCr_Matrix: UINT 1;
+  //            YCbCr_xvYCC: UINT 1;
+  //            Reserved: UINT 28;
+  //            }
+  //        Value: UINT;
+  //   end;
+  //   DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA = _DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA;
 
   //
   PDXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA = ^_DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA;
   _DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA = record
+
   public
     Value: UINT; // Same as 'flags' used to acces all bitvalues
+
   private
     function ReadBits(const aIndex: Integer): Integer;
-    procedure WriteBits(const aIndex: Integer; const aValue: Integer);
+    procedure WriteBits(const aIndex: Integer;
+                        const aValue: Integer);
+
   public
     property Usage: Integer index $0001 read ReadBits write WriteBits;        // 1 bit at offset 0
     property RGB_Range: Integer index $0101 read ReadBits write WriteBits;    // 1 bit at offset 1
@@ -428,6 +449,7 @@ type
   DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA = _DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA;
 
   PDXVAHD_BLT_STATE_ALPHA_FILL_DATA = ^_DXVAHD_BLT_STATE_ALPHA_FILL_DATA;
+
   _DXVAHD_BLT_STATE_ALPHA_FILL_DATA = record
     Mode: DXVAHD_ALPHA_FILL_MODE;
     StreamNumber: UINT;
@@ -435,6 +457,7 @@ type
   DXVAHD_BLT_STATE_ALPHA_FILL_DATA = _DXVAHD_BLT_STATE_ALPHA_FILL_DATA;
 
   PDXVAHD_BLT_STATE_CONSTRICTION_DATA = ^_DXVAHD_BLT_STATE_CONSTRICTION_DATA;
+
   _DXVAHD_BLT_STATE_CONSTRICTION_DATA = record
     Enable: BOOL;
     Size: SIZE;
@@ -442,6 +465,7 @@ type
   DXVAHD_BLT_STATE_CONSTRICTION_DATA = _DXVAHD_BLT_STATE_CONSTRICTION_DATA;
 
   PDXVAHD_BLT_STATE_PRIVATE_DATA = ^_DXVAHD_BLT_STATE_PRIVATE_DATA;
+
   _DXVAHD_BLT_STATE_PRIVATE_DATA = record
     Guid: TGUID;
     DataSize: UINT;
@@ -450,41 +474,47 @@ type
   DXVAHD_BLT_STATE_PRIVATE_DATA = _DXVAHD_BLT_STATE_PRIVATE_DATA;
 
   PDXVAHD_STREAM_STATE_D3DFORMAT_DATA = ^_DXVAHD_STREAM_STATE_D3DFORMAT_DATA;
+
   _DXVAHD_STREAM_STATE_D3DFORMAT_DATA = record
     Format: D3DFORMAT;
   end;
   DXVAHD_STREAM_STATE_D3DFORMAT_DATA = _DXVAHD_STREAM_STATE_D3DFORMAT_DATA;
 
   PDXVAHD_STREAM_STATE_FRAME_FORMAT_DATA = ^_DXVAHD_STREAM_STATE_FRAME_FORMAT_DATA;
+
   _DXVAHD_STREAM_STATE_FRAME_FORMAT_DATA = record
     FrameFormat: DXVAHD_FRAME_FORMAT;
   end;
   DXVAHD_STREAM_STATE_FRAME_FORMAT_DATA = _DXVAHD_STREAM_STATE_FRAME_FORMAT_DATA;
 
 
-//typedef struct _DXVAHD_STREAM_STATE_INPUT_COLOR_SPACE_DATA
-//    {
-//    union
-//        {
-//        struct
-//            {
-//            UINT Type : 1;
-//            UINT RGB_Range  : 1;
-//            UINT YCbCr_Matrix : 1;
-//            UINT YCbCr_xvYCC  : 1;
-//            UINT Reserved : 28;
-//            }   ;
-//        UINT Value;
-//        }   ;
-//    }   DXVAHD_STREAM_STATE_INPUT_COLOR_SPACE_DATA;
+  //typedef struct _DXVAHD_STREAM_STATE_INPUT_COLOR_SPACE_DATA
+  //    {
+  //    union
+  //        {
+  //        struct
+  //            {
+  //            UINT Type : 1;
+  //            UINT RGB_Range  : 1;
+  //            UINT YCbCr_Matrix : 1;
+  //            UINT YCbCr_xvYCC  : 1;
+  //            UINT Reserved : 28;
+  //            }   ;
+  //        UINT Value;
+  //        }   ;
+  //    }   DXVAHD_STREAM_STATE_INPUT_COLOR_SPACE_DATA;
 
   PDXVAHD_STREAM_STATE_INPUT_COLOR_SPACE_DATA = ^_DXVAHD_STREAM_STATE_INPUT_COLOR_SPACE_DATA;
   _DXVAHD_STREAM_STATE_INPUT_COLOR_SPACE_DATA = record
+
   public
     Value: UINT; // Same as 'flags' used to acces all bitvalues
+
   private
     function ReadBits(const aIndex: Integer): Integer;
-    procedure WriteBits(const aIndex: Integer; const aValue: Integer);
+    procedure WriteBits(const aIndex: Integer;
+                        const aValue: Integer);
+
   public
     property _Type: Integer index $0001 read ReadBits write WriteBits;        // 1 bit at offset 0
     property RGB_Range: Integer index $0101 read ReadBits write WriteBits;    // 1 bit at offset 1
@@ -496,6 +526,7 @@ type
 
 
   PDXVAHD_STREAM_STATE_OUTPUT_RATE_DATA = ^_DXVAHD_STREAM_STATE_OUTPUT_RATE_DATA;
+
   _DXVAHD_STREAM_STATE_OUTPUT_RATE_DATA = record
     RepeatFrame: BOOL;
     OutputRate: DXVAHD_OUTPUT_RATE;
@@ -504,6 +535,7 @@ type
   DXVAHD_STREAM_STATE_OUTPUT_RATE_DATA = _DXVAHD_STREAM_STATE_OUTPUT_RATE_DATA;
 
   PDXVAHD_STREAM_STATE_SOURCE_RECT_DATA = ^_DXVAHD_STREAM_STATE_SOURCE_RECT_DATA;
+
   _DXVAHD_STREAM_STATE_SOURCE_RECT_DATA = record
     Enable: BOOL;
     SourceRect: TRect;
@@ -511,6 +543,7 @@ type
   DXVAHD_STREAM_STATE_SOURCE_RECT_DATA = _DXVAHD_STREAM_STATE_SOURCE_RECT_DATA;
 
   PDXVAHD_STREAM_STATE_DESTINATION_RECT_DATA = ^_DXVAHD_STREAM_STATE_DESTINATION_RECT_DATA;
+
   _DXVAHD_STREAM_STATE_DESTINATION_RECT_DATA = record
     Enable: BOOL;
     DestinationRect: TRect;
@@ -518,6 +551,7 @@ type
   DXVAHD_STREAM_STATE_DESTINATION_RECT_DATA = _DXVAHD_STREAM_STATE_DESTINATION_RECT_DATA;
 
   PDXVAHD_STREAM_STATE_ALPHA_DATA = ^_DXVAHD_STREAM_STATE_ALPHA_DATA;
+
   _DXVAHD_STREAM_STATE_ALPHA_DATA = record
     Enable: BOOL;
     Alpha: Single;
@@ -525,6 +559,7 @@ type
   DXVAHD_STREAM_STATE_ALPHA_DATA = _DXVAHD_STREAM_STATE_ALPHA_DATA;
 
   PDXVAHD_STREAM_STATE_PALETTE_DATA = ^_DXVAHD_STREAM_STATE_PALETTE_DATA;
+
   _DXVAHD_STREAM_STATE_PALETTE_DATA = record
     Count: UINT;
     pEntries: ^D3DCOLOR;
@@ -532,6 +567,7 @@ type
   DXVAHD_STREAM_STATE_PALETTE_DATA = _DXVAHD_STREAM_STATE_PALETTE_DATA;
 
   PDXVAHD_STREAM_STATE_LUMA_KEY_DATA = ^_DXVAHD_STREAM_STATE_LUMA_KEY_DATA;
+
   _DXVAHD_STREAM_STATE_LUMA_KEY_DATA = record
     Enable: BOOL;
     Lower: Single;
@@ -540,6 +576,7 @@ type
   DXVAHD_STREAM_STATE_LUMA_KEY_DATA = _DXVAHD_STREAM_STATE_LUMA_KEY_DATA;
 
   PDXVAHD_STREAM_STATE_ASPECT_RATIO_DATA = ^_DXVAHD_STREAM_STATE_ASPECT_RATIO_DATA;
+
   _DXVAHD_STREAM_STATE_ASPECT_RATIO_DATA = record
     Enable: BOOL;
     SourceAspectRatio: DXVAHD_RATIONAL;
@@ -548,6 +585,7 @@ type
   DXVAHD_STREAM_STATE_ASPECT_RATIO_DATA = _DXVAHD_STREAM_STATE_ASPECT_RATIO_DATA;
 
   PDXVAHD_STREAM_STATE_FILTER_DATA = ^_DXVAHD_STREAM_STATE_FILTER_DATA;
+
   _DXVAHD_STREAM_STATE_FILTER_DATA = record
     Enable: BOOL;
     Level: Integer;
@@ -555,6 +593,7 @@ type
   DXVAHD_STREAM_STATE_FILTER_DATA = _DXVAHD_STREAM_STATE_FILTER_DATA;
 
   PDXVAHD_STREAM_STATE_PRIVATE_DATA = ^_DXVAHD_STREAM_STATE_PRIVATE_DATA;
+
   _DXVAHD_STREAM_STATE_PRIVATE_DATA = record
     Guid: TGUID;
     DataSize: UINT;
@@ -563,6 +602,7 @@ type
   DXVAHD_STREAM_STATE_PRIVATE_DATA = _DXVAHD_STREAM_STATE_PRIVATE_DATA;
 
   PDXVAHD_STREAM_DATA = ^_DXVAHD_STREAM_DATA;
+
   _DXVAHD_STREAM_DATA = record
     Enable: BOOL;
     OutputIndex: UINT;
@@ -576,6 +616,7 @@ type
   DXVAHD_STREAM_DATA = _DXVAHD_STREAM_DATA;
 
   PDXVAHD_STREAM_STATE_PRIVATE_IVTC_DATA = ^_DXVAHD_STREAM_STATE_PRIVATE_IVTC_DATA;
+
   _DXVAHD_STREAM_STATE_PRIVATE_IVTC_DATA = record
     Enable: BOOL;
     ITelecineFlags: UINT;
@@ -664,6 +705,7 @@ type
   // Callback record
 type
   PDXVAHDSW_CALLBACKS = ^DXVAHDSW_CALLBACKS;
+
   DXVAHDSW_CALLBACKS = record
     CreateDevice: PDXVAHDSW_CreateDevice;
     ProposeVideoPrivateFormat: PDXVAHDSW_ProposeVideoPrivateFormat;
@@ -684,14 +726,15 @@ type
   end;
 
 
-  //
-  function PDXVAHDSW_Plugin(Size: UINT;
-                            out pCallbacks: Pointer): HResult; stdcall;
+//
+function PDXVAHDSW_Plugin(Size: UINT;
+                          out pCallbacks: Pointer): HResult; stdcall;
 
 
 type
 
   PDXVAHDETW_CREATEVIDEOPROCESSOR = ^_DXVAHDETW_CREATEVIDEOPROCESSOR;
+
   _DXVAHDETW_CREATEVIDEOPROCESSOR = record
     pObject: ULONGLONG;
     pD3D9Ex: ULONGLONG;
@@ -700,6 +743,7 @@ type
   DXVAHDETW_CREATEVIDEOPROCESSOR = _DXVAHDETW_CREATEVIDEOPROCESSOR;
 
   PDXVAHDETW_VIDEOPROCESSBLTSTATE = ^_DXVAHDETW_VIDEOPROCESSBLTSTATE;
+
   _DXVAHDETW_VIDEOPROCESSBLTSTATE = record
     pObject: ULONGLONG;
     State: DXVAHD_BLT_STATE;
@@ -709,6 +753,7 @@ type
   DXVAHDETW_VIDEOPROCESSBLTSTATE = _DXVAHDETW_VIDEOPROCESSBLTSTATE;
 
   PDXVAHDETW_VIDEOPROCESSSTREAMSTATE = ^_DXVAHDETW_VIDEOPROCESSSTREAMSTATE;
+
   _DXVAHDETW_VIDEOPROCESSSTREAMSTATE = record
     pObject: ULONGLONG;
     StreamNumber: UINT;
@@ -719,6 +764,7 @@ type
   DXVAHDETW_VIDEOPROCESSSTREAMSTATE = _DXVAHDETW_VIDEOPROCESSSTREAMSTATE;
 
   PDXVAHDETW_VIDEOPROCESSBLTHD = ^_DXVAHDETW_VIDEOPROCESSBLTHD;
+
   _DXVAHDETW_VIDEOPROCESSBLTHD = record
     pObject: ULONGLONG;
     pOutputSurface: ULONGLONG;
@@ -732,6 +778,7 @@ type
   DXVAHDETW_VIDEOPROCESSBLTHD = _DXVAHDETW_VIDEOPROCESSBLTHD;
 
   PDXVAHDETW_VIDEOPROCESSBLTHD_STREAM = ^_DXVAHDETW_VIDEOPROCESSBLTHD_STREAM;
+
   _DXVAHDETW_VIDEOPROCESSBLTHD_STREAM = record
     pObject: ULONGLONG;
     pInputSurface: ULONGLONG;
@@ -749,6 +796,7 @@ type
   DXVAHDETW_VIDEOPROCESSBLTHD_STREAM = _DXVAHDETW_VIDEOPROCESSBLTHD_STREAM;
 
   PDXVAHDETW_DESTROYVIDEOPROCESSOR = ^_DXVAHDETW_DESTROYVIDEOPROCESSOR;
+
   _DXVAHDETW_DESTROYVIDEOPROCESSOR = record
     pObject: ULONGLONG;
   end;
@@ -763,18 +811,24 @@ type
   PIDXVAHD_VideoProcessor = ^IDXVAHD_VideoProcessor;
   IDXVAHD_VideoProcessor = interface;
 
-   // INTERFACES ///////////////////////////////////////////////////////////////
+  // INTERFACES ///////////////////////////////////////////////////////////////
 
 
   // Interface IDXVAHD_Device
   // ========================
   //
   IDXVAHD_Device = interface(IUnknown)
-  ['{95f12dfd-d77e-49be-815f-57d579634d6d}']
+    ['{95f12dfd-d77e-49be-815f-57d579634d6d}']
 
-    function CreateVideoSurface(Width: UINT; const Height: UINT; const Format: D3DFORMAT;
-                                Pool: D3DPOOL; const Usage: DWORD; const tType: DXVAHD_SURFACE_TYPE;
-                                NumSurfaces: UINT; out ppSurfaces: IDirect3DSurface9; var pSharedHandle: THandle): HResult; stdcall;
+    function CreateVideoSurface(Width: UINT;
+                                const Height: UINT;
+                                const Format: D3DFORMAT;
+                                Pool: D3DPOOL;
+                                const Usage: DWORD;
+                                const tType: DXVAHD_SURFACE_TYPE;
+                                NumSurfaces: UINT;
+                                out ppSurfaces: IDirect3DSurface9;
+                                var pSharedHandle: THandle): HResult; stdcall;
 
     function GetVideoProcessorDeviceCaps(out pCaps: DXVAHD_VPDEVCAPS): HResult; stdcall;
 
@@ -798,6 +852,7 @@ type
                                   out ppVideoProcessor: IDXVAHD_VideoProcessor): HResult; stdcall;
 
   end;
+
   IID_IDXVAHD_Device = IDXVAHD_Device;
 
 
@@ -806,7 +861,7 @@ type
   // ================================
   //
   IDXVAHD_VideoProcessor = interface(IUnknown)
-  ['{95f4edf4-6e03-4cd7-be1b-3075d665aa52}']
+    ['{95f4edf4-6e03-4cd7-be1b-3075d665aa52}']
 
     function SetVideoProcessBltState(State: DXVAHD_BLT_STATE;
                                      const DataSize: UINT;
@@ -832,36 +887,37 @@ type
                                pStreams: DXVAHD_STREAM_DATA): HResult; stdcall;
 
   end;
+
   IID_IDXVAHD_VideoProcessor = IDXVAHD_VideoProcessor;
 
 
-  function DXVAHD_CreateDevice(pD3DDevice: IDirect3DDevice9Ex;
-                               pContentDesc: DXVAHD_CONTENT_DESC;
-                               Usage: DXVAHD_DEVICE_USAGE;
-                               pPlugin: DXVAHDSW_PluginCallbacks;
-                               out ppDevice: IDXVAHD_Device): HResult; stdcall;
+function DXVAHD_CreateDevice(pD3DDevice: IDirect3DDevice9Ex;
+                             pContentDesc: DXVAHD_CONTENT_DESC;
+                             Usage: DXVAHD_DEVICE_USAGE;
+                             pPlugin: DXVAHDSW_PluginCallbacks;
+                             out ppDevice: IDXVAHD_Device): HResult; stdcall;
 
-  function PDXVAHD_CreateDevice(pD3DDevice: IDirect3DDevice9Ex;
-                                pContentDesc: DXVAHD_CONTENT_DESC;
-                                Usage: DXVAHD_DEVICE_USAGE;
-                                pPlugin: DXVAHDSW_PluginCallbacks;
-                                out ppDevice: IDXVAHD_Device): HResult; stdcall;
+function PDXVAHD_CreateDevice(pD3DDevice: IDirect3DDevice9Ex;
+                              pContentDesc: DXVAHD_CONTENT_DESC;
+                              Usage: DXVAHD_DEVICE_USAGE;
+                              pPlugin: DXVAHDSW_PluginCallbacks;
+                              out ppDevice: IDXVAHD_Device): HResult; stdcall;
 
 
-  //Additional Prototypes for ALL interfaces
+//Additional Prototypes for ALL interfaces
 
-  //end of Additional Prototypes
+//end of Additional Prototypes
 
 implementation
 
-  // Implement Additional Prototypes here.
+// Implement Additional Prototypes here.
 
-  // DXVAHDSW_CALLBACKS = _DXVAHDSW_CALLBACKS;
+// DXVAHDSW_CALLBACKS = _DXVAHDSW_CALLBACKS;
 
 
-  function DXVAHD_CreateDevice; external DxVaHdLib name 'DXVAHD_CreateDevice' ;
-  function PDXVAHD_CreateDevice; external DxVaHdLib name 'PDXVAHD_CreateDevice' ;
-  function PDXVAHDSW_Plugin; external DxVaHdLib name 'PDXVAHDSW_Plugin' ;
+function DXVAHD_CreateDevice; external DxVaHdLib name 'DXVAHD_CreateDevice';
+function PDXVAHD_CreateDevice; external DxVaHdLib name 'PDXVAHD_CreateDevice';
+function PDXVAHDSW_Plugin; external DxVaHdLib name 'PDXVAHDSW_Plugin';
 
 
 ///////// _DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA ////////////////////////////
@@ -869,57 +925,69 @@ implementation
 {$OPTIMIZATION ON}
 {$OVERFLOWCHECKS OFF}
 
-  function _DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA.ReadBits(const aIndex: Integer): Integer;
-  var
-    Offset: Integer;
-    NrBits: Integer;
-    Mask: Integer;
-  begin
-    NrBits := aIndex and $FF;
-    Offset := aIndex shr 8;
-    Mask := ((1 shl NrBits) - 1);
-    Result := (Value shr Offset) and Mask;
-  end;
+function _DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA.ReadBits(const aIndex: Integer): Integer;
+var
+  Offset: Integer;
+  NrBits: Integer;
+  Mask: Integer;
 
-  procedure _DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA.WriteBits(const aIndex: Integer; const aValue: Integer);
-  var
-    Offset: Integer;
-    NrBits: Integer;
-    Mask: Integer;
-  begin
-    NrBits := aIndex and $FF;
-    Offset := aIndex shr 8;
-    Mask := ((1 shl NrBits) - 1);
-    Assert(aValue <= Mask);
-    Value := (Value and (not (UINT(Mask) shl UINT(Offset)))) or (UINT(aValue) shl UINT(Offset));
-  end;
+begin
+
+  NrBits := aIndex and $FF;
+  Offset := aIndex shr 8;
+  Mask := ((1 shl NrBits) - 1);
+  Result := (Value shr Offset) and Mask;
+end;
+
+
+procedure _DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA.WriteBits(const aIndex: Integer;
+                                                              const aValue: Integer);
+var
+  Offset: Integer;
+  NrBits: Integer;
+  Mask: Integer;
+
+begin
+
+  NrBits := aIndex and $FF;
+  Offset := aIndex shr 8;
+  Mask := ((1 shl NrBits) - 1);
+  Assert(aValue <= Mask);
+  Value := (Value and (not (UINT(Mask) shl UINT(Offset)))) or (UINT(aValue) shl UINT(Offset));
+end;
 // END _DXVAHD_BLT_STATE_OUTPUT_COLOR_SPACE_DATA ///////////////////////////////
 
 ///////// _DXVAHD_STREAM_STATE_INPUT_COLOR_SPACE_DATA //////////////////////////
-  function _DXVAHD_STREAM_STATE_INPUT_COLOR_SPACE_DATA.ReadBits(const aIndex: Integer): Integer;
-  var
-    Offset: Integer;
-    NrBits: Integer;
-    Mask: Integer;
-  begin
-    NrBits := aIndex and $FF;
-    Offset := aIndex shr 8;
-    Mask := ((1 shl NrBits) - 1);
-    Result := (Value shr Offset) and Mask;
-  end;
+function _DXVAHD_STREAM_STATE_INPUT_COLOR_SPACE_DATA.ReadBits(const aIndex: Integer): Integer;
+var
+  Offset: Integer;
+  NrBits: Integer;
+  Mask: Integer;
 
-  procedure _DXVAHD_STREAM_STATE_INPUT_COLOR_SPACE_DATA.WriteBits(const aIndex: Integer; const aValue: Integer);
-  var
-    Offset: Integer;
-    NrBits: Integer;
-    Mask: Integer;
-  begin
-    NrBits := aIndex and $FF;
-    Offset := aIndex shr 8;
-    Mask := ((1 shl NrBits) - 1);
-    Assert(aValue <= Mask);
-    Value := (Value and (not (UINT(Mask) shl UINT(Offset)))) or (UINT(aValue) shl UINT(Offset));
-  end;
+begin
+
+  NrBits := aIndex and $FF;
+  Offset := aIndex shr 8;
+  Mask := ((1 shl NrBits) - 1);
+  Result := (Value shr Offset) and Mask;
+end;
+
+
+procedure _DXVAHD_STREAM_STATE_INPUT_COLOR_SPACE_DATA.WriteBits(const aIndex: Integer;
+                                                                const aValue: Integer);
+var
+  Offset: Integer;
+  NrBits: Integer;
+  Mask: Integer;
+
+begin
+
+  NrBits := aIndex and $FF;
+  Offset := aIndex shr 8;
+  Mask := ((1 shl NrBits) - 1);
+  Assert(aValue <= Mask);
+  Value := (Value and (not (UINT(Mask) shl UINT(Offset)))) or (UINT(aValue) shl UINT(Offset));
+end;
 
 
 end.

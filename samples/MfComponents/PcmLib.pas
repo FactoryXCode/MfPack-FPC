@@ -74,9 +74,7 @@ uses
   WinApi.WinApiTypes,
   WinApi.ActiveX.ObjBase,
   WinApi.ComBaseApi,
-
   SysUtils,
-
   WinApi.WinMM.MMReg,
   WinApi.WinMM.MMeApi;
 
@@ -95,88 +93,90 @@ type
   PByteArray = ^TByteArray;
 
 
-  function PtrSingleOffset(p: PSingle;
-                           Index: Integer): PSingle; inline;
+function PtrSingleOffset(p: PSingle;
+                         Index: Integer): PSingle; inline;
 
-  procedure Int16ToFloat(const InBytes: PByte;
-                         OutF: PSingle;
-                         Samples: Integer); //inline;
+procedure Int16ToFloat(const InBytes: PByte;
+                       OutF: PSingle;
+                       Samples: Integer); //inline;
 
-  procedure Int32ToFloat(const InBytes: PByte;
-                         OutF: PSingle;
-                         Samples: Integer); inline;
+procedure Int32ToFloat(const InBytes: PByte;
+                       OutF: PSingle;
+                       Samples: Integer); inline;
 
-  procedure Int24ToFloat(const InBytes: PByte;
-                         OutF: PSingle;
-                         Samples: Integer); inline;
+procedure Int24ToFloat(const InBytes: PByte;
+                       OutF: PSingle;
+                       Samples: Integer); inline;
 
-  procedure FloatToInt16(const InF: PSingle;
-                         OutBytes: PByte;
-                         Samples: Integer); inline;
+procedure FloatToInt16(const InF: PSingle;
+                       OutBytes: PByte;
+                       Samples: Integer); inline;
 
-  procedure FloatToInt32(const InF: PSingle;
-                         OutBytes: PByte;
-                         Samples: Integer); inline;
+procedure FloatToInt32(const InF: PSingle;
+                       OutBytes: PByte;
+                       Samples: Integer); inline;
 
-  procedure FloatToInt24(const InF: PSingle;
-                         OutBytes: PByte;
-                         Samples: Integer); inline;
+procedure FloatToInt24(const InF: PSingle;
+                       OutBytes: PByte;
+                       Samples: Integer); inline;
 
-  procedure EnsureDynFloatBuf(var Buf: PSingle;
-                              var CapacitySamples: Integer;
-                              NeededSamples: Integer); inline;
+procedure EnsureDynFloatBuf(var Buf: PSingle;
+                            var CapacitySamples: Integer;
+                            NeededSamples: Integer); inline;
 
-  function GetWfxBitsAndFloat(const pwfx: PWAVEFORMATEX; out Bits: Integer; out IsFloat: Boolean): Boolean; inline;
+function GetWfxBitsAndFloat(const pwfx: PWAVEFORMATEX;
+                            out Bits: Integer;
+                            out IsFloat: Boolean): Boolean; inline;
 
-  // ---------------------------------------------------------------------------
-  // Float32 safety helpers: NaN/Inf detection, sanitizing, and
-  // Catmull-Rom interpolation for true-peak / oversampling.
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Float32 safety helpers: NaN/Inf detection, sanitizing, and
+// Catmull-Rom interpolation for true-peak / oversampling.
+// ---------------------------------------------------------------------------
 
-  function MfIsFiniteS(const v: Single): Boolean; inline;
+function MfIsFiniteS(const v: Single): Boolean; inline;
 
-  function MfSanitizeSampleS(v: Single;
-                             const ClampAbs: Single = 16.0): Single; inline;
+function MfSanitizeSampleS(v: Single;
+                           const ClampAbs: Single = 16.0): Single; inline;
 
-  procedure MfSanitizeInterleavedFloat32(p: PSingle;
-                                         Samples: Integer;
-                                         const ClampAbs: Single = 16.0); inline;
+procedure MfSanitizeInterleavedFloat32(p: PSingle;
+                                       Samples: Integer;
+                                       const ClampAbs: Single = 16.0); inline;
 
-  function MfCatmullRomS(const y0,
-                         y1,
-                         y2,
-                         y3,
-                         t: Single;
-                         const ClampAbs: Single = 16.0): Single; inline;
+function MfCatmullRomS(const y0,
+                       y1,
+                       y2,
+                       y3,
+                       t: Single;
+                       const ClampAbs: Single = 16.0): Single; inline;
 
-  // Parameters:
-  //  RampMs = desired smoothing time in milliseconds
-  //  SampleRate = e.g. 44100
-  //  Frames = block size being processed
-  //
-  // It returns a coefficient between 0..1.
-  // near 0 = very slow change
-  // near 1 = immediate change
-  //
-  // Example:
-  //  If:
-  //  RampMs = 50
-  //  SampleRate = 44100
-  //  Frames = 512
-  //  then:
-  //  ramp samples ≈ 2205
-  //  coeff ≈ 512 / 2205 ≈ 0.232
-  //  So each block moves about 23% toward the target.
-  function RampCoeff(const RampMs: Integer;
-                     const SampleRate: Cardinal;
-                     const Frames: Integer): Double; inline;
+// Parameters:
+//  RampMs = desired smoothing time in milliseconds
+//  SampleRate = e.g. 44100
+//  Frames = block size being processed
+//
+// It returns a coefficient between 0..1.
+// near 0 = very slow change
+// near 1 = immediate change
+//
+// Example:
+//  If:
+//  RampMs = 50
+//  SampleRate = 44100
+//  Frames = 512
+//  then:
+//  ramp samples ≈ 2205
+//  coeff ≈ 512 / 2205 ≈ 0.232
+//  So each block moves about 23% toward the target.
+function RampCoeff(const RampMs: Integer;
+                   const SampleRate: Cardinal;
+                   const Frames: Integer): Double; inline;
 
-  // Decibel to linear.
-  function DbToLin(const dB: Single): Single; inline;
+// Decibel to linear.
+function DbToLin(const dB: Single): Single; inline;
 
-  // DEBUG:
-  procedure DebugWfx(AMethod: string;
-                     pwfx: PWAVEFORMATEX);
+// DEBUG:
+procedure DebugWfx(AMethod: string;
+                   pwfx: PWAVEFORMATEX);
 
 
 implementation
@@ -187,42 +187,47 @@ uses
 
 function PtrSingleOffset(p: PSingle;
                          Index: Integer): PSingle; inline;
+
 begin
 
   Result := PSingle(NativeUInt(p) + NativeUInt(Index * SizeOf(Single)));
 end;
 
 
-function GetWfxBitsAndFloat(const pwfx: PWAVEFORMATEX;out Bits: Integer;out IsFloat: Boolean): Boolean;
+function GetWfxBitsAndFloat(const pwfx: PWAVEFORMATEX;
+                            out Bits: Integer;
+                            out IsFloat: Boolean): Boolean;
 var
   Extended: PWAVEFORMATEXTENSIBLE;
+
 begin
+
   Result := False;
   Bits := 0;
   IsFloat := False;
-  if pwfx = nil then
+  if (pwfx = nil) then
     Exit;
   Bits := pwfx^.wBitsPerSample;
   case pwfx^.wFormatTag of
     WAVE_FORMAT_PCM:
-      Result := Bits in [16,24,32];
+      Result := Bits in [16, 24, 32];
     WAVE_FORMAT_IEEE_FLOAT:
       begin
-        IsFloat := Bits = 32;
+        IsFloat := (Bits = 32);
         Result := IsFloat;
       end;
     WAVE_FORMAT_EXTENSIBLE:
       begin
-        if pwfx^.cbSize < 22 then
+        if (pwfx^.cbSize < 22) then
           Exit;
         Extended := PWAVEFORMATEXTENSIBLE(pwfx);
-        if IsEqualGUID(Extended^.SubFormat,KSDATAFORMAT_SUBTYPE_IEEE_FLOAT) then
+        if IsEqualGUID(Extended^.SubFormat, KSDATAFORMAT_SUBTYPE_IEEE_FLOAT) then
           begin
-            IsFloat := Bits = 32;
+            IsFloat := (Bits = 32);
             Result := IsFloat;
           end
-        else if IsEqualGUID(Extended^.SubFormat,KSDATAFORMAT_SUBTYPE_PCM) then
-          Result := Bits in [16,24,32];
+        else if IsEqualGUID(Extended^.SubFormat, KSDATAFORMAT_SUBTYPE_PCM) then
+          Result := Bits in [16, 24, 32];
       end;
   end;
 end;
@@ -290,18 +295,21 @@ begin
   pOut := OutF;
 
   for i := 0 to Samples - 1 do
-  begin
-    b0 := p^; Inc(p);
-    b1 := p^; Inc(p);
-    b2 := p^; Inc(p);
+    begin
+      b0 := p^;
+      Inc(p);
+      b1 := p^;
+      Inc(p);
+      b2 := p^;
+      Inc(p);
 
-    v := (b0) or (b1 shl 8) or (b2 shl 16);
-    if (v and $00800000) <> 0 then
-      v := v or Integer($FF000000);
+      v := (b0) or (b1 shl 8) or (b2 shl 16);
+      if ((v and $00800000) <> 0) then
+        v := v or Integer($FF000000);
 
-    pOut^ := v * (1.0 / 8388608.0);
-    Inc(pOut);
-  end;
+      pOut^ := v * (1.0 / 8388608.0);
+      Inc(pOut);
+    end;
 end;
 
 
@@ -323,19 +331,18 @@ begin
   for i := 0 to Samples - 1 do
     begin
 
-      x := MfSanitizeSampleS(pIn^,1.0);
+      x := MfSanitizeSampleS(pIn^,
+                             1.0);
       if (x < -1.0) then
         x := -1.0
-      else
-        if (x > 0.9999695) then
-          x := 0.9999695;
+      else if (x > 0.9999695) then
+        x := 0.9999695;
 
       v := Round(x * 32768.0);
       if (v < -32768) then
         v := -32768
-      else
-        if (v > 32767) then
-          v := 32767;
+      else if (v > 32767) then
+        v := 32767;
 
       pOut^ := SmallInt(v);
 
@@ -363,19 +370,19 @@ begin
   for i := 0 to Samples - 1 do
     begin
 
-      x := MfSanitizeSampleS(pIn^,1.0);
+      x := MfSanitizeSampleS(pIn^,
+                             1.0);
 
-      if x >= 1.0 then
+      if (x >= 1.0) then
         v64 := 2147483647
-      else if x <= -1.0 then
+      else if (x <= -1.0) then
         v64 := -2147483648
       else
         v64 := Round(x * 2147483648.0);
       if (v64 < Int64(-2147483648)) then
         v64 := Int64(-2147483648)
-      else
-        if (v64 > Int64(2147483647)) then
-          v64 := Int64(2147483647);
+      else if (v64 > Int64(2147483647)) then
+        v64 := Int64(2147483647);
 
       pOut^ := Integer(v64);
 
@@ -403,20 +410,19 @@ begin
   for i := 0 to Samples - 1 do
     begin
 
-      x := MfSanitizeSampleS(pIn^,1.0);
+      x := MfSanitizeSampleS(pIn^,
+                             1.0);
 
       if (x < -1.0) then
         x := -1.0
-      else
-        if (x > 0.99999994) then
-          x := 0.99999994;
+      else if (x > 0.99999994) then
+        x := 0.99999994;
 
       v := Round(x * 8388608.0);
       if (v < -8388608) then
         v := -8388608
-      else
-        if (v > 8388607) then
-          v := 8388607;
+      else if (v > 8388607) then
+        v := 8388607;
 
       p^ := Byte(v and $FF);
       Inc(p);
@@ -428,7 +434,7 @@ begin
       Inc(p);
 
       Inc(pIn);
-  end;
+    end;
 end;
 
 
@@ -472,6 +478,7 @@ end;
 
 function MfSanitizeSampleS(v: Single;
                            const ClampAbs: Single = 16.0): Single; inline;
+
 begin
 
   // Kill NaN/Inf (and keep signal NaNs from raising XE7 exceptions).
@@ -481,9 +488,8 @@ begin
   // Clamp to a sane range to prevent polynomial overflow in oversampling.
   if (v > ClampAbs) then
     Exit(ClampAbs)
-  else
-    if (v < -ClampAbs) then
-      Exit(-ClampAbs);
+  else if (v < -ClampAbs) then
+    Exit(-ClampAbs);
 
   Result := v;
 end;
@@ -543,10 +549,10 @@ begin
   t3 := t2 * td;
 
   // Standard Catmull-Rom spline (computed in Double for robustness).
-  Result := (0.5 * ((2*v1) +
-            (-v0 + v2) * td +
-            (2*v0 - 5*v1 + 4*v2 - v3) * t2 +
-            (-v0 + 3*v1 - 3*v2 + v3) * t3)) * 1.0;
+  Result := (0.5 * ((2 * v1) +
+    (-v0 + v2) * td +
+    (2 * v0 - 5 * v1 + 4 * v2 - v3) * t2 +
+    (-v0 + 3 * v1 - 3 * v2 + v3) * t3)) * 1.0;
 end;
 
 
@@ -559,8 +565,8 @@ var
 begin
 
   if (RampMs <= 0) or
-     (SampleRate = 0) or
-     (Frames <= 0) then
+    (SampleRate = 0) or
+    (Frames <= 0) then
     Exit(1.0);
 
   RampSamples := (RampMs * 0.001) * SampleRate;
@@ -571,13 +577,13 @@ begin
 
   if (Result < 0.0) then
     Result := 0.0
-  else
-  if (Result > 1.0) then
+  else if (Result > 1.0) then
     Result := 1.0;
 end;
 
 
 function DbToLin(const dB: Single): Single; inline;
+
 begin
 
   Result := Power(10.0,
@@ -601,9 +607,9 @@ begin
 
   OutputDebugStringW(PChar(Format(
     'In method: %s  WFX: tag=%d ch=%d sr=%d bits=%d align=%d avg=%d cbSize=%d',
-    [AMethod, pwfx^.wFormatTag, pwfx^.nChannels, pwfx^.nSamplesPerSec,
-     pwfx^.wBitsPerSample, pwfx^.nBlockAlign, pwfx^.nAvgBytesPerSec,
-     pwfx^.cbSize])));
+                                  [AMethod, pwfx^.wFormatTag, pwfx^.nChannels, pwfx^.nSamplesPerSec,
+    pwfx^.wBitsPerSample, pwfx^.nBlockAlign, pwfx^.nAvgBytesPerSec,
+    pwfx^.cbSize])));
 
   if (pwfx^.wFormatTag = WAVE_FORMAT_EXTENSIBLE) then
     begin
@@ -612,7 +618,8 @@ begin
       g := pex^.SubFormat;
       sGuid := GUIDToString(g);
       OutputDebugStringW(PChar('  EXT: SubFormat=' + sGuid +
-                              Format('  Mask=$%x', [pex^.dwChannelMask])));
+        Format('  Mask=$%x',
+               [pex^.dwChannelMask])));
     end;
 end;
 

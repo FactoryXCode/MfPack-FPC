@@ -88,7 +88,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -103,50 +104,50 @@ type
 const
   //COINIT_MULTITHREADED     = COINITBASE_MULTITHREADED; // combaseapi
 
-  COINIT_MULTITHREADED     = $0; // = combaseapi COINITBASE_MULTITHREADED
+  COINIT_MULTITHREADED = $0; // = combaseapi COINITBASE_MULTITHREADED
   COINIT_APARTMENTTHREADED = $2;   // Apartment model
-  
+
   // These constants are only valid on Windows NT 4.0
   // ================================================
-  COINIT_DISABLE_OLE1DDE   = $4;   // Don't use DDE for Ole1 support.
+  COINIT_DISABLE_OLE1DDE = $4;   // Don't use DDE for Ole1 support.
   COINIT_SPEED_OVER_MEMORY = $8;   // Trade memory for speed.
 
 
   // interface marshaling definitions
-  MARSHALINTERFACE_MIN                = 500;  // minimum number of bytes for interface marshal
+  MARSHALINTERFACE_MIN = 500;  // minimum number of bytes for interface marshal
 
 
   //*  flags for internet asynchronous and layout docfile *//
-  ASYNC_MODE_COMPATIBILITY            = $00000001;
-  ASYNC_MODE_DEFAULT                  = $00000000;
+  ASYNC_MODE_COMPATIBILITY = $00000001;
+  ASYNC_MODE_DEFAULT = $00000000;
 
-  STGTY_REPEAT                        = $00000100;
-  STG_TOEND                           = MAXDWORD;
+  STGTY_REPEAT = $00000100;
+  STG_TOEND = MAXDWORD;
 
-  STG_LAYOUT_SEQUENTIAL               = $00000000;
-  STG_LAYOUT_INTERLEAVED              = $00000001;
+  STG_LAYOUT_SEQUENTIAL = $00000000;
+  STG_LAYOUT_INTERLEAVED = $00000001;
 
 
 
   //****** STD Object API Prototypes *****************************************//
 
-  function CoBuildVersion(): DWORD; stdcall;
+function CoBuildVersion(): DWORD; stdcall;
 
-  function CoInitialize(pvReserved: Pointer): HResult; stdcall;
+function CoInitialize(pvReserved: Pointer): HResult; stdcall;
 
-  function CoRegisterMallocSpy(pmallocSpy: IMallocSpy): HResult; stdcall;
+function CoRegisterMallocSpy(pmallocSpy: IMallocSpy): HResult; stdcall;
 
-  function CoRevokeMallocSpy(): HResult stdcall;
+function CoRevokeMallocSpy(): HResult stdcall;
 
-  function CoCreateStandardMalloc(memctx: DWORD;
-                                  out ppmalloc: IMalloc): HResult; stdcall;
+function CoCreateStandardMalloc(memctx: DWORD;
+                                out ppmalloc: IMalloc): HResult; stdcall;
 
 //#if (_WIN32_WINNT >= 0x0501)
 
-  function CoRegisterInitializeSpy(pSpy: IInitializeSpy;
-                                   out puliCookie: ULARGE_INTEGER): HResult; stdcall;
+function CoRegisterInitializeSpy(pSpy: IInitializeSpy;
+                                 out puliCookie: ULARGE_INTEGER): HResult; stdcall;
 
-  function CoRevokeInitializeSpy(uliCookie: ULARGE_INTEGER): HResult; stdcall;
+function CoRevokeInitializeSpy(uliCookie: ULARGE_INTEGER): HResult; stdcall;
 
 
 type
@@ -154,270 +155,272 @@ type
   // entries are absent)
 
   PCOMSD = ^tagCOMSD;
-  tagCOMSD                = (
-    SD_LAUNCHPERMISSIONS  = 0,       // Machine wide launch permissions
-    SD_ACCESSPERMISSIONS  = 1,       // Machine wide acesss permissions
+  tagCOMSD = (
+    SD_LAUNCHPERMISSIONS = 0,       // Machine wide launch permissions
+    SD_ACCESSPERMISSIONS = 1,       // Machine wide acesss permissions
     SD_LAUNCHRESTRICTIONS = 2,       // Machine wide launch limits
     SD_ACCESSRESTRICTIONS = 3        // Machine wide access limits
-  );
+    );
   COMSD = tagCOMSD;
 
-  function CoGetSystemSecurityPermissions(comSDType: COMSD;
-                                          ppSD: PSECURITY_DESCRIPTOR): HResult; stdcall;
+function CoGetSystemSecurityPermissions(comSDType: COMSD;
+                                        ppSD: PSECURITY_DESCRIPTOR): HResult; stdcall;
 
 
-  //* dll loading helpers; keeps track of ref counts and unloads all on exit *//
-  function CoLoadLibrary(pszLibName: PWideChar;
-                         bAutoFree: BOOL): THandle; stdcall;
+//* dll loading helpers; keeps track of ref counts and unloads all on exit *//
+function CoLoadLibrary(pszLibName: PWideChar;
+                       bAutoFree: BOOL): THandle; stdcall;
 
-  procedure CoFreeLibrary(hInst: THandle); stdcall;
+procedure CoFreeLibrary(hInst: THandle); stdcall;
 
-  procedure CoFreeAllLibraries(); stdcall;
-
-
-  function CoGetInstanceFromFile({in, optional} pServerInfo: PCoServerInfo;
-                                 {in, optional} pclsid: PCLSID; // = ^GUID
-                                 {in, optional} punkOuter: PUnknown;
-                                 dwClsCtx: DWORD;
-                                 grfMode: DWORD;
-                                 pwszName: PWideChar;
-                                 dwCount: DWORD;
-                                 {in, out} var pResults: MULTI_QI): HResult; stdcall;
-
-  function CoGetInstanceFromIStorage({in, optional} pServerInfo: PCoServerInfo;
-                                     {in, optional} pclsid: PCLSID;
-                                     {in, optional} punkOuter: IUnknown;
-                                     dwClsCtx: DWORD;
-                                     pstg: IUnknown; {IStorage}
-                                     dwCount: DWORD;
-                                     {in, out} var rgmqResults: MULTI_QI): HResult; stdcall;
+procedure CoFreeAllLibraries(); stdcall;
 
 
-  //* Call related APIs *//
+function CoGetInstanceFromFile({in, optional} pServerInfo: PCoServerInfo;
+  {in, optional} pclsid: PCLSID; // = ^GUID
+  {in, optional} punkOuter: PUnknown;
+                               dwClsCtx: DWORD;
+                               grfMode: DWORD;
+                               pwszName: PWideChar;
+                               dwCount: DWORD;
+  {in, out} var pResults: MULTI_QI): HResult; stdcall;
 
-  function CoAllowSetForegroundWindow(pUnk: IUnknown;
-                                      lpvReserved: Pointer): HResult; stdcall;
-
-
-  function DcomChannelSetHResult(pvReserved: Pointer;
-                                 pulReserved: ULONG;
-                                 appsHR: HResult): HResult; stdcall;
-
-
-
-  //* other helpers *//
-
-  function CoIsOle1Class(const clsid: TGUID): BOOL; stdcall;
-
-  function CLSIDFromProgIDEx(lpszProgID: PWideChar;
-                              out lpclsid: TGUID): HResult; stdcall;
-
-  function CoFileTimeToDosDateTime(lpfiletime: PFILETIME;
-                                   out lpDosDate: Word;
-                                   out lpDosTime: Word): BOOL; overload; stdcall;
-
-  function CoFileTimeToDosDateTime(const lpfiletime: FILETIME;
-                                   out lpDosDate: Word;
-                                   out lpDosTime: Word): BOOL; inline; overload;
-
-  function CoDosDateTimeToFileTime(nDosDate: Word;
-                                   nDosTime: Word;
-                                   out lpfiletime: FILETIME): BOOL; stdcall;
-
-  function CoFileTimeNow(out filetime: FILETIME): HResult; stdcall;
-
-  function CoRegisterMessageFilter(lpMessageFilter: IMessageFilter;
-                                   out lplpMessageFilter: IMessageFilter): HResult; stdcall;
-
-  function CoRegisterChannelHook(const ExtensionUuid: TGUID;
-                                 pChannelHook: IChannelHook): HResult; stdcall;
+function CoGetInstanceFromIStorage({in, optional} pServerInfo: PCoServerInfo;
+  {in, optional} pclsid: PCLSID;
+  {in, optional} punkOuter: IUnknown;
+                                   dwClsCtx: DWORD;
+                                   pstg: IUnknown; {IStorage}
+  dwCount: DWORD;
+  {in, out} var rgmqResults: MULTI_QI): HResult; stdcall;
 
 
-  //* TreatAs APIS *//
+//* Call related APIs *//
 
-  function CoTreatAsClass(const clsidOld: TGUID;
-                          out clsidNew: TGUID): HResult; stdcall;
-
-
-  //****** DV APIs ***********************************************************//
-
-  function CreateDataAdviseHolder(out ppDAHolder: IDataAdviseHolder): HResult; stdcall;
-
-  function CreateDataCache(unkOuter: IUnknown;
-                           const rclsid: TGUID;
-                           const iid: TGUID;
-                           var ppv: pointer): HResult; stdcall;
+function CoAllowSetForegroundWindow(pUnk: IUnknown;
+                                    lpvReserved: Pointer): HResult; stdcall;
 
 
-  //****** Storage API Prototypes ********************************************//
-
-  function StgOpenAsyncDocfileOnIFillLockBytes(pflb: IFillLockBytes;
-                                               grfMode: DWORD;
-                                               asyncFlags: DWORD;
-                                               var ppstgOpen: IStorage): HResult; stdcall;
-
-  function StgGetIFillLockBytesOnILockBytes(pilb: ILockBytes;
-                                            var ppflb: IFillLockBytes): HResult; stdcall;
-
-  function StgGetIFillLockBytesOnFile(pwcsName: PWideChar;
-                                      var ppflb: IFillLockBytes): HResult; stdcall;
-
-  function StgOpenLayoutDocfile(pwcsDfName: PWideChar;
-                                grfMode: DWORD;
-                                reserved: DWORD;
-                                var ppstgOpen: IStorage): HResult; stdcall;
+function DcomChannelSetHResult(pvReserved: Pointer;
+                               pulReserved: ULONG;
+                               appsHR: HResult): HResult; stdcall;
 
 
 
-  function CoInstall(pbc: IBindCtx;
-                     dwFlags: DWORD;
-                     pClassSpec: PuCLSSPEC;
-                     pQuery: QUERYCONTEXT;
-                     pszCodeBase: LPWSTR): HResult; stdcall;
+//* other helpers *//
 
-  //
-  //  Moniker APIs
-  //
+function CoIsOle1Class(const clsid: TGUID): BOOL; stdcall;
 
-  function BindMoniker(pmk: IMoniker;
-                       grfOpt: DWORD;
-                       const iidResult: TGUID;
-                       out vResult: LPVOID): HResult; stdcall;
+function CLSIDFromProgIDEx(lpszProgID: PWideChar;
+                           out lpclsid: TGUID): HResult; stdcall;
 
-  function CoGetObject(lpszName: PWideChar;
-                       pBindOptions: BIND_OPTS;
-                       const iid: TGUID;
-                       out ppv): HResult; stdcall;
+function CoFileTimeToDosDateTime(lpfiletime: PFILETIME;
+                                 out lpDosDate: Word;
+                                 out lpDosTime: Word): BOOL; overload; stdcall;
 
-  function MkParseDisplayName(pbc: IBindCtx;
-                              szUserName: PWideChar;
-                              out pchEaten: ULONG;
+function CoFileTimeToDosDateTime(const lpfiletime: FILETIME;
+                                 out lpDosDate: Word;
+                                 out lpDosTime: Word): BOOL; inline; overload;
+
+function CoDosDateTimeToFileTime(nDosDate: Word;
+                                 nDosTime: Word;
+                                 out lpfiletime: FILETIME): BOOL; stdcall;
+
+function CoFileTimeNow(out filetime: FILETIME): HResult; stdcall;
+
+function CoRegisterMessageFilter(lpMessageFilter: IMessageFilter;
+                                 out lplpMessageFilter: IMessageFilter): HResult; stdcall;
+
+function CoRegisterChannelHook(const ExtensionUuid: TGUID;
+                               pChannelHook: IChannelHook): HResult; stdcall;
+
+
+//* TreatAs APIS *//
+
+function CoTreatAsClass(const clsidOld: TGUID;
+                        out clsidNew: TGUID): HResult; stdcall;
+
+
+//****** DV APIs ***********************************************************//
+
+function CreateDataAdviseHolder(out ppDAHolder: IDataAdviseHolder): HResult; stdcall;
+
+function CreateDataCache(unkOuter: IUnknown;
+                         const rclsid: TGUID;
+                         const iid: TGUID;
+                         var ppv: pointer): HResult; stdcall;
+
+
+//****** Storage API Prototypes ********************************************//
+
+function StgOpenAsyncDocfileOnIFillLockBytes(pflb: IFillLockBytes;
+                                             grfMode: DWORD;
+                                             asyncFlags: DWORD;
+                                             var ppstgOpen: IStorage): HResult; stdcall;
+
+function StgGetIFillLockBytesOnILockBytes(pilb: ILockBytes;
+                                          var ppflb: IFillLockBytes): HResult; stdcall;
+
+function StgGetIFillLockBytesOnFile(pwcsName: PWideChar;
+                                    var ppflb: IFillLockBytes): HResult; stdcall;
+
+function StgOpenLayoutDocfile(pwcsDfName: PWideChar;
+                              grfMode: DWORD;
+                              reserved: DWORD;
+                              var ppstgOpen: IStorage): HResult; stdcall;
+
+
+
+function CoInstall(pbc: IBindCtx;
+                   dwFlags: DWORD;
+                   pClassSpec: PuCLSSPEC;
+                   pQuery: QUERYCONTEXT;
+                   pszCodeBase: LPWSTR): HResult; stdcall;
+
+//
+//  Moniker APIs
+//
+
+function BindMoniker(pmk: IMoniker;
+                     grfOpt: DWORD;
+                     const iidResult: TGUID;
+                     out vResult: LPVOID): HResult; stdcall;
+
+function CoGetObject(lpszName: PWideChar;
+                     pBindOptions: BIND_OPTS;
+                     const iid: TGUID;
+                     out ppv): HResult; stdcall;
+
+function MkParseDisplayName(pbc: IBindCtx;
+                            szUserName: PWideChar;
+                            out pchEaten: ULONG;
+                            out ppmk: IMoniker): HResult; stdcall;
+
+function MonikerRelativePathTo(pmkSrc: IMoniker;
+                               pmkDest: IMoniker;
+                               out ppmkRelPath: PIMoniker;
+                               dwReserved: BOOL): HResult; stdcall;
+
+function MonikerCommonPrefixWith(pmkThis: IMoniker;
+                                 pmkOther: IMoniker;
+                                 out ppmkCommon: IMoniker): HResult; stdcall;
+
+function CreateBindCtx(reserved: DWORD;
+                       out ppbc: IBindCtx): HResult; stdcall;
+
+function CreateGenericComposite(pmkFirst: IMoniker;
+                                pmkRest: IMoniker;
+                                out ppmkComposite: IMoniker): HResult; stdcall;
+
+function GetClassFile(szFilename: PWideChar;
+                      out clsid: TGUID): HResult; stdcall;
+
+function CreateFileMoniker(lpszPathName: PWideChar;
+                           out ppmk: IMoniker): HResult; stdcall;
+
+function CreateClassMoniker(const rclsid: TGUID;
+                            out ppmk: PIMoniker): HResult; stdcall;
+
+function CreateItemMoniker(lpszDelim: PWideChar;
+                           lpszItem: PWideChar;
+                           out ppmk: IMoniker): HResult; stdcall;
+
+function CreateAntiMoniker(out ppmk: IMoniker): HResult; stdcall;
+
+function CreatePointerMoniker(punk: IUnknown;
                               out ppmk: IMoniker): HResult; stdcall;
 
-  function MonikerRelativePathTo(pmkSrc: IMoniker;
-                                 pmkDest: IMoniker;
-                                 out ppmkRelPath: PIMoniker;
-                                 dwReserved: BOOL): HResult; stdcall;
 
-  function MonikerCommonPrefixWith(pmkThis: IMoniker;
-                                   pmkOther: IMoniker;
-                                   out ppmkCommon: IMoniker): HResult; stdcall;
-
-  function CreateBindCtx(reserved: DWORD;
-                         out ppbc: IBindCtx): HResult; stdcall;
-
-  function CreateGenericComposite(pmkFirst: IMoniker;
-                                  pmkRest: IMoniker;
-                                  out ppmkComposite: IMoniker): HResult; stdcall;
-
-  function GetClassFile(szFilename: PWideChar;
-                        out clsid: TGUID): HResult; stdcall;
-
-  function CreateFileMoniker(lpszPathName: PWideChar;
+function CreateObjrefMoniker(punk: PUNKNOWN;
                              out ppmk: IMoniker): HResult; stdcall;
 
-  function CreateClassMoniker(const rclsid: TGUID;
-                             out ppmk: PIMoniker): HResult; stdcall;
-
-  function CreateItemMoniker(lpszDelim: PWideChar;
-                             lpszItem: PWideChar;
-                             out ppmk: IMoniker): HResult; stdcall;
-
-  function CreateAntiMoniker(out ppmk: IMoniker): HResult; stdcall;
-
-  function CreatePointerMoniker(punk: IUnknown;
-                                out ppmk: IMoniker): HResult; stdcall;
+function GetRunningObjectTable(reserved: DWORD;
+                               out pprot: IRunningObjectTable): HResult; stdcall;
 
 
-  function CreateObjrefMoniker(punk: PUNKNOWN;
-                               out ppmk: IMoniker): HResult; stdcall;
+//
+// Standard Progress Indicator implementation
+//
+// urlmon.h >> Internet Explorer 3.0 XP !!!
 
-  function GetRunningObjectTable(reserved: DWORD;
-                                 out pprot: IRunningObjectTable): HResult; stdcall;
-
-
-  //
-  // Standard Progress Indicator implementation
-  //
-  // urlmon.h >> Internet Explorer 3.0 XP !!!
-
-  // function CreateStdProgressIndicator(hwndParent: HWND;
-  //                                     pszTitle: POLESTR;
-  //                                     pIbscCaller: IBindStatusCallback;
-  //                                     out ppIbsc: IBindStatusCallback);
+// function CreateStdProgressIndicator(hwndParent: HWND;
+//                                     pszTitle: POLESTR;
+//                                     pIbscCaller: IBindStatusCallback;
+//                                     out ppIbsc: IBindStatusCallback);
 
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
 
 const
   Ole32Lib = 'ole32.dll';
 
-function CoBuildVersion;                      external Ole32Lib name 'CoBuildVersion' ;
-function CoInitialize;                        external Ole32Lib name 'CoInitialize' ;
-function CoRegisterMallocSpy;                 external Ole32Lib name 'CoRegisterMallocSpy' ;
-function CoRevokeMallocSpy;                   external Ole32Lib name 'CoRevokeMallocSpy' ;
-function CoCreateStandardMalloc;              external Ole32Lib name 'CoCreateStandardMalloc' ;
-function CoRegisterInitializeSpy;             external Ole32Lib name 'CoRegisterInitializeSpy' ;
-function CoRevokeInitializeSpy;               external Ole32Lib name 'CoRevokeInitializeSpy' ;
-function CoGetSystemSecurityPermissions;      external Ole32Lib name 'CoGetSystemSecurityPermissions' ;
-function CoLoadLibrary;                       external Ole32Lib name 'CoLoadLibrary' ;
-procedure CoFreeLibrary;                      external Ole32Lib name 'CoFreeLibrary' ;
-procedure CoFreeAllLibraries;                 external Ole32Lib name 'CoFreeAllLibraries' ;
-function CoGetInstanceFromFile;               external Ole32Lib name 'CoGetInstanceFromFile' ;
-function CoGetInstanceFromIStorage;           external Ole32Lib name 'CoGetInstanceFromIStorage' ;
-function CoAllowSetForegroundWindow;          external Ole32Lib name 'CoAllowSetForegroundWindow' ;
-function DcomChannelSetHResult;               external Ole32Lib name 'DcomChannelSetHResult' ;
-function CoIsOle1Class;                       external Ole32Lib name 'CoIsOle1Class' ;
-function CLSIDFromProgIDEx;                   external Ole32Lib name 'CLSIDFromProgIDEx' ;
+function CoBuildVersion; external Ole32Lib name 'CoBuildVersion';
+function CoInitialize; external Ole32Lib name 'CoInitialize';
+function CoRegisterMallocSpy; external Ole32Lib name 'CoRegisterMallocSpy';
+function CoRevokeMallocSpy; external Ole32Lib name 'CoRevokeMallocSpy';
+function CoCreateStandardMalloc; external Ole32Lib name 'CoCreateStandardMalloc';
+function CoRegisterInitializeSpy; external Ole32Lib name 'CoRegisterInitializeSpy';
+function CoRevokeInitializeSpy; external Ole32Lib name 'CoRevokeInitializeSpy';
+function CoGetSystemSecurityPermissions; external Ole32Lib name 'CoGetSystemSecurityPermissions';
+function CoLoadLibrary; external Ole32Lib name 'CoLoadLibrary';
+procedure CoFreeLibrary; external Ole32Lib name 'CoFreeLibrary';
+procedure CoFreeAllLibraries; external Ole32Lib name 'CoFreeAllLibraries';
+function CoGetInstanceFromFile; external Ole32Lib name 'CoGetInstanceFromFile';
+function CoGetInstanceFromIStorage; external Ole32Lib name 'CoGetInstanceFromIStorage';
+function CoAllowSetForegroundWindow; external Ole32Lib name 'CoAllowSetForegroundWindow';
+function DcomChannelSetHResult; external Ole32Lib name 'DcomChannelSetHResult';
+function CoIsOle1Class; external Ole32Lib name 'CoIsOle1Class';
+function CLSIDFromProgIDEx; external Ole32Lib name 'CLSIDFromProgIDEx';
 
 function CoFileTimeToDosDateTime(lpfiletime: PFILETIME;
                                  out lpDosDate: Word;
-                                 out lpDosTime: Word): BOOL; external Ole32Lib name 'CoFileTimeToDosDateTime' ;
+                                 out lpDosTime: Word): BOOL; external Ole32Lib name 'CoFileTimeToDosDateTime';
 
-function CoDosDateTimeToFileTime;             external Ole32Lib name 'CoDosDateTimeToFileTime' ;
-function CoFileTimeNow;                       external Ole32Lib name 'CoFileTimeNow' ;
-function CoRegisterMessageFilter;             external Ole32Lib name 'CoRegisterMessageFilter' ;
-function CoRegisterChannelHook;               external Ole32Lib name 'CoRegisterChannelHook' ;
-function CoTreatAsClass;                      external Ole32Lib name 'CoTreatAsClass' ;
-function CreateDataAdviseHolder;              external Ole32Lib name 'CreateDataAdviseHolder' ;
-function CreateDataCache;                     external Ole32Lib name 'CreateDataCache' ;
-function StgOpenAsyncDocfileOnIFillLockBytes; external Ole32Lib name 'StgOpenAsyncDocfileOnIFillLockBytes' ;
-function StgGetIFillLockBytesOnILockBytes;    external Ole32Lib name 'StgGetIFillLockBytesOnILockBytes' ;
-function StgGetIFillLockBytesOnFile;          external Ole32Lib name 'StgGetIFillLockBytesOnFile' ;
-function StgOpenLayoutDocfile;                external Ole32Lib name 'StgOpenLayoutDocfile' ;
-function CoInstall;                           external Ole32Lib name 'CoInstall' ;
-function BindMoniker;                         external Ole32Lib name 'BindMoniker' ;
-function CoGetObject;                         external Ole32Lib name 'CoGetObject' ;
-function MkParseDisplayName;                  external Ole32Lib name 'MkParseDisplayName' ;
-function MonikerRelativePathTo;               external Ole32Lib name 'MonikerRelativePathTo' ;
-function MonikerCommonPrefixWith;             external Ole32Lib name 'MonikerCommonPrefixWith' ;
-function CreateBindCtx;                       external Ole32Lib name 'CreateBindCtx' ;
-function CreateGenericComposite;              external Ole32Lib name 'CreateGenericComposite' ;
-function GetClassFile;                        external Ole32Lib name 'GetClassFile' ;
-function CreateFileMoniker;                   external Ole32Lib name 'CreateFileMoniker' ;
-function CreateClassMoniker;                  external Ole32Lib name 'CreateClassMoniker' ;
-function CreateItemMoniker;                   external Ole32Lib name 'CreateItemMoniker' ;
-function CreateAntiMoniker;                   external Ole32Lib name 'CreateAntiMoniker' ;
-function CreatePointerMoniker;                external Ole32Lib name 'CreatePointerMoniker' ;
-function CreateObjrefMoniker;                 external Ole32Lib name 'CreateObjrefMoniker' ;
-function GetRunningObjectTable;               external Ole32Lib name 'GetRunningObjectTable' ;
+function CoDosDateTimeToFileTime; external Ole32Lib name 'CoDosDateTimeToFileTime';
+function CoFileTimeNow; external Ole32Lib name 'CoFileTimeNow';
+function CoRegisterMessageFilter; external Ole32Lib name 'CoRegisterMessageFilter';
+function CoRegisterChannelHook; external Ole32Lib name 'CoRegisterChannelHook';
+function CoTreatAsClass; external Ole32Lib name 'CoTreatAsClass';
+function CreateDataAdviseHolder; external Ole32Lib name 'CreateDataAdviseHolder';
+function CreateDataCache; external Ole32Lib name 'CreateDataCache';
+function StgOpenAsyncDocfileOnIFillLockBytes; external Ole32Lib name 'StgOpenAsyncDocfileOnIFillLockBytes';
+function StgGetIFillLockBytesOnILockBytes; external Ole32Lib name 'StgGetIFillLockBytesOnILockBytes';
+function StgGetIFillLockBytesOnFile; external Ole32Lib name 'StgGetIFillLockBytesOnFile';
+function StgOpenLayoutDocfile; external Ole32Lib name 'StgOpenLayoutDocfile';
+function CoInstall; external Ole32Lib name 'CoInstall';
+function BindMoniker; external Ole32Lib name 'BindMoniker';
+function CoGetObject; external Ole32Lib name 'CoGetObject';
+function MkParseDisplayName; external Ole32Lib name 'MkParseDisplayName';
+function MonikerRelativePathTo; external Ole32Lib name 'MonikerRelativePathTo';
+function MonikerCommonPrefixWith; external Ole32Lib name 'MonikerCommonPrefixWith';
+function CreateBindCtx; external Ole32Lib name 'CreateBindCtx';
+function CreateGenericComposite; external Ole32Lib name 'CreateGenericComposite';
+function GetClassFile; external Ole32Lib name 'GetClassFile';
+function CreateFileMoniker; external Ole32Lib name 'CreateFileMoniker';
+function CreateClassMoniker; external Ole32Lib name 'CreateClassMoniker';
+function CreateItemMoniker; external Ole32Lib name 'CreateItemMoniker';
+function CreateAntiMoniker; external Ole32Lib name 'CreateAntiMoniker';
+function CreatePointerMoniker; external Ole32Lib name 'CreatePointerMoniker';
+function CreateObjrefMoniker; external Ole32Lib name 'CreateObjrefMoniker';
+function GetRunningObjectTable; external Ole32Lib name 'GetRunningObjectTable';
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 function CoFileTimeToDosDateTime(const lpfiletime: FILETIME;
                                  out lpDosDate: Word;
                                  out lpDosTime: Word): BOOL; inline;
+
 begin
+
   Result := CoFileTimeToDosDateTime(@lpfiletime,
                                     lpDosDate,
                                     lpDosTime);
 end;
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

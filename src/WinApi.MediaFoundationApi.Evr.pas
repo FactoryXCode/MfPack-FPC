@@ -107,7 +107,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -121,76 +122,78 @@ type
   D3DFORMAT = _D3DFORMAT;
 
 const
-  D3DFMT_UNKNOWN      = D3DFORMAT(0);
-  D3DFMT_R8G8B8       = D3DFORMAT(20);
-  D3DFMT_A8R8G8B8     = D3DFORMAT(21);
-  D3DFMT_X8R8G8B8     = D3DFORMAT(22);
-  D3DFMT_R5G6B5       = D3DFORMAT(23);
-  D3DFMT_X1R5G5B5     = D3DFORMAT(24);
-  D3DFMT_A1R5G5B5     = D3DFORMAT(25);
-  D3DFMT_A4R4G4B4     = D3DFORMAT(26);
-  D3DFMT_R3G3B2       = D3DFORMAT(27);
-  D3DFMT_A8           = D3DFORMAT(28);
-  D3DFMT_A8R3G3B2     = D3DFORMAT(29);
-  D3DFMT_X4R4G4B4     = D3DFORMAT(30);
-  D3DFMT_A2B10G10R10  = D3DFORMAT(31);
+  D3DFMT_UNKNOWN = D3DFORMAT(0);
+  D3DFMT_R8G8B8 = D3DFORMAT(20);
+  D3DFMT_A8R8G8B8 = D3DFORMAT(21);
+  D3DFMT_X8R8G8B8 = D3DFORMAT(22);
+  D3DFMT_R5G6B5 = D3DFORMAT(23);
+  D3DFMT_X1R5G5B5 = D3DFORMAT(24);
+  D3DFMT_A1R5G5B5 = D3DFORMAT(25);
+  D3DFMT_A4R4G4B4 = D3DFORMAT(26);
+  D3DFMT_R3G3B2 = D3DFORMAT(27);
+  D3DFMT_A8 = D3DFORMAT(28);
+  D3DFMT_A8R3G3B2 = D3DFORMAT(29);
+  D3DFMT_X4R4G4B4 = D3DFORMAT(30);
+  D3DFMT_A2B10G10R10 = D3DFORMAT(31);
 
-  D3DFMT_G16R16       = D3DFORMAT(34);
-  D3DFMT_A8P8         = D3DFORMAT(40);
-  D3DFMT_P8           = D3DFORMAT(41);
-  D3DFMT_L8           = D3DFORMAT(50);
-  D3DFMT_A8L8         = D3DFORMAT(51);
-  D3DFMT_A4L4         = D3DFORMAT(52);
-  D3DFMT_V8U8         = D3DFORMAT(60);
-  D3DFMT_L6V5U5       = D3DFORMAT(61);
-  D3DFMT_X8L8V8U8     = D3DFORMAT(62);
-  D3DFMT_Q8W8V8U8     = D3DFORMAT(63);
-  D3DFMT_V16U16       = D3DFORMAT(64);
-  D3DFMT_W11V11U10    = D3DFORMAT(65);
-  D3DFMT_A2W10V10U10  = D3DFORMAT(67);
+  D3DFMT_G16R16 = D3DFORMAT(34);
+  D3DFMT_A8P8 = D3DFORMAT(40);
+  D3DFMT_P8 = D3DFORMAT(41);
+  D3DFMT_L8 = D3DFORMAT(50);
+  D3DFMT_A8L8 = D3DFORMAT(51);
+  D3DFMT_A4L4 = D3DFORMAT(52);
+  D3DFMT_V8U8 = D3DFORMAT(60);
+  D3DFMT_L6V5U5 = D3DFORMAT(61);
+  D3DFMT_X8L8V8U8 = D3DFORMAT(62);
+  D3DFMT_Q8W8V8U8 = D3DFORMAT(63);
+  D3DFMT_V16U16 = D3DFORMAT(64);
+  D3DFMT_W11V11U10 = D3DFORMAT(65);
+  D3DFMT_A2W10V10U10 = D3DFORMAT(67);
   D3DFMT_D16_LOCKABLE = D3DFORMAT(70);
-  D3DFMT_D32          = D3DFORMAT(71);
-  D3DFMT_D15S1        = D3DFORMAT(73);
-  D3DFMT_D24S8        = D3DFORMAT(75);
-  D3DFMT_D24X8        = D3DFORMAT(77);
-  D3DFMT_D24X4S4      = D3DFORMAT(79);
-  D3DFMT_D16          = D3DFORMAT(80);
-  D3DFMT_VERTEXDATA   = D3DFORMAT(100);
-  D3DFMT_INDEX16      = D3DFORMAT(101);
-  D3DFMT_INDEX32      = D3DFORMAT(102);
+  D3DFMT_D32 = D3DFORMAT(71);
+  D3DFMT_D15S1 = D3DFORMAT(73);
+  D3DFMT_D24S8 = D3DFORMAT(75);
+  D3DFMT_D24X8 = D3DFORMAT(77);
+  D3DFMT_D24X4S4 = D3DFORMAT(79);
+  D3DFMT_D16 = D3DFORMAT(80);
+  D3DFMT_VERTEXDATA = D3DFORMAT(100);
+  D3DFMT_INDEX16 = D3DFORMAT(101);
+  D3DFMT_INDEX32 = D3DFORMAT(102);
   //D3DFMT_FORCE_DWORD  = FORCEDWORD;
 
-  MR_VIDEO_RENDER_SERVICE           : TGuid =  '{1092a86c-ab1a-459a-a336-831fbc4d11ff}';
-  MR_VIDEO_MIXER_SERVICE            : TGuid =  '{073cd2fc-6cf4-40b7-8859-e89552c841f8}';
-  MR_VIDEO_ACCELERATION_SERVICE     : TGuid =  '{efef5175-5c7d-4ce2-bbbd-34ff8bca6554}';
-  MR_BUFFER_SERVICE                 : TGuid =  '{a562248c-9ac6-4ffc-9fba-3af8f8ad1a4d}';
-  VIDEO_ZOOM_RECT                   : TGuid =  '{7aaa1638-1b7f-4c93-bd89-5b9c9fb6fcf0}';
+  MR_VIDEO_RENDER_SERVICE: TGuid = '{1092a86c-ab1a-459a-a336-831fbc4d11ff}';
+  MR_VIDEO_MIXER_SERVICE: TGuid = '{073cd2fc-6cf4-40b7-8859-e89552c841f8}';
+  MR_VIDEO_ACCELERATION_SERVICE: TGuid = '{efef5175-5c7d-4ce2-bbbd-34ff8bca6554}';
+  MR_BUFFER_SERVICE: TGuid = '{a562248c-9ac6-4ffc-9fba-3af8f8ad1a4d}';
+  VIDEO_ZOOM_RECT: TGuid = '{7aaa1638-1b7f-4c93-bd89-5b9c9fb6fcf0}';
 
 
 type
   PMFVideoAspectRatioMode = ^MFVideoAspectRatioMode;
   MFVideoAspectRatioMode = DWord;
+
 const
-  MFVideoARMode_None             = MFVideoAspectRatioMode($0);
-  MFVideoARMode_PreservePicture  = MFVideoAspectRatioMode($1);
-  MFVideoARMode_PreservePixel    = MFVideoAspectRatioMode($2);
+  MFVideoARMode_None = MFVideoAspectRatioMode($0);
+  MFVideoARMode_PreservePicture = MFVideoAspectRatioMode($1);
+  MFVideoARMode_PreservePixel = MFVideoAspectRatioMode($2);
   MFVideoARMode_NonLinearStretch = MFVideoAspectRatioMode($4);
-  MFVideoARMode_Mask             = MFVideoAspectRatioMode($7);
+  MFVideoARMode_Mask = MFVideoAspectRatioMode($7);
 
 type
   PMFVideoRenderPrefs = ^MFVideoRenderPrefs;
   MFVideoRenderPrefs = DWord;
+
 const
-  MFVideoRenderPrefs_DoNotRenderBorder     = MFVideoRenderPrefs($1);
-  MFVideoRenderPrefs_DoNotClipToDevice     = MFVideoRenderPrefs($2);
+  MFVideoRenderPrefs_DoNotRenderBorder = MFVideoRenderPrefs($1);
+  MFVideoRenderPrefs_DoNotClipToDevice = MFVideoRenderPrefs($2);
   MFVideoRenderPrefs_AllowOutputThrottling = MFVideoRenderPrefs($4);
   MFVideoRenderPrefs_ForceOutputThrottling = MFVideoRenderPrefs($8);
-  MFVideoRenderPrefs_ForceBatching         = MFVideoRenderPrefs($10);
-  MFVideoRenderPrefs_AllowBatching         = MFVideoRenderPrefs($20);
-  MFVideoRenderPrefs_ForceScaling          = MFVideoRenderPrefs($40);
-  MFVideoRenderPrefs_AllowScaling          = MFVideoRenderPrefs($80);
-  MFVideoRenderPrefs_DoNotRepaintOnStop    = MFVideoRenderPrefs($100);
-  MFVideoRenderPrefs_Mask                  = MFVideoRenderPrefs($1FF);
+  MFVideoRenderPrefs_ForceBatching = MFVideoRenderPrefs($10);
+  MFVideoRenderPrefs_AllowBatching = MFVideoRenderPrefs($20);
+  MFVideoRenderPrefs_ForceScaling = MFVideoRenderPrefs($40);
+  MFVideoRenderPrefs_AllowScaling = MFVideoRenderPrefs($80);
+  MFVideoRenderPrefs_DoNotRepaintOnStop = MFVideoRenderPrefs($100);
+  MFVideoRenderPrefs_Mask = MFVideoRenderPrefs($1FF);
 
 
 type
@@ -225,48 +228,50 @@ type
 
   PMfvpMessageType = ^MFVP_MESSAGE_TYPE;
   PMFVP_MESSAGE_TYPE = ^MFVP_MESSAGE_TYPE;
-  MFVP_MESSAGE_TYPE                  = (
-    MFVP_MESSAGE_FLUSH               = 0,
-    MFVP_MESSAGE_INVALIDATEMEDIATYPE = $1,
-    MFVP_MESSAGE_PROCESSINPUTNOTIFY  = $2,
-    MFVP_MESSAGE_BEGINSTREAMING      = $3,
-    MFVP_MESSAGE_ENDSTREAMING        = $4,
-    MFVP_MESSAGE_ENDOFSTREAM         = $5,
-    MFVP_MESSAGE_STEP                = $6,
-    MFVP_MESSAGE_CANCELSTEP          = $7
-  );
+  MFVP_MESSAGE_TYPE = (
+    MFVP_MESSAGE_FLUSH = 0,
+                       MFVP_MESSAGE_INVALIDATEMEDIATYPE = $1,
+                       MFVP_MESSAGE_PROCESSINPUTNOTIFY = $2,
+                       MFVP_MESSAGE_BEGINSTREAMING = $3,
+                       MFVP_MESSAGE_ENDSTREAMING = $4,
+                       MFVP_MESSAGE_ENDOFSTREAM = $5,
+                       MFVP_MESSAGE_STEP = $6,
+                       MFVP_MESSAGE_CANCELSTEP = $7
+    );
 
 type
   PMFVideoMixPrefs = ^MFVideoMixPrefs;
   _MFVideoMixPrefs = DWord;
   MFVideoMixPrefs = _MFVideoMixPrefs;
+
 const
-  MFVideoMixPrefs_ForceHalfInterlace       = MFVideoMixPrefs($1);
+  MFVideoMixPrefs_ForceHalfInterlace = MFVideoMixPrefs($1);
   MFVideoMixPrefs_AllowDropToHalfInterlace = MFVideoMixPrefs($2);
-  MFVideoMixPrefs_AllowDropToBob           = MFVideoMixPrefs($4);
-  MFVideoMixPrefs_ForceBob                 = MFVideoMixPrefs($8);
-  MFVideoMixPrefs_Mask                     = MFVideoMixPrefs($F);
+  MFVideoMixPrefs_AllowDropToBob = MFVideoMixPrefs($4);
+  MFVideoMixPrefs_ForceBob = MFVideoMixPrefs($8);
+  MFVideoMixPrefs_Mask = MFVideoMixPrefs($F);
 
 type
   PEVRFilterConfigPrefs = ^EVRFilterConfigPrefs;
   _EVRFilterConfig_Prefs = DWord;
   EVRFilterConfigPrefs = _EVRFilterConfig_Prefs;
+
 const
   EVRFilterConfigPrefs_EnableQoS = EVRFilterConfigPrefs($1);
-  EVRFilterConfigPrefs_Mask      = EVRFilterConfigPrefs($1);
+  EVRFilterConfigPrefs_Mask = EVRFilterConfigPrefs($1);
 
 
 type
   PMfServiceLookupType = ^MF_SERVICE_LOOKUP_TYPE;
   PMF_SERVICE_LOOKUP_TYPE = ^MF_SERVICE_LOOKUP_TYPE;
-  _MF_SERVICE_LOOKUP_TYPE               = (
-    MF_SERVICE_LOOKUP_UPSTREAM          = 0,
-    MF_SERVICE_LOOKUP_UPSTREAM_DIRECT   = (MF_SERVICE_LOOKUP_UPSTREAM + 1),
-    MF_SERVICE_LOOKUP_DOWNSTREAM        = (MF_SERVICE_LOOKUP_UPSTREAM_DIRECT + 1),
-    MF_SERVICE_LOOKUP_DOWNSTREAM_DIRECT = (MF_SERVICE_LOOKUP_DOWNSTREAM + 1),
-    MF_SERVICE_LOOKUP_ALL               = (MF_SERVICE_LOOKUP_DOWNSTREAM_DIRECT + 1),
-    MF_SERVICE_LOOKUP_GLOBAL            = (MF_SERVICE_LOOKUP_ALL + 1)
-  );
+  _MF_SERVICE_LOOKUP_TYPE = (
+    MF_SERVICE_LOOKUP_UPSTREAM = 0,
+                             MF_SERVICE_LOOKUP_UPSTREAM_DIRECT = (MF_SERVICE_LOOKUP_UPSTREAM + 1),
+                             MF_SERVICE_LOOKUP_DOWNSTREAM = (MF_SERVICE_LOOKUP_UPSTREAM_DIRECT + 1),
+                             MF_SERVICE_LOOKUP_DOWNSTREAM_DIRECT = (MF_SERVICE_LOOKUP_DOWNSTREAM + 1),
+                             MF_SERVICE_LOOKUP_ALL = (MF_SERVICE_LOOKUP_DOWNSTREAM_DIRECT + 1),
+                             MF_SERVICE_LOOKUP_GLOBAL = (MF_SERVICE_LOOKUP_ALL + 1)
+    );
   MF_SERVICE_LOOKUP_TYPE = _MF_SERVICE_LOOKUP_TYPE;
 
 
@@ -278,7 +283,7 @@ type
   // ================================
   //
   IMFVideoPositionMapper = interface(IUnknown)
-  ['{1F6A9F17-E70B-4e24-8AE4-0B2C3BA7A4AE}']
+    ['{1F6A9F17-E70B-4e24-8AE4-0B2C3BA7A4AE}']
 
     function MapOutputCoordinateToInputStream(xOut: Single;
                                               yOut: Single;
@@ -287,6 +292,7 @@ type
                                               out pxIn: Single;
                                               out pyIn: Single): HRESULT; stdcall;
   end;
+
   IID_IMFVideoPositionMapper = IMFVideoPositionMapper;
 
 
@@ -295,11 +301,12 @@ type
   // ==========================
   //
   IMFVideoDeviceID = interface(IUnknown)
-  ['{A38D9567-5A9C-4f3c-B293-8EB415B279BA}']
+    ['{A38D9567-5A9C-4f3c-B293-8EB415B279BA}']
 
     function GetDeviceID(out pDeviceID: IID): HRESULT; stdcall;
 
   end;
+
   IID_IMFVideoDeviceID = IMFVideoDeviceID;
 
 
@@ -308,7 +315,7 @@ type
   // ================================
   //
   IMFVideoDisplayControl = interface(IUnknown)
-  ['{a490b1e4-ab84-4d31-a1b2-181e03b1077a}']
+    ['{a490b1e4-ab84-4d31-a1b2-181e03b1077a}']
     function GetNativeVideoSize(var pszVideo: SIZE;
                                 var pszARVideo: SIZE): HRESULT; stdcall;
 
@@ -354,6 +361,7 @@ type
     function GetFullscreen(out pfFullscreen: BOOL): HRESULT; stdcall; deprecated 'This API is not longer available since SDK version RedStone 5';
 
   end;
+
   IID_IMFVideoDisplayControl = IMFVideoDisplayControl;
 
 
@@ -361,7 +369,7 @@ type
   // ===========================
   //
   IMFVideoPresenter = interface(IMFClockStateSink)
-  ['{29AFF080-182A-4a5d-AF3B-448F3A6346CB}']
+    ['{29AFF080-182A-4a5d-AF3B-448F3A6346CB}']
 
     function ProcessMessage(eMessage: MFVP_MESSAGE_TYPE;
                             ulParam: ULONG_PTR): HRESULT; stdcall;
@@ -369,6 +377,7 @@ type
     function GetCurrentMediaType(out ppMediaType: IMFVideoMediaType): HRESULT; stdcall;
 
   end;
+
   IID_IMFVideoPresenter = IMFVideoPresenter;
 
 
@@ -376,7 +385,7 @@ type
   // ==========================
   //
   IMFDesiredSample = interface(IUnknown)
-  ['{56C294D0-753E-4260-8D61-A3D8820B1D54}']
+    ['{56C294D0-753E-4260-8D61-A3D8820B1D54}']
 
     function GetDesiredSampleTimeAndDuration(out phnsSampleTime: LONGLONG;
                                              out phnsSampleDuration: LONGLONG): HRESULT; stdcall;
@@ -387,6 +396,7 @@ type
     procedure Clear(); stdcall;
 
   end;
+
   IID_IMFDesiredSample = IMFDesiredSample;
 
 
@@ -394,12 +404,13 @@ type
   // ==========================
   //
   IMFTrackedSample = interface(IUnknown)
-  ['{245BF8E9-0755-40f7-88A5-AE0F18D55E17}']
+    ['{245BF8E9-0755-40f7-88A5-AE0F18D55E17}']
 
     function SetAllocator(pSampleAllocator: IMFAsyncCallback;
                           const pUnkState: IUnknown): HRESULT; stdcall;
 
   end;
+
   IID_IMFTrackedSample = IMFTrackedSample;
 
 
@@ -407,7 +418,7 @@ type
   // ==============================
   //
   IMFVideoMixerControl = interface(IUnknown)
-  ['{245BF8E9-0755-40f7-88A5-AE0F18D55E17}']
+    ['{245BF8E9-0755-40f7-88A5-AE0F18D55E17}']
 
     function SetStreamZOrder(dwStreamID: DWORD;
                              dwZ: DWORD): HRESULT; stdcall;
@@ -421,6 +432,7 @@ type
     function GetStreamOutputRect(dwStreamID: DWORD;
                                  out pnrcOutput: MFVideoNormalizedRect): HRESULT; stdcall;
   end;
+
   IID_IMFVideoMixerControl = IMFVideoMixerControl;
 
 
@@ -428,13 +440,14 @@ type
   // ===============================
   //
   IMFVideoMixerControl2 = interface(IMFVideoMixerControl)
-  ['{8459616d-966e-4930-b658-54fa7e5a16d3}']
+    ['{8459616d-966e-4930-b658-54fa7e5a16d3}']
 
     function SetMixingPrefs(dwMixFlags: DWORD): HRESULT; stdcall;
 
     function GetMixingPrefs(out pdwMixFlags: DWORD): HRESULT; stdcall;
 
   end;
+
   IID_IMFVideoMixerControl2 = IMFVideoMixerControl2;
 
 
@@ -442,12 +455,13 @@ type
   // ==========================
   //
   IMFVideoRenderer = interface(IUnknown)
-  ['{DFDFD197-A9CA-43d8-B341-6AF3503792CD}']
+    ['{DFDFD197-A9CA-43d8-B341-6AF3503792CD}']
 
     function InitializeRenderer(pVideoMixer: IMFTransform;
                                 pVideoPresenter: IMFVideoPresenter): HRESULT; stdcall;
 
   end;
+
   IID_IMFVideoRenderer = IMFVideoRenderer;
 
 
@@ -455,13 +469,14 @@ type
   // ==========================
   //
   IEVRFilterConfig = interface(IUnknown)
-  ['{DFDFD197-A9CA-43d8-B341-6AF3503792CD}']
+    ['{DFDFD197-A9CA-43d8-B341-6AF3503792CD}']
 
     function SetNumberOfStreams(dwMaxStreams: DWORD): HRESULT; stdcall;
 
     function GetNumberOfStreams(out pdwMaxStreams: DWORD): HRESULT; stdcall;
 
   end;
+
   IID_IEVRFilterConfig = IEVRFilterConfig;
 
 
@@ -469,13 +484,14 @@ type
   // ============================
   //
   IEVRFilterConfigEx = interface(IEVRFilterConfig)
-  ['{aea36028-796d-454f-beee-b48071e24304}']
+    ['{aea36028-796d-454f-beee-b48071e24304}']
 
     function SetConfigPrefs(dwConfigFlags: DWORD): HRESULT; stdcall;
 
     function GetConfigPrefs(out pdwConfigFlags: DWORD): HRESULT; stdcall;
 
   end;
+
   IID_IEVRFilterConfigEx = IEVRFilterConfigEx;
 
 
@@ -483,7 +499,7 @@ type
   // ==================================
   //
   IMFTopologyServiceLookup = interface(IUnknown)
-  ['{fa993889-4383-415a-a930-dd472a8cf6f7}']
+    ['{fa993889-4383-415a-a930-dd472a8cf6f7}']
 
     function LookupService(aType: MF_SERVICE_LOOKUP_TYPE;
                            dwIndex: DWORD;
@@ -493,6 +509,7 @@ type
                            pnObjects: PDWORD): HRESULT; stdcall;
 
   end;
+
   IID_IMFTopologyServiceLookup = IMFTopologyServiceLookup;
 
 
@@ -500,13 +517,14 @@ type
   // ========================================
   //
   IMFTopologyServiceLookupClient = interface(IUnknown)
-  ['{fa99388a-4383-415a-a930-dd472a8cf6f7}']
+    ['{fa99388a-4383-415a-a930-dd472a8cf6f7}']
 
     function InitServicePointers(pLookup: IMFTopologyServiceLookup): HRESULT; stdcall;
 
     function ReleaseServicePointers(): HRESULT; stdcall;
 
   end;
+
   IID_IMFTopologyServiceLookupClient = IMFTopologyServiceLookupClient;
 
 
@@ -514,7 +532,7 @@ type
   // ================================
   //
   IEVRTrustedVideoPlugin = interface(IUnknown)
-  ['{83A4CE40-7710-494b-A893-A472049AF630}']
+    ['{83A4CE40-7710-494b-A893-A472049AF630}']
 
     function IsInTrustedVideoMode(out pYes: BOOL): HRESULT; stdcall;
 
@@ -525,99 +543,100 @@ type
     function DisableImageExport(bDisable: BOOL): HRESULT; stdcall;
 
   end;
+
   IID_IEVRTrustedVideoPlugin = IEVRTrustedVideoPlugin;
 
 
-  //function MFCreateVideoPresenter
-  //Creates the default video presenter for the enhanced video renderer (EVR).
-  //NOTES:
-  //pOwner :  Pointer to the owner of the object.
-  //          If the object is aggregated, pass a pointer to the aggregating object's IUnknown interface.
-  //          Otherwise, set this parameter to nil.
-  //riidDevice : Interface identifier (IID) of the video device interface that will be used for processing the video.
-  //             Currently the only supported value is IID_IDirect3DDevice9.
-  //riid : IID of the requested interface on the video presenter. The video presenter exposes the IMFVideoPresenter interface.
-  //ppVideoPresenter : Receives a pointer to the requested interface on the video presenter.
-  //                   The caller must release the interface.
-  function MFCreateVideoPresenter(pOwner: IUnknown;
-                                  const riidDevice: REFIID;
-                                  const riid: REFIID;
-                                  out ppVideoPresenter: IMFVideoPresenter): HRESULT; stdcall;
+//function MFCreateVideoPresenter
+//Creates the default video presenter for the enhanced video renderer (EVR).
+//NOTES:
+//pOwner :  Pointer to the owner of the object.
+//          If the object is aggregated, pass a pointer to the aggregating object's IUnknown interface.
+//          Otherwise, set this parameter to nil.
+//riidDevice : Interface identifier (IID) of the video device interface that will be used for processing the video.
+//             Currently the only supported value is IID_IDirect3DDevice9.
+//riid : IID of the requested interface on the video presenter. The video presenter exposes the IMFVideoPresenter interface.
+//ppVideoPresenter : Receives a pointer to the requested interface on the video presenter.
+//                   The caller must release the interface.
+function MFCreateVideoPresenter(pOwner: IUnknown;
+                                const riidDevice: REFIID;
+                                const riid: REFIID;
+                                out ppVideoPresenter: IMFVideoPresenter): HRESULT; stdcall;
 
 
-  //function MFCreateVideoMixer
-  //Creates the default video mixer for the enhanced video renderer (EVR).
-  //NOTES:
-  //pOwner :  Pointer to the owner of this object.
-  //          If the object is aggregated, pass a pointer to the aggregating object's IUnknown interface.
-  //          Otherwise, set this parameter to Nil ( IUnknown(nil) ).
-  //riidDevice :  Interface identifier (IID) of the video device interface that will be used for processing the video.
-  //              Currently the only supported value is IID_IDirect3DDevice9.
-  //riid : IID of the requested interface on the video mixer. The video mixer exposes the IMFTransform interface.
-  //ppVideoMixer : Receives a pointer to the requested interface. The caller must release the interface.
-  function MFCreateVideoMixer(pOwner: IUnknown;
-                              const riidDevice: REFIID;
-                              const riid: REFIID;
-                              out ppVideoMixer: Pointer): HRESULT; stdcall;
+//function MFCreateVideoMixer
+//Creates the default video mixer for the enhanced video renderer (EVR).
+//NOTES:
+//pOwner :  Pointer to the owner of this object.
+//          If the object is aggregated, pass a pointer to the aggregating object's IUnknown interface.
+//          Otherwise, set this parameter to Nil ( IUnknown(nil) ).
+//riidDevice :  Interface identifier (IID) of the video device interface that will be used for processing the video.
+//              Currently the only supported value is IID_IDirect3DDevice9.
+//riid : IID of the requested interface on the video mixer. The video mixer exposes the IMFTransform interface.
+//ppVideoMixer : Receives a pointer to the requested interface. The caller must release the interface.
+function MFCreateVideoMixer(pOwner: IUnknown;
+                            const riidDevice: REFIID;
+                            const riid: REFIID;
+                            out ppVideoMixer: Pointer): HRESULT; stdcall;
 
 
-  //function MFCreateVideoMixerAndPresenter
-  //Creates the default video mixer and video presenter for the enhanced video renderer (EVR).
-  //NOTES:
-  //pMixerOwner : Pointer to the owner of the video mixer.
-  //              If the mixer is aggregated, pass a pointer to the aggregating object's IUnknown interface.
-  //              Otherwise, set this parameter to Nil ( IUnknown(nil) ).
-  //pPresenterOwner : Pointer to the owner of the video presenter.
-  //                  If the presenter is aggregated, pass a pointer to the aggregating object's IUnknown interface.
-  //                  Otherwise, set this parameter to Nil ( IUnknown(nil) ).
-  //riidMixer : Interface identifier (IID) of the requested interface on the video mixer. The video mixer exposes the IMFTransform interface.
-  //ppvVideoMixer : Receives a pointer to the requested interface on the video mixer. The caller must release the interface.
-  //riidPresenter : IID of the requested interface on the video presenter. The video presenter exposes the IMFVideoPresenter interface.
-  //ppvVideoPresenter : Receives a pointer to the requested interface on the video presenter. The caller must release the interface.
-  function MFCreateVideoMixerAndPresenter(pMixerOwner: IUnknown;
-                                          pPresenterOwner: IUnknown;
-                                          const riidMixer: REFIID;
-                                          out ppvVideoMixer: Pointer;
-                                          const riidPresenter: REFIID;
-                                          out ppvVideoPresenter: Pointer): HRESULT; stdcall;
+//function MFCreateVideoMixerAndPresenter
+//Creates the default video mixer and video presenter for the enhanced video renderer (EVR).
+//NOTES:
+//pMixerOwner : Pointer to the owner of the video mixer.
+//              If the mixer is aggregated, pass a pointer to the aggregating object's IUnknown interface.
+//              Otherwise, set this parameter to Nil ( IUnknown(nil) ).
+//pPresenterOwner : Pointer to the owner of the video presenter.
+//                  If the presenter is aggregated, pass a pointer to the aggregating object's IUnknown interface.
+//                  Otherwise, set this parameter to Nil ( IUnknown(nil) ).
+//riidMixer : Interface identifier (IID) of the requested interface on the video mixer. The video mixer exposes the IMFTransform interface.
+//ppvVideoMixer : Receives a pointer to the requested interface on the video mixer. The caller must release the interface.
+//riidPresenter : IID of the requested interface on the video presenter. The video presenter exposes the IMFVideoPresenter interface.
+//ppvVideoPresenter : Receives a pointer to the requested interface on the video presenter. The caller must release the interface.
+function MFCreateVideoMixerAndPresenter(pMixerOwner: IUnknown;
+                                        pPresenterOwner: IUnknown;
+                                        const riidMixer: REFIID;
+                                        out ppvVideoMixer: Pointer;
+                                        const riidPresenter: REFIID;
+                                        out ppvVideoPresenter: Pointer): HRESULT; stdcall;
 
 
-  //function MFCreateVideoRenderer
-  //Creates an instance of the enhanced video renderer (EVR) media sink.
-  //NOTES:
-  //riidRenderer : Interface identifier (IID) of the requested interface on the EVR.
-  //ppVideoRenderer : Receives a pointer to the requested interface. The caller must release the interface.
-  function MFCreateVideoRenderer(const riidRenderer: REFIID;
-                                 out ppVideoRenderer: Pointer): HRESULT; stdcall;
+//function MFCreateVideoRenderer
+//Creates an instance of the enhanced video renderer (EVR) media sink.
+//NOTES:
+//riidRenderer : Interface identifier (IID) of the requested interface on the EVR.
+//ppVideoRenderer : Receives a pointer to the requested interface. The caller must release the interface.
+function MFCreateVideoRenderer(const riidRenderer: REFIID;
+                               out ppVideoRenderer: Pointer): HRESULT; stdcall;
 
 
-  //function MFCreateVideoSampleFromSurface
-  //Creates a media sample that manages a Direct3D surface.
-  //NOTES:
-  //pUnkSurface : A pointer to the IUnknown interface of the Direct3D surface.
-  //              This parameter can be Nil ( IUnknown(Nil) ).
-  //ppSample : Receives a pointer to the sample's IMFSample interface. The caller must release the interface.
-  function MFCreateVideoSampleFromSurface(pUnkSurface: IUnknown;
-                                          out ppSample: IMFSample): HRESULT; stdcall;
+//function MFCreateVideoSampleFromSurface
+//Creates a media sample that manages a Direct3D surface.
+//NOTES:
+//pUnkSurface : A pointer to the IUnknown interface of the Direct3D surface.
+//              This parameter can be Nil ( IUnknown(Nil) ).
+//ppSample : Receives a pointer to the sample's IMFSample interface. The caller must release the interface.
+function MFCreateVideoSampleFromSurface(pUnkSurface: IUnknown;
+                                        out ppSample: IMFSample): HRESULT; stdcall;
 
 
-  // Additional Prototypes for ALL interfaces
+// Additional Prototypes for ALL interfaces
 
-  // End of Additional Prototypes
+// End of Additional Prototypes
 
 implementation
-  
-  // Implement Additional functions here.
+
+// Implement Additional functions here.
 
 
 const
   EvrLib = 'evr.dll';
   MfLib = 'mf.dll';
 
-  function MFCreateVideoPresenter;         external EvrLib name 'MFCreateVideoPresenter' ;
-  function MFCreateVideoMixer;             external EvrLib name 'MFCreateVideoMixer' ;
-  function MFCreateVideoMixerAndPresenter; external EvrLib name 'MFCreateVideoMixerAndPresenter' ;
-  function MFCreateVideoRenderer;          external MfLib name 'MFCreateVideoRenderer' ;
-  function MFCreateVideoSampleFromSurface; external EvrLib name 'MFCreateVideoSampleFromSurface' ;
+function MFCreateVideoPresenter; external EvrLib name 'MFCreateVideoPresenter';
+function MFCreateVideoMixer; external EvrLib name 'MFCreateVideoMixer';
+function MFCreateVideoMixerAndPresenter; external EvrLib name 'MFCreateVideoMixerAndPresenter';
+function MFCreateVideoRenderer; external MfLib name 'MFCreateVideoRenderer';
+function MFCreateVideoSampleFromSurface; external EvrLib name 'MFCreateVideoSampleFromSurface';
 
 end.

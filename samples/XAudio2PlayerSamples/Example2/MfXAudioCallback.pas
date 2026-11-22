@@ -1,13 +1,18 @@
 unit MfXAudioCallback;
 
-{$IFDEF FPC}{$I MfPack.Fpc.inc}{$ENDIF}
+{$IFDEF FPC}
+{$I MfPack.Fpc.inc}
+{$ENDIF}
 
 interface
 
-uses WinApi.WinApiTypes,WinApi.DirectX.XAudio2.XAudio2;
+uses
+  WinApi.WinApiTypes,
+  WinApi.DirectX.XAudio2.XAudio2;
 
 type
   TNativeXAudioCallback = class;
+
   TXAudioCallbackBridge = record
     Native: IXAudio2VoiceCallback;
     Owner: TNativeXAudioCallback;
@@ -15,9 +20,11 @@ type
   PXAudioCallbackBridge = ^TXAudioCallbackBridge;
 
   TNativeXAudioCallback = class
+
   private
     FBridge: TXAudioCallbackBridge;
     function GetCallbackPointer(): PIXAudio2VoiceCallback;
+
   public
     constructor Create();
     procedure OnVoiceProcessingPassStart(BytesRequired: UINT32); virtual; stdcall;
@@ -26,14 +33,19 @@ type
     procedure OnBufferStart(pBufferContext: Pointer); virtual; stdcall;
     procedure OnBufferEnd(pBufferContext: Pointer); virtual; stdcall;
     procedure OnLoopEnd(pBufferContext: Pointer); virtual; stdcall;
-    procedure OnVoiceError(pBufferContext: Pointer;Error: HRESULT); virtual; stdcall;
+    procedure OnVoiceError(pBufferContext: Pointer;
+                           Error: HRESULT); virtual; stdcall;
     property CallbackPointer: PIXAudio2VoiceCallback read GetCallbackPointer;
   end;
 
 implementation
 
-procedure NativeOnVoiceProcessingPassStart(This: Pointer;BytesRequired: UINT32); stdcall;
+
+procedure NativeOnVoiceProcessingPassStart(This: Pointer;
+                                           BytesRequired: UINT32); stdcall;
+
 begin
+
   try
     PXAudioCallbackBridge(This).Owner.OnVoiceProcessingPassStart(BytesRequired);
   except
@@ -41,8 +53,11 @@ begin
   end;
 end;
 
+
 procedure NativeOnVoiceProcessingPassEnd(This: Pointer); stdcall;
+
 begin
+
   try
     PXAudioCallbackBridge(This).Owner.OnVoiceProcessingPassEnd();
   except
@@ -50,8 +65,11 @@ begin
   end;
 end;
 
+
 procedure NativeOnStreamEnd(This: Pointer); stdcall;
+
 begin
+
   try
     PXAudioCallbackBridge(This).Owner.OnStreamEnd();
   except
@@ -59,8 +77,12 @@ begin
   end;
 end;
 
-procedure NativeOnBufferStart(This: Pointer;pBufferContext: Pointer); stdcall;
+
+procedure NativeOnBufferStart(This: Pointer;
+                              pBufferContext: Pointer); stdcall;
+
 begin
+
   try
     PXAudioCallbackBridge(This).Owner.OnBufferStart(pBufferContext);
   except
@@ -68,8 +90,12 @@ begin
   end;
 end;
 
-procedure NativeOnBufferEnd(This: Pointer;pBufferContext: Pointer); stdcall;
+
+procedure NativeOnBufferEnd(This: Pointer;
+                            pBufferContext: Pointer); stdcall;
+
 begin
+
   try
     PXAudioCallbackBridge(This).Owner.OnBufferEnd(pBufferContext);
   except
@@ -77,8 +103,12 @@ begin
   end;
 end;
 
-procedure NativeOnLoopEnd(This: Pointer;pBufferContext: Pointer); stdcall;
+
+procedure NativeOnLoopEnd(This: Pointer;
+                          pBufferContext: Pointer); stdcall;
+
 begin
+
   try
     PXAudioCallbackBridge(This).Owner.OnLoopEnd(pBufferContext);
   except
@@ -86,10 +116,16 @@ begin
   end;
 end;
 
-procedure NativeOnVoiceError(This: Pointer;pBufferContext: Pointer;Error: HRESULT); stdcall;
+
+procedure NativeOnVoiceError(This: Pointer;
+                             pBufferContext: Pointer;
+                             Error: HRESULT); stdcall;
+
 begin
+
   try
-    PXAudioCallbackBridge(This).Owner.OnVoiceError(pBufferContext,Error);
+    PXAudioCallbackBridge(This).Owner.OnVoiceError(pBufferContext,
+                                                   Error);
   except
     // Pascal exceptions must not cross an XAudio2 native callback boundary.
   end;
@@ -98,44 +134,72 @@ end;
 var
   CallbackVTable: IXAudio2VoiceCallbackVTable;
 
+
 constructor TNativeXAudioCallback.Create();
+
 begin
+
   inherited Create();
   FBridge.Native.lpVtbl := @CallbackVTable;
   FBridge.Owner := Self;
 end;
 
+
 function TNativeXAudioCallback.GetCallbackPointer(): PIXAudio2VoiceCallback;
+
 begin
+
   Result := @FBridge.Native;
 end;
 
+
 procedure TNativeXAudioCallback.OnVoiceProcessingPassStart(BytesRequired: UINT32);
+
 begin
+
 end;
+
 
 procedure TNativeXAudioCallback.OnVoiceProcessingPassEnd();
+
 begin
+
 end;
+
 
 procedure TNativeXAudioCallback.OnStreamEnd();
+
 begin
+
 end;
+
 
 procedure TNativeXAudioCallback.OnBufferStart(pBufferContext: Pointer);
+
 begin
+
 end;
+
 
 procedure TNativeXAudioCallback.OnBufferEnd(pBufferContext: Pointer);
+
 begin
+
 end;
+
 
 procedure TNativeXAudioCallback.OnLoopEnd(pBufferContext: Pointer);
+
 begin
+
 end;
 
-procedure TNativeXAudioCallback.OnVoiceError(pBufferContext: Pointer;Error: HRESULT);
+
+procedure TNativeXAudioCallback.OnVoiceError(pBufferContext: Pointer;
+                                             Error: HRESULT);
+
 begin
+
 end;
 
 initialization

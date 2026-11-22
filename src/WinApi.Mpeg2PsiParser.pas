@@ -72,7 +72,7 @@ unit WinApi.Mpeg2PsiParser;
 interface
 
 uses
-  
+
   {WinApi}
   WinApi.WinApiTypes,
   WinApi.Unknwn,
@@ -85,7 +85,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   // Interfaces.
@@ -96,8 +97,9 @@ type
   // =============================
   //
   PIGenericDescriptor = ^IGenericDescriptor;
+
   IGenericDescriptor = interface(IUnknown)
-  ['{6A5918F8-A77A-4f61-AED0-5702BDCDA3E6}']
+    ['{6A5918F8-A77A-4f61-AED0-5702BDCDA3E6}']
     function Initialize(pbDesc: PByte;
                         bCount: INT): HRESULT; stdcall;
 
@@ -108,6 +110,7 @@ type
     function GetBody(out ppbVal: PByte): HRESULT; stdcall;
 
   end;
+
   IID_IGenericDescriptor = IGenericDescriptor;
 
 
@@ -119,7 +122,7 @@ type
   // The SDK intentionally hides inherited names while adding two new COM slots.
   {$WARN 3057 OFF}
   IGenericDescriptor2 = interface(IGenericDescriptor)
-  ['{BF02FB7E-9792-4e10-A68D-033A2CC246A5}']
+    ['{BF02FB7E-9792-4e10-A68D-033A2CC246A5}']
 
     function Initialize(pbDesc: PByte;
                         wCount: WORD): HRESULT; stdcall;
@@ -127,6 +130,7 @@ type
     function GetLength(out pwVal: WORD): HRESULT; stdcall;
 
   end;
+
   IID_IGenericDescriptor2 = IGenericDescriptor2;
 
 
@@ -134,6 +138,7 @@ type
   {$POP}
 
   PProgramElement = ^ProgramElement;
+
   ProgramElement = record
     wProgramNumber: WORD;
     wProgramMapPID: WORD;
@@ -143,8 +148,9 @@ type
   // ==============
   //
   PIPAT = ^IPAT;
+
   IPAT = interface(IUnknown)
-  ['{6623B511-4B5F-43c3-9A01-E8FF84188060}']
+    ['{6623B511-4B5F-43c3-9A01-E8FF84188060}']
 
     function Initialize(pSectionList: ISectionList;
                         pMPEGData: IMpeg2Data): HRESULT; stdcall;
@@ -173,6 +179,7 @@ type
     function ConvertNextToCurrent(): HRESULT; stdcall;
 
   end;
+
   IID_IPAT = IPAT;
 
 
@@ -180,8 +187,9 @@ type
   // ==============
   //
   PICAT = ^ICAT;
+
   ICAT = interface(IUnknown)
-  ['{7C6995FB-2A31-4bd7-953E-B1AD7FB7D31C}']
+    ['{7C6995FB-2A31-4bd7-953E-B1AD7FB7D31C}']
 
     function Initialize(pSectionList: ISectionList;
                         pMPEGData: IMpeg2Data): HRESULT; stdcall;
@@ -208,6 +216,7 @@ type
     function ConvertNextToCurrent(): HRESULT; stdcall;
 
   end;
+
   IID_ICAT = ICAT;
 
 
@@ -215,8 +224,9 @@ type
   // ==============
   //
   PIPMT = ^IPMT;
+
   IPMT = interface(IUnknown)
-  ['{01F3B398-9527-4736-94DB-5195878E97A8}']
+    ['{01F3B398-9527-4736-94DB-5195878E97A8}']
 
     function Initialize(pSectionList: ISectionList;
                         pMPEGData: IMpeg2Data): HRESULT; stdcall;
@@ -273,6 +283,7 @@ type
     function ConvertNextToCurrent(): HRESULT; stdcall;
 
   end;
+
   IID_IPMT = IPMT;
 
 
@@ -280,8 +291,9 @@ type
   // ===============
   //
   PITSDT = ^ITSDT;
+
   ITSDT = interface(IUnknown)
-  ['{D19BDB43-405B-4a7c-A791-C89110C33165}']
+    ['{D19BDB43-405B-4a7c-A791-C89110C33165}']
 
     function Initialize(pSectionList: ISectionList;
                         pMPEGData: IMpeg2Data): HRESULT; stdcall;
@@ -307,6 +319,7 @@ type
     function ConvertNextToCurrent(): HRESULT; stdcall;
 
   end;
+
   IID_ITSDT = ITSDT;
 
 
@@ -314,7 +327,7 @@ type
   // ====================
   //
   IPSITables = interface(IUnknown)
-  ['{919F24C5-7B14-42ac-A4B0-2AE08DAF00AC}']
+    ['{919F24C5-7B14-42ac-A4B0-2AE08DAF00AC}']
 
     // The parameters are basically the ones from the event EVENTID_PSITable
     // defined in bdamedia.h
@@ -337,6 +350,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.

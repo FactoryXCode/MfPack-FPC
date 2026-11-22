@@ -94,6 +94,7 @@ type
   end;
 
   TAvrCapabilityRequest = class(TThread)
+
   private
 
     FHost: string;
@@ -124,6 +125,7 @@ type
   // SelectDevice, Refresh and Poll are called from the owning (normally UI) thread.
   // Workers never call VCL code. Poll returns True when the visible result changes.
   TAvrCapabilityManager = class
+
   private
 
     FCacheFile: string;
@@ -135,7 +137,7 @@ type
     FErrorText: string;
     FElapsedMs: Int64;
     FRequest: TAvrCapabilityRequest;
-    FRetired: TObjectList<TAvrCapabilityRequest>;
+    FRetired: TObjectList < TAvrCapabilityRequest > ;
 
     function CacheSection(): string;
     procedure LoadCache();
@@ -172,7 +174,8 @@ implementation
 uses
 
   {WinApi}
-  Windows,Heos.Fpc.Platform,
+  Windows,
+  Heos.Fpc.Platform,
   ActiveX,
   {System}
   IniFiles,
@@ -187,25 +190,49 @@ type
   // Minimal Windows SDK bindings keep this unit compatible with Delphi XE7.
   HINTERNET = Pointer;
 
-function WinHttpOpen(Agent: PWideChar; AccessType: DWORD; ProxyName: PWideChar;
-                     ProxyBypass: PWideChar; Flags: DWORD): HINTERNET; stdcall; external 'winhttp.dll';
-function WinHttpConnect(Session: HINTERNET; Host: PWideChar; Port: Word;
+function WinHttpOpen(Agent: PWideChar;
+                     AccessType: DWORD;
+                     ProxyName: PWideChar;
+                     ProxyBypass: PWideChar;
+                     Flags: DWORD): HINTERNET; stdcall; external 'winhttp.dll';
+function WinHttpConnect(Session: HINTERNET;
+                        Host: PWideChar;
+                        Port: Word;
                         Reserved: DWORD): HINTERNET; stdcall; external 'winhttp.dll';
-function WinHttpOpenRequest(Connection: HINTERNET; Verb: PWideChar; Path: PWideChar;
-                            Version: PWideChar; Referrer: PWideChar; AcceptTypes: Pointer;
+function WinHttpOpenRequest(Connection: HINTERNET;
+                            Verb: PWideChar;
+                            Path: PWideChar;
+                            Version: PWideChar;
+                            Referrer: PWideChar;
+                            AcceptTypes: Pointer;
                             Flags: DWORD): HINTERNET; stdcall; external 'winhttp.dll';
-function WinHttpSetTimeouts(Session: HINTERNET; ResolveMs: Integer; ConnectMs: Integer;
-                            SendMs: Integer; ReceiveMs: Integer): BOOL; stdcall; external 'winhttp.dll';
-function WinHttpSetOption(Request: HINTERNET; Option: DWORD; Buffer: Pointer;
+function WinHttpSetTimeouts(Session: HINTERNET;
+                            ResolveMs: Integer;
+                            ConnectMs: Integer;
+                            SendMs: Integer;
+                            ReceiveMs: Integer): BOOL; stdcall; external 'winhttp.dll';
+function WinHttpSetOption(Request: HINTERNET;
+                          Option: DWORD;
+                          Buffer: Pointer;
                           BufferLength: DWORD): BOOL; stdcall; external 'winhttp.dll';
-function WinHttpSendRequest(Request: HINTERNET; Headers: PWideChar; HeadersLength: DWORD;
-                            Optional: Pointer; OptionalLength: DWORD; TotalLength: DWORD;
+function WinHttpSendRequest(Request: HINTERNET;
+                            Headers: PWideChar;
+                            HeadersLength: DWORD;
+                            Optional: Pointer;
+                            OptionalLength: DWORD;
+                            TotalLength: DWORD;
                             Context: NativeUInt): BOOL; stdcall; external 'winhttp.dll';
-function WinHttpReceiveResponse(Request: HINTERNET; Reserved: Pointer): BOOL; stdcall; external 'winhttp.dll';
-function WinHttpQueryHeaders(Request: HINTERNET; InfoLevel: DWORD; Name: PWideChar;
-                             Buffer: Pointer; var BufferLength: DWORD;
+function WinHttpReceiveResponse(Request: HINTERNET;
+                                Reserved: Pointer): BOOL; stdcall; external 'winhttp.dll';
+function WinHttpQueryHeaders(Request: HINTERNET;
+                             InfoLevel: DWORD;
+                             Name: PWideChar;
+                             Buffer: Pointer;
+                             var BufferLength: DWORD;
                              Index: Pointer): BOOL; stdcall; external 'winhttp.dll';
-function WinHttpReadData(Request: HINTERNET; Buffer: Pointer; Size: DWORD;
+function WinHttpReadData(Request: HINTERNET;
+                         Buffer: Pointer;
+                         Size: DWORD;
                          var BytesRead: DWORD): BOOL; stdcall; external 'winhttp.dll';
 function WinHttpCloseHandle(Handle: HINTERNET): BOOL; stdcall; external 'winhttp.dll';
 
@@ -219,15 +246,27 @@ const
   WinHttpQueryFlagNumber = $20000000;
   MaximumCapabilityBytes = 1024 * 1024;
 
-function LoadXMLData(const Text:UnicodeString):TXMLDocument;
-var Stream:TStringStream;
+
+function LoadXMLData(const Text: UnicodeString): TXMLDocument;
+var
+  Stream: TStringStream;
+
 begin
- Result:=nil;Stream:=TStringStream.Create(UTF8Encode(Text));
- try ReadXMLFile(Result,Stream);finally Stream.Free;end;
+
+  Result := nil;
+  Stream := TStringStream.Create(UTF8Encode(Text));
+  try
+    ReadXMLFile(Result,
+                Stream);
+  finally
+    Stream.Free;
+  end;
 end;
+
 
 function Child(Node: TDOMNode;
                const Name: string): TDOMNode;
+
 begin
 
   Result := nil;
@@ -244,7 +283,8 @@ var
 begin
 
   Result := '';
-  Value := Child(Node, Name);
+  Value := Child(Node,
+                 Name);
   if Assigned(Value) then
     Result := Trim(Value.TextContent);
 end;
@@ -262,16 +302,15 @@ begin
   Value := Trim(Node.TextContent);
   if (Value = '1') then
     Result := asSupported
-  else
-    if (Value = '0') then
-      Result := asUnsupported;
+  else if (Value = '0') then
+    Result := asUnsupported;
 end;
 
 
 function ParseCapabilityDocument(const Xml: string;
-                                              const DeviceId: string;
-                                              out Data: TAvrCapabilityData;
-                                              out ErrorText: string): Boolean;
+                                 const DeviceId: string;
+                                 out Data: TAvrCapabilityData;
+                                 out ErrorText: string): Boolean;
 var
   Document: TXMLDocument;
   Root: TDOMNode;
@@ -292,106 +331,125 @@ begin
 
   Document := nil;
   try
-  Result := False;
-  ErrorText := '';
-  Data := Default(TAvrCapabilityData);
-  if (Length(Xml) > MaximumCapabilityBytes) or
-     ContainsText(Xml, '<!DOCTYPE') or ContainsText(Xml, '<!ENTITY') then
-    begin
-      ErrorText := 'Unsupported or oversized device capability XML.';
-      Exit;
-    end;
-
-  try
-    Document := LoadXMLData(Xml);
-    Root := Document.DocumentElement;
-    if not Assigned(Root) or (Root.NodeName <> 'Device_Info') then
-      raise Exception.Create('Not a Denon/Marantz device capability document.');
-
-    // The caller supplies the SSDP identity. Do not derive it from MacAddress:
-    // the UUID and capability document can refer to different network interfaces.
-    AdvertisedId := TextOf(Root, 'UDN');
-    if (DeviceId <> '') and (AdvertisedId <> '') and
-       not SameText(DeviceId, AdvertisedId) then
-      raise Exception.Create('Capability identity does not match the selected receiver.');
-
-    Data.DeviceId := DeviceId;
-    Data.Model := TextOf(Root, 'ModelName');
-    Data.Firmware := TextOf(Root, 'UpgradeVersion');
-    Data.RetrievedAt := Now;
-    Setup := Child(Child(Root, 'DeviceCapabilities'), 'Setup');
-    Tone := Child(Setup, 'ToneControl');
-    Data.Features[afTone] := Flag(Child(Tone, 'Control'));
-    if (Data.Features[afTone] = asUnsupported) then
+    Result := False;
+    ErrorText := '';
+    Data := Default(TAvrCapabilityData);
+    if (Length(Xml) > MaximumCapabilityBytes) or
+      ContainsText(Xml,
+                   '<!DOCTYPE') or ContainsText(Xml,
+                                                '<!ENTITY') then
       begin
-        Data.Features[afBass] := asUnsupported;
-        Data.Features[afTreble] := asUnsupported;
-      end
-    else
-      if (Data.Features[afTone] = asSupported) then
+        ErrorText := 'Unsupported or oversized device capability XML.';
+        Exit;
+      end;
+
+    try
+      Document := LoadXMLData(Xml);
+      Root := Document.DocumentElement;
+      if not Assigned(Root) or (Root.NodeName <> 'Device_Info') then
+        raise Exception.Create('Not a Denon/Marantz device capability document.');
+
+      // The caller supplies the SSDP identity. Do not derive it from MacAddress:
+      // the UUID and capability document can refer to different network interfaces.
+      AdvertisedId := TextOf(Root,
+                             'UDN');
+      if (DeviceId <> '') and (AdvertisedId <> '') and not SameText(DeviceId, AdvertisedId) then
+        raise Exception.Create('Capability identity does not match the selected receiver.');
+
+      Data.DeviceId := DeviceId;
+      Data.Model := TextOf(Root,
+                           'ModelName');
+      Data.Firmware := TextOf(Root,
+                              'UpgradeVersion');
+      Data.RetrievedAt := Now;
+      Setup := Child(Child(Root,
+                           'DeviceCapabilities'),
+                     'Setup');
+      Tone := Child(Setup,
+                    'ToneControl');
+      Data.Features[afTone] := Flag(Child(Tone,
+                                          'Control'));
+      if (Data.Features[afTone] = asUnsupported) then
         begin
-          Node := Child(Tone, 'ToneControlSet_AVR');
+          Data.Features[afBass] := asUnsupported;
+          Data.Features[afTreble] := asUnsupported;
+        end
+      else if (Data.Features[afTone] = asSupported) then
+        begin
+          Node := Child(Tone,
+                        'ToneControlSet_AVR');
           if Assigned(Child(Node, 'BassMin')) and Assigned(Child(Node, 'BassMax')) then
             Data.Features[afBass] := asSupported;
           if Assigned(Child(Node, 'TrebleMin')) and Assigned(Child(Node, 'TrebleMax')) then
             Data.Features[afTreble] := asSupported;
         end;
 
-    Node := Child(Setup, 'ChannelLevel');
-    Data.Features[afBalance] := Flag(Child(Node, 'Control'));
-    if (Data.Features[afBalance] = asSupported) then
-      begin
-        // MainForm implements balance using both front-channel trim controls.
-        Channels := Child(Node, 'ChLists');
-        LeftFound := False;
-        RightFound := False;
-        if Assigned(Channels) then
-          for I := 0 to Channels.ChildNodes.Count - 1 do
-            begin
-              LeftFound := LeftFound or (TextOf(Channels.ChildNodes[I], 'Name') = 'FL');
-              RightFound := RightFound or (TextOf(Channels.ChildNodes[I], 'Name') = 'FR');
-            end;
-        if not Assigned(Channels) then
-          Data.Features[afBalance] := asUnknown
-        else
-          if not (LeftFound and RightFound) then
+      Node := Child(Setup,
+                    'ChannelLevel');
+      Data.Features[afBalance] := Flag(Child(Node,
+                                             'Control'));
+      if (Data.Features[afBalance] = asSupported) then
+        begin
+          // MainForm implements balance using both front-channel trim controls.
+          Channels := Child(Node,
+                            'ChLists');
+          LeftFound := False;
+          RightFound := False;
+          if Assigned(Channels) then
+            for I := 0 to Channels.ChildNodes.Count - 1 do
+              begin
+                LeftFound := LeftFound or (TextOf(Channels.ChildNodes[I],
+                                                  'Name') = 'FL');
+                RightFound := RightFound or (TextOf(Channels.ChildNodes[I],
+                                                    'Name') = 'FR');
+              end;
+          if not Assigned(Channels) then
+            Data.Features[afBalance] := asUnknown
+          else if not (LeftFound and RightFound) then
             Data.Features[afBalance] := asUnsupported;
-      end;
+        end;
 
-    if TryStrToInt(TextOf(Root, 'DeviceZones'), Count) and (Count = 1) then
-      Data.Features[afZone2] := asUnsupported;
-    for I := 0 to Root.ChildNodes.Count - 1 do
-      begin
-        Zone := Root.ChildNodes[I];
-        if (Zone.NodeName <> 'DeviceZoneCapabilities') then
-          Continue;
-        if not TryStrToInt(TextOf(Child(Zone, 'Zone'), 'No'), ZoneNumber) then
-          Continue;
-        if (ZoneNumber = 0) then
-          begin
-            Data.Features[afMainZone] := Flag(Child(Child(Zone, 'Power'), 'Control'));
-            Data.Features[afVolume] := Flag(Child(Child(Zone, 'Volume'), 'Control'));
-            Data.Features[afMute] := Flag(Child(Child(Zone, 'Mute'), 'Control'));
-          end
-        else
-          if (ZoneNumber = 1) then
-            Data.Features[afZone2] := Flag(Child(Child(Zone, 'Power'), 'Control'));
-      end;
+      if TryStrToInt(TextOf(Root, 'DeviceZones'), Count) and (Count = 1) then
+        Data.Features[afZone2] := asUnsupported;
+      for I := 0 to Root.ChildNodes.Count - 1 do
+        begin
+          Zone := Root.ChildNodes[I];
+          if (Zone.NodeName <> 'DeviceZoneCapabilities') then
+            Continue;
+          if not TryStrToInt(TextOf(Child(Zone, 'Zone'), 'No'), ZoneNumber) then
+            Continue;
+          if (ZoneNumber = 0) then
+            begin
+              Data.Features[afMainZone] := Flag(Child(Child(Zone,
+                                                            'Power'),
+                                                      'Control'));
+              Data.Features[afVolume] := Flag(Child(Child(Zone,
+                                                          'Volume'),
+                                                    'Control'));
+              Data.Features[afMute] := Flag(Child(Child(Zone,
+                                                        'Mute'),
+                                                  'Control'));
+            end
+          else if (ZoneNumber = 1) then
+            Data.Features[afZone2] := Flag(Child(Child(Zone,
+                                                       'Power'),
+                                                 'Control'));
+        end;
 
-    Count := 0;
-    for Feature := Low(TAvrFeature) to High(TAvrFeature) do
-      if (Data.Features[Feature] <> asUnknown) then
-        Inc(Count);
-    if (Count = 0) then
-      raise Exception.Create('No recognized AVR capability flags were returned.');
-    Result := True;
-  except
-    on E: Exception do
-      begin
-        ErrorText := E.Message;
-        Data := Default(TAvrCapabilityData);
-      end;
-  end;
+      Count := 0;
+      for Feature := Low(TAvrFeature) to High(TAvrFeature) do
+        if (Data.Features[Feature] <> asUnknown) then
+          Inc(Count);
+      if (Count = 0) then
+        raise Exception.Create('No recognized AVR capability flags were returned.');
+      Result := True;
+    except
+      on E: Exception do
+        begin
+          ErrorText := E.Message;
+          Data := Default(TAvrCapabilityData);
+        end;
+    end;
   finally
     Document.Free;
   end;
@@ -407,11 +465,15 @@ var
 
 begin
 
-  ComResult := CoInitializeEx(nil, COINIT_MULTITHREADED);
+  ComResult := CoInitializeEx(nil,
+                              COINIT_MULTITHREADED);
   try
     // All XML interfaces, including compiler-created temporaries, must be
     // finalized before this thread releases its COM apartment.
-    Result := ParseCapabilityDocument(Xml, DeviceId, Data, ErrorText);
+    Result := ParseCapabilityDocument(Xml,
+                                      DeviceId,
+                                      Data,
+                                      ErrorText);
   finally
     if (ComResult = S_OK) or (ComResult = S_FALSE) then
       CoUninitialize();
@@ -420,8 +482,9 @@ end;
 
 
 constructor TAvrCapabilityRequest.Create(const Host: string;
-                                          const DeviceId: string;
-                                          Port: Word);
+                                         const DeviceId: string;
+                                         Port: Word);
+
 begin
 
   inherited Create(True);
@@ -446,11 +509,12 @@ var
   Clock: TStopwatch;
   Bytes: TBytes;
 
+
   procedure Fail(const Operation: string);
   begin
 
     FErrorText := Format('Device capability %s failed (Windows error %d).',
-                          [Operation, GetLastError()]);
+                         [Operation, GetLastError()]);
   end;
 
 begin
@@ -462,7 +526,11 @@ begin
   Clock := TStopwatch.StartNew;
   try
     try
-      Session := WinHttpOpen('FactoryX AVR capabilities', WinHttpAccessTypeNoProxy, nil, nil, 0);
+      Session := WinHttpOpen('FactoryX AVR capabilities',
+                             WinHttpAccessTypeNoProxy,
+                             nil,
+                             nil,
+                             0);
       if not Assigned(Session) then
         begin
           Fail('session');
@@ -473,14 +541,22 @@ begin
           Fail('timeout configuration');
           Exit;
         end;
-      Connection := WinHttpConnect(Session, PChar(FHost), FPort, 0);
+      Connection := WinHttpConnect(Session,
+                                   PChar(FHost),
+                                   FPort,
+                                   0);
       if not Assigned(Connection) then
         begin
           Fail('connection');
           Exit;
         end;
-      Request := WinHttpOpenRequest(Connection, 'GET', '/goform/Deviceinfo.xml',
-                                      nil, nil, nil, 0);
+      Request := WinHttpOpenRequest(Connection,
+                                    'GET',
+                                    '/goform/Deviceinfo.xml',
+                                    nil,
+                                    nil,
+                                    nil,
+                                    0);
       if not Assigned(Request) then
         begin
           Fail('request');
@@ -509,9 +585,10 @@ begin
       Status := 0;
       Size := SizeOf(Status);
       if not WinHttpQueryHeaders(Request, WinHttpQueryStatusCode or WinHttpQueryFlagNumber, nil, @Status, Size, nil) or
-         (Status <> 200) then
+        (Status <> 200) then
         begin
-          FErrorText := Format('Device capability request returned HTTP %d.', [Status]);
+          FErrorText := Format('Device capability request returned HTTP %d.',
+                               [Status]);
           Exit;
         end;
       Stream := TMemoryStream.Create;
@@ -535,15 +612,21 @@ begin
             FErrorText := 'Device capability document is too large.';
             Exit;
           end;
-        Stream.WriteBuffer(Buffer, Count);
+        Stream.WriteBuffer(Buffer,
+                           Count);
       until False;
       if Terminated then
         Exit;
-      SetLength(Bytes, Stream.Size);
+      SetLength(Bytes,
+                Stream.Size);
       if (Stream.Size > 0) then
-        Move(Stream.Memory^, Bytes[0], Stream.Size);
+        Move(Stream.Memory^,
+             Bytes[0],
+             Stream.Size);
       FSuccess := TAvrCapabilityManager.ParseXml(TEncoding.UTF8.GetString(Bytes),
-                                                  FDeviceId, FData, FErrorText);
+                                                 FDeviceId,
+                                                 FData,
+                                                 FErrorText);
     except
       on E: Exception do
         FErrorText := E.Message;
@@ -562,11 +645,12 @@ end;
 
 
 constructor TAvrCapabilityManager.Create(const CacheFile: string);
+
 begin
 
   inherited Create;
   FCacheFile := CacheFile;
-  FRetired := TObjectList<TAvrCapabilityRequest>.Create(True);
+  FRetired := (TObjectList < TAvrCapabilityRequest > .Create(True));
 end;
 
 
@@ -601,7 +685,8 @@ begin
   // Hex encoding is stable, collision-free and valid for INI section names.
   Result := 'Device-';
   for C in LowerCase(FDeviceId) do
-    Result := Result + IntToHex(Ord(C), 4);
+    Result := Result + IntToHex(Ord(C),
+                                4);
 end;
 
 
@@ -617,20 +702,28 @@ begin
 
   if (FDeviceId = '') or (FCacheFile = '') or not FileExists(FCacheFile) then
     Exit;
-  Settings := TMemIniFile.Create(FCacheFile, TEncoding.UTF8);
+  Settings := TMemIniFile.Create(FCacheFile,
+                                 TEncoding.UTF8);
   try
     Section := CacheSection();
-    if (Settings.ReadInteger(Section, 'Schema', 0) <> CapabilityCacheVersion) or
-       not SameText(Settings.ReadString(Section, 'DeviceId', ''), FDeviceId) then
+    if (Settings.ReadInteger(Section, 'Schema', 0) <> CapabilityCacheVersion) or not SameText(Settings.ReadString(Section, 'DeviceId', ''), FDeviceId) then
       Exit;
     Data := Default(TAvrCapabilityData);
     Data.DeviceId := FDeviceId;
-    Data.Model := Settings.ReadString(Section, 'Model', '');
-    Data.Firmware := Settings.ReadString(Section, 'Firmware', '');
-    Data.RetrievedAt := Settings.ReadDateTime(Section, 'RetrievedAt', 0);
+    Data.Model := Settings.ReadString(Section,
+                                      'Model',
+                                      '');
+    Data.Firmware := Settings.ReadString(Section,
+                                         'Firmware',
+                                         '');
+    Data.RetrievedAt := Settings.ReadDateTime(Section,
+                                              'RetrievedAt',
+                                              0);
     for Feature := Low(TAvrFeature) to High(TAvrFeature) do
       begin
-        Value := Settings.ReadInteger(Section, 'Feature' + IntToStr(Ord(Feature)), 0);
+        Value := Settings.ReadInteger(Section,
+                                      'Feature' + IntToStr(Ord(Feature)),
+                                      0);
         if (Value < Ord(Low(TAvrSupport))) or (Value > Ord(High(TAvrSupport))) then
           Exit;
         Data.Features[Feature] := TAvrSupport(Value);
@@ -662,24 +755,36 @@ begin
   if FileExists(FCacheFile) then
     if not CopyFileW(PChar(FCacheFile), PChar(TemporaryFile), False) then
       RaiseLastOSError();
-  Settings := TMemIniFile.Create(TemporaryFile, TEncoding.UTF8);
+  Settings := TMemIniFile.Create(TemporaryFile,
+                                 TEncoding.UTF8);
   try
     Section := CacheSection();
     Settings.EraseSection(Section);
-    Settings.WriteInteger(Section, 'Schema', CapabilityCacheVersion);
-    Settings.WriteString(Section, 'DeviceId', FDeviceId);
-    Settings.WriteString(Section, 'Model', FData.Model);
-    Settings.WriteString(Section, 'Firmware', FData.Firmware);
-    Settings.WriteDateTime(Section, 'RetrievedAt', FData.RetrievedAt);
+    Settings.WriteInteger(Section,
+                          'Schema',
+                          CapabilityCacheVersion);
+    Settings.WriteString(Section,
+                         'DeviceId',
+                         FDeviceId);
+    Settings.WriteString(Section,
+                         'Model',
+                         FData.Model);
+    Settings.WriteString(Section,
+                         'Firmware',
+                         FData.Firmware);
+    Settings.WriteDateTime(Section,
+                           'RetrievedAt',
+                           FData.RetrievedAt);
     for Feature := Low(TAvrFeature) to High(TAvrFeature) do
-      Settings.WriteInteger(Section, 'Feature' + IntToStr(Ord(Feature)),
-                              Ord(FData.Features[Feature]));
+      Settings.WriteInteger(Section,
+                            'Feature' + IntToStr(Ord(Feature)),
+                            Ord(FData.Features[Feature]));
     Settings.UpdateFile;
   finally
     Settings.Free;
   end;
   if not MoveFileExW(PChar(TemporaryFile), PChar(FCacheFile),
-                     MOVEFILE_REPLACE_EXISTING or MOVEFILE_WRITE_THROUGH) then
+    MOVEFILE_REPLACE_EXISTING or MOVEFILE_WRITE_THROUGH) then
     RaiseLastOSError();
 end;
 
@@ -687,6 +792,7 @@ end;
 procedure TAvrCapabilityManager.SelectDevice(const Host: string;
                                              const DeviceId: string;
                                              Port: Word);
+
 begin
 
   if SameText(FHost, Host) and SameText(FDeviceId, DeviceId) and (FPort = Port) then
@@ -715,12 +821,15 @@ end;
 
 
 procedure TAvrCapabilityManager.Refresh();
+
 begin
 
   if Assigned(FRequest) or (FHost = '') then
     Exit;
   FErrorText := '';
-  FRequest := TAvrCapabilityRequest.Create(FHost, FDeviceId, FPort);
+  FRequest := TAvrCapabilityRequest.Create(FHost,
+                                           FDeviceId,
+                                           FPort);
   FRequest.Start;
 end;
 
@@ -759,6 +868,7 @@ end;
 
 
 function TAvrCapabilityManager.Busy(): Boolean;
+
 begin
 
   Result := Assigned(FRequest);
@@ -766,11 +876,10 @@ end;
 
 
 function TAvrCapabilityManager.Support(Feature: TAvrFeature): TAvrSupport;
+
 begin
 
   Result := FData.Features[Feature];
 end;
 
 end.
-
-

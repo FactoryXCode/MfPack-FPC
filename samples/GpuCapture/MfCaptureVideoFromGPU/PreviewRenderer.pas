@@ -69,7 +69,7 @@ interface
 
 uses
   MfGpuCapture.Platform,
-{WinApi}
+  {WinApi}
   Windows,
   //WinApi.ActiveX.ObjBase,
   WinApi.ComBaseApi,
@@ -84,6 +84,7 @@ uses
 
 type
   TPreviewRenderer = class
+
   private
 
     FDevice: ID3D11Device;
@@ -124,7 +125,9 @@ implementation
 
 constructor TPreviewRenderer.Create(const ADevice: ID3D11Device;
                                     const AContext: ID3D11DeviceContext);
+
 begin
+
   inherited Create;
   FDevice := ADevice;
   FContext := AContext;
@@ -132,7 +135,9 @@ end;
 
 
 destructor TPreviewRenderer.Destroy();
+
 begin
+
   ReleaseSwapChain;
   FContext := nil;
   FDevice := nil;
@@ -141,7 +146,9 @@ end;
 
 
 procedure TPreviewRenderer.ReleaseSwapChain();
+
 begin
+
   FRenderTargetView := nil;
   FSwapChain := nil;
 end;
@@ -149,8 +156,8 @@ end;
 
 procedure TPreviewRenderer.CreateRenderTarget();
 var
-  hr    : HResult;
-  back  : ID3D11Texture2D;
+  hr: HResult;
+  back: ID3D11Texture2D;
 
 begin
 
@@ -159,12 +166,14 @@ begin
   hr := FSwapChain.GetBuffer(0,
                              ID3D11Texture2D,
                              back);
-  CheckHR(hr, 'Preview: GetBuffer');
+  CheckHR(hr,
+          'Preview: GetBuffer');
 
   hr := FDevice.CreateRenderTargetView(back,
                                        nil,
                                        @FRenderTargetView);
-  CheckHR(hr, 'Preview: CreateRenderTargetView');
+  CheckHR(hr,
+          'Preview: CreateRenderTargetView');
 end;
 
 
@@ -183,20 +192,23 @@ begin
 
   ReleaseSwapChain();
 
-  FWidth  := Width;
+  FWidth := Width;
   FHeight := Height;
   FSampleRate := SampleRate;
 
   hr := FDevice.QueryInterface(IDXGIDevice,
                                dxgiDev);
-  CheckHR(hr, 'Preview: QI IDXGIDevice');
+  CheckHR(hr,
+          'Preview: QI IDXGIDevice');
 
   hr := dxgiDev.GetAdapter(adapter);
-  CheckHR(hr, 'Preview: GetAdapter');
+  CheckHR(hr,
+          'Preview: GetAdapter');
 
   hr := adapter.GetParent(IDXGIFactory,
                           Pointer(factory));
-  CheckHR(hr, 'Preview: GetParent IDXGIFactory');
+  CheckHR(hr,
+          'Preview: GetParent IDXGIFactory');
 
   ZeroMemory(@sd,
              SizeOf(sd));
@@ -218,7 +230,8 @@ begin
   hr := factory.CreateSwapChain(FDevice,
                                 sd,
                                 FSwapChain);
-  CheckHR(hr, 'Preview: CreateSwapChain');
+  CheckHR(hr,
+          'Preview: CreateSwapChain');
 
   CreateRenderTarget();
 end;
@@ -228,7 +241,9 @@ procedure TPreviewRenderer.CreateSwapChainForHWND(hWnd: HWND;
                                                   Width,
                                                   Height: UINT;
                                                   SampleRate: UINT32);
+
 begin
+
   CreateSwapChainInternal(hWnd,
                           Width,
                           Height,
@@ -246,9 +261,9 @@ var
 begin
 
   if (FDevice = nil) or
-     (FContext = nil) or
-     (FSwapChain = nil) or
-     (SrcTex = nil) then
+    (FContext = nil) or
+    (FSwapChain = nil) or
+    (SrcTex = nil) then
     Exit;
 
   FDevice.GetImmediateContext(ctx);
@@ -256,10 +271,15 @@ begin
   SrcTex.GetDesc(sourceDesc);
   if (sourceDesc.Width <> FWidth) or (sourceDesc.Height <> FHeight) then
     begin
-      ctx.OMSetRenderTargets(0,nil,nil);
+      ctx.OMSetRenderTargets(0,
+                             nil,
+                             nil);
       FRenderTargetView := nil;
-      CheckHR(FSwapChain.ResizeBuffers(0,sourceDesc.Width,sourceDesc.Height,
-                                       DXGI_FORMAT_UNKNOWN,0),
+      CheckHR(FSwapChain.ResizeBuffers(0,
+                                       sourceDesc.Width,
+                                       sourceDesc.Height,
+                                       DXGI_FORMAT_UNKNOWN,
+                                       0),
               'Preview: ResizeBuffers');
       FWidth := sourceDesc.Width;
       FHeight := sourceDesc.Height;
@@ -270,7 +290,8 @@ begin
   hr := FSwapChain.GetBuffer(0,
                              ID3D11Texture2D,
                              backBuf);
-  CheckHR(hr, 'Preview: GetBuffer');
+  CheckHR(hr,
+          'Preview: GetBuffer');
 
   ctx.CopyResource(backBuf,
                    SrcTex);
@@ -278,7 +299,8 @@ begin
   // Present
   hr := FSwapChain.Present(1,
                            0);
-  CheckHR(hr, 'Preview: Present');
+  CheckHR(hr,
+          'Preview: Present');
 end;
 
 end.

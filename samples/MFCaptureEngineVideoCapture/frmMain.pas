@@ -68,7 +68,7 @@ interface
 uses
   LMessages,
   LCLIntf,
-{WinApi}
+  {WinApi}
   Windows,
   Messages,
   WinApi.ComBaseApi,
@@ -137,7 +137,8 @@ type
     procedure butTakePhotoClick(Sender: TObject);
     procedure mnuStartRecordingClick(Sender: TObject);
     procedure butSaveToFileClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(Sender: TObject;
+                             var CanClose: Boolean);
     procedure FormDestroy(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure mnuSetVideoOutputFormatClick(Sender: TObject);
@@ -211,6 +212,7 @@ var
   pcrD: PMFVideoNormalizedRect;
 
 begin
+
   inherited;
 
   if not Visible then
@@ -231,8 +233,11 @@ end;
 procedure TMainWindow.OnRecievedSample(var AMessage: TLMessage);
 var
   pSample: IMFSample;
+
 begin
-  if AMessage.WParam = 0 then Exit;
+
+  if (AMessage.WParam = 0) then
+    Exit;
   pSample := IMFSample(Pointer(AMessage.WParam));
   IMFSample(Pointer(AMessage.WParam))._Release();
   // process the sample
@@ -246,11 +251,13 @@ var
   hr: HResult;
 
 begin
+
   hr := FCaptureManager.OnCaptureEvent(AMessage.WParam,
                                        AMessage.LParam);
   if FAILED(hr) then
     begin
-      ErrMsg(Format('Capturemanager.OnCaptureEvent reported error: %d', [hr]),
+      ErrMsg(Format('Capturemanager.OnCaptureEvent reported error: %d',
+                    [hr]),
              hr);
     end;
 end;
@@ -261,6 +268,7 @@ var
   amsg: TGUID;
 
 begin
+
   amsg := PGUID(AMessage.LParam)^;
 
   if SUCCEEDED(HRESULT(DWORD(AMessage.WParam))) then
@@ -281,6 +289,7 @@ var
   strCurrentDeviceName: string;
 
 begin
+
   if (AMessage.WParam = DBT_DEVICEREMOVECOMPLETE) then
     begin
       // remember the current device that is activated
@@ -311,12 +320,13 @@ begin
         if FCaptureManager.IsPreviewing or FCaptureManager.IsRecording then
           begin
             if (StrIComp(pwcCurrentDeviceSymLink,
-                         pwcDevSymbolicLink) = 0) then
+              pwcDevSymbolicLink) = 0) then
               bDeviceLost := True;
 
             if (FAILED(hr) or bDeviceLost) then
               begin
-                MessageDlg(Format('Lost capture device: %s', [strCurrentDeviceName]),
+                MessageDlg(Format('Lost capture device: %s',
+                                  [strCurrentDeviceName]),
                            mtError,
                            mbOKCancel,
                            0);
@@ -336,6 +346,7 @@ var
 
 label
   done;
+
 begin
 
   hr := FSampleConverter.UpdateConverter(g_pDXGIMan,
@@ -383,9 +394,9 @@ begin
   else
     hr := E_POINTER;
 
-done:
-  if Assigned(FMemoryStream) then
-    FMemoryStream.Destroy();
+  done:
+    if Assigned(FMemoryStream) then
+      FMemoryStream.Destroy();
   Result := hr;
 end;
 
@@ -399,6 +410,7 @@ var
 
 
 begin
+
   if not bImageCleared and Assigned(bm) and not bm.Empty then
     begin
       // Clear the area
@@ -450,6 +462,7 @@ var
   iWidthRatio: Double;
 
 begin
+
   iHeightRatio := pbCapture.Height / AImage.Height;
   iWidthRatio := pbCapture.Width / AImage.Width;
   if (iHeightRatio > iWidthRatio) then
@@ -467,11 +480,13 @@ end;
 
 
 procedure TMainWindow.butSaveToFileClick(Sender: TObject);
+
 begin
 
-  dlgSaveSnapShot.FileName := Format('Capture_%s', [HnsTimeToStr(lSampleTime,
-                                                    '_',
-                                                    False)]);
+  dlgSaveSnapShot.FileName := Format('Capture_%s',
+                                     [HnsTimeToStr(lSampleTime,
+                                                   '_',
+                                                   False)]);
   if dlgSaveSnapShot.Execute then
     begin
       SaveImage(bmCapturedFrame,
@@ -490,6 +505,7 @@ label
   done;
 
 begin
+
   hr := E_FAIL;
   if chkNoPreview.Checked then
     SnapShotOption := ssoFile
@@ -502,15 +518,17 @@ begin
   if FAILED(hr) then
     goto Done;
 
-done:
-  if FAILED(hr) then
-    ErrMsg('butTakePhotoClick: ' + ERR_PHOTO,
-            hr);
+  done:
+    if FAILED(hr) then
+      ErrMsg('butTakePhotoClick: ' + ERR_PHOTO,
+             hr);
 end;
 
 
 procedure TMainWindow.DestroyCaptureObjects();
+
 begin
+
   if Assigned(bmCapturedFrame) then
     FreeAndNil(bmCapturedFrame);
 
@@ -525,27 +543,31 @@ end;
 
 
 // FormCreate
-procedure TMainWindow.FormCloseQuery(Sender: TObject;var CanClose: Boolean);
+procedure TMainWindow.FormCloseQuery(Sender: TObject;
+                                     var CanClose: Boolean);
+
 begin
+
   CanClose := True;
 end;
 
+
 procedure TMainWindow.FormDestroy(Sender: TObject);
+
 begin
 
   DestroyCaptureObjects();
 
   if Assigned(FSampleConverter) then
-     FreeAndNil(FSampleConverter);
+    FreeAndNil(FSampleConverter);
 
   if Assigned(FDeviceExplorer) then
-     begin
-       FreeAndNil(FDeviceExplorer);
-     end;
+    begin
+      FreeAndNil(FDeviceExplorer);
+    end;
 
   UnRegisterForDeviceNotification(ptrDevNotify);
   ptrDevNotify := 0;
-
 
 end;
 
@@ -569,9 +591,9 @@ begin
   if (hr = MF_E_NO_CAPTURE_DEVICES_AVAILABLE) then
     begin
       MessageBoxW(0,
-                 lpcwstr('Currently there are no devices found: Please insert a device.'),
-                 lpcwstr('No capture devices found.'),
-                 MB_ICONWARNING);
+                  lpcwstr('Currently there are no devices found: Please insert a device.'),
+                  lpcwstr('No capture devices found.'),
+                  MB_ICONWARNING);
       hr := S_OK;
       goto done;
     end;
@@ -579,9 +601,9 @@ begin
   if FAILED(hr) then
     begin
       MessageBoxW(0,
-                 lpcwstr('Failed to create the DeviceExplorer, Resultcode = (' + IntToStr(hr) + ').'),
-                 lpcwstr('DeviceExplorer Failure!'),
-                 MB_ICONSTOP);
+                  lpcwstr('Failed to create the DeviceExplorer, Resultcode = (' + IntToStr(hr) + ').'),
+                  lpcwstr('DeviceExplorer Failure!'),
+                  MB_ICONSTOP);
       goto done;
     end;
 
@@ -607,7 +629,7 @@ begin
 
   //
   if not RegisterForDeviceNotification(Handle,
-                                       ptrDevNotify) then
+    ptrDevNotify) then
     hr := E_FAIL;
 
   //
@@ -618,9 +640,9 @@ begin
   bPhotoMade := False;
   bCaptureManInitialized := False;
 
-done:
-  if FAILED(hr) then
-    Application.Terminate;
+  done:
+    if FAILED(hr) then
+      Application.Terminate;
 end;
 
 
@@ -651,8 +673,8 @@ begin
                          [hr]));
       goto Done;
     end;
-done:
-  Result := hr;
+  done:
+    Result := hr;
 end;
 
 
@@ -730,25 +752,26 @@ begin
       hr := S_OK;
     end;
 
-done:
+  done:
 
-  if (hr = MF_E_NO_CAPTURE_DEVICES_AVAILABLE) or (FChooseDeviceParam.Count = 0) then
-    ShowMessage(format('No capture devices found on this system (hr = %d)',
-                       [hr]))
-  else if FAILED(hr) then
-    begin
-      ErrMsg(ERR_INITIALIZE + ' The application will be closed.',
-             hr);
-      Application.Terminate();
-    end;
+    if (hr = MF_E_NO_CAPTURE_DEVICES_AVAILABLE) or (FChooseDeviceParam.Count = 0) then
+      ShowMessage(format('No capture devices found on this system (hr = %d)',
+                         [hr]))
+    else if FAILED(hr) then
+      begin
+        ErrMsg(ERR_INITIALIZE + ' The application will be closed.',
+               hr);
+        Application.Terminate();
+      end;
 end;
 
 
 // UpdateUI
 procedure TMainWindow.UpdateUI(const pGuidType: TGUID);
+
 begin
 
-  if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_INITIALIZED) then
+  if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_INITIALIZED) then
     begin
       bCaptureManInitialized := True;
       pnlInfo.Caption := 'Please select ''Choose Device '' or ''Start Preview''';
@@ -758,7 +781,7 @@ begin
       mnuStartRecording.Tag := 0;
       pnlControls.Enabled := False;
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_PREVIEW_STARTED) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_PREVIEW_STARTED) then
     begin
       mnuStartPreview.Caption := 'Stop Preview';
       pnlInfo.Caption := 'Previewing.';
@@ -769,7 +792,7 @@ begin
       pnlControls.Enabled := True;
 
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_PREVIEW_STOPPED) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_PREVIEW_STOPPED) then
     begin
       mnuStartPreview.Caption := 'Start Preview';
       pnlInfo.Caption := 'Stopped Previewing.';
@@ -779,37 +802,39 @@ begin
       mnuChooseDevice.Enabled := True;
       pnlControls.Enabled := False;
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_RECORD_STARTED) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_RECORD_STARTED) then
     begin
       mnuStartRecording.Caption := 'Stop Recording';
-      pnlInfo.Caption := Format('Recording to file %s', [pvVideoFile]);
+      pnlInfo.Caption := Format('Recording to file %s',
+                                [pvVideoFile]);
       bRecording := True;
       pnlControls.Enabled := True;
       mnuStartRecording.Enabled := True;
       pnlControls.Enabled := True;
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_RECORD_STOPPED) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_RECORD_STOPPED) then
     begin
       mnuStartRecording.Caption := 'Start Recording';
-      pnlInfo.Caption := Format('Stopped recording to file %s', [pvVideoFile]);
+      pnlInfo.Caption := Format('Stopped recording to file %s',
+                                [pvVideoFile]);
       Sleep(1000);
       pnlInfo.Caption := 'Previewing.';
       bRecording := False;
       mnuStartRecording.Enabled := True;
       pnlControls.Enabled := bPreviewing;
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_PHOTO_TAKEN) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_PHOTO_TAKEN) then
     begin
       pnlInfo.Caption := 'Photo has been made.';
       bPhotoMade := True;
       pnlControls.Enabled := True;
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_SINK_PREPARED) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_SINK_PREPARED) then
     begin
       // Stub.
       // pnlInfo.Caption := 'The capture sink has been initialized.';
     end
-  else if IsEqualGUID(pGuidType,MF_CAPTURE_ENGINE_ERROR) then
+  else if IsEqualGUID(pGuidType, MF_CAPTURE_ENGINE_ERROR) then
     begin
       // The capture engine will be destroyed.
       // So, at this point we have to reinitialize the capture engine again.
@@ -842,7 +867,9 @@ end;
 
 
 procedure TMainWindow.mnuSetVideoOutputFormatClick(Sender: TObject);
+
 begin
+
   dlgSaveVideo.FileName := CreateNewFileName('.mp4');
   if dlgSaveVideo.Execute then
     pvVideoFile := dlgSaveVideo.FileName;
@@ -899,9 +926,9 @@ begin
                 end;
             end;
 
-            butSaveToFile.Enabled := False;
-            butTakePhoto.Enabled := True;
-            mnuStartPreview.Tag := 1;
+          butSaveToFile.Enabled := False;
+          butTakePhoto.Enabled := True;
+          mnuStartPreview.Tag := 1;
 
         end
       else
@@ -966,6 +993,7 @@ var
   sfileName: string;
 
 begin
+
   i := 0;
   sfileName := 'VideoCapture' + ext;
 
@@ -977,7 +1005,8 @@ begin
   else
     while FileExists(sFileName) do
       begin
-        sFileName := Format('VideoCapture(%d)%s', [i, ext]);
+        sFileName := Format('VideoCapture(%d)%s',
+                            [i, ext]);
         Inc(i);
       end;
   Result := sFileName;
@@ -985,7 +1014,9 @@ end;
 
 
 procedure TMainWindow.Exit1Click(Sender: TObject);
+
 begin
+
   Close();
 end;
 
@@ -996,14 +1027,14 @@ end;
 initialization
 
   if FAILED(MFStartup(MF_VERSION,
-                      MFSTARTUP_LITE)) then
-      begin
-        MessageBoxW(0,
-                   lpcwstr('Your computer does not support this Media Foundation API version ' +
-                           IntToStr(MF_VERSION) + '.'),
-                   lpcwstr('MFStartup Failure!'),
-                           MB_ICONSTOP);
-      end;
+    MFSTARTUP_LITE)) then
+    begin
+      MessageBoxW(0,
+                  lpcwstr('Your computer does not support this Media Foundation API version ' +
+        IntToStr(MF_VERSION) + '.'),
+                  lpcwstr('MFStartup Failure!'),
+                  MB_ICONSTOP);
+    end;
 
 finalization
 

@@ -100,8 +100,8 @@ type
   TMfAnalyzerMode = (amLevelsOnly,
                      amLevelsAndSpectrum);
 
-  TMfVizMode      = (vmMeters,
-                     vmSpectrum);
+  TMfVizMode = (vmMeters,
+                vmSpectrum);
 
   TMfAudioInputSource = (isLoopback,
                          isExternalFeed);
@@ -127,16 +127,18 @@ type
   end;
 
   TSimpleFFT = record
-
-    class procedure HannWindow(var X: TArray<Single>); static;
-    class procedure FFT(var Re, Im: TArray<Single>); static;
+    class procedure HannWindow(var X: TArray < Single > ); static;
+    class procedure FFT(var Re,
+                        Im: TArray < Single > ); static;
   end;
 
   // Forwarded class.
   TMfAudioMixVisualizer = class;
 
   // Device notification COM interface (default-device switching etc.)
-  TMfDeviceNotificationClient = class(TInterfacedObject, IMMNotificationClient)
+  TMfDeviceNotificationClient = class(TInterfacedObject,
+                                      IMMNotificationClient)
+
   private
 
     FOwner: TMfAudioMixVisualizer;
@@ -161,20 +163,24 @@ type
   end;
 
   TMfCaptureThread = class(TThread)
+
   private
 
     FOwner: TMfAudioMixVisualizer;
+
   protected
 
     procedure Execute(); override;
+
   public
 
     constructor Create(AOwner: TMfAudioMixVisualizer);
   end;
 
-  TMfSpectrum = TArray<Single>; // 0..1 per bar
+  TMfSpectrum = TArray < Single > ; // 0..1 per bar
 
   TMfAudioMixVisualizer = class(TGraphicControl)
+
   private
 
     // Published settings.
@@ -245,7 +251,7 @@ type
 
     // Atomic snapshots.
     FLevelsBits: array[0..7] of Integer;
-    FSpectrumBits: TArray<Integer>;
+    FSpectrumBits: TArray < Integer > ;
 
     // Threading (runtime only).
     FCaptureThread: TThread;
@@ -266,7 +272,7 @@ type
     FExtLastDispatchTick: DWORD;
 
     // Spectrum ring buffer (mono).
-    FMonoRing: TArray<Single>;
+    FMonoRing: TArray < Single > ;
     FRingWrite: Integer;
     FRingCount: Integer;
 
@@ -343,11 +349,14 @@ type
     function DbToDisplayFrac(const ADb,
                              ADbMin,
                              ADbTop: Single): Single;
-    procedure BuildSpectrumBars(const MonoBlock: TArray<Single>;
-                                out Bars: TArray<Single>);
-    procedure DrawMeters(ACanvas: TCanvas; const R: TRect);
-    procedure DrawSpectrum(ACanvas: TCanvas; const R: TRect);
-    procedure DrawDesignTimePlaceholder(ACanvas: TCanvas; const R: TRect);
+    procedure BuildSpectrumBars(const MonoBlock: TArray < Single > ;
+                                out Bars: TArray < Single > );
+    procedure DrawMeters(ACanvas: TCanvas;
+                         const R: TRect);
+    procedure DrawSpectrum(ACanvas: TCanvas;
+                           const R: TRect);
+    procedure DrawDesignTimePlaceholder(ACanvas: TCanvas;
+                                        const R: TRect);
 
     // Set DeviceID
     procedure SetDeviceId(const Value: string);
@@ -360,9 +369,13 @@ type
   public
 
     // External feed mode (InputSource = isExternalFeed).
-    procedure BeginExternalFormat(ASampleRate, AChannels: Integer; AIsFloat: Boolean);
-    procedure PushFloat32Interleaved(pData: PSingle; Frames: Integer);
-    procedure PushInt16Interleaved(pData: PSmallInt; Frames: Integer);
+    procedure BeginExternalFormat(ASampleRate,
+                                  AChannels: Integer;
+                                  AIsFloat: Boolean);
+    procedure PushFloat32Interleaved(pData: PSingle;
+                                     Frames: Integer);
+    procedure PushInt16Interleaved(pData: PSmallInt;
+                                   Frames: Integer);
 
     constructor Create(AOwner: TComponent); override;
     destructor Destroy(); override;
@@ -447,6 +460,7 @@ const
 
 
 procedure Register;
+
 begin
 
   RegisterComponents('MfPack Core Audio Samples',
@@ -455,6 +469,7 @@ end;
 
 
 function RectWidth(const R: TRect): Integer; inline;
+
 begin
 
   Result := R.Right - R.Left;
@@ -462,6 +477,7 @@ end;
 
 
 function RectHeight(const R: TRect): Integer; inline;
+
 begin
 
   Result := R.Bottom - R.Top;
@@ -469,6 +485,7 @@ end;
 
 
 function SingleToBits(const S: Single): Integer; inline;
+
 begin
 
   Result := PInteger(@S)^;
@@ -476,6 +493,7 @@ end;
 
 
 function BitsToSingle(const B: Integer): Single; inline;
+
 begin
 
   Result := PSingle(@B)^;
@@ -483,6 +501,7 @@ end;
 
 
 function DbToGain(const ADb: Single): Single; inline;
+
 begin
 
   Result := Power(10.0,
@@ -491,6 +510,7 @@ end;
 
 
 function ClampVizSample(const S: Single): Single; inline;
+
 begin
 
   Result := EnsureRange(S,
@@ -501,7 +521,7 @@ end;
 
 // SimpleFFT
 
-class procedure TSimpleFFT.HannWindow(var X: TArray<Single>);
+class procedure TSimpleFFT.HannWindow(var X: TArray < Single > );
 var
   i, N: Integer;
   w: Double;
@@ -521,7 +541,9 @@ begin
 end;
 
 
-class procedure TSimpleFFT.FFT(var Re, Im: TArray<Single>);
+class procedure TSimpleFFT.FFT(var Re,
+                               Im: TArray < Single > );
+
 
   procedure Swap(var A,
                  B: Single); inline;
@@ -568,16 +590,16 @@ begin
           step := step shr 1;
         end;
 
-    j := j + step;
-    if (i < j) then
-      begin
+      j := j + step;
+      if (i < j) then
+        begin
 
-        Swap(Re[i],
-             Re[j]);
-        Swap(Im[i],
-             Im[j]);
-      end;
-  end;
+          Swap(Re[i],
+               Re[j]);
+          Swap(Im[i],
+               Im[j]);
+        end;
+    end;
 
   m := 2;
   while (m <= N) do
@@ -602,7 +624,7 @@ begin
               ur := Re[i];
               ui := Im[i];
 
-              Re[i] := (ur + tr)  * 1.0;
+              Re[i] := (ur + tr) * 1.0;
               Im[i] := (ui + ti) * 1.0;
               Re[i + m2] := (ur - tr) * 1.0;
               Im[i + m2] := (ui - ti) * 1.0;
@@ -617,6 +639,7 @@ end;
 
 
 constructor TMfCaptureThread.Create(AOwner: TMfAudioMixVisualizer);
+
 begin
 
   inherited Create(False);
@@ -630,6 +653,7 @@ end;
 { TMfDeviceNotificationClient }
 
 constructor TMfDeviceNotificationClient.Create(AOwner: TMfAudioMixVisualizer);
+
 begin
 
   inherited Create;
@@ -639,6 +663,7 @@ end;
 
 function TMfDeviceNotificationClient.OnDeviceStateChanged(pwstrDeviceId: LPCWSTR;
                                                           dwNewState: DWord): HResult; stdcall;
+
 begin
 
   Result := S_OK;
@@ -646,6 +671,7 @@ end;
 
 
 function TMfDeviceNotificationClient.OnDeviceAdded(pwstrDeviceId: LPCWSTR): HResult; stdcall;
+
 begin
 
   Result := S_OK;
@@ -653,6 +679,7 @@ end;
 
 
 function TMfDeviceNotificationClient.OnDeviceRemoved(pwstrDeviceId: LPCWSTR): HResult; stdcall;
+
 begin
 
   Result := S_OK;
@@ -662,6 +689,7 @@ end;
 function TMfDeviceNotificationClient.OnDefaultDeviceChanged(flow: EDataFlow;
                                                             role: ERole;
                                                             pwstrDefaultDeviceId: PWideChar): HResult; stdcall;
+
 begin
 
   Result := S_OK;
@@ -691,6 +719,7 @@ end;
 
 function TMfDeviceNotificationClient.OnPropertyValueChanged(pwstrDeviceId: LPCWSTR;
                                                             const key: PROPERTYKEY): HResult; stdcall;
+
 begin
 
   Result := S_OK;
@@ -738,18 +767,18 @@ var
   attackA: Single;
   releaseA: Single;
 
-  monoBlock: TArray<Single>;
-  re: TArray<Single>;
-  im: TArray<Single>;
-  mags: TArray<Single>;
-  bars: TArray<Single>;
+  monoBlock: TArray < Single > ;
+  re: TArray < Single > ;
+  im: TArray < Single > ;
+  mags: TArray < Single > ;
+  bars: TArray < Single > ;
 
   fftN, barCount: Integer;
   i: Integer;
 
   lastDispatchTick: DWORD;
 
-  tmpMono: TArray<Single>;
+  tmpMono: TArray < Single > ;
 
   pf: PSingle;
   ps: PSmallInt;
@@ -762,11 +791,13 @@ var
   acc: Single;
   cnt: Integer;
 
-  function NowTick: DWORD; inline;
-    begin
 
-      Result := GetTickCount();
-    end;
+  function NowTick: DWORD; inline;
+  begin
+
+    Result := GetTickCount();
+  end;
+
 
   function ShouldDispatch(): Boolean;
   var
@@ -775,8 +806,8 @@ var
   begin
 
     t := NowTick;
-    if (t - lastDispatchTick) >= DWORD(Max(1,
-                                           FOwner.FDispatchEveryMs)) then
+    if ((t - lastDispatchTick) >= DWORD(Max(1,
+      FOwner.FDispatchEveryMs))) then
       begin
 
         lastDispatchTick := t;
@@ -786,6 +817,7 @@ var
       Result := False;
   end;
 
+
   procedure AtomicWriteSingle(var DestBits: Integer;
                               const Value: Single); inline;
   begin
@@ -793,6 +825,7 @@ var
     InterlockedExchange(DestBits,
                         SingleToBits(Value));
   end;
+
 
   function Smooth(prev,
                   target,
@@ -805,6 +838,7 @@ var
     else
       Result := target + (prev - target) * aRelLocal;
   end;
+
 
   procedure ComputeAttackRelease();
   var
@@ -824,7 +858,8 @@ var
     releaseA := (rr * 1.0);
   end;
 
-  procedure PushMonoToRing(const X: TArray<Single>);
+
+  procedure PushMonoToRing(const X: TArray < Single > );
   var
     j,
     N: Integer;
@@ -833,19 +868,20 @@ var
 
     N := Length(X);
     for j := 0 to N - 1 do
-    begin
+      begin
 
-      FOwner.FMonoRing[FOwner.FRingWrite] := X[j];
-      Inc(FOwner.FRingWrite);
-      if (FOwner.FRingWrite >= Length(FOwner.FMonoRing)) then
-        FOwner.FRingWrite := 0;
+        FOwner.FMonoRing[FOwner.FRingWrite] := X[j];
+        Inc(FOwner.FRingWrite);
+        if (FOwner.FRingWrite >= Length(FOwner.FMonoRing)) then
+          FOwner.FRingWrite := 0;
 
-      if (FOwner.FRingCount < Length(FOwner.FMonoRing)) then
-        Inc(FOwner.FRingCount);
-    end;
+        if (FOwner.FRingCount < Length(FOwner.FMonoRing)) then
+          Inc(FOwner.FRingCount);
+      end;
   end;
 
-  procedure ReadRingLatest(var OutBlock: TArray<Single>);
+
+  procedure ReadRingLatest(var OutBlock: TArray < Single > );
   var
     j,
     N, start: Integer;
@@ -879,9 +915,11 @@ var
       end;
   end;
 
+
   procedure PublishCaptureLevels(const pL,
                                  pR,
-                                 rL, rR: Single);
+                                 rL,
+                                 rR: Single);
   var
     peakDbL,
     peakDbR,
@@ -894,10 +932,10 @@ var
                               pL));
     peakDbR := 20 * Log10(Max(EPS_AMP,
                               pR));
-    rmsDbL  := 20 * Log10(Max(EPS_AMP,
-                              rL));
-    rmsDbR  := 20 * Log10(Max(EPS_AMP,
-                              rR));
+    rmsDbL := 20 * Log10(Max(EPS_AMP,
+                             rL));
+    rmsDbR := 20 * Log10(Max(EPS_AMP,
+                             rR));
 
     AtomicWriteSingle(FOwner.FLevelsBits[0],
                       pL);
@@ -917,7 +955,8 @@ var
                       rmsDbR);
 
     // Mark that we received fresh audio data (for auto-reset on stop).
-    InterlockedExchange(FOwner.FLastDataTick, Integer(GetTickCount));
+    InterlockedExchange(FOwner.FLastDataTick,
+                        Integer(GetTickCount));
 
     // Clip latch (per channel + any).
     if (pL >= FOwner.FClipThreshold) then
@@ -933,7 +972,8 @@ var
                           Integer(GetTickCount) + FOwner.FClipHoldMs);
   end;
 
-  procedure PublishCaptureSpectrum(const BarsLocal: TArray<Single>);
+
+  procedure PublishCaptureSpectrum(const BarsLocal: TArray < Single > );
   const
     // How to tune:
     // More punch / faster bar rise:
@@ -945,9 +985,9 @@ var
     // More aggressive snap-to-zero:
     //   Raise SPEC_ZERO_SNAP to 0.005..0.01
     //
-    SPEC_ATTACK_ALPHA  = 0.70;  // higher = faster rise
+    SPEC_ATTACK_ALPHA = 0.70;  // higher = faster rise
     SPEC_RELEASE_ALPHA = 0.18;  // lower = slower fall
-    SPEC_ZERO_SNAP     = 0.009; // tiny residuals -> hard zero
+    SPEC_ZERO_SNAP = 0.009; // tiny residuals -> hard zero
 
   var
     ii,
@@ -965,9 +1005,9 @@ var
       begin
 
         prev := BitsToSingle(
-                  InterlockedCompareExchange(FOwner.FSpectrumBits[ii],
-                                             0,
-                                             0));
+          InterlockedCompareExchange(FOwner.FSpectrumBits[ii],
+                                     0,
+                                     0));
 
         prev := EnsureRange(prev,
                             0.0,
@@ -1045,18 +1085,17 @@ begin
     isFloat := False;
     if (MixFmt.wFormatTag = WAVE_FORMAT_IEEE_FLOAT) then
       isFloat := True
-    else
-      if (MixFmt.wFormatTag = WAVE_FORMAT_EXTENSIBLE) then
-        begin
+    else if (MixFmt.wFormatTag = WAVE_FORMAT_EXTENSIBLE) then
+      begin
 
-          if (IsEqualGUID(PWaveFormatExtensible(MixFmt).SubFormat,KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)) then
-            isFloat := True;
-        end;
+        if (IsEqualGUID(PWaveFormatExtensible(MixFmt).SubFormat, KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)) then
+          isFloat := True;
+      end;
 
     EventHandle := CreateEventW(nil,
-                               False,
-                               False,
-                               nil);
+                                False,
+                                False,
+                                nil);
     if (EventHandle = 0) then
       begin
 
@@ -1147,195 +1186,198 @@ begin
                                     @WaitHandles[0],
                                     False,
                                     INFINITE) of
-        WAIT_OBJECT_0: Break;
+          WAIT_OBJECT_0: Break;
 
-        WAIT_OBJECT_0 + 1:
-          begin
+          WAIT_OBJECT_0 + 1:
+            begin
 
-            while True do
-              begin
+              while True do
+                begin
 
-                hr := CaptureClient.GetNextPacketSize(PacketFrames);
-                if FAILED(hr) or (PacketFrames = 0) then
-                  Break;
+                  hr := CaptureClient.GetNextPacketSize(PacketFrames);
+                  if FAILED(hr) or (PacketFrames = 0) then
+                    Break;
 
-                pData := nil;
-                NumFrames := 0;
-                Flags := 0;
+                  pData := nil;
+                  NumFrames := 0;
+                  Flags := 0;
 
-                hr := CaptureClient.GetBuffer(pData,
-                                              NumFrames,
-                                              Flags,
-                                              nil,
-                                              nil);
-                if FAILED(hr) then
-                  Break;
+                  hr := CaptureClient.GetBuffer(pData,
+                                                NumFrames,
+                                                Flags,
+                                                nil,
+                                                nil);
+                  if FAILED(hr) then
+                    Break;
 
-                try
+                  try
 
-                  peakL := 0;
-                  peakR := 0;
-                  sumSqL := 0;
-                  sumSqR := 0;
-                  nSamp := Integer(NumFrames);
+                    peakL := 0;
+                    peakR := 0;
+                    sumSqL := 0;
+                    sumSqR := 0;
+                    nSamp := Integer(NumFrames);
 
-                  if ((Flags and AUDCLNT_BUFFERFLAGS_SILENT) <> 0) then
-                  begin
-
-                    if (FOwner.FMode = amLevelsAndSpectrum) and (Length(FOwner.FMonoRing) > 0) then
+                    if ((Flags and AUDCLNT_BUFFERFLAGS_SILENT) <> 0) then
                       begin
-                        SetLength(tmpMono,
-                                  nSamp);
-                        if (nSamp > 0) then
-                          FillChar(tmpMono[0],
-                                   nSamp * SizeOf(Single),
-                                   0);
-                        PushMonoToRing(tmpMono);
-                      end;
-                  end
-                else
-                  begin
-
-                    if (FOwner.FMode = amLevelsAndSpectrum) and (Length(FOwner.FMonoRing) > 0) then
-                      SetLength(tmpMono,
-                                nSamp);
-
-                    if isFloat then
-                      begin
-
-                        pf := PSingle(pData);
-                        for i := 0 to nSamp - 1 do
-                          begin
-
-                            a := ClampVizSample(pf^ * DbToGain(FOwner.FInputTrimDb)); Inc(pf);
-                            sumSqL := sumSqL + (a * a);
-
-                            if (Abs(a) > peakL) then
-                              peakL := Abs(a);
-
-                            if (channels > 1) then
-                              begin
-
-                                b := ClampVizSample(pf^ * DbToGain(FOwner.FInputTrimDb)); Inc(pf);
-                                sumSqR := sumSqR + (b * b);
-                                if (Abs(b) > peakR) then
-                                  peakR := Abs(b);
-                              end
-                            else
-                              b := a;
-
-                            if (FOwner.FMode = amLevelsAndSpectrum) and (Length(FOwner.FMonoRing) > 0) then
-                              tmpMono[i] := 0.5 * (a + b);
-
-                            if (channels > 2) then
-                              Inc(pf,
-                                  channels - 2);
-                          end;
 
                         if (FOwner.FMode = amLevelsAndSpectrum) and (Length(FOwner.FMonoRing) > 0) then
-                          PushMonoToRing(tmpMono);
+                          begin
+                            SetLength(tmpMono,
+                                      nSamp);
+                            if (nSamp > 0) then
+                              FillChar(tmpMono[0],
+                                       nSamp * SizeOf(Single),
+                                       0);
+                            PushMonoToRing(tmpMono);
+                          end;
                       end
                     else
                       begin
 
-                        ps := PSmallInt(pData);
-                        for i := 0 to nSamp - 1 do
+                        if (FOwner.FMode = amLevelsAndSpectrum) and (Length(FOwner.FMonoRing) > 0) then
+                          SetLength(tmpMono,
+                                    nSamp);
+
+                        if isFloat then
                           begin
 
-                            a := ClampVizSample((ps^ / 32768.0) * DbToGain(FOwner.FInputTrimDb)); Inc(ps);
-                            sumSqL := sumSqL + (a * a);
-                            if (Abs(a) > peakL) then
-                              peakL := Abs(a);
-
-                            if (channels > 1) then
+                            pf := PSingle(pData);
+                            for i := 0 to nSamp - 1 do
                               begin
 
-                                b := ClampVizSample((ps^ / 32768.0) * DbToGain(FOwner.FInputTrimDb));
-                                Inc(ps);
-                                sumSqR := sumSqR + (b * b);
+                                a := ClampVizSample(pf^ * DbToGain(FOwner.FInputTrimDb));
+                                Inc(pf);
+                                sumSqL := sumSqL + (a * a);
 
-                                if (Abs(b) > peakR) then
-                                  peakR := Abs(b);
-                              end
-                            else
-                              b := a;
+                                if (Abs(a) > peakL) then
+                                  peakL := Abs(a);
+
+                                if (channels > 1) then
+                                  begin
+
+                                    b := ClampVizSample(pf^ * DbToGain(FOwner.FInputTrimDb));
+                                    Inc(pf);
+                                    sumSqR := sumSqR + (b * b);
+                                    if (Abs(b) > peakR) then
+                                      peakR := Abs(b);
+                                  end
+                                else
+                                  b := a;
+
+                                if (FOwner.FMode = amLevelsAndSpectrum) and (Length(FOwner.FMonoRing) > 0) then
+                                  tmpMono[i] := 0.5 * (a + b);
+
+                                if (channels > 2) then
+                                  Inc(pf,
+                                      channels - 2);
+                              end;
 
                             if (FOwner.FMode = amLevelsAndSpectrum) and (Length(FOwner.FMonoRing) > 0) then
-                              tmpMono[i] := 0.5 * (a + b);
+                              PushMonoToRing(tmpMono);
+                          end
+                        else
+                          begin
 
-                            if (channels > 2) then
-                              Inc(ps,
-                                  channels - 2);
+                            ps := PSmallInt(pData);
+                            for i := 0 to nSamp - 1 do
+                              begin
+
+                                a := ClampVizSample((ps^ / 32768.0) * DbToGain(FOwner.FInputTrimDb));
+                                Inc(ps);
+                                sumSqL := sumSqL + (a * a);
+                                if (Abs(a) > peakL) then
+                                  peakL := Abs(a);
+
+                                if (channels > 1) then
+                                  begin
+
+                                    b := ClampVizSample((ps^ / 32768.0) * DbToGain(FOwner.FInputTrimDb));
+                                    Inc(ps);
+                                    sumSqR := sumSqR + (b * b);
+
+                                    if (Abs(b) > peakR) then
+                                      peakR := Abs(b);
+                                  end
+                                else
+                                  b := a;
+
+                                if (FOwner.FMode = amLevelsAndSpectrum) and (Length(FOwner.FMonoRing) > 0) then
+                                  tmpMono[i] := 0.5 * (a + b);
+
+                                if (channels > 2) then
+                                  Inc(ps,
+                                      channels - 2);
+                              end;
+
+                            if (FOwner.FMode = amLevelsAndSpectrum) and (Length(FOwner.FMonoRing) > 0) then
+                              PushMonoToRing(tmpMono);
                           end;
-
-                        if (FOwner.FMode = amLevelsAndSpectrum) and (Length(FOwner.FMonoRing) > 0) then
-                          PushMonoToRing(tmpMono);
-                        end;
-                  end;
-
-                finally
-
-                  CaptureClient.ReleaseBuffer(NumFrames);
-                end;
-
-                rmsL := (Sqrt(sumSqL / Max(1,
-                                           nSamp))) * 1.0;
-                rmsR := (Sqrt(sumSqR / Max(1,
-                                           nSamp))) * 1.0;
-
-                aAtk := Power(attackA,
-                              NumFrames);
-                aRel := Power(releaseA,
-                              NumFrames);
-
-                smPeakL := Smooth(smPeakL,
-                                  peakL,
-                                  aAtk,
-                                  aRel);
-
-                smPeakR := Smooth(smPeakR,
-                                  peakR,
-                                  aAtk,
-                                  aRel);
-
-                smRmsL  := Smooth(smRmsL,
-                                  rmsL,
-                                  aAtk,
-                                  aRel);
-
-                smRmsR  := Smooth(smRmsR,
-                                  rmsR,
-                                  aAtk,
-                                  aRel);
-
-                if ShouldDispatch() then
-                  begin
-
-                    PublishCaptureLevels(smPeakL,
-                                         smPeakR,
-                                         smRmsL,
-                                         smRmsR);
-
-                    if (FOwner.FMode = amLevelsAndSpectrum) and (Length(FOwner.FMonoRing) > 0) then
-                      begin
-
-                        try
-
-                          ReadRingLatest(monoBlock);
-                          FOwner.BuildSpectrumBars(monoBlock,
-                                                   bars);
-                          PublishCaptureSpectrum(bars);
-                        except
-                          on E: Exception do
-                            OutputDebugStringW(PChar('MfAudioMixVisualizer capture spectrum exception: ' +
-                                                    E.ClassName + ': ' + E.Message));
-                        end;
                       end;
+
+                  finally
+
+                    CaptureClient.ReleaseBuffer(NumFrames);
                   end;
-              end;
-          end;
-        else  // case
-          Break;
+
+                  rmsL := (Sqrt(sumSqL / Max(1,
+                                             nSamp))) * 1.0;
+                  rmsR := (Sqrt(sumSqR / Max(1,
+                                             nSamp))) * 1.0;
+
+                  aAtk := Power(attackA,
+                                NumFrames);
+                  aRel := Power(releaseA,
+                                NumFrames);
+
+                  smPeakL := Smooth(smPeakL,
+                                    peakL,
+                                    aAtk,
+                                    aRel);
+
+                  smPeakR := Smooth(smPeakR,
+                                    peakR,
+                                    aAtk,
+                                    aRel);
+
+                  smRmsL := Smooth(smRmsL,
+                                   rmsL,
+                                   aAtk,
+                                   aRel);
+
+                  smRmsR := Smooth(smRmsR,
+                                   rmsR,
+                                   aAtk,
+                                   aRel);
+
+                  if ShouldDispatch() then
+                    begin
+
+                      PublishCaptureLevels(smPeakL,
+                                           smPeakR,
+                                           smRmsL,
+                                           smRmsR);
+
+                      if (FOwner.FMode = amLevelsAndSpectrum) and (Length(FOwner.FMonoRing) > 0) then
+                        begin
+
+                          try
+
+                            ReadRingLatest(monoBlock);
+                            FOwner.BuildSpectrumBars(monoBlock,
+                                                     bars);
+                            PublishCaptureSpectrum(bars);
+                          except
+                            on E: Exception do
+                              OutputDebugStringW(PChar('MfAudioMixVisualizer capture spectrum exception: ' +
+                                E.ClassName + ': ' + E.Message));
+                          end;
+                        end;
+                    end;
+                end;
+            end;
+          else  // case
+            Break;
         end;
 
       end;
@@ -1357,6 +1399,7 @@ end;
 { TMfAudioMixVisualizer }
 
 constructor TMfAudioMixVisualizer.Create(AOwner: TComponent);
+
 begin
 
   inherited Create(AOwner);
@@ -1461,6 +1504,7 @@ end;
 
 
 destructor TMfAudioMixVisualizer.Destroy();
+
 begin
 
   Active := False;
@@ -1482,6 +1526,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.Reset();
+
 begin
 
   ClearVisualState();
@@ -1492,6 +1537,7 @@ end;
 procedure TMfAudioMixVisualizer.BeginExternalFormat(ASampleRate,
                                                     AChannels: Integer;
                                                     AIsFloat: Boolean);
+
 begin
 
   if (csDesigning in ComponentState) then
@@ -1538,15 +1584,16 @@ var
   // spectrum locals
   fftN,
   barCount: Integer;
-  monoBlock: TArray<Single>;
+  monoBlock: TArray < Single > ;
   re,
-  im: TArray<Single>;
-  mags: TArray<Single>;
-  bars: TArray<Single>;
+  im: TArray < Single > ;
+  mags: TArray < Single > ;
+  bars: TArray < Single > ;
 
   // mono push
-  tmpMono: TArray<Single>;
+  tmpMono: TArray < Single > ;
   needSpectrum: Boolean;
+
 
   function Smooth(prev,
                   target,
@@ -1560,6 +1607,7 @@ var
       Result := target + (prev - target) * aRelLocal;
   end;
 
+
   procedure ComputeAttackRelease();
   var
     dt: Double;
@@ -1572,7 +1620,7 @@ var
       Exit;
 
     dt := 1.0 / Max(1,
-                   FSampleRate);
+                    FSampleRate);
 
     aa := Exp(-dt / (Max(1,
                          FAttackMs) / 1000.0));
@@ -1583,13 +1631,14 @@ var
     FExtReleaseA := (rr) * 1.0;
   end;
 
+
   function ShouldDispatch(): Boolean;
   begin
 
     nowTick := GetTickCount();
 
-    if (nowTick - FExtLastDispatchTick) >= DWORD(Max(1,
-                                                     FDispatchEveryMs)) then
+    if ((nowTick - FExtLastDispatchTick) >= DWORD(Max(1,
+      FDispatchEveryMs))) then
       begin
 
         FExtLastDispatchTick := nowTick;
@@ -1599,7 +1648,8 @@ var
       Result := False;
   end;
 
-  procedure PushMonoToRing(const X: TArray<Single>);
+
+  procedure PushMonoToRing(const X: TArray < Single > );
   var
     j,
     N: Integer;
@@ -1617,10 +1667,11 @@ var
 
         if (FRingCount < Length(FMonoRing)) then
           Inc(FRingCount);
-    end;
+      end;
   end;
 
-  procedure ReadRingLatest(var OutBlock: TArray<Single>);
+
+  procedure ReadRingLatest(var OutBlock: TArray < Single > );
   var
     j,
     N,
@@ -1654,6 +1705,7 @@ var
       end;
   end;
 
+
   procedure PublishExternalLevels(const pL,
                                   pR,
                                   rL,
@@ -1670,10 +1722,10 @@ var
                               pL));
     peakDbR := 20 * Log10(Max(EPS_AMP,
                               pR));
-    rmsDbL  := 20 * Log10(Max(EPS_AMP,
-                              rL));
-    rmsDbR  := 20 * Log10(Max(EPS_AMP,
-                              rR));
+    rmsDbL := 20 * Log10(Max(EPS_AMP,
+                             rL));
+    rmsDbR := 20 * Log10(Max(EPS_AMP,
+                             rR));
 
     InterlockedExchange(FLevelsBits[0],
                         SingleToBits(pL));
@@ -1710,7 +1762,8 @@ var
                           Integer(GetTickCount) + FClipHoldMs);
   end;
 
-  procedure PublishExternalSpectrum(const BarsLocal: TArray<Single>);
+
+  procedure PublishExternalSpectrum(const BarsLocal: TArray < Single > );
   const
     // How to tune:
     // More punch / faster bar rise:
@@ -1720,9 +1773,9 @@ var
     // More aggressive snap-to-zero:
     //   Raise SPEC_ZERO_SNAP to 0.005..0.01
     //
-    SPEC_ATTACK_ALPHA  = 0.70;  // higher = faster rise
+    SPEC_ATTACK_ALPHA = 0.70;  // higher = faster rise
     SPEC_RELEASE_ALPHA = 0.18;  // lower = slower fall
-    SPEC_ZERO_SNAP     = 0.009; // tiny residuals -> hard zero
+    SPEC_ZERO_SNAP = 0.009; // tiny residuals -> hard zero
 
   var
     ii,
@@ -1740,9 +1793,9 @@ var
       begin
 
         prev := BitsToSingle(
-                  InterlockedCompareExchange(FSpectrumBits[ii],
-                                             0,
-                                             0));
+          InterlockedCompareExchange(FSpectrumBits[ii],
+                                     0,
+                                     0));
 
         prev := EnsureRange(prev,
                             0.0,
@@ -1790,7 +1843,8 @@ begin
   sumSqR := 0;
 
   if needSpectrum then
-    SetLength(tmpMono, Frames);
+    SetLength(tmpMono,
+              Frames);
 
   for i := 0 to Frames - 1 do
     begin
@@ -1846,15 +1900,15 @@ begin
                      aAtk,
                      aRel);
 
-  FSmRmsL  := Smooth(FSmRmsL,
-                     rmsL,
-                     aAtk,
-                     aRel);
+  FSmRmsL := Smooth(FSmRmsL,
+                    rmsL,
+                    aAtk,
+                    aRel);
 
-  FSmRmsR  := Smooth(FSmRmsR,
-                     rmsR,
-                     aAtk,
-                     aRel);
+  FSmRmsR := Smooth(FSmRmsR,
+                    rmsR,
+                    aAtk,
+                    aRel);
 
   if needSpectrum then
     PushMonoToRing(tmpMono);
@@ -1873,11 +1927,16 @@ begin
           fftN := FFftSize;
           barCount := FBarCount;
 
-          SetLength(monoBlock, fftN);
-          SetLength(re, fftN);
-          SetLength(im, fftN);
-          SetLength(mags, fftN div 2);
-          SetLength(bars, barCount);
+          SetLength(monoBlock,
+                    fftN);
+          SetLength(re,
+                    fftN);
+          SetLength(im,
+                    fftN);
+          SetLength(mags,
+                    fftN div 2);
+          SetLength(bars,
+                    barCount);
 
           try
 
@@ -1888,14 +1947,15 @@ begin
           except
             on E: Exception do
               OutputDebugStringW(PChar('MfAudioMixVisualizer external spectrum exception: ' +
-                                      E.ClassName + ': ' + E.Message));
+                E.ClassName + ': ' + E.Message));
           end;
         end;
     end;
 end;
 
 
-procedure TMfAudioMixVisualizer.PushInt16Interleaved(pData: PSmallInt; Frames: Integer);
+procedure TMfAudioMixVisualizer.PushInt16Interleaved(pData: PSmallInt;
+                                                     Frames: Integer);
 var
   i: Integer;
   a16,
@@ -1913,8 +1973,9 @@ var
   nowTick: DWORD;
 
   // spectrum
-  tmpMono: TArray<Single>;
+  tmpMono: TArray < Single > ;
   needSpectrum: Boolean;
+
 
   function Smooth(prev,
                   target,
@@ -1928,6 +1989,7 @@ var
       Result := target + (prev - target) * aRelLocal;
   end;
 
+
   procedure ComputeAttackRelease();
   var
     dt: Double;
@@ -1936,10 +1998,11 @@ var
 
   begin
 
-    if FSampleRate <= 0 then
+    if (FSampleRate <= 0) then
       Exit;
 
-    dt := 1.0 / Max(1, FSampleRate);
+    dt := 1.0 / Max(1,
+                    FSampleRate);
     aa := Exp(-dt / (Max(1,
                          FAttackMs) / 1000.0));
     rr := Exp(-dt / (Max(1,
@@ -1949,13 +2012,14 @@ var
     FExtReleaseA := (rr) * 1.0;
   end;
 
+
   function ShouldDispatch(): Boolean;
   begin
 
     nowTick := GetTickCount();
 
-    if (nowTick - FExtLastDispatchTick) >= DWORD(Max(1,
-                                                     FDispatchEveryMs)) then
+    if ((nowTick - FExtLastDispatchTick) >= DWORD(Max(1,
+      FDispatchEveryMs))) then
       begin
 
         FExtLastDispatchTick := nowTick;
@@ -1965,10 +2029,11 @@ var
       Result := False;
   end;
 
+
   procedure PublishExternalLevelsOnly(const pL,
                                       pR,
-                              rL,
-                              rR: Single);
+                                      rL,
+                                      rR: Single);
   var
     peakDbL,
     peakDbR,
@@ -1981,10 +2046,10 @@ var
                               pL));
     peakDbR := 20 * Log10(Max(EPS_AMP,
                               pR));
-    rmsDbL  := 20 * Log10(Max(EPS_AMP,
-                              rL));
-    rmsDbR  := 20 * Log10(Max(EPS_AMP,
-                              rR));
+    rmsDbL := 20 * Log10(Max(EPS_AMP,
+                             rL));
+    rmsDbR := 20 * Log10(Max(EPS_AMP,
+                             rR));
 
     InterlockedExchange(FLevelsBits[0],
                         SingleToBits(pL));
@@ -2021,7 +2086,8 @@ var
                           Integer(GetTickCount) + FClipHoldMs);
   end;
 
-  procedure PushMonoToRing(const X: TArray<Single>);
+
+  procedure PushMonoToRing(const X: TArray < Single > );
   var
     j,
     N: Integer;
@@ -2071,37 +2137,38 @@ begin
   sumSqR := 0;
 
   for i := 0 to Frames - 1 do
-  begin
+    begin
 
-    a16 := pData^;
-    Inc(pData);
+      a16 := pData^;
+      Inc(pData);
 
-    if FChannels > 1 then
-      begin
+      if (FChannels > 1) then
+        begin
 
-        b16 := pData^;
-        Inc(pData);
-      end
-    else
-      b16 := a16;
+          b16 := pData^;
+          Inc(pData);
+        end
+      else
+        b16 := a16;
 
-    a := a16 / 32768.0;
-    b := b16 / 32768.0;
+      a := a16 / 32768.0;
+      b := b16 / 32768.0;
 
-    sumSqL := sumSqL + (a * a);
-    if (Abs(a) > peakL) then
-      peakL := Abs(a);
+      sumSqL := sumSqL + (a * a);
+      if (Abs(a) > peakL) then
+        peakL := Abs(a);
 
-    sumSqR := sumSqR + (b * b);
-    if (Abs(b) > peakR) then
-      peakR := Abs(b);
+      sumSqR := sumSqR + (b * b);
+      if (Abs(b) > peakR) then
+        peakR := Abs(b);
 
-    if needSpectrum then
-      tmpMono[i] := 0.5 * (a + b);
+      if needSpectrum then
+        tmpMono[i] := 0.5 * (a + b);
 
-    if FChannels > 2 then
-      Inc(pData, FChannels - 2);
-  end;
+      if (FChannels > 2) then
+        Inc(pData,
+            FChannels - 2);
+    end;
 
   rmsL := (Sqrt(sumSqL / Max(1,
                              Frames))) * 1.0;
@@ -2127,21 +2194,24 @@ begin
                      aAtk,
                      aRel);
 
-  FSmRmsL  := Smooth(FSmRmsL,
-                     rmsL,
-                     aAtk,
-                     aRel);
+  FSmRmsL := Smooth(FSmRmsL,
+                    rmsL,
+                    aAtk,
+                    aRel);
 
-  FSmRmsR  := Smooth(FSmRmsR,
-                     rmsR,
-                     aAtk,
-                     aRel);
+  FSmRmsR := Smooth(FSmRmsR,
+                    rmsR,
+                    aAtk,
+                    aRel);
 
   if needSpectrum then
     PushMonoToRing(tmpMono);
 
   if ShouldDispatch() then
-    PublishExternalLevelsOnly(FSmPeakL, FSmPeakR, FSmRmsL, FSmRmsR);
+    PublishExternalLevelsOnly(FSmPeakL,
+                              FSmPeakR,
+                              FSmRmsL,
+                              FSmRmsR);
 end;
 
 
@@ -2218,7 +2288,7 @@ begin
         MasterVol := 1.0;
 
         if Succeeded(FEndpointVol.GetMute(Muted)) and
-           Succeeded(FEndpointVol.GetMasterVolumeLevelScalar(MasterVol)) then
+          Succeeded(FEndpointVol.GetMasterVolumeLevelScalar(MasterVol)) then
           begin
 
             if (Muted <> 0) then
@@ -2273,6 +2343,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetBackColor(Value: TColor);
+
 begin
 
   if (FBackColor = Value) then
@@ -2283,6 +2354,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetBarColor(Value: TColor);
+
 begin
 
   if (FBarColor = Value) then
@@ -2294,6 +2366,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetPeakColor(Value: TColor);
+
 begin
 
   if (FPeakColor = Value) then
@@ -2305,6 +2378,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetRmsColor(Value: TColor);
+
 begin
 
   if (FRmsColor = Value) then
@@ -2316,6 +2390,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetBorderColor(Value: TColor);
+
 begin
 
   if (FBorderColor = Value) then
@@ -2347,8 +2422,8 @@ begin
 end;
 
 
-procedure TMfAudioMixVisualizer.BuildSpectrumBars(const MonoBlock: TArray<Single>;
-                                                  out Bars: TArray<Single>);
+procedure TMfAudioMixVisualizer.BuildSpectrumBars(const MonoBlock: TArray < Single > ;
+                                                  out Bars: TArray < Single > );
 const
   EPS_AMP = 1.0e-12;
   HANN_COHERENT_GAIN = 0.5;
@@ -2356,9 +2431,9 @@ const
 var
   fftN: Integer;
   barCount: Integer;
-  re: TArray<Single>;
-  im: TArray<Single>;
-  magsDb: TArray<Single>;
+  re: TArray < Single > ;
+  im: TArray < Single > ;
+  magsDb: TArray < Single > ;
   i: Integer;
   k: Integer;
   bar: Integer;
@@ -2374,10 +2449,11 @@ begin
   fftN := FFftSize;
   barCount := FBarCount;
 
-  SetLength(Bars, barCount);
+  SetLength(Bars,
+            barCount);
   if (fftN <= 0) or
-     (barCount <= 0) or
-     (Length(MonoBlock) < fftN) then
+    (barCount <= 0) or
+    (Length(MonoBlock) < fftN) then
     Exit;
 
   SetLength(re,
@@ -2420,8 +2496,10 @@ begin
       t0 := bar / barCount;
       t1 := (bar + 1) / barCount;
 
-      idxStart := 1 + Trunc((Power(fftN div 2, t0) - 1));
-      idxEnd   := 1 + Trunc((Power(fftN div 2, t1) - 1));
+      idxStart := 1 + Trunc((Power(fftN div 2,
+                                   t0) - 1));
+      idxEnd := 1 + Trunc((Power(fftN div 2,
+                                 t1) - 1));
 
       if (idxEnd <= idxStart) then
         idxEnd := idxStart + 1;
@@ -2443,6 +2521,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetShowDbScale(Value: Boolean);
+
 begin
 
   if (FShowDbScale <> Value) then
@@ -2455,6 +2534,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetShowMeters(Value: Boolean);
+
 begin
 
   if (FShowMeters <> Value) then
@@ -2463,11 +2543,12 @@ begin
       FShowMeters := Value;
       Invalidate();
     end;
-  
+
 end;
 
 
 procedure TMfAudioMixVisualizer.SetDbTop(Value: Single);
+
 begin
 
   Value := EnsureRange(Value,
@@ -2478,8 +2559,8 @@ begin
     Value := FDbMin + 0.1;
 
   if not SameValue(FDbTop,
-                   Value,
-                   1E-6) then
+    Value,
+    1E-6) then
     begin
 
       FDbTop := Value;
@@ -2489,6 +2570,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetDbMin(Value: Single);
+
 begin
 
   // Must be negative.
@@ -2505,6 +2587,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetDbTickStep(Value: Integer);
+
 begin
 
   if (Value < 1) then
@@ -2520,6 +2603,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetDbLabelStep(Value: Integer);
+
 begin
 
   if (Value < 1) then
@@ -2535,6 +2619,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetDbScaleWidth(Value: Integer);
+
 begin
 
   if (Value < 0) then
@@ -2550,6 +2635,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetPeakThreshold(Value: Single);
+
 begin
 
   Value := EnsureRange(Value,
@@ -2557,14 +2643,15 @@ begin
                        1.0);
 
   if SameValue(FPeakThreshold,
-               Value,
-               1e-6) then
+    Value,
+    1e-6) then
     Exit;
   FPeakThreshold := Value;
 end;
 
 
 procedure TMfAudioMixVisualizer.SetPeakCapFrac(Value: Single);
+
 begin
 
   Value := EnsureRange(Value,
@@ -2572,15 +2659,16 @@ begin
                        1.0);
 
   if SameValue(FPeakCapFrac,
-               Value,
-               1e-6) then
+    Value,
+    1e-6) then
     Exit;
   FPeakCapFrac := Value;
 end;
 
 
 procedure TMfAudioMixVisualizer.DrawDesignTimePlaceholder(ACanvas: TCanvas;
-                                                       const R: TRect);
+                                                          const R: TRect);
+
 begin
 
   ACanvas.Brush.Style := bsSolid;
@@ -2601,9 +2689,10 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetDeviceId(const Value: string);
+
 begin
 
-  if (lstrcmpiW(PWideChar(FDeviceId),PWideChar(Value)) = 0) then
+  if (lstrcmpiW(PWideChar(FDeviceId), PWideChar(Value)) = 0) then
     Exit;
 
   FDeviceId := Trim(Value);
@@ -2673,11 +2762,12 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetInputTrimDb(Value: Single);
+
 begin
 
   if SameValue(FInputTrimDb,
-               Value,
-               1.0e-4) then
+    Value,
+    1.0e-4) then
     Exit;
 
   FInputTrimDb := EnsureRange(Value,
@@ -2798,9 +2888,9 @@ begin
 
   if (FStopEvent = 0) then
     FStopEvent := CreateEventW(nil,
-                              True,
-                              False,
-                              nil)
+                               True,
+                               False,
+                               nil)
   else
     ResetEvent(FStopEvent);
 
@@ -2818,7 +2908,7 @@ begin
       hr := CoInitializeEx(nil,
                            COINIT_APARTMENTTHREADED);
       if (hr <> S_OK) and (hr <> S_FALSE) and (hr <> RPC_E_CHANGED_MODE) then
-        ; // ignore
+      ; // ignore
 
       hr := CoCreateInstance(CLSID_MMDeviceEnumerator,
                              nil,
@@ -2853,6 +2943,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.StopCapture();
+
 begin
 
   if Assigned(FCaptureThread) then
@@ -2874,6 +2965,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.QueueRestart();
+
 begin
 
   if (csDesigning in ComponentState) then
@@ -2896,6 +2988,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.DoQueuedRestart();
+
 begin
 
   try
@@ -2910,6 +3003,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.RestartIfRunning();
+
 begin
 
   if (csDesigning in ComponentState) then
@@ -2934,6 +3028,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetActive(Value: Boolean);
+
 begin
 
   if (FActive = Value) then
@@ -2966,6 +3061,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetAutoStart(Value: Boolean);
+
 begin
 
   if (FAutoStart = Value) then
@@ -2975,6 +3071,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetInputSource(Value: TMfAudioInputSource);
+
 begin
 
   if (FInputSource = Value) then
@@ -2989,6 +3086,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetDeviceDataFlow(Value: EDataFlow);
+
 begin
 
   if (FDataFlow = Value) then
@@ -3000,6 +3098,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetDeviceRole(Value: ERole);
+
 begin
 
   if (FRole = Value) then
@@ -3011,6 +3110,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetVolumeScaleMode(Value: TMfVolumeScaleMode);
+
 begin
 
   if (FVolumeScaleMode = Value) then
@@ -3053,13 +3153,14 @@ begin
 
         Result := (Result + 60.0) / 60.0;
       end;
-  else
-    Result := s;
+    else
+      Result := s;
   end;
 end;
 
 
 procedure TMfAudioMixVisualizer.SetMode(Value: TMfAnalyzerMode);
+
 begin
 
   if (FMode = Value) then
@@ -3075,6 +3176,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetView(Value: TMfVizMode);
+
 begin
 
   if (FView = Value) then
@@ -3086,13 +3188,14 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetBarCount(Value: Integer);
+
 begin
 
   Value := EnsureRange(Value,
                        8,
                        256);
 
-  if FBarCount = Value then
+  if (FBarCount = Value) then
     Exit;
 
   FBarCount := Value;
@@ -3104,6 +3207,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetFftSize(Value: Integer);
+
 begin
 
   Value := EnsureRange(Value,
@@ -3122,6 +3226,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetAttackMs(Value: Integer);
+
 begin
 
   Value := EnsureRange(Value,
@@ -3137,6 +3242,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetReleaseMs(Value: Integer);
+
 begin
 
   Value := EnsureRange(Value,
@@ -3153,6 +3259,7 @@ end;
 
 
 procedure TMfAudioMixVisualizer.SetDispatchEveryMs(Value: Integer);
+
 begin
 
   Value := EnsureRange(Value,
@@ -3203,36 +3310,36 @@ var
 begin
 
   Result.PeakL := BitsToSingle(InterlockedCompareExchange(FLevelsBits[0],
-                               0,
-                               0));
+                                                          0,
+                                                          0));
 
   Result.PeakR := BitsToSingle(InterlockedCompareExchange(FLevelsBits[1],
-                               0,
-                               0));
+                                                          0,
+                                                          0));
 
-  Result.RmsL  := BitsToSingle(InterlockedCompareExchange(FLevelsBits[2],
-                               0,
-                               0));
+  Result.RmsL := BitsToSingle(InterlockedCompareExchange(FLevelsBits[2],
+                                                         0,
+                                                         0));
 
-  Result.RmsR  := BitsToSingle(InterlockedCompareExchange(FLevelsBits[3],
-                               0,
-                               0));
+  Result.RmsR := BitsToSingle(InterlockedCompareExchange(FLevelsBits[3],
+                                                         0,
+                                                         0));
 
   Result.PeakDbL := BitsToSingle(InterlockedCompareExchange(FLevelsBits[4],
-                                 0,
-                                 0));
+                                                            0,
+                                                            0));
 
   Result.PeakDbR := BitsToSingle(InterlockedCompareExchange(FLevelsBits[5],
-                                 0,
-                                 0));
+                                                            0,
+                                                            0));
 
-  Result.RmsDbL  := BitsToSingle(InterlockedCompareExchange(FLevelsBits[6],
-                                 0,
-                                 0));
+  Result.RmsDbL := BitsToSingle(InterlockedCompareExchange(FLevelsBits[6],
+                                                           0,
+                                                           0));
 
-  Result.RmsDbR  := BitsToSingle(InterlockedCompareExchange(FLevelsBits[7],
-                                 0,
-                                 0));
+  Result.RmsDbR := BitsToSingle(InterlockedCompareExchange(FLevelsBits[7],
+                                                           0,
+                                                           0));
 
   // Apply endpoint master-volume visual scaling (optional).
   g := GetVolumeVisualGain();
@@ -3241,8 +3348,8 @@ begin
 
       Result.PeakL := Result.PeakL * g;
       Result.PeakR := Result.PeakR * g;
-      Result.RmsL  := Result.RmsL  * g;
-      Result.RmsR  := Result.RmsR  * g;
+      Result.RmsL := Result.RmsL * g;
+      Result.RmsR := Result.RmsR * g;
     end;
 end;
 
@@ -3261,8 +3368,8 @@ begin
 
   for i := 0 to High(FSpectrumBits) do
     Result[i] := BitsToSingle(InterlockedCompareExchange(FSpectrumBits[i],
-                              0,
-                              0));
+                                                         0,
+                                                         0));
 
   // Apply endpoint master-volume visual scaling (optional).
   g := GetVolumeVisualGain();
@@ -3287,12 +3394,14 @@ var
   PlotArea: TRect;
   DbMinLocal: Single;
 
+
   function AmpToDb(const A: Single): Single; inline;
   begin
 
     Result := 20.0 * Log10(Max(A,
-                           EPS_AMP));
+                               EPS_AMP));
   end;
+
 
   function DbToFrac(const Db: Single): Double;
   var
@@ -3300,15 +3409,19 @@ var
 
   begin
 
-    dbClamped := EnsureRange(Db, DbMinLocal, 0.0);
+    dbClamped := EnsureRange(Db,
+                             DbMinLocal,
+                             0.0);
     Result := (dbClamped - DbMinLocal) / (0.0 - DbMinLocal); // 0..1
   end;
+
 
   function AmpToFrac(const A: Single): Double; inline;
   begin
 
     Result := DbToFrac(AmpToDb(A));
   end;
+
 
   procedure DrawDbScale(const ScaleR,
                         PlotArea: TRect);
@@ -3349,8 +3462,10 @@ var
           else
             tickLen := 5;
 
-          ACanvas.MoveTo(axisX - tickLen, y);
-          ACanvas.LineTo(axisX, y);
+          ACanvas.MoveTo(axisX - tickLen,
+                         y);
+          ACanvas.LineTo(axisX,
+                         y);
 
           if ((Abs(db) mod FDbLabelStep) = 0) or (db = 0) then
             begin
@@ -3363,6 +3478,7 @@ var
         end;
   end;
 
+
   function BarRect(const idx,
                    total: Integer): TRect;
   var
@@ -3374,7 +3490,8 @@ var
   begin
 
     w := RectWidth(PlotR);
-    gap := Max(4, w div 80);
+    gap := Max(4,
+               w div 80);
 
     bw := (w - gap * (total + 1)) div total;
     if (bw < 10) then
@@ -3387,6 +3504,7 @@ var
                    x0 + bw,
                    PlotR.Bottom - BOT_M);
   end;
+
 
   procedure DrawBar(const BR: TRect;
                     const level,
@@ -3466,9 +3584,9 @@ var
     if showHold then
       begin
 
-       yHold := BR.Bottom - 1 - Round(h * EnsureRange(hold,
-                                                      0,
-                                                      1));
+        yHold := BR.Bottom - 1 - Round(h * EnsureRange(hold,
+                                                       0,
+                                                       1));
         ACanvas.Pen.Color := clWhite;
 
         ACanvas.MoveTo(BR.Left + 1,
@@ -3478,6 +3596,7 @@ var
                        yHold);
       end;
   end;
+
 
   procedure DrawClipLedSquare(const LedR: TRect;
                               const Active: Boolean;
@@ -3505,7 +3624,8 @@ var
           ACanvas.Font.Color := clSilver;
 
         ACanvas.TextOut(LedR.Right + 4,
-                        LedR.Top - 1, 'CLIP');
+                        LedR.Top - 1,
+                        'CLIP');
       end;
   end;
 
@@ -3595,19 +3715,19 @@ begin
                                  brL.Top + 2,
                                  brL.Right - 2,
                                  brL.Top + 14),
-                                 GetTickCount < Cardinal(InterlockedCompareExchange(FClipUntilL,
-                                                                                    0,
-                                                                                    0)),
-                                                                                    False);
+                            GetTickCount < Cardinal(InterlockedCompareExchange(FClipUntilL,
+                                                                               0,
+                                                                               0)),
+                            False);
 
           DrawClipLedSquare(Rect(brR.Right - 14,
                                  brR.Top + 2,
                                  brR.Right - 2,
                                  brR.Top + 14),
-                                 GetTickCount < Cardinal(InterlockedCompareExchange(FClipUntilR,
-                                                                                    0,
-                                                                                    0)),
-                                                                                    False);
+                            GetTickCount < Cardinal(InterlockedCompareExchange(FClipUntilR,
+                                                                               0,
+                                                                               0)),
+                            False);
         end
       else
         begin
@@ -3617,10 +3737,10 @@ begin
                                  PlotR.Top + 2,
                                  PlotR.Right - 2,
                                  PlotR.Top + 14),
-                                 GetTickCount < Cardinal(InterlockedCompareExchange(FClipUntilAny,
-                                                                                    0,
-                                                                                    0)),
-                                                                                    True);
+                            GetTickCount < Cardinal(InterlockedCompareExchange(FClipUntilAny,
+                                                                               0,
+                                                                               0)),
+                            True);
         end;
     end;
 
@@ -3634,7 +3754,7 @@ begin
                       R.Top + 8,
                       Format('Meters  SR=%d  Ch=%d',
                              [FSampleRate,
-                             FChannels]));
+        FChannels]));
     end;
 
 end;
@@ -3654,6 +3774,7 @@ var
   PlotArea: TRect;
   DbMinLocal: Single;
   DbTopLocal: Single;
+
 
   procedure DrawDbScale(const ScaleR,
                         PlotArea: TRect);
@@ -3829,7 +3950,7 @@ begin
                       R.Top + 8,
                       Format('Spectrum  Sample Rate=%d  FFT=%d',
                              [FSampleRate,
-                              FFftSize]));
+        FFftSize]));
     end;
 end;
 

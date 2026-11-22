@@ -93,7 +93,8 @@ uses
   {$IFDEF WIN32}
     {$ALIGN 1}
   {$ELSE}
-    {$ALIGN 8} // Win64
+  {$ALIGN 8}
+  // Win64
   {$ENDIF}
 
   {$I 'WinApiTypes.inc'}
@@ -104,14 +105,15 @@ const
   // for volume/mute/meter, this bit will be on in the
   // DWORD returned by the IAudioEndpointVolume QueryHardwareSupport and
   // the IAudioEndpointMeter QueryHardwareSupport API
-  ENDPOINT_HARDWARE_SUPPORT_VOLUME    = $00000001;
-  ENDPOINT_HARDWARE_SUPPORT_MUTE      = $00000002;
-  ENDPOINT_HARDWARE_SUPPORT_METER     = $00000004;
+  ENDPOINT_HARDWARE_SUPPORT_VOLUME = $00000001;
+  ENDPOINT_HARDWARE_SUPPORT_MUTE = $00000002;
+  ENDPOINT_HARDWARE_SUPPORT_METER = $00000004;
 
 
 type
 
   PAUDIO_VOLUME_NOTIFICATION_DATA = ^AUDIO_VOLUME_NOTIFICATION_DATA;
+
   cwAUDIO_VOLUME_NOTIFICATION_DATA = record
     guidEventContext: TGUID;  // Context associated with the originator of the event.
     bMuted: BOOL;
@@ -148,11 +150,12 @@ type
   //      codes from the OnNotify method.
   //
   IAudioEndpointVolumeCallback = interface(IUnknown)
-  ['{657804FA-D6AD-4496-8A60-352752AF4F89}']
+    ['{657804FA-D6AD-4496-8A60-352752AF4F89}']
 
     function OnNotify(pNotify: PAUDIO_VOLUME_NOTIFICATION_DATA): HRESULT; stdcall;
 
   end;
+
   IID_IAudioEndpointVolumeCallback = IAudioEndpointVolumeCallback;
 
 
@@ -175,7 +178,7 @@ type
   //      <other error> If registration for notification failed.
   //
   IAudioEndpointVolume = interface(IUnknown)
-  ['{5CDF2C82-841E-4546-9722-0CF74078229A}']
+    ['{5CDF2C82-841E-4546-9722-0CF74078229A}']
 
     function RegisterControlChangeNotify(pNotify: IAudioEndpointVolumeCallback): HRESULT; stdcall;
 
@@ -208,7 +211,7 @@ type
                                          out fLevel: Single): HRESULT; stdcall;
 
     function SetMute(const bMute: INT {BOOL};  // See BOOL comments in WinApiTypes.pas (See for a workaround Components/example MfAudioEndPoint)
-                     const pguidEventContext: LPCGUID): HRESULT; stdcall;
+      const pguidEventContext: LPCGUID): HRESULT; stdcall;
 
     function GetMute(out pbMute: INT {BOOL}): HRESULT; stdcall; // See BOOL comments in WinApi.WinApiTypes.pas (See for a workaround Components/example MfAudioEndPoint)
 
@@ -225,6 +228,7 @@ type
                             out pflVolumeMaxdB: Single;
                             out pflVolumeIncrementdB: Single): HRESULT; stdcall;
   end;
+
   IID_IAudioEndpointVolume = IAudioEndpointVolume;
 
 
@@ -233,13 +237,14 @@ type
   // >= Windows 7
   //
   IAudioEndpointVolumeEx = interface(IAudioEndpointVolume)
-  ['{66E11784-F695-4F28-A505-A7080081A78F}']
+    ['{66E11784-F695-4F28-A505-A7080081A78F}']
 
     function GetVolumeRangeChannel(iChannel: UINT;
                                    out pflVolumeMinDB: Single;
                                    out pflVolumeMaxDB: Single;
                                    out pflVolumeIncrementDB: Single): HRESULT; stdcall;
   end;
+
   IID_IAudioEndpointVolumeEx = IAudioEndpointVolumeEx;
 
 
@@ -261,7 +266,7 @@ type
   //      <other error> If failed.
   //
   IAudioMeterInformation = interface(IUnknown)
-  ['{C02216F6-8C67-4B5B-9D00-D008E73E0064}']
+    ['{C02216F6-8C67-4B5B-9D00-D008E73E0064}']
 
     function GetPeakValue(out pfPeak: Single): HResult; stdcall;
     // The GetPeakValue method gets the peak sample value for the channels in the audio stream.
@@ -277,7 +282,7 @@ type
     // Parameters
     // pnChannelCount [out]
     //  Pointer to a UINT variable into which the method writes the number of channels.
-    
+
     function GetChannelsPeakValues(u32ChannelCount: UINT32;
                                    afPeakValues: PFloat): HResult; stdcall;
     // The GetChannelsPeakValues method gets the peak sample values for all the channels in the audio stream.
@@ -316,6 +321,7 @@ type
     //    Peak meter
 
   end;
+
   IID_IAudioMeterInformation = IAudioMeterInformation;
 
 
@@ -325,6 +331,6 @@ type
 
 implementation
 
-  // Implement Additional functions here.
+// Implement Additional functions here.
 
 end.
