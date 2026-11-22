@@ -1,0 +1,915 @@
+// FactoryX
+//
+// Copyright © FactoryX, Netherlands/Australia
+//
+// Project: Media Foundation - MFPack - Samples
+// Project location: http://sourceforge.net/projects/MFPack
+// Module: frmMfMediaEnginePlayer.pas
+// Kind: Pascal Unit
+// Release date: 24-04-2019
+// Language: ENU
+//
+// Revision Version: 4.1.0
+// Description: This player version is based on the IMFMediaEngine and
+//              the TimedText interfaces for subtitles.
+//
+// Company: FactoryX
+// Initiator(s): Tony (maXcomX), Peter (OzShips)
+// Contributor(s): Tony Kalf (maXcomX), Peter Larson (ozships),
+//                 Ramyses De Macedo Rodrigues, (Ciaran).
+//
+//------------------------------------------------------------------------------
+// CHANGE LOG
+// Date       Person              Reason
+// ---------- ------------------- ----------------------------------------------
+// 15/11/2026 All                 Eels release  SDK 10.0.28000.2705 (Windows 11)
+//------------------------------------------------------------------------------
+//
+// Remarks: Requires Windows 10 or higher.
+//
+// Related objects: -
+// Related projects: MfPackX410
+// Known Issues: -
+//
+// Compiler version: 23 up to 35
+// SDK version: 10.0.28000.2705
+//
+// Todo: -
+//
+// =============================================================================
+// Source: -
+//
+// Copyright © FactoryX. All rights reserved.
+//==============================================================================
+//
+// LICENSE
+//
+// The contents of this file are subject to the Mozilla Public License
+// Version 2.0 (the "License"); you may not use this file except in
+// compliance with the License. You may obtain a copy of the License at
+// https://www.mozilla.org/en-US/MPL/2.0/
+//
+// Software distributed under the License is distributed on an "AS IS"
+// basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+// License for the specific language governing rights and limitations
+// under the License.
+//
+// Non commercial users may distribute this sourcecode provided that this
+// header is included in full at the top of the file.
+// Commercial users are not allowed to distribute this sourcecode as part of
+// their product.
+//
+//==============================================================================
+unit frmMfMediaEnginePlayer;
+
+{$I MfPack.Fpc.inc}
+{$POINTERMATH ON}
+
+interface
+
+uses
+  LMessages,
+  LCLIntf,
+{Winapi}
+  Windows,
+  Messages,
+  WinApi.WinApiTypes,
+  {System}
+  Types,
+  Math,
+  SysUtils,
+  Variants,
+  Classes,
+  ComObj,
+  {Vcl}
+  Graphics,
+  Controls,
+  Forms,
+  Dialogs,
+  StdCtrls,
+  ComCtrls,
+  ExtCtrls,
+  Menus,
+  {MfPack}
+  WinApi.MediaFoundationApi.MfUtils,
+  WinApi.MediaFoundationApi.MfApi,
+  WinApi.MediaFoundationApi.MfMediaEngine,
+  WinApi.MediaFoundationApi.MfMetLib,
+  {WIC}
+  WinApi.WIC.WinCodec,
+  {Project}
+  MediaEngineClass,
+  TimedTextNotifyClass,
+  FloatingFrm;
+
+
+type
+  TSubtitleMode = (smTransparentWindow, smBurnedIn);
+
+  TFeMediaEnginePlayer = class(TForm)
+    pnlControls: TPanel;
+    butStop: TButton;
+    butPause: TButton;
+    butPlay: TButton;
+    trbVolume: TTrackBar;
+    prbProgress: TProgressBar;
+    butFullScreen: TButton;
+    pnlVideo: TPanel;
+    MainMenu1: TMainMenu;
+    muFile: TMenuItem;
+    muOpen: TMenuItem;
+    muSeparator1: TMenuItem;
+    muExit: TMenuItem;
+    muExtra: TMenuItem;
+    mnuTakeScreenshot: TMenuItem;
+    mnuAspectRatio: TMenuItem;
+    smFourByThree: TMenuItem;
+    smSixteenByNine: TMenuItem;
+    smCinema: TMenuItem;
+    mnuSubtitles: TMenuItem;
+    mnuTransparentSubtitles: TMenuItem;
+    mnuBurnedSubtitles: TMenuItem;
+    dlgOpenUrl: TOpenDialog;
+    trbBalance: TTrackBar;
+    cbMute: TCheckBox;
+
+
+    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure muOpenClick(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure butStopClick(Sender: TObject);
+    procedure butPauseClick(Sender: TObject);
+    procedure butPlayClick(Sender: TObject);
+    procedure trbVolumeChange(Sender: TObject);
+    procedure prbProgressMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure FormCreate(Sender: TObject);
+    procedure butFullScreenClick(Sender: TObject);
+    procedure mnuTakeScreenshotClick(Sender: TObject);
+    procedure trbBalanceChange(Sender: TObject);
+    procedure FormResize(Sender: TObject);
+    procedure trbBalanceKeyUp(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure muExitClick(Sender: TObject);
+    procedure cbMuteClick(Sender: TObject);
+    procedure smSixteenByNineClick(Sender: TObject);
+    procedure smCinemaClick(Sender: TObject);
+    procedure smFourByThreeClick(Sender: TObject);
+    procedure SubtitleModeClick(Sender: TObject);
+
+  private
+    { Private declarations }
+    FSubtitleMode: TSubtitleMode;
+    FSubtitleText: string;
+    FSubtitleFont: TFont;
+    FVideoFrame, FPresentedFrame: TBitmap;
+    FFrameSurface: IWICBitmap;
+    FFramePixels: TBytes;
+    FVideoPaint: TPaintBox;
+    FFrameTimer: TTimer;
+    FCompositeDirty, FHaveVideoFrame: Boolean;
+
+    pb_IsFullScreen: Boolean;
+    ph_FloatingForm: HWnd;
+    pi_AspectRatio: Single;
+    wic_ImagingFactory: IWICImagingFactory;
+
+    procedure UpdateSubtitles;
+    procedure ClearSubtitles;
+    procedure FrameTimer(Sender: TObject);
+    procedure PaintVideo(Sender: TObject);
+    procedure ComposeFrame;
+    procedure DrawBurnedSubtitles;
+    procedure OnMeTimerUpdate(var message: TLMessage); message WM_TIMERUPDATE;
+    // TimedTextNotify messages
+    procedure OnTextNotify(var message: TLMessage); message WM_TIMEDTEXTNOTIFY;
+    procedure OnErrorNotify(var message: TLMessage); message WM_ERROR_TIMEDTEXTNOTYFY;
+
+    // Create FloatingForm
+    procedure CreateSubTitleLayer(bShowCustomText: Boolean);
+    procedure SetParentRect();
+    procedure ForceResize();
+    // Size and move methods, needed by FloatingForm to adjust position and size.
+    procedure WMSize(var message: TLMSize); message WM_SIZE;
+    procedure WMMove(var message: TLMMove); message WM_MOVE;
+    // Keeps this form in correct aspectratio when changing size
+    procedure WMSizing(var message: TLMessage); message WM_SIZING;
+
+  public
+    destructor Destroy; override;
+    { Public declarations }
+
+    procedure SetWindowStyle(bFullScreen: Boolean);
+    procedure ResetInterface();
+    procedure RealignInterface();
+    function ReleaseEngine(): HResult;
+
+
+  end;
+
+
+var
+  FeMediaEnginePlayer: TFeMediaEnginePlayer;
+  gi_MediaEngine: TcMediaEngine;
+  FloatingForm: TFloatingForm;
+
+
+implementation
+
+{$R *.lfm}
+
+uses
+  ClipBrd;
+
+
+// Subtitle routines ///////////////////////////////////////////////////////////
+destructor TFeMediaEnginePlayer.Destroy;
+begin
+ if FFrameTimer<>nil then FFrameTimer.Enabled:=False;
+ ReleaseEngine;
+ FreeAndNil(FloatingForm);
+ FreeAndNil(FVideoFrame);
+ FreeAndNil(FPresentedFrame);
+ FreeAndNil(FSubtitleFont);
+ FFrameSurface:=nil;
+ wic_ImagingFactory:=nil;
+ inherited;
+end;
+
+procedure TFeMediaEnginePlayer.CreateSubTitleLayer(bShowCustomText: Boolean);
+begin
+  if FSubtitleMode<>smTransparentWindow then Exit;
+  // Create the FloatingForm
+  if (FloatingForm = nil) then
+    FloatingForm := TFloatingForm.Create(Self);
+
+  // Get it's handle
+  ph_FloatingForm := FloatingForm.Handle;
+
+  // Initial size and position
+  SetParentRect();
+
+  // Initial text before subtitling starts (Optional)
+  // This can be any message
+  if (bShowCustomText = True) then
+    begin
+      // Text
+      FloatingForm.SubtitleText := 'Mediafile ' +
+                                   ExtractFileName(gi_MediaEngine.pu_SourceURL) +
+                                   ' has been loaded...' + #13 +
+                                   'Click "Play" or hit the spacebar to start playing...';
+      // How long to be visible
+      //sleep(2000);  // 2 sec
+      //FloatingForm.SubtitleText := '';
+      // Or,
+      // reset this text when starting the video
+    end;
+end;
+
+
+procedure TFeMediaEnginePlayer.SetParentRect();
+var
+  lp, lo: TPoint;
+
+begin
+
+  if FloatingForm=nil then Exit;
+  lp.X := 0;
+  lp.Y := 0;
+  lo := pnlVideo.ClientToScreen(lp);
+
+  // with FloatingForm do {Deprecated since version 10.3}
+
+  FloatingForm.ParentPosition := lo;
+  FloatingForm.ParentRect.Empty;
+  FloatingForm.ParentRect.Width := pnlVideo.Width;
+  FloatingForm.ParentRect.Height := pnlVideo.Height;
+
+  SendMessageW(ph_FloatingForm,
+              WM_PARENTCHANGED,
+              0,
+              0);
+end;
+
+//------------------------------------------------------------------------------
+// Size and move methods, needed by FloatingForm to adjust position and size.
+//------------------------------------------------------------------------------
+procedure TFeMediaEnginePlayer.WMSize(var message: TLMSize);
+begin
+  Inherited;  // OnResize method will be handled first
+  if (ph_FloatingForm > 0) then
+    SetParentRect();
+end;
+
+procedure TFeMediaEnginePlayer.WMMove(var message: TLMMove);
+begin
+  if (ph_FloatingForm > 0) then
+    SetParentRect();
+end;
+
+//------------------------------------------------------------------------------
+// TimedTextNotify: WM_TIMEDTEXTNOTIFY handler.
+//------------------------------------------------------------------------------
+procedure TFeMediaEnginePlayer.OnTextNotify(var message: TLMessage);
+begin
+  if (message.WParam<>1) or (gi_MediaEngine=nil) or
+     (gi_MediaEngine.pr_TimedTextNotify=nil) then Exit;
+  FSubtitleFont.Assign(gi_MediaEngine.pr_TimedTextNotify.Font);
+  FSubtitleText:=gi_MediaEngine.pr_TimedTextNotify.SubTitle;
+  UpdateSubtitles;
+end;
+
+procedure TFeMediaEnginePlayer.SubtitleModeClick(Sender: TObject);
+begin
+  if Sender=mnuBurnedSubtitles then FSubtitleMode:=smBurnedIn
+  else FSubtitleMode:=smTransparentWindow;
+  mnuTransparentSubtitles.Checked:=FSubtitleMode=smTransparentWindow;
+  mnuBurnedSubtitles.Checked:=FSubtitleMode=smBurnedIn;
+  UpdateSubtitles;
+end;
+
+procedure TFeMediaEnginePlayer.UpdateSubtitles;
+begin
+  if (FSubtitleMode=smTransparentWindow) and (FSubtitleText<>'') then
+  begin
+    if FloatingForm=nil then CreateSubTitleLayer(False);
+    FloatingForm.LayerFont:=FSubtitleFont;
+    FloatingForm.SubtitleText:=FSubtitleText;
+    FloatingForm.Show;
+  end
+  else if FloatingForm<>nil then
+  begin
+    FloatingForm.SubtitleText:='';
+    FloatingForm.Hide;
+  end;
+  FCompositeDirty:=True;
+  if FVideoPaint<>nil then ComposeFrame;
+end;
+
+procedure TFeMediaEnginePlayer.ClearSubtitles;
+begin
+  FSubtitleText:='';
+  UpdateSubtitles;
+end;
+
+procedure TFeMediaEnginePlayer.DrawBurnedSubtitles;
+var R, MeasuredRect, ShadowRect: TRect; Text: string; X,Y,H,Flags: Integer;
+begin
+  if (FSubtitleMode<>smBurnedIn) or (FSubtitleText='') then Exit;
+  Text:=UnicodeStringReplace(FSubtitleText,#13#10,#10,[rfReplaceAll]);
+  Text:=UnicodeStringReplace(Text,#13,#10,[rfReplaceAll]);
+  Text:=UnicodeStringReplace(Text,#10,#13#10,[rfReplaceAll]);
+  FPresentedFrame.Canvas.Changing;
+  try
+  with FPresentedFrame.Canvas do
+  begin
+    Font.Assign(FSubtitleFont);
+    Font.Size:=Max(12,MulDiv(Max(12,FSubtitleFont.Size),FPresentedFrame.Height,480));
+    Brush.Style:=bsClear;
+    R:=Rect(FPresentedFrame.Width div 20,0,
+      FPresentedFrame.Width-FPresentedFrame.Width div 20,FPresentedFrame.Height);
+    Flags:=DT_CENTER or DT_WORDBREAK or DT_NOPREFIX;
+    MeasuredRect:=R;
+    H:=Windows.DrawTextW(Handle,PChar(Text),Length(Text),MeasuredRect,Flags or DT_CALCRECT);
+    R.Top:=Max(0,R.Bottom-Max(12,FPresentedFrame.Height div 20)-H);
+    R.Bottom:=R.Top+H;
+    SetBkMode(Handle,TRANSPARENT);
+    Font.Color:=clBlack;
+    for X:=-1 to 1 do for Y:=-1 to 1 do
+      if (X<>0) or (Y<>0) then
+      begin
+        ShadowRect:=R;OffsetRect(ShadowRect,X*2,Y*2);
+        Windows.DrawTextW(Handle,PChar(Text),Length(Text),ShadowRect,Flags);
+      end;
+    Font.Color:=FSubtitleFont.Color;
+    Windows.DrawTextW(Handle,PChar(Text),Length(Text),R,Flags);
+    Brush.Style:=bsSolid;
+  end;
+  finally FPresentedFrame.Canvas.Changed;end;
+end;
+
+procedure TFeMediaEnginePlayer.ComposeFrame;
+begin
+  if not FHaveVideoFrame or (FPresentedFrame=nil) then Exit;
+  // Always start from the clean frame: switching modes or clearing a cue
+  // cannot leave old text permanently painted on a paused frame.
+  FPresentedFrame.Assign(FVideoFrame);
+  DrawBurnedSubtitles;
+  FCompositeDirty:=False;
+  FVideoPaint.Invalidate;
+end;
+
+procedure TFeMediaEnginePlayer.PaintVideo(Sender: TObject);
+begin
+  if FHaveVideoFrame then
+    FVideoPaint.Canvas.StretchDraw(FVideoPaint.ClientRect,FPresentedFrame)
+  else
+  begin
+    FVideoPaint.Canvas.Brush.Color:=clBlack;
+    FVideoPaint.Canvas.FillRect(FVideoPaint.ClientRect);
+  end;
+end;
+
+procedure TFeMediaEnginePlayer.FrameTimer(Sender: TObject);
+var W,H,Y,Stride: Integer; Tick: Int64; HR: HRESULT;
+    Source: TRectF; Dest: TRect; Resized: Boolean;
+begin
+  if (gi_MediaEngine<>nil) and (gi_MediaEngine.pu_RenderingState=rsStopped) and
+     (FSubtitleText<>'') then ClearSubtitles;
+  if (gi_MediaEngine=nil) or not (gi_MediaEngine.pu_RenderingState in
+    [rsPlaying,rsPaused]) then Exit;
+  W:=pnlVideo.ClientWidth;H:=pnlVideo.ClientHeight;
+  if (W<=0) or (H<=0) then Exit;
+  Resized:=(FVideoFrame.Width<>W) or (FVideoFrame.Height<>H);
+  HR:=gi_MediaEngine.GetVideoStreamTick(Tick);
+  if (HR=S_OK) or (Resized and FHaveVideoFrame) then
+  begin
+    if Resized or (FFrameSurface=nil) then
+    begin
+      FFrameSurface:=nil;
+      OleCheck(wic_ImagingFactory.CreateBitmap(W,H,GUID_WICPixelFormat32bppBGRA,
+        WICBitmapCacheOnLoad,FFrameSurface));
+      FVideoFrame.PixelFormat:=Graphics.pf32bit;
+      FVideoFrame.SetSize(W,H);
+      SetLength(FFramePixels,W*H*4);
+    end;
+    Source.Left:=0;Source.Top:=0;Source.Right:=1;Source.Bottom:=1;Dest:=Rect(0,0,W,H);
+    HR:=gi_MediaEngine.GetVideoFrame(Source,Dest,FFrameSurface);
+    if HR=S_OK then
+    begin
+      Stride:=W*4;
+      OleCheck(FFrameSurface.CopyPixels(nil,Stride,Length(FFramePixels),@FFramePixels[0]));
+      FVideoFrame.BeginUpdate;
+      try
+        for Y:=0 to H-1 do
+          Move(FFramePixels[Y*Stride],FVideoFrame.ScanLine[Y]^,Stride);
+      finally
+        FVideoFrame.EndUpdate;
+      end;
+      FHaveVideoFrame:=True;
+      FCompositeDirty:=True;
+    end;
+  end;
+  if FCompositeDirty then ComposeFrame;
+end;
+
+
+procedure TFeMediaEnginePlayer.OnErrorNotify(var message: TLMessage);
+var
+  ttxtNotiFy: TTimedTxtError;
+
+begin
+  ttxtNotiFy := PTimedTxtError(message.WParam)^;
+
+  if (message.LParam = 0) then // 0 = TimedTextNotify.TrackReadyStateChanged event.
+    ShowMessage(Format('TimedTextNotify reported an error. Errorcode: %d HResult: %d TrackId: %d',
+                         [DWord(ttxtNotiFy.errorCode), ttxtNotiFy.extendedErrorCode, ttxtNotiFy.sourceTrackId]))
+  else if (message.LParam = 1) then  // 1 = Event is intialized by the TimedTextNotify.Error event.
+    ShowMessage(Format('TimedTextNotify reported an error. Ready state: %d HResult: %d TrackId: %d',
+                         [DWord(ttxtNotiFy.TrackReadyState), ttxtNotiFy.extendedErrorCode, ttxtNotiFy.sourceTrackId]));
+
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+procedure TFeMediaEnginePlayer.ResetInterface();
+begin
+  prbProgress.Position := 0;
+  pnlControls.Enabled := False;
+  mnuTakeScreenshot.Enabled := False;
+end;
+
+
+procedure TFeMediaEnginePlayer.trbVolumeChange(Sender: TObject);
+begin
+  if not Assigned(gi_MediaEngine) then
+    Exit;
+
+  // Because trackbar has no MouseUp event, jou can use this trick.
+  //if GetAsyncKeyState(VK_LBUTTON) = 0 then
+
+  gi_MediaEngine.SetVolume(trbVolume.Position * 0.01);
+end;
+
+
+procedure TFeMediaEnginePlayer.trbBalanceChange(Sender: TObject);
+begin
+  if not Assigned(gi_MediaEngine) then
+    Exit;
+  gi_MediaEngine.SetBalance(trbBalance.Position * 0.01);
+end;
+
+
+// Reset balance
+procedure TFeMediaEnginePlayer.trbBalanceKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if (Key = VK_F1) then
+    trbBalance.Position := 0;
+end;
+
+
+procedure TFeMediaEnginePlayer.RealignInterface();
+var
+  crD: TRect;
+
+begin
+  if (prbProgress <> nil) then
+    prbProgress.Max:= prbProgress.Width;
+
+  // Set video size
+  if Assigned(gi_MediaEngine) then
+    begin
+      crD.left:= 0;
+      crD.top:= 0;
+      crD.right:= pnlVideo.ClientWidth;
+      crD.bottom:= pnlVideo.ClientHeight;
+      gi_MediaEngine.ResizeVideo(crD);
+    end;
+end;
+
+
+function TFeMediaEnginePlayer.ReleaseEngine(): HResult;
+begin
+  ClearSubtitles;
+  FHaveVideoFrame:=False;
+  FFrameSurface:=nil;
+  if FVideoPaint<>nil then FVideoPaint.Invalidate;
+  if Assigned(gi_MediaEngine) then
+    begin
+      // To safely release all resources from the IMFMEdiaEngineEx,
+      // you need to call this function first!
+      gi_MediaEngine.FlushPlayer();
+      gi_MediaEngine.Free;
+      gi_MediaEngine := nil;
+      Result := S_OK;
+    end
+  else
+    Result := E_POINTER;
+end;
+
+
+procedure TFeMediaEnginePlayer.mnuTakeScreenshotClick(Sender: TObject);
+begin
+  if not FHaveVideoFrame then Exit;
+  // Burned-in text is already part of this bitmap; no screen scraping.
+  ComposeFrame;
+  ClipBoard.Assign(FPresentedFrame);
+end;
+
+
+procedure TFeMediaEnginePlayer.muExitClick(Sender: TObject);
+begin
+  Close();
+end;
+
+
+procedure TFeMediaEnginePlayer.muOpenClick(Sender: TObject);
+var
+  hr: HResult;
+
+begin
+  // End and release any previous session first!
+  ReleaseEngine();
+
+  gi_MediaEngine := TcMediaEngine.Create(pnlVideo.Handle,
+                                         Self.Handle,
+                                         Self.WindowHandle,
+                                         hr);
+
+  if FAILED(hr) then
+    begin
+      ReleaseEngine;
+      ShowMessage(Format('Unable to create Media Engine (0x%.8x).',[hr]));
+      Exit;
+    end;
+
+  // Get the mediafile to play
+  if dlgOpenUrl.Execute then
+    begin
+
+      hr := gi_MediaEngine.OpenURL(PWideChar(dlgOpenUrl.Filename));
+      if SUCCEEDED(hr) then
+      begin
+        gi_MediaEngine.SetVolume(trbVolume.Position*0.01);
+        cbMuteClick(nil);
+      end;
+    end
+  else // User pressed cancel
+    ReleaseEngine();
+end;
+
+
+procedure TFeMediaEnginePlayer.prbProgressMouseUp(Sender: TObject; Button: TMouseButton;
+                                                  Shift: TShiftState; X, Y: Integer);
+var
+  hr: HResult;
+  fPos: Double;
+
+begin
+
+  if (X <= 0) then
+    fPos := 0.0
+  else
+    fPos := ((X / prbProgress.Width) * gi_MediaEngine.pu_Duration);
+
+  hr := gi_MediaEngine.SetPosition(fPos); // set new StartPosition
+
+  if FAILED(hr) then
+    begin
+      ShowMessage(Format('SetPosition failed with error code: %d. We start all over again.', [hr]));
+      gi_MediaEngine.SetPosition(0);
+    end;
+
+
+  //while (pt_RequestMsg <> rMsgNone) do
+   // HandleMessages(GetCurrentThread());
+end;
+
+
+procedure TFeMediaEnginePlayer.SetWindowStyle(bFullScreen: Boolean);
+begin
+  if bFullScreen = True then
+    begin
+      BorderStyle := bsNone;
+      pnlControls.Visible := False;
+      muFile.Visible := False;
+      muExtra.Visible := False;
+      WindowState := wsMaximized;
+      pb_IsFullScreen := True;
+    end
+  else
+    begin
+      pb_IsFullScreen := False;
+      pnlControls.Visible := True;
+      muFile.Visible := True;
+      muExtra.Visible := True;
+      WindowState := wsNormal;
+      BorderStyle := bsSizeable;
+    end;
+end;
+
+
+procedure TFeMediaEnginePlayer.smCinemaClick(Sender: TObject);
+begin
+  pi_AspectRatio := AR_235_1;
+  ForceResize();
+end;
+
+
+procedure TFeMediaEnginePlayer.smFourByThreeClick(Sender: TObject);
+begin
+  pi_AspectRatio := AR_4_3;
+  ForceResize();
+end;
+
+
+procedure TFeMediaEnginePlayer.smSixteenByNineClick(Sender: TObject);
+begin
+  pi_AspectRatio := AR_16_9; // default
+  ForceResize();
+end;
+
+
+// Get to fullscreen
+// user needs to hit ESC button to go back to windowed mode
+procedure TFeMediaEnginePlayer.butFullScreenClick(Sender: TObject);
+begin
+  if pb_IsFullScreen then
+    SetWindowStyle(False)
+  else
+    SetWindowStyle(True);
+end;
+
+
+// Pause
+procedure TFeMediaEnginePlayer.butPauseClick(Sender: TObject);
+begin
+  {void} gi_MediaEngine.Pause();
+end;
+
+
+// Play
+procedure TFeMediaEnginePlayer.butPlayClick(Sender: TObject);
+begin
+  if not Assigned(gi_MediaEngine) then
+    Exit;
+
+  if FAILED(gi_MediaEngine.Play()) then
+    begin
+      MessageBoxW(0,
+                 LPCWSTR('An error occured while trying to play the media file.'),
+                 LPCWSTR('Error'),
+                 MB_ICONEXCLAMATION);
+    end
+  else
+    begin
+      mnuTakeScreenshot.Enabled:= True;
+      // Clear custom subtitletext, if this has been set.
+      ClearSubtitles;
+    end;
+end;
+
+
+procedure TFeMediaEnginePlayer.butStopClick(Sender: TObject);
+begin
+  // Note: This calls: Pause()
+  //       The file pointer will be set to 0.0
+  //       So, if hitting Play, the file will start at position 0.0
+  //       See explanation at method gi_MediaEngine.Stop()
+  if gi_MediaEngine=nil then Exit;
+  {void} gi_MediaEngine.Stop();
+  ClearSubtitles;
+  mnuTakeScreenshot.Enabled := False;
+  prbProgress.Position := 0;
+end;
+
+
+procedure TFeMediaEnginePlayer.cbMuteClick(Sender: TObject);
+var
+  bchecked: Bool;
+
+begin
+  if Assigned(gi_MediaEngine) then
+    begin
+      bchecked := cbMute.Checked;
+      if SUCCEEDED(gi_MediaEngine.Mute(bchecked)) then
+        cbMute.Checked := bchecked;
+    end;
+end;
+
+
+procedure TFeMediaEnginePlayer.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := False;
+  if Assigned(gi_MediaEngine) then
+    begin
+      if SUCCEEDED(ReleaseEngine()) then
+        CanClose := True
+      else
+        MessageBoxW(0,
+                   LPCWSTR('Unable to release the MediaEngine.'),
+                   LPCWSTR('Error!'),
+                   MB_ICONEXCLAMATION);
+    end;
+
+  CanClose := True;
+end;
+
+
+procedure TFeMediaEnginePlayer.OnMeTimerUpdate(var message: TLMessage);
+begin
+  if not Assigned(gi_MediaEngine) then
+    Exit;
+  if (gi_MediaEngine.pu_Duration > 0) then
+    begin
+      prbProgress.Position := Trunc((prbProgress.Width / gi_MediaEngine.pu_Duration) *
+                                    gi_MediaEngine.pu_CurrPosition);
+    end;
+end;
+
+
+procedure TFeMediaEnginePlayer.FormCreate(Sender: TObject);
+begin
+  FVideoFrame:=TBitmap.Create;
+  FPresentedFrame:=TBitmap.Create;
+  FSubtitleFont:=TFont.Create;
+  FSubtitleFont.Name:='Segoe UI';FSubtitleFont.Size:=12;
+  FSubtitleFont.Style:=[fsBold];FSubtitleFont.Color:=clWhite;
+  wic_ImagingFactory:=CreateCOMObject(CLSID_WICImagingFactory) as IWICImagingFactory;
+  FVideoPaint:=TPaintBox.Create(Self);
+  FVideoPaint.Parent:=pnlVideo;
+  FVideoPaint.Align:=alClient;
+  FVideoPaint.OnPaint:=PaintVideo;
+  pnlVideo.DoubleBuffered:=True;
+  FFrameTimer:=TTimer.Create(Self);
+  FFrameTimer.Interval:=15;
+  FFrameTimer.OnTimer:=FrameTimer;
+  FSubtitleMode:=smTransparentWindow;
+  mnuTransparentSubtitles.Checked:=True;
+  pb_IsFullScreen := False;
+  // Initial aspectratio is 16:9
+  smSixteenByNineClick(nil);
+  ForceResize();
+end;
+
+
+procedure TFeMediaEnginePlayer.FormKeyUp(Sender: TObject; var Key: Word;
+                               Shift: TShiftState);
+begin
+  case Key of
+    //Play/Pause
+    VK_SPACE:   if Assigned(gi_MediaEngine) then
+                  begin
+                    case gi_MediaEngine.pu_RenderingState of
+                      rsPlaying: butPauseClick(Self);
+                      rsStopped, rsPaused: butPlayClick(Self);
+                      rsInitialised: butPlayClick(Self);
+                    end;
+                  end;
+    // Stop
+    VK_END:     if Assigned(gi_MediaEngine) then
+                  begin
+                    butStopClick(Self);
+                  end;
+    // Shutdown/Exit
+    VK_F11:       begin
+                    Close();
+                  end;
+    // Open file
+    VK_F12:     begin muOpenClick(Self); end;
+
+    // Take a snapshot and copy the bitmap to the clipboard
+    VK_F8:      begin
+                  // See comments at mnuTakeScreenshotClick()
+                  mnuTakeScreenshotClick(Self);
+                  // See: https://docs.microsoft.com/windows/desktop/api/mfmediaengine/nf-mfmediaengine-imfmediaengine-transfervideoframe
+                end;
+
+    // Use left and right arrows to adjust the volume.
+    // since there is a trackbar, this one will have the focus.
+    // We did not implement a balance method.
+    VK_LEFT:    begin
+                  trbVolume.Position := trbVolume.Position - 1;
+                  if Assigned(gi_MediaEngine) then
+                    gi_MediaEngine.SetVolume(trbVolume.Position * 0.01);
+                end;
+
+    VK_RIGHT:   begin
+                  trbVolume.Position := trbVolume.Position + 1;
+                  if Assigned(gi_MediaEngine) then
+                    gi_MediaEngine.SetVolume(trbVolume.Position * 0.01);
+                end;
+
+    VK_ESCAPE:  begin
+                  butFullScreenClick(Self);
+                end;
+  end;
+end;
+
+
+procedure TFeMediaEnginePlayer.FormResize(Sender: TObject);
+begin
+  RealignInterface();
+end;
+
+
+procedure TFeMediaEnginePlayer.WMSizing(var message: TLMessage);
+var
+  rc: PRect;
+
+begin
+  //inherited;
+  rc := PRect(message.LParam);
+
+  case message.WParam of
+    WMSZ_LEFT,
+    WMSZ_RIGHT,
+    WMSZ_BOTTOMLEFT:  begin
+                        rc.Bottom := rc.Top + Round(rc.Width / pi_AspectRatio);
+                      end;
+
+    WMSZ_TOP,
+    WMSZ_BOTTOM,
+    WMSZ_TOPRIGHT,
+    WMSZ_BOTTOMRIGHT: begin
+                        rc.Right := rc.Left + Round(rc.Height * pi_AspectRatio);
+                      end;
+
+    WMSZ_TOPLEFT:     begin
+                        rc.Top := rc.Bottom - Round((rc.Right - rc.Left) / pi_AspectRatio);
+                      end;
+  end;
+
+  // Set form properties, needed when a custom sendmessage is called (see: procedure ForceResize())
+  Width := rc.Width;
+  Height := rc.Height;
+  Top := rc.Top;
+  Left := rc.Left;
+
+end;
+
+
+procedure TFeMediaEnginePlayer.ForceResize();
+var
+  pr: PRect;
+  rc: TRect;
+
+begin
+
+  rc.Left := Left;
+  rc.Top := Top;
+  rc.Width := 840;
+  rc.Height := 473;
+  pr := @rc;
+
+  // Force a resize to set aspectratio
+  SendMessageW(Handle,
+              WM_SIZING,
+              WParam(WMSZ_TOP),
+              LParam(pr));
+
+end;
+
+
+end.

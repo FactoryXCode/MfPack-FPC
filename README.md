@@ -138,7 +138,7 @@ Note: On how to use these components, please read the WasApiPlayer sample 5 docu
   
 ---
   
-**AudioClip, AudioClipEx and AudioClipEx2 samples**
+# AudioClip, AudioClipEx and AudioClipEx2 Samples  
   
 Demonstrates using the IMFSourceReader API to extract uncompressed media data from a media file.
 This sample application reads audio data from a media file and writes the uncompressed audio to a WAVE file.  
