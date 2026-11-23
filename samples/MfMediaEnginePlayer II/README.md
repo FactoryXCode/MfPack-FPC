@@ -35,9 +35,8 @@ Validated with FPC 3.2.2 and Lazarus 4.8 on Windows x64.
 API reference: [TransferVideoFrame](https://learn.microsoft.com/en-us/windows/win32/api/mfmediaengine/nf-mfmediaengine-imfmediaengine-transfervideoframe).
 
 Project: Media Foundation - MfPack - Samples  
-[GitHub](https://github.com/FactoryXCode/MfPack)  
-
-
+Project location: https://github.com/FactoryXCode/MfPack-FPC  
+  
 First release: 05-02-2016.  
 Final release: 22-11-2026.  
   
