@@ -1,4 +1,4 @@
-# mfMediaPlayer I
+# MfMediaPlayer I
   
 Version: 4.1.0  
   
@@ -16,8 +16,7 @@ For indepth information see the Microsoft MediaEnginePlayer example and
 documentation, containing the complete information about MfMediaEnginePlayer.  
   
 Project: Media Foundation - MFPack - Samples  
-Project location: https://github.com/FactoryXCode/MfPack  
-https://sourceforge.net/projects/MFPack  
+Project location: https://github.com/FactoryXCode/MfPack-FPC  
   
 First release date: 05-02-2016  
 Final release date: 18/11/2026  
