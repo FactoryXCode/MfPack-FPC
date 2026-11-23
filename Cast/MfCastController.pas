@@ -111,7 +111,8 @@ type
 
   TMfCastController = class(TInterfacedObject,
                             IMfCastController,
-                            IMfCastTargetedDiscovery)
+                            IMfCastTargetedDiscovery,
+                            IMfCastReceiverVolume)
 
   private
     FSettings: TMfCastSettings;
@@ -214,6 +215,7 @@ type
     procedure ReceiverReady(const ASessionId: string;
                             const ATransportId: string);
     procedure ReceiverClosed();
+    procedure ChannelReceiverVolumeChanged(const AStatus: TMfCastReceiverVolumeStatus);
     procedure ChannelMediaStatus(const AStatus: TMfCastMediaStatus);
     procedure ChannelError(const AError: TMfCastErrorInfo);
 
@@ -270,6 +272,10 @@ type
     function SelectSubtitle(const ASubtitle: TMfCastSubtitleAsset): HRESULT;
     function DisableSubtitles(): HRESULT;
 
+    function GetReceiverVolume(out AStatus: TMfCastReceiverVolumeStatus): HRESULT;
+    function SetReceiverVolume(const AVolume: Single): HRESULT;
+    function SetReceiverMuted(const AMuted: Boolean): HRESULT;
+    function RequestReceiverVolumeStatus(): HRESULT;
     function SetVolume(const AVolume: Single): HRESULT;
     function SetMuted(const AMuted: Boolean): HRESULT;
 
@@ -660,6 +666,7 @@ begin
   ChannelCallbacks.OnReceiverReady := ReceiverReady;
   ChannelCallbacks.OnReceiverClosed := ReceiverClosed;
   ChannelCallbacks.OnMediaStatus := ChannelMediaStatus;
+  ChannelCallbacks.OnReceiverVolumeChanged := ChannelReceiverVolumeChanged;
   ChannelCallbacks.OnError := ChannelError;
 
   if Assigned(FComponents.Channel) then
@@ -1800,8 +1807,7 @@ begin
   else
     FPendingLoadRequest.Title := 'Desktop capture';
 
-  // Create the media session paused so fixed-volume receivers can also be
-  // silenced before the first audio sample is played.
+  // Keep LOAD paused until the receiver has acknowledged the media session.
   FPendingLoadRequest.AutoPlay := False;
 
   Result := ConnectReceiver(ADevice);
@@ -1853,23 +1859,20 @@ begin
       Exit;
     end;
 
-  // LOAD has acknowledged the paused media session. SetVolume can now target
-  // either receiver volume or a fixed-volume receiver's media-stream volume.
+  // Preserve receiver volume when starting the acknowledged desktop session.
   StageTick := GetTickCount64();
-  Result := SetVolume(0.0);
-  if SUCCEEDED(Result) then
-    Result := FComponents.Channel.Play();
+  Result := FComponents.Channel.Play();
   if FAILED(Result) then
     begin
       Result := FailCastAttempt(Result,
-                                'Start silent desktop playback',
-                                'The receiver could not start desktop playback at zero volume.');
+                                'Start desktop playback',
+                                'The receiver could not start desktop playback.');
       CleanupCastAttempt();
       Exit;
     end;
 
   Log(cllDebug,
-      Format('Startup timing: zero-volume/PLAY submission took %d ms; desktop startup commands accepted after %d ms total.',
+      Format('Startup timing: PLAY submission took %d ms; desktop startup commands accepted after %d ms total.',
              [Int64(GetTickCount64() - StageTick),
     Int64(GetTickCount64() - StartupTick)]));
   if ASettings.AudioOnly then
@@ -2988,6 +2991,7 @@ begin
   ChannelCallbacks.OnReceiverReady := ReceiverReady;
   ChannelCallbacks.OnReceiverClosed := ReceiverClosed;
   ChannelCallbacks.OnMediaStatus := ChannelMediaStatus;
+  ChannelCallbacks.OnReceiverVolumeChanged := ChannelReceiverVolumeChanged;
   ChannelCallbacks.OnError := ChannelError;
   FComponents.Channel.SetCallbacks(ChannelCallbacks);
   FComponents.Channel.SetLogger(FLogger);
@@ -3034,6 +3038,67 @@ begin
   Log(cllDebug,
       Format('Control recovery: synchronize media HRESULT $%.8x.',
              [DWORD(Result)]));
+end;
+
+
+function TMfCastController.GetReceiverVolume(out AStatus: TMfCastReceiverVolumeStatus): HRESULT;
+var
+  ReceiverVolume: IMfCastReceiverVolume;
+
+begin
+
+  AStatus.Reset();
+  if Supports(FComponents.Channel,
+               IMfCastReceiverVolume,
+               ReceiverVolume) then
+    Result := ReceiverVolume.GetReceiverVolume(AStatus)
+  else
+    Result := E_NOINTERFACE;
+end;
+
+
+function TMfCastController.SetReceiverVolume(const AVolume: Single): HRESULT;
+var
+  ReceiverVolume: IMfCastReceiverVolume;
+
+begin
+
+  if Supports(FComponents.Channel,
+               IMfCastReceiverVolume,
+               ReceiverVolume) then
+    Result := ReceiverVolume.SetReceiverVolume(AVolume)
+  else
+    Result := E_NOINTERFACE;
+end;
+
+
+function TMfCastController.SetReceiverMuted(const AMuted: Boolean): HRESULT;
+var
+  ReceiverVolume: IMfCastReceiverVolume;
+
+begin
+
+  if Supports(FComponents.Channel,
+               IMfCastReceiverVolume,
+               ReceiverVolume) then
+    Result := ReceiverVolume.SetReceiverMuted(AMuted)
+  else
+    Result := E_NOINTERFACE;
+end;
+
+
+function TMfCastController.RequestReceiverVolumeStatus(): HRESULT;
+var
+  ReceiverVolume: IMfCastReceiverVolume;
+
+begin
+
+  if Supports(FComponents.Channel,
+               IMfCastReceiverVolume,
+               ReceiverVolume) then
+    Result := ReceiverVolume.RequestReceiverVolumeStatus()
+  else
+    Result := E_NOINTERFACE;
 end;
 
 
@@ -3318,6 +3383,32 @@ begin
 end;
 
 
+procedure TMfCastController.ChannelReceiverVolumeChanged(const AStatus: TMfCastReceiverVolumeStatus);
+
+begin
+
+  // Synchronize local preview audio without modifying transcoded PCM gain.
+  if AStatus.HasLevel then
+    FPreviewVolume := AStatus.Level;
+
+  if AStatus.HasMuted then
+    FPreviewMuted := AStatus.Muted;
+
+  if Assigned(FComponents.DirectPreviewPlayer) and
+     FComponents.DirectPreviewPlayer.IsActive() then
+    begin
+      if AStatus.HasLevel then
+        FComponents.DirectPreviewPlayer.SetVolume(AStatus.Level);
+
+      if AStatus.HasMuted then
+        FComponents.DirectPreviewPlayer.SetMuted(AStatus.Muted);
+    end;
+
+  if Assigned(FCallbacks.OnReceiverVolumeChanged) then
+    FCallbacks.OnReceiverVolumeChanged(AStatus);
+end;
+
+
 procedure TMfCastController.ChannelMediaStatus(const AStatus: TMfCastMediaStatus);
 const
   TRANSCODE_STARTUP_IDLE_GRACE_MS = 15000;
@@ -3379,6 +3470,13 @@ begin
     end;
 
   CallbackStatus := AStatus;
+
+  // Generated file streams can look live to the receiver. Their progress bar
+  // must use the original file duration, alongside the existing seek offset.
+  if (FUsingTranscodedStream or FUsingRemuxedStream) and
+     (FCurrentMedia.Duration100ns > 0) and (not FCurrentMedia.IsLive) then
+    CallbackStatus.Duration100ns := FCurrentMedia.Duration100ns;
+
   if (AStatus.MediaSessionId <> 0) then
     FCurrentMediaSessionId := AStatus.MediaSessionId;
 

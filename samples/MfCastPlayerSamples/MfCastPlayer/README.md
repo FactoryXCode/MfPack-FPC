@@ -1,7 +1,5 @@
-## MfCastPlayer
-  
-Version: 4.1.0  
-  
+# MfCastPlayer for FPC/Lazarus
+
 NOTES:  
 This release is updated for compiler version 3.2.2 (64 bit).  
 SDK version: 10.0.28000.2705 (Win 11)  
@@ -22,6 +20,7 @@ This sample demonstrates the public `TMfCast` main interface.
 - Sidecar and embedded text-subtitle enumeration, with sidecars preferred when
   the same language exists in both sources;
 - Exact embedded-track selection and subtitle switching while casting;
+- Renaming a Chromecast device.
   
 Please read the white paper document  MfPack/Cast/MfPack_Chromecast_API_White_Paper.txt for full details using the MfPack Cast API  
   
@@ -29,7 +28,7 @@ Please read the white paper document  MfPack/Cast/MfPack_Chromecast_API_White_Pa
 Build the MfCastPlayer project. The project search paths point to `MfPack\src`, `MfPack\Cast`, and `MfPack\Cast\Media`. Shared units  
 are found through those search paths and do not need to be added to the sample's  
 Project Manager.  
-  
+
 **Brief workflow**  
 The sample enables the optional Media Foundation conversion stack. Compatible  
 MP4/H.264/AAC, WebM, MP3, M4A, and AAC sources use direct play. Containers such  
@@ -37,7 +36,7 @@ as MKV are converted to fragmented MP4 and published by the local HTTP server.
 The Chromecast device and the PC must be able to reach each other on the local network;  
 Windows Firewall may prompt when the server starts.  
   
-### YouTube resolver  
+## YouTube resolver  
   
 `MfYouTubeSourceResolver.pas` is a sample-owned implementation of the generic  
 `IMfCastSourceResolver` extension point. It recognizes `youtu.be`, YouTube  
@@ -74,6 +73,41 @@ source position. Audio controls are intentionally not added here: this sample
 keeps one simple compact playback workflow, while API consumers can build the track UI  
 appropriate to their application.  
   
+## Renaming a receiver
+
+Select a receiver, then choose **Rename...** beside the receiver selector.  
+Enter its new name and choose **Rename**.  
+This changes the receiver's own name through TMfCast's Eureka setup API.  
+Readback must confirm the name before the dialog accepts it.  
+Selection follows the stable receiver ID when discovery reorders or refreshes the list.  
+  
+The dialog uses HTTPS on port 8443 by default and explicitly trusts the selected
+receiver's local device certificate, including the client-authentication usage
+found on JBL Link devices. Certificate expiry is still checked.  
+You can clear that checkbox to require normal certificate validation.  
+Older receivers may require HTTP on port 8008; changing the HTTPS checkbox selects the usual port.  
+A local authorization token can be entered when the receiver requires one.  
+It is masked, kept only for the dialog's lifetime and never saved or included in diagnostic messages.  
+Tokens are not sent over plain HTTP.  
+  
+Network requests run on a worker so the dialog remains responsive.  
+Controls and Close are disabled until the request finishes.  
+A failed response does not necessarily mean the receiver kept its old name: use **Read current name**
+after an uncertain result before retrying.  
+Failed or unverified writes do not replace the selected receiver's displayed name.  
+  
+Receiver setup support and token requirements depend on device firmware.  
+No playback or volume command is sent by this dialog.  
+  
+The rename dialog uses local dlgCastRename.pas and dlgCastRename.lfm files.  
+No third-party component is required.  
+Existing LFM form resources, media/subtitle selection and (in Player II) the LWFileBrowserExDlg custom background/font handling are retained.  
+  
+  
+The Rename button is declared in the main form resource and is visible in the form designer.  
+The rename dialog is a normal designer-backed LCL form (`dlgCastRename.pas` / `.lfm`).  
+It retains its worker-based network operations; controls and their event handlers can be edited in the IDE.  
+  
 ## Diagnostics  
   
 Cast stages and state transitions are written both to the sample's log memo and,  
@@ -90,7 +124,7 @@ The sender is a native implementation of the Google Cast protocol. Google does
 not provide an official Delphi/Windows Cast Sender SDK.  
   
   
-### Automatic receiver wake-up
+## Automatic receiver wake-up
   
 All applications using the shared TMfCast controller try the normal Cast
 connection first. After a retryable connection failure, a known receiver MAC
@@ -119,6 +153,6 @@ Project location:
 https://github.com/FactoryXCode/MfPack-FPC  
   
 First release date: 02/08/2026  
-Final release date: 18/11/2026  
+Final release date: 23/11/2026  
   
-Copyright Â© FactoryX. All rights reserved.
+Copyright © FactoryX. All rights reserved.

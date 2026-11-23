@@ -283,6 +283,18 @@ type
     procedure Reset();
   end;
 
+  // Receiver device volume is independent of media-stream volume and PCM gain.
+  // HasLevel/HasMuted distinguish an unknown value from zero/False.
+  TMfCastReceiverVolumeStatus = record
+    Level: Single;
+    Muted: Boolean;
+    HasLevel: Boolean;
+    HasMuted: Boolean;
+    ControlType: string;
+
+    procedure Reset();
+  end;
+
   TMfCastMediaStatus = record
     MediaSessionId: Int64;
     PlayerState: string;
@@ -312,6 +324,8 @@ type
   TMfCastStateChangedEvent = procedure(const AOldState: TMfCastState;
                                        const ANewState: TMfCastState) of object;
 
+  TMfCastReceiverVolumeEvent = procedure(const AStatus: TMfCastReceiverVolumeStatus) of object;
+
   TMfCastMediaStatusEvent = procedure(const AStatus: TMfCastMediaStatus) of object;
 
   TMfCastReceiverReadyEvent = procedure(const ASessionId: string;
@@ -332,6 +346,7 @@ type
     OnReceiverReady: TMfCastReceiverReadyEvent;
     OnReceiverClosed: TMfCastSimpleEvent;
     OnMediaStatus: TMfCastMediaStatusEvent;
+    OnReceiverVolumeChanged: TMfCastReceiverVolumeEvent;
     OnError: TMfCastErrorEvent;
 
     procedure Reset();
@@ -343,6 +358,7 @@ type
     OnDeviceRemoved: TMfCastDeviceRemovedEvent;
     OnStateChanged: TMfCastStateChangedEvent;
     OnMediaStatus: TMfCastMediaStatusEvent;
+    OnReceiverVolumeChanged: TMfCastReceiverVolumeEvent;
     OnError: TMfCastErrorEvent;
 
     procedure Reset();
@@ -365,6 +381,7 @@ type
     ReceiverLaunchTimeoutMs: Cardinal;
     HeartbeatIntervalMs: Cardinal;
     HeartbeatTimeoutMs: Cardinal;
+    MediaStatusIntervalMs: Cardinal;
     VerifyTlsPeer: Boolean;
     TlsServerName: string;
 
@@ -660,6 +677,18 @@ begin
 end;
 
 
+procedure TMfCastReceiverVolumeStatus.Reset();
+
+begin
+
+  Level := 0.0;
+  Muted := False;
+  HasLevel := False;
+  HasMuted := False;
+  ControlType := '';
+end;
+
+
 procedure TMfCastMediaStatus.Reset();
 
 begin
@@ -705,6 +734,7 @@ begin
   OnReceiverReady := nil;
   OnReceiverClosed := nil;
   OnMediaStatus := nil;
+  OnReceiverVolumeChanged := nil;
   OnError := nil;
 end;
 
@@ -718,6 +748,7 @@ begin
   OnDeviceRemoved := nil;
   OnStateChanged := nil;
   OnMediaStatus := nil;
+  OnReceiverVolumeChanged := nil;
   OnError := nil;
 end;
 
@@ -742,6 +773,7 @@ begin
   ReceiverLaunchTimeoutMs := 0;
   HeartbeatIntervalMs := 0;
   HeartbeatTimeoutMs := 0;
+  MediaStatusIntervalMs := 0;
   VerifyTlsPeer := False;
   TlsServerName := '';
 end;
@@ -830,6 +862,7 @@ begin
   Result.Protocol.ReceiverLaunchTimeoutMs := 30000;
   Result.Protocol.HeartbeatIntervalMs := 5000;
   Result.Protocol.HeartbeatTimeoutMs := 15000;
+  Result.Protocol.MediaStatusIntervalMs := 1000;
   Result.Protocol.VerifyTlsPeer := False;
 
   Result.Discovery.QueryTimeoutMs := 3000;

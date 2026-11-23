@@ -256,7 +256,7 @@ object CastPlayerForm: TCastPlayerForm
     object cbxDevices: TComboBox
       Left = 18
       Top = 51
-      Width = 412
+      Width = 322
       Height = 24
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -266,6 +266,16 @@ object CastPlayerForm: TCastPlayerForm
       ParentFont = False
       TabOrder = 0
       OnChange = SourceOrDeviceChanged
+    end
+    object btnRenameDevice: TButton
+      Left = 346
+      Top = 51
+      Width = 84
+      Height = 24
+      Caption = 'Rename...'
+      Enabled = False
+      TabOrder = 30
+      OnClick = RenameDeviceClick
     end
     object edtSource: TEdit
       Left = 18
@@ -571,11 +581,13 @@ object CastPlayerForm: TCastPlayerForm
       Top = 196
       Width = 493
       Height = 23
-      Max = 7200
+      Max = 1
       ShowSelRange = False
       TabOrder = 23
       TickStyle = tsNone
-      OnChange = trkSeekChange
+      OnMouseDown = trkSeekMouseDown
+      OnMouseMove = trkSeekMouseMove
+      OnMouseUp = trkSeekMouseUp
     end
   end
 end

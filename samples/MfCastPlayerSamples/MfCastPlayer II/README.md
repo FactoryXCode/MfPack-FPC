@@ -1,5 +1,5 @@
-## MfCastPlayer II
-  
+# MfCastPlayer II for FPC/Lazarus
+
 Version: 4.1.0 
   
 NOTES:  
@@ -153,46 +153,78 @@ retaining discovery, direct playback, and media-track inspection.
   
 The sender is a native implementation of the Google Cast protocol. Google does  
 not provide an official Delphi/Windows Cast Sender SDK.  
-
-
-### Automatic receiver wake-up
-
-All applications using the shared TMfCast controller try the normal Cast
-connection first. After a retryable connection failure, a known receiver MAC
-address enables native Wake-on-LAN recovery, followed by bounded Cast connection
-retries. Receivers that connect immediately, including always-available speakers,
-use the normal path without sending wake packets.
-
-The MAC address is learned from the Windows IPv4 neighbor table during discovery
-and after a successful connection. Discover or connect once while the receiver is
-awake. The per-receiver cache is shared by these applications for the current
-Windows user at `%LOCALAPPDATA%\MfPack\Cast\WakeTargets.ini`. It is keyed by the
-Cast device identity, not just an IP address. The current local interface and
-subnet broadcast address are selected again for each attempt. A missing or
-unusable MAC skips wake-up and retains ordinary retries.
-
+  
+  
+## Automatic receiver wake-up  
+  
+All applications using the shared TMfCast controller try the normal Cast connection first.
+After a retryable connection failure, a known receiver MAC address enables native Wake-on-LAN recovery,
+followed by bounded Cast connection retries.  
+Receivers that connect immediately, including always-available speakers, use the normal path without sending wake packets.  
+  
+The MAC address is learned from the Windows IPv4 neighbor table during discovery and after a successful connection.
+Discover or connect once while the receiver is awake.  
+The per-receiver cache is shared by these applications for the current Windows user at `%LOCALAPPDATA%\MfPack\Cast\WakeTargets.ini`.  
+It is keyed by the Cast device identity, not just an IP address.  
+The current local interface and subnet broadcast address are selected again for each attempt.  
+A missing or unusable MAC skips wake-up and retains ordinary retries.  
+  
 Wake-on-LAN uses three bursts of standard 102-byte magic packets over UDP port 9,
-addressed to the receiver's MAC via subnet broadcast and unicast. The receiver
-must support network wake-up. HDMI-CEC can also turn connected equipment on.
-This is native Delphi/Windows code; Python and remote-control pairing are not
-required. Logs distinguish wake packets sent, wake-up skipped, and connection
-retry results. File, URL, desktop, and RDJ live-stream casting share this behavior.
-
-
-### Standard Windows GUI sample
-
-This sample synchronizes CastPlayer functionality and form/dialog layout while
-using standard VCL buttons, check boxes, track bars, and Windows system colors.
-The local file-browser dialog preserves the source layout and browsing behavior,
-including shell icons, network locations, file filters, and artwork preview.
-No MPxpButton, MfTrackBar, MfLevelProgressBar, or RDJ custom-control dependency
-is required. Shared Cast API units are resolved through relative paths to
-`MfPack\Cast`, `MfPack\Cast\Media`, and `MfPack\src`.
+addressed to the receiver's MAC via subnet broadcast and unicast.  
+The receiver must support network wake-up.  
+HDMI-CEC can also turn connected equipment on.  
+This is native Delphi/Windows code; Python and remote-control pairing are not required.  
+Logs distinguish wake packets sent, wake-up skipped, and connection retry results.  
+File, URL, desktop, and RDJ live-stream casting share this behavior.  
+  
+  
+## Standard Windows GUI sample  
+  
+This sample synchronizes CastPlayer functionality and form/dialog layout while using standard VCL buttons,
+check boxes, track bars, and Windows system colors.  
+The local file-browser dialog preserves the source layout and browsing behavior, including shell icons,
+network locations, file filters, and artwork preview.  
+No MPxpButton, MfTrackBar, MfLevelProgressBar, or RDJ custom-control dependency is required.  
+Shared Cast API units are resolved through relative paths to `MfPack\Cast`, `MfPack\Cast\Media`, and `MfPack\src`.  
+  
+## Rename a receiver  
+  
+Select a receiver, then choose **Rename...** beside the receiver selector.  
+Enter its new name and choose **Rename**.  
+This changes the receiver's own name through TMfCast's Eureka setup API.  
+Readback must confirm the name before the dialog accepts it.  
+Selection follows the stable receiver ID when discovery reorders or refreshes the list.  
+  
+The dialog uses HTTPS on port 8443 by default and explicitly trusts the selected receiver's local device certificate,
+including the client-authentication usage found on JBL Link devices.  
+Certificate expiry is still checked.  
+You can clear that checkbox to require normal certificate validation.  
+Older receivers may require HTTP on port 8008; changing the HTTPS checkbox selects the usual port.  
+A local authorization token can be entered when the receiver requires one.  
+It is masked, kept only for the dialog's lifetime and never saved or included in diagnostic messages.  
+Tokens are not sent over plain HTTP.  
+  
+Network requests run on a worker so the dialog remains responsive.  
+Controls and Close are disabled until the request finishes.  
+A failed response does not necessarily mean the receiver kept its old name: use **Read current name** after an uncertain result before retrying.  
+Failed or unverified writes do not replace the selected receiver's displayed name.  
+  
+Receiver setup support and token requirements depend on device firmware.  
+No playback or volume command is sent by this dialog.  
+  
+The rename dialog uses local dlgCastRename.pas and dlgCastRename.lfm files.  
+No third-party component is required.  
+Existing LFM form  resources, media/subtitle selection and (in Player II) the LWFileBrowserExDlg custom background/font handling are retained.
+  
+  
+The Rename button is declared in the main form resource and is visible in the form designer.  
+The rename dialog is a normal designer-backed LCL form (`dlgCastRename.pas` / `.lfm`).
+It retains its worker-based network operations; controls and their event handlers can be edited in the IDE.
   
 Project: Media Foundation - MFPack - Samples  
 Project location: https://github.com/FactoryXCode/MfPack-FPC  
   
 First release date: 02/08/2026  
-Final release date: 18/11/2026  
+Final release date: 23/11/2026  
   
 Copyright © FactoryX. All rights reserved.

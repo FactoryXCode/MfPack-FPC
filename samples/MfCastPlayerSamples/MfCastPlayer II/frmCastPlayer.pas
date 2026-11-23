@@ -92,6 +92,7 @@ uses
   {MediaFoundationApi}
   WinApi.MediaFoundationApi.MfApi,
   {Cast}
+  dlgCastRename,
   MfCast,
   MfCastInterfaces,
   MfCastTypes,
@@ -134,6 +135,7 @@ type
     lblSeek: TLabel;
     lblVolume: TLabel;
     cbxDevices: TComboBox;
+    btnRenameDevice: TButton;
     edtSource: TEdit;
     edtArtwork: TEdit;
     cbxSubtitleLanguage: TComboBox;
@@ -165,6 +167,7 @@ type
     Label3: TLabel;
     Label4: TLabel;
 
+    procedure RenameDeviceClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnDiscoverClick(Sender: TObject);
@@ -177,7 +180,20 @@ type
     procedure btnStopClick(Sender: TObject);
     procedure btnDisconnectClick(Sender: TObject);
     procedure btnSeekClick(Sender: TObject);
-    procedure trkSeekChange(Sender: TObject);
+    procedure trkSeekMouseDown(Sender: TObject;
+                               Button: TMouseButton;
+                               Shift: TShiftState;
+                               X: Integer;
+                               Y: Integer);
+    procedure trkSeekMouseMove(Sender: TObject;
+                               Shift: TShiftState;
+                               X: Integer;
+                               Y: Integer);
+    procedure trkSeekMouseUp(Sender: TObject;
+                             Button: TMouseButton;
+                             Shift: TShiftState;
+                             X: Integer;
+                             Y: Integer);
     procedure trkVolumeChange(Sender: TObject);
     procedure chkMutedClick(Sender: TObject);
     procedure SourceOrDeviceChanged(Sender: TObject);
@@ -196,9 +212,12 @@ type
     FSubtitleWorker: TMfCastSubtitleWorker;
     FAudioTrackWorker: TMfCastAudioTrackWorker;
     FClosing: Boolean;
+    FUpdatingReceiverVolume: Boolean;
     FDesktopCaptureExcluded: Boolean;
     FPreviousDisplayAffinity: DWORD;
     FUpdatingSeekPosition: Boolean;
+    FSeekDragging: Boolean;
+    FSeekDurationSeconds: Integer;
     FSeekPositionPending: Boolean;
     FSeekTargetSeconds: Integer;
     FSeekRequestTick: Cardinal;
@@ -214,12 +233,17 @@ type
     function SelectLocalFile(const AArtwork: Boolean;
                              out AFileName: string): Boolean;
 
+    procedure ResetSeekProgress();
+    procedure SetSeekPositionFromPoint(const AX: Integer);
     procedure DeviceChanged(const ADevice: TMfCastDevice);
     procedure DeviceRemoved(const ADeviceId: string);
 
     procedure CastStateChanged(const AOldState: TMfCastState;
                                const ANewState: TMfCastState);
 
+    procedure ReceiverVolumeChanged(const AStatus: TMfCastReceiverVolumeStatus);
+    procedure RefreshReceiverVolume();
+    procedure WmReceiverVolume(var message: TLMessage); message WM_MFCAST_RECEIVER_VOLUME;
     procedure CastMediaStatus(const AStatus: TMfCastMediaStatus);
     procedure PreviewSubtitleTimer(Sender: TObject);
 
@@ -498,9 +522,42 @@ begin
 end;
 
 
+procedure TCastPlayerForm.RenameDeviceClick(Sender: TObject);
+var
+  Device: TMfCastDevice;
+  I, Index: Integer;
+
+begin
+
+  if FClosing or (FCast = nil) or not btnRenameDevice.Enabled then
+    Exit;
+  Index := cbxDevices.ItemIndex;
+  if (Index < 0) or (Index >= Length(FDevices)) then
+    Exit;
+  Device := FDevices[Index];
+  if TCastRenameDialog.ExecuteDialog(Self, FCast, Device) then
+    begin
+      for I := 0 to Length(FDevices) - 1 do
+        if ((Device.Id <> '') and SameText(FDevices[I].Id, Device.Id)) or
+          ((Device.Id = '') and SameText(FDevices[I].Address,
+                                         Device.Address)) then
+          begin
+            FDevices[I] := Device;
+            cbxDevices.Items[I] := Format('%s  (%s:%d)',
+                                          [Device.FriendlyName, Device.Address, Device.Port]);
+            cbxDevices.ItemIndex := I;
+            Break;
+          end;
+    end;
+  UpdateControls;
+end;
+
+
 procedure TCastPlayerForm.FormCreate(Sender: TObject);
 
 begin
+
+  FUpdatingReceiverVolume := True;
 
   FClosing := False;
   FActiveDesktopMode := -1;
@@ -532,14 +589,16 @@ begin
   FCast.OnDeviceRemoved := DeviceRemoved;
   FCast.OnStateChanged := CastStateChanged;
   FCast.OnMediaStatus := CastMediaStatus;
+  FCast.OnReceiverVolumeChanged := ReceiverVolumeChanged;
   FCast.OnError := CastError;
   FCast.OnLog := CastLog;
 
-  trkSeek.Max := 7200;
+  ResetSeekProgress();
   trkVolume.Max := 100;
   trkVolume.Position := 0;
   AddLog('Ready. Choose a local file/URL, or cast the desktop with DXGI and WASAPI.');
   RegisterGlobalHotKeys();
+  FUpdatingReceiverVolume := False;
   UpdateControls;
 end;
 
@@ -570,6 +629,7 @@ begin
       FCast.OnDeviceUpdated := nil;
       FCast.OnDeviceRemoved := nil;
       FCast.OnStateChanged := nil;
+      FCast.OnReceiverVolumeChanged := nil;
       FCast.OnMediaStatus := nil;
       FCast.OnError := nil;
       FCast.OnLog := nil;
@@ -772,6 +832,73 @@ begin
                  WM_MFCAST_STATE,
                  Ord(ANewState),
                  0);
+end;
+
+
+procedure TCastPlayerForm.ReceiverVolumeChanged(const AStatus: TMfCastReceiverVolumeStatus);
+
+begin
+
+  if not FClosing then
+    PostMessageW(Handle,
+                 WM_MFCAST_RECEIVER_VOLUME,
+                 0,
+                 0);
+end;
+
+
+procedure TCastPlayerForm.WmReceiverVolume(var message: TLMessage);
+
+begin
+
+  if not FClosing then
+    RefreshReceiverVolume();
+end;
+
+
+procedure TCastPlayerForm.RefreshReceiverVolume();
+var
+  Status: TMfCastReceiverVolumeStatus;
+  HaveStatus: Boolean;
+  CanControl: Boolean;
+
+begin
+
+  if FUpdatingReceiverVolume then
+    Exit;
+
+  Status.Reset();
+  HaveStatus := Assigned(FCast) and (not FClosing);
+  if HaveStatus then
+    HaveStatus := (FCast.GetReceiverVolume(Status) = S_OK);
+
+  CanControl := HaveStatus and (not Assigned(FWorker)) and
+                (FCast.State() in [csConnected, csLaunchingReceiver, csBuffering,
+                                   csPlaying, csPaused, csStopped]) and
+                (not SameText(Status.ControlType,
+                              'fixed'));
+  FUpdatingReceiverVolume := True;
+  try
+    trkVolume.Enabled := CanControl and Status.HasLevel;
+    chkMuted.Enabled := CanControl and Status.HasMuted;
+    if Status.HasLevel then
+      trkVolume.Position := Round(Status.Level * 100.0)
+    else
+      trkVolume.Position := trkVolume.Min;
+
+    chkMuted.Checked := Status.HasMuted and Status.Muted;
+    if SameText(Status.ControlType,
+                'fixed') then
+      lblVolume.Caption := 'Volume fixed'
+    else
+      if Status.HasLevel then
+        lblVolume.Caption := Format('Volume %d%%',
+                                    [trkVolume.Position])
+      else
+        lblVolume.Caption := 'Volume unavailable';
+  finally
+    FUpdatingReceiverVolume := False;
+  end;
 end;
 
 
@@ -1456,10 +1583,10 @@ begin
 
   btnDisconnect.Enabled := CanControlReceiver;
 
-  btnSeek.Enabled := CanControlReceiver and (State in [csPlaying, csPaused]);
+  btnSeek.Enabled := CanControlReceiver and (FSeekDurationSeconds > 0) and
+                     (State in [csPlaying, csPaused]);
   trkSeek.Enabled := btnSeek.Enabled;
-  trkVolume.Enabled := CanControlReceiver;
-  chkMuted.Enabled := CanControlReceiver;
+  RefreshReceiverVolume();
   chkEmbeddedSubtitles.Enabled := not Busy;
 
   cbxSubtitleLanguage.Enabled := chkEmbeddedSubtitles.Checked and
@@ -1471,6 +1598,9 @@ begin
 
   cbxCaptureCodec.Enabled := (not Busy) and (cbxCaptureMode.ItemIndex <> 1);
   cbxCaptureMode.Enabled := not Busy;
+  if (btnRenameDevice <> nil) then
+    btnRenameDevice.Enabled := Assigned(FCast) and not FClosing and not Busy and
+      (cbxDevices.ItemIndex >= 0) and (cbxDevices.ItemIndex < Length(FDevices));
 end;
 
 
@@ -1493,9 +1623,13 @@ begin
 
   if State in [csIdle, csStopped, csError] then
     begin
+      FSeekDragging := False;
+      if (Windows.GetCapture() = trkSeek.Handle) then
+        Windows.ReleaseCapture();
       FSeekPositionPending := False;
       FSeekTargetSeconds := -1;
       FSeekRequestTick := 0;
+      ResetSeekProgress();
     end;
 
   UpdateControls;
@@ -1506,39 +1640,68 @@ procedure TCastPlayerForm.WmCastStatus(var message: TLMessage);
 var
   PositionSeconds: Integer;
   DurationSeconds: Integer;
+  PreviousDuration: Integer;
 
 begin
 
+  if FSeekDragging then
+    begin
+      if (Windows.GetCapture() = trkSeek.Handle) then
+        Exit;
+
+      FSeekDragging := False;
+      FSeekPositionPending := False;
+      FSeekTargetSeconds := -1;
+      FSeekRequestTick := 0;
+    end;
+
   PositionSeconds := Integer(message.WParam);
   DurationSeconds := Integer(message.LParam);
+  PreviousDuration := FSeekDurationSeconds;
   FUpdatingSeekPosition := True;
 
   try
-    if (DurationSeconds > trkSeek.Max) then
-      trkSeek.Max := DurationSeconds;
+    if (DurationSeconds > 0) then
+      begin
+        FSeekDurationSeconds := DurationSeconds;
+        if (DurationSeconds <> trkSeek.Max) then
+          trkSeek.Max := DurationSeconds;
+      end
+    else
+      begin
+        FSeekDurationSeconds := 0;
+        trkSeek.Max := 1;
+        trkSeek.Position := 0;
+      end;
 
   finally
     FUpdatingSeekPosition := False;
   end;
 
+  if (FSeekDurationSeconds <> PreviousDuration) then
+    UpdateControls();
+
+  if (FSeekDurationSeconds = 0) then
+    PositionSeconds := 0;
+
   if FSeekPositionPending then
     begin
       if (FSeekTargetSeconds >= 0) and
-        (Abs(PositionSeconds - FSeekTargetSeconds) <= 2) then
+         (Abs(PositionSeconds - FSeekTargetSeconds) <= 2) then
         begin
           FSeekPositionPending := False;
           FSeekTargetSeconds := -1;
           FSeekRequestTick := 0;
         end
-      else if (FSeekRequestTick = 0) or
-        ((GetTickCount() - FSeekRequestTick) < 20000) then
-        Exit
       else
-        begin
-          FSeekPositionPending := False;
-          FSeekTargetSeconds := -1;
-          FSeekRequestTick := 0;
-        end;
+        if ((GetTickCount() - FSeekRequestTick) < 20000) then
+          Exit
+        else
+          begin
+            FSeekPositionPending := False;
+            FSeekTargetSeconds := -1;
+            FSeekRequestTick := 0;
+          end;
     end;
 
   if (PositionSeconds > trkSeek.Max) then
@@ -1603,10 +1766,7 @@ begin
   if SUCCEEDED(Hr) then
     begin
 
-      // Apply the UI settings to a receiver that may have retained a muted
-      // state from an earlier session.
-      FCast.SetVolume(trkVolume.Position / 100.0);
-      FCast.SetMuted(chkMuted.Checked);
+      RefreshReceiverVolume();
 
       // Also pick up an artwork selection made while the cast worker connected.
       if FileExists(Trim(edtArtwork.Text)) then
@@ -1836,6 +1996,7 @@ begin
     end;
 
   FActiveDesktopMode := -1;
+  ResetSeekProgress();
   FWorker := TMfCastFileWorker.Create(FCast,
                                       FDevices[cbxDevices.ItemIndex],
                                       Trim(edtSource.Text),
@@ -1968,10 +2129,8 @@ begin
   if (not Settings.AudioOnly) and (Settings.ArtworkSourceName = '') then
     AddLog('Local preview enabled; player window excluded from desktop capture to prevent feedback.');
 
-  // Every new desktop cast starts silent; raise the slider after connecting.
-  trkVolume.Position := 0;
-
   FActiveDesktopMode := cbxCaptureMode.ItemIndex;
+  ResetSeekProgress();
   FWorker := TMfCastDesktopWorker.Create(FCast,
                                          FDevices[cbxDevices.ItemIndex],
                                          Settings,
@@ -2044,6 +2203,9 @@ var
 
 begin
 
+  if FClosing or (not Assigned(FCast)) or (not btnSeek.Enabled) then
+    Exit;
+
   FSeekPositionPending := True;
   FSeekTargetSeconds := trkSeek.Position;
   FSeekRequestTick := GetTickCount();
@@ -2061,16 +2223,104 @@ begin
 end;
 
 
-procedure TCastPlayerForm.trkSeekChange(Sender: TObject);
+procedure TCastPlayerForm.ResetSeekProgress();
 
 begin
 
-  if FUpdatingSeekPosition then
-    Exit;
+  FSeekDragging := False;
+  if (Windows.GetCapture() = trkSeek.Handle) then
+    Windows.ReleaseCapture();
 
-  FSeekPositionPending := True;
+  FSeekDurationSeconds := 0;
+  FSeekPositionPending := False;
   FSeekTargetSeconds := -1;
   FSeekRequestTick := 0;
+  FUpdatingSeekPosition := True;
+  try
+    trkSeek.Min := 0;
+    trkSeek.Max := 1;
+    trkSeek.Position := 0;
+  finally
+    FUpdatingSeekPosition := False;
+  end;
+end;
+
+
+procedure TCastPlayerForm.SetSeekPositionFromPoint(const AX: Integer);
+var
+  BarWidth: Integer;
+  Offset: Integer;
+  PositionRange: Int64;
+
+begin
+
+  BarWidth := trkSeek.ClientWidth;
+
+  if (BarWidth <= 0) then
+    Exit;
+
+  Offset := AX;
+
+  if (Offset < 0) then
+    Offset := 0
+  else if (Offset > BarWidth) then
+    Offset := BarWidth;
+
+  PositionRange := Int64(trkSeek.Max) - Int64(trkSeek.Min);
+  trkSeek.Position := Integer(Int64(trkSeek.Min) +
+                               ((Int64(Offset) * PositionRange + (BarWidth div 2)) div BarWidth));
+end;
+
+
+procedure TCastPlayerForm.trkSeekMouseDown(Sender: TObject;
+                                           Button: TMouseButton;
+                                           Shift: TShiftState;
+                                           X: Integer;
+                                           Y: Integer);
+
+begin
+
+  if (Button <> mbLeft) or FClosing or
+     (not trkSeek.Enabled) or (not btnSeek.Enabled) then
+    Exit;
+
+  FSeekDragging := True;
+  Windows.SetCapture(trkSeek.Handle);
+  SetSeekPositionFromPoint(X);
+end;
+
+
+procedure TCastPlayerForm.trkSeekMouseMove(Sender: TObject;
+                                           Shift: TShiftState;
+                                           X: Integer;
+                                           Y: Integer);
+
+begin
+
+  if FSeekDragging and (ssLeft in Shift) then
+    SetSeekPositionFromPoint(X);
+end;
+
+
+procedure TCastPlayerForm.trkSeekMouseUp(Sender: TObject;
+                                         Button: TMouseButton;
+                                         Shift: TShiftState;
+                                         X: Integer;
+                                         Y: Integer);
+
+begin
+
+  if (Button <> mbLeft) or FClosing or
+     (not trkSeek.Enabled) or (not btnSeek.Enabled) then
+    Exit;
+
+  SetSeekPositionFromPoint(X);
+  FSeekDragging := False;
+  if (Windows.GetCapture() = trkSeek.Handle) then
+    Windows.ReleaseCapture();
+
+  if (not FClosing) and btnSeek.Enabled then
+    btnSeek.Click();
 end;
 
 
@@ -2078,9 +2328,9 @@ procedure TCastPlayerForm.trkVolumeChange(Sender: TObject);
 
 begin
 
-  if trkVolume.Enabled then
+  if (not FUpdatingReceiverVolume) and trkVolume.Enabled then
     begin
-      FCast.SetVolume(trkVolume.Position / 100.0);
+      FCast.SetReceiverVolume(trkVolume.Position / 100.0);
       lblVolume.Caption := Format('Volume %d%%',
                                   [trkVolume.Position]);
     end;
@@ -2116,8 +2366,8 @@ procedure TCastPlayerForm.chkMutedClick(Sender: TObject);
 
 begin
 
-  if chkMuted.Enabled then
-    FCast.SetMuted(chkMuted.Checked);
+  if (not FUpdatingReceiverVolume) and chkMuted.Enabled then
+    FCast.SetReceiverMuted(chkMuted.Checked);
 end;
 
 

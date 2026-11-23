@@ -16,7 +16,7 @@ uses
   LangTags, MfCastArtwork, MfEmbeddedSubtitleReader, MfVobSubReader, 
   MfMatroskaSubtitleReader, MfPCXConstants, MfCastWindowPreview, 
   MfSubtitleCompositor, MfSubtitleFramePump, TimedTextClass, 
-  MfCastDirectPreviewPlayer, MfCastRegularExpressions, MfCastText;
+  MfCastDirectPreviewPlayer, MfCastRegularExpressions, MfCastText, MfCastEureka;
 
 implementation
 
