@@ -49,9 +49,9 @@ For indepth information see the [VideoThumbNails example and documentation.](htt
   
 *This sample app needs the D2D1 Api. If your Delphi version doesn't have the D2D1 API, May 2019 update or later, use the D2D1 MfPack version.*
   
-![]MfPack-FPC/Pic/VideoThumbNailsSample.jpg)
+![](Pic/VideoThumbNailsSample.jpg)
   
-![RL](MfPack-FPC/Pic/RL.svg)
+![RL](Pic/RL.svg)
 
 ## MediaEngine Player Samples  
 
@@ -65,9 +65,9 @@ This is the basic class of MfMediaEnginePlayer (IMFMediaEngine), containing the 
 MediaEngine player (IMFMediaEngine(Ex)) with support for subtitles (closed captions) using the IMFTimedTextNotify interface.
 The application has options to use a layer to project subtitles or burned in subtitles in the videostream.  
   
-![](MfPack-FPC/Pic/MediaEnginePlayer2.jfif)
+![](Pic/MediaEnginePlayer2.jfif)
   
-![RL](MfPack-FPC/Pic/RL.svg)  
+![RL](Pic/RL.svg)  
   
 ## MfTranscode Samples
   
@@ -100,18 +100,18 @@ MPEG-4 Video with AAC Audio (mp4)
 MPEG-4 Video with Dolby AC-3 Audio (mp4)  
 Windows Media Video (wmv)  
   
-![](MfPack-FPC/Pic/MfTranscode%20Sample%202.png)
+![](Pic/MfTranscode%20Sample%202.png)
   
-![RL](MfPack-FPC/Pic/RL.svg) 
+![RL](Pic/RL.svg) 
   
 ## MfSimpleCapture Sample
   
 This example shows, how you have to implement capturing within a session.  
 Note: The old MS sample used the deprecated IMFplayer interface.  
   
-![](MfPack-FPC/Pic/MfSimpleCapture.png)
+![](Pic/MfSimpleCapture.png)
   
-![RL](MfPack-FPC/Pic/RL.svg)  
+![RL](Pic/RL.svg)  
 
 ## MfComponents Samples
 
@@ -129,12 +129,12 @@ This package contains the following -installable- components:
 An example about how to create a MfPeakMeter control.
 This sample is part of the Samples\MfComponents package.  
   
-![](MfPack-FPC/Pic/MfPeakmeter.jfif)
+![](Pic/MfPeakmeter.jfif)
   
 An example about how to create a MfAudioVisualizer control - A visual component that uses loopback, Peak/RMS, optional spectrum bars or VU.  
 This sample is part of the Samples/MfComponents package.  
 
-![](MfPack-FPC/Pic/MfAudioVisualizer.png)
+![](Pic/MfAudioVisualizer.png)
   
 **WASAPI player / dsp / mft components:**
   
@@ -153,7 +153,7 @@ Note: On how to use these components, please read the WasApiPlayer sample 5 docu
 * PcmLib.pas - A very convenient unit that is capable of recoding diverse WAV formats.
 * WASAPIEngine.pas - Universal WASAPIEngine .
   
-![RL](MfPack-FPC/Pic/RL.svg) 
+![RL](Pic/RL.svg) 
   
 ## AudioClip, AudioClipEx and AudioClipEx2 samples
   
@@ -165,9 +165,9 @@ The AudioClipEx2 sample demonstrates using the IMFSourceReader,
 IMFSourceReaderCallback and IMFSinkWriter API to extract uncompressed audiodata from a media file and write the audio to a wav.
 It also uses threads for better responsiveness.  
   
-![](MfPack-FPC/Pic/AudioClipExSample.jpg)
+![](Pic/AudioClipExSample.jpg)
   
-![RL](MfPack-FPC/Pic/RL.svg) 
+![RL](Pic/RL.svg) 
 
 ## MfPlayer Samples  
   
@@ -185,9 +185,9 @@ There are 4 samples in 4 project degrees.
   mDNS, TLS, MfPack Cast V2 messages, and a local HTTP server can work together  
   inside a Delphi application, without using 3th party components.  
   
-![](MfPack-FPC/Pic/MfMediaPlayer_X.jfif)
+![](Pic/MfMediaPlayer_X.jfif)
 
-![RL](MfPack-FPC/Pic/RL.svg)   
+![RL](Pic/RL.svg)   
   
 ## MfProtectedPlayback Sample
   
@@ -197,9 +197,9 @@ It is a close Delphi translation of Microsoft's `ProtectedPlayback` C++ sample a
 The translation of this Microsoft sample preserves the structure, class names, method names, and control flow of the original sample wherever Delphi permits them. 
 The sample includes the original C++ code for references.  
 
-![](MfPack-FPC/Pic/MfProtectedPlayback.png)
+![](Pic/MfProtectedPlayback.png)
 
-![RL](MfPack-FPC/Pic/RL.svg)   
+![RL](Pic/RL.svg)   
   
 ## Volume Ducking Samples  
   
@@ -209,7 +209,7 @@ This sample implements a simple media player that responds to the "ducking"
 feature in Windows 7 and later. It also implements a volume control which tracks  
 to the volume control in the volume mixer.  
   
-![](MfPack-FPC/Pic/DuckingMediaPlayerSample.jpg)
+![](Pic/DuckingMediaPlayerSample.jpg)
   
 ---
   
@@ -220,9 +220,9 @@ ducking feature. In capture mode, audio from the default communications
 capture endpoint is routed to the default playback endpoint.  
 Select 'Use default input device' in the application to hear the routed input.  
   
-![](MfPack-FPC/Pic/ChatDemo.jfif)
+![](Pic/ChatDemo.jfif)
   
-![RL](MfPack-FPC/Pic/RL.svg)  
+![RL](Pic/RL.svg)  
 
 ## WebCamStreamer Samples  
   
@@ -236,9 +236,9 @@ It demonstrates the complete path from Media Foundation capture to a
 browser-playable live stream without requiring another external  
 media server on a local network.
 
-![](MfPack-FPC/Pic/MfSimpleWebCamStreamer.png)
+![](Pic/MfSimpleWebCamStreamer.png)
   
-![RL](MfPack-FPC/Pic/RL.svg)  
+![RL](Pic/RL.svg)  
   
 **MfWebCamStreamer**
   
@@ -256,9 +256,9 @@ The browser player includes:
 - Live viewer count with privacy-masked IP addresses;
 - Sound, playback, reconnect, and live-edge controls.
   
-![](MfPack-FPC/Pic/MfWebCamStreamer.png)
+![](Pic/MfWebCamStreamer.png)
   
-![RL](MfPack-FPC/Pic/RL.svg)  
+![RL](Pic/RL.svg)  
 
 ## CastPlayer Samples  
 
@@ -281,7 +281,7 @@ Compatible MP4/H.264/AAC, WebM, MP3, M4A, and AAC sources use direct play.
 Containers such as MKV are converted to fragmented MP4 and published by the build-in HTTP server.  
 Please read the white paper document MfPack/Cast/MfPack_Chromecast_API_White_Paper.txt for full details using the MfPack Cast API.  
   
-![](MfPack-FPC/Pic/MfSimpleCastPlayer.png)
+![](Pic/MfSimpleCastPlayer.png)
   
 ---
   
@@ -304,7 +304,7 @@ Other containers and codecs, including AVI and MKV when required, are remuxed or
   
 Please read [MfPack_Chromecast_API_White_Paper.txt](MfPack-FPC/Cast/MfPack_Chromecast_API_White_Paper.txt) for full details about using the MfPack Cast API.  
   
-![](MfPack-FPC/Pic/MfCastPlayer.png)
+![](Pic/MfCastPlayer.png)
   
 ---
 
@@ -318,7 +318,7 @@ The sample uses DXGI desktop duplication to make it possible casting from for ex
 It avoids installing 3th party apps viewing web content like YouTube.  
 There is some trade off: The quality of origin is downgraded to the monitor resolution it play's on.
 
-![RL](MfPack-FPC/Pic/RL.svg)  
+![RL](Pic/RL.svg)  
 
 ## Frame/Snapshot Capture Samples  
   
@@ -326,7 +326,7 @@ There is some trade off: The quality of origin is downgraded to the monitor reso
   
 Demonstrates how to capture an image (synchronous or A-synchronous) using the IMFSourceReader.
   
-![](MfPack-FPC/Pic/MfFrameCapture.png)
+![](Pic/MfFrameCapture.png)
 
 ---
   
@@ -335,7 +335,7 @@ Demonstrates how to capture an image (synchronous or A-synchronous) using the IM
 Demonstrates how to capture a still image or so called snapshot (A-synchronous) from a    
 capture device such as a webcam or camera using the IMFSourceReader.
   
-![](MfPack-FPC/Pic/CameraFrameCaptureSample.png)
+![](Pic/CameraFrameCaptureSample.png)
   
 ---
   
@@ -345,9 +345,9 @@ Demonstrates how to capture a snapshot or a recording (A-synchronous) from a cap
 such as a webcam using the IMFCaptureEngine and IMFCapturePreviewSink.  
 This sample also demonstrates how to use the MfMediaTypeDebug API.  
   
-![](MfPack-FPC/Pic/MFCaptureEngineVideoCapture.jpg)
+![](Pic/MFCaptureEngineVideoCapture.jpg)
   
-![RL](MfPack-FPC/Pic/RL.svg)  
+![RL](Pic/RL.svg)  
 
 ## SinkWriterToEncodeVideo Samples  
   
@@ -358,15 +358,15 @@ Creates a simple green bitmap (640x480) and store it to a file with a length of 
 **Example 2**  
 Demonstrates how to use the SinkWriter to create a video from one or more bitmap files.  
   
-![](MfPack-FPC/Pic/SinkWriterSample.png)
+![](Pic/SinkWriterSample.png)
   
 **Example 3**  
 Demonstrates how to use the SinkWriter to create a video from one or more image files including audio.
   
-![](MfPack-FPC/Pic/ImageToVideo_3.jpg)
+![](Pic/ImageToVideo_3.jpg)
 
   
-![RL](MfPack-FPC/Pic/RL.svg)
+![RL](Pic/RL.svg)
   
 ## LoopBackCapture Samples  
   
@@ -375,7 +375,7 @@ Demonstrates how to use the SinkWriter to create a video from one or more image 
 This sample shows, how to capture sound from your soundcard using  and save this capture  
 with the quality that is supported by your soundcard.  
   
-![](MfPack-FPC/Pic/LoopBackCapture.png)
+![](Pic/LoopBackCapture.png)
   
 ---
   
@@ -402,7 +402,7 @@ The application is provided with a dialog to select a running process from the p
   
 The application is using MMCSS and runs the rendering part in a separate thread.  
   
-![](MfPack-FPC/Pic/LoopbackCapture2.png)
+![](Pic/LoopbackCapture2.png)
   
 ---
   
@@ -420,9 +420,9 @@ buffersize for better sound to eliminate buffer related gliches.
    - *Possibility to write wav data in native format 44.1 kHz/ 16 bit PCM or* 
      *the soundcard's audio format (including Uncompressed IEEE floating-point audio).*
   
-![](MfPack-FPC/Pic/ThreadedLoopbackCapture.png)
+![](Pic/ThreadedLoopbackCapture.png)
   
-![RL](MfPack-FPC/Pic/RL.svg)
+![RL](Pic/RL.svg)
 
   
 ## XAudio2Player Samples  
@@ -438,7 +438,7 @@ It shows you the basics of using XAudio2 without formatting the mediatypes yours
 The sample uses the MfPeakMeter component. This requires that you install the MfComponents.  
 In your projectsettings you have to add ..MfPack\Samples\MfComponents in the project options searchpath.  
   
-![](MfPack-FPC/Pic/XAudio_Basic_Sample.png)
+![](Pic/XAudio_Basic_Sample.png)
   
 ---
   
@@ -449,7 +449,7 @@ The sample uses the MfPeakMeter component. This requires that you install the Mf
 In your projectsettings you must add ..MfPack\Samples\MfComponents in the project options searchpath.  
 It also has a pitch control.  
   
-![](MfPack-FPC/Pic/XAudio2_Sample2.png)
+![](Pic/XAudio2_Sample2.png)
   
 ---
   
@@ -462,7 +462,7 @@ It shows you how to implement events and methods instead of using messages from 
 The sample uses the MfPeakMeter component. This requires that you install the MfComponents.  
 In your projectsettings you have to add ..MfPack\Samples\MfComponents in the project options searchpath.  
   
-![](MfPack-FPC/Pic/XAudio2_Sample3.png)
+![](Pic/XAudio2_Sample3.png)
   
 ---
   
@@ -487,9 +487,9 @@ Unlike earlier samples, this version does not load the entire audio file into me
 It uses Media Foundation streaming decode + multiple XAudio2 buffers,  
 making it suitable for large audio files (e.g. FLAC > 100 MB).  
   
-![](MfPack-FPC/Pic/XAudio2_Sample4.png)
+![](Pic/XAudio2_Sample4.png)
   
-![RL](MfPack-FPC/Pic/RL.svg)   
+![RL](Pic/RL.svg)   
 
 ## WASAPI Player Samples
   
@@ -506,7 +506,7 @@ IAudioClock and IAudioStreamVolume interfaces.
 The sample uses the MfPeakMeter component. This requires that you install the MfComponents.  
 In your projectsettings you have to add ..MfPack\Samples\MfComponents in the project options searchpath.  
   
-![](MfPack-FPC/Pic/WasApiPlayer1.png)
+![](Pic/WasApiPlayer1.png)
   
 ---
   
@@ -515,7 +515,7 @@ In your projectsettings you have to add ..MfPack\Samples\MfComponents in the pro
 This sample is based on Sample 1, but includes full threaded code,  
 using threadsafe events and also uses a custom MFT for bass and treble control.  
   
-![](MfPack-FPC/Pic/WasApiPlayer2.png)
+![](Pic/WasApiPlayer2.png)
   
 ---
   
@@ -525,7 +525,7 @@ This sample is based on Sample 2, instead of a bass/treble MFT, this one is equi
 a 3 band High, Mid(Peaking or Notch) and Low EQ MFT and a spectrum analizer.  
 It also stores and read back settings for the MFT.  
   
-![](MfPack-FPC/Pic/WasApiPlayer3.png)
+![](Pic/WasApiPlayer3.png)
   
 ---
   
@@ -552,7 +552,7 @@ This sample demonstrates a **real-time audio playback engine on Windows** using:
 **Note:**  
 This is not a sample for absolute beginners. Please read the documents included with this sample.  
   
-![](MfPack-FPC/Pic/WasApiPlayer4.png)
+![](Pic/WasApiPlayer4.png)
   
 ---
   
@@ -575,9 +575,9 @@ This sample also demonstrates how to create and implement a:
 This is not a sample for absolute beginners.  
 Please read the documents included with this sample.  
   
-![](MfPack-FPC/Pic/WasApiPlayer5.png)
+![](Pic/WasApiPlayer5.png)
   
-![RL](MfPack-FPC/Pic/RL.svg)   
+![RL](Pic/RL.svg)   
 
 ## Capture Video From GPU Samples
   
@@ -585,7 +585,7 @@ Please read the documents included with this sample.
   
 This sample demonstrates how to capture from screen using your videocard GPU.  
   
-![](MfPack-FPC/Pic/CaptureVideoFromGPUSample.png)
+![](Pic/CaptureVideoFromGPUSample.png)
   
 ---
   
@@ -602,16 +602,16 @@ dedicated recorder unit.
 **Note:**  
 You need good knowledge of Media Foundation, DirectX and GPU processing.  
   
-![](MfPack-FPC/Pic/MfCaptureVideoFromScreen2s.png)
+![](Pic/MfCaptureVideoFromScreen2s.png)
   
-![RL](MfPack-FPC/Pic/RL.svg)   
+![RL](Pic/RL.svg)   
   
 **MfMftExplorer sample**
 
 This sample demonstrates how to discover Media Foundation Transforms (MFTs) installed on a  
 Windows system and their properties. 
 
-![](MfPack-FPC/Pic/MfMftExplorer.png)
+![](Pic/MfMftExplorer.png)
   
 ---
   
@@ -624,12 +624,12 @@ The project has 15 samples where each sample is lifted from the previous one.
 At sample 7 a programmer should be able to build a simple registered MFT and  
 how to use it in Media Foundation.  
   
-[Read about it in details](MfPack-FPC/Samples/MfCustomMFT/Readme.md)
+[Read about it in details](Samples/MfCustomMFT/Readme.md)
   
   
-![Sample 1](MfPack-FPC/Pic/MfCustomMft_S1.png)
+![Sample 1](Pic/MfCustomMft_S1.png)
 
-![RL](MfPack-FPC/Pic/RL.svg)   
+![RL](Pic/RL.svg)   
   
 ## Complex Samples
   
@@ -643,7 +643,7 @@ All WASAPI and MFT sample code comes together in this sample.
  You have to know the principles of WASAPI, MFT's (see MFT samples) and audio manipulation.  
  Before compiling this sample make sure, you have all needed components compiled and installed (see instructions).
   
-![](MfPack-FPC/Pic/RDJ_Interface_s.png)
+![](Pic/RDJ_Interface_s.png)
   
   
 **RDJ Pro Mixer sample**  
@@ -674,9 +674,9 @@ MfPack Cast V2 protocols.
 You have to know the principles of WASAPI, MFT's (see MFT samples), MfPack Cast V2, FxServe and audio manipulation.  
 Before compiling this sample make sure, you have all needed components compiled and installed (see instructions). 
 
-![](MfPack-FPC/Pic/RDJPro_Interface_s.png)
+![](Pic/RDJPro_Interface_s.png)
   
-![RL](MfPack-FPC/Pic/RL.svg)   
+![RL](Pic/RL.svg)   
 
   
 # Media Servers
@@ -733,7 +733,7 @@ Samples using MfCast are:
 - MfPlayer X2
 - RDJ Pro.
   
-![RL](MfPack-FPC/Pic/RL.svg)   
+![RL](Pic/RL.svg)   
   
 # HEOS CLI and AVR
 
@@ -752,14 +752,14 @@ HEOS playback and AVR settings use separate protocols, with availability dependi
 The API's have the following samples:
 - A simple HEOS remote demonstrates the CLI with standard Delphi VCL components.
 
-![](MfPack-FPC/Pic/SimpleHEOSRemote_s.png)  
+![](Pic/SimpleHEOSRemote_s.png)  
   
 - The complete HEOS Remote application adds playlist editing, file streaming, playlist streaming and Windows audio (loopback) streaming.
 Its controls and form layouts are included for editing in the Delphi IDE.
 
-![](MfPack-FPC/Pic/HEOSRemote_s.png)
+![](Pic/HEOSRemote_s.png)
   
-![RL](MfPack-FPC/Pic/RL.svg) 
+![RL](Pic/RL.svg) 
   
 # Tools
   
@@ -769,7 +769,7 @@ This tool can be used to determine HResult or Error codes returned by the Window
 featuring a detailed build in "HResult Lookup tool", the "Windows System Error Code Lookup Tool" and  
 the "System.SysUtils.SysErrorMessage" function, that provides the localized translation (language of your OS) of the HResult.  
   
-![](MfPack-FPC/Pic/HResultLookUpToolApp.png)
+![](Pic/HResultLookUpToolApp.png)
   
     
 **Copyright © FactoryX. All rights reserved.**
