@@ -9,7 +9,7 @@ NOTES:
 * This release is updated for compiler version 3.2.2 (64 bit).
 * SDK version 10.0.28000.2705 (Win 11)
 * Requires Windows 10 or later.
-* Minimum supported MfPack version: 3.1.8
+* Minimum supported MfPack version: 4.1.0
   
   
 ## What the sample demonstrates
