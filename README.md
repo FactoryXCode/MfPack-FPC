@@ -104,13 +104,25 @@ Windows Media Video (wmv)
   
 ![RL](Pic/RL.svg) 
   
-## MfSimpleCapture Sample
+## MfSimpleCapture Samples
   
+**Sample 1**
 This example shows, how you have to implement capturing within a session.  
 Note: The old MS sample used the deprecated IMFplayer interface.  
   
 ![](Pic/MfSimpleCapture.png)
+
+**Sample 2**  
+This sample uses the DirectShow IAMCameraControl and IAMVideoProcAmp interfaces to control camera settings.  
   
+![](Pic/MfSimpleCapture_2.png)  
+
+**Sample 3**  
+This sample is based on MfSimpleCapture Sample 2.  
+It uses the Media Foundation camera source, Media Session, partial capture topology and EVR preview and uses native source controls and the newer Media Foundation camera interfaces for configuration.  
+  
+![](Pic/MfSimpleCapture_3.png)  
+
 ![RL](Pic/RL.svg)  
 
 ## MfComponents Samples
