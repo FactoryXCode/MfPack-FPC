@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="12" />
+    <General>
+      <Flags>
+        <MainUnitHasScaledStatement Value="True" />
+      </Flags>
+      <SessionStorage Value="InProjectDir" />
+      <Title Value="MfSimpleCapture" />
+      <UseAppBundle Value="False" />
+      <ResourceType Value="res" />
+    </General>
+    <BuildModes Count="2">
+      <Item1 Name="Debug" Default="True" />
+      <Item2 Name="Release">
+        <CompilerOptions>
+          <Version Value="11" />
+          <Target>
+            <Filename Value="bin/$(TargetCPU)-$(TargetOS)/$(BuildMode)/MfSimpleCapture" />
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="../../../src" />
+            <OtherUnitFiles Value=".;../../../src;../../../src/debug" />
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)/$(BuildMode)/$(LCLWidgetType)" />
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <SyntaxMode Value="DelphiUnicode" />
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <TargetCPU Value="x86_64" />
+            <TargetOS Value="win64" />
+            <Checks>
+              <IOChecks Value="True" />
+              <RangeChecks Value="True" />
+              <OverflowChecks Value="True" />
+              <StackChecks Value="True" />
+            </Checks>
+            <Optimizations>
+              <OptimizationLevel Value="2" />
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True" />
+              </Win32>
+            </Options>
+            <Debugging>
+              <GenerateDebugInfo Value="False" />
+              <DebugInfoType Value="dsDwarf3" />
+            </Debugging>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-Sa -O2" />
+          </Other>
+        </CompilerOptions>
+      </Item2>
+    </BuildModes>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="LCL" />
+      </Item1>
+    </RequiredPackages>
+    <Units Count="7">
+      <Unit0><Filename Value="MfSimpleCapture.dpr"/><IsPartOfProject Value="True"/></Unit0>
+      <Unit1><Filename Value="frmSimpleCapture.pas"/><IsPartOfProject Value="True"/><ComponentName Value="Frm_SimpleCapture"/><HasResources Value="True"/><ResourceBaseClass Value="Form"/></Unit1>
+      <Unit2><Filename Value="MfDeviceCaptureClass.pas"/><IsPartOfProject Value="True"/></Unit2>
+      <Unit3><Filename Value="MfCameraControls.pas"/><IsPartOfProject Value="True"/></Unit3>
+      <Unit4><Filename Value="MfCameraControlsPlatform.pas"/><IsPartOfProject Value="True"/></Unit4>
+      <Unit5><Filename Value="dlgMfCameraControls.pas"/><IsPartOfProject Value="True"/><ComponentName Value="MfCameraControlsDialog"/><HasResources Value="True"/><ResourceBaseClass Value="Form"/></Unit5>
+      <Unit6><Filename Value="frmdlgChooseDevice.pas"/><IsPartOfProject Value="True"/><ComponentName Value="dlgChooseDevice"/><HasResources Value="True"/><ResourceBaseClass Value="Form"/></Unit6>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11" />
+    <Target>
+      <Filename Value="bin/$(TargetCPU)-$(TargetOS)/$(BuildMode)/MfSimpleCapture" />
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="../../../src" />
+      <OtherUnitFiles Value=".;../../../src;../../../src/debug" />
+      <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)/$(BuildMode)/$(LCLWidgetType)" />
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <SyntaxMode Value="DelphiUnicode" />
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <TargetCPU Value="x86_64" />
+      <TargetOS Value="win64" />
+      <Checks>
+        <IOChecks Value="True" />
+        <RangeChecks Value="True" />
+        <OverflowChecks Value="True" />
+        <StackChecks Value="True" />
+      </Checks>
+    </CodeGeneration>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True" />
+        </Win32>
+      </Options>
+      <Debugging>
+        <GenerateDebugInfo Value="True" />
+        <DebugInfoType Value="dsDwarf3" />
+      </Debugging>
+    </Linking>
+    <Other>
+      <CustomOptions Value="-Sa" />
+    </Other>
+  </CompilerOptions>
+</CONFIG>
