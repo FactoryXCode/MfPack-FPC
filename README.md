@@ -291,6 +291,12 @@ The browser player includes:
 - Sound, playback, reconnect, and live-edge controls.
   
 ![](Pic/MfWebCamStreamer.png)
+
+**MfWebCamStreamerMF**
+
+MfWebCamStreamerMF is a follow-up of MfWebCamStreamer.  
+It shows how to implement the Media Foundation IMFExtendedCameraControl interface that exposes supported standard properties, including exposure, focus, zoom, brightness and white balance.
+  
   
 ![RL](Pic/RL.svg)  
 
