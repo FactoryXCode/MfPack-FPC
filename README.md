@@ -202,8 +202,9 @@ There are 4 samples in 4 project degrees.
 ![RL](Pic/RL.svg)   
 
     
-## MfPlaylist Sample  
-  
+## MfPlaylist Samples  
+
+**Sample 1**
 This is a VCL implementation of Microsoft's [How to Create a Playlist](https://learn.microsoft.com/en-us/windows/win32/medfound/how-to-create-a-playlist).  
 
 **About this sample**
@@ -220,13 +221,17 @@ This is a VCL implementation of Microsoft's [How to Create a Playlist](https://l
 | 8. Shut down | `ClosePlaylist`: shut down the sequencer's media source, close and await the session's close notification, then shut down the session |
 
 ![](Pic/MfPlaylist_s.png)
+
+**Sample 2**
+This sample has been derived from Sample 1, but able to save and load the playslists to/from UTF-8 .m3u8 files.  
+It also projects a default artwork, when no artwork has been found in the audiofile's folder.
   
 ![RL](Pic/RL.svg)  
   
 ## MfProtectedPlayback Sample
   
 This sample demonstrates playback of clear and protected media with Microsoft Media Foundation and the Protected Media Path (PMP).
-It is a close Delphi translation of Microsoft's `ProtectedPlayback` C++ sample and uses the Media Foundation declarations supplied by MfPack.  
+It is a close FPC/Lazarus translation of Microsoft's `ProtectedPlayback` C++ sample and uses the Media Foundation declarations supplied by MfPack.  
   
 The translation of this Microsoft sample preserves the structure, class names, method names, and control flow of the original sample wherever Delphi permits them. 
 The sample includes the original C++ code for references.  
@@ -599,8 +604,7 @@ This is not a sample for absolute beginners. Please read the documents included 
 **Player Sample 5**
   
 This is a non-visual components application sample.  
-The sample shows you how to build a real-time audio playback engine for  
-Windows using Delphi style components.  
+The sample shows you how to build a real-time audio playback engine for Windows using Lazarus style components.  
   
 **Features**  
 This sample also demonstrates how to create and implement a:
@@ -751,7 +755,7 @@ configure and control Caddy as a Windows service.
 
 ***MfCast V2.2***
   
-MfCast is an independent Chromecast subsystem for Delphi.
+MfCast is an independent Chromecast subsystem for FPC/Lazarus.
 It handles device discovery, receiver control, local media serving,
 media preparation, subtitles, track selection,
 and optional remuxing/transcoding behind a small public API.
@@ -763,7 +767,7 @@ MfCast can be used by:
 - Radio applications
 - Slideshow or image applications
 - Dedicated Chromecast control applications
-- Third-party Delphi applications that use MfPack
+- Third-party FPC/Lazarus applications that use MfPack
 - Applications that do not otherwise use MfPack player classes
 
 Samples using MfCast are:
@@ -777,7 +781,7 @@ Samples using MfCast are:
   
 # HEOS CLI and AVR
 
-FactoryX HEOS CLI provides Delphi APIs for controlling HEOS-enabled audio devices from Denon and Marantz.
+FactoryX HEOS CLI provides FPC/Lazarus APIs for controlling HEOS-enabled audio devices from Denon and Marantz.
 It supports player control, volume and mute, music browsing, queues, playlists, grouping and receiver events.
 The APIs use native Windows sockets; no Indy or third-party JSON libraries are needed.
 
@@ -790,12 +794,12 @@ HEOS playback and AVR settings use separate protocols, with availability dependi
 **Remote samples**
 
 The API's have the following samples:
-- A simple HEOS remote demonstrates the CLI with standard Delphi VCL components.
+- A simple HEOS remote demonstrates the CLI with standard Lazarus VCL components.
 
 ![](Pic/SimpleHEOSRemote_s.png)  
   
 - The complete HEOS Remote application adds playlist editing, file streaming, playlist streaming and Windows audio (loopback) streaming.
-Its controls and form layouts are included for editing in the Delphi IDE.
+Its controls and form layouts are included for editing in the Lazarus IDE.
 
 ![](Pic/HEOSRemote_s.png)
   
